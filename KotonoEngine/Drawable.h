@@ -8,7 +8,6 @@ class Drawable :
 
 public:
     Drawable();
-    ~Drawable();
     
     virtual const bool GetIsDraw() const;
     void SetIsDraw(const bool isDraw);

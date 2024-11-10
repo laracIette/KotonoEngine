@@ -19,6 +19,7 @@ public:
 
 private:
     Transform* _transform;
+
     Drawable3D* _parent;
 };
 

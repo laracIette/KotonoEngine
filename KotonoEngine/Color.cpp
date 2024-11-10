@@ -15,7 +15,7 @@ const Color::HSV Color::GetHSV() const
 
     HSV hsv{};
     if (delta == 0) hsv.Hue = 0;
-    else if (max == _rgb.Red) hsv.Hue = 60.0f * fmod((_rgb.Green - _rgb.Blue) / delta, 6);
+    else if (max == _rgb.Red) hsv.Hue = 60.0f * fmod((_rgb.Green - _rgb.Blue) / delta, 6.0f);
     else if (max == _rgb.Green) hsv.Hue = 60.0f * ((_rgb.Blue - _rgb.Red) / delta + 2);
     else hsv.Hue = 60.0f * ((_rgb.Red - _rgb.Green) / delta + 4);
 
@@ -44,7 +44,7 @@ const Color::HSL Color::GetHSL() const
     {
         hsl.Saturation = delta / (1.0f - std::fabs(2.0f * hsl.Lightness / 100.0f - 1.0f)) * 100.0f;
 
-        if (max == _rgb.Red) hsl.Hue = 60.0f * fmod((_rgb.Green - _rgb.Blue) / delta, 6);
+        if (max == _rgb.Red) hsl.Hue = 60.0f * fmod((_rgb.Green - _rgb.Blue) / delta, 6.0f);
         else if (max == _rgb.Green) hsl.Hue = 60.0f * ((_rgb.Blue - _rgb.Red) / delta + 2);
         else hsl.Hue = 60.0f * ((_rgb.Red - _rgb.Green) / delta + 4);
 

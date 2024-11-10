@@ -81,5 +81,5 @@ void ImageTexture::Draw() const
 {
     glBindTexture(GL_TEXTURE_2D, _handle);
     _vertexArraySetup.VertexArrayObject.Bind();
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, nullptr);
 }

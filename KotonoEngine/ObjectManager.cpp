@@ -10,7 +10,7 @@
 ObjectManager::ObjectManager() :
 	_lastUpdateTime(std::chrono::steady_clock::now()),
 	_fileExplorer(new FileExplorer()),
-	_gameState(GameState::Stopped)
+	_gameState(GameState::Playing)
 {
 	// Open project
 	_fileExplorer->SetDirectoryPath(R"(C:\Users\nicos\Documents\Kotono Projects\Test)");
@@ -28,6 +28,10 @@ ObjectManager::ObjectManager() :
 	auto image = new Image();
 	image->SetMaterial(material);
 	image->SetTexture(texture);
+
+	image->GetRect()->SetRelativeSize(glm::vec2(100.0f, 100.0f));
+	image->GetRect()->SetRelativePosition(glm::vec2(100.0f, 100.0f));
+	image->GetRect()->SetRelativePositionVelocity(glm::vec2(10.0f, 5.0f));
 
 	Create(image);
 }

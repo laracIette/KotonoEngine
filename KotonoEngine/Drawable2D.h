@@ -10,6 +10,8 @@ public:
 	Drawable2D();
 	~Drawable2D();
 
+	void Update(float deltaTime) override;
+
 	const bool GetIsDraw() const override;
 
 	Rect* GetRect() const;
@@ -17,11 +19,11 @@ public:
 	Drawable2D* GetParent() const;
 	void SetParent(Drawable2D* parent);
 
-	virtual void UpdateShader() const override;
-	virtual void Draw() const override;
+	void UpdateShader() const override;
+	void Draw() const override;
 
 private:
 	Rect* _rect;
+
 	Drawable2D* _parent;
 };
-

@@ -2,7 +2,7 @@
 #include "Rect.h"
 
 Drawable2D::Drawable2D() :
-    _rect(new Rect()), 
+    _rect(new Rect()),
     _parent(nullptr)
 {
 }
@@ -10,6 +10,12 @@ Drawable2D::Drawable2D() :
 Drawable2D::~Drawable2D()
 {
     delete _rect;
+}
+
+void Drawable2D::Update(float deltaTime)
+{
+    Base::Update(deltaTime);
+    _rect->Update(deltaTime);
 }
 
 const bool Drawable2D::GetIsDraw() const
@@ -36,7 +42,6 @@ void Drawable2D::SetParent(Drawable2D* parent)
 void Drawable2D::UpdateShader() const
 {
     Base::UpdateShader();
-
     GetMaterial()->GetShader().SetMatrix4("model", GetRect()->GetModelMatrix());
 }
 

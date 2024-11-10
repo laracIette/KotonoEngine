@@ -1,11 +1,8 @@
 #include "Drawable.h"
 
 Drawable::Drawable() :
-    _isDraw(true), _material(nullptr)
-{
-}
-
-Drawable::~Drawable()
+    _isDraw(true), 
+    _material(nullptr)
 {
 }
 

@@ -3,9 +3,11 @@
 
 Rect::Rect() :
     _baseSize(glm::vec2(0.0f, 0.0f)),
-    _relativePosition(glm::vec2(0.0f)),
-    _relativeRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f))),
+    _anchor(Anchor::Center),
+    _relativePosition(glm::vec2(0.0f, 0.0f)),
+    _relativeRotation(glm::quat()),
     _relativeScale(glm::vec2(1.0f, 1.0f)),
+    _relativePositionVelocity(glm::vec2(0.0f, 0.0f)),
     _parent(nullptr)
 {
 }
@@ -15,9 +17,14 @@ const glm::vec2& Rect::GetBaseSize() const
     return _baseSize;
 }
 
-const glm::vec2& Rect::GetRelativePosition() const
+const Anchor Rect::GetAnchor() const
 {
-    return _relativePosition;
+    return _anchor;
+}
+
+const glm::vec2 Rect::GetRelativePosition() const
+{
+    return _relativePosition + GetAnchorPositionDelta();
 }
 
 const glm::quat& Rect::GetRelativeRotation() const
@@ -39,7 +46,7 @@ const glm::vec2 Rect::GetWorldPosition() const
 {
     if (_parent)
     {
-        return _relativePosition + _parent->GetWorldPosition();
+        return GetRelativePosition() + _parent->GetWorldPosition();
     }
     return _relativePosition;
 }
@@ -67,6 +74,11 @@ const glm::vec2 Rect::GetWorldSize() const
     return _baseSize * GetWorldScale();
 }
 
+const glm::vec2& Rect::GetRelativePositionVelocity() const
+{
+    return _relativePositionVelocity;
+}
+
 const glm::mat4 Rect::GetModelMatrix() const
 {
     constexpr glm::vec2 windowSize(1600, 900);
@@ -80,9 +92,9 @@ const glm::mat4 Rect::GetModelMatrix() const
     );
     glm::vec3 ndcSize(GetWorldSize() / windowSize, 1.0f);
 
-    glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), ndcPosition);
-    glm::mat4 rotationMatrix = glm::mat4_cast(GetWorldRotation());
     glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), ndcSize);
+    glm::mat4 rotationMatrix = glm::mat4_cast(GetWorldRotation());
+    glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), ndcPosition);
 
     return translationMatrix * rotationMatrix * scaleMatrix;
 }
@@ -95,6 +107,11 @@ Rect* Rect::GetParent() const
 void Rect::SetBaseSize(const glm::vec2& baseSize)
 {
     _baseSize = baseSize;
+}
+
+void Rect::SetAnchor(const Anchor anchor)
+{
+    _anchor = anchor;
 }
 
 void Rect::SetRelativePosition(const glm::vec2& relativePosition)
@@ -162,6 +179,11 @@ void Rect::SetWorldSize(const glm::vec2& worldSize)
     SetWorldScale(worldSize / _baseSize);
 }
 
+void Rect::SetRelativePositionVelocity(const glm::vec2& relativePositionVelocity)
+{
+    _relativePositionVelocity = relativePositionVelocity;
+}
+
 void Rect::SetParent(Rect* parent)
 {
     _parent = parent;
@@ -169,6 +191,7 @@ void Rect::SetParent(Rect* parent)
 
 void Rect::Update(float deltaTime)
 {
+    _relativePosition += _relativePositionVelocity * deltaTime;
 }
 
 const glm::vec2 Rect::GetDirection(Rect* target) const
@@ -179,4 +202,16 @@ const glm::vec2 Rect::GetDirection(Rect* target) const
 const float Rect::GetDistance(Rect* other) const
 {
     return GetDirection(other).length();
+}
+
+const glm::vec2 Rect::GetAnchorPositionDelta() const
+{
+    return glm::vec2(
+        (_anchor & Anchor::Left) == Anchor::Left ? GetRelativeSize().x / 2.0f
+        : (_anchor & Anchor::Right) == Anchor::Right ? -GetRelativeSize().x / 2.0f
+        : 0.0f,
+        (_anchor & Anchor::Top) == Anchor::Top ? GetRelativeSize().y / 2.0f
+        : (_anchor & Anchor::Bottom) == Anchor::Bottom ? -GetRelativeSize().y / 2.0f
+        : 0.0f
+    );
 }

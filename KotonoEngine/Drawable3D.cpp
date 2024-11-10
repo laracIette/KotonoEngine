@@ -2,7 +2,7 @@
 #include "Transform.h"
 
 Drawable3D::Drawable3D() :
-    _transform(new Transform()), 
+    _transform(new Transform()),
     _parent(nullptr)
 {
 }

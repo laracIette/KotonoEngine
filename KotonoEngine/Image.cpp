@@ -6,6 +6,11 @@ Image::Image() :
 {
 }
 
+const bool Image::GetIsDraw() const
+{
+	return _texture && Base::GetIsDraw();
+}
+
 ImageTexture* Image::GetTexture() const
 {
 	return _texture;
@@ -31,10 +36,13 @@ void Image::UpdateTextureShader()
 	}
 }
 
+void Image::UpdateShader() const
+{
+	Base::UpdateShader();
+
+}
+
 void Image::Draw() const
 {
-	if (_texture)
-	{
-		_texture->Draw();
-	}
+	_texture->Draw();
 }
