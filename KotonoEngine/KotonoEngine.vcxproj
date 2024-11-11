@@ -72,7 +72,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\nicos\Documents\glew-2.1.0\include;C:\Users\nicos\Documents\openal-soft-1.23.1-bin\include;C:\Users\nicos\Documents\glfw-3.4.bin.WIN64\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\nicos\Documents\magic_enum-v0.9.6\include;C:\Users\nicos\Documents\glew-2.1.0\include;C:\Users\nicos\Documents\openal-soft-1.23.1-bin\include;C:\Users\nicos\Documents\glfw-3.4.bin.WIN64\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\nicos\Documents\glew-2.1.0\lib\Release\x64;C:\Users\nicos\Documents\openal-soft-1.23.1-bin\libs\Win64;C:\Users\nicos\Documents\glfw-3.4.bin.WIN64\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -137,12 +137,13 @@
   <ItemGroup>
     <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="Component.cpp" />
     <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="ElementBufferObject.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FileExplorer.cpp" />
-    <ClCompile Include="FileExplorerWindowComponent.cpp" />
+    <ClCompile Include="FileExplorerComponent.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -169,13 +170,14 @@
     <ClInclude Include="AudioManager.h" />
     <ClInclude Include="BaseClass.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="Component.h" />
     <ClInclude Include="Drawable.h" />
     <ClInclude Include="ElementBufferObject.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="FileExplorer.h" />
-    <ClInclude Include="FileExplorerWindowComponent.h" />
+    <ClInclude Include="FileExplorerComponent.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MaterialNode.h" />

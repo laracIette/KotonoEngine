@@ -1,24 +1,36 @@
 #include "ObjectManager.h"
-#include "FIleExplorerWindowComponent.h"
-#include <iostream>
+#include "FileExplorerComponent.h"
 #include "Drawable.h"
+#include "Drawable2D.h"
 #include "Drawable3D.h"
 #include "Image.h"
 #include "Material.h"
+#include <magic_enum/magic_enum.hpp>
 
+ObjectManager* ObjectManagerInstance = new ObjectManager();
 
 ObjectManager::ObjectManager() :
 	_lastUpdateTime(std::chrono::steady_clock::now()),
-	_fileExplorer(new FileExplorer()),
-	_gameState(GameState::Playing)
+	_gameState(GameState::Stopped)
 {
-	// Open project
-	_fileExplorer->SetDirectoryPath(R"(C:\Users\nicos\Documents\Kotono Projects\Test)");
+}
 
+ObjectManager::~ObjectManager()
+{
+	std::cout << "ObjectManager::~ObjectManager(): deleting objects..." << std::endl;
+
+	for (Object* object : _objects)
+	{
+		delete object;
+	}
+
+	std::cout << "ObjectManager::~ObjectManager(): finished deleting objects." << std::endl;
+}
+
+void ObjectManager::Init()
+{
 	// Initialize all WindowComponents
-	auto fileExplorerWindowComponent = new FileExplorerWindowComponent(_fileExplorer);
-
-
+	auto fileExplorerComponent = new FileExplorerComponent();
 
 	auto material = new Material();
 	material->Compile();
@@ -33,17 +45,7 @@ ObjectManager::ObjectManager() :
 	image->GetRect()->SetRelativePosition(glm::vec2(100.0f, 100.0f));
 	image->GetRect()->SetRelativePositionVelocity(glm::vec2(10.0f, 5.0f));
 
-	Create(image);
-}
-
-ObjectManager::~ObjectManager()
-{
-	for (Object* object : _objects)
-	{
-		delete object;
-	}
-
-	delete _fileExplorer;
+	SetGameState(GameState::Playing);
 }
 
 void ObjectManager::Update()
@@ -127,6 +129,12 @@ void ObjectManager::Delete(Object* object) const
 	}
 	
 	delete object;
+}
+
+void ObjectManager::SetGameState(const GameState& gameState)
+{
+	_gameState = gameState;
+	std::cout << "ObjectManager::SetGameState(const GameState&): _gameState set to " << magic_enum::enum_name(gameState) << '.' << std::endl;
 }
 
 void ObjectManager::Draw() const

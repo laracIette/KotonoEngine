@@ -42,7 +42,7 @@ const std::string Material::GenerateFragmentShaderCode() const
 
 	for (MaterialNode* node : _nodes)
 	{
-		node->GetInputs()[0]->GetSource();
+		node->Inputs[0]->GetSource();
 	}
 
 	return stream.str();

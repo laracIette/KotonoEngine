@@ -8,16 +8,15 @@ MaterialNodeOperation<__operator>::MaterialNodeOperation() :
     _type("float")
 {
     AddInput();
+    AddInput();
 }
 
 template <char __operator>
-std::string MaterialNodeOperation<__operator>::GetDefaultValue() const
+const std::string MaterialNodeOperation<__operator>::GetDefaultValue() const
 {
     switch (_type)
     {
     case "int":
-        return "0";
-    case "long":
         return "0";
     case "float": 
         return "0.0f";
@@ -29,20 +28,21 @@ std::string MaterialNodeOperation<__operator>::GetDefaultValue() const
 }
 
 template <char __operator>
-std::string MaterialNodeOperation<__operator>::GetShaderCode() const
+const std::string MaterialNodeOperation<__operator>::GetShaderCode() const
 {
     std::stringstream stream;
-    stream << _inputs[0]->GetValue();
-    for (size_t i = 1; i < _inputs.size(); i++)
+    stream << _type << ' ' << Id << " = " << Inputs[0]->GetValue();
+    for (size_t i = 1; i < Inputs.size(); i++)
     {
-        stream << ' ' << __operator << ' ' << _inputs[i]->GetValue();
+        stream << ' ' << __operator << ' ' << Inputs[i]->GetValue();
     }
+    stream << ';';
     return stream.str();
 }
 
 template<char __operator>
 void MaterialNodeOperation<__operator>::AddInput()
 {
-    std::string name = std::format("[{}]", _inputs.size());
-    _inputs.push_back(new MaterialNodeInput(name, _type, GetDefaultValue()));
+    std::string name = std::format("[{}]", Inputs.size());
+    Inputs.push_back(new MaterialNodeInput(name, _type, GetDefaultValue()));
 }

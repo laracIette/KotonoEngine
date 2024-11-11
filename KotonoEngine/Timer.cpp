@@ -40,6 +40,8 @@ void Timer::SetTimeout(std::function<void()> timeout)
 
 void Timer::Update(float deltaTime)
 {
+    Base::Update(deltaTime);
+
     if (_isTicking && !_isPaused)
     {
         _elapsedTime += deltaTime;

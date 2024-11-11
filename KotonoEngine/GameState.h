@@ -1,8 +1,8 @@
 #pragma once
-enum GameState 
+
+enum class GameState
 {
 	Stopped,
 	Playing,
 	Paused
 };
-

@@ -5,6 +5,8 @@
 class Timer final :
     public Object
 {
+    BASECLASS(Object)
+
 public:
     Timer();
 

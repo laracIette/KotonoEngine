@@ -1,15 +1,20 @@
 #include "Window.h"
-#include "ObjectManager.h"
 #include "Timer.h"
+#include "ObjectManager.h"
 #include <iostream>
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
 Window::Window() :
-    _window(nullptr)
+    _window(nullptr),
+    _windowSize(glm::uvec2(1600, 900))
 {
 }
 
 Window::~Window()
 {
+    delete ObjectManagerInstance;
+
     // Cleanup GLFW
     glfwDestroyWindow(_window);
     glfwTerminate();
@@ -27,9 +32,10 @@ void Window::Init()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     // Create a windowed mode window and its OpenGL context
-    _window = glfwCreateWindow(1600, 900, "OpenGL Window", nullptr, nullptr);
+    _window = glfwCreateWindow(_windowSize.x, _windowSize.y, "Kotono Engine", nullptr, nullptr);
     if (!_window)
     {
         throw "Failed to create GLFW window";
@@ -38,43 +44,51 @@ void Window::Init()
     // Make the window's context current
     glfwMakeContextCurrent(_window);
 
+    glfwSetFramebufferSizeCallback(_window, framebuffer_size_callback);
+
     // Initialize GLEW (for modern OpenGL functions)
     glewExperimental = true; // Needed for core profile
     if (glewInit() != GLEW_OK)
     {
         throw "Failed to initialize GLEW";
     }
+
+    // Show the window after initialization
+    glfwShowWindow(_window);
+
+    ObjectManagerInstance->Init();
 }
 
 void Window::MainLoop()
 {
-    ObjectManager* objectManager = new ObjectManager();
-
-    Timer* renderTimer = new Timer();
+    auto* renderTimer = new Timer();
     renderTimer->SetTargetDuration(1.0f / 60.0f);
     renderTimer->SetIsLoop(true);
     renderTimer->SetTimeout(
-        [this, objectManager]()
+        [this]()
         {
             glClear(GL_COLOR_BUFFER_BIT);
 
-            objectManager->Draw();
+            ObjectManagerInstance->Draw();
 
             // Swap buffers
-            glfwSwapBuffers(this->_window);
+            glfwSwapBuffers(_window);
         }
     );
     renderTimer->Start();
 
-    objectManager->Create(renderTimer);
-
     while (!glfwWindowShouldClose(_window))
     {
-        objectManager->Update();
+        ObjectManagerInstance->Update();
 
         // Poll for and process events
         glfwPollEvents();
     }
+}
 
-    delete objectManager;
+static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    // Adjust the viewport on window resize
+    glViewport(0, 0, width, height);
+    std::cout << "Window resized: " << width << 'x' << height << std::endl;
 }

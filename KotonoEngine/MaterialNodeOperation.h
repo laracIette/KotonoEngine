@@ -7,8 +7,8 @@ class MaterialNodeOperation :
 public:
     MaterialNodeOperation();
 
-    std::string GetDefaultValue() const;
-    std::string GetShaderCode() const override;
+    const std::string GetDefaultValue() const;
+    const std::string GetShaderCode() const override;
     
     void AddInput();
 
@@ -16,8 +16,8 @@ private:
     std::string _type;
 };
 
-using MaterialNodeOperationAdd = MaterialNodeOperation<'+'>;
-using MaterialNodeOperationSubstract = MaterialNodeOperation<'-'>;
-using MaterialNodeOperationMultiply = MaterialNodeOperation<'*'>;
-using MaterialNodeOperationDivide = MaterialNodeOperation<'/'>;
-using MaterialNodeOperationModulo = MaterialNodeOperation<'%'>;
+typedef MaterialNodeOperation<'+'> MaterialNodeOperationAdd;
+typedef MaterialNodeOperation<'-'> MaterialNodeOperationSubstract;
+typedef MaterialNodeOperation<'*'> MaterialNodeOperationMultiply;
+typedef MaterialNodeOperation<'/'> MaterialNodeOperationDivide;
+typedef MaterialNodeOperation<'%'> MaterialNodeOperationModulo;

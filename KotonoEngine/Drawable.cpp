@@ -8,10 +8,10 @@ Drawable::Drawable() :
 
 const bool Drawable::GetIsDraw() const
 {
-    return _isDraw;
+    return _isDraw && _material;
 }
 
-void Drawable::SetIsDraw(const bool isDraw)
+void Drawable::SetIsDraw(bool isDraw)
 {
     _isDraw = isDraw;
 }

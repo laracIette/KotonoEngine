@@ -10,7 +10,7 @@ public:
     Drawable();
     
     virtual const bool GetIsDraw() const;
-    void SetIsDraw(const bool isDraw);
+    void SetIsDraw(bool isDraw);
     
     Material* GetMaterial() const;
     virtual void SetMaterial(Material* material);

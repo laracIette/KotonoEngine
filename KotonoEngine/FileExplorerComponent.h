@@ -1,15 +1,21 @@
 #pragma once
 #include "FileExplorer.h"
+#include "Component.h"
 #include <functional>
-class FileExplorerWindowComponent final
+class FileExplorerComponent final :
+	public Component
 {
+	BASECLASS(Component)
+
 public:
-	FileExplorerWindowComponent(FileExplorer* fileExplorer);
+	FileExplorerComponent();
+
+	void Init() override;
 
 	void SetOpenFile(const std::function<void(const std::string&)>& openFile);
 
 private:
-	FileExplorer* _fileExplorer;
+	FileExplorer _fileExplorer;
 
 	std::function<void(const std::string&)> _openFile;
 	

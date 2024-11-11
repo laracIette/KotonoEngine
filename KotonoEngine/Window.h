@@ -1,6 +1,7 @@
 #pragma once
-#include <GL/glew.h>  // Use GLEW for managing OpenGL extensions
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 class Window final
 {
@@ -13,5 +14,7 @@ public:
 
 private:
 	GLFWwindow* _window;
+
+	glm::uvec2 _windowSize;
 };
 

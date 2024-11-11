@@ -1,5 +1,8 @@
 #pragma once
+#include <iostream>
+#include <string>
 #include "BaseClass.h"
+
 class Object
 {
 public:
@@ -9,13 +12,20 @@ public:
     virtual void Update(float deltaTime);
 
     bool GetIsUpdate() const;
-    void SetIsUpdate(const bool isUpdate);
+    void SetIsUpdate(bool isUpdate);
 
     bool GetIsDelete() const;
-    void SetIsDelete(const bool isDelete);
+    void SetIsDelete(bool isDelete);
+
+    const std::string& GetName() const;
+    void SetName(const std::string& name);
+
+    virtual std::string ToString() const;
 
 private:
     bool _isUpdate;
     bool _isDelete;
+
+    std::string _name;
 };
 
