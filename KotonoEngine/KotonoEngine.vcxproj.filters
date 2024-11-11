@@ -16,8 +16,11 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{9b6dbdfa-00bb-4225-b274-fff1cbfde5fa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders\image">
-      <UniqueIdentifier>{7291a64e-03ee-4882-bcc5-c48335019148}</UniqueIdentifier>
+    <Filter Include="Shaders\Vertex">
+      <UniqueIdentifier>{da4e08c8-59a8-4d0d-91e8-f7cb861dbc3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Fragment">
+      <UniqueIdentifier>{aacb8d6d-3eb6-41b4-ae40-c85b10d09410}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -106,6 +109,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Component.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RoundedBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KotonoEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -209,14 +218,26 @@
     <ClInclude Include="Component.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RoundedBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KotonoEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="image.frag">
-      <Filter>Shaders\image</Filter>
-    </None>
-    <None Include="image.vert">
-      <Filter>Shaders\image</Filter>
-    </None>
     <None Include="cpp.hint" />
+    <None Include="roundedBorder.frag">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="roundedBox.frag">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="texture2D.frag">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="texture2D.vert">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
   </ItemGroup>
 </Project>

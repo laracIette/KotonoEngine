@@ -10,6 +10,9 @@ public:
 
 	const Shader& GetShader() const;
 
+	// Temporary
+	void Compile(const std::string& vertexShader, const std::string& fragmentShader);
+
 	void Compile();
 
 private:

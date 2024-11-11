@@ -35,5 +35,3 @@ private:
 	template<typename T>
 	const std::vector<T*> GetObjectsOfType() const;
 };
-
-extern ObjectManager* ObjectManagerInstance;

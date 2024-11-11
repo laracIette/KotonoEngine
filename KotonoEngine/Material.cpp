@@ -23,9 +23,14 @@ const Shader& Material::GetShader() const
 	return _shader;
 }
 
+void Material::Compile(const std::string& vertexShader, const std::string& fragmentShader)
+{
+	_shader.Compile(File(vertexShader).GetContent(), File(fragmentShader).GetContent());
+}
+
 void Material::Compile()
 {
-	_shader.Compile(File("image.vert").GetContent(), File("image.frag").GetContent());
+	
 }
 
 const std::string Material::GenerateVertexShaderCode() const

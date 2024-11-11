@@ -7,8 +7,6 @@
 #include "Material.h"
 #include <magic_enum/magic_enum.hpp>
 
-ObjectManager* ObjectManagerInstance = new ObjectManager();
-
 ObjectManager::ObjectManager() :
 	_lastUpdateTime(std::chrono::steady_clock::now()),
 	_gameState(GameState::Stopped)
@@ -32,18 +30,21 @@ void ObjectManager::Init()
 	// Initialize all WindowComponents
 	auto fileExplorerComponent = new FileExplorerComponent();
 
-	auto material = new Material();
-	material->Compile();
+	auto texture2DMaterial = new Material();
+	texture2DMaterial->Compile("texture2D.vert", "texture2D.frag");
 
 	auto texture = new ImageTexture(R"(Assets\Default\Textures\image.jpg)");
 
 	auto image = new Image();
-	image->SetMaterial(material);
+	image->SetMaterial(texture2DMaterial);
 	image->SetTexture(texture);
 
 	image->GetRect()->SetRelativeSize(glm::vec2(100.0f, 100.0f));
 	image->GetRect()->SetRelativePosition(glm::vec2(100.0f, 100.0f));
 	image->GetRect()->SetRelativePositionVelocity(glm::vec2(10.0f, 5.0f));
+
+	auto roundedBoxMaterial = new Material();
+	roundedBoxMaterial->Compile("texture2D.vert", "roundedBox.frag");
 
 	SetGameState(GameState::Playing);
 }

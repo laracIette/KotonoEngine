@@ -1,11 +1,11 @@
 #include "Object.h"
-#include "ObjectManager.h"
+#include "KotonoEngine.h"
 
 Object::Object() : 
     _isUpdate(true), 
     _isDelete(false)
 {
-    ObjectManagerInstance->Create(this);
+    Engine->GetWindow()->GetObjectManager()->Create(this);
 }
 
 void Object::Init()

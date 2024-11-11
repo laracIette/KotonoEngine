@@ -145,6 +145,7 @@
     <ClCompile Include="FileExplorer.cpp" />
     <ClCompile Include="FileExplorerComponent.cpp" />
     <ClCompile Include="Image.cpp" />
+    <ClCompile Include="KotonoEngine.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MaterialNode.cpp" />
@@ -157,6 +158,7 @@
     <ClCompile Include="Drawable3D.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="Rect.cpp" />
+    <ClCompile Include="RoundedBox.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ImageTexture.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -179,6 +181,7 @@
     <ClInclude Include="FileExplorer.h" />
     <ClInclude Include="FileExplorerComponent.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="KotonoEngine.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MaterialNode.h" />
     <ClInclude Include="MaterialNodeInput.h" />
@@ -191,6 +194,7 @@
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="RoundedBox.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ImageTexture.h" />
     <ClInclude Include="Timer.h" />
@@ -202,8 +206,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
-    <None Include="image.frag" />
-    <None Include="image.vert" />
+    <None Include="texture2D.frag" />
+    <None Include="texture2D.vert" />
+    <None Include="roundedBorder.frag" />
+    <None Include="roundedBox.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

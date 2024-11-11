@@ -1,19 +1,19 @@
 #include "Window.h"
 #include "Timer.h"
-#include "ObjectManager.h"
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 Window::Window() :
     _window(nullptr),
-    _windowSize(glm::uvec2(1600, 900))
+    _windowSize(glm::uvec2(1600, 900)),
+    _objectManager(nullptr)
 {
 }
 
 Window::~Window()
 {
-    delete ObjectManagerInstance;
+    delete _objectManager;
 
     // Cleanup GLFW
     glfwDestroyWindow(_window);
@@ -56,7 +56,8 @@ void Window::Init()
     // Show the window after initialization
     glfwShowWindow(_window);
 
-    ObjectManagerInstance->Init();
+    _objectManager = new ObjectManager();
+    _objectManager->Init();
 }
 
 void Window::MainLoop()
@@ -69,7 +70,7 @@ void Window::MainLoop()
         {
             glClear(GL_COLOR_BUFFER_BIT);
 
-            ObjectManagerInstance->Draw();
+            _objectManager->Draw();
 
             // Swap buffers
             glfwSwapBuffers(_window);
@@ -79,11 +80,16 @@ void Window::MainLoop()
 
     while (!glfwWindowShouldClose(_window))
     {
-        ObjectManagerInstance->Update();
+        _objectManager->Update();
 
         // Poll for and process events
         glfwPollEvents();
     }
+}
+
+ObjectManager* Window::GetObjectManager() const
+{
+    return _objectManager;
 }
 
 static void framebuffer_size_callback(GLFWwindow* window, int width, int height)

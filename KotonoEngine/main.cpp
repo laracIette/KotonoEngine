@@ -1,23 +1,11 @@
-#include "AudioManager.h"
-#include "Window.h"
-#include "Transform.h"
+#include "KotonoEngine.h"
 #include <iostream>
+
+KotonoEngine* Engine = new KotonoEngine();
 
 int main()
 {
-    // Init
-    auto window = new Window();
-    window->Init();
-
-    auto audioManager = new AudioManager();
-    audioManager->Init();
-
-    // MainLoop
-    window->MainLoop();
-
-    // Cleanup
-    delete audioManager;
-    delete window;
+    Engine->Run();
 
     return 0;
 }
