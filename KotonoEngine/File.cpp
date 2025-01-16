@@ -2,10 +2,12 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <unordered_map>
 
 File::File(const std::filesystem::path& path) :
     _path(path)
 {
+    //_document.Parse(GetContent().c_str());
 }
 
 const std::filesystem::path& File::GetPath() const
@@ -55,4 +57,46 @@ const std::string File::GetContent() const
     std::ostringstream fileContents;
     fileContents << file.rdbuf();
     return fileContents.str();
+}
+
+const std::unordered_map<std::string, const std::type_info&> extensionMap =
+{
+    {".txt", typeid(std::string)}/*,
+    {".jpg", typeid(ImageTexture)},
+    {".jpeg", typeid(ImageTexture)},
+    {".png", typeid(ImageTexture)},
+    {".bmp", typeid(ImageTexture)}*/
+};
+
+const std::type_info& File::GetType() const
+{
+    auto it = extensionMap.find(GetExtension());
+    if (it != extensionMap.end())
+    {
+        return it->second; 
+    }
+
+    return typeid(void);  
+}
+
+const std::filesystem::path File::GetAssetPath() const
+{
+    return "";//return _document["assetPath"].GetString();
+}
+
+template<class T>
+const bool File::IsOfType() const
+{
+    return typeid(T) == GetType();
+}
+
+template<class T>
+T* File::Instantiate() const
+{
+    if (IsOfType<T>())
+    {
+        return new T();  
+    }
+
+    return nullptr; 
 }

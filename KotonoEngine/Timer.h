@@ -1,11 +1,11 @@
 #pragma once
-#include "Object.h"
+#include "Updatable.h"
 #include <functional>
 
 class Timer final :
-    public Object
+    public Updatable
 {
-    BASECLASS(Object)
+    BASECLASS(Updatable)
 
 public:
     Timer();

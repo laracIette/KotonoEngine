@@ -2,9 +2,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 Transform::Transform() :
-	_relativeLocation(glm::vec3(0.0f, 0.0f, 0.0f)), 
-	_relativeRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f))),
-	_relativeScale(glm::vec3(1.0f, 1.0f, 1.0f)),
+	_relativeLocation(0.0f, 0.0f, 0.0f), 
+	_relativeRotation(glm::vec3(0.0f, 0.0f, 0.0f)),
+	_relativeScale(1.0f, 1.0f, 1.0f),
 	_parent(nullptr)
 {
 }

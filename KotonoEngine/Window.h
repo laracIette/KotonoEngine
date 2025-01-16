@@ -1,8 +1,6 @@
 #pragma once
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-#include "ObjectManager.h"
+#include "VulkanInstance.h"
 
 class Window final
 {
@@ -11,15 +9,24 @@ public:
 	~Window();
 
 	void Init();
-	void MainLoop();
 
-	ObjectManager* GetObjectManager() const;
+	GLFWwindow* GetGLFWWindow() const;
+
+	const bool IsRunning() const;
+
+	void SwapBuffers() const;
+
+	const glm::uvec2& GetSize() const;
+
+	void SetSize(const glm::uvec2& size);
 
 private:
 	GLFWwindow* _window;
+	VulkanInstance _vulkanInstance;
 
-	glm::uvec2 _windowSize;
+	glm::uvec2 _size;
 
-	ObjectManager* _objectManager;
+	void InitGLFW();
+	void InitVulkan();
 };
 

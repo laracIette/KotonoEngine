@@ -2,13 +2,13 @@
 
 Drawable::Drawable() :
     _isDraw(true), 
-    _material(nullptr)
+    _shader(nullptr)
 {
 }
 
 const bool Drawable::GetIsDraw() const
 {
-    return _isDraw && _material;
+    return _isDraw && _shader;
 }
 
 void Drawable::SetIsDraw(bool isDraw)
@@ -16,21 +16,32 @@ void Drawable::SetIsDraw(bool isDraw)
     _isDraw = isDraw;
 }
 
-Material* Drawable::GetMaterial() const
+Shader* Drawable::GetShader() const
 {
-    return _material;
+    return _shader;
 }
 
-void Drawable::SetMaterial(Material* material)
+void Drawable::SetShader(Shader* shader)
 {
-    _material = material;
+    _shader = shader;
+}
+
+const Color& Drawable::GetColor() const
+{
+    return _color;
+}
+
+void Drawable::SetColor(const Color& color)
+{
+    _color = color;
 }
 
 void Drawable::UpdateShader() const
 {
-    _material->GetShader().Use();
+
 }
 
 void Drawable::Draw() const
 {
+
 }

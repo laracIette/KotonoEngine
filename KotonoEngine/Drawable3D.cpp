@@ -41,3 +41,18 @@ void Drawable3D::SetParent(Drawable3D* parent)
     _transform->SetWorldRotation(rotation);
     _transform->SetWorldScale(scale);
 }
+
+const bool Drawable3D::GetIsFront() const
+{
+    return _isFront;
+}
+
+void Drawable3D::SetFront(const bool isFront)
+{
+    _isFront = isFront;
+}
+
+const glm::mat4 Drawable3D::GetModelMatrix() const
+{
+    return GetTransform()->GetModelMatrix();
+}

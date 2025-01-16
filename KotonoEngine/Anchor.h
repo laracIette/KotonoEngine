@@ -1,16 +1,16 @@
 #pragma once
 enum Anchor
 {
-    Center = 0x0,
+    ANCHOR_CENTER = 0x0,
 
-    Top = 0x1,
-    Bottom = 0x2,
-    Left = 0x4,
-    Right = 0x8,
+    ANCHOR_TOP = 0x1,
+    ANCHOR_BOTTOM = 0x2,
+    ANCHOR_LEFT = 0x4,
+    ANCHOR_RIGHT = 0x8,
 
-    TopLeft = Top | Left,
-    TopRight = Top | Right,
-    BottomLeft = Bottom | Left,
-    BottomRight = Bottom | Right,
+    ANCHOR_TOP_LEFT = ANCHOR_TOP | ANCHOR_LEFT,
+    ANCHOR_TOP_RIGHT = ANCHOR_TOP | ANCHOR_RIGHT,
+    ANCHOR_BOTTOM_LEFT = ANCHOR_BOTTOM | ANCHOR_LEFT,
+    ANCHOR_BOTTOM_RIGHT = ANCHOR_BOTTOM | ANCHOR_RIGHT,
 };
 

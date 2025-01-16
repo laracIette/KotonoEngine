@@ -17,9 +17,17 @@ public:
     Drawable3D* GetParent() const;
     void SetParent(Drawable3D* parent);
 
+    const bool GetIsFront() const;
+    void SetFront(const bool isFront);
+
+protected:
+    const glm::mat4 GetModelMatrix() const override;
+
 private:
     Transform* _transform;
 
     Drawable3D* _parent;
+
+    bool _isFront;
 };
 

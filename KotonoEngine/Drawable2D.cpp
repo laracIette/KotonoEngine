@@ -3,7 +3,8 @@
 
 Drawable2D::Drawable2D() :
     _rect(new Rect()),
-    _parent(nullptr)
+    _parent(nullptr),
+    _layer(0)
 {
 }
 
@@ -23,6 +24,11 @@ const bool Drawable2D::GetIsDraw() const
     return Base::GetIsDraw() && (!_parent || _parent->GetIsDraw());
 }
 
+void Drawable2D::Draw() const
+{
+    Base::Draw();
+}
+
 Rect* Drawable2D::GetRect() const
 {
     return _rect;
@@ -39,12 +45,17 @@ void Drawable2D::SetParent(Drawable2D* parent)
     _rect->SetParent(parent->GetRect());
 }
 
-void Drawable2D::UpdateShader() const
+const int Drawable2D::GetLayer() const
 {
-    Base::UpdateShader();
-    GetMaterial()->GetShader().SetMatrix4("model", GetRect()->GetModelMatrix());
+    return _parent ? _parent->GetLayer() + _layer + 1 : _layer;
 }
 
-void Drawable2D::Draw() const
+void Drawable2D::SetLayer(const int layer)
 {
+    _layer = layer;
+}
+
+const glm::mat4 Drawable2D::GetModelMatrix() const
+{
+    return GetRect()->GetModelMatrix();
 }

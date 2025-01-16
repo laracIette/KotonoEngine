@@ -1,19 +1,21 @@
 #include "Window.h"
 #include "Timer.h"
+#include "KotonoEngine.h"
+#include "vulkan_helper.h"
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 
 Window::Window() :
     _window(nullptr),
-    _windowSize(glm::uvec2(1600, 900)),
-    _objectManager(nullptr)
+    _size(1600, 900)
 {
 }
 
 Window::~Window()
 {
-    delete _objectManager;
+    _vulkanInstance.Cleanup();
 
     // Cleanup GLFW
     glfwDestroyWindow(_window);
@@ -22,20 +24,59 @@ Window::~Window()
 
 void Window::Init()
 {
+    InitGLFW();
+    InitVulkan();
+
+    // Show the window after initialization
+    glfwShowWindow(_window);
+
+    LogVulkanError("Window Initialization");
+}
+
+GLFWwindow* Window::GetGLFWWindow() const
+{
+    return _window;
+}
+
+const bool Window::IsRunning() const
+{
+    if (glfwWindowShouldClose(_window))
+    {
+        return false;
+    }
+
+    glfwPollEvents();
+    return true;
+}
+
+void Window::SwapBuffers() const
+{
+    glfwSwapBuffers(_window);
+}
+
+const glm::uvec2& Window::GetSize() const
+{
+    return _size;
+}
+
+void Window::SetSize(const glm::uvec2& size)
+{
+    _size = size;
+}
+
+void Window::InitGLFW()
+{
     // Initialize GLFW
     if (!glfwInit())
     {
         throw "Failed to initialize GLFW";
     }
 
-    // Set OpenGL version (e.g., 3.3)
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     // Create a windowed mode window and its OpenGL context
-    _window = glfwCreateWindow(_windowSize.x, _windowSize.y, "Kotono Engine", nullptr, nullptr);
+    _window = glfwCreateWindow(_size.x, _size.y, "Kotono Engine", nullptr, nullptr);
     if (!_window)
     {
         throw "Failed to create GLFW window";
@@ -45,56 +86,29 @@ void Window::Init()
     glfwMakeContextCurrent(_window);
 
     glfwSetFramebufferSizeCallback(_window, framebuffer_size_callback);
-
-    // Initialize GLEW (for modern OpenGL functions)
-    glewExperimental = true; // Needed for core profile
-    if (glewInit() != GLEW_OK)
-    {
-        throw "Failed to initialize GLEW";
-    }
-
-    // Show the window after initialization
-    glfwShowWindow(_window);
-
-    _objectManager = new ObjectManager();
-    _objectManager->Init();
+    glfwSetCursorPosCallback(_window, cursor_position_callback);
 }
 
-void Window::MainLoop()
+void Window::InitVulkan()
 {
-    auto* renderTimer = new Timer();
-    renderTimer->SetTargetDuration(1.0f / 60.0f);
-    renderTimer->SetIsLoop(true);
-    renderTimer->SetTimeout(
-        [this]()
-        {
-            glClear(GL_COLOR_BUFFER_BIT);
-
-            _objectManager->Draw();
-
-            // Swap buffers
-            glfwSwapBuffers(_window);
-        }
-    );
-    renderTimer->Start();
-
-    while (!glfwWindowShouldClose(_window))
-    {
-        _objectManager->Update();
-
-        // Poll for and process events
-        glfwPollEvents();
-    }
+    _vulkanInstance.Init();
 }
 
-ObjectManager* Window::GetObjectManager() const
-{
-    return _objectManager;
-}
 
-static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     // Adjust the viewport on window resize
     glViewport(0, 0, width, height);
+    LogVulkanError("Resize Viewport");
+
+    Engine->GetWindow()->SetSize(glm::uvec2(width, height));
+    //Engine->GetFramebuffer()->ResizeTextures();
+
     std::cout << "Window resized: " << width << 'x' << height << std::endl;
+}
+
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    Engine->GetInputManager()->GetMouse().SetCursorPosition(glm::vec2(xpos, ypos));
+    std::cout << "Mouse Position: (" << xpos << ", " << ypos << ")\n";
 }

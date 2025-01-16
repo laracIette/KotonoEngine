@@ -2,6 +2,12 @@
 #include <algorithm>
 #include <cmath>
 
+Color::Color() :
+    _rgb({ 1.0f, 1.0f, 1.0f }),
+    _alpha(1.0f)
+{
+}
+
 const Color::RGB& Color::GetRGB() const
 {
     return _rgb;
@@ -16,7 +22,7 @@ const Color::HSV Color::GetHSV() const
     HSV hsv{};
     if (delta == 0) hsv.Hue = 0;
     else if (max == _rgb.Red) hsv.Hue = 60.0f * fmod((_rgb.Green - _rgb.Blue) / delta, 6.0f);
-    else if (max == _rgb.Green) hsv.Hue = 60.0f * ((_rgb.Blue - _rgb.Red) / delta + 2);
+    else if (max == _rgb.Green) hsv.Hue = 60.0f * ((_rgb.Blue - _rgb.Red) / delta + 2.0f);
     else hsv.Hue = 60.0f * ((_rgb.Red - _rgb.Green) / delta + 4);
 
     if (hsv.Hue < 0) hsv.Hue += 360.0f;
@@ -45,7 +51,7 @@ const Color::HSL Color::GetHSL() const
         hsl.Saturation = delta / (1.0f - std::fabs(2.0f * hsl.Lightness / 100.0f - 1.0f)) * 100.0f;
 
         if (max == _rgb.Red) hsl.Hue = 60.0f * fmod((_rgb.Green - _rgb.Blue) / delta, 6.0f);
-        else if (max == _rgb.Green) hsl.Hue = 60.0f * ((_rgb.Blue - _rgb.Red) / delta + 2);
+        else if (max == _rgb.Green) hsl.Hue = 60.0f * ((_rgb.Blue - _rgb.Red) / delta + 2.0f);
         else hsl.Hue = 60.0f * ((_rgb.Red - _rgb.Green) / delta + 4);
 
         if (hsl.Hue < 0) hsl.Hue += 360.0f;
@@ -115,3 +121,20 @@ void Color::SetAlpha(const float alpha)
 {
     _alpha = alpha;
 }
+
+const bool Color::IsVisible() const
+{
+    return _alpha > 0.0f;
+}
+
+const bool Color::IsOpaque() const
+{
+    return _alpha == 1.0f;
+}
+
+const bool Color::IsTransparent() const
+{
+    return _alpha < 1.0f;
+}
+
+

@@ -2,7 +2,7 @@
 
 enum class GameState
 {
-	Stopped,
-	Playing,
-	Paused
+	GAMESTATE_STOPPED,
+	GAMESTATE_PLAYING,
+	GAMESTATE_PAUSED
 };

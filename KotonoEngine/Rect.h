@@ -1,6 +1,8 @@
 #pragma once
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "Anchor.h"
+#include <string>
 class Rect final
 {
 public:
@@ -51,6 +53,12 @@ public:
 
 	const glm::vec2 GetDirection(Rect* target) const;
 	const float GetDistance(Rect* other) const;
+
+	const bool Overlaps(Rect* other) const;
+	const bool Overlaps(const glm::vec2& position) const;
+	const bool Overlaps(const glm::vec2& position, const glm::vec2& size) const;
+
+	const std::string ToString() const;
 
 private:
 	glm::vec2 _baseSize;

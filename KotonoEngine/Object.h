@@ -1,6 +1,9 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <typeinfo>
+#include <format>
+#include <vector>
 #include "BaseClass.h"
 
 class Object
@@ -8,24 +11,14 @@ class Object
 public:
     Object();
 
-    virtual void Init();
-    virtual void Update(float deltaTime);
-
-    bool GetIsUpdate() const;
-    void SetIsUpdate(bool isUpdate);
-
-    bool GetIsDelete() const;
-    void SetIsDelete(bool isDelete);
-
     const std::string& GetName() const;
+    const std::type_info& GetType() const;
+
     void SetName(const std::string& name);
 
-    virtual std::string ToString() const;
+    virtual const std::string ToString() const;
 
 private:
-    bool _isUpdate;
-    bool _isDelete;
-
     std::string _name;
 };
 

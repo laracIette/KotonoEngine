@@ -4,13 +4,24 @@
 class Event final
 {
 public:
-    // Adds an observer with a callable function
     template <typename T>
-    void AddObserver(T* instance, void (T::* func)());
+    void Add(T* object, void (T::* memberFunction)());
 
-    // Triggers the event and calls all _observers
+    template <typename T>
+    void Remove(T* object, void (T::* memberFunction)());
+
+    // Triggers the event and calls all observers
     void Invoke();
 
 private:
-    std::vector<std::function<void()>> _observers;
+    struct Observer
+    {
+        void* Object;
+        void* MemberFunction;
+
+        std::function<void()> Callback;
+    };
+
+    std::vector<Observer> _observers;
 };
+

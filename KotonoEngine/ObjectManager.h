@@ -4,34 +4,28 @@
 #include "Object.h"
 #include "FileExplorer.h"
 #include "GameState.h"
-class ObjectManager final
+#include "Camera.h"
+#include "Renderer.h"
+class ObjectManager
 {
 public:
 	ObjectManager();
-	~ObjectManager();
 
 	void Init();
-	void Update();
-	void Draw() const;
+	void Update(const float deltaTime);
+	virtual void Draw() = 0;
 
-	void Create(Object* object);
+	Camera* GetActiveCamera() const;
+
+protected:
+	void QueueInit(Object* object);
+	virtual void UpdateObjects(const float deltaTime) = 0;
+	virtual void DeleteObjects() = 0;
 
 private:
-	std::unordered_set<Object*> _objects;
 	std::unordered_set<Object*> _inits;
 
 	std::chrono::steady_clock::time_point _lastUpdateTime;
 
-	GameState _gameState;
-
-	void UpdateObjects();
-	void InitObjects();
-	void DeleteObjects();
-
-	void Delete(Object* object) const;
-
-	void SetGameState(const GameState& gameState);
-
-	template<typename T>
-	const std::vector<T*> GetObjectsOfType() const;
+	//void InitObjects();
 };

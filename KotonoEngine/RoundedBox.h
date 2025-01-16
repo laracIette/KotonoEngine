@@ -19,6 +19,7 @@ public:
     void SetTargetCornerSize(float targetCornerSize);
 
     virtual void SetRelativeSize(const glm::vec2& relativeSize);
+    virtual void SetWorldSize(const glm::vec2& worldSize);
 
 protected:
     float _targetFallOff;
@@ -29,11 +30,8 @@ protected:
 
     virtual void UpdateValues();
 
-    /*virtual Matrix4 GetModel() const
-    {
-        return NDCRect(GetWorldPosition(), _fallOff * 2.0f + GetWorldSize()).GetModel();
-    }*/
+    const glm::mat4 GetModelMatrix() const override;
 
-    glm::vec4 GetSides() const;
+    const glm::vec4 GetSides() const;
 };
 

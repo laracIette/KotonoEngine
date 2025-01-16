@@ -1,13 +1,15 @@
 #include "Rect.h"
-#include <glm/gtc/matrix_transform.hpp>
+#include "NDCRect.h"
+#include <format>
+#include "glm_helper.h"
 
 Rect::Rect() :
-    _baseSize(glm::vec2(0.0f, 0.0f)),
-    _anchor(Anchor::Center),
-    _relativePosition(glm::vec2(0.0f, 0.0f)),
-    _relativeRotation(glm::quat()),
-    _relativeScale(glm::vec2(1.0f, 1.0f)),
-    _relativePositionVelocity(glm::vec2(0.0f, 0.0f)),
+    _baseSize(0.0f, 0.0f),
+    _anchor(ANCHOR_CENTER),
+    _relativePosition(0.0f, 0.0f),
+    _relativeRotation(),
+    _relativeScale(1.0f, 1.0f),
+    _relativePositionVelocity(0.0f, 0.0f),
     _parent(nullptr)
 {
 }
@@ -48,7 +50,7 @@ const glm::vec2 Rect::GetWorldPosition() const
     {
         return GetRelativePosition() + _parent->GetWorldPosition();
     }
-    return _relativePosition;
+    return GetRelativePosition();
 }
 
 const glm::quat Rect::GetWorldRotation() const
@@ -81,22 +83,7 @@ const glm::vec2& Rect::GetRelativePositionVelocity() const
 
 const glm::mat4 Rect::GetModelMatrix() const
 {
-    constexpr glm::vec2 windowSize(1600, 900);
-
-    glm::vec2 worldPosition = GetWorldPosition();
-
-    glm::vec3 ndcPosition(
-        2.0f * worldPosition.x / windowSize.x - 1.0f,
-        1.0f - worldPosition.y / windowSize.y * 2.0f,
-        0.0f
-    );
-    glm::vec3 ndcSize(GetWorldSize() / windowSize, 1.0f);
-
-    glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), ndcSize);
-    glm::mat4 rotationMatrix = glm::mat4_cast(GetWorldRotation());
-    glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), ndcPosition);
-
-    return translationMatrix * rotationMatrix * scaleMatrix;
+    return NDCRect(GetWorldPosition(), GetWorldRotation(), GetWorldSize()).GetModelMatrix();
 }
 
 Rect* Rect::GetParent() const
@@ -201,17 +188,43 @@ const glm::vec2 Rect::GetDirection(Rect* target) const
 
 const float Rect::GetDistance(Rect* other) const
 {
-    return GetDirection(other).length();
+    return static_cast<float>(GetDirection(other).length());
+}
+
+const bool Rect::Overlaps(Rect* other) const
+{
+    return Overlaps(other->GetWorldPosition(), other->GetWorldSize());
+}
+
+const bool Rect::Overlaps(const glm::vec2& position) const
+{
+    glm::vec2 difference = glm::abs(GetWorldPosition() - position);
+    glm::vec2 halfSize = GetWorldSize() / 2.0f;
+    return difference.x < halfSize.x && difference.y < halfSize.y;
+}
+
+const bool Rect::Overlaps(const glm::vec2& position, const glm::vec2& size) const
+{
+    glm::vec2 difference = glm::abs(GetWorldPosition() - position);
+    glm::vec2 halfSumOfSize = (GetWorldSize() + size) / 2.0f;
+    return difference.x < halfSumOfSize.x && difference.y < halfSumOfSize.y;
+}
+
+const std::string Rect::ToString() const
+{
+    return "World: {Position: {" + glm::to_string(GetWorldPosition())
+        + "}, Rotation: {" + glm::to_string(GetWorldRotation())
+        + "}, Size: {" + glm::to_string(GetWorldSize()) + "}}";
 }
 
 const glm::vec2 Rect::GetAnchorPositionDelta() const
 {
     return glm::vec2(
-        (_anchor & Anchor::Left) == Anchor::Left ? GetRelativeSize().x / 2.0f
-        : (_anchor & Anchor::Right) == Anchor::Right ? -GetRelativeSize().x / 2.0f
+        (_anchor & ANCHOR_LEFT) == ANCHOR_LEFT ? GetRelativeSize().x / 2.0f
+        : (_anchor & ANCHOR_RIGHT) == ANCHOR_RIGHT ? -GetRelativeSize().x / 2.0f
         : 0.0f,
-        (_anchor & Anchor::Top) == Anchor::Top ? GetRelativeSize().y / 2.0f
-        : (_anchor & Anchor::Bottom) == Anchor::Bottom ? -GetRelativeSize().y / 2.0f
+        (_anchor & ANCHOR_TOP) == ANCHOR_TOP ? GetRelativeSize().y / 2.0f
+        : (_anchor & ANCHOR_BOTTOM) == ANCHOR_BOTTOM ? -GetRelativeSize().y / 2.0f
         : 0.0f
     );
 }
