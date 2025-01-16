@@ -8,8 +8,8 @@ EICViewport::EICViewport() :
 
 void EICViewport::OnResize()
 {
-	float aspectRatio = GetRect().GetSize().x / GetRect().GetSize().y;
-	_cameraView->SetAspectRatio(aspectRatio);
+	/*float aspectRatio = GetRect().GetSize().x / GetRect().GetSize().y;
+	_cameraView->SetAspectRatio(aspectRatio);*/
 }
 
 void EICViewport::Draw() const

@@ -4,7 +4,7 @@
 EICFileExplorer::EICFileExplorer() :
 	Base("File Explorer")
 {
-	std::vector<std::filesystem::path> directories = _fileExplorer.GetDirectories();
+	/*std::vector<std::filesystem::path> directories = _fileExplorer.GetDirectories();
 	std::transform(
 		std::begin(directories), std::end(directories),
 		std::back_inserter(_directories),
@@ -16,7 +16,7 @@ EICFileExplorer::EICFileExplorer() :
 		std::begin(files), std::end(files),
 		std::back_inserter(_files),
 		[](const File& file) { return Entry{ file.GetPath(), nullptr}; }
-	);
+	);*/
 }
 
 void EICFileExplorer::Draw() const

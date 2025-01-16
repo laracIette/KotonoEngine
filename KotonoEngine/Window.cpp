@@ -1,7 +1,6 @@
 #include "Window.h"
 #include "Timer.h"
 #include "KotonoEngine.h"
-#include "vulkan_helper.h"
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -29,8 +28,6 @@ void Window::Init()
 
     // Show the window after initialization
     glfwShowWindow(_window);
-
-    LogVulkanError("Window Initialization");
 }
 
 GLFWwindow* Window::GetGLFWWindow() const
@@ -97,11 +94,7 @@ void Window::InitVulkan()
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // Adjust the viewport on window resize
-    glViewport(0, 0, width, height);
-    LogVulkanError("Resize Viewport");
-
-    Engine->GetWindow()->SetSize(glm::uvec2(width, height));
+    //Engine->GetWindow()->SetSize(glm::uvec2(width, height));
     //Engine->GetFramebuffer()->ResizeTextures();
 
     std::cout << "Window resized: " << width << 'x' << height << std::endl;

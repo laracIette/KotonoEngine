@@ -96,9 +96,6 @@
     <ClCompile Include="RenderQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vulkan_helper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TextureManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -234,9 +231,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="glm_helper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vulkan_helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TextureManager.h">

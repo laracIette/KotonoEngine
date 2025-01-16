@@ -1,19 +1,12 @@
-//#include "KotonoEngine.h"
-//
-//KotonoEngine* Engine = new KotonoEngine();
-//
-//int main()
-//{
-//    Engine->Run();
-//
-//    delete Engine;
-//
-//    return 0;
-//}
-#include "Window.h"
+#include "KotonoEngine.h"
+
+KotonoEngine* Engine = new KotonoEngine();
+
 int main()
 {
-	Window().Init();
+    Engine->Run();
 
-	return 0;
+    delete Engine;
+
+    return 0;
 }
