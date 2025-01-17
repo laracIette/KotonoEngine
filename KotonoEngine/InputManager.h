@@ -4,6 +4,8 @@
 class InputManager final
 {
 public:
+	void Init();
+
 	Mouse& GetMouse();
 	Keyboard& GetKeyboard();
 

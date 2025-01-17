@@ -86,7 +86,7 @@ const glm::vec4 RoundedBox::GetSides() const
 {
 	glm::vec2 position(
 		GetRect()->GetWorldPosition().x,
-		Engine->GetWindow()->GetSize().y - GetRect()->GetWorldPosition().y
+		Engine.GetWindow().GetSize().y - GetRect()->GetWorldPosition().y
 	);
 	glm::vec2 worldSize = GetRect()->GetWorldSize();
 

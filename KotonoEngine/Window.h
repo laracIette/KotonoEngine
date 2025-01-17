@@ -6,7 +6,8 @@ class Window final
 {
 public:
 	Window();
-	~Window();
+
+	void Cleanup();
 
 	void Init();
 

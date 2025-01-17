@@ -1,5 +1,9 @@
 #include "InputManager.h"
 
+void InputManager::Init()
+{
+}
+
 Mouse& InputManager::GetMouse()
 {
     return _mouse;

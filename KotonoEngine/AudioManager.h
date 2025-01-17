@@ -3,10 +3,8 @@
 class AudioManager final
 {
 public:
-	AudioManager();
-	~AudioManager();
-
 	void Init();
+	void Cleanup();
 
 private:
 	ALCdevice* _device;

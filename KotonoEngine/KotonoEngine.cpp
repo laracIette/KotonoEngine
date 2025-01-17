@@ -1,43 +1,48 @@
 #include "KotonoEngine.h"
 
 KotonoEngine::KotonoEngine() :
-    _window(nullptr),
-    _audioManager(nullptr),
-    _inputManager(nullptr),
+    _window(),
+    _audioManager(),
+    _inputManager(),
     _projectDirectory(R"(C:\Users\nicos\Documents\Kotono Projects\Test)")
 {
 }
 
-KotonoEngine::~KotonoEngine()
-{
-    delete _inputManager;
-    delete _audioManager;
-    delete _window;
-}
-
 void KotonoEngine::Run()
 {
-    // Init
-    _window = new Window();
-    _window->Init();
-
-    _audioManager = new AudioManager();
-    _audioManager->Init();
-
-    _inputManager = new InputManager();
+    Init();
+    MainLoop();
+    Cleanup();
 }
 
-Window* KotonoEngine::GetWindow() const
+void KotonoEngine::Init()
+{
+    _window.Init();
+    _audioManager.Init();
+    _inputManager.Init();
+}
+
+void KotonoEngine::MainLoop()
+{
+}
+
+void KotonoEngine::Cleanup()
+{
+    _audioManager.Cleanup();
+    _window.Cleanup();
+}
+
+Window& KotonoEngine::GetWindow()
 {
     return _window;
 }
 
-AudioManager* KotonoEngine::GetAudioManager() const
+AudioManager& KotonoEngine::GetAudioManager()
 {
     return _audioManager;
 }
 
-InputManager* KotonoEngine::GetInputManager() const
+InputManager& KotonoEngine::GetInputManager()
 {
     return _inputManager;
 }

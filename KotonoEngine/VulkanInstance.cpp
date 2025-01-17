@@ -16,15 +16,6 @@ const bool enableValidationLayers = false;
 const bool enableValidationLayers = true;
 #endif
 
-VulkanInstance::VulkanInstance() :
-	_instance(),
-	_debugMessenger(),
-    _device(),
-    _graphicsQueue(),
-    _surface()
-{
-}
-
 void VulkanInstance::Init()
 {
     CreateInstance();
@@ -317,7 +308,7 @@ void VulkanInstance::CreateLogicalDevice()
 
 void VulkanInstance::CreateSurface()
 {
-    if (glfwCreateWindowSurface(_instance, Engine->GetWindow()->GetGLFWWindow(), nullptr, &_surface) != VK_SUCCESS)
+    if (glfwCreateWindowSurface(_instance, Engine.GetWindow().GetGLFWWindow(), nullptr, &_surface) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create window surface!");
     }
@@ -407,7 +398,7 @@ const VkExtent2D VulkanInstance::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR
     else
     {
         int width, height;
-        glfwGetFramebufferSize(Engine->GetWindow()->GetGLFWWindow(), &width, &height);
+        glfwGetFramebufferSize(Engine.GetWindow().GetGLFWWindow(), &width, &height);
 
         VkExtent2D actualExtent = {
             static_cast<uint32_t>(width),

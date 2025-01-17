@@ -29,8 +29,6 @@ struct SwapChainSupportDetails
 class VulkanInstance
 {
 public:
-	VulkanInstance();
-
 	void Init();
 	void Cleanup() const;
 

@@ -1,12 +1,10 @@
 #include "KotonoEngine.h"
 
-KotonoEngine* Engine = new KotonoEngine();
+KotonoEngine Engine;
 
 int main()
 {
-    Engine->Run();
-
-    delete Engine;
+    Engine.Run();
 
     return 0;
 }

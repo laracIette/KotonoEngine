@@ -12,15 +12,6 @@ Window::Window() :
 {
 }
 
-Window::~Window()
-{
-    _vulkanInstance.Cleanup();
-
-    // Cleanup GLFW
-    glfwDestroyWindow(_window);
-    glfwTerminate();
-}
-
 void Window::Init()
 {
     InitGLFW();
@@ -28,6 +19,15 @@ void Window::Init()
 
     // Show the window after initialization
     glfwShowWindow(_window);
+}
+
+void Window::Cleanup()
+{
+    _vulkanInstance.Cleanup();
+
+    // Cleanup GLFW
+    glfwDestroyWindow(_window);
+    glfwTerminate();
 }
 
 GLFWwindow* Window::GetGLFWWindow() const
@@ -94,14 +94,14 @@ void Window::InitVulkan()
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    //Engine->GetWindow()->SetSize(glm::uvec2(width, height));
-    //Engine->GetFramebuffer()->ResizeTextures();
+    //Engine.GetWindow().SetSize(glm::uvec2(width, height));
+    //Engine.GetFramebuffer().ResizeTextures();
 
     std::cout << "Window resized: " << width << 'x' << height << std::endl;
 }
 
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    Engine->GetInputManager()->GetMouse().SetCursorPosition(glm::vec2(xpos, ypos));
+    Engine.GetInputManager().GetMouse().SetCursorPosition(glm::vec2(xpos, ypos));
     std::cout << "Mouse Position: (" << xpos << ", " << ypos << ")\n";
 }

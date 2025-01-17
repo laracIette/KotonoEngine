@@ -2,7 +2,7 @@
 #include "KotonoEngine.h"
 
 FileExplorer::FileExplorer() :
-    _directoryPath(Engine->GetProjectDirectory())
+    _directoryPath(Engine.GetProjectDirectory())
 {
 }
 

@@ -308,5 +308,11 @@
     <None Include="color.vert">
       <Filter>Shaders\Vertex</Filter>
     </None>
+    <None Include="vulkan.frag">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="vulkan.vert">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
   </ItemGroup>
 </Project>

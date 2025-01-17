@@ -8,7 +8,7 @@ const glm::vec2& Mouse::GetCursorPosition() const
 
 const glm::vec2 Mouse::GetCursorPositionNormalized() const
 {
-    const glm::vec2 windowSize = Engine->GetWindow()->GetSize();
+    const glm::vec2 windowSize = Engine.GetWindow().GetSize();
 
     const float normalizedX = (2.0f * _cursorPosition.x / windowSize.x) - 1.0f;
     const float normalizedY = (2.0f * _cursorPosition.y / windowSize.y) - 1.0f;

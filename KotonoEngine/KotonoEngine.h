@@ -6,23 +6,26 @@ class KotonoEngine final
 {
 public:
 	KotonoEngine();
-	~KotonoEngine();
 
 	void Run();
 
-	Window* GetWindow() const;
-	AudioManager* GetAudioManager() const;
-	InputManager* GetInputManager() const;
+	void Cleanup();
+	void MainLoop();
+	void Init();
+
+	Window& GetWindow();
+	AudioManager& GetAudioManager();
+	InputManager& GetInputManager();
 
 	const std::string& GetProjectDirectory() const;
 
 private:
-	Window* _window;
-	AudioManager* _audioManager;
-	InputManager* _inputManager;
+	Window _window;
+	AudioManager _audioManager;
+	InputManager _inputManager;
 
 	std::string _projectDirectory;
 };
 
-extern KotonoEngine* Engine;
+extern KotonoEngine Engine;
 

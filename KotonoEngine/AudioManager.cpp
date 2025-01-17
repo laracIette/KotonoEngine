@@ -1,17 +1,5 @@
 #include "AudioManager.h"
 
-AudioManager::AudioManager() :
-    _device(nullptr), _context(nullptr)
-{
-}
-
-AudioManager::~AudioManager()
-{
-    alcMakeContextCurrent(nullptr);
-    alcDestroyContext(_context);
-    alcCloseDevice(_device);
-}
-
 void AudioManager::Init()
 {
     _device = alcOpenDevice(nullptr); // Select the default device
@@ -27,4 +15,11 @@ void AudioManager::Init()
     }
 
     alcMakeContextCurrent(_context);
+}
+
+void AudioManager::Cleanup()
+{
+    alcMakeContextCurrent(nullptr);
+    alcDestroyContext(_context);
+    alcCloseDevice(_device);
 }
