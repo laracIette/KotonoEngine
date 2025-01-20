@@ -31,6 +31,9 @@ class VulkanInstance
 public:
 	void Init();
 	void Cleanup() const;
+	void DrawFrame() const;
+
+	VkDevice GetDevice() const;
 
 private:
 	VkInstance _instance;
@@ -51,6 +54,18 @@ private:
 	VkFormat _swapChainImageFormat;
 	VkExtent2D _swapChainExtent;
 	std::vector<VkImageView> _swapChainImageViews;
+
+	VkRenderPass _renderPass;
+	VkPipelineLayout _pipelineLayout;
+	VkPipeline _graphicsPipeline;
+
+	std::vector<VkFramebuffer> _swapChainFramebuffers;
+	VkCommandPool _commandPool;
+	VkCommandBuffer _commandBuffer;
+
+	VkSemaphore _imageAvailableSemaphore;
+	VkSemaphore _renderFinishedSemaphore;
+	VkFence _inFlightFence;
 
 	void CreateInstance();
 	void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
@@ -73,6 +88,15 @@ private:
 	void CreateImageViews();
 
 	void CreateGraphicsPipeline();
+	const VkShaderModule CreateShaderModule(const std::vector<char>& code) const;
+	void CreateRenderPass();
+
+	void CreateFramebuffers();
+	void CreateCommandPool();
+	void CreateCommandBuffer(); 
+	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) const;
+
+	void CreateSyncObjects();
 
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 	{

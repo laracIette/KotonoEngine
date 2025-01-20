@@ -11,9 +11,9 @@ public:
 
 	void Init();
 
-	GLFWwindow* GetGLFWWindow() const;
+	void MainLoop();
 
-	const bool IsRunning() const;
+	GLFWwindow* GetGLFWWindow() const;
 
 	void SwapBuffers() const;
 

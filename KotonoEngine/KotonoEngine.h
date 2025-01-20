@@ -9,10 +9,6 @@ public:
 
 	void Run();
 
-	void Cleanup();
-	void MainLoop();
-	void Init();
-
 	Window& GetWindow();
 	AudioManager& GetAudioManager();
 	InputManager& GetInputManager();

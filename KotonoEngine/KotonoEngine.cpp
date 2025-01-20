@@ -10,24 +10,12 @@ KotonoEngine::KotonoEngine() :
 
 void KotonoEngine::Run()
 {
-    Init();
-    MainLoop();
-    Cleanup();
-}
-
-void KotonoEngine::Init()
-{
     _window.Init();
     _audioManager.Init();
     _inputManager.Init();
-}
 
-void KotonoEngine::MainLoop()
-{
-}
+    _window.MainLoop();
 
-void KotonoEngine::Cleanup()
-{
     _audioManager.Cleanup();
     _window.Cleanup();
 }

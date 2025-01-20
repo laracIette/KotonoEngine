@@ -21,6 +21,17 @@ void Window::Init()
     glfwShowWindow(_window);
 }
 
+void Window::MainLoop()
+{
+    while (!glfwWindowShouldClose(_window))
+    {
+        glfwPollEvents();
+        _vulkanInstance.DrawFrame();
+    }
+
+    vkDeviceWaitIdle(_vulkanInstance.GetDevice());
+}
+
 void Window::Cleanup()
 {
     _vulkanInstance.Cleanup();
@@ -33,17 +44,6 @@ void Window::Cleanup()
 GLFWwindow* Window::GetGLFWWindow() const
 {
     return _window;
-}
-
-const bool Window::IsRunning() const
-{
-    if (glfwWindowShouldClose(_window))
-    {
-        return false;
-    }
-
-    glfwPollEvents();
-    return true;
 }
 
 void Window::SwapBuffers() const
