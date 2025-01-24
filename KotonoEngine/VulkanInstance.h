@@ -31,7 +31,9 @@ class VulkanInstance
 public:
 	void Init();
 	void Cleanup() const;
-	void DrawFrame() const;
+	void DrawFrame();
+
+	void OnFramebufferResized();
 
 	VkDevice GetDevice() const;
 
@@ -61,11 +63,17 @@ private:
 
 	std::vector<VkFramebuffer> _swapChainFramebuffers;
 	VkCommandPool _commandPool;
-	VkCommandBuffer _commandBuffer;
+	VkBuffer _vertexBuffer;
+	VkDeviceMemory _vertexBufferMemory;
+	std::vector<VkCommandBuffer> _commandBuffers;
 
-	VkSemaphore _imageAvailableSemaphore;
-	VkSemaphore _renderFinishedSemaphore;
-	VkFence _inFlightFence;
+	std::vector<VkSemaphore> _imageAvailableSemaphores;
+	std::vector<VkSemaphore> _renderFinishedSemaphores;
+	std::vector<VkFence> _inFlightFences;
+
+	bool _framebufferResized = false;
+
+	uint32_t _currentFrame = 0;
 
 	void CreateInstance();
 	void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
@@ -93,10 +101,15 @@ private:
 
 	void CreateFramebuffers();
 	void CreateCommandPool();
-	void CreateCommandBuffer(); 
+	void CreateVertexBuffer();
+	const uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
+	void CreateCommandBuffers(); 
 	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) const;
 
 	void CreateSyncObjects();
+
+	void RecreateSwapChain();
+	void CleanupSwapChain() const;
 
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 	{

@@ -14,6 +14,7 @@ public:
 	void MainLoop();
 
 	GLFWwindow* GetGLFWWindow() const;
+	VulkanInstance& GetVulkanInstance();
 
 	void SwapBuffers() const;
 
