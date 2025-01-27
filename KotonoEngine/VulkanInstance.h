@@ -6,25 +6,8 @@
 #include <GLFW/glfw3native.h>
 #include <vector>
 #include <iostream>
-#include <optional>
-
-struct QueueFamilyIndices
-{
-	std::optional<uint32_t> GraphicsFamily;
-	std::optional<uint32_t> PresentFamily;
-
-	bool IsComplete() const
-	{
-		return GraphicsFamily.has_value() && PresentFamily.has_value();
-	}
-};
-
-struct SwapChainSupportDetails
-{
-	VkSurfaceCapabilitiesKHR Capabilities;
-	std::vector<VkSurfaceFormatKHR> Formats;
-	std::vector<VkPresentModeKHR> PresentModes;
-};
+#include "QueueFamilyIndices.h"
+#include "SwapChainSupportDetails.h"
 
 class VulkanInstance
 {
@@ -58,14 +41,23 @@ private:
 	std::vector<VkImageView> _swapChainImageViews;
 
 	VkRenderPass _renderPass;
+	VkDescriptorSetLayout _descriptorSetLayout;
 	VkPipelineLayout _pipelineLayout;
 	VkPipeline _graphicsPipeline;
 
 	std::vector<VkFramebuffer> _swapChainFramebuffers;
 	VkCommandPool _commandPool;
+	std::vector<VkCommandBuffer> _commandBuffers;
 	VkBuffer _vertexBuffer;
 	VkDeviceMemory _vertexBufferMemory;
-	std::vector<VkCommandBuffer> _commandBuffers;
+	VkBuffer _indexBuffer;
+	VkDeviceMemory _indexBufferMemory;
+
+	std::vector<VkBuffer> _uniformBuffers;
+	std::vector<VkDeviceMemory> _uniformBuffersMemory;
+	std::vector<void*> _uniformBuffersMapped;
+	VkDescriptorPool _descriptorPool;
+	std::vector<VkDescriptorSet> _descriptorSets;
 
 	std::vector<VkSemaphore> _imageAvailableSemaphores;
 	std::vector<VkSemaphore> _renderFinishedSemaphores;
@@ -76,6 +68,7 @@ private:
 	uint32_t _currentFrame = 0;
 
 	void CreateInstance();
+
 	void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 	void SetupDebugMessenger();
 	const bool CheckValidationLayerSupport();
@@ -95,16 +88,24 @@ private:
 	void CreateSwapChain();
 	void CreateImageViews();
 
+	void CreateDescriptorSetLayout();
 	void CreateGraphicsPipeline();
 	const VkShaderModule CreateShaderModule(const std::vector<char>& code) const;
 	void CreateRenderPass();
 
 	void CreateFramebuffers();
 	void CreateCommandPool();
-	void CreateVertexBuffer();
-	const uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
 	void CreateCommandBuffers(); 
 	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) const;
+	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) const;
+	const uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
+	void CreateVertexBuffer(); 
+	void CreateIndexBuffer();
+	void CreateUniformBuffers();
+	void UpdateUniformBuffer(uint32_t currentImage);
+	void CreateDescriptorPool();
+	void CreateDescriptorSets();
 
 	void CreateSyncObjects();
 

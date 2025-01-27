@@ -109,5 +109,4 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
     Engine.GetInputManager().GetMouse().SetCursorPosition(glm::vec2(xpos, ypos));
-    std::cout << "Mouse Position: (" << xpos << ", " << ypos << ")\n";
 }
