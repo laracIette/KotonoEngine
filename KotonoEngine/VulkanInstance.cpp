@@ -11,6 +11,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #include <chrono>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include <unordered_map>
 
 const std::vector<const char*> validationLayers = 
 {
@@ -28,26 +32,13 @@ constexpr bool enableValidationLayers = false;
 constexpr bool enableValidationLayers = true;
 #endif
 
-const std::vector<Vertex> vertices =
-{
-    {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-    {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-    {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-    {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
-
-    {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-    {{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-    {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-    {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
-};
-
-const std::vector<uint16_t> indices =
-{
-    0, 1, 2, 2, 3, 0,
-    4, 5, 6, 6, 7, 4
-};
-
 constexpr int MAX_FRAMES_IN_FLIGHT = 2;
+
+constexpr uint32_t WIDTH = 800;
+constexpr uint32_t HEIGHT = 600;
+
+const std::string MODEL_PATH = R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.obj)";
+const std::string TEXTURE_PATH = R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.png)";
 
 const std::vector<char> readFile(const std::string& filename);
 
@@ -69,6 +60,7 @@ void VulkanInstance::Init()
     CreateTextureImage();
     CreateTextureImageView();
     CreateTextureSampler();
+    LoadModel();
     CreateVertexBuffer();
     CreateIndexBuffer();
     CreateUniformBuffers();
@@ -989,10 +981,10 @@ void VulkanInstance::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t
     VkDeviceSize offsets[] = { 0 };
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-    vkCmdBindIndexBuffer(commandBuffer, _indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+    vkCmdBindIndexBuffer(commandBuffer, _indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout, 0, 1, &_descriptorSets[_currentFrame], 0, nullptr);
-    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(_indices.size()), 1, 0, 0, 0);
 
     // End RenderPass
     vkCmdEndRenderPass(commandBuffer);
@@ -1059,9 +1051,51 @@ const uint32_t VulkanInstance::FindMemoryType(uint32_t typeFilter, VkMemoryPrope
     throw std::runtime_error("failed to find suitable memory type!");
 }
 
+void VulkanInstance::LoadModel()
+{
+    Assimp::Importer importer;
+    const aiScene* scene = importer.ReadFile(MODEL_PATH.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
+
+    if (!scene || !scene->HasMeshes())
+    {
+        throw std::runtime_error("Failed to load model: " + MODEL_PATH);
+    }
+
+    std::unordered_map<Vertex, uint32_t> uniqueVertices{};
+
+    for (unsigned int m = 0; m < scene->mNumMeshes; ++m)
+    {
+        aiMesh* mesh = scene->mMeshes[m];
+
+        for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
+        {
+            aiFace& face = mesh->mFaces[i];
+
+            for (unsigned int j = 0; j < face.mNumIndices; ++j)
+            {
+                aiVector3D pos = mesh->mVertices[face.mIndices[j]];
+                aiVector3D texCoord = mesh->mTextureCoords[0] ? mesh->mTextureCoords[0][face.mIndices[j]] : aiVector3D(0.0f, 0.0f, 0.0f);
+
+                Vertex vertex{};
+                vertex.Position = { pos.x, pos.y, pos.z };
+                vertex.TexCoord = { texCoord.x, texCoord.y }; 
+                vertex.Color = { 1.0f, 1.0f, 1.0f }; 
+
+                if (uniqueVertices.count(vertex) == 0)
+                {
+                    uniqueVertices[vertex] = static_cast<uint32_t>(_vertices.size());
+                    _vertices.push_back(vertex);
+                }
+
+                _indices.push_back(uniqueVertices[vertex]);
+            }
+        }
+    }
+}
+
 void VulkanInstance::CreateVertexBuffer()
 {
-    VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+    VkDeviceSize bufferSize = sizeof(_vertices[0]) * _vertices.size();
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
@@ -1075,7 +1109,7 @@ void VulkanInstance::CreateVertexBuffer()
 
     void* data;
     vkMapMemory(_device, stagingBufferMemory, 0, bufferSize, 0, &data);
-    memcpy(data, vertices.data(), (size_t)bufferSize);
+    memcpy(data, _vertices.data(), (size_t)bufferSize);
     vkUnmapMemory(_device, stagingBufferMemory);
 
     CreateBuffer(
@@ -1094,7 +1128,7 @@ void VulkanInstance::CreateVertexBuffer()
 
 void VulkanInstance::CreateIndexBuffer()
 {
-    VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+    VkDeviceSize bufferSize = sizeof(_indices[0]) * _indices.size();
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
@@ -1108,7 +1142,7 @@ void VulkanInstance::CreateIndexBuffer()
 
     void* data;
     vkMapMemory(_device, stagingBufferMemory, 0, bufferSize, 0, &data);
-    memcpy(data, indices.data(), (size_t)bufferSize);
+    memcpy(data, _indices.data(), (size_t)bufferSize);
     vkUnmapMemory(_device, stagingBufferMemory);
 
     CreateBuffer(
@@ -1357,13 +1391,7 @@ const bool VulkanInstance::HasStencilComponent(VkFormat format) const
 void VulkanInstance::CreateTextureImage()
 {
     int texWidth, texHeight, texChannels;
-    stbi_uc* pixels = stbi_load(
-        R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\textures\texture.jpg)", 
-        &texWidth, 
-        &texHeight, 
-        &texChannels, 
-        STBI_rgb_alpha
-    );
+    stbi_uc* pixels = stbi_load(TEXTURE_PATH.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
     VkDeviceSize imageSize = texWidth * texHeight * 4;
 
     if (!pixels)

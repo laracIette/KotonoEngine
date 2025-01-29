@@ -8,6 +8,7 @@
 #include <iostream>
 #include "QueueFamilyIndices.h"
 #include "SwapChainSupportDetails.h"
+#include "Vertex.h"
 
 class VulkanInstance
 {
@@ -48,6 +49,9 @@ private:
 	std::vector<VkFramebuffer> _swapChainFramebuffers;
 	VkCommandPool _commandPool;
 	std::vector<VkCommandBuffer> _commandBuffers;
+
+	std::vector<Vertex> _vertices;
+	std::vector<uint32_t> _indices;
 	VkBuffer _vertexBuffer;
 	VkDeviceMemory _vertexBufferMemory;
 	VkBuffer _indexBuffer;
@@ -111,6 +115,8 @@ private:
 	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) const;
 	const uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
+	
+	void LoadModel();
 	void CreateVertexBuffer(); 
 	void CreateIndexBuffer();
 	void CreateUniformBuffers();
