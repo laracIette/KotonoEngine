@@ -59,6 +59,11 @@ private:
 	VkDescriptorPool _descriptorPool;
 	std::vector<VkDescriptorSet> _descriptorSets;
 
+	VkImage _textureImage;
+	VkDeviceMemory _textureImageMemory;
+	VkImageView _textureImageView;
+	VkSampler _textureSampler;
+
 	std::vector<VkSemaphore> _imageAvailableSemaphores;
 	std::vector<VkSemaphore> _renderFinishedSemaphores;
 	std::vector<VkFence> _inFlightFences;
@@ -94,6 +99,8 @@ private:
 	void CreateRenderPass();
 
 	void CreateFramebuffers();
+	const VkCommandBuffer BeginSingleTimeCommands() const;
+	void EndSingleTimeCommands(VkCommandBuffer commandBuffer) const;
 	void CreateCommandPool();
 	void CreateCommandBuffers(); 
 	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) const;
@@ -108,6 +115,14 @@ private:
 	void CreateDescriptorSets();
 
 	void CreateSyncObjects();
+
+	void CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+	void CreateTextureImage();
+	void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+	void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+	void CreateTextureImageView();
+	const VkImageView CreateImageView(VkImage image, VkFormat format) const;
+	void CreateTextureSampler();
 
 	void RecreateSwapChain();
 	void CleanupSwapChain() const;
