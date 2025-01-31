@@ -114,9 +114,6 @@
     <ClCompile Include="EICObjectExplorer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Clamped.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CameraView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -260,9 +257,6 @@
     <ClInclude Include="EngineInterfaceElementRect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Clamped.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CameraView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -297,6 +291,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SwapChainSupportDetails.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Clamped.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

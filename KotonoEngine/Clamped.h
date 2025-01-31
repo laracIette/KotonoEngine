@@ -1,25 +1,21 @@
 #pragma once
-template <typename T>
-class Clamped
+template <float Min, float Max>
+class ClampedFloat
 {
 public:
-	Clamped(const T& min, const T& max);
-
-	Clamped& operator=(const T& value)
+	constexpr ClampedFloat(const float value = 0.0f) : _value(Clamp(value)) {}
+	constexpr operator float() const { return _value; }
+	ClampedFloat& operator=(const float value)
 	{
 		_value = Clamp(value);
 		return *this;
 	}
 
-	operator T() const
-	{
-		return _value;
-	}
-
 private:
-	T _value;
-	T _min;
-	T _max;
-
-	const T Clamp(const T& value) const;
+	float _value;
+	static constexpr const float Clamp(const float value)
+	{
+		return (value < Min) ? Min : (Max < value) ? Max : value;
+	}
 };
+
