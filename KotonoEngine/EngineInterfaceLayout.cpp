@@ -1,5 +1,5 @@
 #include "EngineInterfaceLayout.h"
-#include "KotonoEngine.h"
+#include <KotonoFramework/Framework.h>
 
 void EngineInterfaceLayout::AddComponent(EngineInterfaceComponent* component)
 {
@@ -13,7 +13,7 @@ void EngineInterfaceLayout::RemoveComponent(EngineInterfaceComponent* component)
 
 void EngineInterfaceLayout::OnComponentMoved(EngineInterfaceComponent* movedComponent)
 {
-	const glm::vec2 cursorPositionNormalized = Engine.GetInputManager().GetMouse().GetCursorPositionNormalized();
+	const glm::vec2 cursorPositionNormalized = Framework.GetInputManager().GetMouse().GetCursorPositionNormalized();
 
 	for (auto* component : _components)
 	{

@@ -2,10 +2,10 @@
 #include "Window.h"
 #include "AudioManager.h"
 #include "InputManager.h"
-class KotonoFramework final
+class KtFramework final
 {
 public:
-	KotonoFramework();
+	KtFramework();
 
 	void Run();
 
@@ -13,14 +13,10 @@ public:
 	KtAudioManager& GetAudioManager();
 	KtInputManager& GetInputManager();
 
-	const std::string& GetProjectDirectory() const;
-
 private:
 	KtWindow _window;
 	KtAudioManager _audioManager;
 	KtInputManager _inputManager;
-
-	std::string _projectDirectory;
 };
 
-extern KotonoFramework Framework;
+extern KtFramework Framework;

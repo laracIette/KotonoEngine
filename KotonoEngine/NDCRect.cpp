@@ -1,5 +1,5 @@
 #include "NDCRect.h"
-#include "KotonoEngine.h"
+#include <KotonoFramework/Framework.h>
 
 NDCRect::NDCRect(const glm::vec2& position, const glm::quat& rotation, const glm::vec2& size) :
 	_position(position),
@@ -10,7 +10,7 @@ NDCRect::NDCRect(const glm::vec2& position, const glm::quat& rotation, const glm
 
 const glm::mat4 NDCRect::GetModelMatrix() const
 {
-    glm::vec2 windowSize = Engine.GetWindow().GetSize();
+    glm::vec2 windowSize = Framework.GetWindow().GetSize();
 
     glm::vec3 ndcPosition(
         2.0f * _position.x / windowSize.x - 1.0f,

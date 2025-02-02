@@ -1,6 +1,6 @@
 #include "RoundedBox.h"
 #include "NDCRect.h"
-#include "KotonoEngine.h"
+#include <KotonoFramework/Framework.h>
 
 float RoundedBox::GetFallOff() const
 {
@@ -86,7 +86,7 @@ const glm::vec4 RoundedBox::GetSides() const
 {
 	glm::vec2 position(
 		GetRect()->GetWorldPosition().x,
-		Engine.GetWindow().GetSize().y - GetRect()->GetWorldPosition().y
+		Framework.GetWindow().GetSize().y - GetRect()->GetWorldPosition().y
 	);
 	glm::vec2 worldSize = GetRect()->GetWorldSize();
 

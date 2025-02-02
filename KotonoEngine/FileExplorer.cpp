@@ -6,7 +6,7 @@ FileExplorer::FileExplorer() :
 {
 }
 
-void FileExplorer::SetDirectoryPath(const std::string& directoryPath)
+void FileExplorer::SetDirectoryPath(const std::filesystem::path& directoryPath)
 {
     _directoryPath = directoryPath;
 }

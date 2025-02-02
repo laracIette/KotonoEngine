@@ -134,7 +134,7 @@
     <ClInclude Include="AudioManager.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Keyboard.h" />
-    <ClInclude Include="KotonoFramework.h" />
+    <ClInclude Include="Framework.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="QueueFamilyIndices.h" />
     <ClInclude Include="SwapChainSupportDetails.h" />
@@ -147,7 +147,7 @@
     <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Keyboard.cpp" />
-    <ClCompile Include="KotonoFramework.cpp" />
+    <ClCompile Include="Framework.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="Window.cpp" />

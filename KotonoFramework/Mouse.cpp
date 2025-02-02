@@ -1,5 +1,5 @@
 #include "Mouse.h"
-#include "KotonoFramework.h"
+#include "Framework.h"
 
 const glm::vec2& KtMouse::GetCursorPosition() const
 {

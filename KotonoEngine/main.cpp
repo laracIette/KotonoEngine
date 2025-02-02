@@ -1,10 +1,12 @@
+#include <KotonoFramework/Framework.h>
 #include "KotonoEngine.h"
 
+KtFramework Framework;
 KotonoEngine Engine;
 
 int main()
 {
-    Engine.Run();
+    Framework.Run();
 
     return 0;
 }

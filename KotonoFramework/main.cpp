@@ -1,6 +1,6 @@
-#include "KotonoFramework.h"
+#include "Framework.h"
 
-KotonoFramework Framework;
+KtFramework Framework;
 
 int main()
 {

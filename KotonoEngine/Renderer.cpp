@@ -1,5 +1,5 @@
 #include "Renderer.h"
-#include "KotonoEngine.h"
+#include <KotonoFramework/Framework.h>
 #include <algorithm>
 
 void Renderer::AddToRenderQueue(Drawable* drawable)
@@ -11,7 +11,7 @@ void Renderer::AddToRenderQueue(Drawable* drawable)
 
 	if (auto drawable2D = dynamic_cast<Drawable2D*>(drawable))
 	{
-		glm::vec2 windowSize = Engine.GetWindow().GetSize();
+		glm::vec2 windowSize = Framework.GetWindow().GetSize();
 		glm::vec2 windowPosition = windowSize / 2.0f;
 
 		if (drawable2D->GetRect()->Overlaps(windowPosition, windowSize))

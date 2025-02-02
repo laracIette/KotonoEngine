@@ -30,7 +30,7 @@
     <ClInclude Include="QueueFamilyIndices.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="KotonoFramework.h">
+    <ClInclude Include="Framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="InputManager.h">
@@ -59,7 +59,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KotonoFramework.cpp">
+    <ClCompile Include="Framework.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="InputManager.cpp">

@@ -1,5 +1,5 @@
 #include "EICFileExplorer.h"
-#include "KotonoEngine.h"
+#include <KotonoFramework/Framework.h>
 
 EICFileExplorer::EICFileExplorer() :
 	Base("File Explorer")

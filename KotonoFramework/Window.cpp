@@ -1,5 +1,5 @@
 #include "Window.h"
-#include "KotonoFramework.h"
+#include "Framework.h"
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);

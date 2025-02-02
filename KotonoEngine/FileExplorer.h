@@ -6,7 +6,7 @@ class FileExplorer final
 public:
 	FileExplorer();
 
-	void SetDirectoryPath(const std::string& directoryPath);
+	void SetDirectoryPath(const std::filesystem::path& directoryPath);
 
 	// Get the directories paths in the current directory.
 	const std::vector<std::filesystem::path> GetDirectories() const;
@@ -17,6 +17,6 @@ public:
 	const std::vector<File> Find(const std::string& name) const;
 
 private:
-	std::string _directoryPath;
+	std::filesystem::path _directoryPath;
 };
 
