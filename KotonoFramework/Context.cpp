@@ -114,7 +114,7 @@ void KtContext::Cleanup() const
 
     vkDestroyCommandPool(_device, _commandPool, nullptr);
 
-    //vmaDestroyAllocator(_allocator);
+    vmaDestroyAllocator(_allocator);
 
     vkDestroyDevice(_device, nullptr);
 
@@ -581,7 +581,7 @@ void KtContext::CreateImageViews()
 
 void KtContext::CreateAllocator()
 {
-    VmaAllocatorCreateInfo allocatorInfo = {};
+    VmaAllocatorCreateInfo allocatorInfo{};
     allocatorInfo.physicalDevice = _physicalDevice;
     allocatorInfo.device = _device;
     allocatorInfo.instance = _instance;
