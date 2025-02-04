@@ -44,6 +44,7 @@ void KtContext::Init()
     CreateSurface();
     PickPhysicalDevice();
     CreateLogicalDevice();
+    CreateAllocator();
     CreateSwapChain();
     CreateImageViews();
     CreateRenderPass();
@@ -139,7 +140,7 @@ void KtContext::CreateInstance()
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.pEngineName = "Kotono Engine";
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.apiVersion = VK_API_VERSION_1_0;
+    appInfo.apiVersion = VK_API_VERSION_1_3;
 
     VkInstanceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -580,12 +581,16 @@ void KtContext::CreateImageViews()
 
 void KtContext::CreateAllocator()
 {
-    /*VmaAllocatorCreateInfo allocatorInfo = {};
+    VmaAllocatorCreateInfo allocatorInfo = {};
     allocatorInfo.physicalDevice = _physicalDevice;
     allocatorInfo.device = _device;
     allocatorInfo.instance = _instance;
+    allocatorInfo.vulkanApiVersion = VK_API_VERSION_1_3;
 
-    vmaCreateAllocator(&allocatorInfo, &_allocator);*/
+    if (vmaCreateAllocator(&allocatorInfo, &_allocator) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create VMA allocator");
+    }
 }
 
 void KtContext::CreateDescriptorSetLayout()

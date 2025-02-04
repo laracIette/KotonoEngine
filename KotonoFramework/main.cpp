@@ -6,5 +6,5 @@ int main()
 {
 	Framework.Run();
 
-	return 0;
+	return EXIT_SUCCESS;
 }
