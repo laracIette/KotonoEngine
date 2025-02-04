@@ -4,9 +4,14 @@
 #include <GLFW/glfw3.h>
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
+#include <vk_mem_alloc.h> 
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
+#include <stb_image.h>
 #include <vector>
+#include <unordered_set>
 #include <iostream>
-#include <vulkan/vulkan.h>
 #include "QueueFamilyIndices.h"
 #include "SwapChainSupportDetails.h"
 #include "Vertex.h"
@@ -31,6 +36,8 @@ private:
 	VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE;
 	// Logical device
 	VkDevice _device;
+
+	VmaAllocator _allocator;
 
 	VkQueue _graphicsQueue;
 	// Presentation queue
@@ -89,7 +96,7 @@ private:
 
 	void CreateInstance();
 
-	void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+	void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) const;
 	void SetupDebugMessenger();
 	const bool CheckValidationLayerSupport();
 	const std::vector<const char*> GetRequiredExtensions();
@@ -107,6 +114,8 @@ private:
 	const VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
 	void CreateSwapChain();
 	void CreateImageViews();
+
+	void CreateAllocator();
 
 	void CreateDescriptorSetLayout();
 	void CreateGraphicsPipeline();

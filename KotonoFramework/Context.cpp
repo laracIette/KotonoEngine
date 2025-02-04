@@ -4,12 +4,7 @@
 #include <fstream>
 #include "Vertex.h"
 #include "UniformBufferObject.h"
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
 #include <chrono>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -118,6 +113,8 @@ void KtContext::Cleanup() const
 
     vkDestroyCommandPool(_device, _commandPool, nullptr);
 
+    //vmaDestroyAllocator(_allocator);
+
     vkDestroyDevice(_device, nullptr);
 
     if (enableValidationLayers)
@@ -174,7 +171,7 @@ void KtContext::CreateInstance()
     }
 }
 
-void KtContext::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
+void KtContext::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) const
 {
     createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -581,6 +578,16 @@ void KtContext::CreateImageViews()
     }
 }
 
+void KtContext::CreateAllocator()
+{
+    /*VmaAllocatorCreateInfo allocatorInfo = {};
+    allocatorInfo.physicalDevice = _physicalDevice;
+    allocatorInfo.device = _device;
+    allocatorInfo.instance = _instance;
+
+    vmaCreateAllocator(&allocatorInfo, &_allocator);*/
+}
+
 void KtContext::CreateDescriptorSetLayout()
 {
     VkDescriptorSetLayoutBinding uboLayoutBinding{};
@@ -827,16 +834,16 @@ void KtContext::CreateRenderPass()
     depthAttachmentRef.attachment = 1;
     depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-    VkAttachmentReference colorAttachmentResolveRef{};
-    colorAttachmentResolveRef.attachment = 2;
-    colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    VkAttachmentReference resolveAttachmentRef{};
+    resolveAttachmentRef.attachment = 2;
+    resolveAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
     VkSubpassDescription subpass{};
     subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
     subpass.colorAttachmentCount = 1;
     subpass.pColorAttachments = &colorAttachmentRef;
     subpass.pDepthStencilAttachment = &depthAttachmentRef;
-    subpass.pResolveAttachments = &colorAttachmentResolveRef;
+    subpass.pResolveAttachments = &resolveAttachmentRef;
 
     VkSubpassDependency dependency{};
     dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
