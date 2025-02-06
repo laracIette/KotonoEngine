@@ -59,36 +59,36 @@ private:
 	std::vector<VkCommandBuffer> _commandBuffers;
 
 	std::vector<KtVertex> _vertices;
-	std::vector<uint32_t> _indices;
 	VkBuffer _vertexBuffer;
-	VkDeviceMemory _vertexBufferMemory;
+	VmaAllocation _vertexBufferAllocation;
+	std::vector<uint32_t> _indices;
 	VkBuffer _indexBuffer;
-	VkDeviceMemory _indexBufferMemory;
+	VmaAllocation _indexBufferAllocation;
 
 	std::vector<VkBuffer> _uniformBuffers;
-	std::vector<VkDeviceMemory> _uniformBuffersMemory;
+	std::vector<VmaAllocation> _uniformBuffersAllocation;
 	std::vector<void*> _uniformBuffersMapped;
 	VkDescriptorPool _descriptorPool;
 	std::vector<VkDescriptorSet> _descriptorSets;
 
 	uint32_t _mipLevels;
 	VkImage _textureImage;
-	VkDeviceMemory _textureImageMemory;
+	VmaAllocation _textureImageAllocation;
 	VkImageView _textureImageView;
 	VkSampler _textureSampler;
 
+	VkSampleCountFlagBits _msaaSamples = VK_SAMPLE_COUNT_1_BIT;
+	VkImage _colorImage;
+	VmaAllocation _colorImageAllocation;
+	VkImageView _colorImageView;
+
 	VkImage _depthImage;
-	VkDeviceMemory _depthImageMemory;
+	VmaAllocation _depthImageAllocation;
 	VkImageView _depthImageView;
 
 	std::vector<VkSemaphore> _imageAvailableSemaphores;
 	std::vector<VkSemaphore> _renderFinishedSemaphores;
 	std::vector<VkFence> _inFlightFences;
-
-	VkSampleCountFlagBits _msaaSamples = VK_SAMPLE_COUNT_1_BIT;
-	VkImage _colorImage;
-	VkDeviceMemory _colorImageMemory;
-	VkImageView _colorImageView;
 
 	bool _framebufferResized = false;
 
@@ -128,7 +128,7 @@ private:
 	void CreateCommandPool();
 	void CreateCommandBuffers();
 	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) const;
-	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VmaAllocationCreateFlags flags, VkBuffer& buffer, VmaAllocation& allocation, VmaAllocationInfo& allocInfo) const;
 	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) const;
 	const uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
 
@@ -142,7 +142,7 @@ private:
 
 	void CreateSyncObjects();
 
-	void CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+	void CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VmaAllocation& imageAllocation) const;
 
 	void CreateDepthResources();
 	const VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;

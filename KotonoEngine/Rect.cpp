@@ -220,11 +220,11 @@ const std::string Rect::ToString() const
 const glm::vec2 Rect::GetAnchorPositionDelta() const
 {
     return glm::vec2(
-        (_anchor & ANCHOR_LEFT) == ANCHOR_LEFT ? GetRelativeSize().x / 2.0f
-        : (_anchor & ANCHOR_RIGHT) == ANCHOR_RIGHT ? -GetRelativeSize().x / 2.0f
+        (_anchor & ANCHOR_LEFT) ? GetRelativeSize().x / 2.0f
+        : (_anchor & ANCHOR_RIGHT) ? -GetRelativeSize().x / 2.0f
         : 0.0f,
-        (_anchor & ANCHOR_TOP) == ANCHOR_TOP ? GetRelativeSize().y / 2.0f
-        : (_anchor & ANCHOR_BOTTOM) == ANCHOR_BOTTOM ? -GetRelativeSize().y / 2.0f
+        (_anchor & ANCHOR_TOP) ? GetRelativeSize().y / 2.0f
+        : (_anchor & ANCHOR_BOTTOM) ? -GetRelativeSize().y / 2.0f
         : 0.0f
     );
 }
