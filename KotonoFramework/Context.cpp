@@ -54,9 +54,7 @@ void KtContext::Init()
 	CreateColorResources();
 	CreateDepthResources();
 	CreateFramebuffers();
-	CreateTextureImage();
-	CreateTextureImageView();
-	CreateTextureSampler();
+	CreateImageTexture();
 	LoadModel();
 	CreateVertexBuffer();
 	CreateIndexBuffer();
@@ -71,16 +69,13 @@ void KtContext::Cleanup() const
 {
 	CleanupSwapChain();
 
-	vkDestroySampler(_device, _textureSampler, nullptr);
+	delete _imageTexture;
 
 	vkDestroyImageView(_device, _depthImageView, nullptr);
 	vmaDestroyImage(_allocator, _depthImage, _depthImageAllocation);
 
 	vkDestroyImageView(_device, _colorImageView, nullptr);
 	vmaDestroyImage(_allocator, _colorImage, _colorImageAllocation);
-
-	vkDestroyImageView(_device, _textureImageView, nullptr);
-	vmaDestroyImage(_allocator, _textureImage, _textureImageAllocation);
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
@@ -1287,8 +1282,8 @@ void KtContext::CreateDescriptorSets()
 
 		VkDescriptorImageInfo imageInfo{};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = _textureImageView;
-		imageInfo.sampler = _textureSampler;
+		imageInfo.imageView = _imageTexture->ImageView;
+		imageInfo.sampler = _imageTexture->Sampler;
 
 		std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
@@ -1427,70 +1422,9 @@ const bool KtContext::HasStencilComponent(VkFormat format) const
 	return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 }
 
-void KtContext::CreateTextureImage()
+void KtContext::CreateImageTexture()
 {
-	int texWidth, texHeight, texChannels;
-	stbi_uc* pixels = stbi_load(TEXTURE_PATH.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-	if (texWidth == 0 || texHeight == 0)
-	{
-		throw std::runtime_error("Texture has zero width or height!");
-	}
-	VkDeviceSize imageSize = texWidth * texHeight * 4;
-
-	_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
-
-	if (!pixels)
-	{
-		throw std::runtime_error("failed to load texture image!");
-	}
-
-	VkBuffer stagingBuffer;
-	VmaAllocation stagingBufferAllocation;
-	VmaAllocationInfo stagingBufferAllocInfo;
-	CreateBuffer(
-		imageSize,
-		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
-		stagingBuffer,
-		stagingBufferAllocation,
-		stagingBufferAllocInfo
-	);
-
-	memcpy(stagingBufferAllocInfo.pMappedData, pixels, static_cast<size_t>(imageSize));
-
-	stbi_image_free(pixels);
-
-	CreateImage(
-		texWidth,
-		texHeight,
-		_mipLevels,
-		VK_SAMPLE_COUNT_1_BIT,
-		VK_FORMAT_R8G8B8A8_SRGB,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		_textureImage,
-		_textureImageAllocation
-	);
-
-	TransitionImageLayout(
-		_textureImage,
-		VK_FORMAT_R8G8B8A8_SRGB,
-		VK_IMAGE_LAYOUT_UNDEFINED,
-		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		_mipLevels
-	);
-	CopyBufferToImage(
-		stagingBuffer,
-		_textureImage,
-		static_cast<uint32_t>(texWidth),
-		static_cast<uint32_t>(texHeight)
-	);
-
-	vmaDestroyBuffer(_allocator, stagingBuffer, stagingBufferAllocation);
-
-	GenerateMipmaps(_textureImage, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, _mipLevels);
+	_imageTexture = new KtImageTexture(TEXTURE_PATH);
 }
 
 void KtContext::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels)
@@ -1602,11 +1536,6 @@ void KtContext::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width
 	EndSingleTimeCommands(commandBuffer);
 }
 
-void KtContext::CreateTextureImageView()
-{
-	_textureImageView = CreateImageView(_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels);
-}
-
 const VkImageView KtContext::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) const
 {
 	VkImageViewCreateInfo viewInfo{};
@@ -1627,35 +1556,6 @@ const VkImageView KtContext::CreateImageView(VkImage image, VkFormat format, VkI
 	}
 
 	return imageView;
-}
-
-void KtContext::CreateTextureSampler()
-{
-	VkSamplerCreateInfo samplerInfo{};
-	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-	samplerInfo.magFilter = VK_FILTER_LINEAR;
-	samplerInfo.minFilter = VK_FILTER_LINEAR;
-	samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-	samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-	samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-
-	VkPhysicalDeviceProperties properties{};
-	vkGetPhysicalDeviceProperties(_physicalDevice, &properties);
-	samplerInfo.anisotropyEnable = VK_TRUE;
-	samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
-	samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-	samplerInfo.unnormalizedCoordinates = VK_FALSE;
-	samplerInfo.compareEnable = VK_FALSE;
-	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-	samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-	samplerInfo.minLod = 0.0f;
-	samplerInfo.maxLod = static_cast<float>(_mipLevels);
-	samplerInfo.mipLodBias = 0.0f; // Optional
-
-	if (vkCreateSampler(_device, &samplerInfo, nullptr, &_textureSampler) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create texture sampler!");
-	}
 }
 
 void KtContext::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
@@ -1774,12 +1674,12 @@ void KtContext::RecreateSwapChain()
 
 void KtContext::CleanupSwapChain() const
 {
-	for (const auto& imageView : _swapChainImageViews)
+	for (auto imageView : _swapChainImageViews)
 	{
 		vkDestroyImageView(_device, imageView, nullptr);
 	}
 
-	for (const auto& framebuffer : _swapChainFramebuffers)
+	for (auto framebuffer : _swapChainFramebuffers)
 	{
 		vkDestroyFramebuffer(_device, framebuffer, nullptr);
 	}
@@ -1899,9 +1799,19 @@ void KtContext::OnFramebufferResized()
 	_framebufferResized = true;
 }
 
+VkPhysicalDevice KtContext::GetPhysicalDevice() const
+{
+	return _physicalDevice;
+}
+
 VkDevice KtContext::GetDevice() const
 {
 	return _device;
+}
+
+VmaAllocator KtContext::GetAllocator() const 
+{ 
+	return _allocator; 
 }
 
 const std::vector<char> readFile(const std::string& filename)

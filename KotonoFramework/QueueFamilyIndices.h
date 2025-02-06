@@ -4,7 +4,7 @@ struct KtQueueFamilyIndices
 {
 	std::optional<uint32_t> GraphicsFamily;
 	std::optional<uint32_t> PresentFamily;
-	bool IsComplete() const
+	bool IsComplete() const noexcept
 	{
 		return GraphicsFamily.has_value() && PresentFamily.has_value();
 	}
