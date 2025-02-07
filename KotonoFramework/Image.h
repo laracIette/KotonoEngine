@@ -1,7 +1,7 @@
 #pragma once
 #include <vulkan/vulkan.h>
 #include <vk_mem_alloc.h>
-#include <glm/glm.hpp>
+#include "glm_includes.h"
 #include "ImageTexture.h"
 class KtImage
 {

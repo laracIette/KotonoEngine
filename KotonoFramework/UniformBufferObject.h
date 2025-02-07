@@ -1,5 +1,5 @@
 #pragma once
-#include <glm/glm.hpp>
+#include "glm_includes.h"
 struct KtUniformBufferObject
 {
     alignas(16) glm::mat4 Model;

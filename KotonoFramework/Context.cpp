@@ -4,12 +4,7 @@
 #include <fstream>
 #include "Vertex.h"
 #include "UniformBufferObject.h"
-#include <glm/gtc/matrix_transform.hpp>
 #include <chrono>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-#include <unordered_map>
 
 const std::vector<const char*> validationLayers =
 {
@@ -55,9 +50,7 @@ void KtContext::Init()
 	CreateDepthResources();
 	CreateFramebuffers();
 	CreateImageTexture();
-	LoadModel();
-	CreateVertexBuffer();
-	CreateIndexBuffer();
+	CreateModel();
 	CreateUniformBuffers();
 	CreateDescriptorPool();
 	CreateDescriptorSets();
@@ -70,6 +63,7 @@ void KtContext::Cleanup() const
 	CleanupSwapChain();
 
 	delete _imageTexture;
+	delete _model;
 
 	vkDestroyImageView(_device, _depthImageView, nullptr);
 	vmaDestroyImage(_allocator, _depthImage, _depthImageAllocation);
@@ -84,9 +78,6 @@ void KtContext::Cleanup() const
 
 	vkDestroyDescriptorPool(_device, _descriptorPool, nullptr);
 	vkDestroyDescriptorSetLayout(_device, _descriptorSetLayout, nullptr);
-
-	vmaDestroyBuffer(_allocator, _indexBuffer, _indexBufferAllocation);
-	vmaDestroyBuffer(_allocator, _vertexBuffer, _vertexBufferAllocation);
 
 	vkDestroyPipeline(_device, _graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(_device, _pipelineLayout, nullptr);
@@ -1001,14 +992,14 @@ void KtContext::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imag
 	scissor.extent = _swapChainExtent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	VkBuffer vertexBuffers[] = { _vertexBuffer };
+	VkBuffer vertexBuffers[] = { _model->VertexBuffer };
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-	vkCmdBindIndexBuffer(commandBuffer, _indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+	vkCmdBindIndexBuffer(commandBuffer, _model->IndexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout, 0, 1, &_descriptorSets[_currentFrame], 0, nullptr);
-	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(_indices.size()), 1, 0, 0, 0);
+	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(_model->Indices.size()), 1, 0, 0, 0);
 
 	// End RenderPass
 	vkCmdEndRenderPass(commandBuffer);
@@ -1084,117 +1075,9 @@ const uint32_t KtContext::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFl
 	throw std::runtime_error("failed to find suitable memory type!");
 }
 
-void KtContext::LoadModel()
+void KtContext::CreateModel()
 {
-	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(MODEL_PATH.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
-
-	if (!scene || !scene->HasMeshes())
-	{
-		throw std::runtime_error("Failed to load model: " + MODEL_PATH);
-	}
-
-	std::unordered_map<KtVertex, uint32_t> uniqueVertices{};
-
-	for (unsigned int m = 0; m < scene->mNumMeshes; ++m)
-	{
-		aiMesh* mesh = scene->mMeshes[m];
-
-		for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
-		{
-			aiFace& face = mesh->mFaces[i];
-
-			for (unsigned int j = 0; j < face.mNumIndices; ++j)
-			{
-				aiVector3D pos = mesh->mVertices[face.mIndices[j]];
-				aiVector3D texCoord = mesh->mTextureCoords[0] ? mesh->mTextureCoords[0][face.mIndices[j]] : aiVector3D(0.0f, 0.0f, 0.0f);
-
-				KtVertex vertex{};
-				vertex.Position = { pos.x, pos.y, pos.z };
-				vertex.TexCoord = { texCoord.x, texCoord.y };
-				vertex.Color = { 1.0f, 1.0f, 1.0f };
-
-				if (uniqueVertices.count(vertex) == 0)
-				{
-					uniqueVertices[vertex] = static_cast<uint32_t>(_vertices.size());
-					_vertices.push_back(vertex);
-				}
-
-				_indices.push_back(uniqueVertices[vertex]);
-			}
-		}
-	}
-}
-
-void KtContext::CreateVertexBuffer()
-{
-	VkDeviceSize bufferSize = sizeof(_vertices[0]) * _vertices.size();
-
-	VkBuffer stagingBuffer;
-	VmaAllocation stagingBufferAllocation;
-	VmaAllocationInfo stagingBufferAllocInfo;
-	CreateBuffer(
-		bufferSize,
-		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
-		stagingBuffer,
-		stagingBufferAllocation,
-		stagingBufferAllocInfo
-	);
-
-	memcpy(stagingBufferAllocInfo.pMappedData, _vertices.data(), (size_t)bufferSize);
-
-	VmaAllocationInfo vertexBufferAllocInfo;
-	CreateBuffer(
-		bufferSize,
-		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
-		_vertexBuffer,
-		_vertexBufferAllocation,
-		vertexBufferAllocInfo
-	);
-
-	CopyBuffer(stagingBuffer, _vertexBuffer, bufferSize);
-
-	vmaDestroyBuffer(_allocator, stagingBuffer, stagingBufferAllocation);
-}
-
-void KtContext::CreateIndexBuffer()
-{
-	VkDeviceSize bufferSize = sizeof(_indices[0]) * _indices.size();
-
-	VkBuffer stagingBuffer;
-	VmaAllocation stagingBufferAllocation;
-	VmaAllocationInfo stagingBufferAllocInfo;
-	CreateBuffer(
-		bufferSize,
-		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
-		stagingBuffer,
-		stagingBufferAllocation,
-		stagingBufferAllocInfo
-	);
-
-	memcpy(stagingBufferAllocInfo.pMappedData, _indices.data(), (size_t)bufferSize);
-
-	VmaAllocationInfo indexBufferAllocInfo;
-	CreateBuffer(
-		bufferSize,
-		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
-		_indexBuffer,
-		_indexBufferAllocation,
-		indexBufferAllocInfo
-	);
-
-
-	CopyBuffer(stagingBuffer, _indexBuffer, bufferSize);
-
-	vmaDestroyBuffer(_allocator, stagingBuffer, stagingBufferAllocation);
+	_model = new KtModel(MODEL_PATH);
 }
 
 void KtContext::CreateUniformBuffers()

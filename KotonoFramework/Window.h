@@ -1,7 +1,7 @@
 #pragma once
 #include <GLFW/glfw3.h>
 #include "Context.h"
-#include <glm/glm.hpp>
+#include "glm_includes.h"
 class KtWindow
 {
 public:

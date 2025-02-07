@@ -102,7 +102,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\nicos\Documents\VulkanMemoryAllocator-3.2.0\include;C:\Users\nicos\Documents\openal-soft-1.23.1-bin\include;C:\Program Files\Assimp\include;C:\Users\nicos\Documents\stbimage;C:\Users\nicos\Documents\glfw-3.4.bin.WIN64\include;C:\VulkanSDK\1.4.304.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -132,11 +132,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AudioManager.h" />
+    <ClInclude Include="glm_includes.h" />
     <ClInclude Include="ImageTexture.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Framework.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="QueueFamilyIndices.h" />
     <ClInclude Include="SwapChainSupportDetails.h" />
@@ -154,6 +156,7 @@
     <ClCompile Include="Framework.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="Context.cpp" />

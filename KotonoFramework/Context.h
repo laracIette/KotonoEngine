@@ -5,9 +5,7 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 #include <vk_mem_alloc.h> 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
+#include "glm_includes.h"
 #include <stb_image.h>
 #include <vector>
 #include <unordered_set>
@@ -16,6 +14,7 @@
 #include "SwapChainSupportDetails.h"
 #include "Vertex.h"
 #include "ImageTexture.h"
+#include "Model.h"
 
 class KtContext final
 {
@@ -31,6 +30,7 @@ public:
 	VmaAllocator GetAllocator() const;
 
 	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VmaAllocationCreateFlags flags, VkBuffer& buffer, VmaAllocation& allocation, VmaAllocationInfo& allocInfo) const;
+	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) const;
 	void CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VmaAllocation& imageAllocation) const;
 	void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
 	void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
@@ -68,12 +68,7 @@ private:
 	VkCommandPool _commandPool;
 	std::vector<VkCommandBuffer> _commandBuffers;
 
-	std::vector<KtVertex> _vertices;
-	VkBuffer _vertexBuffer;
-	VmaAllocation _vertexBufferAllocation;
-	std::vector<uint32_t> _indices;
-	VkBuffer _indexBuffer;
-	VmaAllocation _indexBufferAllocation;
+	KtModel* _model;
 
 	std::vector<VkBuffer> _uniformBuffers;
 	std::vector<VmaAllocation> _uniformBuffersAllocation;
@@ -134,12 +129,9 @@ private:
 	void CreateCommandPool();
 	void CreateCommandBuffers();
 	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) const;
-	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) const;
 	const uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
 
-	void LoadModel();
-	void CreateVertexBuffer();
-	void CreateIndexBuffer();
+	void CreateModel();
 	void CreateUniformBuffers();
 	void UpdateUniformBuffer(uint32_t currentImage);
 	void CreateDescriptorPool();

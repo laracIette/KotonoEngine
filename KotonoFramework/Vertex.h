@@ -1,7 +1,5 @@
 #pragma once
-#include <glm/glm.hpp>
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/hash.hpp>
+#include "glm_includes.h"
 #include <vulkan/vulkan.h>
 #include <array>
 struct KtVertex
