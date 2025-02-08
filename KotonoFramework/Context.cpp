@@ -992,14 +992,14 @@ void KtContext::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imag
 	scissor.extent = _swapChainExtent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	VkBuffer vertexBuffers[] = { _model->VertexBuffer };
+	VkBuffer vertexBuffers[] = { _model->GetVertexBuffer() };
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-	vkCmdBindIndexBuffer(commandBuffer, _model->IndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+	vkCmdBindIndexBuffer(commandBuffer, _model->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
 
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout, 0, 1, &_descriptorSets[_currentFrame], 0, nullptr);
-	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(_model->Indices.size()), 1, 0, 0, 0);
+	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(_model->GetIndices().size()), 1, 0, 0, 0);
 
 	// End RenderPass
 	vkCmdEndRenderPass(commandBuffer);

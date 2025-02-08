@@ -141,6 +141,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="QueueFamilyIndices.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="SwapChainSupportDetails.h" />
     <ClInclude Include="UniformBufferObject.h" />
     <ClInclude Include="Vertex.h" />
@@ -158,6 +159,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="Context.cpp" />
   </ItemGroup>

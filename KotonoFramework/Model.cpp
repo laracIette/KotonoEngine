@@ -6,7 +6,7 @@
 #include <assimp/postprocess.h>
 
 KtModel::KtModel(const std::filesystem::path& path) :
-	Path(path)
+	_path(path)
 {
 	Load();
 	CreateVertexBuffer();
@@ -15,34 +15,59 @@ KtModel::KtModel(const std::filesystem::path& path) :
 
 KtModel::~KtModel()
 {
-	vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), IndexBuffer, IndexBufferAllocation);
-	vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), VertexBuffer, VertexBufferAllocation);
+	vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _indexBuffer, _indexBufferAllocation);
+	vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _vertexBuffer, _vertexBufferAllocation);
+}
+
+const std::filesystem::path& KtModel::GetPath() const
+{
+	return _path;
+}
+
+const std::vector<KtVertex>& KtModel::GetVertices() const
+{
+	return _vertices;
+}
+
+const std::vector<uint32_t>& KtModel::GetIndices() const
+{
+	return _indices;
+}
+
+const VkBuffer KtModel::GetVertexBuffer() const
+{
+	return _vertexBuffer;
+}
+
+const VkBuffer KtModel::GetIndexBuffer() const
+{
+	return _indexBuffer;
 }
 
 void KtModel::Load()
 {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(Path.string().c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = importer.ReadFile(_path.string().c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
 
 	if (!scene || !scene->HasMeshes())
 	{
-		throw std::runtime_error("Failed to load model: " + Path.string());
+		throw std::runtime_error("Failed to load model: " + _path.string());
 	}
 
 	std::unordered_map<KtVertex, uint32_t> uniqueVertices{};
 
 	for (unsigned int m = 0; m < scene->mNumMeshes; ++m)
 	{
-		 aiMesh* mesh = scene->mMeshes[m];
+		const aiMesh* mesh = scene->mMeshes[m];
 
 		for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
 		{
-			 aiFace& face = mesh->mFaces[i];
+			const aiFace& face = mesh->mFaces[i];
 
 			for (unsigned int j = 0; j < face.mNumIndices; ++j)
 			{
-				 aiVector3D pos = mesh->mVertices[face.mIndices[j]];
-				 aiVector3D texCoord = mesh->mTextureCoords[0] ? mesh->mTextureCoords[0][face.mIndices[j]] : aiVector3D(0.0f, 0.0f, 0.0f);
+				const aiVector3D pos = mesh->mVertices[face.mIndices[j]];
+				const aiVector3D texCoord = mesh->mTextureCoords[0] ? mesh->mTextureCoords[0][face.mIndices[j]] : aiVector3D(0.0f, 0.0f, 0.0f);
 
 				KtVertex vertex{};
 				vertex.Position = { pos.x, pos.y, pos.z };
@@ -51,11 +76,11 @@ void KtModel::Load()
 
 				if (uniqueVertices.count(vertex) == 0)
 				{
-					uniqueVertices[vertex] = static_cast<uint32_t>(Vertices.size());
-					Vertices.push_back(vertex);
+					uniqueVertices[vertex] = static_cast<uint32_t>(_vertices.size());
+					_vertices.push_back(vertex);
 				}
 
-				Indices.push_back(uniqueVertices[vertex]);
+				_indices.push_back(uniqueVertices[vertex]);
 			}
 		}
 	}
@@ -63,7 +88,7 @@ void KtModel::Load()
 
 void KtModel::CreateVertexBuffer()
 {
-	const VkDeviceSize bufferSize = sizeof(Vertices[0]) * Vertices.size();
+	const VkDeviceSize bufferSize = sizeof(_vertices[0]) * _vertices.size();
 
 	VkBuffer stagingBuffer;
 	VmaAllocation stagingBufferAllocation;
@@ -78,7 +103,7 @@ void KtModel::CreateVertexBuffer()
 		stagingBufferAllocInfo
 	);
 
-	memcpy(stagingBufferAllocInfo.pMappedData, Vertices.data(), (size_t)bufferSize);
+	memcpy(stagingBufferAllocInfo.pMappedData, _vertices.data(), (size_t)bufferSize);
 
 	VmaAllocationInfo vertexBufferAllocInfo;
 	Framework.GetWindow().GetContext().CreateBuffer(
@@ -86,19 +111,19 @@ void KtModel::CreateVertexBuffer()
 		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
-		VertexBuffer,
-		VertexBufferAllocation,
+		_vertexBuffer,
+		_vertexBufferAllocation,
 		vertexBufferAllocInfo
 	);
 
-	Framework.GetWindow().GetContext().CopyBuffer(stagingBuffer, VertexBuffer, bufferSize);
+	Framework.GetWindow().GetContext().CopyBuffer(stagingBuffer, _vertexBuffer, bufferSize);
 
 	vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), stagingBuffer, stagingBufferAllocation);
 }
 
 void KtModel::CreateIndexBuffer()
 {
-	const VkDeviceSize bufferSize = sizeof(Indices[0]) * Indices.size();
+	const VkDeviceSize bufferSize = sizeof(_indices[0]) * _indices.size();
 
 	VkBuffer stagingBuffer;
 	VmaAllocation stagingBufferAllocation;
@@ -113,7 +138,7 @@ void KtModel::CreateIndexBuffer()
 		stagingBufferAllocInfo
 	);
 
-	memcpy(stagingBufferAllocInfo.pMappedData, Indices.data(), (size_t)bufferSize);
+	memcpy(stagingBufferAllocInfo.pMappedData, _indices.data(), (size_t)bufferSize);
 
 	VmaAllocationInfo indexBufferAllocInfo;
 	Framework.GetWindow().GetContext().CreateBuffer(
@@ -121,12 +146,12 @@ void KtModel::CreateIndexBuffer()
 		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
-		IndexBuffer,
-		IndexBufferAllocation,
+		_indexBuffer,
+		_indexBufferAllocation,
 		indexBufferAllocInfo
 	);
 
-	Framework.GetWindow().GetContext().CopyBuffer(stagingBuffer, IndexBuffer, bufferSize);
+	Framework.GetWindow().GetContext().CopyBuffer(stagingBuffer, _indexBuffer, bufferSize);
 
 	vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), stagingBuffer, stagingBufferAllocation);
 }

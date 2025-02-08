@@ -2,20 +2,27 @@
 #include <vk_mem_alloc.h>
 #include <filesystem>
 #include "Vertex.h"
-struct KtModel
+class KtModel
 {
-	const std::filesystem::path Path;
-	std::vector<KtVertex> Vertices;
-	std::vector<uint32_t> Indices; 
-	VkBuffer VertexBuffer;
-	VkBuffer IndexBuffer;
-	VmaAllocation VertexBufferAllocation;
-	VmaAllocation IndexBufferAllocation;
-
+public:
 	KtModel(const std::filesystem::path& path);
 	~KtModel();
 
+	const std::filesystem::path& GetPath() const;
+	const std::vector<KtVertex>& GetVertices() const;
+	const std::vector<uint32_t>& GetIndices() const; 
+	const VkBuffer GetVertexBuffer() const;
+	const VkBuffer GetIndexBuffer() const;
+
 private:
+	const std::filesystem::path _path;
+	std::vector<KtVertex> _vertices;
+	std::vector<uint32_t> _indices;
+	VkBuffer _vertexBuffer;
+	VkBuffer _indexBuffer;
+	VmaAllocation _vertexBufferAllocation;
+	VmaAllocation _indexBufferAllocation;
+
 	void Load();
 	void CreateVertexBuffer();
 	void CreateIndexBuffer();
