@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AudioManager.h" />
+    <ClInclude Include="File.h" />
     <ClInclude Include="glm_includes.h" />
     <ClInclude Include="ImageTexture.h" />
     <ClInclude Include="InputManager.h" />
@@ -150,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioManager.cpp" />
+    <ClCompile Include="File.cpp" />
     <ClCompile Include="ImageTexture.cpp" />
     <ClCompile Include="implementations.cpp" />
     <ClCompile Include="InputManager.cpp" />

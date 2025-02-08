@@ -15,6 +15,7 @@
 #include "Vertex.h"
 #include "ImageTexture.h"
 #include "Model.h"
+#include "Shader.h"
 
 class KtContext final
 {
@@ -28,6 +29,11 @@ public:
 	VkPhysicalDevice GetPhysicalDevice() const;
 	VkDevice GetDevice() const;
 	VmaAllocator GetAllocator() const;
+	VkSampleCountFlagBits GetMSAASamples() const;
+	VkDescriptorSetLayout& GetDescriptorSetLayout();
+	VkPipelineLayout& GetPipelineLayout();
+	VkExtent2D GetSwapChainExtent() const;
+	VkRenderPass GetRenderPass() const;
 
 	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VmaAllocationCreateFlags flags, VkBuffer& buffer, VmaAllocation& allocation, VmaAllocationInfo& allocInfo) const;
 	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) const;
@@ -59,10 +65,10 @@ private:
 	VkExtent2D _swapChainExtent;
 	std::vector<VkImageView> _swapChainImageViews;
 
+	KtShader* _shader;
 	VkRenderPass _renderPass;
 	VkDescriptorSetLayout _descriptorSetLayout;
 	VkPipelineLayout _pipelineLayout;
-	VkPipeline _graphicsPipeline;
 
 	std::vector<VkFramebuffer> _swapChainFramebuffers;
 	VkCommandPool _commandPool;
@@ -118,9 +124,8 @@ private:
 
 	void CreateAllocator();
 
+	void CreateShader();
 	void CreateDescriptorSetLayout();
-	void CreateGraphicsPipeline();
-	const VkShaderModule CreateShaderModule(const std::vector<char>& code) const;
 	void CreateRenderPass();
 
 	void CreateFramebuffers();

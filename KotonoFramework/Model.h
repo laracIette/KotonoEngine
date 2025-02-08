@@ -2,7 +2,7 @@
 #include <vk_mem_alloc.h>
 #include <filesystem>
 #include "Vertex.h"
-class KtModel
+class KtModel final
 {
 public:
 	KtModel(const std::filesystem::path& path);

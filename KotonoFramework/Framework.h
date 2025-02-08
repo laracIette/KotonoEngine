@@ -20,3 +20,8 @@ private:
 };
 
 extern KtFramework Framework;
+
+static VkDevice getVulkanDevice()
+{
+	return Framework.GetWindow().GetContext().GetDevice();
+}
