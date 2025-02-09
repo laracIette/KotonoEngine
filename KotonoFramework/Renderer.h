@@ -10,7 +10,7 @@ public:
 	void Init();
 	void Cleanup();
 
-	void AddToRenderQueue(KtShader* shader, KtModel* model);
+	void AddToRenderQueue(const KtShader* shader, const KtModel* model);
 	void DrawFrame();
 
 	void RecreateSwapChain();
@@ -23,7 +23,8 @@ public:
 	VkPipelineLayout& GetPipelineLayout();
 
 private:
-	KtRenderQueue3D _renderQueue3D;
+	void CreateShaderAndModels();
+	std::unordered_map<const KtShader*, std::unordered_set<const KtModel*>> _renderQueue3D;
 
 	VkSwapchainKHR _swapChain;
 	std::vector<VkImage> _swapChainImages;
@@ -50,7 +51,7 @@ private:
 	std::array<VmaAllocation, MAX_FRAMES_IN_FLIGHT> _uniformBuffersAllocation;
 	std::array<void*, MAX_FRAMES_IN_FLIGHT> _uniformBuffersMapped;
 	VkDescriptorPool _descriptorPool;
-	std::vector<VkDescriptorSet> _descriptorSets;
+	std::array<VkDescriptorSet, MAX_FRAMES_IN_FLIGHT> _descriptorSets;
 
 	std::vector<VkSemaphore> _imageAvailableSemaphores;
 	std::vector<VkSemaphore> _renderFinishedSemaphores;
@@ -61,13 +62,10 @@ private:
 	uint32_t _currentFrame = 0;
 
 
-	KtShader* _shader;
-	KtModel* _model;
 	KtImageTexture* _imageTexture;
 
-	void CreateShader();
-	void CreateModel();
 	void CreateImageTexture();
+
 
 	void CreateSwapChain();
 	const VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
@@ -93,6 +91,7 @@ private:
 	void CreateCommandBuffers();
 	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) const;
 
+	void BindShader(VkCommandBuffer commandBuffer, const KtShader* shader) const;
 	void DrawModel(VkCommandBuffer commandBuffer, const KtModel* model) const;
 
 	void CreateSyncObjects();

@@ -15,21 +15,31 @@ void KtRenderer::Init()
 	CreateUniformBuffers();
 	CreateDescriptorPool();
 
-	CreateShader();
-	CreateModel();
 	CreateImageTexture();
 
 	CreateDescriptorSets();
 	CreateCommandBuffers();
 	CreateSyncObjects();
 
+	CreateShaderAndModels();
 }
 
 void KtRenderer::Cleanup()
 {
-	delete _shader;
 	delete _imageTexture;
-	delete _model;
+
+	for (const auto& pair : _renderQueue3D)
+	{
+		const auto* shader = pair.first;
+		const auto& models = pair.second;
+
+		delete shader;
+
+		for (const auto* model : models)
+		{
+			delete model;
+		}
+	}
 
 	CleanupSwapChain();
 
@@ -59,23 +69,30 @@ void KtRenderer::Cleanup()
 	}
 }
 
-void KtRenderer::AddToRenderQueue(KtShader* shader, KtModel* model)
+void KtRenderer::AddToRenderQueue(const KtShader* shader, const KtModel* model)
 {
-	_renderQueue3D.Add(shader, model);
+	if (_renderQueue3D.contains(shader))
+	{
+		_renderQueue3D[shader].insert(model);
+	}
+	else
+	{
+		_renderQueue3D[shader] = { model };
+	}
 }
 
-void KtRenderer::CreateShader()
+void KtRenderer::CreateShaderAndModels() 
 {
-	_shader = new KtShader(
+	const auto* shader = new KtShader(
 		R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\shaders\vulkanVert.spv)",
 		R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\shaders\vulkanFrag.spv)"
-	);
-}
+	); 
+	
+	const auto* model1 = new KtModel(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.obj)");
+	const auto* model2 = new KtModel(R"(C:\Users\nicos\OneDrive - e-artsup\B2\Environment\Corridor\SM_Column_low.fbx)");
 
-void KtRenderer::CreateModel()
-{
-	_model = new KtModel(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.obj)");
-	//_model = new KtModel(R"(C:\Users\nicos\OneDrive - e-artsup\B2\Environment\Corridor\SM_Column_low.fbx)");
+	AddToRenderQueue(shader, model1);
+	AddToRenderQueue(shader, model2);
 }
 
 void KtRenderer::CreateImageTexture()
@@ -488,14 +505,15 @@ void KtRenderer::CreateDescriptorPool()
 
 void KtRenderer::CreateDescriptorSets()
 {
-	std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, _descriptorSetLayout);
+	std::array<VkDescriptorSetLayout, MAX_FRAMES_IN_FLIGHT> layouts{};
+	layouts.fill(_descriptorSetLayout);
+
 	VkDescriptorSetAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 	allocInfo.descriptorPool = _descriptorPool;
-	allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+	allocInfo.descriptorSetCount = static_cast<uint32_t>(layouts.size());
 	allocInfo.pSetLayouts = layouts.data();
 
-	_descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
 	if (vkAllocateDescriptorSets(Framework.GetWindow().GetContext().GetDevice(), &allocInfo, _descriptorSets.data()) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to allocate descriptor sets!");
@@ -579,7 +597,6 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t ima
 
 	// Begin RenderPass
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _shader->GetGraphicsPipeline());
 
 	VkViewport viewport{};
 	viewport.x = 0.0f;
@@ -595,7 +612,18 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t ima
 	scissor.extent = _swapChainExtent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	DrawModel(commandBuffer, _model);
+	for (const auto& pair : _renderQueue3D)
+	{  
+		const auto* shader = pair.first;
+		const auto& models = pair.second;
+
+		BindShader(commandBuffer, shader);
+
+		for (const auto* model : models)
+		{ 
+			DrawModel(commandBuffer, model);
+		}
+	}
 
 	// End RenderPass
 	vkCmdEndRenderPass(commandBuffer);
@@ -604,6 +632,11 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t ima
 	{
 		throw std::runtime_error("failed to record command buffer!");
 	}
+}
+
+void KtRenderer::BindShader(VkCommandBuffer commandBuffer, const KtShader* shader) const
+{
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetGraphicsPipeline());
 }
 
 void KtRenderer::DrawModel(VkCommandBuffer commandBuffer, const KtModel* model) const
