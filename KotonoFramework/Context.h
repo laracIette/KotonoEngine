@@ -24,14 +24,15 @@ public:
 	void Init();
 	void Cleanup();
 
-	VkPhysicalDevice GetPhysicalDevice() const;
-	VkDevice GetDevice() const;
-	VmaAllocator GetAllocator() const;
+	VkPhysicalDevice& GetPhysicalDevice();
+	VkDevice& GetDevice();
+	VmaAllocator& GetAllocator();
+	VkQueue& GetGraphicsQueue();
+	VkQueue& GetPresentQueue();
+	VkSurfaceKHR& GetSurface();
+	VkCommandPool& GetCommandPool();
+
 	VkSampleCountFlagBits GetMSAASamples() const;
-	VkQueue GetGraphicsQueue() const;
-	VkQueue GetPresentQueue() const;
-	VkSurfaceKHR GetSurface() const;
-	VkCommandPool GetCommandPool() const;
 
 	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VmaAllocationCreateFlags flags, VkBuffer& buffer, VmaAllocation& allocation, VmaAllocationInfo& allocInfo) const;
 	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) const;

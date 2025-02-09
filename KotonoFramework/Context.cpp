@@ -867,42 +867,42 @@ const VkSampleCountFlagBits KtContext::GetMaxUsableSampleCount() const
 }
 
 
-VkPhysicalDevice KtContext::GetPhysicalDevice() const
+VkPhysicalDevice& KtContext::GetPhysicalDevice()
 {
 	return _physicalDevice;
 }
 
-VkDevice KtContext::GetDevice() const
+VkDevice& KtContext::GetDevice()
 {
 	return _device;
 }
 
-VmaAllocator KtContext::GetAllocator() const 
+VmaAllocator& KtContext::GetAllocator() 
 { 
 	return _allocator; 
+}
+
+VkQueue& KtContext::GetGraphicsQueue()
+{
+	return _graphicsQueue;
+}
+
+VkQueue& KtContext::GetPresentQueue()
+{
+	return _presentQueue;
+}
+
+VkSurfaceKHR& KtContext::GetSurface()
+{
+	return _surface;
+}
+
+VkCommandPool& KtContext::GetCommandPool()
+{
+	return _commandPool;
 }
 
 VkSampleCountFlagBits KtContext::GetMSAASamples() const
 {
 	return _msaaSamples;
-}
-
-VkQueue KtContext::GetGraphicsQueue() const
-{
-	return _graphicsQueue;
-}
-
-VkQueue KtContext::GetPresentQueue() const
-{
-	return _presentQueue;
-}
-
-VkSurfaceKHR KtContext::GetSurface() const
-{
-	return _surface;
-}
-
-VkCommandPool KtContext::GetCommandPool() const
-{
-	return _commandPool;
 }
