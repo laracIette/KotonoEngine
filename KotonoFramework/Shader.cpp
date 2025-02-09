@@ -21,6 +21,10 @@ const VkPipeline KtShader::GetGraphicsPipeline() const
 	return _graphicsPipeline;
 }
 
+void KtShader::Bind() const
+{
+}
+
 void KtShader::CreateGraphicsPipeline()
 {
 	const std::vector<char> vertShaderCode = KtFile(_vertPath).GetBinaryContent();
@@ -62,14 +66,14 @@ void KtShader::CreateGraphicsPipeline()
 	VkViewport viewport{};
 	viewport.x = 0.0f;
 	viewport.y = 0.0f;
-	viewport.width = (float)Framework.GetWindow().GetContext().GetSwapChainExtent().width;
-	viewport.height = (float)Framework.GetWindow().GetContext().GetSwapChainExtent().height;
+	viewport.width = (float)Framework.GetWindow().GetRenderer().GetSwapChainExtent().width;
+	viewport.height = (float)Framework.GetWindow().GetRenderer().GetSwapChainExtent().height;
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
 
 	VkRect2D scissor{};
 	scissor.offset = { 0, 0 };
-	scissor.extent = Framework.GetWindow().GetContext().GetSwapChainExtent();
+	scissor.extent = Framework.GetWindow().GetRenderer().GetSwapChainExtent();
 
 	VkPipelineViewportStateCreateInfo viewportState{};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -148,11 +152,11 @@ void KtShader::CreateGraphicsPipeline()
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutInfo.setLayoutCount = 1;
-	pipelineLayoutInfo.pSetLayouts = &Framework.GetWindow().GetContext().GetDescriptorSetLayout();
+	pipelineLayoutInfo.pSetLayouts = &Framework.GetWindow().GetRenderer().GetDescriptorSetLayout();
 	pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
 	pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 
-	if (vkCreatePipelineLayout(Framework.GetWindow().GetContext().GetDevice(), &pipelineLayoutInfo, nullptr, &Framework.GetWindow().GetContext().GetPipelineLayout()) != VK_SUCCESS)
+	if (vkCreatePipelineLayout(Framework.GetWindow().GetContext().GetDevice(), &pipelineLayoutInfo, nullptr, &Framework.GetWindow().GetRenderer().GetPipelineLayout()) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create pipeline layout!");
 	}
@@ -169,8 +173,8 @@ void KtShader::CreateGraphicsPipeline()
 	pipelineInfo.pDepthStencilState = &depthStencil;
 	pipelineInfo.pColorBlendState = &colorBlending;
 	pipelineInfo.pDynamicState = &dynamicState;
-	pipelineInfo.layout = Framework.GetWindow().GetContext().GetPipelineLayout();
-	pipelineInfo.renderPass = Framework.GetWindow().GetContext().GetRenderPass();
+	pipelineInfo.layout = Framework.GetWindow().GetRenderer().GetPipelineLayout();
+	pipelineInfo.renderPass = Framework.GetWindow().GetRenderer().GetRenderPass();
 	pipelineInfo.subpass = 0;
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
 	pipelineInfo.basePipelineIndex = -1; // Optional

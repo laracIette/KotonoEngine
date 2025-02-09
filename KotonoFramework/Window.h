@@ -15,6 +15,7 @@ public:
 
 	GLFWwindow* GetGLFWWindow() const;
 	KtContext& GetContext();
+	KtRenderer& GetRenderer();
 
 	void SwapBuffers() const;
 
@@ -25,6 +26,7 @@ public:
 private:
 	GLFWwindow* _window;
 	KtContext _context;
+	KtRenderer _renderer;
 
 	glm::uvec2 _size;
 

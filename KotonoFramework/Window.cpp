@@ -25,7 +25,7 @@ void KtWindow::MainLoop()
     while (!glfwWindowShouldClose(_window))
     {
         glfwPollEvents();
-        _context.DrawFrame();
+        _renderer.DrawFrame();
     }
 
     vkDeviceWaitIdle(_context.GetDevice());
@@ -33,6 +33,7 @@ void KtWindow::MainLoop()
 
 void KtWindow::Cleanup()
 {
+    _renderer.Cleanup();
     _context.Cleanup();
 
     // Cleanup GLFW
@@ -48,6 +49,11 @@ GLFWwindow* KtWindow::GetGLFWWindow() const
 KtContext& KtWindow::GetContext()
 {
     return _context;
+}
+
+KtRenderer& KtWindow::GetRenderer()
+{
+    return _renderer;
 }
 
 void KtWindow::SwapBuffers() const
@@ -93,6 +99,7 @@ void KtWindow::InitGLFW()
 void KtWindow::InitVulkan()
 {
     _context.Init();
+    _renderer.Init();
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -100,7 +107,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     //Framework.GetWindow().SetSize(glm::uvec2(width, height));
     //Framework.GetFramebuffer().ResizeTextures();
 
-    Framework.GetWindow().GetContext().OnFramebufferResized();
+    Framework.GetWindow().GetRenderer().OnFramebufferResized();
     std::cout << "Window resized: " << width << 'x' << height << std::endl;
 }
 

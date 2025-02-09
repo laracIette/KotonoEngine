@@ -16,24 +16,22 @@
 #include "ImageTexture.h"
 #include "Model.h"
 #include "Shader.h"
+#include "Renderer.h"
 
 class KtContext final
 {
 public:
 	void Init();
-	void Cleanup() const;
-	void DrawFrame();
-
-	void OnFramebufferResized();
+	void Cleanup();
 
 	VkPhysicalDevice GetPhysicalDevice() const;
 	VkDevice GetDevice() const;
 	VmaAllocator GetAllocator() const;
 	VkSampleCountFlagBits GetMSAASamples() const;
-	VkDescriptorSetLayout& GetDescriptorSetLayout();
-	VkPipelineLayout& GetPipelineLayout();
-	VkExtent2D GetSwapChainExtent() const;
-	VkRenderPass GetRenderPass() const;
+	VkQueue GetGraphicsQueue() const;
+	VkQueue GetPresentQueue() const;
+	VkSurfaceKHR GetSurface() const;
+	VkCommandPool GetCommandPool() const;
 
 	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VmaAllocationCreateFlags flags, VkBuffer& buffer, VmaAllocation& allocation, VmaAllocationInfo& allocInfo) const;
 	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) const;
@@ -42,6 +40,8 @@ public:
 	void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 	void GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 	const VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) const;
+	const KtQueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const;
+	const KtSwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
 
 private:
 	VkInstance _instance;
@@ -59,47 +59,9 @@ private:
 	// Presentation queue
 	VkQueue _presentQueue;
 
-	VkSwapchainKHR _swapChain;
-	std::vector<VkImage> _swapChainImages;
-	VkFormat _swapChainImageFormat;
-	VkExtent2D _swapChainExtent;
-	std::vector<VkImageView> _swapChainImageViews;
-
-	KtShader* _shader;
-	VkRenderPass _renderPass;
-	VkDescriptorSetLayout _descriptorSetLayout;
-	VkPipelineLayout _pipelineLayout;
-
-	std::vector<VkFramebuffer> _swapChainFramebuffers;
 	VkCommandPool _commandPool;
-	std::vector<VkCommandBuffer> _commandBuffers;
-
-	KtModel* _model;
-
-	std::vector<VkBuffer> _uniformBuffers;
-	std::vector<VmaAllocation> _uniformBuffersAllocation;
-	std::vector<void*> _uniformBuffersMapped;
-	VkDescriptorPool _descriptorPool;
-	std::vector<VkDescriptorSet> _descriptorSets;
-
-	KtImageTexture* _imageTexture;
 
 	VkSampleCountFlagBits _msaaSamples = VK_SAMPLE_COUNT_1_BIT;
-	VkImage _colorImage;
-	VmaAllocation _colorImageAllocation;
-	VkImageView _colorImageView;
-
-	VkImage _depthImage;
-	VmaAllocation _depthImageAllocation;
-	VkImageView _depthImageView;
-
-	std::vector<VkSemaphore> _imageAvailableSemaphores;
-	std::vector<VkSemaphore> _renderFinishedSemaphores;
-	std::vector<VkFence> _inFlightFences;
-
-	bool _framebufferResized = false;
-
-	uint32_t _currentFrame = 0;
 
 	void CreateInstance();
 
@@ -110,52 +72,27 @@ private:
 	void PickPhysicalDevice();
 	const bool IsDeviceSuitable(VkPhysicalDevice device);
 	bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
-	const KtQueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const;
 	void CreateLogicalDevice();
 	void CreateSurface();
-	const KtSwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
 	const VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) const;
 	void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) const;
 	const VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
 	const VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const;
 	const VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
-	void CreateSwapChain();
-	void CreateImageViews();
 
 	void CreateAllocator();
 
-	void CreateShader();
-	void CreateDescriptorSetLayout();
-	void CreateRenderPass();
-
-	void CreateFramebuffers();
 	const VkCommandBuffer BeginSingleTimeCommands() const;
 	void EndSingleTimeCommands(VkCommandBuffer commandBuffer) const;
 	void CreateCommandPool();
-	void CreateCommandBuffers();
-	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) const;
 	const uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
 
-	void CreateModel();
-	void CreateUniformBuffers();
-	void UpdateUniformBuffer(uint32_t currentImage);
-	void CreateDescriptorPool();
-	void CreateDescriptorSets();
-
-	void CreateSyncObjects();
-
-	void CreateDepthResources();
 	const VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
 	const VkFormat FindDepthFormat() const;
 	const bool HasStencilComponent(VkFormat format) const;
 
-	void CreateImageTexture();
 
 	const VkSampleCountFlagBits GetMaxUsableSampleCount() const;
-	void CreateColorResources();
-
-	void RecreateSwapChain();
-	void CleanupSwapChain() const;
 
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 	{

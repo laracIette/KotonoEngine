@@ -3,8 +3,9 @@
 #include <stb_image.h>
 #include <filesystem>
 #include <vk_mem_alloc.h>
-struct KtImageTexture
+class KtImageTexture
 {
+public:
     // File path of the texture
     const std::filesystem::path Path;
     // Vulkan image handle
