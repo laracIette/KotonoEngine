@@ -9,8 +9,6 @@ public:
 
 	const VkPipeline GetGraphicsPipeline() const;
 
-	void Bind() const;
-
 private:
 	const std::filesystem::path _vertPath;
 	const std::filesystem::path _fragPath;

@@ -1,6 +1,9 @@
 #pragma once
 #include "RenderQueue3D.h"
 #include "ImageTexture.h"
+
+constexpr size_t MAX_FRAMES_IN_FLIGHT = 2;
+
 class KtRenderer final
 {
 public:
@@ -14,6 +17,7 @@ public:
 	void OnFramebufferResized();
 
 	const VkExtent2D GetSwapChainExtent() const;
+
 	VkRenderPass& GetRenderPass();
 	VkDescriptorSetLayout& GetDescriptorSetLayout();
 	VkPipelineLayout& GetPipelineLayout();
@@ -42,9 +46,9 @@ private:
 	VmaAllocation _depthImageAllocation;
 	VkImageView _depthImageView;
 
-	std::vector<VkBuffer> _uniformBuffers;
-	std::vector<VmaAllocation> _uniformBuffersAllocation;
-	std::vector<void*> _uniformBuffersMapped;
+	std::array<VkBuffer, MAX_FRAMES_IN_FLIGHT> _uniformBuffers;
+	std::array<VmaAllocation, MAX_FRAMES_IN_FLIGHT> _uniformBuffersAllocation;
+	std::array<void*, MAX_FRAMES_IN_FLIGHT> _uniformBuffersMapped;
 	VkDescriptorPool _descriptorPool;
 	std::vector<VkDescriptorSet> _descriptorSets;
 
@@ -88,6 +92,8 @@ private:
 
 	void CreateCommandBuffers();
 	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) const;
+
+	void DrawModel(VkCommandBuffer commandBuffer, const KtModel* model) const;
 
 	void CreateSyncObjects();
 

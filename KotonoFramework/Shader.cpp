@@ -21,10 +21,6 @@ const VkPipeline KtShader::GetGraphicsPipeline() const
 	return _graphicsPipeline;
 }
 
-void KtShader::Bind() const
-{
-}
-
 void KtShader::CreateGraphicsPipeline()
 {
 	const std::vector<char> vertShaderCode = KtFile(_vertPath).GetBinaryContent();

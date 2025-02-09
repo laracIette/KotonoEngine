@@ -3,8 +3,6 @@
 #include "UniformBufferObject.h"
 #include <chrono>
 
-constexpr int MAX_FRAMES_IN_FLIGHT = 2;
-
 void KtRenderer::Init()
 {
 	CreateSwapChain();
@@ -77,6 +75,7 @@ void KtRenderer::CreateShader()
 void KtRenderer::CreateModel()
 {
 	_model = new KtModel(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.obj)");
+	//_model = new KtModel(R"(C:\Users\nicos\OneDrive - e-artsup\B2\Environment\Corridor\SM_Column_low.fbx)");
 }
 
 void KtRenderer::CreateImageTexture()
@@ -434,10 +433,6 @@ void KtRenderer::CreateUniformBuffers()
 {
 	VkDeviceSize bufferSize = sizeof(KtUniformBufferObject);
 
-	_uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-	_uniformBuffersAllocation.resize(MAX_FRAMES_IN_FLIGHT);
-	_uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
-
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
 		VmaAllocationInfo uniformBufferAllocInfo;
@@ -457,18 +452,18 @@ void KtRenderer::CreateUniformBuffers()
 
 void KtRenderer::UpdateUniformBuffer(uint32_t currentImage)
 {
-	static auto startTime = std::chrono::high_resolution_clock::now();
+	static const auto startTime = std::chrono::high_resolution_clock::now();
 
-	auto currentTime = std::chrono::high_resolution_clock::now();
-	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+	const auto currentTime = std::chrono::high_resolution_clock::now();
+	const float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
 	KtUniformBufferObject ubo{};
 	ubo.Model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ubo.View = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ubo.Projection = glm::perspective(glm::radians(45.0f), _swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 10.0f);
-	ubo.Projection[1][1] *= -1;
+	ubo.Projection[1][1] *= -1.0f;
 
-	memcpy(_uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
+	memcpy(_uniformBuffersMapped[currentImage], &ubo, sizeof(KtUniformBufferObject));
 }
 
 void KtRenderer::CreateDescriptorPool()
@@ -600,14 +595,7 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t ima
 	scissor.extent = _swapChainExtent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	VkBuffer vertexBuffers[] = { _model->GetVertexBuffer() };
-	VkDeviceSize offsets[] = { 0 };
-	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-
-	vkCmdBindIndexBuffer(commandBuffer, _model->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
-
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout, 0, 1, &_descriptorSets[_currentFrame], 0, nullptr);
-	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(_model->GetIndices().size()), 1, 0, 0, 0);
+	DrawModel(commandBuffer, _model);
 
 	// End RenderPass
 	vkCmdEndRenderPass(commandBuffer);
@@ -616,6 +604,18 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t ima
 	{
 		throw std::runtime_error("failed to record command buffer!");
 	}
+}
+
+void KtRenderer::DrawModel(VkCommandBuffer commandBuffer, const KtModel* model) const
+{
+	VkBuffer vertexBuffers[] = { model->GetVertexBuffer() };
+	VkDeviceSize offsets[] = { 0 };
+	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+
+	vkCmdBindIndexBuffer(commandBuffer, model->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout, 0, 1, &_descriptorSets[_currentFrame], 0, nullptr);
+	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(model->GetIndices().size()), 1, 0, 0, 0);
 }
 
 void KtRenderer::CreateSyncObjects()

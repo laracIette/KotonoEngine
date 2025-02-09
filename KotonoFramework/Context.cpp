@@ -22,8 +22,6 @@ constexpr bool enableValidationLayers = false;
 constexpr bool enableValidationLayers = true;
 #endif
 
-constexpr int MAX_FRAMES_IN_FLIGHT = 2;
-
 constexpr uint32_t WIDTH = 800;
 constexpr uint32_t HEIGHT = 600;
 
@@ -902,7 +900,7 @@ VkCommandPool& KtContext::GetCommandPool()
 	return _commandPool;
 }
 
-VkSampleCountFlagBits KtContext::GetMSAASamples() const
+const VkSampleCountFlagBits KtContext::GetMSAASamples() const
 {
 	return _msaaSamples;
 }

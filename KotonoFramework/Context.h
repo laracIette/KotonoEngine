@@ -24,6 +24,8 @@ public:
 	void Init();
 	void Cleanup();
 
+	const VkSampleCountFlagBits GetMSAASamples() const;
+
 	VkPhysicalDevice& GetPhysicalDevice();
 	VkDevice& GetDevice();
 	VmaAllocator& GetAllocator();
@@ -31,8 +33,6 @@ public:
 	VkQueue& GetPresentQueue();
 	VkSurfaceKHR& GetSurface();
 	VkCommandPool& GetCommandPool();
-
-	VkSampleCountFlagBits GetMSAASamples() const;
 
 	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VmaAllocationCreateFlags flags, VkBuffer& buffer, VmaAllocation& allocation, VmaAllocationInfo& allocInfo) const;
 	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) const;
