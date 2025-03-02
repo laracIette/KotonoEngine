@@ -1,8 +1,8 @@
 #pragma once
 #include "RenderQueue3D.h"
 #include "ImageTexture.h"
-
-constexpr size_t MAX_FRAMES_IN_FLIGHT = 2;
+#include "max_frames_in_flight.h"
+#include "ObjectData3D.h"
 
 class KtRenderer final
 {
@@ -10,21 +10,21 @@ public:
 	void Init();
 	void Cleanup();
 
-	void AddToRenderQueue(const KtShader* shader, const KtModel* model);
+	void AddToRenderQueue(KtShader* shader, KtModel* model, const KtObjectData3D& objectData);
 	void DrawFrame();
 
 	void RecreateSwapChain();
 	void OnFramebufferResized();
 
 	const VkExtent2D GetSwapChainExtent() const;
+	const uint32_t GetCurrentFrame() const;
 
-	VkRenderPass& GetRenderPass();
-	VkDescriptorSetLayout& GetDescriptorSetLayout();
-	VkPipelineLayout& GetPipelineLayout();
+	VkRenderPass GetRenderPass() const;
+	//VkDescriptorSetLayout& GetDescriptorSetLayout();
 
 private:
 	void CreateShaderAndModels();
-	std::unordered_map<const KtShader*, std::unordered_set<const KtModel*>> _renderQueue3D;
+	std::unordered_map<KtShader*, std::unordered_map<KtModel*, std::vector<KtObjectData3D>>> _renderQueue3D;
 
 	VkSwapchainKHR _swapChain;
 	std::vector<VkImage> _swapChainImages;
@@ -34,8 +34,7 @@ private:
 	std::vector<VkFramebuffer> _swapChainFramebuffers;
 
 	VkRenderPass _renderPass;
-	VkDescriptorSetLayout _descriptorSetLayout;
-	VkPipelineLayout _pipelineLayout;
+	//VkDescriptorSetLayout _descriptorSetLayout;
 
 	std::vector<VkCommandBuffer> _commandBuffers;
 
@@ -47,22 +46,22 @@ private:
 	VmaAllocation _depthImageAllocation;
 	VkImageView _depthImageView;
 
-	std::array<VkBuffer, MAX_FRAMES_IN_FLIGHT> _uniformBuffers;
-	std::array<VmaAllocation, MAX_FRAMES_IN_FLIGHT> _uniformBuffersAllocation;
-	std::array<void*, MAX_FRAMES_IN_FLIGHT> _uniformBuffersMapped;
-	VkDescriptorPool _descriptorPool;
-	std::array<VkDescriptorSet, MAX_FRAMES_IN_FLIGHT> _descriptorSets;
+	//std::array<VkBuffer, MAX_FRAMES_IN_FLIGHT> _uniformBuffers;
+	//std::array<VmaAllocation, MAX_FRAMES_IN_FLIGHT> _uniformBuffersAllocation;
+	//std::array<void*, MAX_FRAMES_IN_FLIGHT> _uniformBuffersMapped;
+	//VkDescriptorPool _descriptorPool;
+	//std::array<VkDescriptorSet, MAX_FRAMES_IN_FLIGHT> _globalDescriptorSets;
 
-	std::vector<VkSemaphore> _imageAvailableSemaphores;
-	std::vector<VkSemaphore> _renderFinishedSemaphores;
-	std::vector<VkFence> _inFlightFences;
+	std::array<VkSemaphore, MAX_FRAMES_IN_FLIGHT> _imageAvailableSemaphores;
+	std::array<VkSemaphore, MAX_FRAMES_IN_FLIGHT> _renderFinishedSemaphores;
+	std::array<VkFence, MAX_FRAMES_IN_FLIGHT> _inFlightFences;
 
 	bool _framebufferResized = false;
 
 	uint32_t _currentFrame = 0;
 
 
-	KtImageTexture* _imageTexture;
+	//KtImageTexture* _imageTexture;
 
 	void CreateImageTexture();
 
@@ -76,23 +75,27 @@ private:
 	void CreateRenderPass();
 	void CreateFramebuffers();
 
-	void CreateDescriptorSetLayout();
+	//void CreateDescriptorSetLayout();
 
 	void CreateColorResources();
 	void CreateDepthResources();
 	const VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
 	const VkFormat FindDepthFormat() const;
 	const bool HasStencilComponent(VkFormat format) const;
-	void CreateUniformBuffers();
-	void UpdateUniformBuffer(uint32_t currentImage);
-	void CreateDescriptorPool();
-	void CreateDescriptorSets();
+	//void CreateUniformBuffers();
+	//void UpdateUniformBuffer(const uint32_t imageIndex);
+	//void CreateDescriptorPool();
+	//void CreateDescriptorSets();
+
+	//void UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTexture* imageTexture);
 
 	void CreateCommandBuffers();
-	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) const;
+	void RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const;
 
-	void BindShader(VkCommandBuffer commandBuffer, const KtShader* shader) const;
-	void DrawModel(VkCommandBuffer commandBuffer, const KtModel* model) const;
+	//void CmdPushConstants(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, const KtPushConstantData& pushConstantData) const;
+
+	void CmdBindModel(VkCommandBuffer commandBuffer, KtModel* model) const;
+	void CmdDrawModel(VkCommandBuffer commandBuffer, KtModel* model, const uint32_t instanceCount) const;
 
 	void CreateSyncObjects();
 

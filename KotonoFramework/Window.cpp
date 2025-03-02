@@ -1,6 +1,7 @@
 #include "Window.h"
 #include "Framework.h"
 #include <iostream>
+#include "log.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
@@ -34,7 +35,9 @@ void KtWindow::MainLoop()
 void KtWindow::Cleanup()
 {
     _renderer.Cleanup();
+    KT_DEBUG_LOG("renderer cleanup up");
     _context.Cleanup();
+    KT_DEBUG_LOG("context cleanup up");
 
     // Cleanup GLFW
     glfwDestroyWindow(_window);

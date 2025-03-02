@@ -137,9 +137,12 @@
     <ClInclude Include="glm_includes.h" />
     <ClInclude Include="ImageTexture.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="ObjectData3D.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Framework.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="log.h" />
+    <ClInclude Include="max_frames_in_flight.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Mouse.h" />
@@ -148,8 +151,8 @@
     <ClInclude Include="RenderQueue3D.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SwapChainSupportDetails.h" />
-    <ClInclude Include="UniformBufferObject.h" />
     <ClInclude Include="Vertex.h" />
+    <ClInclude Include="vk_utils.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="Context.h" />
   </ItemGroup>

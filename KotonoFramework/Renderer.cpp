@@ -1,23 +1,25 @@
 #include "Renderer.h"
 #include "Framework.h"
-#include "UniformBufferObject.h"
 #include <chrono>
+#include "Mesh.h"
+#include "log.h"
+#include "vk_utils.h"
 
 void KtRenderer::Init()
 {
 	CreateSwapChain();
 	CreateImageViews();
 	CreateRenderPass();
-	CreateDescriptorSetLayout();
+	//CreateDescriptorSetLayout();
 	CreateColorResources();
 	CreateDepthResources();
 	CreateFramebuffers();
-	CreateUniformBuffers();
-	CreateDescriptorPool();
+	//CreateUniformBuffers();
+	//CreateDescriptorPool();
 
-	CreateImageTexture();
+	//CreateImageTexture();
 
-	CreateDescriptorSets();
+	//CreateDescriptorSets();
 	CreateCommandBuffers();
 	CreateSyncObjects();
 
@@ -26,78 +28,81 @@ void KtRenderer::Init()
 
 void KtRenderer::Cleanup()
 {
-	delete _imageTexture;
+	KT_DEBUG_LOG("cleaning up renderer");
+	//delete _imageTexture;
 
-	for (const auto& pair : _renderQueue3D)
+	for (const auto& shaderModelsPair : _renderQueue3D)
 	{
-		const auto* shader = pair.first;
-		const auto& models = pair.second;
-
+		auto* shader = shaderModelsPair.first;
 		delete shader;
-
-		for (const auto* model : models)
+		
+		const auto& modelObjectDatasPair = shaderModelsPair.second;
+		for (const auto& modelObjectDatasPair : modelObjectDatasPair)
 		{
+			auto* model = modelObjectDatasPair.first;
 			delete model;
 		}
 	}
 
 	CleanupSwapChain();
 
-	vkDestroyImageView(Framework.GetWindow().GetContext().GetDevice(), _depthImageView, nullptr);
-	vmaDestroyImage(Framework.GetWindow().GetContext().GetAllocator(), _depthImage, _depthImageAllocation);
+	const auto& device = Framework.GetWindow().GetContext().GetDevice();
+	const auto& allocator = Framework.GetWindow().GetContext().GetAllocator();
 
-	vkDestroyImageView(Framework.GetWindow().GetContext().GetDevice(), _colorImageView, nullptr);
-	vmaDestroyImage(Framework.GetWindow().GetContext().GetAllocator(), _colorImage, _colorImageAllocation);
+	vkDestroyImageView(device, _depthImageView, nullptr);
+	vmaDestroyImage(allocator, _depthImage, _depthImageAllocation);
+
+	vkDestroyImageView(device, _colorImageView, nullptr);
+	vmaDestroyImage(allocator, _colorImage, _colorImageAllocation);
+
+	//for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	//{
+	//	vmaDestroyBuffer(allocator, _uniformBuffers[i], _uniformBuffersAllocation[i]);
+	//}
+
+	//vkDestroyDescriptorPool(device, _descriptorPool, nullptr);
+	//vkDestroyDescriptorSetLayout(device, _descriptorSetLayout, nullptr);
+
+	vkDestroyRenderPass(device, _renderPass, nullptr);
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
-		vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _uniformBuffers[i], _uniformBuffersAllocation[i]);
-	}
-
-	vkDestroyDescriptorPool(Framework.GetWindow().GetContext().GetDevice(), _descriptorPool, nullptr);
-	vkDestroyDescriptorSetLayout(Framework.GetWindow().GetContext().GetDevice(), _descriptorSetLayout, nullptr);
-
-	vkDestroyPipelineLayout(Framework.GetWindow().GetContext().GetDevice(), _pipelineLayout, nullptr);
-
-	vkDestroyRenderPass(Framework.GetWindow().GetContext().GetDevice(), _renderPass, nullptr);
-
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-	{
-		vkDestroySemaphore(Framework.GetWindow().GetContext().GetDevice(), _renderFinishedSemaphores[i], nullptr);
-		vkDestroySemaphore(Framework.GetWindow().GetContext().GetDevice(), _imageAvailableSemaphores[i], nullptr);
-		vkDestroyFence(Framework.GetWindow().GetContext().GetDevice(), _inFlightFences[i], nullptr);
+		vkDestroySemaphore(device, _renderFinishedSemaphores[i], nullptr);
+		vkDestroySemaphore(device, _imageAvailableSemaphores[i], nullptr);
+		vkDestroyFence(device, _inFlightFences[i], nullptr);
 	}
 }
 
-void KtRenderer::AddToRenderQueue(const KtShader* shader, const KtModel* model)
+void KtRenderer::AddToRenderQueue(KtShader* shader, KtModel* model, const KtObjectData3D& objectData)
 {
-	if (_renderQueue3D.contains(shader))
-	{
-		_renderQueue3D[shader].insert(model);
-	}
-	else
-	{
-		_renderQueue3D[shader] = { model };
-	}
+	_renderQueue3D[shader][model].push_back(objectData);
 }
 
 void KtRenderer::CreateShaderAndModels() 
 {
-	const auto* shader = new KtShader(
+	KtShader* shader = new KtShader(
 		R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\shaders\vulkanVert.spv)",
 		R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\shaders\vulkanFrag.spv)"
-	); 
+	);
 	
-	const auto* model1 = new KtModel(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.obj)");
-	const auto* model2 = new KtModel(R"(C:\Users\nicos\OneDrive - e-artsup\B2\Environment\Corridor\SM_Column_low.fbx)");
+	KtModel* model1 = new KtModel(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.obj)");
+	KtModel* model2 = new KtModel(R"(C:\Users\nicos\OneDrive - e-artsup\B2\Environment\Corridor\SM_Column_low.fbx)");
 
-	AddToRenderQueue(shader, model1);
-	AddToRenderQueue(shader, model2);
+	KtMesh* mesh1 = new KtMesh();
+	mesh1->SetShader(shader);
+	mesh1->SetModel(model1);
+
+	KtMesh* mesh2 = new KtMesh();
+	mesh2->SetShader(shader);
+	mesh2->SetModel(model2);
+
+	mesh1->AddToRenderQueue();
+	mesh2->AddToRenderQueue();
 }
 
 void KtRenderer::CreateImageTexture()
 {
-	_imageTexture = new KtImageTexture(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.png)");
+	//_imageTexture = new KtImageTexture(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.png)");
 }
 
 void KtRenderer::CreateSwapChain()
@@ -326,33 +331,33 @@ void KtRenderer::CreateFramebuffers()
 	}
 }
 
-void KtRenderer::CreateDescriptorSetLayout()
-{
-	VkDescriptorSetLayoutBinding uboLayoutBinding{};
-	uboLayoutBinding.binding = 0;
-	uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	uboLayoutBinding.descriptorCount = 1;
-	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-	uboLayoutBinding.pImmutableSamplers = nullptr; // Optional
-
-	VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-	samplerLayoutBinding.binding = 1;
-	samplerLayoutBinding.descriptorCount = 1;
-	samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	samplerLayoutBinding.pImmutableSamplers = nullptr;
-	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-	std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
-	VkDescriptorSetLayoutCreateInfo layoutInfo{};
-	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-	layoutInfo.pBindings = bindings.data();
-
-	if (vkCreateDescriptorSetLayout(Framework.GetWindow().GetContext().GetDevice(), &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create descriptor set layout!");
-	}
-}
+//void KtRenderer::CreateDescriptorSetLayout()
+//{
+//	VkDescriptorSetLayoutBinding uboLayoutBinding{};
+//	uboLayoutBinding.binding = 0;
+//	uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+//	uboLayoutBinding.descriptorCount = 1;
+//	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+//	uboLayoutBinding.pImmutableSamplers = nullptr; // Optional
+//
+//	VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+//	samplerLayoutBinding.binding = 1;
+//	samplerLayoutBinding.descriptorCount = 1;
+//	samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+//	samplerLayoutBinding.pImmutableSamplers = nullptr;
+//	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+//
+//	std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
+//	VkDescriptorSetLayoutCreateInfo layoutInfo{};
+//	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+//	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+//	layoutInfo.pBindings = bindings.data();
+//
+//	if (vkCreateDescriptorSetLayout(Framework.GetWindow().GetContext().GetDevice(), &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
+//	{
+//		throw std::runtime_error("failed to create descriptor set layout!");
+//	}
+//}
 
 void KtRenderer::CreateColorResources()
 {
@@ -446,112 +451,117 @@ const bool KtRenderer::HasStencilComponent(VkFormat format) const
 	return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 }
 
-void KtRenderer::CreateUniformBuffers()
-{
-	VkDeviceSize bufferSize = sizeof(KtUniformBufferObject);
+//void KtRenderer::CreateUniformBuffers()
+//{
+//	VkDeviceSize bufferSize = sizeof(KtUniformBufferObject);
+//
+//	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+//	{
+//		VmaAllocationInfo uniformBufferAllocInfo;
+//		Framework.GetWindow().GetContext().CreateBuffer(
+//			bufferSize,
+//			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+//			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+//			VMA_ALLOCATION_CREATE_MAPPED_BIT,
+//			_uniformBuffers[i],
+//			_uniformBuffersAllocation[i],
+//			uniformBufferAllocInfo
+//		);
+//
+//		_uniformBuffersMapped[i] = uniformBufferAllocInfo.pMappedData;
+//	}
+//}
 
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-	{
-		VmaAllocationInfo uniformBufferAllocInfo;
-		Framework.GetWindow().GetContext().CreateBuffer(
-			bufferSize,
-			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			VMA_ALLOCATION_CREATE_MAPPED_BIT,
-			_uniformBuffers[i],
-			_uniformBuffersAllocation[i],
-			uniformBufferAllocInfo
-		);
+//void KtRenderer::UpdateUniformBuffer(const uint32_t imageIndex)
+//{
+//	static const auto startTime = std::chrono::high_resolution_clock::now();
+//
+//	const auto currentTime = std::chrono::high_resolution_clock::now();
+//	const float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+//
+//	KtUniformBufferObject ubo{};
+//	ubo.Model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+//	ubo.View = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+//	ubo.Projection = glm::perspective(glm::radians(45.0f), _swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 10.0f);
+//	ubo.Projection[1][1] *= -1.0f;
+//
+//	memcpy(_uniformBuffersMapped[imageIndex], &ubo, sizeof(KtUniformBufferObject));
+//}
 
-		_uniformBuffersMapped[i] = uniformBufferAllocInfo.pMappedData;
-	}
-}
+//void KtRenderer::CreateDescriptorPool()
+//{
+//	std::array<VkDescriptorPoolSize, 2> poolSizes{};
+//	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+//	poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+//	poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+//	poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+//
+//	VkDescriptorPoolCreateInfo poolInfo{};
+//	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+//	poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+//	poolInfo.pPoolSizes = poolSizes.data();
+//	poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+//
+//	if (vkCreateDescriptorPool(Framework.GetWindow().GetContext().GetDevice(), &poolInfo, nullptr, &_descriptorPool) != VK_SUCCESS)
+//	{
+//		throw std::runtime_error("failed to create descriptor pool!");
+//	}
+//}
 
-void KtRenderer::UpdateUniformBuffer(uint32_t currentImage)
-{
-	static const auto startTime = std::chrono::high_resolution_clock::now();
+//void KtRenderer::CreateDescriptorSets()
+//{
+//	std::array<VkDescriptorSetLayout, MAX_FRAMES_IN_FLIGHT> layouts{};
+//	layouts.fill(_descriptorSetLayout);
+//
+//	VkDescriptorSetAllocateInfo allocInfo{};
+//	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+//	allocInfo.descriptorPool = _descriptorPool;
+//	allocInfo.descriptorSetCount = static_cast<uint32_t>(layouts.size());
+//	allocInfo.pSetLayouts = layouts.data();
+//	
+//	if (vkAllocateDescriptorSets(Framework.GetWindow().GetContext().GetDevice(), &allocInfo, _globalDescriptorSets.data()) != VK_SUCCESS)
+//	{
+//		throw std::runtime_error("failed to allocate descriptor sets!");
+//	}
+//
+//	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+//	{
+//		UpdateDescriptorSet(static_cast<uint32_t>(i), _imageTexture);
+//	}
+//}
 
-	const auto currentTime = std::chrono::high_resolution_clock::now();
-	const float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
-	KtUniformBufferObject ubo{};
-	ubo.Model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.View = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.Projection = glm::perspective(glm::radians(45.0f), _swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 10.0f);
-	ubo.Projection[1][1] *= -1.0f;
-
-	memcpy(_uniformBuffersMapped[currentImage], &ubo, sizeof(KtUniformBufferObject));
-}
-
-void KtRenderer::CreateDescriptorPool()
-{
-	std::array<VkDescriptorPoolSize, 2> poolSizes{};
-	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-	poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-
-	VkDescriptorPoolCreateInfo poolInfo{};
-	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-	poolInfo.pPoolSizes = poolSizes.data();
-	poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-
-	if (vkCreateDescriptorPool(Framework.GetWindow().GetContext().GetDevice(), &poolInfo, nullptr, &_descriptorPool) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create descriptor pool!");
-	}
-}
-
-void KtRenderer::CreateDescriptorSets()
-{
-	std::array<VkDescriptorSetLayout, MAX_FRAMES_IN_FLIGHT> layouts{};
-	layouts.fill(_descriptorSetLayout);
-
-	VkDescriptorSetAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = _descriptorPool;
-	allocInfo.descriptorSetCount = static_cast<uint32_t>(layouts.size());
-	allocInfo.pSetLayouts = layouts.data();
-
-	if (vkAllocateDescriptorSets(Framework.GetWindow().GetContext().GetDevice(), &allocInfo, _descriptorSets.data()) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to allocate descriptor sets!");
-	}
-
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-	{
-		VkDescriptorBufferInfo bufferInfo{};
-		bufferInfo.buffer = _uniformBuffers[i];
-		bufferInfo.offset = 0;
-		bufferInfo.range = sizeof(KtUniformBufferObject);
-
-		VkDescriptorImageInfo imageInfo{};
-		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = _imageTexture->ImageView;
-		imageInfo.sampler = _imageTexture->Sampler;
-
-		std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
-
-		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[0].dstSet = _descriptorSets[i];
-		descriptorWrites[0].dstBinding = 0;
-		descriptorWrites[0].dstArrayElement = 0;
-		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorWrites[0].descriptorCount = 1;
-		descriptorWrites[0].pBufferInfo = &bufferInfo;
-
-		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[1].dstSet = _descriptorSets[i];
-		descriptorWrites[1].dstBinding = 1;
-		descriptorWrites[1].dstArrayElement = 0;
-		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorWrites[1].descriptorCount = 1;
-		descriptorWrites[1].pImageInfo = &imageInfo;
-
-		vkUpdateDescriptorSets(Framework.GetWindow().GetContext().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-	}
-}
+//void KtRenderer::UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTexture* imageTexture)
+//{
+//	VkDescriptorBufferInfo bufferInfo{};
+//	bufferInfo.buffer = _uniformBuffers[imageIndex];
+//	bufferInfo.offset = 0;
+//	bufferInfo.range = sizeof(KtUniformBufferObject);
+//
+//	VkDescriptorImageInfo imageInfo{};
+//	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+//	imageInfo.imageView = imageTexture->ImageView;
+//	imageInfo.sampler = imageTexture->Sampler;
+//
+//	std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+//
+//	descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+//	descriptorWrites[0].dstSet = _globalDescriptorSets[imageIndex];
+//	descriptorWrites[0].dstBinding = 0;
+//	descriptorWrites[0].dstArrayElement = 0;
+//	descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+//	descriptorWrites[0].descriptorCount = 1;
+//	descriptorWrites[0].pBufferInfo = &bufferInfo;
+//
+//	descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+//	descriptorWrites[1].dstSet = _globalDescriptorSets[imageIndex];
+//	descriptorWrites[1].dstBinding = 1;
+//	descriptorWrites[1].dstArrayElement = 0;
+//	descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+//	descriptorWrites[1].descriptorCount = 1;
+//	descriptorWrites[1].pImageInfo = &imageInfo;
+//
+//	vkUpdateDescriptorSets(Framework.GetWindow().GetContext().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+//}
 
 void KtRenderer::CreateCommandBuffers()
 {
@@ -569,7 +579,7 @@ void KtRenderer::CreateCommandBuffers()
 	}
 }
 
-void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) const
+void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const
 {
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -612,51 +622,48 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t ima
 	scissor.extent = _swapChainExtent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	for (const auto& pair : _renderQueue3D)
-	{  
-		const auto* shader = pair.first;
-		const auto& models = pair.second;
+	for (const auto& shaderModelsPair : _renderQueue3D)
+	{
+		auto* shader = shaderModelsPair.first;
+		shader->CmdBindGraphicsPipeline(commandBuffer);
+		shader->UpdateUniformBuffer(_currentFrame);
 
-		BindShader(commandBuffer, shader);
+		const auto& modelObjectDatasPair = shaderModelsPair.second;
+		for (const auto& modelObjectDatasPair : modelObjectDatasPair)
+		{
+			auto* model = modelObjectDatasPair.first;
+			const auto& objectDatas = modelObjectDatasPair.second;
 
-		for (const auto* model : models)
-		{ 
-			DrawModel(commandBuffer, model);
+			shader->UpdateObjectBuffer(objectDatas, _currentFrame);
+			shader->CmdBindDescriptorSets(commandBuffer, _currentFrame);
+
+			CmdBindModel(commandBuffer, model);
+			CmdDrawModel(commandBuffer, model, static_cast<uint32_t>(objectDatas.size()));
 		}
 	}
 
 	// End RenderPass
 	vkCmdEndRenderPass(commandBuffer);
 
-	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to record command buffer!");
-	}
+	VK_CHECK_THROW(vkEndCommandBuffer(commandBuffer), "failed to record command buffer!");
 }
 
-void KtRenderer::BindShader(VkCommandBuffer commandBuffer, const KtShader* shader) const
-{
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetGraphicsPipeline());
-}
 
-void KtRenderer::DrawModel(VkCommandBuffer commandBuffer, const KtModel* model) const
+void KtRenderer::CmdBindModel(VkCommandBuffer commandBuffer, KtModel* model) const
 {
 	VkBuffer vertexBuffers[] = { model->GetVertexBuffer() };
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-
 	vkCmdBindIndexBuffer(commandBuffer, model->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+}
 
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout, 0, 1, &_descriptorSets[_currentFrame], 0, nullptr);
-	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(model->GetIndices().size()), 1, 0, 0, 0);
+void KtRenderer::CmdDrawModel(VkCommandBuffer commandBuffer, KtModel* model, const uint32_t instanceCount) const
+{
+    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(model->GetIndices().size()), instanceCount, 0, 0, 0);
 }
 
 void KtRenderer::CreateSyncObjects()
 {
-	_imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-	_renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-	_inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
-
 	VkSemaphoreCreateInfo semaphoreInfo{};
 	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
@@ -692,8 +699,6 @@ void KtRenderer::DrawFrame()
 	{
 		throw std::runtime_error("failed to acquire swap chain image!");
 	}
-
-	UpdateUniformBuffer(_currentFrame);
 
 	vkResetFences(Framework.GetWindow().GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame]);
 
@@ -778,20 +783,20 @@ const VkExtent2D KtRenderer::GetSwapChainExtent() const
 	return _swapChainExtent;
 }
 
-VkRenderPass& KtRenderer::GetRenderPass()
+const uint32_t KtRenderer::GetCurrentFrame() const
+{
+	return _currentFrame;
+}
+
+VkRenderPass KtRenderer::GetRenderPass() const
 {
 	return _renderPass;
 }
 
-VkDescriptorSetLayout& KtRenderer::GetDescriptorSetLayout() 
-{
-	return _descriptorSetLayout;
-}
-
-VkPipelineLayout& KtRenderer::GetPipelineLayout()
-{
-	return _pipelineLayout;
-}
+//VkDescriptorSetLayout& KtRenderer::GetDescriptorSetLayout() 
+//{
+//	return _descriptorSetLayout;
+//}
 
 void KtRenderer::CleanupSwapChain() const
 {

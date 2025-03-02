@@ -1,13 +1,17 @@
 #include "Mesh.h"
+#include "Framework.h"
 
 void KtMesh::AddToRenderQueue() const
 {
-    //renderer.queue[_shader].add(_model)
-}
-
-KtModel* KtMesh::GetModel() const
-{
-    return _model;
+    Framework.GetWindow().GetRenderer().AddToRenderQueue(
+        _shader, 
+        _model, 
+        { 
+            glm::vec3(),
+			glm::quat(),
+			glm::vec3(1.0f)
+        }
+    );
 }
 
 KtShader* KtMesh::GetShader() const
@@ -15,12 +19,27 @@ KtShader* KtMesh::GetShader() const
     return _shader;
 }
 
-void KtMesh::SetModel(KtModel* model)
+KtModel* KtMesh::GetModel() const
 {
-    _model = model;
+    return _model;
 }
 
 void KtMesh::SetShader(KtShader* shader)
 {
     _shader = shader;
+}
+
+void KtMesh::SetModel(KtModel* model)
+{
+    _model = model;
+}
+
+const glm::mat4 KtMesh::GetModelMatrix() const
+{
+    static const auto startTime = std::chrono::high_resolution_clock::now();
+
+    const auto currentTime = std::chrono::high_resolution_clock::now();
+    const float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+    return glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 }

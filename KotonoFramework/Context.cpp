@@ -3,17 +3,17 @@
 #include <set>
 #include <fstream>
 #include "Vertex.h"
-#include "UniformBufferObject.h"
 #include <chrono>
 
-const std::vector<const char*> validationLayers =
+constexpr std::array<const char*, 1> validationLayers =
 {
 	"VK_LAYER_KHRONOS_validation"
 };
 
-const std::vector<const char*> deviceExtensions =
+constexpr std::array<const char*, 2> deviceExtensions =
 {
-	VK_KHR_SWAPCHAIN_EXTENSION_NAME
+	VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+	VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME
 };
 
 #ifdef NDEBUG

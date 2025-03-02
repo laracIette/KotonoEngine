@@ -1,5 +1,6 @@
 #include "ImageTexture.h"
 #include "Framework.h"
+#include "log.h"
 
 KtImageTexture::KtImageTexture(const std::filesystem::path& path) :
 	Path(path)
@@ -11,6 +12,7 @@ KtImageTexture::KtImageTexture(const std::filesystem::path& path) :
 
 KtImageTexture::~KtImageTexture()
 {
+	KT_DEBUG_LOG("cleaning up image texture");
 	vkDestroySampler(Framework.GetWindow().GetContext().GetDevice(), Sampler, nullptr); 
 	vkDestroyImageView(Framework.GetWindow().GetContext().GetDevice(), ImageView, nullptr);
 	vmaDestroyImage(Framework.GetWindow().GetContext().GetAllocator(), Image, Allocation);
