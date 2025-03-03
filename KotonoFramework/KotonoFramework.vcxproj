@@ -176,8 +176,8 @@
     <ClCompile Include="Context.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\KotonoEngine\vulkan.frag" />
-    <None Include="..\KotonoEngine\vulkan.vert" />
+    <None Include="vulkan.frag" />
+    <None Include="vulkan.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
