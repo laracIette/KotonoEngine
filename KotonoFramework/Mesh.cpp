@@ -8,16 +8,11 @@ void KtMesh::AddToRenderQueue() const
     const auto currentTime = std::chrono::high_resolution_clock::now();
     const float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-    // Calculate the angle of rotation (360 degrees every 2 seconds)
-    const float angle = glm::radians(360.0f) * (time / 2.0f);
-
     Framework.GetWindow().GetRenderer().AddToRenderQueue(
         _shader,
         _model,
         {
-            glm::vec3(),
-            glm::quat(glm::vec3(0.0f, angle, 0.0f)),
-            glm::vec3(1.0f)
+            glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f))
         }
     );
 }
