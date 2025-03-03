@@ -13,7 +13,7 @@ layout(set = 0, binding = 0) uniform CameraData
     mat4 projection;
 } cameraData;
 
-layout(std140, set = 1, binding = 0) readonly buffer ObjectBuffer
+layout(std140, set = 1, binding = 0) readonly buffer ObjectBuffer // check 430
 {
 	ObjectData objectDatas[];
 } objectBuffer;
@@ -39,7 +39,6 @@ void main()
     mat4 model = translate(objectPosition) * quatToMat4(objectRotation) * scale(objectScale);
 
     gl_Position = cameraData.projection * cameraData.view * model * vec4(inPosition, 1.0);
-    //gl_Position = vec4(0.5, 0.5, 0.0, 1.0);
     fragColor = inColor;
     fragTexCoord = inTexCoord;
 }
@@ -47,20 +46,21 @@ void main()
 mat4 translate(vec3 t)
 {
     return mat4(
-        1.0, 0.0, 0.0, t.x,
-        0.0, 1.0, 0.0, t.y,
-        0.0, 0.0, 1.0, t.z,
-        0.0, 0.0, 0.0, 1.0
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        t.x, t.y, t.z, 1.0
     );
 }
 
 mat4 quatToMat4(vec4 q)
 {
+    q = normalize(q); // Ensure quaternion is unit-length
     return mat4(
-        1.0f - 2.0f * (q.y * q.y + q.z * q.z), 2.0f * (q.x * q.y - q.w * q.z),        2.0f * (q.x * q.z + q.w * q.y),        0.0f,
-        2.0f * (q.x * q.y + q.w * q.z),        1.0f - 2.0f * (q.x * q.x + q.z * q.z), 2.0f * (q.y * q.z - q.w * q.x),        0.0f,
-        2.0f * (q.x * q.z - q.w * q.y),        2.0f * (q.y * q.z + q.w * q.x),        1.0f - 2.0f * (q.x * q.x + q.y * q.y), 0.0f,
-        0.0f,                                  0.0f,                                  0.0f,                                  1.0f
+        1.0 - 2.0 * (q.y * q.y + q.z * q.z),  2.0 * (q.x * q.y + q.w * q.z),  2.0 * (q.x * q.z - q.w * q.y),  0.0,
+        2.0 * (q.x * q.y - q.w * q.z),  1.0 - 2.0 * (q.x * q.x + q.z * q.z),  2.0 * (q.y * q.z + q.w * q.x),  0.0,
+        2.0 * (q.x * q.z + q.w * q.y),  2.0 * (q.y * q.z - q.w * q.x),  1.0 - 2.0 * (q.x * q.x + q.y * q.y),  0.0,
+        0.0,  0.0,  0.0,  1.0
     );
 }
 

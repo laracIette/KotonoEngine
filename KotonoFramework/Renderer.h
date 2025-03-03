@@ -76,6 +76,8 @@ private:
 
 	void CreateSyncObjects();
 
+	void ClearRenderQueue();
+
 	void CleanupSwapChain() const;
 };
 

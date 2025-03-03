@@ -5,6 +5,12 @@
 #include "log.h"
 #include "vk_utils.h"
 
+KtShader* shader = nullptr;
+KtModel* model1 = nullptr;
+KtModel* model2 = nullptr;
+KtMesh* mesh1 = nullptr;
+KtMesh* mesh2 = nullptr;
+
 void KtRenderer::Init()
 {
 	CreateSwapChain();
@@ -26,18 +32,11 @@ void KtRenderer::Cleanup()
 {
 	KT_DEBUG_LOG("cleaning up renderer");
 
-	for (const auto& shaderModelsPair : _renderQueue3D)
-	{
-		auto* shader = shaderModelsPair.first;
-		delete shader;
-		
-		const auto& modelObjectDatasPair = shaderModelsPair.second;
-		for (const auto& modelObjectDatasPair : modelObjectDatasPair)
-		{
-			auto* model = modelObjectDatasPair.first;
-			delete model;
-		}
-	}
+	delete shader;
+	delete model1;
+	delete model2;
+	delete mesh1;
+	delete mesh2;
 
 	CleanupSwapChain();
 
@@ -69,24 +68,21 @@ void KtRenderer::AddToRenderQueue(KtShader* shader, KtModel* model, const KtObje
 
 void KtRenderer::CreateShaderAndModels() 
 {
-	KtShader* shader = new KtShader(
+	shader = new KtShader(
 		R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\shaders\vulkanVert.spv)",
 		R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\shaders\vulkanFrag.spv)"
 	);
 	
-	KtModel* model1 = new KtModel(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.obj)");
-	KtModel* model2 = new KtModel(R"(C:\Users\nicos\OneDrive - e-artsup\B2\Environment\Corridor\SM_Column_low.fbx)");
+	model1 = new KtModel(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.obj)");
+	model2 = new KtModel(R"(C:\Users\nicos\OneDrive - e-artsup\B2\Environment\Corridor\SM_Column_low.fbx)");
 
-	KtMesh* mesh1 = new KtMesh();
+	mesh1 = new KtMesh();
 	mesh1->SetShader(shader);
 	mesh1->SetModel(model1);
 
-	KtMesh* mesh2 = new KtMesh();
+	mesh2 = new KtMesh();
 	mesh2->SetShader(shader);
 	mesh2->SetModel(model2);
-
-	mesh1->AddToRenderQueue();
-	mesh2->AddToRenderQueue();
 }
 
 void KtRenderer::CreateSwapChain()
@@ -519,8 +515,16 @@ void KtRenderer::CreateSyncObjects()
 	}
 }
 
+void KtRenderer::ClearRenderQueue()
+{
+	_renderQueue3D.clear();
+}
+
 void KtRenderer::DrawFrame()
 {
+	mesh1->AddToRenderQueue();
+	mesh2->AddToRenderQueue();
+
 	vkWaitForFences(Framework.GetWindow().GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
 
 	uint32_t imageIndex;
@@ -585,7 +589,9 @@ void KtRenderer::DrawFrame()
 		throw std::runtime_error("failed to present swap chain image!");
 	}
 
-	_currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT; // only non-const line
+	ClearRenderQueue();
+
+	_currentFrame = (_currentFrame + 1) % static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 }
 
 void KtRenderer::RecreateSwapChain()

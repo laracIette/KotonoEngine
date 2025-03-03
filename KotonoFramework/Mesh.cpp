@@ -1,15 +1,23 @@
 #include "Mesh.h"
 #include "Framework.h"
+#include "log.h"
 
 void KtMesh::AddToRenderQueue() const
 {
+    static const auto startTime = std::chrono::high_resolution_clock::now();
+    const auto currentTime = std::chrono::high_resolution_clock::now();
+    const float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+    // Calculate the angle of rotation (360 degrees every 2 seconds)
+    const float angle = glm::radians(360.0f) * (time / 2.0f);
+
     Framework.GetWindow().GetRenderer().AddToRenderQueue(
-        _shader, 
-        _model, 
-        { 
+        _shader,
+        _model,
+        {
             glm::vec3(),
-			glm::quat(),
-			glm::vec3(1.0f)
+            glm::quat(glm::vec3(0.0f, angle, 0.0f)),
+            glm::vec3(1.0f)
         }
     );
 }
