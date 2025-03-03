@@ -153,8 +153,9 @@ void KtShader::CreateObjectBuffers()
 
 void KtShader::CreateObjectBuffer(const uint32_t imageIndex)
 {
+	KT_DEBUG_LOG("0bject buffer size at frame %u: %llu", imageIndex, sizeof(KtObjectData3D) * (_objectCounts[imageIndex] == 0 ? 1 : _objectCounts[imageIndex]));
 	Framework.GetWindow().GetContext().CreateBuffer(
-		sizeof(KtObjectData3D) * _objectCounts[imageIndex] == 0 ? 1 : _objectCounts[imageIndex],
+		sizeof(KtObjectData3D) * (_objectCounts[imageIndex] == 0 ? 1 : _objectCounts[imageIndex]),
 		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, // Usage flags
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, // Memory properties
 		VMA_ALLOCATION_CREATE_MAPPED_BIT, // Allocation flags
@@ -265,7 +266,7 @@ void KtShader::UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTextu
 	VkDescriptorBufferInfo objectBufferInfo{};
 	objectBufferInfo.buffer = _objectBuffers[imageIndex].Buffer;
 	objectBufferInfo.offset = 0; 
-	objectBufferInfo.range = sizeof(KtObjectData3D) * _objectCounts[imageIndex] == 0 ? 1 : _objectCounts[imageIndex];
+	objectBufferInfo.range = sizeof(KtObjectData3D) * (_objectCounts[imageIndex] == 0 ? 1 : _objectCounts[imageIndex]);
 
 	std::array<VkWriteDescriptorSet, 3> descriptorWrites{};
 
