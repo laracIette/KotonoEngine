@@ -13,7 +13,7 @@ layout(set = 0, binding = 0) uniform CameraData
     mat4 projection;
 } cameraData;
 
-layout(std430, set = 1, binding = 0) readonly buffer ObjectBuffer
+layout(std140, set = 1, binding = 0) readonly buffer ObjectBuffer
 {
 	ObjectData objectDatas[];
 } objectBuffer;
@@ -39,6 +39,7 @@ void main()
     mat4 model = translate(objectPosition) * quatToMat4(objectRotation) * scale(objectScale);
 
     gl_Position = cameraData.projection * cameraData.view * model * vec4(inPosition, 1.0);
+    //gl_Position = vec4(0.5, 0.5, 0.0, 1.0);
     fragColor = inColor;
     fragTexCoord = inTexCoord;
 }

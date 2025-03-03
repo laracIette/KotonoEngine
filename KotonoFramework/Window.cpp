@@ -35,9 +35,7 @@ void KtWindow::MainLoop()
 void KtWindow::Cleanup()
 {
     _renderer.Cleanup();
-    KT_DEBUG_LOG("renderer cleanup up");
     _context.Cleanup();
-    KT_DEBUG_LOG("context cleanup up");
 
     // Cleanup GLFW
     glfwDestroyWindow(_window);

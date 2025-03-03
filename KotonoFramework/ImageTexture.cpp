@@ -16,6 +16,7 @@ KtImageTexture::~KtImageTexture()
 	vkDestroySampler(Framework.GetWindow().GetContext().GetDevice(), Sampler, nullptr); 
 	vkDestroyImageView(Framework.GetWindow().GetContext().GetDevice(), ImageView, nullptr);
 	vmaDestroyImage(Framework.GetWindow().GetContext().GetAllocator(), Image, Allocation);
+	KT_DEBUG_LOG("cleaned up image texture");
 }
 
 void KtImageTexture::CreateTextureImage()
@@ -35,20 +36,16 @@ void KtImageTexture::CreateTextureImage()
 		throw std::runtime_error("failed to load texture image!");
 	}
 
-	VkBuffer stagingBuffer;
-	VmaAllocation stagingBufferAllocation;
-	VmaAllocationInfo stagingBufferAllocInfo;
+	KtAllocatedBuffer stagingBuffer;
 	Framework.GetWindow().GetContext().CreateBuffer(
 		imageSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
-		stagingBuffer,
-		stagingBufferAllocation,
-		stagingBufferAllocInfo
+		stagingBuffer
 	);
 
-	memcpy(stagingBufferAllocInfo.pMappedData, pixels, static_cast<size_t>(imageSize));
+	memcpy(stagingBuffer.AllocationInfo.pMappedData, pixels, static_cast<size_t>(imageSize));
 
 	stbi_image_free(pixels);
 
@@ -73,13 +70,13 @@ void KtImageTexture::CreateTextureImage()
 		MipLevels
 	);
 	Framework.GetWindow().GetContext().CopyBufferToImage(
-		stagingBuffer,
+		stagingBuffer.Buffer,
 		Image,
 		static_cast<uint32_t>(texWidth),
 		static_cast<uint32_t>(texHeight)
 	);
 
-	vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), stagingBuffer, stagingBufferAllocation);
+	vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), stagingBuffer.Buffer, stagingBuffer.Allocation);
 
 	Framework.GetWindow().GetContext().GenerateMipmaps(Image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, MipLevels);
 

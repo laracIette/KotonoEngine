@@ -17,6 +17,7 @@
 #include "Model.h"
 #include "Shader.h"
 #include "Renderer.h"
+#include "AllocatedBuffer.h"
 
 class KtContext final
 {
@@ -34,7 +35,7 @@ public:
 	VkSurfaceKHR& GetSurface();
 	VkCommandPool& GetCommandPool();
 
-	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VmaAllocationCreateFlags flags, VkBuffer& buffer, VmaAllocation& allocation, VmaAllocationInfo& allocInfo) const;
+	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VmaAllocationCreateFlags flags, KtAllocatedBuffer& buffer, VmaMemoryUsage vmaUsage = VMA_MEMORY_USAGE_UNKNOWN) const;
 	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) const;
 	void CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VmaAllocation& imageAllocation) const;
 	void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);

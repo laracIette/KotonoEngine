@@ -23,6 +23,6 @@ private:
 	std::array<VmaAllocation, MAX_FRAMES_IN_FLIGHT> _uniformBuffersAllocation;
 	std::array<void*, MAX_FRAMES_IN_FLIGHT> _uniformBuffersMapped;
 	VkDescriptorPool _descriptorPool;
-	std::array<VkDescriptorSet, MAX_FRAMES_IN_FLIGHT> _globalDescriptorSets;
+	std::array<VkDescriptorSet, MAX_FRAMES_IN_FLIGHT> _uniformDescriptorSets;
 };
 

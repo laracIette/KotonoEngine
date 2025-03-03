@@ -6,6 +6,7 @@
 #include <array>
 #include "ObjectData3D.h"
 #include "glm_includes.h" 
+#include "AllocatedBuffer.h"
 class KtShader final
 {
 public:
@@ -18,7 +19,7 @@ public:
 	void UpdateUniformBuffer(const uint32_t imageIndex);
 	void UpdateObjectBuffer(const std::vector<KtObjectData3D>& objectDatas, const uint32_t imageIndex);
 
-	void CmdBindGraphicsPipeline(VkCommandBuffer commandBuffer);
+	void CmdBind(VkCommandBuffer commandBuffer) const;
 	void CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32_t imageIndex);
 
 private:
@@ -34,21 +35,16 @@ private:
 	KtImageTexture* _imageTexture;
 
 	VkDescriptorPool _descriptorPool;
-	VkDescriptorSetLayout _globalDescriptorSetLayout;
+	VkDescriptorSetLayout _uniformDescriptorSetLayout;
 	VkDescriptorSetLayout _objectDescriptorSetLayout;
-	std::array<VkDescriptorSet, MAX_FRAMES_IN_FLIGHT> _globalDescriptorSets;
+	std::array<VkDescriptorSet, MAX_FRAMES_IN_FLIGHT> _uniformDescriptorSets;
 	std::array<VkDescriptorSet, MAX_FRAMES_IN_FLIGHT> _objectDescriptorSets;
 
 	VkPipelineLayout _pipelineLayout;
 	VkPipeline _graphicsPipeline;
 
-	std::array<VkBuffer, MAX_FRAMES_IN_FLIGHT> _uniformBuffers;
-	std::array<VmaAllocation, MAX_FRAMES_IN_FLIGHT> _uniformBuffersAllocation;
-	std::array<void*, MAX_FRAMES_IN_FLIGHT> _uniformBuffersMapped;
-
-	std::array<VkBuffer, MAX_FRAMES_IN_FLIGHT> _objectBuffers;
-	std::array<VmaAllocation, MAX_FRAMES_IN_FLIGHT> _objectBuffersAllocation;
-	std::array<void*, MAX_FRAMES_IN_FLIGHT> _objectBuffersMapped;
+	std::array<KtAllocatedBuffer, MAX_FRAMES_IN_FLIGHT> _uniformBuffers;
+	std::array<KtAllocatedBuffer, MAX_FRAMES_IN_FLIGHT> _objectBuffers;
 
 	std::array<VkDeviceSize, MAX_FRAMES_IN_FLIGHT> _objectCounts;
 
@@ -64,7 +60,7 @@ private:
 	void SetObjectCount(const VkDeviceSize objectCount, const uint32_t imageIndex);
 
 	void CreateDescriptorSets();
-	void UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTexture* imageTexture, const VkDeviceSize objectCount);
+	void UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTexture* imageTexture);
 
 	void CreateGraphicsPipeline();
 	const VkShaderModule CreateShaderModule(const std::vector<char>& code) const;

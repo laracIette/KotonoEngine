@@ -2,6 +2,7 @@
 #include <vk_mem_alloc.h>
 #include <filesystem>
 #include "Vertex.h"
+#include "AllocatedBuffer.h"
 class KtModel final
 {
 public:
@@ -14,14 +15,15 @@ public:
 	const VkBuffer GetVertexBuffer() const;
 	const VkBuffer GetIndexBuffer() const;
 
+	void CmdBind(VkCommandBuffer commandBuffer) const;
+	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t instanceCount) const;
+
 private:
 	const std::filesystem::path _path;
 	std::vector<KtVertex> _vertices;
 	std::vector<uint32_t> _indices;
-	VkBuffer _vertexBuffer;
-	VkBuffer _indexBuffer;
-	VmaAllocation _vertexBufferAllocation;
-	VmaAllocation _indexBufferAllocation;
+	KtAllocatedBuffer _vertexBuffer;
+	KtAllocatedBuffer _indexBuffer;
 
 	void Load();
 	void CreateVertexBuffer();

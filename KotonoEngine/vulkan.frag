@@ -11,4 +11,5 @@ void main()
 {
     outColor = vec4(fragColor * texture(texSampler, fragTexCoord).rgb, 1.0);
     outColor.rgb = pow(outColor.rgb, vec3(1.0 / 2.2)); // Gamma correction if using sRGB
+    //outColor = vec4(1.0, 1.0, 1.0, 1.0);
 }

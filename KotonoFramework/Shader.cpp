@@ -29,11 +29,18 @@ KtShader::~KtShader()
 	
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
-		vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _uniformBuffers[i], _uniformBuffersAllocation[i]);
+		vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _uniformBuffers[i].Buffer, _uniformBuffers[i].Allocation);
+	}
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	{
+		vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _objectBuffers[i].Buffer, _objectBuffers[i].Allocation);
 	}
 
+	vkDestroyDescriptorSetLayout(Framework.GetWindow().GetContext().GetDevice(), _uniformDescriptorSetLayout, nullptr);
+	vkDestroyDescriptorSetLayout(Framework.GetWindow().GetContext().GetDevice(), _objectDescriptorSetLayout, nullptr);
+
 	vkDestroyDescriptorPool(Framework.GetWindow().GetContext().GetDevice(), _descriptorPool, nullptr);
-	vkDestroyDescriptorSetLayout(Framework.GetWindow().GetContext().GetDevice(), _globalDescriptorSetLayout, nullptr);
+	KT_DEBUG_LOG("cleaned up shader");
 }
 
 VkPipeline KtShader::GetGraphicsPipeline() const
@@ -69,7 +76,7 @@ void KtShader::CreateDescriptorSetLayout()
 	set0LayoutInfo.pBindings = set0Bindings.data();
 
 	VK_CHECK_THROW(
-		vkCreateDescriptorSetLayout(Framework.GetWindow().GetContext().GetDevice(), &set0LayoutInfo, nullptr, &_globalDescriptorSetLayout),
+		vkCreateDescriptorSetLayout(Framework.GetWindow().GetContext().GetDevice(), &set0LayoutInfo, nullptr, &_uniformDescriptorSetLayout),
 		"failed to create descriptor set layout!"
 	);
 
@@ -126,18 +133,13 @@ void KtShader::CreateUniformBuffers()
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
-		VmaAllocationInfo uniformBufferAllocInfo;
 		Framework.GetWindow().GetContext().CreateBuffer(
 			bufferSize,
 			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			VMA_ALLOCATION_CREATE_MAPPED_BIT,
-			_uniformBuffers[i],
-			_uniformBuffersAllocation[i],
-			uniformBufferAllocInfo
+			_uniformBuffers[i]
 		);
-
-		_uniformBuffersMapped[i] = uniformBufferAllocInfo.pMappedData;
 	}
 }
 
@@ -151,29 +153,24 @@ void KtShader::CreateObjectBuffers()
 
 void KtShader::CreateObjectBuffer(const uint32_t imageIndex)
 {
-	VmaAllocationInfo objectBufferAllocInfo;
 	Framework.GetWindow().GetContext().CreateBuffer(
 		sizeof(KtObjectData3D) * _objectCounts[imageIndex] == 0 ? 1 : _objectCounts[imageIndex],
-		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, // Usage flags
+		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, // Usage flags
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, // Memory properties
 		VMA_ALLOCATION_CREATE_MAPPED_BIT, // Allocation flags
-		_objectBuffers[imageIndex], // Object buffer handle
-		_objectBuffersAllocation[imageIndex], // Allocation handle
-		objectBufferAllocInfo // Allocation info (mapped data, etc.)
+		_objectBuffers[imageIndex],
+		VMA_MEMORY_USAGE_CPU_TO_GPU
 	);
-
-	// Mapped data for the object buffer (used to update object data each frame)
-	_objectBuffersMapped[imageIndex] = objectBufferAllocInfo.pMappedData;
 }
 
 void KtShader::UpdateObjectBuffer(const std::vector<KtObjectData3D>& objectDatas, const uint32_t imageIndex)
 {
 	SetObjectCount(objectDatas.size(), imageIndex);
 
-	memcpy(_objectBuffersMapped[imageIndex], objectDatas.data(), sizeof(KtObjectData3D) * objectDatas.size());
+	memcpy(_objectBuffers[imageIndex].AllocationInfo.pMappedData, objectDatas.data(), sizeof(KtObjectData3D) * objectDatas.size());
 }
 
-void KtShader::CmdBindGraphicsPipeline(VkCommandBuffer commandBuffer)
+void KtShader::CmdBind(VkCommandBuffer commandBuffer) const
 {
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline);
 }
@@ -182,7 +179,7 @@ void KtShader::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32
 {
 	vkCmdBindDescriptorSets(
 		commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout,
-		0, 1, &_globalDescriptorSets[imageIndex], 0, nullptr
+		0, 1, &_uniformDescriptorSets[imageIndex], 0, nullptr
 	);
 
 	vkCmdBindDescriptorSets(
@@ -202,26 +199,29 @@ void KtShader::UpdateUniformBuffer(const uint32_t imageIndex)
 
 	ViewProjectionBuffer ubo{};
 	ubo.View = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.Projection = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);
+	ubo.Projection = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 100.0f);
 	ubo.Projection[1][1] *= -1.0f;
 
-	memcpy(_uniformBuffersMapped[imageIndex], &ubo, sizeof(ViewProjectionBuffer));
+	memcpy(_uniformBuffers[imageIndex].AllocationInfo.pMappedData, &ubo, sizeof(ViewProjectionBuffer));
 }
 
 void KtShader::SetObjectCount(const VkDeviceSize objectCount, const uint32_t imageIndex)
 {
 	if (_objectCounts[imageIndex] != objectCount)
 	{
+		KT_DEBUG_LOG("Object count at frame %u: %llu", imageIndex, objectCount);
 		_objectCounts[imageIndex] = objectCount;
+
+		vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _objectBuffers[imageIndex].Buffer, _objectBuffers[imageIndex].Allocation);
 		CreateObjectBuffer(imageIndex);
-		UpdateDescriptorSet(imageIndex, _imageTexture, static_cast<uint32_t>(objectCount));
+		UpdateDescriptorSet(imageIndex, _imageTexture);
 	}
 }
 
 void KtShader::CreateDescriptorSets()
 {
 	std::array<VkDescriptorSetLayout, MAX_FRAMES_IN_FLIGHT> globalLayouts{};
-	globalLayouts.fill(_globalDescriptorSetLayout);
+	globalLayouts.fill(_uniformDescriptorSetLayout);
 
 	std::array<VkDescriptorSetLayout, MAX_FRAMES_IN_FLIGHT> objectLayouts{};
 	objectLayouts.fill(_objectDescriptorSetLayout);
@@ -233,7 +233,7 @@ void KtShader::CreateDescriptorSets()
 	allocInfo.pSetLayouts = globalLayouts.data();
 
 	VK_CHECK_THROW(
-		vkAllocateDescriptorSets(Framework.GetWindow().GetContext().GetDevice(), &allocInfo, _globalDescriptorSets.data()),
+		vkAllocateDescriptorSets(Framework.GetWindow().GetContext().GetDevice(), &allocInfo, _uniformDescriptorSets.data()),
 		"failed to allocate global descriptor sets!"
 	);
 
@@ -246,14 +246,14 @@ void KtShader::CreateDescriptorSets()
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
-		UpdateDescriptorSet(static_cast<uint32_t>(i), _imageTexture, 0);
+		UpdateDescriptorSet(static_cast<uint32_t>(i), _imageTexture);
 	}
 }
 
-void KtShader::UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTexture* imageTexture, const VkDeviceSize objectCount)
+void KtShader::UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTexture* imageTexture)
 {
 	VkDescriptorBufferInfo bufferInfo{};
-	bufferInfo.buffer = _uniformBuffers[imageIndex];
+	bufferInfo.buffer = _uniformBuffers[imageIndex].Buffer;
 	bufferInfo.offset = 0;
 	bufferInfo.range = sizeof(ViewProjectionBuffer);
 
@@ -263,14 +263,14 @@ void KtShader::UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTextu
 	imageInfo.sampler = imageTexture->Sampler;
 
 	VkDescriptorBufferInfo objectBufferInfo{};
-	objectBufferInfo.buffer = _objectBuffers[imageIndex]; // Your storage buffer
-	objectBufferInfo.offset = 0;
-	objectBufferInfo.range = sizeof(KtObjectData3D) * objectCount; // Ensure size matches GLSL array
+	objectBufferInfo.buffer = _objectBuffers[imageIndex].Buffer;
+	objectBufferInfo.offset = 0; 
+	objectBufferInfo.range = sizeof(KtObjectData3D) * _objectCounts[imageIndex] == 0 ? 1 : _objectCounts[imageIndex];
 
 	std::array<VkWriteDescriptorSet, 3> descriptorWrites{};
 
 	descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-	descriptorWrites[0].dstSet = _globalDescriptorSets[imageIndex];
+	descriptorWrites[0].dstSet = _uniformDescriptorSets[imageIndex];
 	descriptorWrites[0].dstBinding = 0;
 	descriptorWrites[0].dstArrayElement = 0;
 	descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -278,7 +278,7 @@ void KtShader::UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTextu
 	descriptorWrites[0].pBufferInfo = &bufferInfo;
 
 	descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-	descriptorWrites[1].dstSet = _globalDescriptorSets[imageIndex];
+	descriptorWrites[1].dstSet = _uniformDescriptorSets[imageIndex];
 	descriptorWrites[1].dstBinding = 1;
 	descriptorWrites[1].dstArrayElement = 0;
 	descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -324,25 +324,19 @@ void KtShader::CreateGraphicsPipeline()
 	VkVertexInputBindingDescription bindingDescriptions[] =
 	{ 
 		// Binding for vertex data
-		{ 0, sizeof(KtVertex), VK_VERTEX_INPUT_RATE_VERTEX },
-		// Binding for instance data
-		{ 1, sizeof(KtObjectData3D), VK_VERTEX_INPUT_RATE_INSTANCE }
+		{ 0, sizeof(KtVertex), VK_VERTEX_INPUT_RATE_VERTEX }
 	};
 	VkVertexInputAttributeDescription attributeDescriptions[] =
 	{
 		// Vertex attributes
 		{ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KtVertex, Position) },
 		{ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KtVertex, Color) },
-		{ 2, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(KtVertex, TexCoord) },
-		// Instance attributes
-		{ 3, 1, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KtObjectData3D, Position) },
-		{ 4, 1, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof(KtObjectData3D, Rotation) },
-		{ 5, 1, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KtObjectData3D, Scale) }
+		{ 2, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(KtVertex, TexCoord) }
 	};
 
-	vertexInputInfo.vertexBindingDescriptionCount = 2;
+	vertexInputInfo.vertexBindingDescriptionCount = 1;
 	vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions;
-	vertexInputInfo.vertexAttributeDescriptionCount = 6;
+	vertexInputInfo.vertexAttributeDescriptionCount = 3;
 	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions;
 
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
@@ -436,7 +430,7 @@ void KtShader::CreateGraphicsPipeline()
 	dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
 	dynamicState.pDynamicStates = dynamicStates.data();
 	
-	std::array<VkDescriptorSetLayout, 2> setLayouts = { _globalDescriptorSetLayout, _objectDescriptorSetLayout };
+	std::array<VkDescriptorSetLayout, 2> setLayouts = { _uniformDescriptorSetLayout, _objectDescriptorSetLayout };
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(setLayouts.size());;

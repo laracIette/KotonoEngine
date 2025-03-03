@@ -4,6 +4,7 @@
 #include <fstream>
 #include "Vertex.h"
 #include <chrono>
+#include "log.h"
 
 constexpr std::array<const char*, 1> validationLayers =
 {
@@ -16,10 +17,10 @@ constexpr std::array<const char*, 2> deviceExtensions =
 	VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME
 };
 
-#ifdef NDEBUG
-constexpr bool enableValidationLayers = false;
-#else
+#ifdef _DEBUG
 constexpr bool enableValidationLayers = true;
+#else
+constexpr bool enableValidationLayers = false;
 #endif
 
 constexpr uint32_t WIDTH = 800;
@@ -38,7 +39,22 @@ void KtContext::Init()
 
 void KtContext::Cleanup()
 {
+	KT_DEBUG_LOG("cleaning up context");
 	vkDestroyCommandPool(_device, _commandPool, nullptr);
+
+#if false
+	VmaTotalStatistics stats;
+	vmaCalculateStatistics(_allocator, &stats);
+
+	KT_DEBUG_LOG("VMA Allocator Stats:");
+	KT_DEBUG_LOG("Total memory allocated: %llu bytes", stats.total.statistics.allocationBytes);
+	KT_DEBUG_LOG("Number of allocations: %u", stats.total.statistics.allocationCount);
+
+	char* statsString;
+	vmaBuildStatsString(_allocator, &statsString, true);
+	KT_DEBUG_LOG("VMA Stats:\n%s", statsString);
+	vmaFreeStatsString(_allocator, statsString);
+#endif
 
 	vmaDestroyAllocator(_allocator);
 
@@ -51,6 +67,7 @@ void KtContext::Cleanup()
 
 	vkDestroySurfaceKHR(_instance, _surface, nullptr);
 	vkDestroyInstance(_instance, nullptr);
+	KT_DEBUG_LOG("cleaned up context");
 }
 
 void KtContext::CreateInstance()
@@ -296,6 +313,12 @@ void KtContext::CreateLogicalDevice()
 	deviceFeatures.samplerAnisotropy = VK_TRUE;
 	deviceFeatures.sampleRateShading = VK_TRUE; // enable sample shading feature for the device
 
+	// Enable shader draw parameters
+	VkPhysicalDeviceShaderDrawParametersFeatures shaderDrawParametersFeatures{};
+	shaderDrawParametersFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETERS_FEATURES;
+	shaderDrawParametersFeatures.pNext = nullptr; // No further extensions
+	shaderDrawParametersFeatures.shaderDrawParameters = VK_TRUE;
+
 	VkDeviceCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
@@ -316,6 +339,9 @@ void KtContext::CreateLogicalDevice()
 	{
 		createInfo.enabledLayerCount = 0;
 	}
+
+	// Attach the shader draw parameters feature via pNext
+	createInfo.pNext = &shaderDrawParametersFeatures;
 
 	if (vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device) != VK_SUCCESS)
 	{
@@ -497,7 +523,7 @@ void KtContext::CreateCommandPool()
 	}
 }
 
-void KtContext::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VmaAllocationCreateFlags flags, VkBuffer& buffer, VmaAllocation& allocation, VmaAllocationInfo& allocInfo) const
+void KtContext::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VmaAllocationCreateFlags flags, KtAllocatedBuffer& buffer, VmaMemoryUsage vmaUsage) const
 {
 	VkBufferCreateInfo bufferInfo{};
 	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -506,7 +532,11 @@ void KtContext::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemo
 	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
 	VmaAllocationCreateInfo allocCreateInfo{};
-	if (properties & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
+	if (vmaUsage != VMA_MEMORY_USAGE_UNKNOWN)
+	{
+		allocCreateInfo.usage = vmaUsage;
+	}
+	else if (properties & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
 	{
 		if (properties & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
 		{
@@ -524,12 +554,12 @@ void KtContext::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemo
 	allocCreateInfo.requiredFlags = properties;
 	allocCreateInfo.flags = flags;
 
-	if (vmaCreateBuffer(_allocator, &bufferInfo, &allocCreateInfo, &buffer, &allocation, &allocInfo) != VK_SUCCESS)
+	if (vmaCreateBuffer(_allocator, &bufferInfo, &allocCreateInfo, &buffer.Buffer, &buffer.Allocation, &buffer.AllocationInfo) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create buffer with VMA!");
 	}
 
-	if ((flags & VMA_ALLOCATION_CREATE_MAPPED_BIT) && !allocInfo.pMappedData)
+	if ((flags & VMA_ALLOCATION_CREATE_MAPPED_BIT) && !buffer.AllocationInfo.pMappedData)
 	{
 		throw std::runtime_error("Staging buffer was not mapped as expected!");
 	}
