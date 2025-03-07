@@ -493,21 +493,21 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32
 
 		for (auto& [model, objectDatas] : modelObjectDatas)
 		{
+			const uint32_t instanceCount = static_cast<uint32_t>(objectDatas.size());
+			
 			if (!model)
 			{
 				KT_DEBUG_LOG("model is nullptr");
-				continue;
 			}
-			if (objectDatas.empty())
+			else if (instanceCount == 0)
 			{
 				KT_DEBUG_LOG("objectDatas is empty");
-				continue;
 			}
-
-			const uint32_t instanceCount = static_cast<uint32_t>(objectDatas.size());
-
-			model->CmdBind(commandBuffer);
-			model->CmdDraw(commandBuffer, instanceCount, instanceIndex);
+			else
+			{
+				model->CmdBind(commandBuffer);
+				model->CmdDraw(commandBuffer, instanceCount, instanceIndex);
+			}
 
 			instanceIndex += instanceCount;
 

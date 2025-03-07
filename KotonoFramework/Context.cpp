@@ -196,25 +196,50 @@ void KtContext::PickPhysicalDevice()
 	std::vector<VkPhysicalDevice> devices(deviceCount);
 	vkEnumeratePhysicalDevices(_instance, &deviceCount, devices.data());
 
+	VkPhysicalDevice bestDevice = VK_NULL_HANDLE;
+	VkDeviceSize maxVRAM = 0;
+
 	for (const auto& device : devices)
 	{
 		if (IsDeviceSuitable(device))
 		{
-			_physicalDevice = device;
-			_msaaSamples = GetMaxUsableSampleCount();
-
 			VkPhysicalDeviceProperties deviceProperties;
-			vkGetPhysicalDeviceProperties(_physicalDevice, &deviceProperties);
-			std::cout << "Selected GPU: " << deviceProperties.deviceName << std::endl;
+			vkGetPhysicalDeviceProperties(device, &deviceProperties);
 
-			break;
+			// Get the memory properties of the GPU
+			VkPhysicalDeviceMemoryProperties memoryProperties;
+			vkGetPhysicalDeviceMemoryProperties(device, &memoryProperties);
+
+			VkDeviceSize totalVRAM = 0;
+			// Iterate over memory types and sum the VRAM of the suitable types
+			for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i)
+			{
+				const VkMemoryType& memoryType = memoryProperties.memoryTypes[i];
+				// Consider only the VRAM (local memory)
+				if (memoryType.propertyFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
+				{
+					totalVRAM += memoryProperties.memoryHeaps[memoryProperties.memoryTypes[i].heapIndex].size;
+				}
+			}
+
+			// If this device has more VRAM than the previously selected one
+			if (totalVRAM > maxVRAM)
+			{
+				bestDevice = device;
+				maxVRAM = totalVRAM;
+
+				std::cout << "Selected GPU: " << deviceProperties.deviceName << ", VRAM: " << totalVRAM / (1024ull * 1024) << " MB" << std::endl;
+			}
 		}
 	}
 
-	if (_physicalDevice == VK_NULL_HANDLE)
+	if (bestDevice == VK_NULL_HANDLE)
 	{
 		throw std::runtime_error("failed to find a suitable GPU!");
 	}
+
+	_physicalDevice = bestDevice;
+	_msaaSamples = GetMaxUsableSampleCount();
 }
 
 const bool KtContext::IsDeviceSuitable(VkPhysicalDevice device)
