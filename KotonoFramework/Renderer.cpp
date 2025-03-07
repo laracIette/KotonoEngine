@@ -10,7 +10,6 @@ KtModel* model1 = nullptr;
 KtModel* model2 = nullptr;
 KtMesh* mesh1 = nullptr;
 KtMesh* mesh2 = nullptr;
-KtMesh* mesh3 = nullptr;
 
 void KtRenderer::Init()
 {
@@ -38,7 +37,6 @@ void KtRenderer::Cleanup()
 	delete model2;
 	delete mesh1;
 	delete mesh2;
-	delete mesh3;
 
 	CleanupSwapChain();
 
@@ -85,10 +83,6 @@ void KtRenderer::CreateShaderAndModels()
 	mesh2 = new KtMesh();
 	mesh2->SetShader(shader);
 	mesh2->SetModel(model2);
-
-	mesh3 = new KtMesh();
-	mesh3->SetShader(shader);
-	mesh3->SetModel(model2);
 }
 
 void KtRenderer::CreateSwapChain()
@@ -560,43 +554,31 @@ void KtRenderer::DrawFrame()
 		glm::scale(
 			glm::rotate(
 				glm::translate(
-					glm::mat4(1.0f), 
-					glm::vec3(0.0f)
-				),
-				time * glm::radians(90.0f), 
-				glm::vec3(0.0f, 0.0f, 1.0f)
-			),
-			glm::vec3(1.0f)
-		)
-	);
-
-	mesh2->AddToRenderQueue(
-		glm::scale(
-			glm::rotate(
-				glm::translate(
-					glm::mat4(1.0f), 
+					glm::mat4(1.0f),
 					glm::vec3(0.0f)
 				),
 				time * glm::radians(90.0f),
 				glm::vec3(0.0f, 0.0f, 1.0f)
 			),
-			glm::vec3(0.2f)
+			glm::vec3(1.0f)
 		)
 	);
-
-	mesh3->AddToRenderQueue(
-		glm::scale(
-			glm::rotate(
-				glm::translate(
-					glm::mat4(1.0f), 
-					glm::vec3(0.5f, 0.0f, 0.0f)
+	for (uint32_t i = 0; i < 1000; i++)
+	{
+		mesh2->AddToRenderQueue(
+			glm::scale(
+				glm::rotate(
+					glm::translate(
+						glm::mat4(1.0f),
+						glm::vec3(cos(i) * i * 0.01f, sin(i) * i * 0.01f, 0.0f)
+					),
+					time * glm::radians(90.0f),
+					glm::vec3(0.0f, 0.0f, 1.0f)
 				),
-				time * glm::radians(90.0f), 
-				glm::vec3(0.0f, 0.0f, 1.0f)
-			),
-			glm::vec3(0.1f)
-		)
-	);
+				glm::vec3(0.1f)
+			)
+		);
+	}
 
 	vkWaitForFences(Framework.GetWindow().GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
 
