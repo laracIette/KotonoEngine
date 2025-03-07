@@ -1,4 +1,4 @@
-#include <KotonoFramework/Framework.h>
+#include <kotono_framework/Framework.h>
 
 KtFramework Framework;
 
