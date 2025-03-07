@@ -230,6 +230,12 @@ void KtContext::PickPhysicalDevice()
 
 				std::cout << "Selected GPU: " << deviceProperties.deviceName << ", VRAM: " << totalVRAM / (1024ull * 1024) << " MB" << std::endl;
 			}
+
+			// Stop on cpu if on battery
+			if (!GetIsComputerPluggedIn())
+			{
+				break;
+			}
 		}
 	}
 
@@ -958,4 +964,11 @@ VkCommandPool& KtContext::GetCommandPool()
 const VkSampleCountFlagBits KtContext::GetMSAASamples() const
 {
 	return _msaaSamples;
+}
+
+const bool KtContext::GetIsComputerPluggedIn()
+{
+	SYSTEM_POWER_STATUS powerStatus;
+	return GetSystemPowerStatus(&powerStatus) 
+		&& powerStatus.ACLineStatus == AC_LINE_ONLINE;
 }

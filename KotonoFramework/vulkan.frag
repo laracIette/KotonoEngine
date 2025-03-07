@@ -10,5 +10,5 @@ layout(set = 0, binding = 1) uniform sampler2D texSampler;
 void main() 
 {
     outColor = vec4(fragColor * texture(texSampler, fragTexCoord).rgb, 1.0);
-    outColor.rgb = pow(outColor.rgb, vec3(1.0 / 2.2)); // Gamma correction if using sRGB
+    //outColor.rgb = pow(outColor.rgb, vec3(1.0 / 2.2)); // Gamma correction if using sRGB
 }

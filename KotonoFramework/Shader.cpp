@@ -196,7 +196,7 @@ void KtShader::UpdateObjectBuffer(const std::vector<KtObjectData3D>& objectDatas
 	Framework.GetWindow().GetContext().CopyBuffer(
 		_stagingObjectBuffers[imageIndex].Buffer,
 		_objectBuffers[imageIndex].Buffer,
-		sizeof(ViewProjectionBuffer)
+		GetObjectBufferSize(imageIndex)
 	);
 }
 

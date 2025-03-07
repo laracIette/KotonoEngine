@@ -27,6 +27,7 @@ public:
 
 	const VkSampleCountFlagBits GetMSAASamples() const;
 
+
 	VkPhysicalDevice& GetPhysicalDevice();
 	VkDevice& GetDevice();
 	VmaAllocator& GetAllocator();
@@ -93,8 +94,9 @@ private:
 	const VkFormat FindDepthFormat() const;
 	const bool HasStencilComponent(VkFormat format) const;
 
-
 	const VkSampleCountFlagBits GetMaxUsableSampleCount() const;
+
+	const bool GetIsComputerPluggedIn();
 
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 	{
