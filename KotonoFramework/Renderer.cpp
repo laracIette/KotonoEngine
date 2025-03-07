@@ -10,6 +10,7 @@ KtModel* model1 = nullptr;
 KtModel* model2 = nullptr;
 KtMesh* mesh1 = nullptr;
 KtMesh* mesh2 = nullptr;
+KtMesh* mesh3 = nullptr;
 
 void KtRenderer::Init()
 {
@@ -37,6 +38,7 @@ void KtRenderer::Cleanup()
 	delete model2;
 	delete mesh1;
 	delete mesh2;
+	delete mesh3;
 
 	CleanupSwapChain();
 
@@ -83,6 +85,10 @@ void KtRenderer::CreateShaderAndModels()
 	mesh2 = new KtMesh();
 	mesh2->SetShader(shader);
 	mesh2->SetModel(model2);
+
+	mesh3 = new KtMesh();
+	mesh3->SetShader(shader);
+	mesh3->SetModel(model2);
 }
 
 void KtRenderer::CreateSwapChain()
@@ -462,24 +468,48 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32
 	scissor.extent = _swapChainExtent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	for (const auto& shaderModelsPair : _renderQueue3D)
+	for (auto& [shader, modelObjectDatas] : _renderQueue3D)
 	{
-		auto* shader = shaderModelsPair.first;
+		if (!shader)
+		{
+			KT_DEBUG_LOG("shader is nullptr");
+			continue;
+		}
 
-		shader->CmdBind(commandBuffer);
 		shader->UpdateUniformBuffer(_currentFrame);
 
-		const auto& modelObjectDatasPair = shaderModelsPair.second;
-		for (const auto& modelObjectDatasPair : modelObjectDatasPair)
-		{
-			auto* model = modelObjectDatasPair.first;
-			const auto& objectDatas = modelObjectDatasPair.second;
+		std::vector<KtObjectData3D> objectBufferData;
+		std::for_each(modelObjectDatas.begin(), modelObjectDatas.end(), [&](const auto& pair)
+			{
+				objectBufferData.insert(objectBufferData.end(), pair.second.begin(), pair.second.end());
+			}
+		);
+		shader->UpdateObjectBuffer(objectBufferData, _currentFrame);
 
-			shader->UpdateObjectBuffer(objectDatas, _currentFrame);
-			shader->CmdBindDescriptorSets(commandBuffer, _currentFrame);
+		shader->CmdBind(commandBuffer);
+		shader->CmdBindDescriptorSets(commandBuffer, _currentFrame);
+
+		uint32_t instanceIndex = 0;	
+
+		for (auto& [model, objectDatas] : modelObjectDatas)
+		{
+			if (!model)
+			{
+				KT_DEBUG_LOG("model is nullptr");
+				continue;
+			}
+			if (objectDatas.empty())
+			{
+				KT_DEBUG_LOG("objectDatas is empty");
+				continue;
+			}
+
+			const uint32_t instanceCount = static_cast<uint32_t>(objectDatas.size());
 
 			model->CmdBind(commandBuffer);
-			model->CmdDraw(commandBuffer, static_cast<uint32_t>(objectDatas.size()));
+			model->CmdDraw(commandBuffer, instanceCount, instanceIndex);
+
+			instanceIndex += instanceCount;
 
 			//KT_DEBUG_LOG("Drawing %s", model->GetPath().string().c_str());
 		}
@@ -522,8 +552,51 @@ void KtRenderer::ClearRenderQueue()
 
 void KtRenderer::DrawFrame()
 {
-	mesh1->AddToRenderQueue();
-	mesh2->AddToRenderQueue();
+	static const auto startTime = std::chrono::high_resolution_clock::now();
+	const auto currentTime = std::chrono::high_resolution_clock::now();
+	const float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+	mesh1->AddToRenderQueue(
+		glm::scale(
+			glm::rotate(
+				glm::translate(
+					glm::mat4(1.0f), 
+					glm::vec3(0.0f)
+				),
+				time * glm::radians(90.0f), 
+				glm::vec3(0.0f, 0.0f, 1.0f)
+			),
+			glm::vec3(1.0f)
+		)
+	);
+
+	mesh2->AddToRenderQueue(
+		glm::scale(
+			glm::rotate(
+				glm::translate(
+					glm::mat4(1.0f), 
+					glm::vec3(0.0f)
+				),
+				time * glm::radians(90.0f),
+				glm::vec3(0.0f, 0.0f, 1.0f)
+			),
+			glm::vec3(0.2f)
+		)
+	);
+
+	mesh3->AddToRenderQueue(
+		glm::scale(
+			glm::rotate(
+				glm::translate(
+					glm::mat4(1.0f), 
+					glm::vec3(0.5f, 0.0f, 0.0f)
+				),
+				time * glm::radians(90.0f), 
+				glm::vec3(0.0f, 0.0f, 1.0f)
+			),
+			glm::vec3(0.1f)
+		)
+	);
 
 	vkWaitForFences(Framework.GetWindow().GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
 
@@ -623,11 +696,6 @@ void KtRenderer::OnFramebufferResized()
 const VkExtent2D KtRenderer::GetSwapChainExtent() const
 {
 	return _swapChainExtent;
-}
-
-const uint32_t KtRenderer::GetCurrentFrame() const
-{
-	return _currentFrame;
 }
 
 VkRenderPass KtRenderer::GetRenderPass() const

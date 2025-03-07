@@ -32,7 +32,7 @@ private:
 	const std::filesystem::path _vertPath;
 	const std::filesystem::path _fragPath;
 
-	KtImageTexture* _imageTexture;
+    KtImageTexture* _imageTexture;
 
 	VkDescriptorPool _descriptorPool;
 	VkDescriptorSetLayout _uniformDescriptorSetLayout;
@@ -45,7 +45,8 @@ private:
 
 	std::array<KtAllocatedBuffer, MAX_FRAMES_IN_FLIGHT> _uniformBuffers;
 	std::array<KtAllocatedBuffer, MAX_FRAMES_IN_FLIGHT> _objectBuffers;
-
+	std::array<KtAllocatedBuffer, MAX_FRAMES_IN_FLIGHT> _stagingUniformBuffers;
+	std::array<KtAllocatedBuffer, MAX_FRAMES_IN_FLIGHT> _stagingObjectBuffers;
 	std::array<VkDeviceSize, MAX_FRAMES_IN_FLIGHT> _objectCounts;
 
 	void CreateDescriptorSetLayout();
@@ -54,10 +55,12 @@ private:
 	void CreateImageTexture();
 
 	void CreateUniformBuffers();
+	void CreateUniformBuffer(const uint32_t imageIndex);
 	void CreateObjectBuffers();
 	void CreateObjectBuffer(const uint32_t imageIndex);
 	// Recreates the object buffer when the object count changes
 	void SetObjectCount(const VkDeviceSize objectCount, const uint32_t imageIndex);
+	const VkDeviceSize GetObjectBufferSize(const uint32_t imageIndex) const;
 
 	void CreateDescriptorSets();
 	void UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTexture* imageTexture);

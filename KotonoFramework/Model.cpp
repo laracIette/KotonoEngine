@@ -27,26 +27,6 @@ const std::filesystem::path& KtModel::GetPath() const
 	return _path;
 }
 
-const std::vector<KtVertex>& KtModel::GetVertices() const
-{
-	return _vertices;
-}
-
-const std::vector<uint32_t>& KtModel::GetIndices() const
-{
-	return _indices;
-}
-
-const VkBuffer KtModel::GetVertexBuffer() const
-{
-	return _vertexBuffer.Buffer;
-}
-
-const VkBuffer KtModel::GetIndexBuffer() const
-{
-	return _indexBuffer.Buffer;
-}
-
 void KtModel::CmdBind(VkCommandBuffer commandBuffer) const
 {
 	VkBuffer vertexBuffers[] = { _vertexBuffer.Buffer };
@@ -55,9 +35,9 @@ void KtModel::CmdBind(VkCommandBuffer commandBuffer) const
 	vkCmdBindIndexBuffer(commandBuffer, _indexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
 }
 
-void KtModel::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t instanceCount) const
+void KtModel::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t instanceCount, const uint32_t firstInstance) const
 {
-	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(_indices.size()), instanceCount, 0, 0, 0);
+	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(_indices.size()), instanceCount, 0, 0, firstInstance);
 }
 
 void KtModel::Load()

@@ -17,11 +17,9 @@ public:
 	void AddToRenderQueue(KtShader* shader, KtModel* model, const KtObjectData3D& objectData);
 	void DrawFrame();
 
-	void RecreateSwapChain();
 	void OnFramebufferResized();
 
 	const VkExtent2D GetSwapChainExtent() const;
-	const uint32_t GetCurrentFrame() const;
 
 	VkRenderPass GetRenderPass() const;
 
@@ -57,6 +55,7 @@ private:
 	uint32_t _currentFrame;
 
 	void CreateSwapChain();
+	void RecreateSwapChain();
 	const VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
 	const VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const;
 	const VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;

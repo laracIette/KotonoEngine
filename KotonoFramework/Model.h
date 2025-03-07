@@ -10,13 +10,9 @@ public:
 	~KtModel();
 
 	const std::filesystem::path& GetPath() const;
-	const std::vector<KtVertex>& GetVertices() const;
-	const std::vector<uint32_t>& GetIndices() const; 
-	const VkBuffer GetVertexBuffer() const;
-	const VkBuffer GetIndexBuffer() const;
 
 	void CmdBind(VkCommandBuffer commandBuffer) const;
-	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t instanceCount) const;
+	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t instanceCount, const uint32_t firstInstance) const;
 
 private:
 	const std::filesystem::path _path;
