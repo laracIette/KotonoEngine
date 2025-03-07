@@ -16,11 +16,5 @@ public:
 private:
 	KtShader* _shader;
 	KtModel* _model;
-
-	std::array<VkBuffer, MAX_FRAMES_IN_FLIGHT> _uniformBuffers;
-	std::array<VmaAllocation, MAX_FRAMES_IN_FLIGHT> _uniformBuffersAllocation;
-	std::array<void*, MAX_FRAMES_IN_FLIGHT> _uniformBuffersMapped;
-	VkDescriptorPool _descriptorPool;
-	std::array<VkDescriptorSet, MAX_FRAMES_IN_FLIGHT> _uniformDescriptorSets;
 };
 

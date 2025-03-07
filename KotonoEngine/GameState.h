@@ -1,8 +1,0 @@
-#pragma once
-
-enum class GameState
-{
-	GAMESTATE_STOPPED,
-	GAMESTATE_PLAYING,
-	GAMESTATE_PAUSED
-};

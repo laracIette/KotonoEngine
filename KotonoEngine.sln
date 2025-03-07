@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KotonoEngine", "KotonoEngine\KotonoEngine.vcxproj", "{70331AF3-3F06-48C6-B020-A0F0D5CC12C8}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KotonoFramework", "KotonoFramework\KotonoFramework.vcxproj", "{2ACAFF16-409B-41CD-AD8A-451E9B7C1409}"
 EndProject
 Global
@@ -15,14 +13,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{70331AF3-3F06-48C6-B020-A0F0D5CC12C8}.Debug|x64.ActiveCfg = Debug|x64
-		{70331AF3-3F06-48C6-B020-A0F0D5CC12C8}.Debug|x64.Build.0 = Debug|x64
-		{70331AF3-3F06-48C6-B020-A0F0D5CC12C8}.Debug|x86.ActiveCfg = Debug|Win32
-		{70331AF3-3F06-48C6-B020-A0F0D5CC12C8}.Debug|x86.Build.0 = Debug|Win32
-		{70331AF3-3F06-48C6-B020-A0F0D5CC12C8}.Release|x64.ActiveCfg = Release|x64
-		{70331AF3-3F06-48C6-B020-A0F0D5CC12C8}.Release|x64.Build.0 = Release|x64
-		{70331AF3-3F06-48C6-B020-A0F0D5CC12C8}.Release|x86.ActiveCfg = Release|Win32
-		{70331AF3-3F06-48C6-B020-A0F0D5CC12C8}.Release|x86.Build.0 = Release|Win32
 		{2ACAFF16-409B-41CD-AD8A-451E9B7C1409}.Debug|x64.ActiveCfg = Debug|x64
 		{2ACAFF16-409B-41CD-AD8A-451E9B7C1409}.Debug|x64.Build.0 = Debug|x64
 		{2ACAFF16-409B-41CD-AD8A-451E9B7C1409}.Debug|x86.ActiveCfg = Debug|Win32
