@@ -26,7 +26,7 @@ public:
 	VkRenderPass GetRenderPass() const;
 
 private:
-	void CreateShaderAndModels();
+	void CreateShaderAndModels() const;
 	std::unordered_map<KtShader*, std::unordered_map<KtModel*, std::vector<KtObjectData3D>>> _renderQueue3D;
 	KtUniformData3D _uniformData3D;
 

@@ -71,11 +71,11 @@ void KtRenderer::SetUniformData3D(const KtUniformData3D& uniformData3D)
 	_uniformData3D = uniformData3D;
 }
 
-void KtRenderer::CreateShaderAndModels() 
+void KtRenderer::CreateShaderAndModels() const
 {
 	shader = new KtShader(
-		R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\shaders\vulkanVert.spv)",
-		R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\shaders\vulkanFrag.spv)"
+		R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\vulkanVert.spv)",
+		R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\vulkanFrag.spv)"
 	);
 	
 	model1 = new KtModel(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.obj)");

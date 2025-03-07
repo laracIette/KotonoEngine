@@ -24,14 +24,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="vulkan.frag">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="vulkan.vert">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="src\AudioManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -163,5 +155,13 @@
     <ClInclude Include="include\kotono_framework\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\vulkan.frag">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="shaders\vulkan.vert">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
   </ItemGroup>
 </Project>

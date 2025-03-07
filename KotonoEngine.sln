@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KotonoFramework", "KotonoFramework\KotonoFramework.vcxproj", "{2ACAFF16-409B-41CD-AD8A-451E9B7C1409}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KotonoEngine", "KotonoEngine\KotonoEngine.vcxproj", "{5D3F099A-E005-453C-BC01-38FF10ACB67C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2ACAFF16-409B-41CD-AD8A-451E9B7C1409} = {2ACAFF16-409B-41CD-AD8A-451E9B7C1409}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
