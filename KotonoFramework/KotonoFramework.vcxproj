@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AudioManager.h" />
+    <ClInclude Include="UniformData3D.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="glm_includes.h" />

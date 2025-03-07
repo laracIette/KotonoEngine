@@ -66,6 +66,11 @@ void KtRenderer::AddToRenderQueue(KtShader* shader, KtModel* model, const KtObje
 	_renderQueue3D[shader][model].push_back(objectData);
 }
 
+void KtRenderer::SetUniformData3D(const KtUniformData3D& uniformData3D)
+{
+	_uniformData3D = uniformData3D;
+}
+
 void KtRenderer::CreateShaderAndModels() 
 {
 	shader = new KtShader(
@@ -470,7 +475,7 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32
 			continue;
 		}
 
-		shader->UpdateUniformBuffer(_currentFrame);
+		shader->UpdateUniformBuffer(_uniformData3D, _currentFrame);
 
 		std::vector<KtObjectData3D> objectBufferData;
 		std::for_each(modelObjectDatas.begin(), modelObjectDatas.end(), [&](const auto& pair)
@@ -550,6 +555,13 @@ void KtRenderer::DrawFrame()
 	const auto currentTime = std::chrono::high_resolution_clock::now();
 	const float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
+	const float uboTime = time / 10.0f;
+	KtUniformData3D ubo{};
+	ubo.View = glm::lookAt(glm::vec3(cos(uboTime) * 10.0f, sin(uboTime) * 10.0f, 3.0f), glm::vec3(cos(uboTime) * 5.0f, sin(uboTime) * 5.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ubo.Projection = glm::perspective(glm::radians(45.0f), _swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 1000.0f);
+	ubo.Projection[1][1] *= -1.0f;
+	SetUniformData3D(ubo);
+
 	mesh1->AddToRenderQueue(
 		glm::scale(
 			glm::rotate(
@@ -570,7 +582,7 @@ void KtRenderer::DrawFrame()
 				glm::rotate(
 					glm::translate(
 						glm::mat4(1.0f),
-						glm::vec3(cos(i) * i * 0.01f, sin(i) * i * 0.01f, 0.0f)
+						glm::vec3(cos(i), sin(i), 0.0f) * 0.01f * static_cast<float>(i)
 					),
 					time * glm::radians(90.0f),
 					glm::vec3(0.0f, 0.0f, 1.0f)

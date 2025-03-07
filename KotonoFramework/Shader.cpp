@@ -163,7 +163,7 @@ void KtShader::UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTextu
 	VkDescriptorBufferInfo bufferInfo{};
 	bufferInfo.buffer = _uniformBuffers[imageIndex].Buffer;
 	bufferInfo.offset = 0;
-	bufferInfo.range = sizeof(ViewProjectionBuffer);
+	bufferInfo.range = sizeof(KtUniformData3D);
 
 	VkDescriptorImageInfo imageInfo{};
 	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -223,7 +223,7 @@ void KtShader::CreateObjectBuffers()
 void KtShader::CreateUniformBuffer(const uint32_t imageIndex)
 {
 	Framework.GetWindow().GetContext().CreateBuffer(
-		sizeof(ViewProjectionBuffer),
+		sizeof(KtUniformData3D),
 		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		0,
@@ -232,7 +232,7 @@ void KtShader::CreateUniformBuffer(const uint32_t imageIndex)
 	);
 
 	Framework.GetWindow().GetContext().CreateBuffer(
-		sizeof(ViewProjectionBuffer),
+		sizeof(KtUniformData3D),
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		VMA_ALLOCATION_CREATE_MAPPED_BIT,
@@ -263,21 +263,14 @@ void KtShader::CreateObjectBuffer(const uint32_t imageIndex)
 	);
 }
 
-void KtShader::UpdateUniformBuffer(const uint32_t imageIndex)
+void KtShader::UpdateUniformBuffer(const KtUniformData3D& uniformData, const uint32_t imageIndex)
 {
-	const auto swapChainExtent = Framework.GetWindow().GetRenderer().GetSwapChainExtent();
-
-	ViewProjectionBuffer ubo{};
-	ubo.View = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.Projection = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 100.0f);
-	ubo.Projection[1][1] *= -1.0f;
-
-	memcpy(_stagingUniformBuffers[imageIndex].AllocationInfo.pMappedData, &ubo, sizeof(ViewProjectionBuffer));
+	memcpy(_stagingUniformBuffers[imageIndex].AllocationInfo.pMappedData, &uniformData, sizeof(KtUniformData3D));
 
 	Framework.GetWindow().GetContext().CopyBuffer(
 		_stagingUniformBuffers[imageIndex].Buffer,
 		_uniformBuffers[imageIndex].Buffer,
-		sizeof(ViewProjectionBuffer)
+		sizeof(KtUniformData3D)
 	);
 }
 

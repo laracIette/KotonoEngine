@@ -15,6 +15,8 @@ public:
 	void Cleanup();
 
 	void AddToRenderQueue(KtShader* shader, KtModel* model, const KtObjectData3D& objectData);
+	void SetUniformData3D(const KtUniformData3D& uniformData3D);
+
 	void DrawFrame();
 
 	void OnFramebufferResized();
@@ -26,6 +28,7 @@ public:
 private:
 	void CreateShaderAndModels();
 	std::unordered_map<KtShader*, std::unordered_map<KtModel*, std::vector<KtObjectData3D>>> _renderQueue3D;
+	KtUniformData3D _uniformData3D;
 
 	VkSwapchainKHR _swapChain;
 	std::vector<VkImage> _swapChainImages;

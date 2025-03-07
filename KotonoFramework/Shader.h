@@ -4,6 +4,7 @@
 #include "max_frames_in_flight.h"
 #include "ImageTexture.h"
 #include <array>
+#include "UniformData3D.h"
 #include "ObjectData3D.h"
 #include "glm_includes.h" 
 #include "AllocatedBuffer.h"
@@ -16,19 +17,13 @@ public:
 	VkPipeline GetGraphicsPipeline() const;
 	VkPipelineLayout GetPipelineLayout() const;
 
-	void UpdateUniformBuffer(const uint32_t imageIndex);
+	void UpdateUniformBuffer(const KtUniformData3D& uniformData, const uint32_t imageIndex);
 	void UpdateObjectBuffer(const std::vector<KtObjectData3D>& objectDatas, const uint32_t imageIndex);
 
 	void CmdBind(VkCommandBuffer commandBuffer) const;
 	void CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32_t imageIndex);
 
 private:
-	struct ViewProjectionBuffer
-	{
-		glm::mat4 View;
-		glm::mat4 Projection;
-	};
-
 	const std::filesystem::path _vertPath;
 	const std::filesystem::path _fragPath;
 
