@@ -52,6 +52,11 @@ VkPipelineLayout KtShader::GetPipelineLayout() const
 	return _pipelineLayout;
 }
 
+void KtShader::CreateImageTexture()
+{
+	_imageTexture = new KtImageTexture(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.png)");
+}
+
 void KtShader::CreateDescriptorSetLayout()
 {
 	VkDescriptorSetLayoutBinding uboLayoutBinding{};
@@ -121,141 +126,6 @@ void KtShader::CreateDescriptorPool()
     );
 }
 
-void KtShader::CreateImageTexture()
-{
-	_imageTexture = new KtImageTexture(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.png)");
-}
-
-void KtShader::CreateUniformBuffers()
-{
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-	{
-		CreateUniformBuffer(static_cast<uint32_t>(i));
-	}
-}
-
-void KtShader::CreateUniformBuffer(const uint32_t imageIndex)
-{
-	Framework.GetWindow().GetContext().CreateBuffer(
-		sizeof(ViewProjectionBuffer),
-		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		0,
-		_uniformBuffers[imageIndex],
-		VMA_MEMORY_USAGE_GPU_ONLY
-	);
-
-	Framework.GetWindow().GetContext().CreateBuffer(
-		sizeof(ViewProjectionBuffer),
-		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		VMA_ALLOCATION_CREATE_MAPPED_BIT,
-		_stagingUniformBuffers[imageIndex],
-		VMA_MEMORY_USAGE_CPU_TO_GPU
-	);
-}
-
-void KtShader::CreateObjectBuffers()
-{
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-	{
-		CreateObjectBuffer(static_cast<uint32_t>(i));
-	}
-}
-
-void KtShader::CreateObjectBuffer(const uint32_t imageIndex)
-{
-	KT_DEBUG_LOG("0bject buffer size at frame %u: %llu", imageIndex, GetObjectBufferSize(imageIndex));
-	Framework.GetWindow().GetContext().CreateBuffer(
-		GetObjectBufferSize(imageIndex),
-		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, // Can be used as SSBO & can receive data from staging
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, // Optimized for GPU access
-		0, // No need for MAPPED_BIT since we won’t access this from CPU
-		_objectBuffers[imageIndex],
-		VMA_MEMORY_USAGE_GPU_ONLY // Best for performance
-	);
-
-	Framework.GetWindow().GetContext().CreateBuffer(
-		GetObjectBufferSize(imageIndex),
-		VK_BUFFER_USAGE_TRANSFER_SRC_BIT, // Usage flags
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, // Memory properties
-		VMA_ALLOCATION_CREATE_MAPPED_BIT, // Allocation flags
-		_stagingObjectBuffers[imageIndex],
-		VMA_MEMORY_USAGE_CPU_TO_GPU
-	);
-}
-
-void KtShader::UpdateObjectBuffer(const std::vector<KtObjectData3D>& objectDatas, const uint32_t imageIndex)
-{
-	// Ensure buffer sizes are enough
-	SetObjectCount(objectDatas.size(), imageIndex);
-
-	// Copy data to the staging buffer
-	memcpy(_stagingObjectBuffers[imageIndex].AllocationInfo.pMappedData, objectDatas.data(), GetObjectBufferSize(imageIndex));
-
-	Framework.GetWindow().GetContext().CopyBuffer(
-		_stagingObjectBuffers[imageIndex].Buffer,
-		_objectBuffers[imageIndex].Buffer,
-		GetObjectBufferSize(imageIndex)
-	);
-}
-
-void KtShader::CmdBind(VkCommandBuffer commandBuffer) const
-{
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline);
-}
-
-void KtShader::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32_t imageIndex)
-{
-	vkCmdBindDescriptorSets(
-		commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout,
-		0, 1, &_uniformDescriptorSets[imageIndex], 0, nullptr
-	);
-
-	vkCmdBindDescriptorSets(
-		commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout,
-		1, 1, &_objectDescriptorSets[imageIndex], 0, nullptr
-	);
-}
-
-void KtShader::UpdateUniformBuffer(const uint32_t imageIndex)
-{
-	const auto swapChainExtent = Framework.GetWindow().GetRenderer().GetSwapChainExtent();
-
-	ViewProjectionBuffer ubo{};
-	ubo.View = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.Projection = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 100.0f);
-	ubo.Projection[1][1] *= -1.0f;
-
-	memcpy(_stagingUniformBuffers[imageIndex].AllocationInfo.pMappedData, &ubo, sizeof(ViewProjectionBuffer));
-
-	Framework.GetWindow().GetContext().CopyBuffer(
-		_stagingUniformBuffers[imageIndex].Buffer,
-		_uniformBuffers[imageIndex].Buffer,
-		sizeof(ViewProjectionBuffer)
-	);
-}
-
-void KtShader::SetObjectCount(const VkDeviceSize objectCount, const uint32_t imageIndex)
-{
-	if (_objectCounts[imageIndex] != objectCount)
-	{
-		_objectCounts[imageIndex] = objectCount;
-		KT_DEBUG_LOG("Object count at frame %u: %llu", imageIndex, objectCount);
-
-		vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _objectBuffers[imageIndex].Buffer, _objectBuffers[imageIndex].Allocation);
-		vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _stagingObjectBuffers[imageIndex].Buffer, _stagingObjectBuffers[imageIndex].Allocation);
-		CreateObjectBuffer(imageIndex);
-
-		UpdateDescriptorSet(imageIndex, _imageTexture);
-	}
-}
-
-const VkDeviceSize KtShader::GetObjectBufferSize(const uint32_t imageIndex) const
-{
-	return sizeof(KtObjectData3D) * (_objectCounts[imageIndex] == 0 ? 1 : _objectCounts[imageIndex]);
-}
-
 void KtShader::CreateDescriptorSets()
 {
 	std::array<VkDescriptorSetLayout, MAX_FRAMES_IN_FLIGHT> globalLayouts{};
@@ -302,7 +172,7 @@ void KtShader::UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTextu
 
 	VkDescriptorBufferInfo objectBufferInfo{};
 	objectBufferInfo.buffer = _objectBuffers[imageIndex].Buffer;
-	objectBufferInfo.offset = 0; 
+	objectBufferInfo.offset = 0;
 	objectBufferInfo.range = GetObjectBufferSize(imageIndex);
 
 	std::array<VkWriteDescriptorSet, 3> descriptorWrites{};
@@ -332,6 +202,136 @@ void KtShader::UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTextu
 	descriptorWrites[2].pBufferInfo = &objectBufferInfo;
 
 	vkUpdateDescriptorSets(Framework.GetWindow().GetContext().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+}
+
+void KtShader::CreateUniformBuffers()
+{
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	{
+		CreateUniformBuffer(static_cast<uint32_t>(i));
+	}
+}
+
+void KtShader::CreateObjectBuffers()
+{
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	{
+		CreateObjectBuffer(static_cast<uint32_t>(i));
+	}
+}
+
+void KtShader::CreateUniformBuffer(const uint32_t imageIndex)
+{
+	Framework.GetWindow().GetContext().CreateBuffer(
+		sizeof(ViewProjectionBuffer),
+		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+		0,
+		_uniformBuffers[imageIndex],
+		VMA_MEMORY_USAGE_GPU_ONLY
+	);
+
+	Framework.GetWindow().GetContext().CreateBuffer(
+		sizeof(ViewProjectionBuffer),
+		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+		VMA_ALLOCATION_CREATE_MAPPED_BIT,
+		_stagingUniformBuffers[imageIndex],
+		VMA_MEMORY_USAGE_CPU_TO_GPU
+	);
+}
+
+void KtShader::CreateObjectBuffer(const uint32_t imageIndex)
+{
+	KT_DEBUG_LOG("0bject buffer size at frame %u: %llu", imageIndex, GetObjectBufferSize(imageIndex));
+	Framework.GetWindow().GetContext().CreateBuffer(
+		GetObjectBufferSize(imageIndex),
+		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, // Can be used as SSBO & can receive data from staging
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, // Optimized for GPU access
+		0, // No need for MAPPED_BIT since we won’t access this from CPU
+		_objectBuffers[imageIndex],
+		VMA_MEMORY_USAGE_GPU_ONLY // Best for performance
+	);
+
+	Framework.GetWindow().GetContext().CreateBuffer(
+		GetObjectBufferSize(imageIndex),
+		VK_BUFFER_USAGE_TRANSFER_SRC_BIT, // Usage flags
+		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, // Memory properties
+		VMA_ALLOCATION_CREATE_MAPPED_BIT, // Allocation flags
+		_stagingObjectBuffers[imageIndex],
+		VMA_MEMORY_USAGE_CPU_TO_GPU
+	);
+}
+
+void KtShader::UpdateUniformBuffer(const uint32_t imageIndex)
+{
+	const auto swapChainExtent = Framework.GetWindow().GetRenderer().GetSwapChainExtent();
+
+	ViewProjectionBuffer ubo{};
+	ubo.View = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ubo.Projection = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 100.0f);
+	ubo.Projection[1][1] *= -1.0f;
+
+	memcpy(_stagingUniformBuffers[imageIndex].AllocationInfo.pMappedData, &ubo, sizeof(ViewProjectionBuffer));
+
+	Framework.GetWindow().GetContext().CopyBuffer(
+		_stagingUniformBuffers[imageIndex].Buffer,
+		_uniformBuffers[imageIndex].Buffer,
+		sizeof(ViewProjectionBuffer)
+	);
+}
+
+void KtShader::UpdateObjectBuffer(const std::vector<KtObjectData3D>& objectDatas, const uint32_t imageIndex)
+{
+	// Ensure buffer sizes are enough
+	SetObjectCount(objectDatas.size(), imageIndex);
+
+	// Copy data to the staging buffer
+	memcpy(_stagingObjectBuffers[imageIndex].AllocationInfo.pMappedData, objectDatas.data(), GetObjectBufferSize(imageIndex));
+
+	Framework.GetWindow().GetContext().CopyBuffer(
+		_stagingObjectBuffers[imageIndex].Buffer,
+		_objectBuffers[imageIndex].Buffer,
+		GetObjectBufferSize(imageIndex)
+	);
+}
+
+void KtShader::CmdBind(VkCommandBuffer commandBuffer) const
+{
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline);
+}
+
+void KtShader::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32_t imageIndex)
+{
+	vkCmdBindDescriptorSets(
+		commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout,
+		0, 1, &_uniformDescriptorSets[imageIndex], 0, nullptr
+	);
+
+	vkCmdBindDescriptorSets(
+		commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout,
+		1, 1, &_objectDescriptorSets[imageIndex], 0, nullptr
+	);
+}
+
+void KtShader::SetObjectCount(const VkDeviceSize objectCount, const uint32_t imageIndex)
+{
+	if (_objectCounts[imageIndex] != objectCount)
+	{
+		_objectCounts[imageIndex] = objectCount;
+		KT_DEBUG_LOG("Object count at frame %u: %llu", imageIndex, objectCount);
+
+		vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _objectBuffers[imageIndex].Buffer, _objectBuffers[imageIndex].Allocation);
+		vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _stagingObjectBuffers[imageIndex].Buffer, _stagingObjectBuffers[imageIndex].Allocation);
+		CreateObjectBuffer(imageIndex);
+
+		UpdateDescriptorSet(imageIndex, _imageTexture);
+	}
+}
+
+const VkDeviceSize KtShader::GetObjectBufferSize(const uint32_t imageIndex) const
+{
+	return sizeof(KtObjectData3D) * (_objectCounts[imageIndex] == 0 ? 1 : _objectCounts[imageIndex]);
 }
 
 void KtShader::CreateGraphicsPipeline()

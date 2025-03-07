@@ -49,21 +49,20 @@ private:
 	std::array<KtAllocatedBuffer, MAX_FRAMES_IN_FLIGHT> _stagingObjectBuffers;
 	std::array<VkDeviceSize, MAX_FRAMES_IN_FLIGHT> _objectCounts;
 
-	void CreateDescriptorSetLayout();
-	void CreateDescriptorPool();
-
 	void CreateImageTexture();
 
+	void CreateDescriptorSetLayout();
+	void CreateDescriptorPool();
+	void CreateDescriptorSets();
+	void UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTexture* imageTexture);
+
 	void CreateUniformBuffers();
-	void CreateUniformBuffer(const uint32_t imageIndex);
 	void CreateObjectBuffers();
+	void CreateUniformBuffer(const uint32_t imageIndex);
 	void CreateObjectBuffer(const uint32_t imageIndex);
 	// Recreates the object buffer when the object count changes
 	void SetObjectCount(const VkDeviceSize objectCount, const uint32_t imageIndex);
 	const VkDeviceSize GetObjectBufferSize(const uint32_t imageIndex) const;
-
-	void CreateDescriptorSets();
-	void UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTexture* imageTexture);
 
 	void CreateGraphicsPipeline();
 	const VkShaderModule CreateShaderModule(const std::vector<char>& code) const;
