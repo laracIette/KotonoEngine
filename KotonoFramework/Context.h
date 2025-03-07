@@ -4,9 +4,9 @@
 #include <GLFW/glfw3.h>
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
-#include <vk_mem_alloc.h> 
+#include <vma/vk_mem_alloc.h> 
 #include "glm_includes.h"
-#include <stb_image.h>
+#include <stbimage/stb_image.h>
 #include <vector>
 #include <unordered_set>
 #include <iostream>

@@ -1,4 +1,4 @@
-#include "Framework.h"
+#include <KotonoFramework/Framework.h>
 
 KtFramework Framework;
 
@@ -6,5 +6,5 @@ int main()
 {
 	Framework.Run();
 
-	return EXIT_SUCCESS;
+	return 0;
 }

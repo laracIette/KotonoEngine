@@ -1,8 +1,8 @@
 #pragma once
 #include <vulkan/vulkan.h>
-#include <stb_image.h>
+#include <stbimage/stb_image.h>
 #include <filesystem>
-#include <vk_mem_alloc.h>
+#include <vma/vk_mem_alloc.h>
 class KtImageTexture
 {
 public:
