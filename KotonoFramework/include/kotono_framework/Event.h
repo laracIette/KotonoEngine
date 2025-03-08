@@ -3,13 +3,28 @@
 #include <functional>
 #include <algorithm>
 
-class Event
+class KtEvent
 {
 public:
     template<class T, typename... Args>
-    void AddListener(T* instance, void (T::* function)(Args...), Args... args);
+    void AddListener(T* instance, void (T::* function)(Args...), Args... args)
+    {
+        _listeners.push_back({
+            instance,
+            [instance, function, args...]() { (instance->*function)(args...); }
+        });
+    }
+
     template<class T>
-    void RemoveListener(T* instance);
+    void RemoveListener(T* instance)
+    {
+        _listeners.erase(
+            std::remove_if(_listeners.begin(), _listeners.end(),
+                [instance](const Listener& listener) { return listener.Instance == instance; }),
+            _listeners.end()
+        );
+    }
+
     void Broadcast();
 
 private:

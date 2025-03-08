@@ -13,6 +13,9 @@ void KtFramework::Run()
     _audioManager.Init();
     _inputManager.Init();
 
+    auto& event = _inputManager.GetKeyboard().GetEvent(KT_KEY_SPACE);
+    event.AddListener(&_window, &KtWindow::OnKeySpacePressed);
+
     _window.MainLoop();
 
     _audioManager.Cleanup();

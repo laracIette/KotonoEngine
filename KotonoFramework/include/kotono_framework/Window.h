@@ -7,9 +7,8 @@ class KtWindow
 public:
 	KtWindow();
 
+	void Init(); 
 	void Cleanup();
-
-	void Init();
 
 	void MainLoop();
 
@@ -22,6 +21,9 @@ public:
 	const glm::uvec2& GetSize() const;
 
 	void SetSize(const glm::uvec2& size);
+
+
+	void OnKeySpacePressed();
 
 private:
 	GLFWwindow* _window;

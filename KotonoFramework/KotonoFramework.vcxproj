@@ -179,6 +179,7 @@
     <ClInclude Include="include\kotono_framework\Vertex.h" />
     <ClInclude Include="include\kotono_framework\vk_utils.h" />
     <ClInclude Include="include\kotono_framework\Window.h" />
+    <ClInclude Include="include\kotono_framework\Key.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\vulkan.frag" />

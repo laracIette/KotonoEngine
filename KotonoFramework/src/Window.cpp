@@ -26,6 +26,7 @@ void KtWindow::MainLoop()
     while (!glfwWindowShouldClose(_window))
     {
         glfwPollEvents();
+        Framework.GetInputManager().GetKeyboard().Update();
         _renderer.DrawFrame();
     }
 
@@ -101,6 +102,11 @@ void KtWindow::InitVulkan()
 {
     _context.Init();
     _renderer.Init();
+}
+
+void KtWindow::OnKeySpacePressed()
+{
+    KT_DEBUG_LOG("Boing");
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
