@@ -3,6 +3,8 @@
 class KtMouse final
 {
 public:
+	void Update();
+
 	const glm::vec2& GetCursorPosition() const;
 	const glm::vec2 GetCursorPositionNormalized() const;
 

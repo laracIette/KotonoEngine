@@ -4,6 +4,12 @@ void KtInputManager::Init()
 {
 }
 
+void KtInputManager::Update()
+{
+    _mouse.Update();
+    _keyboard.Update();
+}
+
 void KtInputManager::Cleanup()
 {
 }

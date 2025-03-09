@@ -10,6 +10,7 @@ public:
 	void Init(); 
 	void Cleanup();
 
+	// Executes vkDeviceWaitIdle(VkDevice) if true, else executes glfwPollEvents()
 	bool GetShouldClose() const;
 
 	GLFWwindow* GetGLFWWindow() const;

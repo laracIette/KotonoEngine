@@ -1,6 +1,10 @@
 #include "Mouse.h"
 #include "Framework.h"
 
+void KtMouse::Update()
+{
+}
+
 const glm::vec2& KtMouse::GetCursorPosition() const
 {
     return _cursorPosition;

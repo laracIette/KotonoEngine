@@ -27,7 +27,6 @@ public:
 
 	const VkSampleCountFlagBits GetMSAASamples() const;
 
-
 	VkPhysicalDevice& GetPhysicalDevice();
 	VkDevice& GetDevice();
 	VmaAllocator& GetAllocator();

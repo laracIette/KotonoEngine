@@ -5,6 +5,7 @@ class KtInputManager final
 {
 public:
 	void Init();
+	void Update();
 	void Cleanup();
 
 	KtMouse& GetMouse();

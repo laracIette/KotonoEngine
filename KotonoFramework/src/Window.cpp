@@ -44,6 +44,7 @@ bool KtWindow::GetShouldClose() const
 {
     if (glfwWindowShouldClose(_window))
     {
+        vkDeviceWaitIdle(Framework.GetContext().GetDevice());
         return true;
     }
 
