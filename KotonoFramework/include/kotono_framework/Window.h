@@ -10,13 +10,9 @@ public:
 	void Init(); 
 	void Cleanup();
 
-	void MainLoop();
+	bool GetShouldClose() const;
 
 	GLFWwindow* GetGLFWWindow() const;
-	KtContext& GetContext();
-	KtRenderer& GetRenderer();
-
-	void SwapBuffers() const;
 
 	const glm::uvec2& GetSize() const;
 
@@ -27,12 +23,7 @@ public:
 
 private:
 	GLFWwindow* _window;
-	KtContext _context;
-	KtRenderer _renderer;
 
 	glm::uvec2 _size;
-
-	void InitGLFW();
-	void InitVulkan();
 };
 

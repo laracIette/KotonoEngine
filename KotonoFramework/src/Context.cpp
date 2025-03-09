@@ -5,6 +5,7 @@
 #include "Vertex.h"
 #include <chrono>
 #include "log.h"
+#include "vk_utils.h"
 
 constexpr std::array<const char*, 1> validationLayers =
 {
@@ -374,10 +375,10 @@ void KtContext::CreateLogicalDevice()
 	// Attach the shader draw parameters feature via pNext
 	createInfo.pNext = &shaderDrawParametersFeatures;
 
-	if (vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create logical device!");
-	}
+	VK_CHECK_THROW(
+		vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device),
+		"failed to create logical device!"
+	);
 
 	vkGetDeviceQueue(_device, indices.GraphicsFamily.value(), 0, &_graphicsQueue);
 	vkGetDeviceQueue(_device, indices.PresentFamily.value(), 0, &_presentQueue);
@@ -385,10 +386,10 @@ void KtContext::CreateLogicalDevice()
 
 void KtContext::CreateSurface()
 {
-	if (glfwCreateWindowSurface(_instance, Framework.GetWindow().GetGLFWWindow(), nullptr, &_surface) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create window surface!");
-	}
+	VK_CHECK_THROW(
+		glfwCreateWindowSurface(_instance, Framework.GetWindow().GetGLFWWindow(), nullptr, &_surface),
+		"failed to create window surface!"
+	);
 }
 
 const KtSwapChainSupportDetails KtContext::QuerySwapChainSupport(VkPhysicalDevice device) const

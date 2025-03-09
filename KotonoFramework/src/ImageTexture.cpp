@@ -13,9 +13,9 @@ KtImageTexture::KtImageTexture(const std::filesystem::path& path) :
 KtImageTexture::~KtImageTexture()
 {
 	KT_DEBUG_LOG("cleaning up image texture");
-	vkDestroySampler(Framework.GetWindow().GetContext().GetDevice(), Sampler, nullptr); 
-	vkDestroyImageView(Framework.GetWindow().GetContext().GetDevice(), ImageView, nullptr);
-	vmaDestroyImage(Framework.GetWindow().GetContext().GetAllocator(), Image, Allocation);
+	vkDestroySampler(Framework.GetContext().GetDevice(), Sampler, nullptr); 
+	vkDestroyImageView(Framework.GetContext().GetDevice(), ImageView, nullptr);
+	vmaDestroyImage(Framework.GetContext().GetAllocator(), Image, Allocation);
 	KT_DEBUG_LOG("cleaned up image texture");
 }
 
@@ -37,7 +37,7 @@ void KtImageTexture::CreateTextureImage()
 	}
 
 	KtAllocatedBuffer stagingBuffer;
-	Framework.GetWindow().GetContext().CreateBuffer(
+	Framework.GetContext().CreateBuffer(
 		imageSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
@@ -49,7 +49,7 @@ void KtImageTexture::CreateTextureImage()
 
 	stbi_image_free(pixels);
 
-	Framework.GetWindow().GetContext().CreateImage(
+	Framework.GetContext().CreateImage(
 		texWidth,
 		texHeight,
 		MipLevels,
@@ -62,30 +62,30 @@ void KtImageTexture::CreateTextureImage()
 		Allocation
 	);
 
-	Framework.GetWindow().GetContext().TransitionImageLayout(
+	Framework.GetContext().TransitionImageLayout(
 		Image,
 		VK_FORMAT_R8G8B8A8_SRGB,
 		VK_IMAGE_LAYOUT_UNDEFINED,
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		MipLevels
 	);
-	Framework.GetWindow().GetContext().CopyBufferToImage(
+	Framework.GetContext().CopyBufferToImage(
 		stagingBuffer.Buffer,
 		Image,
 		static_cast<uint32_t>(texWidth),
 		static_cast<uint32_t>(texHeight)
 	);
 
-	vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), stagingBuffer.Buffer, stagingBuffer.Allocation);
+	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingBuffer.Buffer, stagingBuffer.Allocation);
 
-	Framework.GetWindow().GetContext().GenerateMipmaps(Image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, MipLevels);
+	Framework.GetContext().GenerateMipmaps(Image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, MipLevels);
 
 	Size = { static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight) };
 }
 
 void KtImageTexture::CreateTextureImageView()
 {
-	ImageView = Framework.GetWindow().GetContext().CreateImageView(Image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, MipLevels);
+	ImageView = Framework.GetContext().CreateImageView(Image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, MipLevels);
 }
 
 void KtImageTexture::CreateTextureSampler()
@@ -99,7 +99,7 @@ void KtImageTexture::CreateTextureSampler()
 	samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
 	VkPhysicalDeviceProperties properties{};
-	vkGetPhysicalDeviceProperties(Framework.GetWindow().GetContext().GetPhysicalDevice(), &properties);
+	vkGetPhysicalDeviceProperties(Framework.GetContext().GetPhysicalDevice(), &properties);
 	samplerInfo.anisotropyEnable = VK_TRUE;
 	samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
 	samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
@@ -111,7 +111,7 @@ void KtImageTexture::CreateTextureSampler()
 	samplerInfo.maxLod = static_cast<float>(MipLevels);
 	samplerInfo.mipLodBias = 0.0f; // Optional
 
-	if (vkCreateSampler(Framework.GetWindow().GetContext().GetDevice(), &samplerInfo, nullptr, &Sampler) != VK_SUCCESS)
+	if (vkCreateSampler(Framework.GetContext().GetDevice(), &samplerInfo, nullptr, &Sampler) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create texture sampler!");
 	}

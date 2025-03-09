@@ -22,7 +22,7 @@ void TMesh::SetModel(KtModel* model)
 
 void TMesh::Draw() const
 {
-	Framework.GetWindow().GetRenderer().AddToRenderQueue(
+	Framework.GetRenderer().AddToRenderQueue(
         _shader, _model, { _transform.GetModelMatrix() }
     );
 }

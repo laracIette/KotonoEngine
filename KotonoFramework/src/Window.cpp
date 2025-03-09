@@ -14,30 +14,45 @@ KtWindow::KtWindow() :
 
 void KtWindow::Init()
 {
-    InitGLFW();
-    InitVulkan();
+    // Initialize GLFW
+    if (!glfwInit())
+    {
+        throw std::runtime_error("Failed to initialize GLFW");
+    }
+
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+
+    // Create a windowed mode window and its OpenGL context
+    _window = glfwCreateWindow(_size.x, _size.y, "Kotono Engine", nullptr, nullptr);
+    if (!_window)
+    {
+        throw std::runtime_error("Failed to create GLFW window");
+    }
+
+    // Make the window's context current
+    glfwMakeContextCurrent(_window);
+
+    glfwSetFramebufferSizeCallback(_window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(_window, cursor_position_callback);
 
     // Show the window after initialization
     glfwShowWindow(_window);
 }
 
-void KtWindow::MainLoop()
+bool KtWindow::GetShouldClose() const
 {
-    while (!glfwWindowShouldClose(_window))
+    if (glfwWindowShouldClose(_window))
     {
-        glfwPollEvents();
-        Framework.GetInputManager().GetKeyboard().Update();
-        _renderer.DrawFrame();
+        return true;
     }
 
-    vkDeviceWaitIdle(_context.GetDevice());
+    glfwPollEvents();
+    return false;
 }
 
 void KtWindow::Cleanup()
 {
-    _renderer.Cleanup();
-    _context.Cleanup();
-
     // Cleanup GLFW
     glfwDestroyWindow(_window);
     glfwTerminate();
@@ -46,21 +61,6 @@ void KtWindow::Cleanup()
 GLFWwindow* KtWindow::GetGLFWWindow() const
 {
     return _window;
-}
-
-KtContext& KtWindow::GetContext()
-{
-    return _context;
-}
-
-KtRenderer& KtWindow::GetRenderer()
-{
-    return _renderer;
-}
-
-void KtWindow::SwapBuffers() const
-{
-    glfwSwapBuffers(_window);
 }
 
 const glm::uvec2& KtWindow::GetSize() const
@@ -73,37 +73,6 @@ void KtWindow::SetSize(const glm::uvec2& size)
     _size = size;
 }
 
-void KtWindow::InitGLFW()
-{
-    // Initialize GLFW
-    if (!glfwInit())
-    {
-        throw "Failed to initialize GLFW";
-    }
-
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-    // Create a windowed mode window and its OpenGL context
-    _window = glfwCreateWindow(_size.x, _size.y, "Kotono Engine", nullptr, nullptr);
-    if (!_window)
-    {
-        throw "Failed to create GLFW window";
-    }
-
-    // Make the window's context current
-    glfwMakeContextCurrent(_window);
-
-    glfwSetFramebufferSizeCallback(_window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(_window, cursor_position_callback);
-}
-
-void KtWindow::InitVulkan()
-{
-    _context.Init();
-    _renderer.Init();
-}
-
 void KtWindow::OnKeySpacePressed()
 {
     KT_DEBUG_LOG("Boing");
@@ -114,7 +83,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     //Framework.GetWindow().SetSize(glm::uvec2(width, height));
     //Framework.GetFramebuffer().ResizeTextures();
 
-    Framework.GetWindow().GetRenderer().OnFramebufferResized();
+    Framework.GetRenderer().OnFramebufferResized();
     std::cout << "Window resized: " << width << 'x' << height << std::endl;
 }
 

@@ -24,21 +24,21 @@ KtShader::~KtShader()
 	KT_DEBUG_LOG("cleaning up shader");
 	delete _imageTexture;
 
-	vkDestroyPipeline(Framework.GetWindow().GetContext().GetDevice(), _graphicsPipeline, nullptr);
-	vkDestroyPipelineLayout(Framework.GetWindow().GetContext().GetDevice(), _pipelineLayout, nullptr);
+	vkDestroyPipeline(Framework.GetContext().GetDevice(), _graphicsPipeline, nullptr);
+	vkDestroyPipelineLayout(Framework.GetContext().GetDevice(), _pipelineLayout, nullptr);
 	
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
-		vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _uniformBuffers[i].Buffer, _uniformBuffers[i].Allocation);
-		vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _stagingUniformBuffers[i].Buffer, _stagingUniformBuffers[i].Allocation);
-		vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _objectBuffers[i].Buffer, _objectBuffers[i].Allocation);
-		vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _stagingObjectBuffers[i].Buffer, _stagingObjectBuffers[i].Allocation);
+		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _uniformBuffers[i].Buffer, _uniformBuffers[i].Allocation);
+		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _stagingUniformBuffers[i].Buffer, _stagingUniformBuffers[i].Allocation);
+		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _objectBuffers[i].Buffer, _objectBuffers[i].Allocation);
+		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _stagingObjectBuffers[i].Buffer, _stagingObjectBuffers[i].Allocation);
 	}
 
-	vkDestroyDescriptorSetLayout(Framework.GetWindow().GetContext().GetDevice(), _uniformDescriptorSetLayout, nullptr);
-	vkDestroyDescriptorSetLayout(Framework.GetWindow().GetContext().GetDevice(), _objectDescriptorSetLayout, nullptr);
+	vkDestroyDescriptorSetLayout(Framework.GetContext().GetDevice(), _uniformDescriptorSetLayout, nullptr);
+	vkDestroyDescriptorSetLayout(Framework.GetContext().GetDevice(), _objectDescriptorSetLayout, nullptr);
 
-	vkDestroyDescriptorPool(Framework.GetWindow().GetContext().GetDevice(), _descriptorPool, nullptr);
+	vkDestroyDescriptorPool(Framework.GetContext().GetDevice(), _descriptorPool, nullptr);
 	KT_DEBUG_LOG("cleaned up shader");
 }
 
@@ -80,7 +80,7 @@ void KtShader::CreateDescriptorSetLayout()
 	set0LayoutInfo.pBindings = set0Bindings.data();
 
 	VK_CHECK_THROW(
-		vkCreateDescriptorSetLayout(Framework.GetWindow().GetContext().GetDevice(), &set0LayoutInfo, nullptr, &_uniformDescriptorSetLayout),
+		vkCreateDescriptorSetLayout(Framework.GetContext().GetDevice(), &set0LayoutInfo, nullptr, &_uniformDescriptorSetLayout),
 		"failed to create descriptor set layout!"
 	);
 
@@ -99,7 +99,7 @@ void KtShader::CreateDescriptorSetLayout()
 	set1LayoutInfo.pBindings = set1Bindings.data();
 
 	VK_CHECK_THROW(
-		vkCreateDescriptorSetLayout(Framework.GetWindow().GetContext().GetDevice(), &set1LayoutInfo, nullptr, &_objectDescriptorSetLayout),
+		vkCreateDescriptorSetLayout(Framework.GetContext().GetDevice(), &set1LayoutInfo, nullptr, &_objectDescriptorSetLayout),
 		"failed to create descriptor set layout!"
 	);
 }
@@ -121,7 +121,7 @@ void KtShader::CreateDescriptorPool()
     poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) * 2; // One set for global, one for object buffer
 
     VK_CHECK_THROW(
-        vkCreateDescriptorPool(Framework.GetWindow().GetContext().GetDevice(), &poolInfo, nullptr, &_descriptorPool),
+        vkCreateDescriptorPool(Framework.GetContext().GetDevice(), &poolInfo, nullptr, &_descriptorPool),
         "failed to create descriptor pool!"
     );
 }
@@ -141,14 +141,14 @@ void KtShader::CreateDescriptorSets()
 	allocInfo.pSetLayouts = globalLayouts.data();
 
 	VK_CHECK_THROW(
-		vkAllocateDescriptorSets(Framework.GetWindow().GetContext().GetDevice(), &allocInfo, _uniformDescriptorSets.data()),
+		vkAllocateDescriptorSets(Framework.GetContext().GetDevice(), &allocInfo, _uniformDescriptorSets.data()),
 		"failed to allocate global descriptor sets!"
 	);
 
 	allocInfo.descriptorSetCount = static_cast<uint32_t>(objectLayouts.size());
 	allocInfo.pSetLayouts = objectLayouts.data();
 	VK_CHECK_THROW(
-		vkAllocateDescriptorSets(Framework.GetWindow().GetContext().GetDevice(), &allocInfo, _objectDescriptorSets.data()),
+		vkAllocateDescriptorSets(Framework.GetContext().GetDevice(), &allocInfo, _objectDescriptorSets.data()),
 		"failed to allocate object descriptor sets!"
 	);
 
@@ -201,7 +201,7 @@ void KtShader::UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTextu
 	descriptorWrites[2].descriptorCount = 1;
 	descriptorWrites[2].pBufferInfo = &objectBufferInfo;
 
-	vkUpdateDescriptorSets(Framework.GetWindow().GetContext().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+	vkUpdateDescriptorSets(Framework.GetContext().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 }
 
 void KtShader::CreateUniformBuffers()
@@ -222,7 +222,7 @@ void KtShader::CreateObjectBuffers()
 
 void KtShader::CreateUniformBuffer(const uint32_t imageIndex)
 {
-	Framework.GetWindow().GetContext().CreateBuffer(
+	Framework.GetContext().CreateBuffer(
 		sizeof(KtUniformData3D),
 		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -231,7 +231,7 @@ void KtShader::CreateUniformBuffer(const uint32_t imageIndex)
 		VMA_MEMORY_USAGE_GPU_ONLY
 	);
 
-	Framework.GetWindow().GetContext().CreateBuffer(
+	Framework.GetContext().CreateBuffer(
 		sizeof(KtUniformData3D),
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
@@ -244,7 +244,7 @@ void KtShader::CreateUniformBuffer(const uint32_t imageIndex)
 void KtShader::CreateObjectBuffer(const uint32_t imageIndex)
 {
 	KT_DEBUG_LOG("0bject buffer size at frame %u: %llu", imageIndex, GetObjectBufferSize(imageIndex));
-	Framework.GetWindow().GetContext().CreateBuffer(
+	Framework.GetContext().CreateBuffer(
 		GetObjectBufferSize(imageIndex),
 		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, // Can be used as SSBO & can receive data from staging
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, // Optimized for GPU access
@@ -253,7 +253,7 @@ void KtShader::CreateObjectBuffer(const uint32_t imageIndex)
 		VMA_MEMORY_USAGE_GPU_ONLY // Best for performance
 	);
 
-	Framework.GetWindow().GetContext().CreateBuffer(
+	Framework.GetContext().CreateBuffer(
 		GetObjectBufferSize(imageIndex),
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT, // Usage flags
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, // Memory properties
@@ -267,7 +267,7 @@ void KtShader::UpdateUniformBuffer(const KtUniformData3D& uniformData, const uin
 {
 	memcpy(_stagingUniformBuffers[imageIndex].AllocationInfo.pMappedData, &uniformData, sizeof(KtUniformData3D));
 
-	Framework.GetWindow().GetContext().CopyBuffer(
+	Framework.GetContext().CopyBuffer(
 		_stagingUniformBuffers[imageIndex].Buffer,
 		_uniformBuffers[imageIndex].Buffer,
 		sizeof(KtUniformData3D)
@@ -282,7 +282,7 @@ void KtShader::UpdateObjectBuffer(const std::vector<KtObjectData3D>& objectDatas
 	// Copy data to the staging buffer
 	memcpy(_stagingObjectBuffers[imageIndex].AllocationInfo.pMappedData, objectDatas.data(), GetObjectBufferSize(imageIndex));
 
-	Framework.GetWindow().GetContext().CopyBuffer(
+	Framework.GetContext().CopyBuffer(
 		_stagingObjectBuffers[imageIndex].Buffer,
 		_objectBuffers[imageIndex].Buffer,
 		GetObjectBufferSize(imageIndex)
@@ -314,8 +314,8 @@ void KtShader::SetObjectCount(const VkDeviceSize objectCount, const uint32_t ima
 		_objectCounts[imageIndex] = objectCount;
 		KT_DEBUG_LOG("Object count at frame %u: %llu", imageIndex, objectCount);
 
-		vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _objectBuffers[imageIndex].Buffer, _objectBuffers[imageIndex].Allocation);
-		vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _stagingObjectBuffers[imageIndex].Buffer, _stagingObjectBuffers[imageIndex].Allocation);
+		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _objectBuffers[imageIndex].Buffer, _objectBuffers[imageIndex].Allocation);
+		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _stagingObjectBuffers[imageIndex].Buffer, _stagingObjectBuffers[imageIndex].Allocation);
 		CreateObjectBuffer(imageIndex);
 
 		UpdateDescriptorSet(imageIndex, _imageTexture);
@@ -378,14 +378,14 @@ void KtShader::CreateGraphicsPipeline()
 	VkViewport viewport{};
 	viewport.x = 0.0f;
 	viewport.y = 0.0f;
-	viewport.width = (float)Framework.GetWindow().GetRenderer().GetSwapChainExtent().width;
-	viewport.height = (float)Framework.GetWindow().GetRenderer().GetSwapChainExtent().height;
+	viewport.width = (float)Framework.GetRenderer().GetSwapChainExtent().width;
+	viewport.height = (float)Framework.GetRenderer().GetSwapChainExtent().height;
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
 
 	VkRect2D scissor{};
 	scissor.offset = { 0, 0 };
-	scissor.extent = Framework.GetWindow().GetRenderer().GetSwapChainExtent();
+	scissor.extent = Framework.GetRenderer().GetSwapChainExtent();
 
 	VkPipelineViewportStateCreateInfo viewportState{};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -411,7 +411,7 @@ void KtShader::CreateGraphicsPipeline()
 	VkPipelineMultisampleStateCreateInfo multisampling{};
 	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 	multisampling.sampleShadingEnable = VK_TRUE; // enable sample shading in the pipeline
-	multisampling.rasterizationSamples = Framework.GetWindow().GetContext().GetMSAASamples();
+	multisampling.rasterizationSamples = Framework.GetContext().GetMSAASamples();
 	multisampling.minSampleShading = 0.2f; // min fraction for sample shading; closer to one is smoother
 	multisampling.pSampleMask = nullptr; // Optional
 	multisampling.alphaToCoverageEnable = VK_FALSE; // Optional
@@ -469,7 +469,7 @@ void KtShader::CreateGraphicsPipeline()
 	pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
 	pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 
-	if (vkCreatePipelineLayout(Framework.GetWindow().GetContext().GetDevice(), &pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS)
+	if (vkCreatePipelineLayout(Framework.GetContext().GetDevice(), &pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create pipeline layout!");
 	}
@@ -487,18 +487,18 @@ void KtShader::CreateGraphicsPipeline()
 	pipelineInfo.pColorBlendState = &colorBlending;
 	pipelineInfo.pDynamicState = &dynamicState;
 	pipelineInfo.layout = _pipelineLayout;
-	pipelineInfo.renderPass = Framework.GetWindow().GetRenderer().GetRenderPass();
+	pipelineInfo.renderPass = Framework.GetRenderer().GetRenderPass();
 	pipelineInfo.subpass = 0;
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
 	pipelineInfo.basePipelineIndex = -1; // Optional
 
-	if (vkCreateGraphicsPipelines(Framework.GetWindow().GetContext().GetDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_graphicsPipeline) != VK_SUCCESS)
+	if (vkCreateGraphicsPipelines(Framework.GetContext().GetDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_graphicsPipeline) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create graphics pipeline!");
 	}
 
-	vkDestroyShaderModule(Framework.GetWindow().GetContext().GetDevice(), fragShaderModule, nullptr);
-	vkDestroyShaderModule(Framework.GetWindow().GetContext().GetDevice(), vertShaderModule, nullptr);
+	vkDestroyShaderModule(Framework.GetContext().GetDevice(), fragShaderModule, nullptr);
+	vkDestroyShaderModule(Framework.GetContext().GetDevice(), vertShaderModule, nullptr);
 }
 
 const VkShaderModule KtShader::CreateShaderModule(const std::vector<char>& code) const
@@ -509,7 +509,7 @@ const VkShaderModule KtShader::CreateShaderModule(const std::vector<char>& code)
 	createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
 	VkShaderModule shaderModule;
-	if (vkCreateShaderModule(Framework.GetWindow().GetContext().GetDevice(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+	if (vkCreateShaderModule(Framework.GetContext().GetDevice(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create shader module!");
 	}

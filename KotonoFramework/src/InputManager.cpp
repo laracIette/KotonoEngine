@@ -4,6 +4,10 @@ void KtInputManager::Init()
 {
 }
 
+void KtInputManager::Cleanup()
+{
+}
+
 KtMouse& KtInputManager::GetMouse()
 {
     return _mouse;

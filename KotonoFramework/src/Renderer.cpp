@@ -40,8 +40,8 @@ void KtRenderer::Cleanup()
 
 	CleanupSwapChain();
 
-	const auto& device = Framework.GetWindow().GetContext().GetDevice();
-	const auto& allocator = Framework.GetWindow().GetContext().GetAllocator();
+	const auto& device = Framework.GetContext().GetDevice();
+	const auto& allocator = Framework.GetContext().GetAllocator();
 
 	vkDestroyImageView(device, _depthImageView, nullptr);
 	vmaDestroyImage(allocator, _depthImage, _depthImageAllocation);
@@ -92,7 +92,7 @@ void KtRenderer::CreateShaderAndModels() const
 
 void KtRenderer::CreateSwapChain()
 {
-	const KtSwapChainSupportDetails swapChainSupport = Framework.GetWindow().GetContext().QuerySwapChainSupport(Framework.GetWindow().GetContext().GetPhysicalDevice());
+	const KtSwapChainSupportDetails swapChainSupport = Framework.GetContext().QuerySwapChainSupport(Framework.GetContext().GetPhysicalDevice());
 
 	const VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.Formats);
 	const VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.PresentModes);
@@ -106,7 +106,7 @@ void KtRenderer::CreateSwapChain()
 
 	VkSwapchainCreateInfoKHR createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	createInfo.surface = Framework.GetWindow().GetContext().GetSurface();
+	createInfo.surface = Framework.GetContext().GetSurface();
 
 	createInfo.minImageCount = imageCount;
 	createInfo.imageFormat = surfaceFormat.format;
@@ -115,7 +115,7 @@ void KtRenderer::CreateSwapChain()
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	const KtQueueFamilyIndices indices = Framework.GetWindow().GetContext().FindQueueFamilies(Framework.GetWindow().GetContext().GetPhysicalDevice());
+	const KtQueueFamilyIndices indices = Framework.GetContext().FindQueueFamilies(Framework.GetContext().GetPhysicalDevice());
 	const uint32_t queueFamilyIndices[] = { indices.GraphicsFamily.value(), indices.PresentFamily.value() };
 
 	if (indices.GraphicsFamily != indices.PresentFamily)
@@ -139,14 +139,14 @@ void KtRenderer::CreateSwapChain()
 	createInfo.clipped = VK_TRUE;
 	createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-	if (vkCreateSwapchainKHR(Framework.GetWindow().GetContext().GetDevice(), &createInfo, nullptr, &_swapChain) != VK_SUCCESS)
+	if (vkCreateSwapchainKHR(Framework.GetContext().GetDevice(), &createInfo, nullptr, &_swapChain) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create swap chain!");
 	}
 
-	vkGetSwapchainImagesKHR(Framework.GetWindow().GetContext().GetDevice(), _swapChain, &imageCount, nullptr);
+	vkGetSwapchainImagesKHR(Framework.GetContext().GetDevice(), _swapChain, &imageCount, nullptr);
 	_swapChainImages.resize(imageCount);
-	vkGetSwapchainImagesKHR(Framework.GetWindow().GetContext().GetDevice(), _swapChain, &imageCount, _swapChainImages.data());
+	vkGetSwapchainImagesKHR(Framework.GetContext().GetDevice(), _swapChain, &imageCount, _swapChainImages.data());
 
 	_swapChainImageFormat = surfaceFormat.format;
 	_swapChainExtent = extent;
@@ -208,7 +208,7 @@ void KtRenderer::CreateImageViews()
 
 	for (uint32_t i = 0; i < _swapChainImages.size(); i++)
 	{
-		_swapChainImageViews[i] = Framework.GetWindow().GetContext().CreateImageView(_swapChainImages[i], _swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+		_swapChainImageViews[i] = Framework.GetContext().CreateImageView(_swapChainImages[i], _swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 	}
 }
 
@@ -216,7 +216,7 @@ void KtRenderer::CreateRenderPass()
 {
 	VkAttachmentDescription colorAttachment{};
 	colorAttachment.format = _swapChainImageFormat;
-	colorAttachment.samples = Framework.GetWindow().GetContext().GetMSAASamples();
+	colorAttachment.samples = Framework.GetContext().GetMSAASamples();
 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -226,7 +226,7 @@ void KtRenderer::CreateRenderPass()
 
 	VkAttachmentDescription depthAttachment{};
 	depthAttachment.format = FindDepthFormat();
-	depthAttachment.samples = Framework.GetWindow().GetContext().GetMSAASamples();
+	depthAttachment.samples = Framework.GetContext().GetMSAASamples();
 	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -282,7 +282,7 @@ void KtRenderer::CreateRenderPass()
 	renderPassInfo.dependencyCount = 1;
 	renderPassInfo.pDependencies = &dependency;
 
-	if (vkCreateRenderPass(Framework.GetWindow().GetContext().GetDevice(), &renderPassInfo, nullptr, &_renderPass) != VK_SUCCESS)
+	if (vkCreateRenderPass(Framework.GetContext().GetDevice(), &renderPassInfo, nullptr, &_renderPass) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create render pass!");
 	}
@@ -309,7 +309,7 @@ void KtRenderer::CreateFramebuffers()
 		framebufferInfo.height = _swapChainExtent.height;
 		framebufferInfo.layers = 1;
 
-		if (vkCreateFramebuffer(Framework.GetWindow().GetContext().GetDevice(), &framebufferInfo, nullptr, &_swapChainFramebuffers[i]) != VK_SUCCESS)
+		if (vkCreateFramebuffer(Framework.GetContext().GetDevice(), &framebufferInfo, nullptr, &_swapChainFramebuffers[i]) != VK_SUCCESS)
 		{
 			throw std::runtime_error("failed to create framebuffer!");
 		}
@@ -320,11 +320,11 @@ void KtRenderer::CreateColorResources()
 {
 	VkFormat colorFormat = _swapChainImageFormat;
 
-	Framework.GetWindow().GetContext().CreateImage(
+	Framework.GetContext().CreateImage(
 		_swapChainExtent.width,
 		_swapChainExtent.height,
 		1,
-		Framework.GetWindow().GetContext().GetMSAASamples(),
+		Framework.GetContext().GetMSAASamples(),
 		colorFormat,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
@@ -333,7 +333,7 @@ void KtRenderer::CreateColorResources()
 		_colorImageAllocation
 	);
 
-	_colorImageView = Framework.GetWindow().GetContext().CreateImageView(
+	_colorImageView = Framework.GetContext().CreateImageView(
 		_colorImage, 
 		colorFormat, 
 		VK_IMAGE_ASPECT_COLOR_BIT,
@@ -345,11 +345,11 @@ void KtRenderer::CreateDepthResources()
 {
 	const VkFormat depthFormat = FindDepthFormat();
 
-	Framework.GetWindow().GetContext().CreateImage(
+	Framework.GetContext().CreateImage(
 		_swapChainExtent.width,
 		_swapChainExtent.height,
 		1,
-		Framework.GetWindow().GetContext().GetMSAASamples(),
+		Framework.GetContext().GetMSAASamples(),
 		depthFormat,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
@@ -358,14 +358,14 @@ void KtRenderer::CreateDepthResources()
 		_depthImageAllocation
 	);
 
-	_depthImageView = Framework.GetWindow().GetContext().CreateImageView(
+	_depthImageView = Framework.GetContext().CreateImageView(
 		_depthImage, 
 		depthFormat, 
 		VK_IMAGE_ASPECT_DEPTH_BIT, 
 		1
 	);
 
-	Framework.GetWindow().GetContext().TransitionImageLayout(
+	Framework.GetContext().TransitionImageLayout(
 		_depthImage,
 		depthFormat,
 		VK_IMAGE_LAYOUT_UNDEFINED,
@@ -379,7 +379,7 @@ const VkFormat KtRenderer::FindSupportedFormat(const std::vector<VkFormat>& cand
 	for (VkFormat format : candidates)
 	{
 		VkFormatProperties props;
-		vkGetPhysicalDeviceFormatProperties(Framework.GetWindow().GetContext().GetPhysicalDevice(), format, &props);
+		vkGetPhysicalDeviceFormatProperties(Framework.GetContext().GetPhysicalDevice(), format, &props);
 
 		if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
 		{
@@ -414,11 +414,11 @@ void KtRenderer::CreateCommandBuffers()
 
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = Framework.GetWindow().GetContext().GetCommandPool();
+	allocInfo.commandPool = Framework.GetContext().GetCommandPool();
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	allocInfo.commandBufferCount = (uint32_t)_commandBuffers.size();
 
-	if (vkAllocateCommandBuffers(Framework.GetWindow().GetContext().GetDevice(), &allocInfo, _commandBuffers.data()) != VK_SUCCESS)
+	if (vkAllocateCommandBuffers(Framework.GetContext().GetDevice(), &allocInfo, _commandBuffers.data()) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to allocate command buffers!");
 	}
@@ -534,9 +534,9 @@ void KtRenderer::CreateSyncObjects()
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
-		if (vkCreateSemaphore(Framework.GetWindow().GetContext().GetDevice(), &semaphoreInfo, nullptr, &_imageAvailableSemaphores[i]) != VK_SUCCESS ||
-			vkCreateSemaphore(Framework.GetWindow().GetContext().GetDevice(), &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS ||
-			vkCreateFence(Framework.GetWindow().GetContext().GetDevice(), &fenceInfo, nullptr, &_inFlightFences[i]) != VK_SUCCESS)
+		if (vkCreateSemaphore(Framework.GetContext().GetDevice(), &semaphoreInfo, nullptr, &_imageAvailableSemaphores[i]) != VK_SUCCESS ||
+			vkCreateSemaphore(Framework.GetContext().GetDevice(), &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS ||
+			vkCreateFence(Framework.GetContext().GetDevice(), &fenceInfo, nullptr, &_inFlightFences[i]) != VK_SUCCESS)
 		{
 
 			throw std::runtime_error("failed to create synchronization objects for a frame!");
@@ -592,10 +592,10 @@ void KtRenderer::DrawFrame()
 		);
 	}
 
-	vkWaitForFences(Framework.GetWindow().GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
+	vkWaitForFences(Framework.GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
 
 	uint32_t imageIndex;
-	VkResult result = vkAcquireNextImageKHR(Framework.GetWindow().GetContext().GetDevice(), _swapChain, UINT64_MAX, _imageAvailableSemaphores[_currentFrame], VK_NULL_HANDLE, &imageIndex);
+	VkResult result = vkAcquireNextImageKHR(Framework.GetContext().GetDevice(), _swapChain, UINT64_MAX, _imageAvailableSemaphores[_currentFrame], VK_NULL_HANDLE, &imageIndex);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
@@ -607,7 +607,7 @@ void KtRenderer::DrawFrame()
 		throw std::runtime_error("failed to acquire swap chain image!");
 	}
 
-	vkResetFences(Framework.GetWindow().GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame]);
+	vkResetFences(Framework.GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame]);
 
 	vkResetCommandBuffer(_commandBuffers[_currentFrame], 0);
 	RecordCommandBuffer(_commandBuffers[_currentFrame], imageIndex);
@@ -628,7 +628,7 @@ void KtRenderer::DrawFrame()
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = signalSemaphores;
 
-	if (vkQueueSubmit(Framework.GetWindow().GetContext().GetGraphicsQueue(), 1, &submitInfo, _inFlightFences[_currentFrame]) != VK_SUCCESS)
+	if (vkQueueSubmit(Framework.GetContext().GetGraphicsQueue(), 1, &submitInfo, _inFlightFences[_currentFrame]) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to submit draw command buffer!");
 	}
@@ -644,7 +644,7 @@ void KtRenderer::DrawFrame()
 	presentInfo.pImageIndices = &imageIndex;
 	presentInfo.pResults = nullptr; // Optional
 
-	result = vkQueuePresentKHR(Framework.GetWindow().GetContext().GetPresentQueue(), &presentInfo);
+	result = vkQueuePresentKHR(Framework.GetContext().GetPresentQueue(), &presentInfo);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || _framebufferResized)
 	{
@@ -671,7 +671,7 @@ void KtRenderer::RecreateSwapChain()
 		glfwWaitEvents();                                                               //
 	}                                                                                   //
 
-	vkDeviceWaitIdle(Framework.GetWindow().GetContext().GetDevice());
+	vkDeviceWaitIdle(Framework.GetContext().GetDevice());
 
 	CleanupSwapChain();
 
@@ -701,13 +701,13 @@ void KtRenderer::CleanupSwapChain() const
 {
 	for (auto imageView : _swapChainImageViews)
 	{
-		vkDestroyImageView(Framework.GetWindow().GetContext().GetDevice(), imageView, nullptr);
+		vkDestroyImageView(Framework.GetContext().GetDevice(), imageView, nullptr);
 	}
 
 	for (auto framebuffer : _swapChainFramebuffers)
 	{
-		vkDestroyFramebuffer(Framework.GetWindow().GetContext().GetDevice(), framebuffer, nullptr);
+		vkDestroyFramebuffer(Framework.GetContext().GetDevice(), framebuffer, nullptr);
 	}
 
-	vkDestroySwapchainKHR(Framework.GetWindow().GetContext().GetDevice(), _swapChain, nullptr);
+	vkDestroySwapchainKHR(Framework.GetContext().GetDevice(), _swapChain, nullptr);
 }

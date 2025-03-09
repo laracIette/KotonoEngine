@@ -17,8 +17,8 @@ KtModel::KtModel(const std::filesystem::path& path) :
 KtModel::~KtModel()
 {
 	KT_DEBUG_LOG("cleaning up model");
-	vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _indexBuffer.Buffer, _indexBuffer.Allocation);
-	vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), _vertexBuffer.Buffer, _vertexBuffer.Allocation);
+	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _indexBuffer.Buffer, _indexBuffer.Allocation);
+	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _vertexBuffer.Buffer, _vertexBuffer.Allocation);
 	KT_DEBUG_LOG("cleaned up model");
 }
 
@@ -87,7 +87,7 @@ void KtModel::CreateVertexBuffer()
 	const VkDeviceSize bufferSize = sizeof(_vertices[0]) * _vertices.size();
 
 	KtAllocatedBuffer stagingBuffer;
-	Framework.GetWindow().GetContext().CreateBuffer(
+	Framework.GetContext().CreateBuffer(
 		bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
@@ -97,7 +97,7 @@ void KtModel::CreateVertexBuffer()
 
 	memcpy(stagingBuffer.AllocationInfo.pMappedData, _vertices.data(), (size_t)bufferSize);
 
-	Framework.GetWindow().GetContext().CreateBuffer(
+	Framework.GetContext().CreateBuffer(
 		bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -105,9 +105,9 @@ void KtModel::CreateVertexBuffer()
 		_vertexBuffer
 	);
 
-	Framework.GetWindow().GetContext().CopyBuffer(stagingBuffer.Buffer, _vertexBuffer.Buffer, bufferSize);
+	Framework.GetContext().CopyBuffer(stagingBuffer.Buffer, _vertexBuffer.Buffer, bufferSize);
 
-	vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), stagingBuffer.Buffer, stagingBuffer.Allocation);
+	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingBuffer.Buffer, stagingBuffer.Allocation);
 }
 
 void KtModel::CreateIndexBuffer()
@@ -115,7 +115,7 @@ void KtModel::CreateIndexBuffer()
 	const VkDeviceSize bufferSize = sizeof(_indices[0]) * _indices.size();
 
 	KtAllocatedBuffer stagingBuffer;
-	Framework.GetWindow().GetContext().CreateBuffer(
+	Framework.GetContext().CreateBuffer(
 		bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
@@ -125,7 +125,7 @@ void KtModel::CreateIndexBuffer()
 
 	memcpy(stagingBuffer.AllocationInfo.pMappedData, _indices.data(), (size_t)bufferSize);
 
-	Framework.GetWindow().GetContext().CreateBuffer(
+	Framework.GetContext().CreateBuffer(
 		bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -133,7 +133,7 @@ void KtModel::CreateIndexBuffer()
 		_indexBuffer
 	);
 
-	Framework.GetWindow().GetContext().CopyBuffer(stagingBuffer.Buffer, _indexBuffer.Buffer, bufferSize);
+	Framework.GetContext().CopyBuffer(stagingBuffer.Buffer, _indexBuffer.Buffer, bufferSize);
 
-	vmaDestroyBuffer(Framework.GetWindow().GetContext().GetAllocator(), stagingBuffer.Buffer, stagingBuffer.Allocation);
+	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingBuffer.Buffer, stagingBuffer.Allocation);
 }
