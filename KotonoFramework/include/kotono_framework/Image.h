@@ -27,38 +27,4 @@ private:
     glm::vec2 _position; 
     uint32_t _priority;  
 
-    VkCommandBuffer commandBuffer;  // Command buffer for rendering the image
-
-
-    void createImage(VkDevice device, VkPhysicalDevice physicalDevice, VmaAllocator allocator)
-    {
-        // Create Vulkan image, allocate memory, and bind memory (use VMA for allocation)
-    }
-
-    void createImageView(VkDevice device)
-    {
-        // Create image view from the Vulkan image
-    }
-
-    void createSampler(VkDevice device)
-    {
-        // Create Vulkan sampler for the image (for texture filtering, etc.)
-    }
-
-    void createDescriptorSet(VkDevice device)
-    {
-        // Set up descriptor set to bind the image to shaders
-    }
-
-    void cleanup()
-    {
-        // Cleanup Vulkan resources (image, memory, view, sampler, etc.)
-    }
-
-    // Method to render the image with proper queue handling
-    void render(VkCommandBuffer commandBuffer, VkQueue queue)
-    {
-        // Submit commands for rendering the image here
-        // Ensure the image is correctly presented to the queue
-    }
 };

@@ -5,10 +5,6 @@ KtImage::KtImage(VkDevice device, VkPhysicalDevice physicalDevice, VmaAllocator 
     _position(0.0f, 0.0f),
     _priority(0)
 {
-    createImage(device, physicalDevice, allocator);
-    createImageView(device);
-    createSampler(device);
-    createDescriptorSet(device);
 }
 
 const glm::uvec2 KtImage::GetBaseSize() const
