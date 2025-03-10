@@ -1,16 +1,19 @@
 #pragma once
 #include <map>
+#include <unordered_set>
 #include "Event.h"
 #include "Key.h"
+#include "InputState.h"
 class KtKeyboard final
 {
 public:
 	void Update();
 
 
-	KtEvent& GetEvent(const KtKey key);
+	KtEvent& GetEvent(const KtKey key, const KtInputState inputState);
 
 private:
-	std::map<KtKey, KtEvent> _events;
+	std::map<KtKey, std::map<KtInputState, KtEvent>> _events;
+	std::map<KtKey, std::unordered_set<KtInputState>> _keyStates;
 };
 

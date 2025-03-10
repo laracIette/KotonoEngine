@@ -1,6 +1,5 @@
 #pragma once
 #include <GLFW/glfw3.h>
-#include "Context.h"
 #include "glm_includes.h"
 class KtWindow
 {
@@ -11,16 +10,13 @@ public:
 	void Cleanup();
 
 	// Executes vkDeviceWaitIdle(VkDevice) if true, else executes glfwPollEvents()
-	bool GetShouldClose() const;
+	const bool GetShouldClose() const;
 
 	GLFWwindow* GetGLFWWindow() const;
 
 	const glm::uvec2& GetSize() const;
 
 	void SetSize(const glm::uvec2& size);
-
-
-	void OnKeySpacePressed();
 
 private:
 	GLFWwindow* _window;

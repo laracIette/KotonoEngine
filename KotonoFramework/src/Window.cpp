@@ -40,7 +40,7 @@ void KtWindow::Init()
     glfwShowWindow(_window);
 }
 
-bool KtWindow::GetShouldClose() const
+const bool KtWindow::GetShouldClose() const
 {
     if (glfwWindowShouldClose(_window))
     {
@@ -72,11 +72,6 @@ const glm::uvec2& KtWindow::GetSize() const
 void KtWindow::SetSize(const glm::uvec2& size)
 {
     _size = size;
-}
-
-void KtWindow::OnKeySpacePressed()
-{
-    KT_DEBUG_LOG("Boing");
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
