@@ -12,7 +12,8 @@ int main()
     while (!Framework.GetWindow().GetShouldClose())
     {
         Framework.GetInputManager().Update();
-        Engine.Update();
+        Engine.GetTime().Update();
+        Engine.GetObjectManager().Update();
         Framework.GetRenderer().DrawFrame();
     }
 

@@ -6,12 +6,6 @@ void KEngine::Init()
     _objectManager.Init();
 }
 
-void KEngine::Update()
-{
-    _time.Update();
-    _objectManager.Update();
-}
-
 void KEngine::Cleanup()
 {
     _time.Cleanup();

@@ -5,7 +5,6 @@ class KEngine
 {
 public:
 	void Init();
-	void Update();
 	void Cleanup();
 
 	KTime& GetTime();

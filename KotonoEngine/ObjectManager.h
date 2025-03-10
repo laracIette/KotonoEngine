@@ -5,5 +5,8 @@ public:
 	void Init();
 	void Update();
 	void Cleanup();
+
+public:
+	
 };
 

@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include <kotono_framework/Framework.h>
 
 KtShader* TMesh::GetShader() const
 {
