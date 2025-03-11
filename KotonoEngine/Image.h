@@ -1,6 +1,6 @@
 #pragma once
 #include "InterfaceObject.h"
-#include <kotono_framework/Shader.h>
+//#include <kotono_framework/Shader2D.h>
 #include <kotono_framework/ImageTexture.h>
 class RImage : public RInterfaceObject
 {
@@ -8,7 +8,7 @@ class RImage : public RInterfaceObject
 
 public:
 private:
-	KtShader* _shader;
+	//KtShader2D* _shader;
 	KtImageTexture* _imageTexture;
 };
 

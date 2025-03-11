@@ -8,11 +8,11 @@
 #include "ObjectData3D.h"
 #include "glm_includes.h" 
 #include "AllocatedBuffer.h"
-class KtShader final
+class KtShader3D final
 {
 public:
-	KtShader(const std::filesystem::path& vertPath, const std::filesystem::path& fragPath);
-	~KtShader();
+	KtShader3D();
+	~KtShader3D();
 
 	VkPipeline GetGraphicsPipeline() const;
 	VkPipelineLayout GetPipelineLayout() const;

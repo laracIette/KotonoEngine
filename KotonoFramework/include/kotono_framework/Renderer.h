@@ -2,7 +2,7 @@
 #include "ImageTexture.h"
 #include "frames_in_flight.h"
 #include "ObjectData3D.h"
-#include "Shader.h"
+#include "Shader3D.h"
 #include "Model.h"
 #include <vector>
 #include <array>
@@ -16,7 +16,7 @@ public:
 	void Cleanup();
 
 	template <KtRenderLayer Layer>
-	void AddToRenderQueue3D(KtShader* shader, KtModel* model, const KtObjectData3D& objectData);
+	void AddToRenderQueue3D(KtShader3D* shader, KtModel* model, const KtObjectData3D& objectData);
 	void SetUniformData3D(const KtUniformData3D& uniformData3D);
 
 	void DrawFrame();
@@ -40,7 +40,7 @@ private:
 	};
 	struct RenderQueue3DData
 	{
-		std::unordered_map<KtShader*, RenderQueue3DShaderData> Shaders;
+		std::unordered_map<KtShader3D*, RenderQueue3DShaderData> Shaders;
 	};
 	struct Renderer3DData
 	{

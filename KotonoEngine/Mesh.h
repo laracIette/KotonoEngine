@@ -1,23 +1,23 @@
 #pragma once
 #include "SceneObject.h"
-#include <kotono_framework/Shader.h>
+#include <kotono_framework/Shader3D.h>
 #include <kotono_framework/Model.h>
 class TMesh : public TSceneObject
 {
 	BASECLASS(TSceneObject)
 
 public:
-	KtShader* GetShader() const;
+	KtShader3D* GetShader() const;
 	KtModel* GetModel() const;
 
-	void SetShader(KtShader* shader);
+	void SetShader(KtShader3D* shader);
 	void SetModel(KtModel* model);
 
 
 	void Draw() const;
 
 private:
-	KtShader* _shader;
+	KtShader3D* _shader;
 	KtModel* _model;
 };
 

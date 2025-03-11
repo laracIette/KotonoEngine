@@ -9,7 +9,7 @@ void KtMesh::AddToRenderQueue3D(const glm::mat4& modelMatrix) const
     );
 }
 
-KtShader* KtMesh::GetShader() const
+KtShader3D* KtMesh::GetShader() const
 {
     return _shader;
 }
@@ -19,7 +19,7 @@ KtModel* KtMesh::GetModel() const
     return _model;
 }
 
-void KtMesh::SetShader(KtShader* shader)
+void KtMesh::SetShader(KtShader3D* shader)
 {
     _shader = shader;
 }

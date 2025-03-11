@@ -5,7 +5,7 @@
 #include "log.h"
 #include "vk_utils.h"
 
-KtShader* shader = nullptr;
+KtShader3D* shader = nullptr;
 KtModel* model1 = nullptr;
 KtModel* model2 = nullptr;
 KtMesh* mesh1 = nullptr;
@@ -62,12 +62,12 @@ void KtRenderer::Cleanup()
 }
 
 template <KtRenderLayer Layer>
-void KtRenderer::AddToRenderQueue3D(KtShader* shader, KtModel* model, const KtObjectData3D& objectData)
+void KtRenderer::AddToRenderQueue3D(KtShader3D* shader, KtModel* model, const KtObjectData3D& objectData)
 {
 	_renderer3DData.RenderQueues[Layer].Shaders[shader].Models[model].ObjectDatas.push_back(objectData);
 }
-template void KtRenderer::AddToRenderQueue3D<KT_RENDER_LAYER_ENGINE>(KtShader*, KtModel*, const KtObjectData3D&);
-template void KtRenderer::AddToRenderQueue3D<KT_RENDER_LAYER_GAME>(KtShader*, KtModel*, const KtObjectData3D&);
+template void KtRenderer::AddToRenderQueue3D<KT_RENDER_LAYER_ENGINE>(KtShader3D*, KtModel*, const KtObjectData3D&);
+template void KtRenderer::AddToRenderQueue3D<KT_RENDER_LAYER_GAME>(KtShader3D*, KtModel*, const KtObjectData3D&);
 
 void KtRenderer::SetUniformData3D(const KtUniformData3D& uniformData3D)
 {
@@ -76,11 +76,7 @@ void KtRenderer::SetUniformData3D(const KtUniformData3D& uniformData3D)
 
 void KtRenderer::CreateShaderAndModels() const
 {
-	shader = new KtShader(
-		R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\vulkanVert.spv)",
-		R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\vulkanFrag.spv)"
-	);
-	
+	shader = new KtShader3D();	
 	model1 = new KtModel(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.obj)");
 	model2 = new KtModel(R"(C:\Users\nicos\OneDrive - e-artsup\B2\Environment\Corridor\SM_Column_low.fbx)");
 
