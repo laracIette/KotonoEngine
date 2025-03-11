@@ -1,7 +1,7 @@
 #pragma once
 #include <filesystem>
 #include <vulkan/vulkan.h>
-#include "max_frames_in_flight.h"
+#include "frames_in_flight.h"
 #include "ImageTexture.h"
 #include <array>
 #include "UniformData3D.h"
@@ -32,17 +32,17 @@ private:
 	VkDescriptorPool _descriptorPool;
 	VkDescriptorSetLayout _uniformDescriptorSetLayout;
 	VkDescriptorSetLayout _objectDescriptorSetLayout;
-	std::array<VkDescriptorSet, MAX_FRAMES_IN_FLIGHT> _uniformDescriptorSets;
-	std::array<VkDescriptorSet, MAX_FRAMES_IN_FLIGHT> _objectDescriptorSets;
+	std::array<VkDescriptorSet, KT_FRAMES_IN_FLIGHT> _uniformDescriptorSets;
+	std::array<VkDescriptorSet, KT_FRAMES_IN_FLIGHT> _objectDescriptorSets;
 
 	VkPipelineLayout _pipelineLayout;
 	VkPipeline _graphicsPipeline;
 
-	std::array<KtAllocatedBuffer, MAX_FRAMES_IN_FLIGHT> _uniformBuffers;
-	std::array<KtAllocatedBuffer, MAX_FRAMES_IN_FLIGHT> _objectBuffers;
-	std::array<KtAllocatedBuffer, MAX_FRAMES_IN_FLIGHT> _stagingUniformBuffers;
-	std::array<KtAllocatedBuffer, MAX_FRAMES_IN_FLIGHT> _stagingObjectBuffers;
-	std::array<VkDeviceSize, MAX_FRAMES_IN_FLIGHT> _objectCounts;
+	std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT> _uniformBuffers;
+	std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT> _objectBuffers;
+	std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT> _stagingUniformBuffers;
+	std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT> _stagingObjectBuffers;
+	std::array<VkDeviceSize, KT_FRAMES_IN_FLIGHT> _objectCounts;
 
 	void CreateImageTexture();
 

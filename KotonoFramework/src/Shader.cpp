@@ -27,7 +27,7 @@ KtShader::~KtShader()
 	vkDestroyPipeline(Framework.GetContext().GetDevice(), _graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(Framework.GetContext().GetDevice(), _pipelineLayout, nullptr);
 	
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
 	{
 		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _uniformBuffers[i].Buffer, _uniformBuffers[i].Allocation);
 		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _stagingUniformBuffers[i].Buffer, _stagingUniformBuffers[i].Allocation);
@@ -108,17 +108,17 @@ void KtShader::CreateDescriptorPool()
 {
 	std::array<VkDescriptorPoolSize, 3> poolSizes{};
 	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; // View projection buffer
-    poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+    poolSizes[0].descriptorCount = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
 	poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER; // Image texture
-    poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+    poolSizes[1].descriptorCount = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
 	poolSizes[2].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; // Object data buffer
-    poolSizes[2].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); 
+    poolSizes[2].descriptorCount = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT); 
 
     VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
     poolInfo.pPoolSizes = poolSizes.data();
-    poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) * 2; // One set for global, one for object buffer
+    poolInfo.maxSets = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT) * 2; // One set for global, one for object buffer
 
     VK_CHECK_THROW(
         vkCreateDescriptorPool(Framework.GetContext().GetDevice(), &poolInfo, nullptr, &_descriptorPool),
@@ -128,10 +128,10 @@ void KtShader::CreateDescriptorPool()
 
 void KtShader::CreateDescriptorSets()
 {
-	std::array<VkDescriptorSetLayout, MAX_FRAMES_IN_FLIGHT> globalLayouts{};
+	std::array<VkDescriptorSetLayout, KT_FRAMES_IN_FLIGHT> globalLayouts{};
 	globalLayouts.fill(_uniformDescriptorSetLayout);
 
-	std::array<VkDescriptorSetLayout, MAX_FRAMES_IN_FLIGHT> objectLayouts{};
+	std::array<VkDescriptorSetLayout, KT_FRAMES_IN_FLIGHT> objectLayouts{};
 	objectLayouts.fill(_objectDescriptorSetLayout);
 
 	VkDescriptorSetAllocateInfo allocInfo{};
@@ -152,7 +152,7 @@ void KtShader::CreateDescriptorSets()
 		"failed to allocate object descriptor sets!"
 	);
 
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
 	{
 		UpdateDescriptorSet(static_cast<uint32_t>(i), _imageTexture);
 	}
@@ -206,7 +206,7 @@ void KtShader::UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTextu
 
 void KtShader::CreateUniformBuffers()
 {
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
 	{
 		CreateUniformBuffer(static_cast<uint32_t>(i));
 	}
@@ -214,7 +214,7 @@ void KtShader::CreateUniformBuffers()
 
 void KtShader::CreateObjectBuffers()
 {
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
 	{
 		CreateObjectBuffer(static_cast<uint32_t>(i));
 	}

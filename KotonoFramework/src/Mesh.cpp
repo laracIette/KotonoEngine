@@ -4,12 +4,8 @@
 
 void KtMesh::AddToRenderQueue3D(const glm::mat4& modelMatrix) const
 {
-    Framework.GetRenderer().AddToRenderQueue3D(
-        _shader,
-        _model,
-        {
-            modelMatrix
-        }
+    Framework.GetRenderer().AddToRenderQueue3D<KT_RENDER_LAYER_ENGINE>(
+        _shader, _model, { modelMatrix }
     );
 }
 

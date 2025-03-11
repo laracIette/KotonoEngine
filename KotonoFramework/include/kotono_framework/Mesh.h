@@ -1,7 +1,7 @@
 #pragma once
 #include "Model.h"
 #include "Shader.h"
-#include "max_frames_in_flight.h"
+#include "frames_in_flight.h"
 class KtMesh final
 {
 public:

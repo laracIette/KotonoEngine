@@ -1,12 +1,13 @@
 #pragma once
 #include "ImageTexture.h"
-#include "max_frames_in_flight.h"
+#include "frames_in_flight.h"
 #include "ObjectData3D.h"
 #include "Shader.h"
 #include "Model.h"
 #include <vector>
 #include <array>
 #include <unordered_map>
+#include "RenderLayer.h"
 
 class KtRenderer final
 {
@@ -14,6 +15,7 @@ public:
 	void Init();
 	void Cleanup();
 
+	template <KtRenderLayer Layer>
 	void AddToRenderQueue3D(KtShader* shader, KtModel* model, const KtObjectData3D& objectData);
 	void SetUniformData3D(const KtUniformData3D& uniformData3D);
 
@@ -36,12 +38,16 @@ private:
 	{
 		std::unordered_map<KtModel*, RenderQueue3DModelData> Models;
 	};
-	struct RenderQueue3D
+	struct RenderQueue3DData
 	{
 		std::unordered_map<KtShader*, RenderQueue3DShaderData> Shaders;
 	};
-
-	RenderQueue3D _renderQueue3D;
+	struct Renderer3DData
+	{
+		std::array<RenderQueue3DData, KT_RENDER_LAYER_COUNT> RenderQueues;
+	};
+	
+	Renderer3DData _renderer3DData;
 	KtUniformData3D _uniformData3D;
 
 	VkSwapchainKHR _swapChain;
@@ -63,9 +69,9 @@ private:
 	VmaAllocation _depthImageAllocation;
 	VkImageView _depthImageView;
 
-	std::array<VkSemaphore, MAX_FRAMES_IN_FLIGHT> _imageAvailableSemaphores;
-	std::array<VkSemaphore, MAX_FRAMES_IN_FLIGHT> _renderFinishedSemaphores;
-	std::array<VkFence, MAX_FRAMES_IN_FLIGHT> _inFlightFences;
+	std::array<VkSemaphore, KT_FRAMES_IN_FLIGHT> _imageAvailableSemaphores;
+	std::array<VkSemaphore, KT_FRAMES_IN_FLIGHT> _renderFinishedSemaphores;
+	std::array<VkFence, KT_FRAMES_IN_FLIGHT> _inFlightFences;
 
 	bool _framebufferResized;
 
@@ -96,4 +102,3 @@ private:
 
 	void CleanupSwapChain() const;
 };
-

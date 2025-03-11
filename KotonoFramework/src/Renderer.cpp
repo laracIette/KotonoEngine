@@ -51,7 +51,7 @@ void KtRenderer::Cleanup()
 
 	vkDestroyRenderPass(device, _renderPass, nullptr);
 
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
 	{
 		vkDestroySemaphore(device, _renderFinishedSemaphores[i], nullptr);
 		vkDestroySemaphore(device, _imageAvailableSemaphores[i], nullptr);
@@ -61,10 +61,13 @@ void KtRenderer::Cleanup()
 	KT_DEBUG_LOG("cleaned up renderer");
 }
 
+template <KtRenderLayer Layer>
 void KtRenderer::AddToRenderQueue3D(KtShader* shader, KtModel* model, const KtObjectData3D& objectData)
 {
-	_renderQueue3D.Shaders[shader].Models[model].ObjectDatas.push_back(objectData);
+	_renderer3DData.RenderQueues[Layer].Shaders[shader].Models[model].ObjectDatas.push_back(objectData);
 }
+template void KtRenderer::AddToRenderQueue3D<KT_RENDER_LAYER_ENGINE>(KtShader*, KtModel*, const KtObjectData3D&);
+template void KtRenderer::AddToRenderQueue3D<KT_RENDER_LAYER_GAME>(KtShader*, KtModel*, const KtObjectData3D&);
 
 void KtRenderer::SetUniformData3D(const KtUniformData3D& uniformData3D)
 {
@@ -410,7 +413,7 @@ const bool KtRenderer::HasStencilComponent(VkFormat format) const
 
 void KtRenderer::CreateCommandBuffers()
 {
-	_commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+	_commandBuffers.resize(KT_FRAMES_IN_FLIGHT);
 
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -467,49 +470,52 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32
 	scissor.extent = _swapChainExtent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	for (auto& [shader, shaderData] : _renderQueue3D.Shaders)
+	for (auto& renderQueue3DData : _renderer3DData.RenderQueues)
 	{
-		if (!shader)
+		for (auto& [shader, shaderData] : renderQueue3DData.Shaders)
 		{
-			KT_DEBUG_LOG("shader is nullptr");
-			continue;
-		}
-
-		shader->UpdateUniformBuffer(_uniformData3D, _currentFrame);
-
-		std::vector<KtObjectData3D> objectBufferData;
-		for (auto& [model, modelData] : shaderData.Models)
-		{
-			objectBufferData.insert(objectBufferData.end(), modelData.ObjectDatas.begin(), modelData.ObjectDatas.end());
-		}
-		shader->UpdateObjectBuffer(objectBufferData, _currentFrame);
-
-		shader->CmdBind(commandBuffer);
-		shader->CmdBindDescriptorSets(commandBuffer, _currentFrame);
-
-		uint32_t instanceIndex = 0;	
-
-		for (auto& [model, modelData] : shaderData.Models)
-		{
-			const uint32_t instanceCount = static_cast<uint32_t>(modelData.ObjectDatas.size());
-			
-			if (!model)
+			if (!shader)
 			{
-				KT_DEBUG_LOG("model is nullptr");
-			}
-			else if (instanceCount == 0)
-			{
-				KT_DEBUG_LOG("objectDatas is empty");
-			}
-			else
-			{
-				model->CmdBind(commandBuffer);
-				model->CmdDraw(commandBuffer, instanceCount, instanceIndex);
+				KT_DEBUG_LOG("shader is nullptr");
+				continue;
 			}
 
-			instanceIndex += instanceCount;
+			shader->UpdateUniformBuffer(_uniformData3D, _currentFrame);
 
-			//KT_DEBUG_LOG("Drawing %s", model->GetPath().string().c_str());
+			std::vector<KtObjectData3D> objectBufferData;
+			for (auto& [model, modelData] : shaderData.Models)
+			{
+				objectBufferData.insert(objectBufferData.end(), modelData.ObjectDatas.begin(), modelData.ObjectDatas.end());
+			}
+			shader->UpdateObjectBuffer(objectBufferData, _currentFrame);
+
+			shader->CmdBind(commandBuffer);
+			shader->CmdBindDescriptorSets(commandBuffer, _currentFrame);
+
+			uint32_t instanceIndex = 0;
+
+			for (auto& [model, modelData] : shaderData.Models)
+			{
+				const uint32_t instanceCount = static_cast<uint32_t>(modelData.ObjectDatas.size());
+
+				if (!model)
+				{
+					KT_DEBUG_LOG("model is nullptr");
+				}
+				else if (instanceCount == 0)
+				{
+					KT_DEBUG_LOG("objectDatas is empty");
+				}
+				else
+				{
+					model->CmdBind(commandBuffer);
+					model->CmdDraw(commandBuffer, instanceCount, instanceIndex);
+				}
+
+				instanceIndex += instanceCount;
+
+				//KT_DEBUG_LOG("Drawing %s", model->GetPath().string().c_str());
+			}
 		}
 	}
 
@@ -531,7 +537,7 @@ void KtRenderer::CreateSyncObjects()
 	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
 	{
 		if (vkCreateSemaphore(Framework.GetContext().GetDevice(), &semaphoreInfo, nullptr, &_imageAvailableSemaphores[i]) != VK_SUCCESS ||
 			vkCreateSemaphore(Framework.GetContext().GetDevice(), &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS ||
@@ -545,7 +551,7 @@ void KtRenderer::CreateSyncObjects()
 
 void KtRenderer::ClearRenderQueue()
 {
-	_renderQueue3D = {};
+	_renderer3DData = {};
 }
 
 void KtRenderer::DrawFrame()
@@ -657,7 +663,7 @@ void KtRenderer::DrawFrame()
 
 	ClearRenderQueue();
 
-	_currentFrame = (_currentFrame + 1) % static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+	_currentFrame = (_currentFrame + 1) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
 void KtRenderer::RecreateSwapChain()
