@@ -2,9 +2,9 @@
 #include "Framework.h"
 #include "log.h"
 
-void KtMesh::AddToRenderQueue(const glm::mat4& modelMatrix) const
+void KtMesh::AddToRenderQueue3D(const glm::mat4& modelMatrix) const
 {
-    Framework.GetRenderer().AddToRenderQueue(
+    Framework.GetRenderer().AddToRenderQueue3D(
         _shader,
         _model,
         {

@@ -5,7 +5,7 @@
 class KtMesh final
 {
 public:
-	void AddToRenderQueue(const glm::mat4& modelMatrix) const;
+	void AddToRenderQueue3D(const glm::mat4& modelMatrix) const;
 
 	KtShader* GetShader() const;
 	KtModel* GetModel() const;

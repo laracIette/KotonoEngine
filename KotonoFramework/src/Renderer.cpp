@@ -61,9 +61,9 @@ void KtRenderer::Cleanup()
 	KT_DEBUG_LOG("cleaned up renderer");
 }
 
-void KtRenderer::AddToRenderQueue(KtShader* shader, KtModel* model, const KtObjectData3D& objectData)
+void KtRenderer::AddToRenderQueue3D(KtShader* shader, KtModel* model, const KtObjectData3D& objectData)
 {
-	_renderQueue3D[shader][model].push_back(objectData);
+	_renderQueue3D.Shaders[shader].Models[model].ObjectDatas.push_back(objectData);
 }
 
 void KtRenderer::SetUniformData3D(const KtUniformData3D& uniformData3D)
@@ -467,7 +467,7 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32
 	scissor.extent = _swapChainExtent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	for (auto& [shader, modelObjectDatas] : _renderQueue3D)
+	for (auto& [shader, shaderData] : _renderQueue3D.Shaders)
 	{
 		if (!shader)
 		{
@@ -478,11 +478,10 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32
 		shader->UpdateUniformBuffer(_uniformData3D, _currentFrame);
 
 		std::vector<KtObjectData3D> objectBufferData;
-		std::for_each(modelObjectDatas.begin(), modelObjectDatas.end(), [&](const auto& pair)
-			{
-				objectBufferData.insert(objectBufferData.end(), pair.second.begin(), pair.second.end());
-			}
-		);
+		for (auto& [model, modelData] : shaderData.Models)
+		{
+			objectBufferData.insert(objectBufferData.end(), modelData.ObjectDatas.begin(), modelData.ObjectDatas.end());
+		}
 		shader->UpdateObjectBuffer(objectBufferData, _currentFrame);
 
 		shader->CmdBind(commandBuffer);
@@ -490,9 +489,9 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32
 
 		uint32_t instanceIndex = 0;	
 
-		for (auto& [model, objectDatas] : modelObjectDatas)
+		for (auto& [model, modelData] : shaderData.Models)
 		{
-			const uint32_t instanceCount = static_cast<uint32_t>(objectDatas.size());
+			const uint32_t instanceCount = static_cast<uint32_t>(modelData.ObjectDatas.size());
 			
 			if (!model)
 			{
@@ -546,7 +545,7 @@ void KtRenderer::CreateSyncObjects()
 
 void KtRenderer::ClearRenderQueue()
 {
-	_renderQueue3D.clear();
+	_renderQueue3D = {};
 }
 
 void KtRenderer::DrawFrame()
@@ -562,7 +561,7 @@ void KtRenderer::DrawFrame()
 	ubo.Projection[1][1] *= -1.0f;
 	SetUniformData3D(ubo);
 
-	mesh1->AddToRenderQueue(
+	mesh1->AddToRenderQueue3D(
 		glm::scale(
 			glm::rotate(
 				glm::translate(
@@ -577,7 +576,7 @@ void KtRenderer::DrawFrame()
 	);
 	for (uint32_t i = 0; i < 1000; i++)
 	{
-		mesh2->AddToRenderQueue(
+		mesh2->AddToRenderQueue3D(
 			glm::scale(
 				glm::rotate(
 					glm::translate(
