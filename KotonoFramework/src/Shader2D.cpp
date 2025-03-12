@@ -1,14 +1,14 @@
-#include "Shader3D.h"
+#include "Shader2D.h"
 #include <vulkan/vulkan.h>
-#include "Vertex.h"
+#include "Vertex2D.h"
 #include "File.h"
 #include "Framework.h"
 #include "log.h"
 #include "vk_utils.h"
 
-KtShader3D::KtShader3D() :
-	_vertPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader3DVert.spv)"),
-	_fragPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader3DFrag.spv)")
+KtShader2D::KtShader2D() :
+	_vertPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader2DVert.spv)"),
+	_fragPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader2DFrag.spv)")
 {
 	CreateDescriptorSetLayout();
 	CreateDescriptorPool();
@@ -19,7 +19,7 @@ KtShader3D::KtShader3D() :
 	CreateGraphicsPipeline();
 }
 
-KtShader3D::~KtShader3D()
+KtShader2D::~KtShader2D()
 {
 	KT_DEBUG_LOG("cleaning up shader");
 	delete _imageTexture;
@@ -42,22 +42,22 @@ KtShader3D::~KtShader3D()
 	KT_DEBUG_LOG("cleaned up shader");
 }
 
-VkPipeline KtShader3D::GetGraphicsPipeline() const
+VkPipeline KtShader2D::GetGraphicsPipeline() const
 {
 	return _graphicsPipeline;
 }
 
-VkPipelineLayout KtShader3D::GetPipelineLayout() const
+VkPipelineLayout KtShader2D::GetPipelineLayout() const
 {
 	return _pipelineLayout;
 }
 
-void KtShader3D::CreateImageTexture()
+void KtShader2D::CreateImageTexture()
 {
 	_imageTexture = new KtImageTexture(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.png)");
 }
 
-void KtShader3D::CreateDescriptorSetLayout()
+void KtShader2D::CreateDescriptorSetLayout()
 {
 	VkDescriptorSetLayoutBinding uboLayoutBinding{};
 	uboLayoutBinding.binding = 0;
@@ -104,7 +104,7 @@ void KtShader3D::CreateDescriptorSetLayout()
 	);
 }
 
-void KtShader3D::CreateDescriptorPool()
+void KtShader2D::CreateDescriptorPool()
 {
 	std::array<VkDescriptorPoolSize, 3> poolSizes{};
 	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; // View projection buffer
@@ -118,7 +118,7 @@ void KtShader3D::CreateDescriptorPool()
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
     poolInfo.pPoolSizes = poolSizes.data();
-    poolInfo.maxSets = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT) * 2; // One set for global, one for object buffer
+    poolInfo.maxSets = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT) * 2; // One set for uniform, one for object buffer
 
     VK_CHECK_THROW(
         vkCreateDescriptorPool(Framework.GetContext().GetDevice(), &poolInfo, nullptr, &_descriptorPool),
@@ -126,10 +126,10 @@ void KtShader3D::CreateDescriptorPool()
     );
 }
 
-void KtShader3D::CreateDescriptorSets()
+void KtShader2D::CreateDescriptorSets()
 {
-	std::array<VkDescriptorSetLayout, KT_FRAMES_IN_FLIGHT> globalLayouts{};
-	globalLayouts.fill(_uniformDescriptorSetLayout);
+	std::array<VkDescriptorSetLayout, KT_FRAMES_IN_FLIGHT> uniformLayouts{};
+	uniformLayouts.fill(_uniformDescriptorSetLayout);
 
 	std::array<VkDescriptorSetLayout, KT_FRAMES_IN_FLIGHT> objectLayouts{};
 	objectLayouts.fill(_objectDescriptorSetLayout);
@@ -137,12 +137,12 @@ void KtShader3D::CreateDescriptorSets()
 	VkDescriptorSetAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 	allocInfo.descriptorPool = _descriptorPool;
-	allocInfo.descriptorSetCount = static_cast<uint32_t>(globalLayouts.size());
-	allocInfo.pSetLayouts = globalLayouts.data();
+	allocInfo.descriptorSetCount = static_cast<uint32_t>(uniformLayouts.size());
+	allocInfo.pSetLayouts = uniformLayouts.data();
 
 	VK_CHECK_THROW(
 		vkAllocateDescriptorSets(Framework.GetContext().GetDevice(), &allocInfo, _uniformDescriptorSets.data()),
-		"failed to allocate global descriptor sets!"
+		"failed to allocate uniform descriptor sets!"
 	);
 
 	allocInfo.descriptorSetCount = static_cast<uint32_t>(objectLayouts.size());
@@ -158,12 +158,12 @@ void KtShader3D::CreateDescriptorSets()
 	}
 }
 
-void KtShader3D::UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTexture* imageTexture)
+void KtShader2D::UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTexture* imageTexture)
 {
 	VkDescriptorBufferInfo bufferInfo{};
 	bufferInfo.buffer = _uniformBuffers[imageIndex].Buffer;
 	bufferInfo.offset = 0;
-	bufferInfo.range = sizeof(KtUniformData3D);
+	bufferInfo.range = sizeof(KtUniformData2D);
 
 	VkDescriptorImageInfo imageInfo{};
 	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -204,7 +204,7 @@ void KtShader3D::UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTex
 	vkUpdateDescriptorSets(Framework.GetContext().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 }
 
-void KtShader3D::CreateUniformBuffers()
+void KtShader2D::CreateUniformBuffers()
 {
 	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
 	{
@@ -212,7 +212,7 @@ void KtShader3D::CreateUniformBuffers()
 	}
 }
 
-void KtShader3D::CreateObjectBuffers()
+void KtShader2D::CreateObjectBuffers()
 {
 	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
 	{
@@ -220,10 +220,10 @@ void KtShader3D::CreateObjectBuffers()
 	}
 }
 
-void KtShader3D::CreateUniformBuffer(const uint32_t imageIndex)
+void KtShader2D::CreateUniformBuffer(const uint32_t imageIndex)
 {
 	Framework.GetContext().CreateBuffer(
-		sizeof(KtUniformData3D),
+		sizeof(KtUniformData2D),
 		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		0,
@@ -232,7 +232,7 @@ void KtShader3D::CreateUniformBuffer(const uint32_t imageIndex)
 	);
 
 	Framework.GetContext().CreateBuffer(
-		sizeof(KtUniformData3D),
+		sizeof(KtUniformData2D),
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		VMA_ALLOCATION_CREATE_MAPPED_BIT,
@@ -241,7 +241,7 @@ void KtShader3D::CreateUniformBuffer(const uint32_t imageIndex)
 	);
 }
 
-void KtShader3D::CreateObjectBuffer(const uint32_t imageIndex)
+void KtShader2D::CreateObjectBuffer(const uint32_t imageIndex)
 {
 	KT_DEBUG_LOG("0bject buffer size at frame %u: %llu", imageIndex, GetObjectBufferSize(imageIndex));
 	Framework.GetContext().CreateBuffer(
@@ -263,18 +263,18 @@ void KtShader3D::CreateObjectBuffer(const uint32_t imageIndex)
 	);
 }
 
-void KtShader3D::UpdateUniformBuffer(const KtUniformData3D& uniformData, const uint32_t imageIndex)
+void KtShader2D::UpdateUniformBuffer(const KtUniformData2D& uniformData, const uint32_t imageIndex)
 {
-	memcpy(_stagingUniformBuffers[imageIndex].AllocationInfo.pMappedData, &uniformData, sizeof(KtUniformData3D));
+	memcpy(_stagingUniformBuffers[imageIndex].AllocationInfo.pMappedData, &uniformData, sizeof(KtUniformData2D));
 
 	Framework.GetContext().CopyBuffer(
 		_stagingUniformBuffers[imageIndex].Buffer,
 		_uniformBuffers[imageIndex].Buffer,
-		sizeof(KtUniformData3D)
+		sizeof(KtUniformData2D)
 	);
 }
 
-void KtShader3D::UpdateObjectBuffer(const std::vector<KtObjectData3D>& objectDatas, const uint32_t imageIndex)
+void KtShader2D::UpdateObjectBuffer(const std::vector<KtObjectData2D>& objectDatas, const uint32_t imageIndex)
 {
 	// Ensure buffer sizes are enough
 	SetObjectCount(objectDatas.size(), imageIndex);
@@ -289,12 +289,12 @@ void KtShader3D::UpdateObjectBuffer(const std::vector<KtObjectData3D>& objectDat
 	);
 }
 
-void KtShader3D::CmdBind(VkCommandBuffer commandBuffer) const
+void KtShader2D::CmdBind(VkCommandBuffer commandBuffer) const
 {
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline);
 }
 
-void KtShader3D::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32_t imageIndex)
+void KtShader2D::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32_t imageIndex)
 {
 	vkCmdBindDescriptorSets(
 		commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout,
@@ -307,7 +307,7 @@ void KtShader3D::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint
 	);
 }
 
-void KtShader3D::SetObjectCount(const VkDeviceSize objectCount, const uint32_t imageIndex)
+void KtShader2D::SetObjectCount(const VkDeviceSize objectCount, const uint32_t imageIndex)
 {
 	if (_objectCounts[imageIndex] != objectCount)
 	{
@@ -322,12 +322,12 @@ void KtShader3D::SetObjectCount(const VkDeviceSize objectCount, const uint32_t i
 	}
 }
 
-const VkDeviceSize KtShader3D::GetObjectBufferSize(const uint32_t imageIndex) const
+const VkDeviceSize KtShader2D::GetObjectBufferSize(const uint32_t imageIndex) const
 {
-	return sizeof(KtObjectData3D) * (_objectCounts[imageIndex] == 0 ? 1 : _objectCounts[imageIndex]);
+	return sizeof(KtObjectData2D) * (_objectCounts[imageIndex] == 0 ? 1 : _objectCounts[imageIndex]);
 }
 
-void KtShader3D::CreateGraphicsPipeline()
+void KtShader2D::CreateGraphicsPipeline()
 {
 	const std::vector<char> vertShaderCode = KtFile(_vertPath).GetBinaryContent();
 	const std::vector<char> fragShaderCode = KtFile(_fragPath).GetBinaryContent();
@@ -355,14 +355,14 @@ void KtShader3D::CreateGraphicsPipeline()
 	VkVertexInputBindingDescription bindingDescriptions[] =
 	{ 
 		// Binding for vertex data
-		{ 0, sizeof(KtVertex), VK_VERTEX_INPUT_RATE_VERTEX }
+		{ 0, sizeof(KtVertex2D), VK_VERTEX_INPUT_RATE_VERTEX }
 	};
 	VkVertexInputAttributeDescription attributeDescriptions[] =
 	{
 		// Vertex attributes
-		{ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KtVertex, Position) },
-		{ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KtVertex, Color) },
-		{ 2, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(KtVertex, TexCoord) }
+		{ 0, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(KtVertex2D, Position) },
+		{ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KtVertex2D, Color) },
+		{ 2, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(KtVertex2D, TexCoord) }
 	};
 
 	vertexInputInfo.vertexBindingDescriptionCount = 1;
@@ -501,7 +501,7 @@ void KtShader3D::CreateGraphicsPipeline()
 	vkDestroyShaderModule(Framework.GetContext().GetDevice(), vertShaderModule, nullptr);
 }
 
-const VkShaderModule KtShader3D::CreateShaderModule(const std::vector<char>& code) const
+const VkShaderModule KtShader2D::CreateShaderModule(const std::vector<char>& code) const
 {
 	VkShaderModuleCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;

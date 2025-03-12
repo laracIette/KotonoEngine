@@ -1,6 +1,6 @@
 #include "Shader3D.h"
 #include <vulkan/vulkan.h>
-#include "Vertex.h"
+#include "Vertex3D.h"
 #include "File.h"
 #include "Framework.h"
 #include "log.h"
@@ -118,7 +118,7 @@ void KtShader3D::CreateDescriptorPool()
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
     poolInfo.pPoolSizes = poolSizes.data();
-    poolInfo.maxSets = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT) * 2; // One set for global, one for object buffer
+    poolInfo.maxSets = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT) * 2; // One set for uniform, one for object buffer
 
     VK_CHECK_THROW(
         vkCreateDescriptorPool(Framework.GetContext().GetDevice(), &poolInfo, nullptr, &_descriptorPool),
@@ -128,8 +128,8 @@ void KtShader3D::CreateDescriptorPool()
 
 void KtShader3D::CreateDescriptorSets()
 {
-	std::array<VkDescriptorSetLayout, KT_FRAMES_IN_FLIGHT> globalLayouts{};
-	globalLayouts.fill(_uniformDescriptorSetLayout);
+	std::array<VkDescriptorSetLayout, KT_FRAMES_IN_FLIGHT> uniformLayouts{};
+	uniformLayouts.fill(_uniformDescriptorSetLayout);
 
 	std::array<VkDescriptorSetLayout, KT_FRAMES_IN_FLIGHT> objectLayouts{};
 	objectLayouts.fill(_objectDescriptorSetLayout);
@@ -137,12 +137,12 @@ void KtShader3D::CreateDescriptorSets()
 	VkDescriptorSetAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 	allocInfo.descriptorPool = _descriptorPool;
-	allocInfo.descriptorSetCount = static_cast<uint32_t>(globalLayouts.size());
-	allocInfo.pSetLayouts = globalLayouts.data();
+	allocInfo.descriptorSetCount = static_cast<uint32_t>(uniformLayouts.size());
+	allocInfo.pSetLayouts = uniformLayouts.data();
 
 	VK_CHECK_THROW(
 		vkAllocateDescriptorSets(Framework.GetContext().GetDevice(), &allocInfo, _uniformDescriptorSets.data()),
-		"failed to allocate global descriptor sets!"
+		"failed to allocate uniform descriptor sets!"
 	);
 
 	allocInfo.descriptorSetCount = static_cast<uint32_t>(objectLayouts.size());
@@ -355,14 +355,14 @@ void KtShader3D::CreateGraphicsPipeline()
 	VkVertexInputBindingDescription bindingDescriptions[] =
 	{ 
 		// Binding for vertex data
-		{ 0, sizeof(KtVertex), VK_VERTEX_INPUT_RATE_VERTEX }
+		{ 0, sizeof(KtVertex3D), VK_VERTEX_INPUT_RATE_VERTEX }
 	};
 	VkVertexInputAttributeDescription attributeDescriptions[] =
 	{
 		// Vertex attributes
-		{ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KtVertex, Position) },
-		{ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KtVertex, Color) },
-		{ 2, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(KtVertex, TexCoord) }
+		{ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KtVertex3D, Position) },
+		{ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KtVertex3D, Color) },
+		{ 2, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(KtVertex3D, TexCoord) }
 	};
 
 	vertexInputInfo.vertexBindingDescriptionCount = 1;

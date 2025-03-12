@@ -1,7 +1,7 @@
 #pragma once
 #include <vma/vk_mem_alloc.h>
 #include <filesystem>
-#include "Vertex.h"
+#include "Vertex3D.h"
 #include "AllocatedBuffer.h"
 class KtModel final
 {
@@ -16,7 +16,7 @@ public:
 
 private:
 	const std::filesystem::path _path;
-	std::vector<KtVertex> _vertices;
+	std::vector<KtVertex3D> _vertices;
 	std::vector<uint32_t> _indices;
 	KtAllocatedBuffer _vertexBuffer;
 	KtAllocatedBuffer _indexBuffer;

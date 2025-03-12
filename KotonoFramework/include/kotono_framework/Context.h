@@ -12,7 +12,7 @@
 #include <iostream>
 #include "QueueFamilyIndices.h"
 #include "SwapChainSupportDetails.h"
-#include "Vertex.h"
+#include "Vertex3D.h"
 #include "ImageTexture.h"
 #include "Model.h"
 #include "Shader3D.h"

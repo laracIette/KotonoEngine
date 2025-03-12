@@ -2,7 +2,7 @@
 #include "Framework.h"
 #include <set>
 #include <fstream>
-#include "Vertex.h"
+#include "Vertex3D.h"
 #include <chrono>
 #include "log.h"
 #include "vk_utils.h"

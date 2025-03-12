@@ -50,7 +50,7 @@ void KtModel::Load()
 		throw std::runtime_error("Failed to load model: " + _path.string());
 	}
 
-	std::unordered_map<KtVertex, uint32_t> uniqueVertices{};
+	std::unordered_map<KtVertex3D, uint32_t> uniqueVertices{};
 
 	for (unsigned int m = 0; m < scene->mNumMeshes; ++m)
 	{
@@ -65,7 +65,7 @@ void KtModel::Load()
 				const aiVector3D pos = mesh->mVertices[face.mIndices[j]];
 				const aiVector3D texCoord = mesh->mTextureCoords[0] ? mesh->mTextureCoords[0][face.mIndices[j]] : aiVector3D(0.0f, 0.0f, 0.0f);
 
-				KtVertex vertex{};
+				KtVertex3D vertex{};
 				vertex.Position = { pos.x, pos.y, pos.z };
 				vertex.TexCoord = { texCoord.x, texCoord.y };
 				vertex.Color = { 1.0f, 1.0f, 1.0f };

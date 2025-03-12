@@ -1,7 +1,9 @@
 #pragma once
 #include "ImageTexture.h"
 #include "frames_in_flight.h"
+#include "ObjectData2D.h"
 #include "ObjectData3D.h"
+#include "Shader2D.h"
 #include "Shader3D.h"
 #include "Model.h"
 #include <vector>
@@ -19,6 +21,10 @@ public:
 	void AddToRenderQueue3D(KtShader3D* shader, KtModel* model, const KtObjectData3D& objectData);
 	void SetUniformData3D(const KtUniformData3D& uniformData3D);
 
+	template <KtRenderLayer Layer>
+	void AddToRenderQueue2D(KtShader2D* shader, const KtObjectData2D& objectData);
+	void SetUniformData2D(const KtUniformData2D& uniformData2D);
+
 	void DrawFrame();
 
 	void OnFramebufferResized();
@@ -29,6 +35,21 @@ public:
 
 private:
 	void CreateShaderAndModels() const;
+
+	struct RenderQueue2DModelData
+	{
+		std::vector<KtObjectData2D> ObjectDatas;
+	};
+	struct RenderQueue2DData
+	{
+		std::unordered_map<KtShader2D*, RenderQueue2DModelData> Shaders;
+	};
+	struct Renderer2DData
+	{
+		std::array<RenderQueue2DData, KT_RENDER_LAYER_COUNT> RenderQueues;
+	};
+	Renderer2DData _renderer2DData;
+	KtUniformData2D _uniformData2D;
 
 	struct RenderQueue3DModelData
 	{
@@ -46,7 +67,6 @@ private:
 	{
 		std::array<RenderQueue3DData, KT_RENDER_LAYER_COUNT> RenderQueues;
 	};
-	
 	Renderer3DData _renderer3DData;
 	KtUniformData3D _uniformData3D;
 
@@ -98,7 +118,9 @@ private:
 
 	void CreateSyncObjects();
 
-	void ClearRenderQueue();
+	void ClearRenderQueues();
+	void ClearRenderQueue2D();
+	void ClearRenderQueue3D();
 
 	void CleanupSwapChain() const;
 };

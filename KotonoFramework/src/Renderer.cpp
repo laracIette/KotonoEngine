@@ -69,9 +69,22 @@ void KtRenderer::AddToRenderQueue3D(KtShader3D* shader, KtModel* model, const Kt
 template void KtRenderer::AddToRenderQueue3D<KT_RENDER_LAYER_ENGINE>(KtShader3D*, KtModel*, const KtObjectData3D&);
 template void KtRenderer::AddToRenderQueue3D<KT_RENDER_LAYER_GAME>(KtShader3D*, KtModel*, const KtObjectData3D&);
 
+template<KtRenderLayer Layer>
+void KtRenderer::AddToRenderQueue2D(KtShader2D* shader, const KtObjectData2D& objectData)
+{
+	_renderer2DData.RenderQueues[Layer].Shaders[shader].ObjectDatas.push_back(objectData);
+}
+template void KtRenderer::AddToRenderQueue2D<KT_RENDER_LAYER_ENGINE>(KtShader2D*, const KtObjectData2D&);
+template void KtRenderer::AddToRenderQueue2D<KT_RENDER_LAYER_GAME>(KtShader2D*, const KtObjectData2D&);
+
 void KtRenderer::SetUniformData3D(const KtUniformData3D& uniformData3D)
 {
 	_uniformData3D = uniformData3D;
+}
+
+void KtRenderer::SetUniformData2D(const KtUniformData2D& uniformData2D)
+{
+	_uniformData2D = uniformData2D;
 }
 
 void KtRenderer::CreateShaderAndModels() const
@@ -545,7 +558,18 @@ void KtRenderer::CreateSyncObjects()
 	}
 }
 
-void KtRenderer::ClearRenderQueue()
+void KtRenderer::ClearRenderQueues()
+{
+	ClearRenderQueue2D();
+	ClearRenderQueue3D();
+}
+
+void KtRenderer::ClearRenderQueue2D()
+{
+	_renderer2DData = {};
+}
+
+void KtRenderer::ClearRenderQueue3D()
 {
 	_renderer3DData = {};
 }
@@ -657,7 +681,7 @@ void KtRenderer::DrawFrame()
 		throw std::runtime_error("failed to present swap chain image!");
 	}
 
-	ClearRenderQueue();
+	ClearRenderQueues();
 
 	_currentFrame = (_currentFrame + 1) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
 }

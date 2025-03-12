@@ -4,21 +4,21 @@
 #include "frames_in_flight.h"
 #include "ImageTexture.h"
 #include <array>
-#include "UniformData3D.h"
-#include "ObjectData3D.h"
+#include "UniformData2D.h"
+#include "ObjectData2D.h"
 #include "glm_includes.h" 
 #include "AllocatedBuffer.h"
-class KtShader3D final
+class KtShader2D final
 {
 public:
-	KtShader3D();
-	~KtShader3D();
+	KtShader2D();
+	~KtShader2D();
 
 	VkPipeline GetGraphicsPipeline() const;
 	VkPipelineLayout GetPipelineLayout() const;
 
-	void UpdateUniformBuffer(const KtUniformData3D& uniformData, const uint32_t imageIndex);
-	void UpdateObjectBuffer(const std::vector<KtObjectData3D>& objectDatas, const uint32_t imageIndex);
+	void UpdateUniformBuffer(const KtUniformData2D& uniformData, const uint32_t imageIndex);
+	void UpdateObjectBuffer(const std::vector<KtObjectData2D>& objectDatas, const uint32_t imageIndex);
 
 	void CmdBind(VkCommandBuffer commandBuffer) const;
 	void CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32_t imageIndex);
