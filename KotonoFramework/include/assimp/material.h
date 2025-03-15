@@ -913,7 +913,7 @@ public:
     /** @brief Removes all properties from the material.
      *
      *  The data array remains allocated so adding new properties is quite fast.  */
-    void Clear();
+    void ClearRenderQueue();
 
     // ------------------------------------------------------------------------------
     /** Copy the property list of a material

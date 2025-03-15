@@ -4932,7 +4932,7 @@ public:
     ItemType* InsertBefore(ItemType* pItem, const T& value);
     ItemType* InsertAfter(ItemType* pItem, const T& value);
 
-    void Clear();
+    void ClearRenderQueue();
     void Remove(ItemType* pItem);
 
 private:
@@ -5043,7 +5043,7 @@ void VmaRawList<T>::PopBack()
 }
 
 template<typename T>
-void VmaRawList<T>::Clear()
+void VmaRawList<T>::ClearRenderQueue()
 {
     if (IsEmpty() == false)
     {
@@ -5305,7 +5305,7 @@ public:
     void push_back(const T& value) { m_RawList.PushBack(value); }
     iterator insert(iterator it, const T& value) { return iterator(&m_RawList, m_RawList.InsertBefore(it.m_pItem, value)); }
 
-    void clear() { m_RawList.Clear(); }
+    void clear() { m_RawList.ClearRenderQueue(); }
     void erase(iterator it) { m_RawList.Remove(it.m_pItem); }
 
 private:
@@ -6719,7 +6719,7 @@ public:
 
     // Frees all allocations.
     // Careful! Don't call it if there are VmaAllocation objects owned by userData of cleared allocations!
-    virtual void Clear() = 0;
+    virtual void ClearRenderQueue() = 0;
 
     virtual void SetAllocationUserData(VmaAllocHandle allocHandle, void* userData) = 0;
     virtual void DebugLogAllAllocations() const = 0;
@@ -6892,7 +6892,7 @@ public:
 
     void AllocPages(uint8_t allocType, VkDeviceSize offset, VkDeviceSize size);
     void FreePages(VkDeviceSize offset, VkDeviceSize size);
-    void Clear();
+    void ClearRenderQueue();
 
     ValidationContext StartValidation(const VkAllocationCallbacks* pAllocationCallbacks,
         bool isVirutal) const;
@@ -7025,7 +7025,7 @@ void VmaBlockBufferImageGranularity::FreePages(VkDeviceSize offset, VkDeviceSize
     }
 }
 
-void VmaBlockBufferImageGranularity::Clear()
+void VmaBlockBufferImageGranularity::ClearRenderQueue()
 {
     if (m_RegionInfo)
         memset(m_RegionInfo, 0, m_RegionCount * sizeof(RegionInfo));
@@ -7219,7 +7219,7 @@ public:
     VmaAllocHandle GetAllocationListBegin() const override;
     VmaAllocHandle GetNextAllocation(VmaAllocHandle prevAlloc) const override;
     VkDeviceSize GetNextFreeRegionSize(VmaAllocHandle alloc) const override;
-    void Clear() override;
+    void ClearRenderQueue() override;
     void SetAllocationUserData(VmaAllocHandle allocHandle, void* userData) override;
     void DebugLogAllAllocations() const override;
 
@@ -8307,7 +8307,7 @@ VkDeviceSize VmaBlockMetadata_Linear::GetNextFreeRegionSize(VmaAllocHandle alloc
     return 0;
 }
 
-void VmaBlockMetadata_Linear::Clear()
+void VmaBlockMetadata_Linear::ClearRenderQueue()
 {
     m_SumFreeSize = GetSize();
     m_Suballocations0.clear();
@@ -8833,7 +8833,7 @@ public:
     VmaAllocHandle GetAllocationListBegin() const override;
     VmaAllocHandle GetNextAllocation(VmaAllocHandle prevAlloc) const override;
     VkDeviceSize GetNextFreeRegionSize(VmaAllocHandle alloc) const override;
-    void Clear() override;
+    void ClearRenderQueue() override;
     void SetAllocationUserData(VmaAllocHandle allocHandle, void* userData) override;
     void DebugLogAllAllocations() const override;
 
@@ -9517,7 +9517,7 @@ VkDeviceSize VmaBlockMetadata_TLSF::GetNextFreeRegionSize(VmaAllocHandle alloc) 
     return 0;
 }
 
-void VmaBlockMetadata_TLSF::Clear()
+void VmaBlockMetadata_TLSF::ClearRenderQueue()
 {
     m_AllocCount = 0;
     m_BlocksFreeCount = 0;
@@ -9535,7 +9535,7 @@ void VmaBlockMetadata_TLSF::Clear()
     }
     memset(m_FreeList, 0, m_ListsCount * sizeof(Block*));
     memset(m_InnerIsFreeBitmap, 0, m_MemoryClasses * sizeof(uint32_t));
-    m_GranularityHandler.Clear();
+    m_GranularityHandler.ClearRenderQueue();
 }
 
 void VmaBlockMetadata_TLSF::SetAllocationUserData(VmaAllocHandle allocHandle, void* userData)
@@ -10093,7 +10093,7 @@ public:
     bool IsEmpty() const { return m_Metadata->IsEmpty(); }
     void Free(VmaVirtualAllocation allocation) { m_Metadata->Free((VmaAllocHandle)allocation); }
     void SetAllocationUserData(VmaVirtualAllocation allocation, void* userData) { m_Metadata->SetAllocationUserData((VmaAllocHandle)allocation, userData); }
-    void Clear() { m_Metadata->Clear(); }
+    void ClearRenderQueue() { m_Metadata->ClearRenderQueue(); }
 
     const VkAllocationCallbacks* GetAllocationCallbacks() const;
     void GetAllocationInfo(VmaVirtualAllocation allocation, VmaVirtualAllocationInfo& outInfo);
@@ -16612,7 +16612,7 @@ VMA_CALL_PRE void VMA_CALL_POST vmaClearVirtualBlock(VmaVirtualBlock VMA_NOT_NUL
     VMA_ASSERT(virtualBlock != VK_NULL_HANDLE);
     VMA_DEBUG_LOG("vmaClearVirtualBlock");
     VMA_DEBUG_GLOBAL_MUTEX_LOCK;
-    virtualBlock->Clear();
+    virtualBlock->ClearRenderQueue();
 }
 
 VMA_CALL_PRE void VMA_CALL_POST vmaSetVirtualAllocationUserData(VmaVirtualBlock VMA_NOT_NULL virtualBlock,

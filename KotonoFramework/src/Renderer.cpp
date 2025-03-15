@@ -61,32 +61,6 @@ void KtRenderer::Cleanup()
 	KT_DEBUG_LOG("cleaned up renderer");
 }
 
-template <KtRenderLayer Layer>
-void KtRenderer::AddToRenderQueue3D(KtShader3D* shader, KtModel* model, const KtObjectData3D& objectData)
-{
-	_renderer3DData.RenderQueues[Layer].Shaders[shader].Models[model].ObjectDatas.push_back(objectData);
-}
-template void KtRenderer::AddToRenderQueue3D<KT_RENDER_LAYER_ENGINE>(KtShader3D*, KtModel*, const KtObjectData3D&);
-template void KtRenderer::AddToRenderQueue3D<KT_RENDER_LAYER_GAME>(KtShader3D*, KtModel*, const KtObjectData3D&);
-
-template<KtRenderLayer Layer>
-void KtRenderer::AddToRenderQueue2D(KtShader2D* shader, const KtObjectData2D& objectData)
-{
-	_renderer2DData.RenderQueues[Layer].Shaders[shader].ObjectDatas.push_back(objectData);
-}
-template void KtRenderer::AddToRenderQueue2D<KT_RENDER_LAYER_ENGINE>(KtShader2D*, const KtObjectData2D&);
-template void KtRenderer::AddToRenderQueue2D<KT_RENDER_LAYER_GAME>(KtShader2D*, const KtObjectData2D&);
-
-void KtRenderer::SetUniformData3D(const KtUniformData3D& uniformData3D)
-{
-	_uniformData3D = uniformData3D;
-}
-
-void KtRenderer::SetUniformData2D(const KtUniformData2D& uniformData2D)
-{
-	_uniformData2D = uniformData2D;
-}
-
 void KtRenderer::CreateShaderAndModels() const
 {
 	shader = new KtShader3D();	
@@ -479,54 +453,7 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32
 	scissor.extent = _swapChainExtent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	for (auto& renderQueue3DData : _renderer3DData.RenderQueues)
-	{
-		for (auto& [shader, shaderData] : renderQueue3DData.Shaders)
-		{
-			if (!shader)
-			{
-				KT_DEBUG_LOG("shader is nullptr");
-				continue;
-			}
-
-			shader->UpdateUniformBuffer(_uniformData3D, _currentFrame);
-
-			std::vector<KtObjectData3D> objectBufferData;
-			for (auto& [model, modelData] : shaderData.Models)
-			{
-				objectBufferData.insert(objectBufferData.end(), modelData.ObjectDatas.begin(), modelData.ObjectDatas.end());
-			}
-			shader->UpdateObjectBuffer(objectBufferData, _currentFrame);
-
-			shader->CmdBind(commandBuffer);
-			shader->CmdBindDescriptorSets(commandBuffer, _currentFrame);
-
-			uint32_t instanceIndex = 0;
-
-			for (auto& [model, modelData] : shaderData.Models)
-			{
-				const uint32_t instanceCount = static_cast<uint32_t>(modelData.ObjectDatas.size());
-
-				if (!model)
-				{
-					KT_DEBUG_LOG("model is nullptr");
-				}
-				else if (instanceCount == 0)
-				{
-					KT_DEBUG_LOG("objectDatas is empty");
-				}
-				else
-				{
-					model->CmdBind(commandBuffer);
-					model->CmdDraw(commandBuffer, instanceCount, instanceIndex);
-				}
-
-				instanceIndex += instanceCount;
-
-				//KT_DEBUG_LOG("Drawing %s", model->GetPath().string().c_str());
-			}
-		}
-	}
+	_renderer3D.CmdDraw(commandBuffer, _currentFrame);
 
 	// End RenderPass
 	vkCmdEndRenderPass(commandBuffer);
@@ -560,18 +487,7 @@ void KtRenderer::CreateSyncObjects()
 
 void KtRenderer::ClearRenderQueues()
 {
-	ClearRenderQueue2D();
-	ClearRenderQueue3D();
-}
-
-void KtRenderer::ClearRenderQueue2D()
-{
-	_renderer2DData = {};
-}
-
-void KtRenderer::ClearRenderQueue3D()
-{
-	_renderer3DData = {};
+	_renderer3D.ClearRenderQueue();
 }
 
 void KtRenderer::DrawFrame()
@@ -585,7 +501,7 @@ void KtRenderer::DrawFrame()
 	ubo.View = glm::lookAt(glm::vec3(cos(uboTime) * 10.0f, sin(uboTime) * 10.0f, 3.0f), glm::vec3(cos(uboTime) * 5.0f, sin(uboTime) * 5.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ubo.Projection = glm::perspective(glm::radians(45.0f), _swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 1000.0f);
 	ubo.Projection[1][1] *= -1.0f;
-	SetUniformData3D(ubo);
+	_renderer3D.SetUniformData(ubo);
 
 	mesh1->AddToRenderQueue3D(
 		glm::scale(
@@ -715,6 +631,11 @@ void KtRenderer::OnFramebufferResized()
 const VkExtent2D KtRenderer::GetSwapChainExtent() const
 {
 	return _swapChainExtent;
+}
+
+KtRenderer3D& KtRenderer::GetRenderer3D()
+{
+	return _renderer3D;
 }
 
 VkRenderPass KtRenderer::GetRenderPass() const

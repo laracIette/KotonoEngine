@@ -367,7 +367,7 @@ struct aiString {
     }
 
     /** Clear the string - reset its length to zero */
-    void Clear() {
+    void ClearRenderQueue() {
         length = 0;
         data[0] = '\0';
 

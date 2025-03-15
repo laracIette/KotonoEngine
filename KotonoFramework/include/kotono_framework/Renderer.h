@@ -10,6 +10,8 @@
 #include <array>
 #include <unordered_map>
 #include "RenderLayer.h"
+#include "Renderer2D.h"
+#include "Renderer3D.h"
 
 class KtRenderer final
 {
@@ -17,19 +19,13 @@ public:
 	void Init();
 	void Cleanup();
 
-	template <KtRenderLayer Layer>
-	void AddToRenderQueue3D(KtShader3D* shader, KtModel* model, const KtObjectData3D& objectData);
-	void SetUniformData3D(const KtUniformData3D& uniformData3D);
-
-	template <KtRenderLayer Layer>
-	void AddToRenderQueue2D(KtShader2D* shader, const KtObjectData2D& objectData);
-	void SetUniformData2D(const KtUniformData2D& uniformData2D);
-
 	void DrawFrame();
 
 	void OnFramebufferResized();
 
 	const VkExtent2D GetSwapChainExtent() const;
+
+	KtRenderer3D& GetRenderer3D();
 
 	VkRenderPass GetRenderPass() const;
 
@@ -51,24 +47,7 @@ private:
 	Renderer2DData _renderer2DData;
 	KtUniformData2D _uniformData2D;
 
-	struct RenderQueue3DModelData
-	{
-		std::vector<KtObjectData3D> ObjectDatas;
-	};
-	struct RenderQueue3DShaderData
-	{
-		std::unordered_map<KtModel*, RenderQueue3DModelData> Models;
-	};
-	struct RenderQueue3DData
-	{
-		std::unordered_map<KtShader3D*, RenderQueue3DShaderData> Shaders;
-	};
-	struct Renderer3DData
-	{
-		std::array<RenderQueue3DData, KT_RENDER_LAYER_COUNT> RenderQueues;
-	};
-	Renderer3DData _renderer3DData;
-	KtUniformData3D _uniformData3D;
+	KtRenderer3D _renderer3D;
 
 	VkSwapchainKHR _swapChain;
 	std::vector<VkImage> _swapChainImages;
@@ -119,8 +98,6 @@ private:
 	void CreateSyncObjects();
 
 	void ClearRenderQueues();
-	void ClearRenderQueue2D();
-	void ClearRenderQueue3D();
 
 	void CleanupSwapChain() const;
 };
