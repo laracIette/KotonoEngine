@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "log.h"
 #include "vk_utils.h"
+#include <Viewport.h>
 
 KtShader3D* shader = nullptr;
 KtModel* model1 = nullptr;
@@ -439,19 +440,13 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32
 	// Begin RenderPass
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	VkViewport viewport{};
-	viewport.x = 0.0f;
-	viewport.y = 0.0f;
-	viewport.width = static_cast<float>(_swapChainExtent.width);
-	viewport.height = static_cast<float>(_swapChainExtent.height);
-	viewport.minDepth = 0.0f;
-	viewport.maxDepth = 1.0f;
-	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+	VkOffset2D position = { 200, 300 };
+	VkExtent2D size = { 100, 50 };
 
-	VkRect2D scissor{};
-	scissor.offset = { 0, 0 };
-	scissor.extent = _swapChainExtent;
-	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+	KtViewport viewport{};
+	viewport.SetOffset({ 0, 0 });
+	viewport.SetExtent(_swapChainExtent);
+	viewport.CmdUse(commandBuffer);
 
 	_renderer3D.CmdDraw(commandBuffer, _currentFrame);
 

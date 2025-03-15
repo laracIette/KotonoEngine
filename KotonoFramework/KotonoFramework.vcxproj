@@ -154,6 +154,7 @@
     <ClCompile Include="src\Shader2D.cpp" />
     <ClCompile Include="src\Shader3D.cpp" />
     <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="src\Viewport.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\kotono_framework\AllocatedBuffer.h" />
@@ -191,6 +192,7 @@
     <ClInclude Include="include\kotono_framework\UniformData2D.h" />
     <ClInclude Include="include\kotono_framework\Vertex2D.h" />
     <ClInclude Include="include\kotono_framework\Renderer2D.h" />
+    <ClInclude Include="include\kotono_framework\Viewport.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\shader2D.frag" />
