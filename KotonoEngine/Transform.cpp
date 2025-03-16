@@ -52,9 +52,9 @@ const glm::vec3 UTransform::GetWorldScale() const
 
 const glm::mat4 UTransform::GetModelMatrix() const
 {
-	const glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), GetWorldLocation());
+	const glm::mat4 translationMatrix = glm::translate(glm::identity<glm::mat4>(), GetWorldLocation());
 	const glm::mat4 rotationMatrix = glm::mat4_cast(GetWorldRotation());
-	const glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), GetWorldScale());
+	const glm::mat4 scaleMatrix = glm::scale(glm::identity<glm::mat4>(), GetWorldScale());
 
 	return translationMatrix * rotationMatrix * scaleMatrix;
 }

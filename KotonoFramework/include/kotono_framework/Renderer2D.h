@@ -12,7 +12,7 @@ public:
 	void AddToRenderQueue(KtShader2D* shader, const KtObjectData2D& objectData);
 	void SetUniformData(const KtUniformData2D& uniformData);
 
-	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame);
+	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const;
 
 	void ClearRenderQueue();
 

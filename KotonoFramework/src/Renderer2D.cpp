@@ -36,7 +36,7 @@ void KtRenderer2D::SetUniformData(const KtUniformData2D& uniformData)
 	_uniformData2D = uniformData;
 }
 
-void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame)
+void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const
 {
 	for (auto& [shader, shaderData] : _renderQueue2DData.Shaders)
 	{
@@ -52,13 +52,15 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 		shader->CmdBind(commandBuffer);
 		shader->CmdBindDescriptorSets(commandBuffer, currentFrame);
 
-		VkBuffer vertexBuffers[] = { _vertexBuffer.Buffer };
-		VkDeviceSize offsets[] = { 0 };
+		const VkBuffer vertexBuffers[] = { _vertexBuffer.Buffer };
+		const VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 		vkCmdBindIndexBuffer(commandBuffer, _indexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
 
 		const uint32_t instanceCount = static_cast<uint32_t>(shaderData.ObjectDatas.size());
 		vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), instanceCount, 0, 0, 0);
+	
+		KT_DEBUG_LOG("2D renderer draw %u instances", instanceCount);
 	}
 }
 

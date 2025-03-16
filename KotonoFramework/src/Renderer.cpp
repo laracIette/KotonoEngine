@@ -4,13 +4,17 @@
 #include "Mesh.h"
 #include "log.h"
 #include "vk_utils.h"
-#include <Viewport.h>
+#include "Viewport.h"
+#include "Image.h"
 
-KtShader3D* shader = nullptr;
+KtShader3D* shader1 = nullptr;
 KtModel* model1 = nullptr;
 KtModel* model2 = nullptr;
 KtMesh* mesh1 = nullptr;
 KtMesh* mesh2 = nullptr;
+
+KtShader2D* shader2 = nullptr;
+KtImage* image1 = nullptr;
 
 void KtRenderer::Init()
 {
@@ -39,11 +43,13 @@ void KtRenderer::Cleanup()
 	model1->Cleanup();
 	model2->Cleanup();
 
-	delete shader;
+	delete shader1;
+	delete shader2;
 	delete model1;
 	delete model2;
 	delete mesh1;
 	delete mesh2;
+	delete image1;
 
 	_renderer2D.Cleanup();
 	_renderer3D.Cleanup();
@@ -64,20 +70,24 @@ void KtRenderer::Cleanup()
 
 void KtRenderer::CreateShaderAndModels() const
 {
-	shader = new KtShader3D();	
+	shader1 = new KtShader3D();
 	model1 = new KtModel(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.obj)");
 	model2 = new KtModel(R"(C:\Users\nicos\OneDrive - e-artsup\B2\Environment\Corridor\SM_Column_low.fbx)");
 
 	mesh1 = new KtMesh();
-	mesh1->SetShader(shader);
+	mesh1->SetShader(shader1);
 	mesh1->SetModel(model1);
 
 	mesh2 = new KtMesh();
-	mesh2->SetShader(shader);
+	mesh2->SetShader(shader1);
 	mesh2->SetModel(model2);
 
 	model1->Init();
 	model2->Init();
+
+	shader2 = new KtShader2D();
+	image1 = new KtImage();
+	image1->SetShader(shader2);
 }
 
 void KtRenderer::CreateSwapChain()
@@ -448,7 +458,8 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32
 	viewport.SetExtent(_swapChainExtent);
 	viewport.CmdUse(commandBuffer);
 
-	_renderer3D.CmdDraw(commandBuffer, _currentFrame);
+	_renderer2D.CmdDraw(commandBuffer, _currentFrame);
+	//_renderer3D.CmdDraw(commandBuffer, _currentFrame);
 
 	// End RenderPass
 	vkCmdEndRenderPass(commandBuffer);
@@ -503,7 +514,7 @@ void KtRenderer::DrawFrame()
 		glm::scale(
 			glm::rotate(
 				glm::translate(
-					glm::mat4(1.0f),
+					glm::identity<glm::mat4>(),
 					glm::vec3(0.0f)
 				),
 				time * glm::radians(90.0f),
@@ -518,7 +529,7 @@ void KtRenderer::DrawFrame()
 			glm::scale(
 				glm::rotate(
 					glm::translate(
-						glm::mat4(1.0f),
+						glm::identity<glm::mat4>(),
 						glm::vec3(cos(i), sin(i), 0.0f) * 0.01f * static_cast<float>(i)
 					),
 					time * glm::radians(90.0f),
@@ -528,6 +539,16 @@ void KtRenderer::DrawFrame()
 			)
 		);
 	}
+
+	image1->AddToRenderQueue2D(
+		glm::scale(
+			glm::translate(
+				glm::identity<glm::mat4>(),
+				glm::vec3(0.0f)
+			),
+			glm::vec3(500.0f)
+		)
+	);
 
 	vkWaitForFences(Framework.GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
 
