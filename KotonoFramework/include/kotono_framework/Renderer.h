@@ -85,5 +85,5 @@ private:
 
 	void ClearRenderQueues();
 
-	void CleanupSwapChain() const;
+	void CleanupSwapChain();
 };

@@ -50,22 +50,13 @@ void KtRenderer::Cleanup()
 
 	CleanupSwapChain();
 
-	const auto& device = Framework.GetContext().GetDevice();
-	const auto& allocator = Framework.GetContext().GetAllocator();
-
-	vkDestroyImageView(device, _depthImageView, nullptr);
-	vmaDestroyImage(allocator, _depthImage, _depthImageAllocation);
-
-	vkDestroyImageView(device, _colorImageView, nullptr);
-	vmaDestroyImage(allocator, _colorImage, _colorImageAllocation);
-
-	vkDestroyRenderPass(device, _renderPass, nullptr);
+	vkDestroyRenderPass(Framework.GetContext().GetDevice(), _renderPass, nullptr);
 
 	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
 	{
-		vkDestroySemaphore(device, _renderFinishedSemaphores[i], nullptr);
-		vkDestroySemaphore(device, _imageAvailableSemaphores[i], nullptr);
-		vkDestroyFence(device, _inFlightFences[i], nullptr);
+		vkDestroySemaphore(Framework.GetContext().GetDevice(), _renderFinishedSemaphores[i], nullptr);
+		vkDestroySemaphore(Framework.GetContext().GetDevice(), _imageAvailableSemaphores[i], nullptr);
+		vkDestroyFence(Framework.GetContext().GetDevice(), _inFlightFences[i], nullptr);
 	}
 
 	KT_DEBUG_LOG("cleaned up renderer");
@@ -653,17 +644,27 @@ VkRenderPass KtRenderer::GetRenderPass() const
 	return _renderPass;
 }
 
-void KtRenderer::CleanupSwapChain() const
+void KtRenderer::CleanupSwapChain()
 {
-	for (auto imageView : _swapChainImageViews)
-	{
-		vkDestroyImageView(Framework.GetContext().GetDevice(), imageView, nullptr);
-	}
-
 	for (auto framebuffer : _swapChainFramebuffers)
 	{
 		vkDestroyFramebuffer(Framework.GetContext().GetDevice(), framebuffer, nullptr);
 	}
+	_swapChainFramebuffers.clear();
+
+	for (auto imageView : _swapChainImageViews)
+	{
+		vkDestroyImageView(Framework.GetContext().GetDevice(), imageView, nullptr);
+	}
+	_swapChainImageViews.clear();
+
+	vkDestroyImageView(Framework.GetContext().GetDevice(), _colorImageView, nullptr);
+	vmaDestroyImage(Framework.GetContext().GetAllocator(), _colorImage, _colorImageAllocation);
+	
+	vkDestroyImageView(Framework.GetContext().GetDevice(), _depthImageView, nullptr);
+	vmaDestroyImage(Framework.GetContext().GetAllocator(), _depthImage, _depthImageAllocation);
 
 	vkDestroySwapchainKHR(Framework.GetContext().GetDevice(), _swapChain, nullptr);
+	_swapChain = VK_NULL_HANDLE;
+	_swapChainImages.clear();
 }
