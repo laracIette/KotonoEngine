@@ -23,6 +23,9 @@ void KtRenderer::Init()
 	CreateCommandBuffers();
 	CreateSyncObjects();
 
+	_renderer2D.Init();
+	_renderer3D.Init();
+
 	CreateShaderAndModels();
 
 	_framebufferResized = false;
@@ -33,11 +36,17 @@ void KtRenderer::Cleanup()
 {
 	KT_DEBUG_LOG("cleaning up renderer");
 
+	model1->Cleanup();
+	model2->Cleanup();
+
 	delete shader;
 	delete model1;
 	delete model2;
 	delete mesh1;
 	delete mesh2;
+
+	_renderer2D.Cleanup();
+	_renderer3D.Cleanup();
 
 	CleanupSwapChain();
 
@@ -75,6 +84,9 @@ void KtRenderer::CreateShaderAndModels() const
 	mesh2 = new KtMesh();
 	mesh2->SetShader(shader);
 	mesh2->SetModel(model2);
+
+	model1->Init();
+	model2->Init();
 }
 
 void KtRenderer::CreateSwapChain()
@@ -479,6 +491,7 @@ void KtRenderer::CreateSyncObjects()
 
 void KtRenderer::ClearRenderQueues()
 {
+	_renderer2D.ClearRenderQueue();
 	_renderer3D.ClearRenderQueue();
 }
 
@@ -623,6 +636,11 @@ void KtRenderer::OnFramebufferResized()
 const VkExtent2D KtRenderer::GetSwapChainExtent() const
 {
 	return _swapChainExtent;
+}
+
+KtRenderer2D& KtRenderer::GetRenderer2D()
+{
+	return _renderer2D;
 }
 
 KtRenderer3D& KtRenderer::GetRenderer3D()

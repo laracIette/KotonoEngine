@@ -175,9 +175,6 @@
     <ClInclude Include="include\kotono_framework\frames_in_flight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\kotono_framework\RenderLayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\kotono_framework\Shader2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>

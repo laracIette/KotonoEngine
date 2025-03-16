@@ -3,12 +3,18 @@
 #include <unordered_map>
 #include "ObjectData2D.h"
 #include "Shader2D.h"
-#include "RenderLayer.h"
 class KtRenderer2D
 {
 public:
 	void Init();
+	void Cleanup() const;
+
+	void AddToRenderQueue(KtShader2D* shader, const KtObjectData2D& objectData);
+	void SetUniformData(const KtUniformData2D& uniformData);
+
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame);
+
+	void ClearRenderQueue();
 
 private:
 	struct RenderQueue2DModelData
@@ -19,12 +25,8 @@ private:
 	{
 		std::unordered_map<KtShader2D*, RenderQueue2DModelData> Shaders;
 	};
-	struct Renderer2DData
-	{
-		std::array<RenderQueue2DData, KT_RENDER_LAYER_COUNT> RenderQueues;
-	};
 
-	Renderer2DData _renderer2DData;
+	RenderQueue2DData _renderQueue2DData;
 	KtUniformData2D _uniformData2D;
 
 	KtAllocatedBuffer _vertexBuffer;

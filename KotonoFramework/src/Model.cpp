@@ -9,12 +9,16 @@
 KtModel::KtModel(const std::filesystem::path& path) :
 	_path(path)
 {
+}
+
+void KtModel::Init()
+{
 	Load();
 	CreateVertexBuffer();
 	CreateIndexBuffer();
 }
 
-KtModel::~KtModel()
+void KtModel::Cleanup() const
 {
 	KT_DEBUG_LOG("cleaning up model");
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _indexBuffer.Buffer, _indexBuffer.Allocation);
@@ -84,7 +88,7 @@ void KtModel::Load()
 
 void KtModel::CreateVertexBuffer()
 {
-	const VkDeviceSize bufferSize = sizeof(_vertices[0]) * _vertices.size();
+	const VkDeviceSize bufferSize = sizeof(KtVertex3D) * _vertices.size();
 
 	KtAllocatedBuffer stagingBuffer;
 	Framework.GetContext().CreateBuffer(
@@ -112,7 +116,7 @@ void KtModel::CreateVertexBuffer()
 
 void KtModel::CreateIndexBuffer()
 {
-	const VkDeviceSize bufferSize = sizeof(_indices[0]) * _indices.size();
+	const VkDeviceSize bufferSize = sizeof(uint32_t) * _indices.size();
 
 	KtAllocatedBuffer stagingBuffer;
 	Framework.GetContext().CreateBuffer(

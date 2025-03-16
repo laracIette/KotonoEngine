@@ -3,18 +3,19 @@
 #include <unordered_map>
 #include "ObjectData3D.h"
 #include "Shader3D.h"
-#include "RenderLayer.h"
 #include "Model.h"
 class KtRenderer3D
 {
 public:
-	void ClearRenderQueue();
+	void Init();
+	void Cleanup();
 
-	template <KtRenderLayer Layer>
 	void AddToRenderQueue(KtShader3D* shader, KtModel* model, const KtObjectData3D& objectData);
-	void SetUniformData(const KtUniformData3D& uniformData3D);
+	void SetUniformData(const KtUniformData3D& uniformData);
 
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const;
+	
+	void ClearRenderQueue();
 
 private:
 	struct RenderQueue3DModelData
@@ -29,12 +30,8 @@ private:
 	{
 		std::unordered_map<KtShader3D*, RenderQueue3DShaderData> Shaders;
 	};
-	struct Renderer3DData
-	{
-		std::array<RenderQueue3DData, KT_RENDER_LAYER_COUNT> RenderQueues;
-	};
 
-	Renderer3DData _renderer3DData;
+	RenderQueue3DData _renderQueue3DData;
 	KtUniformData3D _uniformData3D;
 };
 

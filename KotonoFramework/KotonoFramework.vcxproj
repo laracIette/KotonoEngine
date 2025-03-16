@@ -187,7 +187,6 @@
     <ClInclude Include="include\kotono_framework\Window.h" />
     <ClInclude Include="include\kotono_framework\Key.h" />
     <ClInclude Include="include\kotono_framework\InputState.h" />
-    <ClInclude Include="include\kotono_framework\RenderLayer.h" />
     <ClInclude Include="include\kotono_framework\ObjectData2D.h" />
     <ClInclude Include="include\kotono_framework\UniformData2D.h" />
     <ClInclude Include="include\kotono_framework\Vertex2D.h" />

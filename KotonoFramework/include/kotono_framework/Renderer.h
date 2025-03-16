@@ -9,7 +9,6 @@
 #include <vector>
 #include <array>
 #include <unordered_map>
-#include "RenderLayer.h"
 #include "Renderer2D.h"
 #include "Renderer3D.h"
 
@@ -25,6 +24,7 @@ public:
 
 	const VkExtent2D GetSwapChainExtent() const;
 
+	KtRenderer2D& GetRenderer2D();
 	KtRenderer3D& GetRenderer3D();
 
 	VkRenderPass GetRenderPass() const;
@@ -32,21 +32,7 @@ public:
 private:
 	void CreateShaderAndModels() const;
 
-	struct RenderQueue2DModelData
-	{
-		std::vector<KtObjectData2D> ObjectDatas;
-	};
-	struct RenderQueue2DData
-	{
-		std::unordered_map<KtShader2D*, RenderQueue2DModelData> Shaders;
-	};
-	struct Renderer2DData
-	{
-		std::array<RenderQueue2DData, KT_RENDER_LAYER_COUNT> RenderQueues;
-	};
-	Renderer2DData _renderer2DData;
-	KtUniformData2D _uniformData2D;
-
+	KtRenderer2D _renderer2D;
 	KtRenderer3D _renderer3D;
 
 	VkSwapchainKHR _swapChain;

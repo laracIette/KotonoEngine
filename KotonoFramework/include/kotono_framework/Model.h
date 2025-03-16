@@ -7,7 +7,9 @@ class KtModel final
 {
 public:
 	KtModel(const std::filesystem::path& path);
-	~KtModel();
+
+	void Init();
+	void Cleanup() const;
 
 	const std::filesystem::path& GetPath() const;
 
