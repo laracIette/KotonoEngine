@@ -440,9 +440,6 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32
 	// Begin RenderPass
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	VkOffset2D position = { 200, 300 };
-	VkExtent2D size = { 100, 50 };
-
 	KtViewport viewport{};
 	viewport.SetOffset({ 0, 0 });
 	viewport.SetExtent(_swapChainExtent);
