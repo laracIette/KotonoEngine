@@ -10,6 +10,10 @@ KtShader3D::KtShader3D() :
 	_vertPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader3DVert.spv)"),
 	_fragPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader3DFrag.spv)")
 {
+}
+
+void KtShader3D::Init()
+{
 	CreateDescriptorSetLayout();
 	CreateDescriptorPool();
 	CreateImageTexture();
@@ -19,7 +23,7 @@ KtShader3D::KtShader3D() :
 	CreateGraphicsPipeline();
 }
 
-KtShader3D::~KtShader3D()
+void KtShader3D::Cleanup()
 {
 	KT_DEBUG_LOG("cleaning up shader");
 	delete _imageTexture;

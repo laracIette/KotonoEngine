@@ -1,18 +1,21 @@
 #pragma once
 #include <filesystem>
 #include <vulkan/vulkan.h>
-#include "frames_in_flight.h"
-#include "ImageTexture.h"
 #include <array>
+#include "frames_in_flight.h"
+#include "Shader.h"
+#include "ImageTexture.h"
 #include "UniformData3D.h"
 #include "ObjectData3D.h"
 #include "glm_includes.h" 
 #include "AllocatedBuffer.h"
-class KtShader3D final
+class KtShader3D final : public KtShader
 {
 public:
 	KtShader3D();
-	~KtShader3D();
+
+	void Init() override;
+	void Cleanup() override;
 
 	VkPipeline GetGraphicsPipeline() const;
 	VkPipelineLayout GetPipelineLayout() const;

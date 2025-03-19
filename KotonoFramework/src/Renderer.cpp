@@ -8,13 +8,13 @@
 #include "Image.h"
 
 KtShader3D* shader1 = nullptr;
+KtShader2D* shader2 = nullptr;
 KtModel* model1 = nullptr;
 KtModel* model2 = nullptr;
 KtMesh* mesh1 = nullptr;
 KtMesh* mesh2 = nullptr;
-
-KtShader2D* shader2 = nullptr;
 KtImage* image1 = nullptr;
+
 
 void KtRenderer::Init()
 {
@@ -40,6 +40,8 @@ void KtRenderer::Cleanup()
 {
 	KT_DEBUG_LOG("cleaning up renderer");
 
+	shader1->Cleanup();
+	shader2->Cleanup();
 	model1->Cleanup();
 	model2->Cleanup();
 
@@ -82,12 +84,14 @@ void KtRenderer::CreateShaderAndModels() const
 	mesh2->SetShader(shader1);
 	mesh2->SetModel(model2);
 
-	model1->Init();
-	model2->Init();
-
 	shader2 = new KtShader2D();
 	image1 = new KtImage();
 	image1->SetShader(shader2);
+
+	shader1->Init();
+	shader2->Init();
+	model1->Init();
+	model2->Init();
 }
 
 void KtRenderer::CreateSwapChain()
