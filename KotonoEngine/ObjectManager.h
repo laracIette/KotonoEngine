@@ -6,7 +6,8 @@ public:
 	void Update();
 	void Cleanup();
 
-public:
+private:
+	void Quit();
 	
 };
 

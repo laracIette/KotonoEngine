@@ -42,7 +42,7 @@ void KtWindow::Init()
 
 const bool KtWindow::GetShouldClose() const
 {
-    if (glfwWindowShouldClose(_window))
+    if (_shouldClose || glfwWindowShouldClose(_window))
     {
         vkDeviceWaitIdle(Framework.GetContext().GetDevice());
         return true;
@@ -50,6 +50,11 @@ const bool KtWindow::GetShouldClose() const
 
     glfwPollEvents();
     return false;
+}
+
+void KtWindow::Close()
+{
+    _shouldClose = true;
 }
 
 void KtWindow::Cleanup()

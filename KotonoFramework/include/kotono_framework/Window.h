@@ -11,6 +11,8 @@ public:
 
 	// Executes vkDeviceWaitIdle(VkDevice) if true, else executes glfwPollEvents()
 	const bool GetShouldClose() const;
+	// Sets the window to close at the end of the main loop
+	void Close();
 
 	GLFWwindow* GetGLFWWindow() const;
 
@@ -20,6 +22,8 @@ public:
 
 private:
 	GLFWwindow* _window;
+
+	bool _shouldClose;
 
 	glm::uvec2 _size;
 };

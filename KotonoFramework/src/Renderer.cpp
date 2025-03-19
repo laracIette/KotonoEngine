@@ -457,8 +457,8 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32
 	// Begin RenderPass
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	//_renderer2D.CmdDraw(commandBuffer, _currentFrame);
 	_renderer3D.CmdDraw(commandBuffer, _currentFrame);
+	_renderer2D.CmdDraw(commandBuffer, _currentFrame);
 
 	// End RenderPass
 	vkCmdEndRenderPass(commandBuffer);
@@ -501,53 +501,51 @@ void KtRenderer::DrawFrame()
 	static const auto startTime = std::chrono::high_resolution_clock::now();
 	const auto currentTime = std::chrono::high_resolution_clock::now();
 	const float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
 	const float uboTime = time / 10.0f;
+
 	KtUniformData3D ubo{};
 	ubo.View = glm::lookAt(glm::vec3(cos(uboTime) * 10.0f, sin(uboTime) * 10.0f, 3.0f), glm::vec3(cos(uboTime) * 5.0f, sin(uboTime) * 5.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ubo.Projection = glm::perspective(glm::radians(45.0f), _swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 1000.0f);
 	ubo.Projection[1][1] *= -1.0f;
+
 	_renderer3D.SetUniformData(ubo);
 
-	mesh1->AddToRenderQueue3D(
-		glm::scale(
-			glm::rotate(
-				glm::translate(
-					glm::identity<glm::mat4>(),
-					glm::vec3(0.0f)
-				),
-				time * glm::radians(90.0f),
-				glm::vec3(0.0f, 0.0f, 1.0f)
-			),
-			glm::vec3(1.0f)
-		)
-	);
+	glm::mat4 modelMatrix = glm::identity<glm::mat4>();
+	glm::vec3 position = glm::vec3(0.0f);
+	glm::vec3 axis = glm::vec3(0.0f, 0.0f, 1.0f);
+	float angle = time * glm::radians(90.0f);
+	glm::vec3 scale = glm::vec3(1.0f);
+
+	modelMatrix = glm::identity<glm::mat4>();
+	modelMatrix = glm::translate(modelMatrix, position);
+	modelMatrix = glm::rotate(modelMatrix, angle, axis);
+	modelMatrix = glm::scale(modelMatrix, scale);
+
+	mesh1->AddToRenderQueue3D(modelMatrix);
+
 	for (uint32_t i = 0; i < 1000; i++)
 	{
-		mesh2->AddToRenderQueue3D(
-			glm::scale(
-				glm::rotate(
-					glm::translate(
-						glm::identity<glm::mat4>(),
-						glm::vec3(cos(i), sin(i), 0.0f) * 0.01f * static_cast<float>(i)
-					),
-					time * glm::radians(90.0f),
-					glm::vec3(0.0f, 0.0f, 1.0f)
-				),
-				glm::vec3(0.1f)
-			)
-		);
+		position = glm::vec3(cos(i), sin(i), 0.0f) * 0.01f * static_cast<float>(i);
+		scale = glm::vec3(0.1f);
+
+	    modelMatrix = glm::identity<glm::mat4>();
+		modelMatrix = glm::translate(modelMatrix, position);
+		modelMatrix = glm::rotate(modelMatrix, angle, axis);
+		modelMatrix = glm::scale(modelMatrix, scale);
+		
+		mesh2->AddToRenderQueue3D(modelMatrix);
 	}
 
-	image1->AddToRenderQueue2D(
-		glm::scale(
-			glm::translate(
-				glm::identity<glm::mat4>(),
-				glm::vec3(0.0f)
-			),
-			glm::vec3(500.0f)
-		)
-	);
+	axis = glm::vec3(0.0f, 1.0f, 0.0f);
+	angle = 0.0f;
+	scale = glm::vec3(500.0f);
+
+	modelMatrix = glm::identity<glm::mat4>();
+	modelMatrix = glm::translate(modelMatrix, position);
+	modelMatrix = glm::rotate(modelMatrix, angle, axis);
+	modelMatrix = glm::scale(modelMatrix, scale);
+
+	image1->AddToRenderQueue2D(modelMatrix);
 
 	vkWaitForFences(Framework.GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
 
