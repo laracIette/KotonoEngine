@@ -458,8 +458,8 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32
 	viewport.SetExtent(_swapChainExtent);
 	viewport.CmdUse(commandBuffer);
 
-	_renderer2D.CmdDraw(commandBuffer, _currentFrame);
-	//_renderer3D.CmdDraw(commandBuffer, _currentFrame);
+	//_renderer2D.CmdDraw(commandBuffer, _currentFrame);
+	_renderer3D.CmdDraw(commandBuffer, _currentFrame);
 
 	// End RenderPass
 	vkCmdEndRenderPass(commandBuffer);
@@ -616,7 +616,8 @@ void KtRenderer::DrawFrame()
 
 	ClearRenderQueues();
 
-	_currentFrame = (_currentFrame + 1) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
+	++_frameCount;
+	_currentFrame = _frameCount % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
 void KtRenderer::RecreateSwapChain()

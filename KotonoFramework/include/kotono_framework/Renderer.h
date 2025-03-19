@@ -60,6 +60,7 @@ private:
 
 	bool _framebufferResized;
 
+	uint32_t _frameCount;
 	uint32_t _currentFrame;
 
 	void CreateSwapChain();
