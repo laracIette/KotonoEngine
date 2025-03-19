@@ -154,9 +154,10 @@
     <ClCompile Include="src\Shader2D.cpp" />
     <ClCompile Include="src\Shader3D.cpp" />
     <ClCompile Include="src\Window.cpp" />
-    <ClCompile Include="src\Viewport.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\kotono_framework\AddToRenderQueue3DArgs.h" />
+    <ClInclude Include="include\kotono_framework\AddToRenderQueue2DArgs.h" />
     <ClInclude Include="include\kotono_framework\AllocatedBuffer.h" />
     <ClInclude Include="include\kotono_framework\AudioManager.h" />
     <ClInclude Include="include\kotono_framework\Camera.h" />

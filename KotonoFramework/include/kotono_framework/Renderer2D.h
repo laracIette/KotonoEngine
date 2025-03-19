@@ -1,15 +1,14 @@
 #pragma once
 #include <vector>
 #include <unordered_map>
-#include "ObjectData2D.h"
-#include "Shader2D.h"
+#include "AddToRenderQueue2DArgs.h"
 class KtRenderer2D
 {
 public:
 	void Init();
 	void Cleanup() const;
 
-	void AddToRenderQueue(KtShader2D* shader, const KtObjectData2D& objectData);
+	void AddToRenderQueue(const KtAddToRenderQueue2DArgs& args);
 	void SetUniformData(const KtUniformData2D& uniformData);
 
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const;
@@ -17,13 +16,17 @@ public:
 	void ClearRenderQueue();
 
 private:
-	struct RenderQueue2DModelData
+	struct RenderQueue2DShaderData
 	{
 		std::vector<KtObjectData2D> ObjectDatas;
 	};
+	struct RenderQueue2DViewportData
+	{
+		std::unordered_map<KtShader2D*, RenderQueue2DShaderData> Shaders;
+	};
 	struct RenderQueue2DData
 	{
-		std::unordered_map<KtShader2D*, RenderQueue2DModelData> Shaders;
+		std::unordered_map<KtViewport, RenderQueue2DViewportData> Viewports;
 	};
 
 	RenderQueue2DData _renderQueue2DData;
