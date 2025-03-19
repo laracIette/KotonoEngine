@@ -143,10 +143,10 @@ void KtRenderer::CreateSwapChain()
 	createInfo.clipped = VK_TRUE;
 	createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-	if (vkCreateSwapchainKHR(Framework.GetContext().GetDevice(), &createInfo, nullptr, &_swapChain) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create swap chain!");
-	}
+	VK_CHECK_THROW(
+		vkCreateSwapchainKHR(Framework.GetContext().GetDevice(), &createInfo, nullptr, &_swapChain),
+		"failed to create swap chain!"
+	);
 
 	vkGetSwapchainImagesKHR(Framework.GetContext().GetDevice(), _swapChain, &imageCount, nullptr);
 	_swapChainImages.resize(imageCount);
@@ -286,10 +286,10 @@ void KtRenderer::CreateRenderPass()
 	renderPassInfo.dependencyCount = 1;
 	renderPassInfo.pDependencies = &dependency;
 
-	if (vkCreateRenderPass(Framework.GetContext().GetDevice(), &renderPassInfo, nullptr, &_renderPass) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create render pass!");
-	}
+	VK_CHECK_THROW(
+		vkCreateRenderPass(Framework.GetContext().GetDevice(), &renderPassInfo, nullptr, &_renderPass),
+		"failed to create render pass!"
+	);
 }
 
 void KtRenderer::CreateFramebuffers()
@@ -313,10 +313,10 @@ void KtRenderer::CreateFramebuffers()
 		framebufferInfo.height = _swapChainExtent.height;
 		framebufferInfo.layers = 1;
 
-		if (vkCreateFramebuffer(Framework.GetContext().GetDevice(), &framebufferInfo, nullptr, &_swapChainFramebuffers[i]) != VK_SUCCESS)
-		{
-			throw std::runtime_error("failed to create framebuffer!");
-		}
+		VK_CHECK_THROW(
+			vkCreateFramebuffer(Framework.GetContext().GetDevice(), &framebufferInfo, nullptr, &_swapChainFramebuffers[i]),
+			"failed to create framebuffer!"
+		);
 	}
 }
 
@@ -422,10 +422,10 @@ void KtRenderer::CreateCommandBuffers()
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	allocInfo.commandBufferCount = (uint32_t)_commandBuffers.size();
 
-	if (vkAllocateCommandBuffers(Framework.GetContext().GetDevice(), &allocInfo, _commandBuffers.data()) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to allocate command buffers!");
-	}
+	VK_CHECK_THROW(
+		vkAllocateCommandBuffers(Framework.GetContext().GetDevice(), &allocInfo, _commandBuffers.data()),
+		"failed to allocate command buffers!"
+	);
 }
 
 void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const
@@ -583,10 +583,10 @@ void KtRenderer::DrawFrame()
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = signalSemaphores;
 
-	if (vkQueueSubmit(Framework.GetContext().GetGraphicsQueue(), 1, &submitInfo, _inFlightFences[_currentFrame]) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to submit draw command buffer!");
-	}
+	VK_CHECK_THROW(
+		vkQueueSubmit(Framework.GetContext().GetGraphicsQueue(), 1, &submitInfo, _inFlightFences[_currentFrame]),
+		"failed to submit draw command buffer!"
+	);
 
 	VkPresentInfoKHR presentInfo{};
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -606,11 +606,11 @@ void KtRenderer::DrawFrame()
 		_framebufferResized = false;
 		RecreateSwapChain();
 	}
-	else if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to present swap chain image!");
-	}
-
+	else VK_CHECK_THROW(
+		result, 
+		"failed to present swap chain image!"
+	);
+	
 	ClearRenderQueues();
 
 	++_frameCount;

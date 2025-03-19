@@ -16,7 +16,6 @@ void KObjectManager::Cleanup()
 {
 }
 
-
 void KObjectManager::Quit()
 {
 	Framework.GetWindow().Close();
