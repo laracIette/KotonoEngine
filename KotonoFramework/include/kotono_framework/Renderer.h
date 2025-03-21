@@ -84,7 +84,7 @@ private:
 
 	void CreateSyncObjects();
 
-	void ClearRenderQueues();
+	void ResetRenderers();
 
 	void CleanupSwapChain();
 };

@@ -89,6 +89,9 @@
     <ClCompile Include="src\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="include\kotono_framework\Viewport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\kotono_framework\AllocatedBuffer.h">
@@ -219,5 +222,6 @@
     <None Include="shaders\shader2D.vert">
       <Filter>Shaders\Vertex</Filter>
     </None>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

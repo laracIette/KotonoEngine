@@ -29,8 +29,8 @@ void KtRenderer2D::Cleanup() const
 void KtRenderer2D::AddToRenderQueue(const KtAddToRenderQueue2DArgs& args)
 {
 	_renderQueue2DData
-		.Viewports[args.Viewport]
 		.Shaders[args.Shader]
+		.Viewports[args.Viewport]
 		.ObjectDatas.push_back(args.ObjectData);
 }
 
@@ -41,35 +41,30 @@ void KtRenderer2D::SetUniformData(const KtUniformData2D& uniformData)
 
 void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const
 {
-	for (auto& [viewport, viewportData] : _renderQueue2DData.Viewports)
+	/*for (auto& [shader, shaderData] : _renderQueue2DData.Shaders)
 	{
-		ktCmdUseViewport(commandBuffer, viewport);
-
-		for (auto& [shader, shaderData] : viewportData.Shaders)
+		if (!shader)
 		{
-			if (!shader)
-			{
-				KT_DEBUG_LOG("shader is nullptr");
-				continue;
-			}
-
-			shader->UpdateUniformBuffer(_uniformData2D, currentFrame);
-			shader->UpdateObjectBuffer(shaderData.ObjectDatas, currentFrame);
-
-			shader->CmdBind(commandBuffer);
-			shader->CmdBindDescriptorSets(commandBuffer, currentFrame);
-
-			const VkBuffer vertexBuffers[] = { _vertexBuffer.Buffer };
-			const VkDeviceSize offsets[] = { 0 };
-			vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-			vkCmdBindIndexBuffer(commandBuffer, _indexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
-
-			const uint32_t instanceCount = static_cast<uint32_t>(shaderData.ObjectDatas.size());
-			vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), instanceCount, 0, 0, 0);
-
-			KT_DEBUG_LOG("2D renderer draw %u instances", instanceCount);
+			KT_DEBUG_LOG("shader is nullptr");
+			continue;
 		}
-	}
+
+		shader->UpdateUniformBuffer(_uniformData2D, currentFrame);
+		shader->UpdateObjectBuffer(shaderData.ObjectDatas, currentFrame);
+
+		shader->CmdBind(commandBuffer);
+		shader->CmdBindDescriptorSets(commandBuffer, currentFrame);
+
+		const VkBuffer vertexBuffers[] = { _vertexBuffer.Buffer };
+		const VkDeviceSize offsets[] = { 0 };
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+		vkCmdBindIndexBuffer(commandBuffer, _indexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
+
+		const uint32_t instanceCount = static_cast<uint32_t>(shaderData.ObjectDatas.size());
+		vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), instanceCount, 0, 0, 0);
+
+		KT_DEBUG_LOG("2D renderer draw %u instances", instanceCount);
+	}*/
 }
 
 void KtRenderer2D::ClearRenderQueue()

@@ -13,27 +13,27 @@ public:
 
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const;
 	
-	void ClearRenderQueue();
+	void Reset();
 
 private:
-	struct RenderQueue3DModelData
+	struct RenderQueue3DViewportData
 	{
 		std::vector<KtObjectData3D> ObjectDatas;
+	};
+	struct RenderQueue3DModelData
+	{
+		std::unordered_map<KtViewport*, RenderQueue3DViewportData> Viewports;
 	};
 	struct RenderQueue3DShaderData
 	{
 		std::unordered_map<KtModel*, RenderQueue3DModelData> Models;
 	};
-	struct RenderQueue3DViewportData
+	struct RenderQueue3DData
 	{
 		std::unordered_map<KtShader3D*, RenderQueue3DShaderData> Shaders;
 	};
-	struct RenderQueue3DData
-	{
-		std::unordered_map<KtViewport, RenderQueue3DViewportData> Viewports;
-	};
 
 	RenderQueue3DData _renderQueue3DData;
-	KtUniformData3D _uniformData3D;
+	KtUniformData3D _uniformData;
 };
 

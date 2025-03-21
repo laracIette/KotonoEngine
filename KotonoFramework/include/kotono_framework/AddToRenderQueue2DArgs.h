@@ -4,8 +4,8 @@
 #include "ObjectData2D.h"
 struct KtAddToRenderQueue2DArgs
 {
-	KtViewport Viewport;
 	KtShader2D* Shader;
+	KtViewport* Viewport;
 	KtObjectData2D ObjectData;
 };
 

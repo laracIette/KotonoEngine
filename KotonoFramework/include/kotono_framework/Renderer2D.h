@@ -16,17 +16,17 @@ public:
 	void ClearRenderQueue();
 
 private:
-	struct RenderQueue2DShaderData
+	struct RenderQueue2DViewportData
 	{
 		std::vector<KtObjectData2D> ObjectDatas;
 	};
-	struct RenderQueue2DViewportData
+	struct RenderQueue2DShaderData
 	{
-		std::unordered_map<KtShader2D*, RenderQueue2DShaderData> Shaders;
+		std::unordered_map<KtViewport*, RenderQueue2DViewportData> Viewports;
 	};
 	struct RenderQueue2DData
 	{
-		std::unordered_map<KtViewport, RenderQueue2DViewportData> Viewports;
+		std::unordered_map<KtShader2D*, RenderQueue2DShaderData> Shaders;
 	};
 
 	RenderQueue2DData _renderQueue2DData;

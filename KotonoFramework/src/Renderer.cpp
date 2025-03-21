@@ -298,7 +298,8 @@ void KtRenderer::CreateFramebuffers()
 
 	for (size_t i = 0; i < _swapChainImageViews.size(); i++)
 	{
-		std::array<VkImageView, 3> attachments = {
+		std::array<VkImageView, 3> attachments = 
+		{
 			_colorImageView,
 			_depthImageView,
 			_swapChainImageViews[i],
@@ -458,7 +459,7 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 	_renderer3D.CmdDraw(commandBuffer, _currentFrame);
-	_renderer2D.CmdDraw(commandBuffer, _currentFrame);
+	//_renderer2D.CmdDraw(commandBuffer, _currentFrame);
 
 	// End RenderPass
 	vkCmdEndRenderPass(commandBuffer);
@@ -490,10 +491,10 @@ void KtRenderer::CreateSyncObjects()
 	}
 }
 
-void KtRenderer::ClearRenderQueues()
+void KtRenderer::ResetRenderers()
 {
 	_renderer2D.ClearRenderQueue();
-	_renderer3D.ClearRenderQueue();
+	_renderer3D.Reset();
 }
 
 void KtRenderer::DrawFrame()
@@ -611,7 +612,7 @@ void KtRenderer::DrawFrame()
 		"failed to present swap chain image!"
 	);
 	
-	ClearRenderQueues();
+	ResetRenderers();
 
 	++_frameCount;
 	_currentFrame = _frameCount % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);

@@ -134,6 +134,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="include\kotono_framework\Viewport.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Renderer2D.cpp" />
     <ClCompile Include="src\AudioManager.cpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="include\kotono_framework\Shader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cpp.hint" />
     <None Include="shaders\shader2D.frag" />
     <None Include="shaders\shader2D.vert" />
     <None Include="shaders\shader3D.frag" />

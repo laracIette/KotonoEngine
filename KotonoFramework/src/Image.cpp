@@ -3,12 +3,11 @@
 
 void KtImage::AddToRenderQueue2D(const glm::mat4& modelMatrix) const
 {
-    KtViewport viewport{};
-    viewport.Offset = { 0, 0 };
-    viewport.Extent = Framework.GetRenderer().GetSwapChainExtent();
+    WindowViewport.SetOffset({ 0, 0 });
+    WindowViewport.SetExtent(Framework.GetRenderer().GetSwapChainExtent());
 
     KtAddToRenderQueue2DArgs args{};
-    args.Viewport = viewport;
+    args.Viewport = &WindowViewport;
     args.Shader = _shader;
     args.ObjectData = { modelMatrix };
 
