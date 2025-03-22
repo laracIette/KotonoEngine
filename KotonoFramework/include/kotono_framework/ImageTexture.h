@@ -6,27 +6,33 @@
 class KtImageTexture
 {
 public:
-    // File path of the texture
-    const std::filesystem::path Path;
-    // Vulkan image handle
-    VkImage Image;  
-    // Vulkan memory allocation handle
-    VmaAllocation Allocation; 
-    // Image view for rendering
-    VkImageView ImageView; 
-    // Sampler for texture filtering
-    VkSampler Sampler;
-    // Descriptor set for binding image in shaders
-    VkDescriptorSet DescriptorSet;  
-    // Width and height of the texture
-    VkExtent2D Size; 
-    // Number of levels of mipmaps
-    uint32_t MipLevels;
+    void Init();
+    void Cleanup() const;
 
-    KtImageTexture(const std::filesystem::path& path);
-    ~KtImageTexture();
+    const std::filesystem::path& GetPath() const;
+    void SetPath(const std::filesystem::path& path);
+
+    const VkDescriptorImageInfo GetDescriptorImageInfo() const;
 
 private:
+    // File path of the texture
+    std::filesystem::path _path;
+
+    // Vulkan image handle
+    VkImage _image;
+    // Vulkan memory allocation handle
+    VmaAllocation _allocation;
+    // Image view for rendering
+    VkImageView _imageView;
+    // Sampler for texture filtering
+    VkSampler _sampler;
+    // Descriptor set for binding image in shaders
+    VkDescriptorSet _descriptorSet;
+    // Width and height of the texture
+    VkExtent2D _size;
+    // Number of levels of mipmaps
+    uint32_t _mipLevels;
+
     void CreateTextureImage();
     void CreateTextureImageView();
 	void CreateTextureSampler();

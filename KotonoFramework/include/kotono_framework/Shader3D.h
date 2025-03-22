@@ -30,7 +30,7 @@ private:
 	const std::filesystem::path _vertPath;
 	const std::filesystem::path _fragPath;
 
-    KtImageTexture* _imageTexture;
+    KtImageTexture _imageTexture;
 
 	VkDescriptorPool _descriptorPool;
 	VkDescriptorSetLayout _uniformDescriptorSetLayout;
@@ -52,7 +52,7 @@ private:
 	void CreateDescriptorSetLayout();
 	void CreateDescriptorPool();
 	void CreateDescriptorSets();
-	void UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTexture* imageTexture);
+	void UpdateDescriptorSet(const uint32_t imageIndex);
 
 	void CreateUniformBuffers();
 	void CreateObjectBuffers();

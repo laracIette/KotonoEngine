@@ -80,7 +80,7 @@ private:
 	const bool HasStencilComponent(VkFormat format) const;
 
 	void CreateCommandBuffers();
-	void RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const;
+	void CmdRecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const;
 
 	void CreateSyncObjects();
 

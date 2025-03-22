@@ -429,7 +429,7 @@ void KtRenderer::CreateCommandBuffers()
 	);
 }
 
-void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const
+void KtRenderer::CmdRecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const
 {
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -493,7 +493,7 @@ void KtRenderer::CreateSyncObjects()
 
 void KtRenderer::ResetRenderers()
 {
-	_renderer2D.ClearRenderQueue();
+	_renderer2D.Reset();
 	_renderer3D.Reset();
 }
 
@@ -537,9 +537,9 @@ void KtRenderer::DrawFrame()
 		mesh2->AddToRenderQueue3D(modelMatrix);
 	}
 
-	axis = glm::vec3(0.0f, 1.0f, 0.0f);
+	position = glm::vec3(0.0f, 0.0f, 0.0f);
 	angle = 0.0f;
-	scale = glm::vec3(500.0f);
+	scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	modelMatrix = glm::identity<glm::mat4>();
 	modelMatrix = glm::translate(modelMatrix, position);
@@ -566,7 +566,7 @@ void KtRenderer::DrawFrame()
 	vkResetFences(Framework.GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame]);
 
 	vkResetCommandBuffer(_commandBuffers[_currentFrame], 0);
-	RecordCommandBuffer(_commandBuffers[_currentFrame], imageIndex);
+	CmdRecordCommandBuffer(_commandBuffers[_currentFrame], imageIndex);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

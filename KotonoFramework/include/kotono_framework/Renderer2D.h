@@ -13,7 +13,7 @@ public:
 
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const;
 
-	void ClearRenderQueue();
+	void Reset();
 
 private:
 	struct RenderQueue2DViewportData
@@ -37,5 +37,7 @@ private:
 
 	void CreateVertexBuffer();
 	void CreateIndexBuffer();
+
+	void CmdBindBuffers(VkCommandBuffer commandBuffer) const;
 };
 

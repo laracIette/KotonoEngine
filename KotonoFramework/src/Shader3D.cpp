@@ -26,7 +26,8 @@ void KtShader3D::Init()
 void KtShader3D::Cleanup()
 {
 	KT_DEBUG_LOG("cleaning up shader");
-	delete _imageTexture;
+
+	_imageTexture.Cleanup();
 
 	vkDestroyPipeline(Framework.GetContext().GetDevice(), _graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(Framework.GetContext().GetDevice(), _pipelineLayout, nullptr);
@@ -43,6 +44,7 @@ void KtShader3D::Cleanup()
 	vkDestroyDescriptorSetLayout(Framework.GetContext().GetDevice(), _objectDescriptorSetLayout, nullptr);
 
 	vkDestroyDescriptorPool(Framework.GetContext().GetDevice(), _descriptorPool, nullptr);
+	
 	KT_DEBUG_LOG("cleaned up shader");
 }
 
@@ -58,7 +60,8 @@ VkPipelineLayout KtShader3D::GetPipelineLayout() const
 
 void KtShader3D::CreateImageTexture()
 {
-	_imageTexture = new KtImageTexture(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.png)");
+	_imageTexture.SetPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.png)");
+	_imageTexture.Init();
 }
 
 void KtShader3D::CreateDescriptorSetLayout()
@@ -87,7 +90,6 @@ void KtShader3D::CreateDescriptorSetLayout()
 		vkCreateDescriptorSetLayout(Framework.GetContext().GetDevice(), &set0LayoutInfo, nullptr, &_uniformDescriptorSetLayout),
 		"failed to create descriptor set layout!"
 	);
-
 
 	VkDescriptorSetLayoutBinding objectBufferLayoutBinding{};
 	objectBufferLayoutBinding.binding = 0;
@@ -158,26 +160,23 @@ void KtShader3D::CreateDescriptorSets()
 
 	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
 	{
-		UpdateDescriptorSet(static_cast<uint32_t>(i), _imageTexture);
+		UpdateDescriptorSet(static_cast<uint32_t>(i));
 	}
 }
 
-void KtShader3D::UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTexture* imageTexture)
+void KtShader3D::UpdateDescriptorSet(const uint32_t imageIndex)
 {
 	VkDescriptorBufferInfo bufferInfo{};
 	bufferInfo.buffer = _uniformBuffers[imageIndex].Buffer;
 	bufferInfo.offset = 0;
 	bufferInfo.range = sizeof(KtUniformData3D);
 
-	VkDescriptorImageInfo imageInfo{};
-	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	imageInfo.imageView = imageTexture->ImageView;
-	imageInfo.sampler = imageTexture->Sampler;
-
 	VkDescriptorBufferInfo objectBufferInfo{};
 	objectBufferInfo.buffer = _objectBuffers[imageIndex].Buffer;
 	objectBufferInfo.offset = 0;
 	objectBufferInfo.range = GetObjectBufferSize(imageIndex);
+
+	VkDescriptorImageInfo imageInfo = _imageTexture.GetDescriptorImageInfo();
 
 	std::array<VkWriteDescriptorSet, 3> descriptorWrites{};
 
@@ -316,13 +315,13 @@ void KtShader3D::SetObjectCount(const VkDeviceSize objectCount, const uint32_t i
 	if (_objectCounts[imageIndex] != objectCount)
 	{
 		_objectCounts[imageIndex] = objectCount;
-		KT_DEBUG_LOG("Object count at frame %u: %llu", imageIndex, objectCount);
+		KT_DEBUG_LOG("Shader 3D object count at frame %u: %llu", imageIndex, objectCount);
 
 		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _objectBuffers[imageIndex].Buffer, _objectBuffers[imageIndex].Allocation);
 		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _stagingObjectBuffers[imageIndex].Buffer, _stagingObjectBuffers[imageIndex].Allocation);
 		CreateObjectBuffer(imageIndex);
 
-		UpdateDescriptorSet(imageIndex, _imageTexture);
+		UpdateDescriptorSet(imageIndex);
 	}
 }
 

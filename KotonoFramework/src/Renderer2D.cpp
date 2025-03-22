@@ -64,10 +64,7 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 		shader->CmdBind(commandBuffer);
 		shader->CmdBindDescriptorSets(commandBuffer, currentFrame);
 
-		const VkBuffer vertexBuffers[] = { _vertexBuffer.Buffer };
-		const VkDeviceSize offsets[] = { 0 };
-		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-		vkCmdBindIndexBuffer(commandBuffer, _indexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
+		CmdBindBuffers(commandBuffer);
 
 		uint32_t instanceIndex = 0;
 		for (auto& [viewport, viewportData] : shaderData.Viewports)
@@ -84,17 +81,26 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 			}
 			else
 			{
+				viewport->CmdUse(commandBuffer);
 				vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(SquareIndices.size()), instanceCount, 0, 0, instanceIndex);
 			}
 
 			instanceIndex += instanceCount;
-			KT_DEBUG_LOG("2D renderer draw %u instances", instanceCount);
 		}
 	}
 }
 
-void KtRenderer2D::ClearRenderQueue()
+void KtRenderer2D::CmdBindBuffers(VkCommandBuffer commandBuffer) const
 {
+	const VkBuffer vertexBuffers[] = { _vertexBuffer.Buffer };
+	const VkDeviceSize offsets[] = { 0 };
+	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+	vkCmdBindIndexBuffer(commandBuffer, _indexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
+}
+
+void KtRenderer2D::Reset()
+{
+	_uniformData2D = {};
 	_renderQueue2DData = {};
 }
 

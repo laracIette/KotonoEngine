@@ -26,7 +26,8 @@ void KtShader2D::Init()
 void KtShader2D::Cleanup()
 {
 	KT_DEBUG_LOG("cleaning up shader");
-	delete _imageTexture;
+	
+	_imageTexture.Cleanup();
 
 	vkDestroyPipeline(Framework.GetContext().GetDevice(), _graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(Framework.GetContext().GetDevice(), _pipelineLayout, nullptr);
@@ -43,6 +44,7 @@ void KtShader2D::Cleanup()
 	vkDestroyDescriptorSetLayout(Framework.GetContext().GetDevice(), _objectDescriptorSetLayout, nullptr);
 
 	vkDestroyDescriptorPool(Framework.GetContext().GetDevice(), _descriptorPool, nullptr);
+	
 	KT_DEBUG_LOG("cleaned up shader");
 }
 
@@ -58,7 +60,8 @@ VkPipelineLayout KtShader2D::GetPipelineLayout() const
 
 void KtShader2D::CreateImageTexture()
 {
-	_imageTexture = new KtImageTexture(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.png)");
+	_imageTexture.SetPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.png)");
+	_imageTexture.Init();
 }
 
 void KtShader2D::CreateDescriptorSetLayout()
@@ -158,26 +161,23 @@ void KtShader2D::CreateDescriptorSets()
 
 	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
 	{
-		UpdateDescriptorSet(static_cast<uint32_t>(i), _imageTexture);
+		UpdateDescriptorSet(static_cast<uint32_t>(i));
 	}
 }
 
-void KtShader2D::UpdateDescriptorSet(const uint32_t imageIndex, const KtImageTexture* imageTexture)
+void KtShader2D::UpdateDescriptorSet(const uint32_t imageIndex)
 {
 	VkDescriptorBufferInfo bufferInfo{};
 	bufferInfo.buffer = _uniformBuffers[imageIndex].Buffer;
 	bufferInfo.offset = 0;
 	bufferInfo.range = sizeof(KtUniformData2D);
 
-	VkDescriptorImageInfo imageInfo{};
-	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	imageInfo.imageView = imageTexture->ImageView;
-	imageInfo.sampler = imageTexture->Sampler;
-
 	VkDescriptorBufferInfo objectBufferInfo{};
 	objectBufferInfo.buffer = _objectBuffers[imageIndex].Buffer;
 	objectBufferInfo.offset = 0;
 	objectBufferInfo.range = GetObjectBufferSize(imageIndex);
+
+	VkDescriptorImageInfo imageInfo = _imageTexture.GetDescriptorImageInfo();
 
 	std::array<VkWriteDescriptorSet, 3> descriptorWrites{};
 
@@ -316,13 +316,13 @@ void KtShader2D::SetObjectCount(const VkDeviceSize objectCount, const uint32_t i
 	if (_objectCounts[imageIndex] != objectCount)
 	{
 		_objectCounts[imageIndex] = objectCount;
-		KT_DEBUG_LOG("Object count at frame %u: %llu", imageIndex, objectCount);
+		KT_DEBUG_LOG("Shader 2D object count at frame %u: %llu", imageIndex, objectCount);
 
 		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _objectBuffers[imageIndex].Buffer, _objectBuffers[imageIndex].Allocation);
 		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _stagingObjectBuffers[imageIndex].Buffer, _stagingObjectBuffers[imageIndex].Allocation);
 		CreateObjectBuffer(imageIndex);
 
-		UpdateDescriptorSet(imageIndex, _imageTexture);
+		UpdateDescriptorSet(imageIndex);
 	}
 }
 
@@ -405,7 +405,7 @@ void KtShader2D::CreateGraphicsPipeline()
 	rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 	rasterizer.lineWidth = 1.0f; // For rasterizer.polygonMode = VK_POLYGON_MODE_LINE; 
 	// enable wideLines GPU feature for thicker
-	rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+	rasterizer.cullMode = VK_CULL_MODE_NONE; // diff from 3D
 	rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	rasterizer.depthBiasEnable = VK_FALSE;
 	rasterizer.depthBiasConstantFactor = 0.0f; // Optional
@@ -423,8 +423,8 @@ void KtShader2D::CreateGraphicsPipeline()
 
 	VkPipelineDepthStencilStateCreateInfo depthStencil{};
 	depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-	depthStencil.depthTestEnable = VK_TRUE;
-	depthStencil.depthWriteEnable = VK_TRUE;
+	depthStencil.depthTestEnable = VK_FALSE; // diff from 3D
+	depthStencil.depthWriteEnable = VK_FALSE; // diff from 3D
 	depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
 	depthStencil.depthBoundsTestEnable = VK_FALSE;
 	depthStencil.minDepthBounds = 0.0f; // Optional
@@ -435,13 +435,13 @@ void KtShader2D::CreateGraphicsPipeline()
 
 	VkPipelineColorBlendAttachmentState colorBlendAttachment{};
 	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-	colorBlendAttachment.blendEnable = VK_FALSE;
-	colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
-	colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
-	colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD; // Optional
-	colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
-	colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
-	colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD; // Optional
+	colorBlendAttachment.blendEnable = VK_TRUE; // diff from 3D
+	colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA; // diff from 3D
+	colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA; // diff from 3D
+	colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD; // diff from 3D
+	colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE; // diff from 3D
+	colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // diff from 3D
+	colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD; // diff from 3D
 
 	VkPipelineColorBlendStateCreateInfo colorBlending{};
 	colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
