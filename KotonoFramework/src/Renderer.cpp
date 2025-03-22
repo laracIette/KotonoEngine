@@ -459,7 +459,7 @@ void KtRenderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 	_renderer3D.CmdDraw(commandBuffer, _currentFrame);
-	//_renderer2D.CmdDraw(commandBuffer, _currentFrame);
+	_renderer2D.CmdDraw(commandBuffer, _currentFrame);
 
 	// End RenderPass
 	vkCmdEndRenderPass(commandBuffer);

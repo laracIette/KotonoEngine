@@ -33,9 +33,6 @@ void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 			continue;
 		}
 
-		shader->CmdBind(commandBuffer);
-		shader->CmdBindDescriptorSets(commandBuffer, currentFrame);
-
 		std::vector<KtObjectData3D> objectBufferData;
 		for (auto& [model, modelData] : shaderData.Models)
 		{
@@ -46,8 +43,13 @@ void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 				);
 			}
 		}
+		// NOT A CMD, UPDATE ONCE PER FRAME //
 		shader->UpdateObjectBuffer(objectBufferData, currentFrame);
 		shader->UpdateUniformBuffer(_uniformData, currentFrame);
+		// -------------------------------- //
+
+		shader->CmdBind(commandBuffer);
+		shader->CmdBindDescriptorSets(commandBuffer, currentFrame);
 
 		uint32_t instanceIndex = 0;
 		for (auto& [model, modelData] : shaderData.Models)

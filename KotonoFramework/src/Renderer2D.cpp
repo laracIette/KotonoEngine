@@ -3,14 +3,14 @@
 #include "Framework.h"
 #include <Vertex2D.h>
 
-constexpr std::array<KtVertex2D, 4> vertices =
+constexpr std::array<KtVertex2D, 4> SquareVertices =
 {//                   Position,              Color,      TexCoords
 	KtVertex2D{ {-0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f} }, // Bottom-left
 	KtVertex2D{ { 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f} }, // Bottom-right
 	KtVertex2D{ { 0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f} }, // Top-right
 	KtVertex2D{ {-0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f} }  // Top-left
 };
-constexpr std::array<uint32_t, 6> indices = { 0, 1, 2, 2, 3, 0 };
+constexpr std::array<uint32_t, 6> SquareIndices = { 0, 1, 2, 2, 3, 0 };
 
 void KtRenderer2D::Init()
 {
@@ -41,7 +41,7 @@ void KtRenderer2D::SetUniformData(const KtUniformData2D& uniformData)
 
 void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const
 {
-	/*for (auto& [shader, shaderData] : _renderQueue2DData.Shaders)
+	for (auto& [shader, shaderData] : _renderQueue2DData.Shaders)
 	{
 		if (!shader)
 		{
@@ -49,8 +49,17 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 			continue;
 		}
 
+		std::vector<KtObjectData2D> objectBufferData;
+		for (auto& [viewport, viewportData] : shaderData.Viewports)
+		{
+			objectBufferData.insert(objectBufferData.end(),
+				viewportData.ObjectDatas.begin(), viewportData.ObjectDatas.end()
+			);
+		}
+		// NOT A CMD, UPDATE ONCE PER FRAME //
+		shader->UpdateObjectBuffer(objectBufferData, currentFrame);
 		shader->UpdateUniformBuffer(_uniformData2D, currentFrame);
-		shader->UpdateObjectBuffer(shaderData.ObjectDatas, currentFrame);
+		// -------------------------------- //
 
 		shader->CmdBind(commandBuffer);
 		shader->CmdBindDescriptorSets(commandBuffer, currentFrame);
@@ -60,11 +69,28 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 		vkCmdBindIndexBuffer(commandBuffer, _indexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
 
-		const uint32_t instanceCount = static_cast<uint32_t>(shaderData.ObjectDatas.size());
-		vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), instanceCount, 0, 0, 0);
+		uint32_t instanceIndex = 0;
+		for (auto& [viewport, viewportData] : shaderData.Viewports)
+		{
+			const uint32_t instanceCount = static_cast<uint32_t>(viewportData.ObjectDatas.size());
 
-		KT_DEBUG_LOG("2D renderer draw %u instances", instanceCount);
-	}*/
+			if (!viewport)
+			{
+				KT_DEBUG_LOG("viewport is nullptr");
+			}
+			else if (instanceCount == 0)
+			{
+				KT_DEBUG_LOG("model doesn't have any instance");
+			}
+			else
+			{
+				vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(SquareIndices.size()), instanceCount, 0, 0, instanceIndex);
+			}
+
+			instanceIndex += instanceCount;
+			KT_DEBUG_LOG("2D renderer draw %u instances", instanceCount);
+		}
+	}
 }
 
 void KtRenderer2D::ClearRenderQueue()
@@ -74,7 +100,7 @@ void KtRenderer2D::ClearRenderQueue()
 
 void KtRenderer2D::CreateVertexBuffer()
 {
-	const VkDeviceSize bufferSize = sizeof(KtVertex2D) * vertices.size();
+	const VkDeviceSize bufferSize = sizeof(KtVertex2D) * SquareVertices.size();
 
 	KtAllocatedBuffer stagingBuffer;
 	Framework.GetContext().CreateBuffer(
@@ -85,7 +111,7 @@ void KtRenderer2D::CreateVertexBuffer()
 		stagingBuffer
 	);
 
-	memcpy(stagingBuffer.AllocationInfo.pMappedData, vertices.data(), (size_t)bufferSize);
+	memcpy(stagingBuffer.AllocationInfo.pMappedData, SquareVertices.data(), (size_t)bufferSize);
 
 	Framework.GetContext().CreateBuffer(
 		bufferSize,
@@ -102,7 +128,7 @@ void KtRenderer2D::CreateVertexBuffer()
 
 void KtRenderer2D::CreateIndexBuffer()
 {
-	const VkDeviceSize bufferSize = sizeof(uint32_t) * indices.size();
+	const VkDeviceSize bufferSize = sizeof(uint32_t) * SquareIndices.size();
 
 	KtAllocatedBuffer stagingBuffer;
 	Framework.GetContext().CreateBuffer(
@@ -113,7 +139,7 @@ void KtRenderer2D::CreateIndexBuffer()
 		stagingBuffer
 	);
 
-	memcpy(stagingBuffer.AllocationInfo.pMappedData, indices.data(), (size_t)bufferSize);
+	memcpy(stagingBuffer.AllocationInfo.pMappedData, SquareIndices.data(), (size_t)bufferSize);
 
 	Framework.GetContext().CreateBuffer(
 		bufferSize,
