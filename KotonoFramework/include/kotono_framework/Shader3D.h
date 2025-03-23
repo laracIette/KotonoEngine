@@ -11,7 +11,6 @@ class KtShader3D final : public KtShader
 {
 public:
 	void Init() override;
-	void Cleanup() override;
 
 	void UpdateUniformBuffer(const KtUniformData3D& uniformData, const uint32_t imageIndex);
 	void UpdateObjectBuffer(const std::span<KtObjectData3D> objectDatas, const uint32_t imageIndex);
@@ -21,13 +20,9 @@ private:
 	
 	void CreateImageTexture();
 
-	void CreateDescriptorSetLayouts();
-	void CreateDescriptorPools();
+	void CreateDescriptorSetLayouts() override;
+	void CreateDescriptorPools() override;
 	void UpdateDescriptorSet(const uint32_t imageIndex) override;
-
-	void CreateUniformBuffers();
-	void CreateObjectBuffers();
-
-	void CreateGraphicsPipelines();
+	void CreateGraphicsPipelines() override;
 };
 

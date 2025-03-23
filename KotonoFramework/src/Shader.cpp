@@ -1,12 +1,39 @@
 #include "Shader.h"
 #include "vk_utils.h"
 #include "Framework.h"
-#include <File.h>
+#include "File.h"
+
+void KtShader::Init()
+{
+	CreateDescriptorSetLayouts();
+	CreateDescriptorPools();
+	CreateUniformBuffers();
+	CreateObjectBuffers();
+	CreateDescriptorSets();
+	CreateGraphicsPipelines();
+}
 
 void KtShader::Cleanup()
 {
+	KT_DEBUG_LOG("cleaning up shader");
+
 	vkDestroyPipeline(Framework.GetContext().GetDevice(), _graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(Framework.GetContext().GetDevice(), _pipelineLayout, nullptr);
+
+	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
+	{
+		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _uniformBuffers[i].Buffer, _uniformBuffers[i].Allocation);
+		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _stagingUniformBuffers[i].Buffer, _stagingUniformBuffers[i].Allocation);
+		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _objectBuffers[i].Buffer, _objectBuffers[i].Allocation);
+		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _stagingObjectBuffers[i].Buffer, _stagingObjectBuffers[i].Allocation);
+	}
+
+	vkDestroyDescriptorSetLayout(Framework.GetContext().GetDevice(), _uniformDescriptorSetLayout, nullptr);
+	vkDestroyDescriptorSetLayout(Framework.GetContext().GetDevice(), _objectDescriptorSetLayout, nullptr);
+
+	vkDestroyDescriptorPool(Framework.GetContext().GetDevice(), _descriptorPool, nullptr);
+
+	KT_DEBUG_LOG("cleaned up shader");
 }
 
 VkPipeline KtShader::GetGraphicsPipeline() const
@@ -45,6 +72,16 @@ void KtShader::SetVertPath(const std::filesystem::path& path)
 void KtShader::SetFragPath(const std::filesystem::path& path)
 {
 	_fragPath = path;
+}
+
+void KtShader::SetUniformDataSize(const VkDeviceSize size)
+{
+	_uniformDataSize = size;
+}
+
+void KtShader::SetObjectDataSize(const VkDeviceSize size)
+{
+	_objectDataSize = size;
 }
 
 void KtShader::CreateDescriptorSetLayout(VkDescriptorSetLayout& layout, const std::span<VkDescriptorSetLayoutBinding> layoutBindings)
@@ -248,10 +285,26 @@ void KtShader::CreateGraphicsPipeline(
 	vkDestroyShaderModule(Framework.GetContext().GetDevice(), vertShaderModule, nullptr);
 }
 
-void KtShader::CreateUniformBuffer(const uint32_t imageIndex, const VkDeviceSize size)
+void KtShader::CreateUniformBuffers()
+{
+	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
+	{
+		CreateUniformBuffer(static_cast<uint32_t>(i));
+	}
+}
+
+void KtShader::CreateObjectBuffers()
+{
+	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
+	{
+		CreateObjectBuffer(static_cast<uint32_t>(i));
+	}
+}
+
+void KtShader::CreateUniformBuffer(const uint32_t imageIndex)
 {
 	Framework.GetContext().CreateBuffer(
-		size,
+		_uniformDataSize,
 		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		0,
@@ -260,7 +313,7 @@ void KtShader::CreateUniformBuffer(const uint32_t imageIndex, const VkDeviceSize
 	);
 
 	Framework.GetContext().CreateBuffer(
-		size,
+		_uniformDataSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		VMA_ALLOCATION_CREATE_MAPPED_BIT,
@@ -269,11 +322,11 @@ void KtShader::CreateUniformBuffer(const uint32_t imageIndex, const VkDeviceSize
 	);
 }
 
-void KtShader::CreateObjectBuffer(const uint32_t imageIndex, const VkDeviceSize size)
+void KtShader::CreateObjectBuffer(const uint32_t imageIndex)
 {
-	KT_DEBUG_LOG("Object buffer size at frame %u: %llu", imageIndex, size);
+	KT_DEBUG_LOG("Object buffer size at frame %u: %llu", imageIndex, GetObjectBufferCount(imageIndex) * _objectDataSize);
 	Framework.GetContext().CreateBuffer(
-		size,
+		GetObjectBufferCount(imageIndex) * _objectDataSize,
 		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, // Can be used as SSBO & can receive data from staging
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, // Optimized for GPU access
 		0, // No need for MAPPED_BIT since we won’t access this from CPU
@@ -282,7 +335,7 @@ void KtShader::CreateObjectBuffer(const uint32_t imageIndex, const VkDeviceSize 
 	);
 
 	Framework.GetContext().CreateBuffer(
-		size,
+		GetObjectBufferCount(imageIndex) * _objectDataSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT, // Usage flags
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, // Memory properties
 		VMA_ALLOCATION_CREATE_MAPPED_BIT, // Allocation flags
@@ -301,7 +354,7 @@ void KtShader::SetObjectCount(const VkDeviceSize objectCount, const uint32_t ima
 		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _objectBuffers[imageIndex].Buffer, _objectBuffers[imageIndex].Allocation);
 		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _stagingObjectBuffers[imageIndex].Buffer, _stagingObjectBuffers[imageIndex].Allocation);
 
-		CreateObjectBuffer(imageIndex, GetObjectBufferCount(imageIndex) * sizeof(KtObjectData2D));
+		CreateObjectBuffer(imageIndex);
 
 		UpdateDescriptorSet(imageIndex);
 	}

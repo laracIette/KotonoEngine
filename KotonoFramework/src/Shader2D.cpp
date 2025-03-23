@@ -10,35 +10,10 @@ void KtShader2D::Init()
 {
 	SetVertPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader2DVert.spv)");
 	SetFragPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader2DFrag.spv)");
-	CreateDescriptorSetLayouts();
-	CreateDescriptorPools();
+	SetUniformDataSize(sizeof(KtUniformData2D));
+	SetObjectDataSize(sizeof(KtObjectData2D));
 	CreateImageTexture();
-	CreateUniformBuffers();
-	CreateObjectBuffers();
-	CreateDescriptorSets();
-	CreateGraphicsPipelines();
-}
-
-void KtShader2D::Cleanup()
-{
-	KT_DEBUG_LOG("cleaning up shader");
-
-	KtShader::Cleanup();
-
-	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
-	{
-		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _uniformBuffers[i].Buffer, _uniformBuffers[i].Allocation);
-		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _stagingUniformBuffers[i].Buffer, _stagingUniformBuffers[i].Allocation);
-		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _objectBuffers[i].Buffer, _objectBuffers[i].Allocation);
-		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _stagingObjectBuffers[i].Buffer, _stagingObjectBuffers[i].Allocation);
-	}
-
-	vkDestroyDescriptorSetLayout(Framework.GetContext().GetDevice(), _uniformDescriptorSetLayout, nullptr);
-	vkDestroyDescriptorSetLayout(Framework.GetContext().GetDevice(), _objectDescriptorSetLayout, nullptr);
-
-	vkDestroyDescriptorPool(Framework.GetContext().GetDevice(), _descriptorPool, nullptr);
-	
-	KT_DEBUG_LOG("cleaned up shader");
+	KtShader::Init();
 }
 
 void KtShader2D::CreateImageTexture()
@@ -96,12 +71,12 @@ void KtShader2D::UpdateDescriptorSet(const uint32_t imageIndex)
 	VkDescriptorBufferInfo bufferInfo{};
 	bufferInfo.buffer = _uniformBuffers[imageIndex].Buffer;
 	bufferInfo.offset = 0;
-	bufferInfo.range = sizeof(KtUniformData2D);
+	bufferInfo.range = _uniformDataSize;
 
 	VkDescriptorBufferInfo objectBufferInfo{};
 	objectBufferInfo.buffer = _objectBuffers[imageIndex].Buffer;
 	objectBufferInfo.offset = 0;
-	objectBufferInfo.range = GetObjectBufferCount(imageIndex) * sizeof(KtObjectData2D);
+	objectBufferInfo.range = GetObjectBufferCount(imageIndex) * _objectDataSize;
 
 	VkDescriptorImageInfo imageInfo = _imageTexture->GetDescriptorImageInfo();
 
@@ -134,30 +109,14 @@ void KtShader2D::UpdateDescriptorSet(const uint32_t imageIndex)
 	vkUpdateDescriptorSets(Framework.GetContext().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 }
 
-void KtShader2D::CreateUniformBuffers()
-{
-	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
-	{
-		CreateUniformBuffer(static_cast<uint32_t>(i), sizeof(KtUniformData2D));
-	}
-}
-
-void KtShader2D::CreateObjectBuffers()
-{
-	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
-	{
-		CreateObjectBuffer(static_cast<uint32_t>(i), GetObjectBufferCount(static_cast<uint32_t>(i)) * sizeof(KtObjectData2D));
-	}
-}
-
 void KtShader2D::UpdateUniformBuffer(const KtUniformData2D& uniformData, const uint32_t imageIndex)
 {
-	memcpy(_stagingUniformBuffers[imageIndex].AllocationInfo.pMappedData, &uniformData, sizeof(KtUniformData2D));
+	memcpy(_stagingUniformBuffers[imageIndex].AllocationInfo.pMappedData, &uniformData, _uniformDataSize);
 
 	Framework.GetContext().CopyBuffer(
 		_stagingUniformBuffers[imageIndex].Buffer,
 		_uniformBuffers[imageIndex].Buffer,
-		sizeof(KtUniformData2D)
+		_uniformDataSize
 	);
 }
 
@@ -167,12 +126,12 @@ void KtShader2D::UpdateObjectBuffer(const std::span<KtObjectData2D> objectDatas,
 	SetObjectCount(objectDatas.size(), imageIndex);
 
 	// Copy data to the staging buffer
-	memcpy(_stagingObjectBuffers[imageIndex].AllocationInfo.pMappedData, objectDatas.data(), GetObjectBufferCount(imageIndex) * sizeof(KtObjectData2D));
+	memcpy(_stagingObjectBuffers[imageIndex].AllocationInfo.pMappedData, objectDatas.data(), GetObjectBufferCount(imageIndex) * _objectDataSize);
 
 	Framework.GetContext().CopyBuffer(
 		_stagingObjectBuffers[imageIndex].Buffer,
 		_objectBuffers[imageIndex].Buffer,
-		GetObjectBufferCount(imageIndex) * sizeof(KtObjectData2D)
+		GetObjectBufferCount(imageIndex) * _objectDataSize
 	);
 }
 
