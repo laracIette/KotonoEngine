@@ -6,11 +6,12 @@
 class KtImageTexture
 {
 public:
+    KtImageTexture(const std::filesystem::path& path);
+
     void Init();
     void Cleanup() const;
 
     const std::filesystem::path& GetPath() const;
-    void SetPath(const std::filesystem::path& path);
 
     const VkDescriptorImageInfo GetDescriptorImageInfo() const;
 

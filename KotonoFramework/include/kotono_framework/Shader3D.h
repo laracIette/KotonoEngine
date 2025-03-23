@@ -30,7 +30,7 @@ private:
 	const std::filesystem::path _vertPath;
 	const std::filesystem::path _fragPath;
 
-    KtImageTexture _imageTexture;
+    KtImageTexture* _imageTexture;
 
 	VkDescriptorPool _descriptorPool;
 	VkDescriptorSetLayout _uniformDescriptorSetLayout;

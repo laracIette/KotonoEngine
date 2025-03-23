@@ -134,7 +134,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="include\kotono_framework\Viewport.cpp" />
+    <ClCompile Include="src\ImageTextureManager.cpp" />
+    <ClCompile Include="src\Viewport.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Renderer2D.cpp" />
     <ClCompile Include="src\AudioManager.cpp" />
@@ -158,6 +159,7 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\kotono_framework\ImageTextureManager.h" />
     <ClInclude Include="include\kotono_framework\AddToRenderQueue3DArgs.h" />
     <ClInclude Include="include\kotono_framework\AddToRenderQueue2DArgs.h" />
     <ClInclude Include="include\kotono_framework\AllocatedBuffer.h" />

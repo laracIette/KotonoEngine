@@ -8,7 +8,8 @@
 
 KtShader2D::KtShader2D() :
 	_vertPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader2DVert.spv)"),
-	_fragPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader2DFrag.spv)")
+	_fragPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader2DFrag.spv)"),
+	_imageTexture(nullptr)
 {
 }
 
@@ -26,8 +27,6 @@ void KtShader2D::Init()
 void KtShader2D::Cleanup()
 {
 	KT_DEBUG_LOG("cleaning up shader");
-	
-	_imageTexture.Cleanup();
 
 	vkDestroyPipeline(Framework.GetContext().GetDevice(), _graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(Framework.GetContext().GetDevice(), _pipelineLayout, nullptr);
@@ -60,8 +59,9 @@ VkPipelineLayout KtShader2D::GetPipelineLayout() const
 
 void KtShader2D::CreateImageTexture()
 {
-	_imageTexture.SetPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.png)");
-	_imageTexture.Init();
+	_imageTexture = Framework.GetImageTextureManager().Get(
+		R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.png)"
+	);
 }
 
 void KtShader2D::CreateDescriptorSetLayout()
@@ -177,7 +177,7 @@ void KtShader2D::UpdateDescriptorSet(const uint32_t imageIndex)
 	objectBufferInfo.offset = 0;
 	objectBufferInfo.range = GetObjectBufferSize(imageIndex);
 
-	VkDescriptorImageInfo imageInfo = _imageTexture.GetDescriptorImageInfo();
+	VkDescriptorImageInfo imageInfo = _imageTexture->GetDescriptorImageInfo();
 
 	std::array<VkWriteDescriptorSet, 3> descriptorWrites{};
 

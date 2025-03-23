@@ -2,14 +2,14 @@
 #include "Framework.h"
 #include "log.h"
 
+KtImageTexture::KtImageTexture(const std::filesystem::path& path) :
+	_path(path)
+{
+}
+
 const std::filesystem::path& KtImageTexture::GetPath() const
 {
 	return _path;
-}
-
-void KtImageTexture::SetPath(const std::filesystem::path& path)
-{
-	_path = path;
 }
 
 const VkDescriptorImageInfo KtImageTexture::GetDescriptorImageInfo() const
@@ -45,7 +45,7 @@ void KtImageTexture::CreateTextureImage()
 	{
 		throw std::runtime_error("Texture has zero width or height!");
 	}
-	VkDeviceSize imageSize = texWidth * texHeight * 4;
+	VkDeviceSize imageSize = static_cast<VkDeviceSize>(texWidth) * texHeight * 4;
 
 	_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
 
