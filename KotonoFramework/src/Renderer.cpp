@@ -9,8 +9,6 @@
 
 KtShader3D* shader1 = nullptr;
 KtShader2D* shader2 = nullptr;
-KtModel* model1 = nullptr;
-KtModel* model2 = nullptr;
 KtMesh* mesh1 = nullptr;
 KtMesh* mesh2 = nullptr;
 KtImage* image1 = nullptr;
@@ -42,13 +40,9 @@ void KtRenderer::Cleanup()
 
 	shader1->Cleanup();
 	shader2->Cleanup();
-	model1->Cleanup();
-	model2->Cleanup();
 
 	delete shader1;
 	delete shader2;
-	delete model1;
-	delete model2;
 	delete mesh1;
 	delete mesh2;
 	delete image1;
@@ -73,8 +67,14 @@ void KtRenderer::Cleanup()
 void KtRenderer::CreateShaderAndModels() const
 {
 	shader1 = new KtShader3D();
-	model1 = new KtModel(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.obj)");
-	model2 = new KtModel(R"(C:\Users\nicos\OneDrive - e-artsup\B2\Environment\Corridor\SM_Column_low.fbx)");
+	shader2 = new KtShader2D();
+
+	KtModel* model1 = Framework.GetModelManager().Get(
+		R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.obj)"
+	);
+	KtModel* model2 = Framework.GetModelManager().Get(
+		R"(C:\Users\nicos\OneDrive - e-artsup\B2\Environment\Corridor\SM_Column_low.fbx)"
+	);
 
 	mesh1 = new KtMesh();
 	mesh1->SetShader(shader1);
@@ -84,14 +84,11 @@ void KtRenderer::CreateShaderAndModels() const
 	mesh2->SetShader(shader1);
 	mesh2->SetModel(model2);
 
-	shader2 = new KtShader2D();
 	image1 = new KtImage();
 	image1->SetShader(shader2);
 
 	shader1->Init();
 	shader2->Init();
-	model1->Init();
-	model2->Init();
 }
 
 void KtRenderer::CreateSwapChain()

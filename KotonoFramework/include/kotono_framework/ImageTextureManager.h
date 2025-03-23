@@ -1,15 +1,10 @@
 #pragma once
-#include <unordered_map>
+#include "ItemManager.h"
 #include "ImageTexture.h"
-class KtImageTextureManager final
+class KtImageTextureManager final : public KtItemManager<KtImageTexture>
 {
 public:
-	KtImageTexture* Get(const std::filesystem::path& path);
-
-	void Init();
-	void Cleanup();
-
-private:
-	std::unordered_map<std::filesystem::path, KtImageTexture*> _imageTextures;
+	KtImageTexture* CreateItem(const std::filesystem::path& path) const override;
+	void CleanupItem(KtImageTexture* item) const override;
 };
 

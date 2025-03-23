@@ -4,6 +4,7 @@
 #include "Renderer.h"
 #include "AudioManager.h"
 #include "InputManager.h"
+#include "ModelManager.h"
 #include "ImageTextureManager.h"
 class KtFramework final
 {
@@ -16,6 +17,7 @@ public:
 	KtRenderer& GetRenderer();
 	KtAudioManager& GetAudioManager();
 	KtInputManager& GetInputManager();
+	KtModelManager& GetModelManager();
 	KtImageTextureManager& GetImageTextureManager();
 
 private:
@@ -24,6 +26,7 @@ private:
 	KtRenderer _renderer;
 	KtAudioManager _audioManager;
 	KtInputManager _inputManager;
+	KtModelManager _modelManager;
 	KtImageTextureManager _imageTextureManager;
 };
 

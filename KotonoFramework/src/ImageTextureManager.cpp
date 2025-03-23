@@ -1,32 +1,13 @@
 #include "ImageTextureManager.h"
-#include "log.h"
 
-KtImageTexture* KtImageTextureManager::Get(const std::filesystem::path& path)
+KtImageTexture* KtImageTextureManager::CreateItem(const std::filesystem::path& path) const
 {
-    if (!_imageTextures.contains(path))
-    {
-        auto* imageTexture = new KtImageTexture(path);
-        imageTexture->Init();
-
-        _imageTextures[path] = imageTexture;
-    }
-
-    return _imageTextures[path];
+    auto* item = new KtImageTexture(path);
+    item->Init();
+    return item;
 }
 
-void KtImageTextureManager::Init()
+void KtImageTextureManager::CleanupItem(KtImageTexture* item) const
 {
-}
-
-void KtImageTextureManager::Cleanup()
-{
-    KT_DEBUG_LOG("cleaning up image texture manager");
-
-    for (auto& [path, imageTexture] : _imageTextures)
-    {
-        imageTexture->Cleanup();
-        delete imageTexture;
-    }
-
-    KT_DEBUG_LOG("cleaned up image texture manager");
+    item->Cleanup();
 }
