@@ -134,6 +134,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ShaderManager.cpp" />
     <ClCompile Include="src\ItemManager.cpp" />
     <ClCompile Include="src\ModelManager.cpp" />
     <ClCompile Include="src\ImageTextureManager.cpp" />
@@ -202,6 +203,7 @@
     <ClInclude Include="include\kotono_framework\Shader.h" />
     <ClInclude Include="include\kotono_framework\ModelManager.h" />
     <ClInclude Include="include\kotono_framework\ItemManager.h" />
+    <ClInclude Include="include\kotono_framework\ShaderManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
