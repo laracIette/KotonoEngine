@@ -12,24 +12,15 @@
 class KtShader2D final : public KtShader
 {
 public:
-	KtShader2D();
-
 	void Init() override;
 	void Cleanup() override;
-
-	VkPipeline GetGraphicsPipeline() const;
-	VkPipelineLayout GetPipelineLayout() const;
 
 	void UpdateUniformBuffer(const KtUniformData2D& uniformData, const uint32_t imageIndex);
 	void UpdateObjectBuffer(const std::vector<KtObjectData2D>& objectDatas, const uint32_t imageIndex);
 
-	void CmdBind(VkCommandBuffer commandBuffer) const;
 	void CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32_t imageIndex);
 
 private:
-	const std::filesystem::path _vertPath;
-	const std::filesystem::path _fragPath;
-
     KtImageTexture* _imageTexture;
 
 	VkDescriptorPool _descriptorPool;
@@ -37,9 +28,6 @@ private:
 	VkDescriptorSetLayout _objectDescriptorSetLayout;
 	std::array<VkDescriptorSet, KT_FRAMES_IN_FLIGHT> _uniformDescriptorSets;
 	std::array<VkDescriptorSet, KT_FRAMES_IN_FLIGHT> _objectDescriptorSets;
-
-	VkPipelineLayout _pipelineLayout;
-	VkPipeline _graphicsPipeline;
 
 	std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT> _uniformBuffers;
 	std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT> _objectBuffers;
@@ -49,8 +37,8 @@ private:
 
 	void CreateImageTexture();
 
-	void CreateDescriptorSetLayout();
-	void CreateDescriptorPool();
+	void CreateDescriptorSetLayouts();
+	void CreateDescriptorPools();
 	void CreateDescriptorSets();
 	void UpdateDescriptorSet(const uint32_t imageIndex);
 
@@ -62,7 +50,6 @@ private:
 	void SetObjectCount(const VkDeviceSize objectCount, const uint32_t imageIndex);
 	const VkDeviceSize GetObjectBufferSize(const uint32_t imageIndex) const;
 
-	void CreateGraphicsPipeline();
-	const VkShaderModule CreateShaderModule(const std::vector<char>& code) const;
+	void CreateGraphicsPipelines();
 };
 

@@ -6,31 +6,25 @@
 #include "log.h"
 #include "vk_utils.h"
 
-KtShader2D::KtShader2D() :
-	_vertPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader2DVert.spv)"),
-	_fragPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader2DFrag.spv)"),
-	_imageTexture(nullptr)
-{
-}
-
 void KtShader2D::Init()
 {
-	CreateDescriptorSetLayout();
-	CreateDescriptorPool();
+	SetVertPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader2DVert.spv)");
+	SetFragPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader2DFrag.spv)");
+	CreateDescriptorSetLayouts();
+	CreateDescriptorPools();
 	CreateImageTexture();
 	CreateUniformBuffers();
 	CreateObjectBuffers();
 	CreateDescriptorSets();
-	CreateGraphicsPipeline();
+	CreateGraphicsPipelines();
 }
 
 void KtShader2D::Cleanup()
 {
 	KT_DEBUG_LOG("cleaning up shader");
 
-	vkDestroyPipeline(Framework.GetContext().GetDevice(), _graphicsPipeline, nullptr);
-	vkDestroyPipelineLayout(Framework.GetContext().GetDevice(), _pipelineLayout, nullptr);
-	
+	KtShader::Cleanup();
+
 	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
 	{
 		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _uniformBuffers[i].Buffer, _uniformBuffers[i].Allocation);
@@ -47,16 +41,6 @@ void KtShader2D::Cleanup()
 	KT_DEBUG_LOG("cleaned up shader");
 }
 
-VkPipeline KtShader2D::GetGraphicsPipeline() const
-{
-	return _graphicsPipeline;
-}
-
-VkPipelineLayout KtShader2D::GetPipelineLayout() const
-{
-	return _pipelineLayout;
-}
-
 void KtShader2D::CreateImageTexture()
 {
 	_imageTexture = Framework.GetImageTextureManager().Get(
@@ -64,7 +48,7 @@ void KtShader2D::CreateImageTexture()
 	);
 }
 
-void KtShader2D::CreateDescriptorSetLayout()
+void KtShader2D::CreateDescriptorSetLayouts()
 {
 	VkDescriptorSetLayoutBinding uboLayoutBinding{};
 	uboLayoutBinding.binding = 0;
@@ -81,16 +65,7 @@ void KtShader2D::CreateDescriptorSetLayout()
 	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
 	std::array<VkDescriptorSetLayoutBinding, 2> set0Bindings = { uboLayoutBinding, samplerLayoutBinding };
-	VkDescriptorSetLayoutCreateInfo set0LayoutInfo{};
-	set0LayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	set0LayoutInfo.bindingCount = static_cast<uint32_t>(set0Bindings.size());
-	set0LayoutInfo.pBindings = set0Bindings.data();
-
-	VK_CHECK_THROW(
-		vkCreateDescriptorSetLayout(Framework.GetContext().GetDevice(), &set0LayoutInfo, nullptr, &_uniformDescriptorSetLayout),
-		"failed to create descriptor set layout!"
-	);
-
+	CreateDescriptorSetLayout(_uniformDescriptorSetLayout, set0Bindings);
 
 	VkDescriptorSetLayoutBinding objectBufferLayoutBinding{};
 	objectBufferLayoutBinding.binding = 0;
@@ -100,18 +75,10 @@ void KtShader2D::CreateDescriptorSetLayout()
 	objectBufferLayoutBinding.pImmutableSamplers = nullptr; // Optional
 	
 	std::array<VkDescriptorSetLayoutBinding, 1> set1Bindings = { objectBufferLayoutBinding };
-	VkDescriptorSetLayoutCreateInfo set1LayoutInfo{};
-	set1LayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	set1LayoutInfo.bindingCount = static_cast<uint32_t>(set1Bindings.size());
-	set1LayoutInfo.pBindings = set1Bindings.data();
-
-	VK_CHECK_THROW(
-		vkCreateDescriptorSetLayout(Framework.GetContext().GetDevice(), &set1LayoutInfo, nullptr, &_objectDescriptorSetLayout),
-		"failed to create descriptor set layout!"
-	);
+	CreateDescriptorSetLayout(_objectDescriptorSetLayout, set1Bindings);
 }
 
-void KtShader2D::CreateDescriptorPool()
+void KtShader2D::CreateDescriptorPools()
 {
 	std::array<VkDescriptorPoolSize, 3> poolSizes{};
 	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; // View projection buffer
@@ -121,17 +88,9 @@ void KtShader2D::CreateDescriptorPool()
 	poolSizes[2].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; // Object data buffer
     poolSizes[2].descriptorCount = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT); 
 
-    VkDescriptorPoolCreateInfo poolInfo{};
-    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-    poolInfo.pPoolSizes = poolSizes.data();
-    poolInfo.maxSets = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT) * 2; // One set for uniform, one for object buffer
-
-    VK_CHECK_THROW(
-        vkCreateDescriptorPool(Framework.GetContext().GetDevice(), &poolInfo, nullptr, &_descriptorPool),
-        "failed to create descriptor pool!"
-    );
+	CreateDescriptorPool(_descriptorPool, poolSizes, 2);
 }
+
 
 void KtShader2D::CreateDescriptorSets()
 {
@@ -293,11 +252,6 @@ void KtShader2D::UpdateObjectBuffer(const std::vector<KtObjectData2D>& objectDat
 	);
 }
 
-void KtShader2D::CmdBind(VkCommandBuffer commandBuffer) const
-{
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline);
-}
-
 void KtShader2D::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32_t imageIndex)
 {
 	vkCmdBindDescriptorSets(
@@ -331,72 +285,18 @@ const VkDeviceSize KtShader2D::GetObjectBufferSize(const uint32_t imageIndex) co
 	return sizeof(KtObjectData2D) * (_objectCounts[imageIndex] == 0 ? 1 : _objectCounts[imageIndex]);
 }
 
-void KtShader2D::CreateGraphicsPipeline()
+void KtShader2D::CreateGraphicsPipelines()
 {
-	const std::vector<char> vertShaderCode = KtFile(_vertPath).GetBinaryContent();
-	const std::vector<char> fragShaderCode = KtFile(_fragPath).GetBinaryContent();
-
-	VkShaderModule vertShaderModule = CreateShaderModule(vertShaderCode);
-	VkShaderModule fragShaderModule = CreateShaderModule(fragShaderCode);
-
-	VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
-	vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-	vertShaderStageInfo.module = vertShaderModule;
-	vertShaderStageInfo.pName = "main";
-
-	VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
-	fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-	fragShaderStageInfo.module = fragShaderModule;
-	fragShaderStageInfo.pName = "main";
-
-	VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
-
-	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-
-	VkVertexInputBindingDescription bindingDescriptions[] =
+	std::array<VkVertexInputBindingDescription, 1> bindingDescriptions =
 	{ 
-		// Binding for vertex data
-		{ 0, sizeof(KtVertex2D), VK_VERTEX_INPUT_RATE_VERTEX }
+		VkVertexInputBindingDescription { 0, sizeof(KtVertex2D), VK_VERTEX_INPUT_RATE_VERTEX }
 	};
-	VkVertexInputAttributeDescription attributeDescriptions[] =
+	std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions =
 	{
-		// Vertex attributes
-		{ 0, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(KtVertex2D, Position) },
-		{ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KtVertex2D, Color) },
-		{ 2, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(KtVertex2D, TexCoord) }
+		VkVertexInputAttributeDescription { 0, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(KtVertex2D, Position) },
+		VkVertexInputAttributeDescription { 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KtVertex2D, Color) },
+		VkVertexInputAttributeDescription { 2, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(KtVertex2D, TexCoord) }
 	};
-
-	vertexInputInfo.vertexBindingDescriptionCount = 1;
-	vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions;
-	vertexInputInfo.vertexAttributeDescriptionCount = 3;
-	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions;
-
-	VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
-	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-	inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-	inputAssembly.primitiveRestartEnable = VK_FALSE;
-
-	VkViewport viewport{};
-	viewport.x = 0.0f;
-	viewport.y = 0.0f;
-	viewport.width = (float)Framework.GetRenderer().GetSwapChainExtent().width;
-	viewport.height = (float)Framework.GetRenderer().GetSwapChainExtent().height;
-	viewport.minDepth = 0.0f;
-	viewport.maxDepth = 1.0f;
-
-	VkRect2D scissor{};
-	scissor.offset = { 0, 0 };
-	scissor.extent = Framework.GetRenderer().GetSwapChainExtent();
-
-	VkPipelineViewportStateCreateInfo viewportState{};
-	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-	viewportState.viewportCount = 1;
-	viewportState.pViewports = &viewport;
-	viewportState.scissorCount = 1;
-	viewportState.pScissors = &scissor;
 
 	VkPipelineRasterizationStateCreateInfo rasterizer{};
 	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -442,81 +342,8 @@ void KtShader2D::CreateGraphicsPipeline()
 	colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE; // diff from 3D
 	colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // diff from 3D
 	colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD; // diff from 3D
-
-	VkPipelineColorBlendStateCreateInfo colorBlending{};
-	colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-	colorBlending.logicOpEnable = VK_FALSE;
-	colorBlending.logicOp = VK_LOGIC_OP_COPY; // Optional
-	colorBlending.attachmentCount = 1;
-	colorBlending.pAttachments = &colorBlendAttachment;
-	colorBlending.blendConstants[0] = 0.0f; // Optional
-	colorBlending.blendConstants[1] = 0.0f; // Optional
-	colorBlending.blendConstants[2] = 0.0f; // Optional
-	colorBlending.blendConstants[3] = 0.0f; // Optional
-
-	std::vector<VkDynamicState> dynamicStates =
-	{
-		VK_DYNAMIC_STATE_VIEWPORT,
-		VK_DYNAMIC_STATE_SCISSOR
-	};
-
-	VkPipelineDynamicStateCreateInfo dynamicState{};
-	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-	dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
-	dynamicState.pDynamicStates = dynamicStates.data();
 	
 	std::array<VkDescriptorSetLayout, 2> setLayouts = { _uniformDescriptorSetLayout, _objectDescriptorSetLayout };
-	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(setLayouts.size());;
-	pipelineLayoutInfo.pSetLayouts = setLayouts.data();
-	pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
-	pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
-
-	if (vkCreatePipelineLayout(Framework.GetContext().GetDevice(), &pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create pipeline layout!");
-	}
-
-	VkGraphicsPipelineCreateInfo pipelineInfo{};
-	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-	pipelineInfo.stageCount = 2;
-	pipelineInfo.pStages = shaderStages;
-	pipelineInfo.pVertexInputState = &vertexInputInfo;
-	pipelineInfo.pInputAssemblyState = &inputAssembly;
-	pipelineInfo.pViewportState = &viewportState;
-	pipelineInfo.pRasterizationState = &rasterizer;
-	pipelineInfo.pMultisampleState = &multisampling;
-	pipelineInfo.pDepthStencilState = &depthStencil;
-	pipelineInfo.pColorBlendState = &colorBlending;
-	pipelineInfo.pDynamicState = &dynamicState;
-	pipelineInfo.layout = _pipelineLayout;
-	pipelineInfo.renderPass = Framework.GetRenderer().GetRenderPass();
-	pipelineInfo.subpass = 0;
-	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
-	pipelineInfo.basePipelineIndex = -1; // Optional
-
-	if (vkCreateGraphicsPipelines(Framework.GetContext().GetDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_graphicsPipeline) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create graphics pipeline!");
-	}
-
-	vkDestroyShaderModule(Framework.GetContext().GetDevice(), fragShaderModule, nullptr);
-	vkDestroyShaderModule(Framework.GetContext().GetDevice(), vertShaderModule, nullptr);
-}
-
-const VkShaderModule KtShader2D::CreateShaderModule(const std::vector<char>& code) const
-{
-	VkShaderModuleCreateInfo createInfo{};
-	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	createInfo.codeSize = code.size();
-	createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
-
-	VkShaderModule shaderModule;
-	if (vkCreateShaderModule(Framework.GetContext().GetDevice(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create shader module!");
-	}
-
-	return shaderModule;
+	
+	CreateGraphicsPipeline(bindingDescriptions, attributeDescriptions, rasterizer, multisampling, depthStencil, colorBlendAttachment, setLayouts);
 }
