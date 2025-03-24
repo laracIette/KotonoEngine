@@ -57,12 +57,12 @@ const std::string KtFile::GetTextContent() const
     return fileContents.str();
 }
 
-const std::vector<char> KtFile::GetBinaryContent() const
+const std::vector<uint8_t> KtFile::GetBinaryContent() const
 {
     if (!std::filesystem::exists(_path))
     {
         std::cerr << "Failed to find a file at '" << _path << '\'' << std::endl;
-        return std::vector<char>();
+        return {};
     }
 
     std::ifstream file(_path, std::ios::ate | std::ios::binary);
@@ -70,14 +70,14 @@ const std::vector<char> KtFile::GetBinaryContent() const
     if (!file.is_open())
     {
         std::cerr << "Failed to open the file at '" << _path << '\'' << std::endl;
-        return std::vector<char>();
+        return {};
     }
 
-    size_t fileSize = (size_t)file.tellg();
-    std::vector<char> buffer(fileSize);
+    size_t fileSize = static_cast<size_t>(file.tellg());
+    std::vector<uint8_t> buffer(fileSize);
 
     file.seekg(0);
-    file.read(buffer.data(), fileSize);
+    file.read(reinterpret_cast<char*>(buffer.data()), fileSize);
 
     file.close();
 

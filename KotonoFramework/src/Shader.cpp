@@ -154,7 +154,7 @@ void KtShader::CreateDescriptorPool(const std::span<VkDescriptorPoolSize> poolSi
 	);
 }
 
-void KtShader::CreateShaderModule(VkShaderModule& shaderModule, const std::span<char> code)
+void KtShader::CreateShaderModule(VkShaderModule& shaderModule, const std::span<uint8_t> code)
 {
 	VkShaderModuleCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -177,8 +177,8 @@ void KtShader::CreateGraphicsPipeline(
 	const std::span<VkDescriptorSetLayout> setLayouts
 )
 {
-	std::vector<char> vertShaderCode = KtFile(_vertPath).GetBinaryContent();
-	std::vector<char> fragShaderCode = KtFile(_fragPath).GetBinaryContent();
+	std::vector<uint8_t> vertShaderCode = KtFile(_vertPath).GetBinaryContent();
+	std::vector<uint8_t> fragShaderCode = KtFile(_fragPath).GetBinaryContent();
 
 	ReadSPV(vertShaderCode);
 	ReadSPV(fragShaderCode);
@@ -378,7 +378,7 @@ const VkDeviceSize KtShader::GetObjectBufferCount(const uint32_t imageIndex) con
 	return _objectCounts[imageIndex] == 0 ? 1 : _objectCounts[imageIndex];
 }
 
-void KtShader::ReadSPV(const std::span<char> data) const
+void KtShader::ReadSPV(const std::span<uint8_t> data) const
 {
 	SpvReflectShaderModule module;
 	SpvReflectResult result = spvReflectCreateShaderModule(data.size() * sizeof(char), data.data(), &module, 0);
@@ -390,7 +390,7 @@ void KtShader::ReadSPV(const std::span<char> data) const
 
 	for (auto* binding : bindings)
 	{
-		printf("Set: %d, Binding: %d, Type: %d\n",
+		KT_DEBUG_LOG("Set: %d, Binding: %d, Type: %d",
 			binding->set, binding->binding, binding->descriptor_type);
 	}
 	spvReflectDestroyShaderModule(&module);

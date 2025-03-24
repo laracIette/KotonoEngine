@@ -18,7 +18,7 @@ public:
 	// Get the content of the file, for text files.
 	const std::string GetTextContent() const;
 	// Get the content of the file, for all files.
-	const std::vector<char> GetBinaryContent() const;
+	const std::vector<uint8_t> GetBinaryContent() const;
 
 private:
 	const std::filesystem::path _path;
