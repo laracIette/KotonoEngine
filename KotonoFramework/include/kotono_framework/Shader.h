@@ -13,6 +13,9 @@ public:
 	virtual void Init();
 	virtual void Cleanup();
 
+	const std::string& GetName() const;
+	void SetName(const std::string& name);
+
 	VkPipeline GetGraphicsPipeline() const;
 	VkPipelineLayout GetPipelineLayout() const;
 
@@ -20,6 +23,8 @@ public:
 	void CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const;
 
 protected:
+	std::string _name;
+
 	std::filesystem::path _vertPath;
 	std::filesystem::path _fragPath;
 
@@ -53,7 +58,6 @@ protected:
 	void CreateShaderModule(VkShaderModule& shaderModule, const std::span<char> code);
 	void CreateGraphicsPipeline(const std::span<VkVertexInputBindingDescription> bindingDescriptions, const std::span<VkVertexInputAttributeDescription> attributeDescriptions,	const VkPipelineRasterizationStateCreateInfo& rasterizer, const VkPipelineMultisampleStateCreateInfo& multisampling, const VkPipelineDepthStencilStateCreateInfo& depthStencil, const VkPipelineColorBlendAttachmentState& colorBlendAttachment, const std::span<VkDescriptorSetLayout> setLayouts);
 
-
 	void CreateUniformBuffers();
 	void CreateUniformBuffer(const uint32_t imageIndex);
 	void CreateObjectBuffers();
@@ -66,5 +70,7 @@ protected:
 	virtual void CreateDescriptorPools() = 0;
 	virtual void UpdateDescriptorSet(const uint32_t imageIndex) = 0;
 	virtual void CreateGraphicsPipelines() = 0;
+
+	void ReadSPV(const std::span<char> data) const;
 };
 

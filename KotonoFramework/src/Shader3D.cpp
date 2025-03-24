@@ -8,6 +8,7 @@
 
 void KtShader3D::Init()
 {
+	SetName("3D Shader");
 	SetVertPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader3DVert.spv)");
 	SetFragPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader3DFrag.spv)");
 	SetUniformDataSize(sizeof(KtUniformData3D));

@@ -2,6 +2,7 @@
 #include "vk_utils.h"
 #include "Framework.h"
 #include "File.h"
+#include <spirv-reflect/spirv_reflect.h>
 
 void KtShader::Init()
 {
@@ -34,6 +35,16 @@ void KtShader::Cleanup()
 	vkDestroyDescriptorPool(Framework.GetContext().GetDevice(), _descriptorPool, nullptr);
 
 	KT_DEBUG_LOG("cleaned up shader");
+}
+
+const std::string& KtShader::GetName() const
+{
+	return _name;
+}
+
+void KtShader::SetName(const std::string& name)
+{
+	_name = name;
 }
 
 VkPipeline KtShader::GetGraphicsPipeline() const
@@ -168,6 +179,9 @@ void KtShader::CreateGraphicsPipeline(
 {
 	std::vector<char> vertShaderCode = KtFile(_vertPath).GetBinaryContent();
 	std::vector<char> fragShaderCode = KtFile(_fragPath).GetBinaryContent();
+
+	ReadSPV(vertShaderCode);
+	ReadSPV(fragShaderCode);
 
 	VkShaderModule vertShaderModule;
 	CreateShaderModule(vertShaderModule, vertShaderCode);
@@ -349,13 +363,12 @@ void KtShader::SetObjectCount(const VkDeviceSize objectCount, const uint32_t ima
 	if (_objectCounts[imageIndex] != objectCount)
 	{
 		_objectCounts[imageIndex] = objectCount;
-		KT_DEBUG_LOG("Shader 2D object count at frame %u: %llu", imageIndex, objectCount);
+		KT_DEBUG_LOG("Shader '%s' object count at frame %u: %llu", _name.c_str(), imageIndex, objectCount);
 
 		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _objectBuffers[imageIndex].Buffer, _objectBuffers[imageIndex].Allocation);
 		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _stagingObjectBuffers[imageIndex].Buffer, _stagingObjectBuffers[imageIndex].Allocation);
 
 		CreateObjectBuffer(imageIndex);
-
 		UpdateDescriptorSet(imageIndex);
 	}
 }
@@ -363,4 +376,22 @@ void KtShader::SetObjectCount(const VkDeviceSize objectCount, const uint32_t ima
 const VkDeviceSize KtShader::GetObjectBufferCount(const uint32_t imageIndex) const
 {
 	return _objectCounts[imageIndex] == 0 ? 1 : _objectCounts[imageIndex];
+}
+
+void KtShader::ReadSPV(const std::span<char> data) const
+{
+	SpvReflectShaderModule module;
+	SpvReflectResult result = spvReflectCreateShaderModule(data.size() * sizeof(char), data.data(), &module, 0);
+
+	uint32_t count = 0;
+	spvReflectEnumerateDescriptorBindings(&module, &count, nullptr);
+	std::vector<SpvReflectDescriptorBinding*> bindings(count);
+	spvReflectEnumerateDescriptorBindings(&module, &count, bindings.data());
+
+	for (auto* binding : bindings)
+	{
+		printf("Set: %d, Binding: %d, Type: %d\n",
+			binding->set, binding->binding, binding->descriptor_type);
+	}
+	spvReflectDestroyShaderModule(&module);
 }
