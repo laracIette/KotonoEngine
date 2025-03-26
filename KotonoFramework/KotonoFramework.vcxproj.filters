@@ -232,6 +232,9 @@
     <ClInclude Include="include\kotono_framework\ShaderManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\kotono_framework\ShaderLayout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\shader3D.frag">

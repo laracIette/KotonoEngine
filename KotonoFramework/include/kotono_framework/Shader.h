@@ -5,6 +5,7 @@
 #include <array>
 #include "frames_in_flight.h"
 #include "AllocatedBuffer.h"
+#include "ShaderLayout.h"
 class KtShader
 {
 public:
@@ -27,6 +28,8 @@ protected:
 
 	std::filesystem::path _vertPath;
 	std::filesystem::path _fragPath;
+
+	KtShaderLayout _shaderLayout;
 
 	VkDeviceSize _uniformDataSize;
 	VkDeviceSize _objectDataSize;
@@ -71,6 +74,7 @@ protected:
 	virtual void UpdateDescriptorSet(const uint32_t imageIndex) = 0;
 	virtual void CreateGraphicsPipelines() = 0;
 
-	void ReadSPV(const std::span<uint8_t> data) const;
+	void CreateShaderLayout();
+	const KtShaderLayout GetShaderLayout(const std::span<uint8_t> spirvData) const;
 };
 

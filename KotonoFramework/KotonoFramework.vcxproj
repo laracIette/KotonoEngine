@@ -204,6 +204,7 @@
     <ClInclude Include="include\kotono_framework\ModelManager.h" />
     <ClInclude Include="include\kotono_framework\ItemManager.h" />
     <ClInclude Include="include\kotono_framework\ShaderManager.h" />
+    <ClInclude Include="include\kotono_framework\ShaderLayout.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

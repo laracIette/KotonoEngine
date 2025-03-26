@@ -1,4 +1,4 @@
-#include "Shader.h"
+﻿#include "Shader.h"
 #include "vk_utils.h"
 #include "Framework.h"
 #include "File.h"
@@ -6,12 +6,15 @@
 
 void KtShader::Init()
 {
+	KT_DEBUG_LOG("init shader '%s'", _name.c_str());
+	CreateShaderLayout();
 	CreateDescriptorSetLayouts();
 	CreateDescriptorPools();
 	CreateUniformBuffers();
 	CreateObjectBuffers();
 	CreateDescriptorSets();
 	CreateGraphicsPipelines();
+	KT_DEBUG_LOG("inited shader '%s'", _name.c_str());
 }
 
 void KtShader::Cleanup()
@@ -180,12 +183,9 @@ void KtShader::CreateGraphicsPipeline(
 	std::vector<uint8_t> vertShaderCode = KtFile(_vertPath).GetBinaryContent();
 	std::vector<uint8_t> fragShaderCode = KtFile(_fragPath).GetBinaryContent();
 
-	ReadSPV(vertShaderCode);
-	ReadSPV(fragShaderCode);
-
 	VkShaderModule vertShaderModule;
-	CreateShaderModule(vertShaderModule, vertShaderCode);
 	VkShaderModule fragShaderModule;
+	CreateShaderModule(vertShaderModule, vertShaderCode);
 	CreateShaderModule(fragShaderModule, fragShaderCode);
 
 	VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
@@ -343,7 +343,7 @@ void KtShader::CreateObjectBuffer(const uint32_t imageIndex)
 		GetObjectBufferCount(imageIndex) * _objectDataSize,
 		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, // Can be used as SSBO & can receive data from staging
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, // Optimized for GPU access
-		0, // No need for MAPPED_BIT since we won�t access this from CPU
+		0, // No need for MAPPED_BIT since we won’t access this from CPU
 		_objectBuffers[imageIndex],
 		VMA_MEMORY_USAGE_GPU_ONLY // Best for performance
 	);
@@ -378,20 +378,79 @@ const VkDeviceSize KtShader::GetObjectBufferCount(const uint32_t imageIndex) con
 	return _objectCounts[imageIndex] == 0 ? 1 : _objectCounts[imageIndex];
 }
 
-void KtShader::ReadSPV(const std::span<uint8_t> data) const
+void KtShader::CreateShaderLayout()
+{
+	std::vector<uint8_t> vertShaderCode = KtFile(_vertPath).GetBinaryContent();
+	std::vector<uint8_t> fragShaderCode = KtFile(_fragPath).GetBinaryContent();
+
+	const KtShaderLayout vertShaderLayout = GetShaderLayout(vertShaderCode);
+	const KtShaderLayout fragShaderLayout = GetShaderLayout(fragShaderCode);
+}
+
+const KtShaderLayout KtShader::GetShaderLayout(const std::span<uint8_t> spirvData) const
 {
 	SpvReflectShaderModule module;
-	SpvReflectResult result = spvReflectCreateShaderModule(data.size() * sizeof(char), data.data(), &module, 0);
+	SpvReflectResult result = spvReflectCreateShaderModule(spirvData.size() * sizeof(uint8_t), spirvData.data(), &module, 0);
 
-	uint32_t count = 0;
-	spvReflectEnumerateDescriptorBindings(&module, &count, nullptr);
-	std::vector<SpvReflectDescriptorBinding*> bindings(count);
-	spvReflectEnumerateDescriptorBindings(&module, &count, bindings.data());
-
-	for (auto* binding : bindings)
+	if (result != SPV_REFLECT_RESULT_SUCCESS)
 	{
-		KT_DEBUG_LOG("Set: %d, Binding: %d, Type: %d",
-			binding->set, binding->binding, binding->descriptor_type);
+		KT_DEBUG_LOG("spvReflectCreateShaderModule() returned: %u", result);
+		throw std::runtime_error("couldn't create spirv reflect shader module");
 	}
+
+	uint32_t set_count = 0;
+	spvReflectEnumerateDescriptorSets(&module, &set_count, nullptr);
+	std::vector<SpvReflectDescriptorSet*> sets(set_count);
+	spvReflectEnumerateDescriptorSets(&module, &set_count, sets.data());
+
+	for (auto* set : sets)
+	{
+		printf("Descriptor Set: %d, Binding Count: %d\n", set->set, set->binding_count);
+		for (uint32_t i = 0; i < set->binding_count; i++)
+		{
+			SpvReflectDescriptorBinding* binding = set->bindings[i];
+			printf("  Binding %d: Type %d, Descriptor Count %d\n",
+				binding->binding, binding->descriptor_type, binding->count);
+		}
+	}
+
+	// Push Constants
+	uint32_t push_constant_count = 0;
+	spvReflectEnumeratePushConstantBlocks(&module, &push_constant_count, nullptr);
+	if (push_constant_count > 0)
+	{
+		SpvReflectBlockVariable* push_constant;
+		spvReflectEnumeratePushConstantBlocks(&module, &push_constant_count, &push_constant);
+		printf("Push Constant Size: %u bytes\n", push_constant->size);
+	}
+
+	// Vertex Inputs
+	uint32_t input_count = 0;
+	spvReflectEnumerateInputVariables(&module, &input_count, nullptr);
+	std::vector<SpvReflectInterfaceVariable*> inputs(input_count);
+	spvReflectEnumerateInputVariables(&module, &input_count, inputs.data());
+
+	for (auto* input : inputs)
+	{
+		printf("Vertex Input: Location %d, Format %d, Name: %s\n",
+			input->location, input->format, input->name);
+	}
+
+	// Fragment Outputs
+	uint32_t output_count = 0;
+	spvReflectEnumerateOutputVariables(&module, &output_count, nullptr);
+	std::vector<SpvReflectInterfaceVariable*> outputs(output_count);
+	spvReflectEnumerateOutputVariables(&module, &output_count, outputs.data());
+
+	for (auto* output : outputs)
+	{
+		printf("Fragment Output: Location %d, Format %d, Name: %s\n",
+			output->location, output->format, output->name);
+	}
+
+	KtShaderLayout shaderLayout{};
+
 	spvReflectDestroyShaderModule(&module);
+
+	return shaderLayout;
 }

@@ -9,7 +9,6 @@ class KtKeyboard final
 public:
 	void Update();
 
-
 	KtEvent& GetEvent(const KtKey key, const KtInputState inputState);
 
 private:
