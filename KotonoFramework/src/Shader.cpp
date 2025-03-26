@@ -6,7 +6,7 @@
 
 void KtShader::Init()
 {
-	KT_DEBUG_LOG("init shader '%s'", _name.c_str());
+	KT_DEBUG_LOG("initializing shader '%s'", _name.c_str());
 	CreateShaderLayout();
 	CreateDescriptorSetLayouts();
 	CreateDescriptorPools();
@@ -14,7 +14,7 @@ void KtShader::Init()
 	CreateObjectBuffers();
 	CreateDescriptorSets();
 	CreateGraphicsPipelines();
-	KT_DEBUG_LOG("inited shader '%s'", _name.c_str());
+	KT_DEBUG_LOG("initialized shader '%s'", _name.c_str());
 }
 
 void KtShader::Cleanup()
@@ -387,6 +387,65 @@ void KtShader::CreateShaderLayout()
 	const KtShaderLayout fragShaderLayout = GetShaderLayout(fragShaderCode);
 }
 
+static void PrintTypeInfo(const SpvReflectTypeDescription* type, int indent = 0)
+{
+	if (!type) return;
+	std::string indentStr(indent * 2, ' ');
+
+	std::cout << indentStr << "Type: " << (type->type_name ? type->type_name : "(Unnamed)") << "\n";
+	std::cout << indentStr << "  Size: " << type->traits.numeric.scalar.width / 8 << " bytes\n";  // Total struct size
+	std::cout << indentStr << "  Members: " << type->member_count << "\n";
+
+	for (uint32_t i = 0; i < type->member_count; ++i)
+	{
+		const SpvReflectTypeDescription* member = &type->members[i];
+
+		// Compute size: for scalars, vectors, and matrices
+		uint32_t member_size = member->traits.numeric.scalar.width / 8;
+		if (member->type_flags & SPV_REFLECT_TYPE_FLAG_VECTOR)
+		{
+			member_size *= member->traits.numeric.vector.component_count;
+		}
+		if (member->type_flags & SPV_REFLECT_TYPE_FLAG_MATRIX)
+		{
+			member_size *= member->traits.numeric.matrix.column_count;
+		}
+
+		std::cout << indentStr << "    - " << (member->struct_member_name ? member->struct_member_name : "(Unnamed)")
+			<< " | Offset: " << member->traits.numeric.scalar.width / 8
+			<< " | Size: " << member_size << " bytes\n";
+
+		// Recursively print nested structs
+		PrintTypeInfo(member, indent + 2);
+	}
+	
+}
+
+static size_t GetStructSize(const SpvReflectTypeDescription* type, size_t size = 0)
+{
+	for (uint32_t i = 0; i < type->member_count; ++i)
+	{
+		const SpvReflectTypeDescription* member = &type->members[i];
+
+		// Compute size: for scalars, vectors, and matrices
+		uint32_t member_size = member->traits.numeric.scalar.width / 8;
+		if (member->type_flags & SPV_REFLECT_TYPE_FLAG_VECTOR)
+		{
+			member_size *= member->traits.numeric.vector.component_count;
+		}
+		if (member->type_flags & SPV_REFLECT_TYPE_FLAG_MATRIX)
+		{
+			member_size *= member->traits.numeric.matrix.column_count;
+		}
+
+		size += member_size;
+
+		size = GetStructSize(member, size);
+	}
+
+	return size;
+}
+
 const KtShaderLayout KtShader::GetShaderLayout(const std::span<uint8_t> spirvData) const
 {
 	SpvReflectShaderModule module;
@@ -398,54 +457,51 @@ const KtShaderLayout KtShader::GetShaderLayout(const std::span<uint8_t> spirvDat
 		throw std::runtime_error("couldn't create spirv reflect shader module");
 	}
 
-	uint32_t set_count = 0;
-	spvReflectEnumerateDescriptorSets(&module, &set_count, nullptr);
-	std::vector<SpvReflectDescriptorSet*> sets(set_count);
-	spvReflectEnumerateDescriptorSets(&module, &set_count, sets.data());
+	// Descriptor sets
+	uint32_t setCount = 0;
+	spvReflectEnumerateDescriptorSets(&module, &setCount, nullptr);
+	std::vector<SpvReflectDescriptorSet*> sets(setCount);
+	spvReflectEnumerateDescriptorSets(&module, &setCount, sets.data());
 
 	for (auto* set : sets)
 	{
 		printf("Descriptor Set: %d, Binding Count: %d\n", set->set, set->binding_count);
 		for (uint32_t i = 0; i < set->binding_count; i++)
 		{
-			SpvReflectDescriptorBinding* binding = set->bindings[i];
-			printf("  Binding %d: Type %d, Descriptor Count %d\n",
-				binding->binding, binding->descriptor_type, binding->count);
+			const SpvReflectDescriptorBinding* binding = set->bindings[i];			
+
+			printf("\tBinding %d: Type %d, Descriptor Count %d, Size %u bytes\n",
+				binding->binding, binding->descriptor_type, binding->count, binding->block.numeric.scalar.width);
+
+			PrintTypeInfo(binding->type_description);
+
+			if (binding->type_description && (binding->type_description->type_flags & SPV_REFLECT_TYPE_FLAG_STRUCT))
+			{
+				printf("Struct size: %llu\n", GetStructSize(binding->type_description));
+			}
 		}
 	}
 
-	// Push Constants
-	uint32_t push_constant_count = 0;
-	spvReflectEnumeratePushConstantBlocks(&module, &push_constant_count, nullptr);
-	if (push_constant_count > 0)
+	// Push constants
+	uint32_t pushConstantCount = 0;
+	spvReflectEnumeratePushConstantBlocks(&module, &pushConstantCount, nullptr);
+	std::vector<SpvReflectBlockVariable*> push_constants(pushConstantCount);
+	spvReflectEnumeratePushConstantBlocks(&module, &pushConstantCount, push_constants.data());
+	for (auto* push_constant : push_constants)
 	{
-		SpvReflectBlockVariable* push_constant;
-		spvReflectEnumeratePushConstantBlocks(&module, &push_constant_count, &push_constant);
-		printf("Push Constant Size: %u bytes\n", push_constant->size);
+		printf("Push Constant Block: Size %u bytes\n", push_constant->size);
 	}
 
-	// Vertex Inputs
-	uint32_t input_count = 0;
-	spvReflectEnumerateInputVariables(&module, &input_count, nullptr);
-	std::vector<SpvReflectInterfaceVariable*> inputs(input_count);
-	spvReflectEnumerateInputVariables(&module, &input_count, inputs.data());
+	// Vertex inputs
+	uint32_t inputCount = 0;
+	spvReflectEnumerateInputVariables(&module, &inputCount, nullptr);
+	std::vector<SpvReflectInterfaceVariable*> inputs(inputCount);
+	spvReflectEnumerateInputVariables(&module, &inputCount, inputs.data());
 
 	for (auto* input : inputs)
 	{
-		printf("Vertex Input: Location %d, Format %d, Name: %s\n",
-			input->location, input->format, input->name);
-	}
-
-	// Fragment Outputs
-	uint32_t output_count = 0;
-	spvReflectEnumerateOutputVariables(&module, &output_count, nullptr);
-	std::vector<SpvReflectInterfaceVariable*> outputs(output_count);
-	spvReflectEnumerateOutputVariables(&module, &output_count, outputs.data());
-
-	for (auto* output : outputs)
-	{
-		printf("Fragment Output: Location %d, Format %d, Name: %s\n",
-			output->location, output->format, output->name);
+		printf("Vertex Input: Location %d, Format %d, Size %u bytes, Name: %s\n",
+			input->location, input->format, 0, input->name);
 	}
 
 	KtShaderLayout shaderLayout{};
