@@ -24,6 +24,14 @@ public:
 	void CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const;
 
 protected:
+	struct DescriptorSetData
+	{
+		VkDescriptorSetLayout DescriptorSetLayout;
+		std::array<VkDescriptorSet, KT_FRAMES_IN_FLIGHT> DescriptorSets;
+		std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT> Buffers;
+		std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT> StagingBuffers;
+	};
+
 	std::string _name;
 
 	std::filesystem::path _vertPath;
@@ -38,15 +46,8 @@ protected:
 	VkPipeline _graphicsPipeline;
 
 	VkDescriptorPool _descriptorPool;
-	VkDescriptorSetLayout _uniformDescriptorSetLayout;
-	VkDescriptorSetLayout _objectDescriptorSetLayout;
-	std::array<VkDescriptorSet, KT_FRAMES_IN_FLIGHT> _uniformDescriptorSets;
-	std::array<VkDescriptorSet, KT_FRAMES_IN_FLIGHT> _objectDescriptorSets;
-
-	std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT> _uniformBuffers;
-	std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT> _objectBuffers;
-	std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT> _stagingUniformBuffers;
-	std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT> _stagingObjectBuffers;
+	DescriptorSetData _uniformDescriptorSetData;
+	DescriptorSetData _objectDescriptorSetData;
 	std::array<VkDeviceSize, KT_FRAMES_IN_FLIGHT> _objectCounts;
 
 	void SetVertPath(const std::filesystem::path& path);

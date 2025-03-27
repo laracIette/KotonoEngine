@@ -26,14 +26,14 @@ void KtShader::Cleanup()
 
 	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
 	{
-		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _uniformBuffers[i].Buffer, _uniformBuffers[i].Allocation);
-		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _stagingUniformBuffers[i].Buffer, _stagingUniformBuffers[i].Allocation);
-		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _objectBuffers[i].Buffer, _objectBuffers[i].Allocation);
-		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _stagingObjectBuffers[i].Buffer, _stagingObjectBuffers[i].Allocation);
+		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _uniformDescriptorSetData.Buffers[i].Buffer, _uniformDescriptorSetData.Buffers[i].Allocation);
+		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _uniformDescriptorSetData.StagingBuffers[i].Buffer, _uniformDescriptorSetData.StagingBuffers[i].Allocation);
+		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _objectDescriptorSetData.Buffers[i].Buffer, _objectDescriptorSetData.Buffers[i].Allocation);
+		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _objectDescriptorSetData.StagingBuffers[i].Buffer, _objectDescriptorSetData.StagingBuffers[i].Allocation);
 	}
 
-	vkDestroyDescriptorSetLayout(Framework.GetContext().GetDevice(), _uniformDescriptorSetLayout, nullptr);
-	vkDestroyDescriptorSetLayout(Framework.GetContext().GetDevice(), _objectDescriptorSetLayout, nullptr);
+	vkDestroyDescriptorSetLayout(Framework.GetContext().GetDevice(), _uniformDescriptorSetData.DescriptorSetLayout, nullptr);
+	vkDestroyDescriptorSetLayout(Framework.GetContext().GetDevice(), _objectDescriptorSetData.DescriptorSetLayout, nullptr);
 
 	vkDestroyDescriptorPool(Framework.GetContext().GetDevice(), _descriptorPool, nullptr);
 
@@ -69,12 +69,12 @@ void KtShader::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32
 {
 	vkCmdBindDescriptorSets(
 		commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout,
-		0, 1, &_uniformDescriptorSets[imageIndex], 0, nullptr
+		0, 1, &_uniformDescriptorSetData.DescriptorSets[imageIndex], 0, nullptr
 	);
 
 	vkCmdBindDescriptorSets(
 		commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout,
-		1, 1, &_objectDescriptorSets[imageIndex], 0, nullptr
+		1, 1, &_objectDescriptorSetData.DescriptorSets[imageIndex], 0, nullptr
 	);
 }
 
@@ -100,7 +100,7 @@ void KtShader::SetObjectDataSize(const VkDeviceSize size)
 
 void KtShader::CreateDescriptorSetLayouts()
 {
-	const std::array<VkDescriptorSetLayout*, 2> setLayouts = { &_uniformDescriptorSetLayout, &_objectDescriptorSetLayout };
+	const std::array<VkDescriptorSetLayout*, 2> setLayouts = { &_uniformDescriptorSetData.DescriptorSetLayout, &_objectDescriptorSetData.DescriptorSetLayout };
 	for (size_t i = 0; i < setLayouts.size(); i++)
 	{
 		if (!_shaderLayout.DescriptorSetLayouts.contains(i))
@@ -140,10 +140,10 @@ void KtShader::CreateDescriptorSetLayout(VkDescriptorSetLayout* layout, const st
 void KtShader::CreateDescriptorSets()
 {
 	std::array<VkDescriptorSetLayout, KT_FRAMES_IN_FLIGHT> uniformLayouts{};
-	uniformLayouts.fill(_uniformDescriptorSetLayout);
+	uniformLayouts.fill(_uniformDescriptorSetData.DescriptorSetLayout);
 
 	std::array<VkDescriptorSetLayout, KT_FRAMES_IN_FLIGHT> objectLayouts{};
-	objectLayouts.fill(_objectDescriptorSetLayout);
+	objectLayouts.fill(_objectDescriptorSetData.DescriptorSetLayout);
 
 	VkDescriptorSetAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -152,14 +152,14 @@ void KtShader::CreateDescriptorSets()
 	allocInfo.pSetLayouts = uniformLayouts.data();
 
 	VK_CHECK_THROW(
-		vkAllocateDescriptorSets(Framework.GetContext().GetDevice(), &allocInfo, _uniformDescriptorSets.data()),
+		vkAllocateDescriptorSets(Framework.GetContext().GetDevice(), &allocInfo, _uniformDescriptorSetData.DescriptorSets.data()),
 		"failed to allocate uniform descriptor sets!"
 	);
 
 	allocInfo.descriptorSetCount = static_cast<uint32_t>(objectLayouts.size());
 	allocInfo.pSetLayouts = objectLayouts.data();
 	VK_CHECK_THROW(
-		vkAllocateDescriptorSets(Framework.GetContext().GetDevice(), &allocInfo, _objectDescriptorSets.data()),
+		vkAllocateDescriptorSets(Framework.GetContext().GetDevice(), &allocInfo, _objectDescriptorSetData.DescriptorSets.data()),
 		"failed to allocate object descriptor sets!"
 	);
 
@@ -348,7 +348,7 @@ void KtShader::CreateUniformBuffer(const uint32_t imageIndex)
 		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		0,
-		_uniformBuffers[imageIndex],
+		_uniformDescriptorSetData.Buffers[imageIndex],
 		VMA_MEMORY_USAGE_GPU_ONLY
 	);
 
@@ -357,7 +357,7 @@ void KtShader::CreateUniformBuffer(const uint32_t imageIndex)
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		VMA_ALLOCATION_CREATE_MAPPED_BIT,
-		_stagingUniformBuffers[imageIndex],
+		_uniformDescriptorSetData.StagingBuffers[imageIndex],
 		VMA_MEMORY_USAGE_CPU_TO_GPU
 	);
 }
@@ -370,7 +370,7 @@ void KtShader::CreateObjectBuffer(const uint32_t imageIndex)
 		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, // Can be used as SSBO & can receive data from staging
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, // Optimized for GPU access
 		0, // No need for MAPPED_BIT since we won’t access this from CPU
-		_objectBuffers[imageIndex],
+		_objectDescriptorSetData.Buffers[imageIndex],
 		VMA_MEMORY_USAGE_GPU_ONLY // Best for performance
 	);
 
@@ -379,7 +379,7 @@ void KtShader::CreateObjectBuffer(const uint32_t imageIndex)
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT, // Usage flags
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, // Memory properties
 		VMA_ALLOCATION_CREATE_MAPPED_BIT, // Allocation flags
-		_stagingObjectBuffers[imageIndex],
+		_objectDescriptorSetData.StagingBuffers[imageIndex],
 		VMA_MEMORY_USAGE_CPU_TO_GPU
 	);
 }
@@ -391,8 +391,8 @@ void KtShader::SetObjectCount(const VkDeviceSize objectCount, const uint32_t ima
 		_objectCounts[imageIndex] = objectCount;
 		KT_DEBUG_LOG("Shader '%s' object count at frame %u: %llu", _name.c_str(), imageIndex, objectCount);
 
-		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _objectBuffers[imageIndex].Buffer, _objectBuffers[imageIndex].Allocation);
-		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _stagingObjectBuffers[imageIndex].Buffer, _stagingObjectBuffers[imageIndex].Allocation);
+		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _objectDescriptorSetData.Buffers[imageIndex].Buffer, _objectDescriptorSetData.Buffers[imageIndex].Allocation);
+		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _objectDescriptorSetData.StagingBuffers[imageIndex].Buffer, _objectDescriptorSetData.StagingBuffers[imageIndex].Allocation);
 
 		CreateObjectBuffer(imageIndex);
 		UpdateDescriptorSet(imageIndex);
