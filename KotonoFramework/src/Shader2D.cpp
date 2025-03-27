@@ -32,17 +32,17 @@ void KtShader2D::CreateDescriptorSetLayouts()
 	uboLayoutBinding.descriptorCount = 1;
 	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 	uboLayoutBinding.pImmutableSamplers = nullptr; // Optional
-
+	
 	VkDescriptorSetLayoutBinding samplerLayoutBinding{};
 	samplerLayoutBinding.binding = 1;
 	samplerLayoutBinding.descriptorCount = 1;
 	samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 	samplerLayoutBinding.pImmutableSamplers = nullptr;
 	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
+	
 	std::array<VkDescriptorSetLayoutBinding, 2> set0Bindings = { uboLayoutBinding, samplerLayoutBinding };
-	CreateDescriptorSetLayout(_uniformDescriptorSetLayout, set0Bindings);
-
+	CreateDescriptorSetLayout(&_uniformDescriptorSetLayout, set0Bindings);
+	
 	VkDescriptorSetLayoutBinding objectBufferLayoutBinding{};
 	objectBufferLayoutBinding.binding = 0;
 	objectBufferLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
@@ -51,20 +51,9 @@ void KtShader2D::CreateDescriptorSetLayouts()
 	objectBufferLayoutBinding.pImmutableSamplers = nullptr; // Optional
 	
 	std::array<VkDescriptorSetLayoutBinding, 1> set1Bindings = { objectBufferLayoutBinding };
-	CreateDescriptorSetLayout(_objectDescriptorSetLayout, set1Bindings);
-}
+	CreateDescriptorSetLayout(&_objectDescriptorSetLayout, set1Bindings);
 
-void KtShader2D::CreateDescriptorPools()
-{
-	std::array<VkDescriptorPoolSize, 3> poolSizes{};
-	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; // View projection buffer
-    poolSizes[0].descriptorCount = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
-	poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER; // Image texture
-    poolSizes[1].descriptorCount = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
-	poolSizes[2].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; // Object data buffer
-    poolSizes[2].descriptorCount = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT); 
-
-	CreateDescriptorPool(poolSizes, 2);
+	//KtShader::CreateDescriptorSetLayouts();
 }
 
 void KtShader2D::UpdateDescriptorSet(const uint32_t imageIndex)
@@ -105,7 +94,7 @@ void KtShader2D::UpdateDescriptorSet(const uint32_t imageIndex)
 	descriptorWrites[2].dstArrayElement = 0;
 	descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 	descriptorWrites[2].descriptorCount = 1;
-	descriptorWrites[2].pBufferInfo = &objectBufferInfo;
+	descriptorWrites[2].pBufferInfo = &objectBufferInfo; 
 
 	vkUpdateDescriptorSets(Framework.GetContext().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 }

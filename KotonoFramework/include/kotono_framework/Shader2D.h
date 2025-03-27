@@ -21,7 +21,7 @@ private:
 	void CreateImageTexture();
 
 	void CreateDescriptorSetLayouts() override;
-	void CreateDescriptorPools() override;
+
 	void UpdateDescriptorSet(const uint32_t imageIndex) override;
 	void CreateGraphicsPipelines() override;
 };

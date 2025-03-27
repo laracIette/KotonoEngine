@@ -98,7 +98,33 @@ void KtShader::SetObjectDataSize(const VkDeviceSize size)
 	_objectDataSize = size;
 }
 
-void KtShader::CreateDescriptorSetLayout(VkDescriptorSetLayout& layout, const std::span<VkDescriptorSetLayoutBinding> layoutBindings)
+void KtShader::CreateDescriptorSetLayouts()
+{
+	const std::array<VkDescriptorSetLayout*, 2> setLayouts = { &_uniformDescriptorSetLayout, &_objectDescriptorSetLayout };
+	for (size_t i = 0; i < setLayouts.size(); i++)
+	{
+		if (!_shaderLayout.DescriptorSetLayouts.contains(i))
+		{
+			KT_DEBUG_LOG("error: _shaderLayout doesn't contain descriptor set layout %llu", i);
+			continue;
+		}
+
+		std::vector<VkDescriptorSetLayoutBinding> setBindings;
+		for (const auto& binding : _shaderLayout.DescriptorSetLayouts[i].DescriptorSetLayoutBindings)
+		{
+			VkDescriptorSetLayoutBinding vkBinding{};
+			vkBinding.binding = binding.Binding;
+			vkBinding.descriptorCount = binding.DescriptorCount;
+			vkBinding.descriptorType = binding.DescriptorType;
+			vkBinding.stageFlags = binding.StageFlags;
+			vkBinding.pImmutableSamplers = nullptr; // Optional
+			setBindings.push_back(vkBinding);
+		}
+		CreateDescriptorSetLayout(setLayouts[i], setBindings);
+	}
+}
+
+void KtShader::CreateDescriptorSetLayout(VkDescriptorSetLayout* layout, const std::span<VkDescriptorSetLayoutBinding> layoutBindings)
 {
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
 	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -106,7 +132,7 @@ void KtShader::CreateDescriptorSetLayout(VkDescriptorSetLayout& layout, const st
 	layoutInfo.pBindings = layoutBindings.data();
 
 	VK_CHECK_THROW(
-		vkCreateDescriptorSetLayout(Framework.GetContext().GetDevice(), &layoutInfo, nullptr, &layout),
+		vkCreateDescriptorSetLayout(Framework.GetContext().GetDevice(), &layoutInfo, nullptr, layout),
 		"failed to create descriptor set layout!"
 	);
 }
@@ -378,13 +404,29 @@ const VkDeviceSize KtShader::GetObjectBufferCount(const uint32_t imageIndex) con
 	return _objectCounts[imageIndex] == 0 ? 1 : _objectCounts[imageIndex];
 }
 
+void KtShader::CreateDescriptorPools()
+{
+	std::vector<VkDescriptorPoolSize> poolSizes{};
+	for (const auto& [index, setLayout] : _shaderLayout.DescriptorSetLayouts)
+	{
+		for (const auto& binding : setLayout.DescriptorSetLayoutBindings)
+		{
+			VkDescriptorPoolSize poolSize{};
+			poolSize.type = binding.DescriptorType;
+			poolSize.descriptorCount = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
+			poolSizes.push_back(poolSize);
+		}
+	}
+	CreateDescriptorPool(poolSizes, _shaderLayout.DescriptorSetLayouts.size());
+}
+
 void KtShader::CreateShaderLayout()
 {
 	std::vector<uint8_t> vertShaderCode = KtFile(_vertPath).GetBinaryContent();
 	std::vector<uint8_t> fragShaderCode = KtFile(_fragPath).GetBinaryContent();
 
-	const KtShaderLayout vertShaderLayout = GetShaderLayout(vertShaderCode);
-	const KtShaderLayout fragShaderLayout = GetShaderLayout(fragShaderCode);
+	PopulateShaderLayout(vertShaderCode, VK_SHADER_STAGE_VERTEX_BIT);
+	PopulateShaderLayout(fragShaderCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 }
 
 static const size_t GetTypeSize(const SpvReflectTypeDescription* type)
@@ -432,7 +474,7 @@ static const size_t GetTypeSize(const SpvReflectTypeDescription* type)
 	return size;
 }
 
-const KtShaderLayout KtShader::GetShaderLayout(const std::span<uint8_t> spirvData) const
+void KtShader::PopulateShaderLayout(const std::span<uint8_t> spirvData, const VkShaderStageFlagBits shaderStage)
 {
 	SpvReflectShaderModule module;
 	SpvReflectResult result = spvReflectCreateShaderModule(spirvData.size() * sizeof(uint8_t), spirvData.data(), &module, 0);
@@ -442,6 +484,8 @@ const KtShaderLayout KtShader::GetShaderLayout(const std::span<uint8_t> spirvDat
 		KT_DEBUG_LOG("spvReflectCreateShaderModule() returned: %u", result);
 		throw std::runtime_error("couldn't create spirv reflect shader module");
 	}
+
+	_shaderLayout.ShaderStages.push_back(shaderStage);
 
 	// Descriptor sets
 	uint32_t setCount = 0;
@@ -454,10 +498,18 @@ const KtShaderLayout KtShader::GetShaderLayout(const std::span<uint8_t> spirvDat
 		printf("Descriptor Set: %d, Binding Count: %d\n", set->set, set->binding_count);
 		for (uint32_t i = 0; i < set->binding_count; i++)
 		{
-			const SpvReflectDescriptorBinding* binding = set->bindings[i];			
+			const SpvReflectDescriptorBinding* binding = set->bindings[i];	
 
-			printf("\tBinding %d: Type %d, Descriptor Count %d, Size %llu bytes\n",
-				binding->binding, binding->descriptor_type, binding->count, GetTypeSize(binding->type_description));
+			KtShaderLayout::DescriptorSetLayout::DescriptorSetLayoutBinding ktBinding{};
+			ktBinding.Binding = binding->binding;
+			ktBinding.DescriptorCount = binding->count;
+			ktBinding.DescriptorType = static_cast<VkDescriptorType>(binding->descriptor_type);
+			ktBinding.StageFlags = shaderStage;
+			ktBinding.Size = GetTypeSize(binding->type_description);
+
+			_shaderLayout.DescriptorSetLayouts[set->set].DescriptorSetLayoutBindings.push_back(ktBinding);
+
+			// TODO: sampler
 		}
 	}
 
@@ -483,9 +535,6 @@ const KtShaderLayout KtShader::GetShaderLayout(const std::span<uint8_t> spirvDat
 			input->location, input->format, GetTypeSize(input->type_description), input->name);
 	}
 
-	KtShaderLayout shaderLayout{};
 
 	spvReflectDestroyShaderModule(&module);
-
-	return shaderLayout;
 }

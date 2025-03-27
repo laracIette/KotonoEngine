@@ -24,49 +24,6 @@ void KtShader3D::CreateImageTexture()
 	);
 }
 
-void KtShader3D::CreateDescriptorSetLayouts()
-{
-	VkDescriptorSetLayoutBinding uboLayoutBinding{};
-	uboLayoutBinding.binding = 0;
-	uboLayoutBinding.descriptorCount = 1;
-	uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-	uboLayoutBinding.pImmutableSamplers = nullptr; // Optional
-
-	VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-	samplerLayoutBinding.binding = 1;
-	samplerLayoutBinding.descriptorCount = 1;
-	samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-	samplerLayoutBinding.pImmutableSamplers = nullptr;
-
-	std::array<VkDescriptorSetLayoutBinding, 2> set0Bindings = { uboLayoutBinding, samplerLayoutBinding };
-	CreateDescriptorSetLayout(_uniformDescriptorSetLayout, set0Bindings);
-
-	VkDescriptorSetLayoutBinding objectBufferLayoutBinding{};
-	objectBufferLayoutBinding.binding = 0;
-	objectBufferLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	objectBufferLayoutBinding.descriptorCount = 1;
-	objectBufferLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-	objectBufferLayoutBinding.pImmutableSamplers = nullptr; // Optional
-	
-	std::array<VkDescriptorSetLayoutBinding, 1> set1Bindings = { objectBufferLayoutBinding };
-	CreateDescriptorSetLayout(_objectDescriptorSetLayout, set1Bindings);
-}
-
-void KtShader3D::CreateDescriptorPools()
-{
-	std::array<VkDescriptorPoolSize, 3> poolSizes{};
-	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; // View projection buffer
-    poolSizes[0].descriptorCount = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
-	poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER; // Image texture
-    poolSizes[1].descriptorCount = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
-	poolSizes[2].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; // Object data buffer
-    poolSizes[2].descriptorCount = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT); 
-
-	CreateDescriptorPool(poolSizes, 2);
-}
-
 void KtShader3D::UpdateDescriptorSet(const uint32_t imageIndex)
 {
 	VkDescriptorBufferInfo bufferInfo{};
