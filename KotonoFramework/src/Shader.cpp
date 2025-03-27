@@ -387,60 +387,46 @@ void KtShader::CreateShaderLayout()
 	const KtShaderLayout fragShaderLayout = GetShaderLayout(fragShaderCode);
 }
 
-static void PrintTypeInfo(const SpvReflectTypeDescription* type, int indent = 0)
+static const size_t GetTypeSize(const SpvReflectTypeDescription* type)
 {
-	if (!type) return;
-	std::string indentStr(indent * 2, ' ');
-
-	std::cout << indentStr << "Type: " << (type->type_name ? type->type_name : "(Unnamed)") << "\n";
-	std::cout << indentStr << "  Size: " << type->traits.numeric.scalar.width / 8 << " bytes\n";  // Total struct size
-	std::cout << indentStr << "  Members: " << type->member_count << "\n";
-
-	for (uint32_t i = 0; i < type->member_count; ++i)
+	if (!type)
 	{
-		const SpvReflectTypeDescription* member = &type->members[i];
-
-		// Compute size: for scalars, vectors, and matrices
-		uint32_t member_size = member->traits.numeric.scalar.width / 8;
-		if (member->type_flags & SPV_REFLECT_TYPE_FLAG_VECTOR)
-		{
-			member_size *= member->traits.numeric.vector.component_count;
-		}
-		if (member->type_flags & SPV_REFLECT_TYPE_FLAG_MATRIX)
-		{
-			member_size *= member->traits.numeric.matrix.column_count;
-		}
-
-		std::cout << indentStr << "    - " << (member->struct_member_name ? member->struct_member_name : "(Unnamed)")
-			<< " | Offset: " << member->traits.numeric.scalar.width / 8
-			<< " | Size: " << member_size << " bytes\n";
-
-		// Recursively print nested structs
-		PrintTypeInfo(member, indent + 2);
+		KT_DEBUG_LOG("error: type is null");
+		return 0;
 	}
-	
-}
 
-static size_t GetStructSize(const SpvReflectTypeDescription* type, size_t size = 0)
-{
-	for (uint32_t i = 0; i < type->member_count; ++i)
+	if (type->type_flags & SPV_REFLECT_TYPE_FLAG_STRUCT)
 	{
-		const SpvReflectTypeDescription* member = &type->members[i];
-
-		// Compute size: for scalars, vectors, and matrices
-		uint32_t member_size = member->traits.numeric.scalar.width / 8;
-		if (member->type_flags & SPV_REFLECT_TYPE_FLAG_VECTOR)
+		size_t structSize = 0;
+		for (uint32_t i = 0; i < type->member_count; ++i)
 		{
-			member_size *= member->traits.numeric.vector.component_count;
+			const SpvReflectTypeDescription* member = &type->members[i];
+			structSize += GetTypeSize(member); // Sum up members
 		}
-		if (member->type_flags & SPV_REFLECT_TYPE_FLAG_MATRIX)
-		{
-			member_size *= member->traits.numeric.matrix.column_count;
-		}
+		return structSize;  // Return immediately for structs
+	}
 
-		size += member_size;
+	size_t size = 0;
 
-		size = GetStructSize(member, size);
+	if (type->type_flags & SPV_REFLECT_TYPE_FLAG_BOOL)
+	{
+		size = 1;  // Booleans are typically 1 byte
+	}
+	else if (type->type_flags & SPV_REFLECT_TYPE_FLAG_INT)
+	{
+		size = type->traits.numeric.scalar.width / 8;  // Integer size in bytes
+	}
+	else if (type->type_flags & SPV_REFLECT_TYPE_FLAG_FLOAT)
+	{
+		size = type->traits.numeric.scalar.width / 8;  // Floating point size in bytes
+	}
+	if (type->type_flags & SPV_REFLECT_TYPE_FLAG_VECTOR)
+	{
+		size *= type->traits.numeric.vector.component_count;
+	}
+	if (type->type_flags & SPV_REFLECT_TYPE_FLAG_MATRIX)
+	{
+		size *= type->traits.numeric.matrix.column_count;
 	}
 
 	return size;
@@ -470,15 +456,8 @@ const KtShaderLayout KtShader::GetShaderLayout(const std::span<uint8_t> spirvDat
 		{
 			const SpvReflectDescriptorBinding* binding = set->bindings[i];			
 
-			printf("\tBinding %d: Type %d, Descriptor Count %d, Size %u bytes\n",
-				binding->binding, binding->descriptor_type, binding->count, binding->block.numeric.scalar.width);
-
-			PrintTypeInfo(binding->type_description);
-
-			if (binding->type_description && (binding->type_description->type_flags & SPV_REFLECT_TYPE_FLAG_STRUCT))
-			{
-				printf("Struct size: %llu\n", GetStructSize(binding->type_description));
-			}
+			printf("\tBinding %d: Type %d, Descriptor Count %d, Size %llu bytes\n",
+				binding->binding, binding->descriptor_type, binding->count, GetTypeSize(binding->type_description));
 		}
 	}
 
@@ -500,8 +479,8 @@ const KtShaderLayout KtShader::GetShaderLayout(const std::span<uint8_t> spirvDat
 
 	for (auto* input : inputs)
 	{
-		printf("Vertex Input: Location %d, Format %d, Size %u bytes, Name: %s\n",
-			input->location, input->format, 0, input->name);
+		printf("Vertex Input: Location %d, Format %d, Size %llu bytes, Name: %s\n",
+			input->location, input->format, GetTypeSize(input->type_description), input->name);
 	}
 
 	KtShaderLayout shaderLayout{};
