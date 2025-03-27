@@ -9,10 +9,12 @@ void KtFramework::Cleanup()
     _renderer.Cleanup();
     _context.Cleanup();
     _window.Cleanup();
+    _path.Cleanup();
 }
 
 void KtFramework::Init()
 {
+    _path.Init();
     _window.Init();
     _context.Init();
     _renderer.Init();
@@ -20,6 +22,11 @@ void KtFramework::Init()
     _inputManager.Init();
     _modelManager.Init();
     _imageTextureManager.Init();
+}
+
+KtPath& KtFramework::GetPath()
+{
+    return _path;
 }
 
 KtWindow& KtFramework::GetWindow()

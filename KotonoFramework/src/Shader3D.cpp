@@ -9,8 +9,8 @@
 void KtShader3D::Init()
 {
 	SetName("3D Shader");
-	SetVertPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader3DVert.spv)");
-	SetFragPath(R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\KotonoFramework\shaders\shader3DFrag.spv)");
+	SetVertPath(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3DVert.spv)");
+	SetFragPath(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3DFrag.spv)");
 	SetUniformDataSize(sizeof(KtUniformData3D));
 	SetObjectDataSize(sizeof(KtObjectData3D));
 	CreateImageTexture();
@@ -20,7 +20,7 @@ void KtShader3D::Init()
 void KtShader3D::CreateImageTexture()
 {
 	_imageTexture = Framework.GetImageTextureManager().Get(
-		R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.png)"
+		Framework.GetPath().GetSolutionPath() / R"(assets\models\viking_room.png)"
 	);
 }
 

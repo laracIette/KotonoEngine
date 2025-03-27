@@ -68,12 +68,12 @@ void KtRenderer::CreateShaderAndModels() const
 {
 	shader1 = new KtShader3D();
 	shader2 = new KtShader2D();
-
+	
 	KtModel* model1 = Framework.GetModelManager().Get(
-		R"(C:\Users\nicos\Documents\Visual Studio 2022\Projects\KotonoEngine\assets\models\viking_room.obj)"
+		Framework.GetPath().GetSolutionPath() / (R"(assets\models\viking_room.obj)")
 	);
 	KtModel* model2 = Framework.GetModelManager().Get(
-		R"(C:\Users\nicos\OneDrive - e-artsup\B2\Environment\Corridor\SM_Column_low.fbx)"
+		Framework.GetPath().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)"
 	);
 
 	mesh1 = new KtMesh();

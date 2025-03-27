@@ -1,4 +1,5 @@
 #pragma once
+#include "Path.h"
 #include "Window.h"
 #include "Context.h"
 #include "Renderer.h"
@@ -12,6 +13,7 @@ public:
 	void Init();
 	void Cleanup();
 
+	KtPath& GetPath();
 	KtWindow& GetWindow();
 	KtContext& GetContext();
 	KtRenderer& GetRenderer();
@@ -21,6 +23,7 @@ public:
 	KtImageTextureManager& GetImageTextureManager();
 
 private:
+	KtPath _path;
 	KtWindow _window;
 	KtContext _context;
 	KtRenderer _renderer;
