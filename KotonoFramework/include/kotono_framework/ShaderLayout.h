@@ -22,7 +22,6 @@ struct KtShaderLayout
 	};
 	std::map<size_t, DescriptorSetLayout>          DescriptorSetLayouts; // unordered?
 
-
 	std::vector<VkVertexInputBindingDescription>   VertexInputBindingDescriptions;
 	std::vector<VkVertexInputAttributeDescription> VertexInputAttributeDescriptions;
 

@@ -17,17 +17,6 @@ void KtShader3D::Init()
 
 void KtShader3D::CreateGraphicsPipelines()
 {
-	std::array<VkVertexInputBindingDescription, 1> bindingDescriptions =
-	{ 
-		VkVertexInputBindingDescription { 0, sizeof(KtVertex3D), VK_VERTEX_INPUT_RATE_VERTEX }
-	};
-	std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions =
-	{
-		VkVertexInputAttributeDescription { 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KtVertex3D, Position) },
-		VkVertexInputAttributeDescription { 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KtVertex3D, Color) },
-		VkVertexInputAttributeDescription { 2, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(KtVertex3D, TexCoord) }
-	};
-
 	VkPipelineRasterizationStateCreateInfo rasterizer{};
 	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 	rasterizer.depthClampEnable = VK_FALSE;
@@ -79,5 +68,5 @@ void KtShader3D::CreateGraphicsPipelines()
 		setLayouts.push_back(descriptorSetLayoutData.DescriptorSetLayout);
 	}
 
-	CreateGraphicsPipeline(bindingDescriptions, attributeDescriptions, rasterizer, multisampling, depthStencil, colorBlendAttachment, setLayouts);
+	CreateGraphicsPipeline(rasterizer, multisampling, depthStencil, colorBlendAttachment, setLayouts);
 }

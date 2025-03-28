@@ -291,8 +291,6 @@ void KtShader::CreateShaderModule(VkShaderModule& shaderModule, const std::span<
 }
 
 void KtShader::CreateGraphicsPipeline(
-	const std::span<VkVertexInputBindingDescription> bindingDescriptions,
-	const std::span<VkVertexInputAttributeDescription> attributeDescriptions,
 	const VkPipelineRasterizationStateCreateInfo& rasterizer,
 	const VkPipelineMultisampleStateCreateInfo& multisampling,
 	const VkPipelineDepthStencilStateCreateInfo& depthStencil,
@@ -329,10 +327,10 @@ void KtShader::CreateGraphicsPipeline(
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-	vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
-	vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
-	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
-	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+	vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(_shaderLayout.VertexInputBindingDescriptions.size());
+	vertexInputInfo.pVertexBindingDescriptions = _shaderLayout.VertexInputBindingDescriptions.data();
+	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(_shaderLayout.VertexInputAttributeDescriptions.size());
+	vertexInputInfo.pVertexAttributeDescriptions = _shaderLayout.VertexInputAttributeDescriptions.data();
 
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -530,7 +528,7 @@ void KtShader::DebugLogDescriptorSetLayoutData() const
 		{
 			KT_DEBUG_LOG("| | %p", (void*)descriptorSet);
 		}
-		KT_DEBUG_LOG("  DescriptorSetLayoutBindingDatas");
+		KT_DEBUG_LOG("| DescriptorSetLayoutBindingDatas");
 		for (const auto& descriptorSetLayoutBindingData : descriptorSetLayoutData.DescriptorSetLayoutBindingDatas)
 		{
 			KT_DEBUG_LOG("| | Name: %s", descriptorSetLayoutBindingData.Name.c_str());
@@ -692,7 +690,7 @@ void KtShader::PopulateShaderLayout(const std::span<uint8_t> spirvData, const Vk
 
 	for (auto* set : sets)
 	{
-		printf("Descriptor Set: %d, Binding Count: %d\n", set->set, set->binding_count);
+		KT_DEBUG_LOG("Descriptor Set: %d, Binding Count: %d", set->set, set->binding_count);
 		for (uint32_t i = 0; i < set->binding_count; i++)
 		{
 			const SpvReflectDescriptorBinding* binding = set->bindings[i];	
@@ -716,21 +714,37 @@ void KtShader::PopulateShaderLayout(const std::span<uint8_t> spirvData, const Vk
 	spvReflectEnumeratePushConstantBlocks(&module, &pushConstantCount, push_constants.data());
 	for (auto* push_constant : push_constants)
 	{
-		printf("Push Constant Block: Size %u bytes\n", push_constant->size);
+		KT_DEBUG_LOG("Push Constant Block: Size %llu bytes", GetTypeSize(push_constant->type_description));
 	}
 
-	// Vertex inputs
-	uint32_t inputCount = 0;
-	spvReflectEnumerateInputVariables(&module, &inputCount, nullptr);
-	std::vector<SpvReflectInterfaceVariable*> inputs(inputCount);
-	spvReflectEnumerateInputVariables(&module, &inputCount, inputs.data());
-
-	for (auto* input : inputs)
+	if (shaderStage == VK_SHADER_STAGE_VERTEX_BIT)
 	{
-		printf("Vertex Input: Location %d, Format %d, Size %llu bytes, Name: %s\n",
-			input->location, input->format, GetTypeSize(input->type_description), input->name);
+		uint32_t inputCount = 0;
+		spvReflectEnumerateInputVariables(&module, &inputCount, nullptr);
+		std::vector<SpvReflectInterfaceVariable*> inputs(inputCount);
+		spvReflectEnumerateInputVariables(&module, &inputCount, inputs.data());
+
+		uint32_t offset = 0;
+		for (auto* input : inputs)
+		{
+			KT_DEBUG_LOG("Vertex Input: Location %d, Format %d, Size %llu bytes, Name: %s", input->location, input->format, GetTypeSize(input->type_description), input->name);
+			if (input->location != -1)
+			{
+				VkVertexInputAttributeDescription vertexInputAttributeDescription{};
+				vertexInputAttributeDescription.location = input->location;
+				vertexInputAttributeDescription.binding = 0; // TODO: from VkVertexInputBindingDescription ?
+				vertexInputAttributeDescription.format = static_cast<VkFormat>(input->format);
+				vertexInputAttributeDescription.offset = offset;
+				_shaderLayout.VertexInputAttributeDescriptions.push_back(vertexInputAttributeDescription);
+
+				offset += GetTypeSize(input->type_description);
+			}
+		}
+		VkVertexInputBindingDescription vertexInputBindingDescription{};
+		vertexInputBindingDescription.binding = 0;
+		vertexInputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+		vertexInputBindingDescription.stride = offset;
+		_shaderLayout.VertexInputBindingDescriptions.push_back(vertexInputBindingDescription);
 	}
-
-
 	spvReflectDestroyShaderModule(&module);
 }
