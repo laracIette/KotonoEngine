@@ -9,11 +9,12 @@ void KtShader::Init()
 	KT_DEBUG_LOG("initializing shader '%s'", _name.c_str());
 	CreateShaderLayout();
 	CreateDescriptorSetLayouts();
+	CreateDescriptorSetLayoutBindingBuffers();
+	CreateDescriptorSetLayoutBindingImages();
 	CreateDescriptorPools();
-	CreateUniformBuffers();
-	CreateObjectBuffers();
 	CreateDescriptorSets();
 	CreateGraphicsPipelines();
+	DebugLogDescriptorSetLayoutData();
 	KT_DEBUG_LOG("initialized shader '%s'", _name.c_str());
 }
 
@@ -24,16 +25,20 @@ void KtShader::Cleanup()
 	vkDestroyPipeline(Framework.GetContext().GetDevice(), _graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(Framework.GetContext().GetDevice(), _pipelineLayout, nullptr);
 
-	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
+	
+	for (const auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
 	{
-		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _uniformDescriptorSetData.Buffers[i].Buffer, _uniformDescriptorSetData.Buffers[i].Allocation);
-		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _uniformDescriptorSetData.StagingBuffers[i].Buffer, _uniformDescriptorSetData.StagingBuffers[i].Allocation);
-		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _objectDescriptorSetData.Buffers[i].Buffer, _objectDescriptorSetData.Buffers[i].Allocation);
-		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _objectDescriptorSetData.StagingBuffers[i].Buffer, _objectDescriptorSetData.StagingBuffers[i].Allocation);
-	}
+		for (const auto& descriptorSetLayoutBindingData : descriptorSetLayoutData.DescriptorSetLayoutBindingDatas)
+		{
+			for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
+			{
+				vmaDestroyBuffer(Framework.GetContext().GetAllocator(), descriptorSetLayoutBindingData.Buffers[i].Buffer, descriptorSetLayoutBindingData.Buffers[i].Allocation);
+				vmaDestroyBuffer(Framework.GetContext().GetAllocator(), descriptorSetLayoutBindingData.StagingBuffers[i].Buffer, descriptorSetLayoutBindingData.StagingBuffers[i].Allocation);
+			}
+		}
 
-	vkDestroyDescriptorSetLayout(Framework.GetContext().GetDevice(), _uniformDescriptorSetData.DescriptorSetLayout, nullptr);
-	vkDestroyDescriptorSetLayout(Framework.GetContext().GetDevice(), _objectDescriptorSetData.DescriptorSetLayout, nullptr);
+		vkDestroyDescriptorSetLayout(Framework.GetContext().GetDevice(), descriptorSetLayoutData.DescriptorSetLayout, nullptr);
+	}
 
 	vkDestroyDescriptorPool(Framework.GetContext().GetDevice(), _descriptorPool, nullptr);
 
@@ -67,15 +72,17 @@ void KtShader::CmdBind(VkCommandBuffer commandBuffer) const
 
 void KtShader::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const
 {
-	vkCmdBindDescriptorSets(
-		commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout,
-		0, 1, &_uniformDescriptorSetData.DescriptorSets[imageIndex], 0, nullptr
-	);
+	uint32_t offset = 0;
+	for (const auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
+	{
+		vkCmdBindDescriptorSets(
+			commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout,
+			offset, 1, &descriptorSetLayoutData.DescriptorSets[imageIndex], 0, nullptr
+		);
+		++offset;
+	}
 
-	vkCmdBindDescriptorSets(
-		commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout,
-		1, 1, &_objectDescriptorSetData.DescriptorSets[imageIndex], 0, nullptr
-	);
+	// TODO: put in 1 command
 }
 
 void KtShader::SetVertPath(const std::filesystem::path& path)
@@ -88,43 +95,42 @@ void KtShader::SetFragPath(const std::filesystem::path& path)
 	_fragPath = path;
 }
 
-void KtShader::SetUniformDataSize(const VkDeviceSize size)
-{
-	_uniformDataSize = size;
-}
-
-void KtShader::SetObjectDataSize(const VkDeviceSize size)
-{
-	_objectDataSize = size;
-}
-
 void KtShader::CreateDescriptorSetLayouts()
 {
-	const std::array<VkDescriptorSetLayout*, 2> setLayouts = { &_uniformDescriptorSetData.DescriptorSetLayout, &_objectDescriptorSetData.DescriptorSetLayout };
-	for (size_t i = 0; i < setLayouts.size(); i++)
+	for (const auto& [set, setLayout] : _shaderLayout.DescriptorSetLayouts)
 	{
-		if (!_shaderLayout.DescriptorSetLayouts.contains(i))
-		{
-			KT_DEBUG_LOG("error: _shaderLayout doesn't contain descriptor set layout %llu", i);
-			continue;
-		}
-
 		std::vector<VkDescriptorSetLayoutBinding> setBindings;
-		for (const auto& binding : _shaderLayout.DescriptorSetLayouts[i].DescriptorSetLayoutBindings)
+		std::vector<DescriptorSetLayoutBindingData> setBindingDatas;
+		for (const auto& ktBinding : setLayout.DescriptorSetLayoutBindings)
 		{
 			VkDescriptorSetLayoutBinding vkBinding{};
-			vkBinding.binding = binding.Binding;
-			vkBinding.descriptorCount = binding.DescriptorCount;
-			vkBinding.descriptorType = binding.DescriptorType;
-			vkBinding.stageFlags = binding.StageFlags;
+			vkBinding.binding = ktBinding.Binding;
+			vkBinding.descriptorCount = ktBinding.DescriptorCount;
+			vkBinding.descriptorType = ktBinding.DescriptorType;
+			vkBinding.stageFlags = ktBinding.StageFlags;
 			vkBinding.pImmutableSamplers = nullptr; // Optional
 			setBindings.push_back(vkBinding);
+
+			DescriptorSetLayoutBindingData bindingData{};
+			bindingData.Name = ktBinding.Name;
+			bindingData.Binding = ktBinding.Binding;
+			bindingData.MemberSize = ktBinding.Size;
+			bindingData.DescriptorType = ktBinding.DescriptorType;
+			bindingData.DescriptorCount = ktBinding.DescriptorCount;
+			bindingData.StageFlags = ktBinding.StageFlags;
+			setBindingDatas.push_back(bindingData);
 		}
-		CreateDescriptorSetLayout(setLayouts[i], setBindings);
+		VkDescriptorSetLayout newSetLayout = nullptr;
+		CreateDescriptorSetLayout(newSetLayout, setBindings);
+
+		DescriptorSetLayoutData descriptorSetLayoutData{};
+		descriptorSetLayoutData.DescriptorSetLayout = newSetLayout;
+		descriptorSetLayoutData.DescriptorSetLayoutBindingDatas = setBindingDatas;
+		_descriptorSetLayoutDatas.push_back(descriptorSetLayoutData);
 	}
 }
 
-void KtShader::CreateDescriptorSetLayout(VkDescriptorSetLayout* layout, const std::span<VkDescriptorSetLayoutBinding> layoutBindings)
+void KtShader::CreateDescriptorSetLayout(VkDescriptorSetLayout& layout, const std::span<VkDescriptorSetLayoutBinding> layoutBindings)
 {
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
 	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -132,41 +138,129 @@ void KtShader::CreateDescriptorSetLayout(VkDescriptorSetLayout* layout, const st
 	layoutInfo.pBindings = layoutBindings.data();
 
 	VK_CHECK_THROW(
-		vkCreateDescriptorSetLayout(Framework.GetContext().GetDevice(), &layoutInfo, nullptr, layout),
+		vkCreateDescriptorSetLayout(Framework.GetContext().GetDevice(), &layoutInfo, nullptr, &layout),
 		"failed to create descriptor set layout!"
 	);
 }
 
 void KtShader::CreateDescriptorSets()
 {
-	std::array<VkDescriptorSetLayout, KT_FRAMES_IN_FLIGHT> uniformLayouts{};
-	uniformLayouts.fill(_uniformDescriptorSetData.DescriptorSetLayout);
+	for (auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
+	{
+		std::array<VkDescriptorSetLayout, KT_FRAMES_IN_FLIGHT> layouts{};
+		layouts.fill(descriptorSetLayoutData.DescriptorSetLayout);
 
-	std::array<VkDescriptorSetLayout, KT_FRAMES_IN_FLIGHT> objectLayouts{};
-	objectLayouts.fill(_objectDescriptorSetData.DescriptorSetLayout);
+		VkDescriptorSetAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		allocInfo.descriptorPool = _descriptorPool;
+		allocInfo.descriptorSetCount = static_cast<uint32_t>(layouts.size());
+		allocInfo.pSetLayouts = layouts.data();
 
-	VkDescriptorSetAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = _descriptorPool;
-	allocInfo.descriptorSetCount = static_cast<uint32_t>(uniformLayouts.size());
-	allocInfo.pSetLayouts = uniformLayouts.data();
-
-	VK_CHECK_THROW(
-		vkAllocateDescriptorSets(Framework.GetContext().GetDevice(), &allocInfo, _uniformDescriptorSetData.DescriptorSets.data()),
-		"failed to allocate uniform descriptor sets!"
-	);
-
-	allocInfo.descriptorSetCount = static_cast<uint32_t>(objectLayouts.size());
-	allocInfo.pSetLayouts = objectLayouts.data();
-	VK_CHECK_THROW(
-		vkAllocateDescriptorSets(Framework.GetContext().GetDevice(), &allocInfo, _objectDescriptorSetData.DescriptorSets.data()),
-		"failed to allocate object descriptor sets!"
-	);
+		VK_CHECK_THROW(
+			vkAllocateDescriptorSets(Framework.GetContext().GetDevice(), &allocInfo, descriptorSetLayoutData.DescriptorSets.data()),
+			"failed to allocate descriptor sets!"
+		);
+	}
 
 	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
 	{
-		UpdateDescriptorSet(static_cast<uint32_t>(i));
+		UpdateDescriptorSets(static_cast<uint32_t>(i));
 	}
+}
+
+void KtShader::UpdateDescriptorSets(const uint32_t imageIndex)
+{
+	std::vector<VkWriteDescriptorSet> writeDescriptorSets;
+
+	std::vector<VkDescriptorImageInfo> descriptorImageInfos;
+	std::vector<VkDescriptorBufferInfo> descriptorBufferInfos;
+	size_t descriptorImageCount = 0;
+	size_t descriptorBufferCount = 0;
+	for (const auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
+	{
+		for (const auto& descriptorSetLayoutBindingData : descriptorSetLayoutData.DescriptorSetLayoutBindingDatas)
+		{
+			switch (descriptorSetLayoutBindingData.DescriptorType)
+			{
+			case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
+			{
+				++descriptorImageCount;
+				break;
+			}
+			case VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:
+			case VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:
+			case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
+			case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
+			case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
+			case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER:
+			{
+				++descriptorBufferCount;
+				break;
+			}
+			default:
+				break;
+			}
+		}
+	}
+	descriptorImageInfos.reserve(descriptorImageCount);
+	descriptorBufferInfos.reserve(descriptorBufferCount);
+
+	for (const auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
+	{
+		for (const auto& descriptorSetLayoutBindingData : descriptorSetLayoutData.DescriptorSetLayoutBindingDatas)
+		{
+			VkWriteDescriptorSet writeDescriptorSet{};
+			writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			writeDescriptorSet.dstSet = descriptorSetLayoutData.DescriptorSets[imageIndex];
+			writeDescriptorSet.dstBinding = descriptorSetLayoutBindingData.Binding;
+			writeDescriptorSet.dstArrayElement = 0;
+			writeDescriptorSet.descriptorType = descriptorSetLayoutBindingData.DescriptorType;
+			writeDescriptorSet.descriptorCount = descriptorSetLayoutBindingData.DescriptorCount;
+			switch (descriptorSetLayoutBindingData.DescriptorType)
+			{
+			case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
+			{
+				VkDescriptorImageInfo imageInfo = descriptorSetLayoutBindingData.ImageTexture->GetDescriptorImageInfo();
+				descriptorImageInfos.push_back(imageInfo);
+				writeDescriptorSet.pImageInfo = &descriptorImageInfos.back();
+				KT_DEBUG_LOG("imageInfo ptr: %p", (void*)&descriptorImageInfos.back());
+				break;
+			}
+			case VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:
+			case VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:
+			case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
+			case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
+			case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
+			case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER:
+			{
+				VkDescriptorBufferInfo bufferInfo{};
+				bufferInfo.buffer = descriptorSetLayoutBindingData.Buffers[imageIndex].Buffer;
+				bufferInfo.offset = 0;
+				bufferInfo.range = descriptorSetLayoutBindingData.MemberSize * descriptorSetLayoutBindingData.MemberCounts[imageIndex];
+				descriptorBufferInfos.push_back(bufferInfo);
+				writeDescriptorSet.pBufferInfo = &descriptorBufferInfos.back();
+				KT_DEBUG_LOG("bufferInfo ptr: %p", (void*)&descriptorBufferInfos.back());
+				break;
+			}
+			default:
+				break;
+			}
+			writeDescriptorSets.push_back(writeDescriptorSet);
+		}
+	}
+
+	KT_DEBUG_LOG("ImageInfos");
+	for (const auto& imageInfo : descriptorImageInfos)
+	{
+		KT_DEBUG_LOG("  %p", (void*)&imageInfo);
+	}
+	KT_DEBUG_LOG("BufferInfos");
+	for (const auto& bufferInfo : descriptorBufferInfos)
+	{
+		KT_DEBUG_LOG("  %p", (void*)&bufferInfo);
+	}
+
+	vkUpdateDescriptorSets(Framework.GetContext().GetDevice(), static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
 }
 
 void KtShader::CreateDescriptorPool(const std::span<VkDescriptorPoolSize> poolSizes, const uint32_t setCount)
@@ -325,83 +419,186 @@ void KtShader::CreateGraphicsPipeline(
 	vkDestroyShaderModule(Framework.GetContext().GetDevice(), vertShaderModule, nullptr);
 }
 
-void KtShader::CreateUniformBuffers()
+void KtShader::CreateDescriptorSetLayoutBindingBuffers()
 {
 	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
 	{
-		CreateUniformBuffer(static_cast<uint32_t>(i));
+		CreateDescriptorSetLayoutBindingBuffers(static_cast<uint32_t>(i));
 	}
 }
 
-void KtShader::CreateObjectBuffers()
+void KtShader::CreateDescriptorSetLayoutBindingBuffers(const uint32_t imageIndex)
+{
+	for (auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
+	{
+		for (auto& descriptorSetLayoutBindingData : descriptorSetLayoutData.DescriptorSetLayoutBindingDatas)
+		{
+			CreateDescriptorSetLayoutBindingBuffer(descriptorSetLayoutBindingData, imageIndex);
+		}
+	}
+}
+
+void KtShader::CreateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData)
 {
 	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
 	{
-		CreateObjectBuffer(static_cast<uint32_t>(i));
+		CreateDescriptorSetLayoutBindingBuffer(descriptorSetLayoutBindingData, static_cast<uint32_t>(i));
 	}
 }
 
-void KtShader::CreateUniformBuffer(const uint32_t imageIndex)
+void KtShader::CreateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const uint32_t imageIndex)
 {
-	Framework.GetContext().CreateBuffer(
-		_uniformDataSize,
-		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		0,
-		_uniformDescriptorSetData.Buffers[imageIndex],
-		VMA_MEMORY_USAGE_GPU_ONLY
-	);
-
-	Framework.GetContext().CreateBuffer(
-		_uniformDataSize,
-		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		VMA_ALLOCATION_CREATE_MAPPED_BIT,
-		_uniformDescriptorSetData.StagingBuffers[imageIndex],
-		VMA_MEMORY_USAGE_CPU_TO_GPU
-	);
-}
-
-void KtShader::CreateObjectBuffer(const uint32_t imageIndex)
-{
-	KT_DEBUG_LOG("Object buffer size at frame %u: %llu", imageIndex, GetObjectBufferCount(imageIndex) * _objectDataSize);
-	Framework.GetContext().CreateBuffer(
-		GetObjectBufferCount(imageIndex) * _objectDataSize,
-		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, // Can be used as SSBO & can receive data from staging
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, // Optimized for GPU access
-		0, // No need for MAPPED_BIT since we won’t access this from CPU
-		_objectDescriptorSetData.Buffers[imageIndex],
-		VMA_MEMORY_USAGE_GPU_ONLY // Best for performance
-	);
-
-	Framework.GetContext().CreateBuffer(
-		GetObjectBufferCount(imageIndex) * _objectDataSize,
-		VK_BUFFER_USAGE_TRANSFER_SRC_BIT, // Usage flags
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, // Memory properties
-		VMA_ALLOCATION_CREATE_MAPPED_BIT, // Allocation flags
-		_objectDescriptorSetData.StagingBuffers[imageIndex],
-		VMA_MEMORY_USAGE_CPU_TO_GPU
-	);
-}
-
-void KtShader::SetObjectCount(const VkDeviceSize objectCount, const uint32_t imageIndex)
-{
-	if (_objectCounts[imageIndex] != objectCount)
+	VkBufferUsageFlagBits bufferUsageFlagBits{};
+	switch (descriptorSetLayoutBindingData.DescriptorType)
 	{
-		_objectCounts[imageIndex] = objectCount;
-		KT_DEBUG_LOG("Shader '%s' object count at frame %u: %llu", _name.c_str(), imageIndex, objectCount);
+	case VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:
+	{
+		bufferUsageFlagBits = VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT;
+		break;
+	}
+	case VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:
+	{
+		bufferUsageFlagBits = VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT;
+		break;
+	}
+	case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
+	case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
+	{
+		bufferUsageFlagBits = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+		break;
+	}
+	case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
+	case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER:
+	{
+		bufferUsageFlagBits = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+		break;
+	}
+	default:
+		break;
+	}
 
-		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _objectDescriptorSetData.Buffers[imageIndex].Buffer, _objectDescriptorSetData.Buffers[imageIndex].Allocation);
-		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _objectDescriptorSetData.StagingBuffers[imageIndex].Buffer, _objectDescriptorSetData.StagingBuffers[imageIndex].Allocation);
+	if (bufferUsageFlagBits)
+	{
+		Framework.GetContext().CreateBuffer(
+			descriptorSetLayoutBindingData.MemberSize * descriptorSetLayoutBindingData.MemberCounts[imageIndex],
+			bufferUsageFlagBits | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+			0,
+			descriptorSetLayoutBindingData.Buffers[imageIndex],
+			VMA_MEMORY_USAGE_GPU_ONLY
+		);
 
-		CreateObjectBuffer(imageIndex);
-		UpdateDescriptorSet(imageIndex);
+		Framework.GetContext().CreateBuffer(
+			descriptorSetLayoutBindingData.MemberSize * descriptorSetLayoutBindingData.MemberCounts[imageIndex],
+			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+			VMA_ALLOCATION_CREATE_MAPPED_BIT,
+			descriptorSetLayoutBindingData.StagingBuffers[imageIndex],
+			VMA_MEMORY_USAGE_CPU_TO_GPU
+		);
 	}
 }
 
-const VkDeviceSize KtShader::GetObjectBufferCount(const uint32_t imageIndex) const
+void KtShader::CreateDescriptorSetLayoutBindingImages()
 {
-	return _objectCounts[imageIndex] == 0 ? 1 : _objectCounts[imageIndex];
+	for (auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
+	{
+		for (auto& descriptorSetLayoutBindingData : descriptorSetLayoutData.DescriptorSetLayoutBindingDatas)
+		{
+			CreateDescriptorSetLayoutBindingImage(descriptorSetLayoutBindingData);
+		}
+	}
+}
+
+void KtShader::CreateDescriptorSetLayoutBindingImage(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData)
+{
+	if (descriptorSetLayoutBindingData.DescriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+	{
+		descriptorSetLayoutBindingData.ImageTexture = Framework.GetImageTextureManager().Get(
+			Framework.GetPath().GetSolutionPath() / R"(assets\models\viking_room.png)"
+		);
+	}
+}
+
+void KtShader::DebugLogDescriptorSetLayoutData() const
+{
+	for (const auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
+	{
+		KT_DEBUG_LOG("DescriptorSetLayout: %p", (void*)descriptorSetLayoutData.DescriptorSetLayout);
+		KT_DEBUG_LOG("| DescriptorSets");
+		for (const auto& descriptorSet : descriptorSetLayoutData.DescriptorSets)
+		{
+			KT_DEBUG_LOG("| | %p", (void*)descriptorSet);
+		}
+		KT_DEBUG_LOG("  DescriptorSetLayoutBindingDatas");
+		for (const auto& descriptorSetLayoutBindingData : descriptorSetLayoutData.DescriptorSetLayoutBindingDatas)
+		{
+			KT_DEBUG_LOG("| | Name: %s", descriptorSetLayoutBindingData.Name.c_str());
+			KT_DEBUG_LOG("| | Binding: %u", descriptorSetLayoutBindingData.Binding);
+			KT_DEBUG_LOG("| | DescriptorCount: %u", descriptorSetLayoutBindingData.DescriptorCount);
+			KT_DEBUG_LOG("| | DescriptorType: %u", descriptorSetLayoutBindingData.DescriptorType);
+			KT_DEBUG_LOG("| | MemberSize: %llu", descriptorSetLayoutBindingData.MemberSize);
+			KT_DEBUG_LOG("| | StageFlags: %u", descriptorSetLayoutBindingData.StageFlags);
+			KT_DEBUG_LOG("| | Buffers");
+			for (const auto& buffer : descriptorSetLayoutBindingData.Buffers)
+			{
+				KT_DEBUG_LOG("| | | %p", (void*)(&buffer));
+			}
+			for (const auto& stagingBuffer : descriptorSetLayoutBindingData.StagingBuffers)
+			{
+				KT_DEBUG_LOG("| | | %p", (void*)(&stagingBuffer));
+			}
+		}
+	}
+}
+
+void KtShader::UpdateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, void* data, const uint32_t imageIndex)
+{
+	const size_t dataSize = descriptorSetLayoutBindingData.MemberSize * descriptorSetLayoutBindingData.MemberCounts[imageIndex];
+
+	memcpy(descriptorSetLayoutBindingData.StagingBuffers[imageIndex].AllocationInfo.pMappedData, data, dataSize);
+
+	Framework.GetContext().CopyBuffer(
+		descriptorSetLayoutBindingData.StagingBuffers[imageIndex].Buffer,
+		descriptorSetLayoutBindingData.Buffers[imageIndex].Buffer,
+		dataSize
+	);
+}
+
+void KtShader::UpdateDescriptorSetLayoutBindingMemberCount(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const size_t memberCount, const uint32_t imageIndex)
+{
+	if (descriptorSetLayoutBindingData.MemberCounts[imageIndex] != memberCount)
+	{
+		KT_DEBUG_LOG("descriptorSetLayoutBindingData member count at frame %u: %llu", imageIndex, memberCount);
+		descriptorSetLayoutBindingData.MemberCounts[imageIndex] = std::max(1llu, memberCount);
+
+		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), descriptorSetLayoutBindingData.Buffers[imageIndex].Buffer, descriptorSetLayoutBindingData.Buffers[imageIndex].Allocation);
+		vmaDestroyBuffer(Framework.GetContext().GetAllocator(), descriptorSetLayoutBindingData.StagingBuffers[imageIndex].Buffer, descriptorSetLayoutBindingData.StagingBuffers[imageIndex].Allocation);
+
+		CreateDescriptorSetLayoutBindingBuffer(descriptorSetLayoutBindingData, imageIndex);
+		UpdateDescriptorSets(imageIndex);
+	}
+}
+
+void KtShader::UpdateDescriptorSetLayoutBindingImage(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, KtImageTexture* imageTexture)
+{
+	descriptorSetLayoutBindingData.ImageTexture = imageTexture;
+}
+
+KtShader::DescriptorSetLayoutBindingData* KtShader::GetDescriptorSetLayoutBinding(const std::string_view name)
+{
+	for (auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
+	{
+		for (auto& descriptorSetLayoutBindingData : descriptorSetLayoutData.DescriptorSetLayoutBindingDatas)
+		{
+			if (descriptorSetLayoutBindingData.Name == name)
+			{
+				return &descriptorSetLayoutBindingData;
+			}
+		}
+	}
+
+	return nullptr;
 }
 
 void KtShader::CreateDescriptorPools()
@@ -417,7 +614,7 @@ void KtShader::CreateDescriptorPools()
 			poolSizes.push_back(poolSize);
 		}
 	}
-	CreateDescriptorPool(poolSizes, _shaderLayout.DescriptorSetLayouts.size());
+	CreateDescriptorPool(poolSizes, static_cast<uint32_t>(_shaderLayout.DescriptorSetLayouts.size()));
 }
 
 void KtShader::CreateShaderLayout()
@@ -501,6 +698,7 @@ void KtShader::PopulateShaderLayout(const std::span<uint8_t> spirvData, const Vk
 			const SpvReflectDescriptorBinding* binding = set->bindings[i];	
 
 			KtShaderLayout::DescriptorSetLayout::DescriptorSetLayoutBinding ktBinding{};
+			ktBinding.Name = binding->name;
 			ktBinding.Binding = binding->binding;
 			ktBinding.DescriptorCount = binding->count;
 			ktBinding.DescriptorType = static_cast<VkDescriptorType>(binding->descriptor_type);
@@ -508,8 +706,6 @@ void KtShader::PopulateShaderLayout(const std::span<uint8_t> spirvData, const Vk
 			ktBinding.Size = GetTypeSize(binding->type_description);
 
 			_shaderLayout.DescriptorSetLayouts[set->set].DescriptorSetLayoutBindings.push_back(ktBinding);
-
-			// TODO: sampler
 		}
 	}
 

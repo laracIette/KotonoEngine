@@ -30,7 +30,7 @@ private:
 	};
 
 	RenderQueue2DData _renderQueue2DData;
-	KtUniformData2D _uniformData2D;
+	KtUniformData2D _uniformData;
 
 	KtAllocatedBuffer _vertexBuffer;
 	KtAllocatedBuffer _indexBuffer;

@@ -36,7 +36,7 @@ void KtRenderer2D::AddToRenderQueue(const KtAddToRenderQueue2DArgs& args)
 
 void KtRenderer2D::SetUniformData(const KtUniformData2D& uniformData)
 {
-	_uniformData2D = uniformData;
+	_uniformData = uniformData;
 }
 
 void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const
@@ -57,8 +57,11 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 			);
 		}
 		// NOT A CMD, UPDATE ONCE PER FRAME //
-		shader->UpdateObjectBuffer(objectBufferData, currentFrame);
-		shader->UpdateUniformBuffer(_uniformData2D, currentFrame);
+		if (auto* binding = shader->GetDescriptorSetLayoutBinding("objectBuffer"))
+		{
+			shader->UpdateDescriptorSetLayoutBindingMemberCount(*binding, objectBufferData.size(), currentFrame);
+			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, objectBufferData.data(), currentFrame);
+		}
 		// -------------------------------- //
 
 		shader->CmdBind(commandBuffer);
@@ -100,7 +103,7 @@ void KtRenderer2D::CmdBindBuffers(VkCommandBuffer commandBuffer) const
 
 void KtRenderer2D::Reset()
 {
-	_uniformData2D = {};
+	_uniformData = {};
 	_renderQueue2DData = {};
 }
 

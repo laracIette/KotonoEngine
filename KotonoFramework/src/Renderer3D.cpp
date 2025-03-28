@@ -44,8 +44,15 @@ void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 			}
 		}
 		// NOT A CMD, UPDATE ONCE PER FRAME //
-		shader->UpdateObjectBuffer(objectBufferData, currentFrame);
-		shader->UpdateUniformBuffer(_uniformData, currentFrame);
+		if (auto* binding = shader->GetDescriptorSetLayoutBinding("objectBuffer"))
+		{
+			shader->UpdateDescriptorSetLayoutBindingMemberCount(*binding, objectBufferData.size(), currentFrame);
+			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, objectBufferData.data(), currentFrame);
+		}
+		if (auto* binding = shader->GetDescriptorSetLayoutBinding("cameraData"))
+		{
+			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, (void*)(&_uniformData), currentFrame);
+		}
 		// -------------------------------- //
 
 		shader->CmdBind(commandBuffer);

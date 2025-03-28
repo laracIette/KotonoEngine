@@ -1,5 +1,6 @@
 #include "Shader3D.h"
 #include <vulkan/vulkan.h>
+#include <algorithm>
 #include "Vertex3D.h"
 #include "File.h"
 #include "Framework.h"
@@ -11,86 +12,7 @@ void KtShader3D::Init()
 	SetName("3D Shader");
 	SetVertPath(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3DVert.spv)");
 	SetFragPath(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3DFrag.spv)");
-	SetUniformDataSize(sizeof(KtUniformData3D));
-	SetObjectDataSize(sizeof(KtObjectData3D));
-	CreateImageTexture();
 	KtShader::Init();
-}
-
-void KtShader3D::CreateImageTexture()
-{
-	_imageTexture = Framework.GetImageTextureManager().Get(
-		Framework.GetPath().GetSolutionPath() / R"(assets\models\viking_room.png)"
-	);
-}
-
-void KtShader3D::UpdateDescriptorSet(const uint32_t imageIndex)
-{
-	VkDescriptorBufferInfo bufferInfo{};
-	bufferInfo.buffer = _uniformDescriptorSetData.Buffers[imageIndex].Buffer;
-	bufferInfo.offset = 0;
-	bufferInfo.range = _uniformDataSize;
-
-	VkDescriptorBufferInfo objectBufferInfo{};
-	objectBufferInfo.buffer = _objectDescriptorSetData.Buffers[imageIndex].Buffer;
-	objectBufferInfo.offset = 0;
-	objectBufferInfo.range = GetObjectBufferCount(imageIndex) * _objectDataSize;
-
-	VkDescriptorImageInfo imageInfo = _imageTexture->GetDescriptorImageInfo();
-
-	std::array<VkWriteDescriptorSet, 3> descriptorWrites{};
-
-	descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-	descriptorWrites[0].dstSet = _uniformDescriptorSetData.DescriptorSets[imageIndex];
-	descriptorWrites[0].dstBinding = 0;
-	descriptorWrites[0].dstArrayElement = 0;
-	descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	descriptorWrites[0].descriptorCount = 1;
-	descriptorWrites[0].pBufferInfo = &bufferInfo;
-
-	descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-	descriptorWrites[1].dstSet = _uniformDescriptorSetData.DescriptorSets[imageIndex];
-	descriptorWrites[1].dstBinding = 1;
-	descriptorWrites[1].dstArrayElement = 0;
-	descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	descriptorWrites[1].descriptorCount = 1;
-	descriptorWrites[1].pImageInfo = &imageInfo;
-
-	descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-	descriptorWrites[2].dstSet = _objectDescriptorSetData.DescriptorSets[imageIndex]; // Set 1 (Object Data)
-	descriptorWrites[2].dstBinding = 0;
-	descriptorWrites[2].dstArrayElement = 0;
-	descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	descriptorWrites[2].descriptorCount = 1;
-	descriptorWrites[2].pBufferInfo = &objectBufferInfo;
-
-	vkUpdateDescriptorSets(Framework.GetContext().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-}
-
-void KtShader3D::UpdateUniformBuffer(const KtUniformData3D& uniformData, const uint32_t imageIndex)
-{
-	memcpy(_uniformDescriptorSetData.StagingBuffers[imageIndex].AllocationInfo.pMappedData, &uniformData, _uniformDataSize);
-
-	Framework.GetContext().CopyBuffer(
-		_uniformDescriptorSetData.StagingBuffers[imageIndex].Buffer,
-		_uniformDescriptorSetData.Buffers[imageIndex].Buffer,
-		_uniformDataSize
-	);
-}
-
-void KtShader3D::UpdateObjectBuffer(const std::span<KtObjectData3D> objectDatas, const uint32_t imageIndex)
-{
-	// Ensure buffer sizes are enough
-	SetObjectCount(objectDatas.size(), imageIndex);
-
-	// Copy data to the staging buffer
-	memcpy(_objectDescriptorSetData.StagingBuffers[imageIndex].AllocationInfo.pMappedData, objectDatas.data(), GetObjectBufferCount(imageIndex) * _objectDataSize);
-
-	Framework.GetContext().CopyBuffer(
-		_objectDescriptorSetData.StagingBuffers[imageIndex].Buffer,
-		_objectDescriptorSetData.Buffers[imageIndex].Buffer,
-		GetObjectBufferCount(imageIndex) * _objectDataSize
-	);
 }
 
 void KtShader3D::CreateGraphicsPipelines()
@@ -151,11 +73,11 @@ void KtShader3D::CreateGraphicsPipelines()
 	colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
 	colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD; // Optional
 	
-	std::array<VkDescriptorSetLayout, 2> setLayouts =
-	{ 
-		_uniformDescriptorSetData.DescriptorSetLayout, 
-		_objectDescriptorSetData.DescriptorSetLayout 
-	};
+	std::vector<VkDescriptorSetLayout> setLayouts;
+	for (const auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
+	{
+		setLayouts.push_back(descriptorSetLayoutData.DescriptorSetLayout);
+	}
 
 	CreateGraphicsPipeline(bindingDescriptions, attributeDescriptions, rasterizer, multisampling, depthStencil, colorBlendAttachment, setLayouts);
 }
