@@ -34,6 +34,7 @@ void KObjectManager::Init()
 	_mesh2.GetTransform().SetRelativeScale(glm::vec3(0.2f));
 
 	_image1.SetShader(shader2D);
+	_image1.GetRect().SetBaseSize(glm::uvec2(1024, 1024));
 	_image1.GetRect().SetRelativeScale(glm::vec2(0.5f));
 }
 

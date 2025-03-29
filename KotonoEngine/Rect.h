@@ -13,6 +13,8 @@ public:
 	const float GetWorldRotation() const;
 	const glm::vec2 GetWorldScale() const;
 
+	const glm::uvec2& GetBaseSize() const;
+
 	URect* GetParent() const;
 
 
@@ -26,6 +28,8 @@ public:
 
 	void SetParent(URect* parent);
 
+	void SetBaseSize(const glm::uvec2& baseSize);
+
 
 	const glm::mat4 GetModelMatrix() const;
 
@@ -33,6 +37,8 @@ private:
 	glm::vec2 _relativePosition;
 	float _relativeRotation;
 	glm::vec2 _relativeScale;
+
+	glm::uvec2 _baseSize;
 
 	URect* _parent;
 };

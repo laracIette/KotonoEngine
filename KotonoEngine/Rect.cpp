@@ -1,9 +1,11 @@
 #include "Rect.h"
+#include <kotono_framework/Viewport.h>
 
 URect::URect(): 
 	_relativePosition(0.0f, 0.0f),
 	_relativeRotation(0.0f),
 	_relativeScale(1.0f, 1.0f),
+	_baseSize(0.0f, 0.0f),
 	_parent(nullptr)
 {
 }
@@ -48,6 +50,11 @@ const glm::vec2 URect::GetWorldScale() const
 		return _relativeScale * _parent->GetWorldScale();
 	}
 	return _relativeScale;
+}
+
+const glm::uvec2& URect::GetBaseSize() const
+{
+	return _baseSize;
 }
 
 URect* URect::GetParent() const
@@ -105,11 +112,20 @@ void URect::SetParent(URect* parent)
 	_parent = parent;
 }
 
+void URect::SetBaseSize(const glm::uvec2& baseSize)
+{
+	_baseSize = baseSize;
+}
+
 const glm::mat4 URect::GetModelMatrix() const
 {
+	const auto& viewportExtent = WindowViewport.GetExtent();
+	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
+	const auto size = glm::vec2(_baseSize) * GetWorldScale() / viewportSize;
+
 	const glm::mat4 translationMatrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(GetWorldPosition(), 0.0f));
 	const glm::mat4 rotationMatrix = glm::rotate(glm::identity<glm::mat4>(), GetWorldRotation(), glm::vec3(0.0f, 0.0f, 1.0f));
-	const glm::mat4 scaleMatrix = glm::scale(glm::identity<glm::mat4>(), glm::vec3(GetWorldScale(), 1.0f));
+	const glm::mat4 scaleMatrix = glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.0f));
 
 	return translationMatrix * rotationMatrix * scaleMatrix;
 }
