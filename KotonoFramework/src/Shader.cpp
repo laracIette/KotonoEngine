@@ -87,16 +87,6 @@ void KtShader::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32
 	// TODO: put in 1 command
 }
 
-void KtShader::SetVertPath(const std::filesystem::path& path)
-{
-	_vertPath = path;
-}
-
-void KtShader::SetFragPath(const std::filesystem::path& path)
-{
-	_fragPath = path;
-}
-
 void KtShader::SetShaderPath(const std::filesystem::path& path)
 {
 	_shaderPath = path;
@@ -299,7 +289,27 @@ void KtShader::CreateShaderModule(VkShaderModule& shaderModule, const std::span<
 
 void KtShader::CreateGraphicsPipeline()
 {
-	auto data = KtSerializer().ReadData(_shaderPath);
+	std::vector<VkShaderModule> shaderModules;
+	std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
+
+	const auto data = KtSerializer().ReadData(_shaderPath);
+	for (const auto& shader : data["shaders"])
+	{
+		const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders)" / shader["path"];
+		std::vector<uint8_t> shaderCode = KtFile(path).ReadBinary();
+
+		VkShaderModule shaderModule;
+		CreateShaderModule(shaderModule, shaderCode);
+		shaderModules.push_back(shaderModule);
+
+		VkPipelineShaderStageCreateInfo shaderStageInfo{};
+		shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		shaderStageInfo.stage = shader["shaderStage"];
+		shaderStageInfo.module = shaderModule;
+		shaderStageInfo.pName = "main";
+
+		shaderStages.push_back(shaderStageInfo);
+	}
 	
 	auto& dataRasterizer = data["rasterizer"];
 	VkPipelineRasterizationStateCreateInfo rasterizer{};
@@ -353,39 +363,6 @@ void KtShader::CreateGraphicsPipeline()
 	colorBlendAttachment.srcAlphaBlendFactor = dataColorBlendAttachment["srcAlphaBlendFactor"];
 	colorBlendAttachment.dstAlphaBlendFactor = dataColorBlendAttachment["dstAlphaBlendFactor"];
 	colorBlendAttachment.alphaBlendOp = dataColorBlendAttachment["alphaBlendOp"];
-
-
-
-
-
-
-
-
-	std::vector<uint8_t> vertShaderCode = KtFile(_vertPath).ReadBinary();
-	std::vector<uint8_t> fragShaderCode = KtFile(_fragPath).ReadBinary();
-
-	VkShaderModule vertShaderModule;
-	VkShaderModule fragShaderModule;
-	CreateShaderModule(vertShaderModule, vertShaderCode);
-	CreateShaderModule(fragShaderModule, fragShaderCode);
-
-	VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
-	vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-	vertShaderStageInfo.module = vertShaderModule;
-	vertShaderStageInfo.pName = "main";
-
-	VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
-	fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-	fragShaderStageInfo.module = fragShaderModule;
-	fragShaderStageInfo.pName = "main";
-
-	std::array<VkPipelineShaderStageCreateInfo, 2> shaderStages =
-	{ 
-		vertShaderStageInfo, 
-		fragShaderStageInfo 
-	};
 
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -483,8 +460,10 @@ void KtShader::CreateGraphicsPipeline()
 		"failed to create graphics pipeline!"
 	);
 
-	vkDestroyShaderModule(Framework.GetContext().GetDevice(), fragShaderModule, nullptr);
-	vkDestroyShaderModule(Framework.GetContext().GetDevice(), vertShaderModule, nullptr);
+	for (auto shaderModule : shaderModules)
+	{
+		vkDestroyShaderModule(Framework.GetContext().GetDevice(), shaderModule, nullptr);
+	}
 }
 
 void KtShader::CreateDescriptorSetLayoutBindingBuffers()
@@ -687,11 +666,13 @@ void KtShader::CreateDescriptorPools()
 
 void KtShader::CreateShaderLayout()
 {
-	std::vector<uint8_t> vertShaderCode = KtFile(_vertPath).ReadBinary();
-	std::vector<uint8_t> fragShaderCode = KtFile(_fragPath).ReadBinary();
-
-	PopulateShaderLayout(vertShaderCode, VK_SHADER_STAGE_VERTEX_BIT);
-	PopulateShaderLayout(fragShaderCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+	const auto data = KtSerializer().ReadData(_shaderPath);
+	for (const auto& shader : data["shaders"])
+	{
+		const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders)" / shader["path"];
+		std::vector<uint8_t> shaderCode = KtFile(path).ReadBinary();
+		PopulateShaderLayout(shaderCode, shader["shaderStage"]);
+	}
 }
 
 static const size_t GetTypeSize(const SpvReflectTypeDescription* type)
@@ -804,7 +785,7 @@ void KtShader::PopulateShaderLayout(const std::span<uint8_t> spirvData, const Vk
 				vertexInputAttributeDescription.location = input->location;
 				vertexInputAttributeDescription.binding = 0; // TODO: from VkVertexInputBindingDescription ?
 				vertexInputAttributeDescription.format = static_cast<VkFormat>(input->format);
-				vertexInputAttributeDescription.offset = offset;
+				vertexInputAttributeDescription.offset = static_cast<uint32_t>(offset);
 				_shaderLayout.VertexInputAttributeDescriptions.push_back(vertexInputAttributeDescription);
 
 				offset += GetTypeSize(input->type_description);

@@ -1,7 +1,7 @@
 #include "Renderer2D.h"
 #include "log.h"
 #include "Framework.h"
-#include <Vertex2D.h>
+#include "Vertex2D.h"
 
 constexpr std::array<KtVertex2D, 4> SquareVertices =
 {//                   Position,              Color,      TexCoords

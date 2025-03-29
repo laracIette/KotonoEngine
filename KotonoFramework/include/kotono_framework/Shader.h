@@ -55,8 +55,6 @@ public:
 protected:
 	std::string _name;
 
-	std::filesystem::path _vertPath;
-	std::filesystem::path _fragPath;
 	std::filesystem::path _shaderPath;
 
 	KtShaderLayout _shaderLayout;
@@ -71,8 +69,6 @@ protected:
 	std::vector<DescriptorSetLayoutData> _descriptorSetLayoutDatas;
 	std::array<VkDeviceSize, KT_FRAMES_IN_FLIGHT> _objectCounts;
 
-	void SetVertPath(const std::filesystem::path& path);
-	void SetFragPath(const std::filesystem::path& path);
 	void SetShaderPath(const std::filesystem::path& path);
 
 	void CreateShaderLayout();

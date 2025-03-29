@@ -1,4 +1,14 @@
 {
+  "shaders": [
+    {
+      "path": "shader3Dvert.spv",
+      "shaderStage": 1
+    },
+    {
+      "path": "shader3Dfrag.spv",
+      "shaderStage": 16
+    }
+  ],
   "rasterizer": {
     "depthClampEnable": false,
     "rasterizerDiscardEnable": false,

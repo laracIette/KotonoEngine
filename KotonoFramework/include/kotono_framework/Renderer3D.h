@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <unordered_map>
+#include "UniformData3D.h"
 #include "AddToRenderQueue3DArgs.h"
 class KtRenderer3D
 {
