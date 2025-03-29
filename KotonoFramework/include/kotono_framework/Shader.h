@@ -57,6 +57,7 @@ protected:
 
 	std::filesystem::path _vertPath;
 	std::filesystem::path _fragPath;
+	std::filesystem::path _shaderPath;
 
 	KtShaderLayout _shaderLayout;
 
@@ -72,6 +73,7 @@ protected:
 
 	void SetVertPath(const std::filesystem::path& path);
 	void SetFragPath(const std::filesystem::path& path);
+	void SetShaderPath(const std::filesystem::path& path);
 
 	void CreateShaderLayout();
 	void PopulateShaderLayout(const std::span<uint8_t> spirvData, const VkShaderStageFlagBits shaderStage);
@@ -92,10 +94,9 @@ protected:
 
 	void CreateDescriptorPools();
 	void CreateDescriptorPool(const std::span<VkDescriptorPoolSize> poolSizes, const uint32_t setCount);
-	void CreateShaderModule(VkShaderModule& shaderModule, const std::span<uint8_t> code);
-	void CreateGraphicsPipeline(const VkPipelineRasterizationStateCreateInfo& rasterizer, const VkPipelineMultisampleStateCreateInfo& multisampling, const VkPipelineDepthStencilStateCreateInfo& depthStencil, const VkPipelineColorBlendAttachmentState& colorBlendAttachment, const std::span<VkDescriptorSetLayout> setLayouts);
 	
-	virtual void CreateGraphicsPipelines() = 0;
+	void CreateGraphicsPipeline();
+	void CreateShaderModule(VkShaderModule& shaderModule, const std::span<uint8_t> code);
 
 	void DebugLogDescriptorSetLayoutData() const;
 };

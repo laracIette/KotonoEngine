@@ -11,8 +11,5 @@ class KtShader3D final : public KtShader
 {
 public:
 	void Init() override;
-
-private:
-	void CreateGraphicsPipelines() override;
 };
 

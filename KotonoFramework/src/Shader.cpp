@@ -3,6 +3,8 @@
 #include "Framework.h"
 #include "File.h"
 #include <spirv-reflect/spirv_reflect.h>
+#include <nlohmann/json.hpp>
+#include "Serializer.h"
 
 void KtShader::Init()
 {
@@ -13,7 +15,7 @@ void KtShader::Init()
 	CreateDescriptorSetLayoutBindingImages();
 	CreateDescriptorPools();
 	CreateDescriptorSets();
-	CreateGraphicsPipelines();
+	CreateGraphicsPipeline();
 	DebugLogDescriptorSetLayoutData();
 	KT_DEBUG_LOG("initialized shader '%s'", _name.c_str());
 }
@@ -93,6 +95,11 @@ void KtShader::SetVertPath(const std::filesystem::path& path)
 void KtShader::SetFragPath(const std::filesystem::path& path)
 {
 	_fragPath = path;
+}
+
+void KtShader::SetShaderPath(const std::filesystem::path& path)
+{
+	_shaderPath = path;
 }
 
 void KtShader::CreateDescriptorSetLayouts()
@@ -290,14 +297,70 @@ void KtShader::CreateShaderModule(VkShaderModule& shaderModule, const std::span<
 	);
 }
 
-void KtShader::CreateGraphicsPipeline(
-	const VkPipelineRasterizationStateCreateInfo& rasterizer,
-	const VkPipelineMultisampleStateCreateInfo& multisampling,
-	const VkPipelineDepthStencilStateCreateInfo& depthStencil,
-	const VkPipelineColorBlendAttachmentState& colorBlendAttachment,
-	const std::span<VkDescriptorSetLayout> setLayouts
-)
+void KtShader::CreateGraphicsPipeline()
 {
+	auto data = KtSerializer().ReadData(_shaderPath);
+	
+	auto& dataRasterizer = data["rasterizer"];
+	VkPipelineRasterizationStateCreateInfo rasterizer{};
+	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+	rasterizer.depthClampEnable = dataRasterizer["depthClampEnable"];
+	rasterizer.rasterizerDiscardEnable = dataRasterizer["rasterizerDiscardEnable"];
+	rasterizer.polygonMode = dataRasterizer["polygonMode"];
+	rasterizer.lineWidth = dataRasterizer["lineWidth"]; // For rasterizer.polygonMode = VK_POLYGON_MODE_LINE; 
+	// enable wideLines GPU feature for thicker
+	rasterizer.cullMode = dataRasterizer["cullMode"]; 
+	rasterizer.frontFace = dataRasterizer["frontFace"];
+	rasterizer.depthBiasEnable = dataRasterizer["depthBiasEnable"];
+	rasterizer.depthBiasConstantFactor = dataRasterizer["depthBiasConstantFactor"]; // Optional
+	rasterizer.depthBiasClamp = dataRasterizer["depthBiasClamp"]; // Optional
+	rasterizer.depthBiasSlopeFactor = dataRasterizer["depthBiasSlopeFactor"]; // Optional
+
+	auto& dataMultisampling = data["multisampling"];
+	VkPipelineMultisampleStateCreateInfo multisampling{};
+	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+	multisampling.sampleShadingEnable = dataMultisampling["sampleShadingEnable"]; // enable sample shading in the pipeline
+	multisampling.rasterizationSamples = Framework.GetContext().GetMSAASamples();
+	multisampling.minSampleShading = dataMultisampling["minSampleShading"]; // min fraction for sample shading; closer to one is smoother
+	multisampling.pSampleMask = nullptr; // Optional
+	multisampling.alphaToCoverageEnable = dataMultisampling["alphaToCoverageEnable"]; // Optional
+	multisampling.alphaToOneEnable = dataMultisampling["alphaToOneEnable"]; // Optional
+
+	auto& dataDepthStencil = data["depthStencil"];
+	VkPipelineDepthStencilStateCreateInfo depthStencil{};
+	depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+	depthStencil.depthTestEnable = dataDepthStencil["depthTestEnable"];
+	depthStencil.depthWriteEnable = dataDepthStencil["depthWriteEnable"];
+	depthStencil.depthCompareOp = dataDepthStencil["depthCompareOp"];
+	depthStencil.depthBoundsTestEnable = dataDepthStencil["depthBoundsTestEnable"];
+	depthStencil.minDepthBounds = dataDepthStencil["minDepthBounds"]; // Optional
+	depthStencil.maxDepthBounds = dataDepthStencil["maxDepthBounds"]; // Optional
+	depthStencil.stencilTestEnable = dataDepthStencil["stencilTestEnable"];
+	depthStencil.front = {}; // Optional
+	depthStencil.back = {}; // Optional
+
+	auto& dataColorBlendAttachment = data["colorBlendAttachment"];
+	VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+	colorBlendAttachment.colorWriteMask = 0;
+	for (const auto& component : dataColorBlendAttachment["colorWriteMask"])
+	{
+		colorBlendAttachment.colorWriteMask |= component; 
+	}	
+	colorBlendAttachment.blendEnable = dataColorBlendAttachment["blendEnable"];
+	colorBlendAttachment.srcColorBlendFactor = dataColorBlendAttachment["srcColorBlendFactor"];
+	colorBlendAttachment.dstColorBlendFactor = dataColorBlendAttachment["dstColorBlendFactor"];
+	colorBlendAttachment.colorBlendOp = dataColorBlendAttachment["colorBlendOp"];
+	colorBlendAttachment.srcAlphaBlendFactor = dataColorBlendAttachment["srcAlphaBlendFactor"];
+	colorBlendAttachment.dstAlphaBlendFactor = dataColorBlendAttachment["dstAlphaBlendFactor"];
+	colorBlendAttachment.alphaBlendOp = dataColorBlendAttachment["alphaBlendOp"];
+
+
+
+
+
+
+
+
 	std::vector<uint8_t> vertShaderCode = KtFile(_vertPath).ReadBinary();
 	std::vector<uint8_t> fragShaderCode = KtFile(_fragPath).ReadBinary();
 
@@ -377,6 +440,13 @@ void KtShader::CreateGraphicsPipeline(
 	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 	dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
 	dynamicState.pDynamicStates = dynamicStates.data();
+
+
+	std::vector<VkDescriptorSetLayout> setLayouts;
+	for (const auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
+	{
+		setLayouts.push_back(descriptorSetLayoutData.DescriptorSetLayout);
+	}
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -724,11 +794,11 @@ void KtShader::PopulateShaderLayout(const std::span<uint8_t> spirvData, const Vk
 		std::vector<SpvReflectInterfaceVariable*> inputs(inputCount);
 		spvReflectEnumerateInputVariables(&module, &inputCount, inputs.data());
 
-		uint32_t offset = 0;
+		size_t offset = 0;
 		for (auto* input : inputs)
 		{
 			KT_DEBUG_LOG("Vertex Input: Location %d, Format %d, Size %llu bytes, Name: %s", input->location, input->format, GetTypeSize(input->type_description), input->name);
-			if (input->location != -1)
+			if (input->location != -1) // TODO: wtf it's an uint32_t
 			{
 				VkVertexInputAttributeDescription vertexInputAttributeDescription{};
 				vertexInputAttributeDescription.location = input->location;
@@ -743,7 +813,7 @@ void KtShader::PopulateShaderLayout(const std::span<uint8_t> spirvData, const Vk
 		VkVertexInputBindingDescription vertexInputBindingDescription{};
 		vertexInputBindingDescription.binding = 0;
 		vertexInputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-		vertexInputBindingDescription.stride = offset;
+		vertexInputBindingDescription.stride = static_cast<uint32_t>(offset);
 		_shaderLayout.VertexInputBindingDescriptions.push_back(vertexInputBindingDescription);
 	}
 	spvReflectDestroyShaderModule(&module);
