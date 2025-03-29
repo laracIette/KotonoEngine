@@ -21,9 +21,12 @@ void TMesh::SetModel(KtModel* model)
     _model = model;
 }
 
-void TMesh::Draw() const
+void TMesh::AddToRenderQueue() const
 {
-	/*Framework.GetRenderer().GetRenderer3D().AddToRenderQueue(
-        _shader, _model, { _transform.GetModelMatrix() }
-    );*/
+    KtAddToRenderQueue3DArgs args{};
+    args.Shader = _shader;
+    args.Model = _model;
+    args.Viewport = &WindowViewport;
+    args.ObjectData = { _transform.GetModelMatrix() };
+	Framework.GetRenderer().GetRenderer3D().AddToRenderQueue(args);
 }

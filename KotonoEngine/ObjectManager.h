@@ -1,6 +1,6 @@
 #pragma once
-#include <kotono_framework/Shader.h>
-#include <kotono_framework/Model.h>
+#include "Mesh.h"
+#include "Image.h"
 class KObjectManager
 {
 public:
@@ -11,10 +11,8 @@ public:
 private:
 	void Quit();
 
-	KtShader* _shader2D;
-	KtShader* _shader3D;
-
-	KtModel* _model1;
-	KtModel* _model2;
+	TMesh _mesh1;
+	TMesh _mesh2;
+	RImage _image1;
 };
 

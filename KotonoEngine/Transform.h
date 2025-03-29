@@ -13,8 +13,6 @@ public:
 	const glm::quat GetWorldRotation() const;
 	const glm::vec3 GetWorldScale() const;
 
-	const glm::mat4 GetModelMatrix() const;
-
 	UTransform* GetParent() const;
 
 
@@ -27,6 +25,9 @@ public:
 	void SetWorldScale(const glm::vec3& worldScale);
 
 	void SetParent(UTransform* parent);
+
+
+	const glm::mat4 GetModelMatrix() const;
 
 
 	const glm::vec3 GetDirection(UTransform* target) const;

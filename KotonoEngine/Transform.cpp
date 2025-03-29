@@ -2,7 +2,7 @@
 
 UTransform::UTransform() :
 	_relativeLocation(0.0f, 0.0f, 0.0f),
-	_relativeRotation(glm::vec3(0.0f, 0.0f, 0.0f)),
+	_relativeRotation(glm::identity<glm::quat>()),
 	_relativeScale(1.0f, 1.0f, 1.0f),
 	_parent(nullptr)
 {
@@ -48,15 +48,6 @@ const glm::vec3 UTransform::GetWorldScale() const
 		return _relativeScale * _parent->GetWorldScale();
 	}
 	return _relativeScale;
-}
-
-const glm::mat4 UTransform::GetModelMatrix() const
-{
-	const glm::mat4 translationMatrix = glm::translate(glm::identity<glm::mat4>(), GetWorldLocation());
-	const glm::mat4 rotationMatrix = glm::mat4_cast(GetWorldRotation());
-	const glm::mat4 scaleMatrix = glm::scale(glm::identity<glm::mat4>(), GetWorldScale());
-
-	return translationMatrix * rotationMatrix * scaleMatrix;
 }
 
 UTransform* UTransform::GetParent() const
@@ -112,6 +103,15 @@ void UTransform::SetWorldScale(const glm::vec3& worldScale)
 void UTransform::SetParent(UTransform* parent)
 {
 	_parent = parent;
+}
+
+const glm::mat4 UTransform::GetModelMatrix() const
+{
+	const glm::mat4 translationMatrix = glm::translate(glm::identity<glm::mat4>(), GetWorldLocation());
+	const glm::mat4 rotationMatrix = glm::mat4_cast(GetWorldRotation());
+	const glm::mat4 scaleMatrix = glm::scale(glm::identity<glm::mat4>(), GetWorldScale());
+
+	return translationMatrix * rotationMatrix * scaleMatrix;
 }
 
 const glm::vec3 UTransform::GetDirection(UTransform* target) const

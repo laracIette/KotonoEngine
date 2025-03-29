@@ -8,22 +8,33 @@ void KObjectManager::Init()
 		.AddListener(this, &KObjectManager::Quit);
 
 
-	_shader2D = Framework.GetShaderManager().Get(
+	KtShader* shader2D = Framework.GetShaderManager().Get(
 		Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)"
 	);
-	_shader2D->SetName("2D Shader");
-
-	_shader3D = Framework.GetShaderManager().Get(
+	KtShader* shader3D = Framework.GetShaderManager().Get(
 		Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3D.ktshader)"
 	);
-	_shader3D->SetName("3D Shader");
+	shader2D->SetName("2D Shader");
+	shader3D->SetName("3D Shader");
 
-	_model1 = Framework.GetModelManager().Get(
+	KtModel* model1 = Framework.GetModelManager().Get(
 		Framework.GetPath().GetSolutionPath() / (R"(assets\models\viking_room.obj)")
 	);
-	_model2 = Framework.GetModelManager().Get(
+	KtModel* model2 = Framework.GetModelManager().Get(
 		Framework.GetPath().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)"
 	);
+
+
+	_mesh1.SetShader(shader3D);
+	_mesh1.SetModel(model1);
+
+	_mesh2.SetShader(shader3D);
+	_mesh2.SetModel(model2);
+	_mesh2.GetTransform().SetRelativeLocation(glm::vec3(2.0f, 0.0f, 0.0f));
+	_mesh2.GetTransform().SetRelativeScale(glm::vec3(0.2f));
+
+	_image1.SetShader(shader2D);
+	_image1.GetRect().SetRelativeScale(glm::vec2(0.5f));
 }
 
 void KObjectManager::Update()
@@ -45,57 +56,9 @@ void KObjectManager::Update()
 
 	Framework.GetRenderer().GetRenderer3D().SetUniformData(ubo);
 
-	glm::mat4 modelMatrix = glm::identity<glm::mat4>();
-	glm::vec3 position = glm::vec3(0.0f);
-	glm::vec3 axis = glm::vec3(0.0f, 0.0f, 1.0f);
-	float angle = time * glm::radians(90.0f);
-	glm::vec3 scale = glm::vec3(1.0f);
-
-	modelMatrix = glm::identity<glm::mat4>();
-	modelMatrix = glm::translate(modelMatrix, position);
-	modelMatrix = glm::rotate(modelMatrix, angle, axis);
-	modelMatrix = glm::scale(modelMatrix, scale);
-
-	KtAddToRenderQueue3DArgs model1Args{};
-	model1Args.Shader = _shader3D;
-	model1Args.Model = _model1;
-	model1Args.Viewport = &WindowViewport;
-	model1Args.ObjectData = { modelMatrix };
-	Framework.GetRenderer().GetRenderer3D().AddToRenderQueue(model1Args);
-
-	KtAddToRenderQueue3DArgs model2Args{};
-	model2Args.Shader = _shader3D;
-	model2Args.Model = _model2;
-	model2Args.Viewport = &WindowViewport;
-
-	for (uint32_t i = 0; i < 1000; i++)
-	{
-		position = glm::vec3(cos(i), sin(i), 0.0f) * 0.01f * static_cast<float>(i);
-		scale = glm::vec3(0.1f);
-
-		modelMatrix = glm::identity<glm::mat4>();
-		modelMatrix = glm::translate(modelMatrix, position);
-		modelMatrix = glm::rotate(modelMatrix, angle, axis);
-		modelMatrix = glm::scale(modelMatrix, scale);
-
-		model2Args.ObjectData = { modelMatrix };
-		Framework.GetRenderer().GetRenderer3D().AddToRenderQueue(model2Args);
-	}
-
-	position = glm::vec3(0.0f, 0.0f, 0.0f);
-	angle = 0.0f;
-	scale = glm::vec3(1.0f, 1.0f, 1.0f);
-
-	modelMatrix = glm::identity<glm::mat4>();
-	modelMatrix = glm::translate(modelMatrix, position);
-	modelMatrix = glm::rotate(modelMatrix, angle, axis);
-	modelMatrix = glm::scale(modelMatrix, scale);
-
-	KtAddToRenderQueue2DArgs imageArgs{};
-	imageArgs.Shader = _shader2D;
-	imageArgs.Viewport = &WindowViewport;
-	imageArgs.ObjectData = { modelMatrix };
-	Framework.GetRenderer().GetRenderer2D().AddToRenderQueue(imageArgs);
+	_mesh1.AddToRenderQueue();
+	_mesh2.AddToRenderQueue();
+	_image1.AddToRenderQueue();
 }
 
 void KObjectManager::Cleanup()

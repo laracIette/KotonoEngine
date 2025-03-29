@@ -13,8 +13,7 @@ public:
 	void SetShader(KtShader* shader);
 	void SetModel(KtModel* model);
 
-
-	void Draw() const;
+	void AddToRenderQueue() const;
 
 private:
 	KtShader* _shader;
