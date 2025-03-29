@@ -7,9 +7,9 @@
 #include "Viewport.h"
 #include "Image.h"
 
-KtImage image1;
-KtMesh mesh1;
-KtMesh mesh2;
+static KtImage image1;
+static KtMesh mesh1;
+static KtMesh mesh2;
 
 void KtRenderer::Init()
 {
