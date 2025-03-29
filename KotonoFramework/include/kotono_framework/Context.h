@@ -15,7 +15,6 @@
 #include "Vertex3D.h"
 #include "ImageTexture.h"
 #include "Model.h"
-#include "Shader3D.h"
 #include "Renderer.h"
 #include "AllocatedBuffer.h"
 

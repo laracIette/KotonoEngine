@@ -3,6 +3,7 @@
 void KtFramework::Cleanup()
 {
     _imageTextureManager.Cleanup();
+    _shaderManager.Cleanup();
     _modelManager.Cleanup();
     _inputManager.Cleanup();
     _audioManager.Cleanup();
@@ -21,6 +22,7 @@ void KtFramework::Init()
     _audioManager.Init();
     _inputManager.Init();
     _modelManager.Init();
+    _shaderManager.Init();
     _imageTextureManager.Init();
 }
 
@@ -57,6 +59,11 @@ KtInputManager& KtFramework::GetInputManager()
 KtModelManager& KtFramework::GetModelManager()
 {
     return _modelManager;
+}
+
+KtShaderManager& KtFramework::GetShaderManager()
+{
+    return _shaderManager;
 }
 
 KtImageTextureManager& KtFramework::GetImageTextureManager()

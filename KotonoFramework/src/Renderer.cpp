@@ -7,12 +7,9 @@
 #include "Viewport.h"
 #include "Image.h"
 
-KtShader3D* shader1 = nullptr;
-KtShader2D* shader2 = nullptr;
-KtMesh* mesh1 = nullptr;
-KtMesh* mesh2 = nullptr;
-KtImage* image1 = nullptr;
-
+KtImage image1;
+KtMesh mesh1;
+KtMesh mesh2;
 
 void KtRenderer::Init()
 {
@@ -38,15 +35,6 @@ void KtRenderer::Cleanup()
 {
 	KT_DEBUG_LOG("cleaning up renderer");
 
-	shader1->Cleanup();
-	shader2->Cleanup();
-
-	delete shader1;
-	delete shader2;
-	delete mesh1;
-	delete mesh2;
-	delete image1;
-
 	_renderer2D.Cleanup();
 	_renderer3D.Cleanup();
 
@@ -66,8 +54,15 @@ void KtRenderer::Cleanup()
 
 void KtRenderer::CreateShaderAndModels() const
 {
-	shader1 = new KtShader3D();
-	shader2 = new KtShader2D();
+	auto* shader1 = Framework.GetShaderManager().Get(
+		Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)"
+	);
+	shader1->SetName("2D Shader");
+
+	auto* shader2 = Framework.GetShaderManager().Get(
+		Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3D.ktshader)"
+	);
+	shader2->SetName("3D Shader");
 	
 	KtModel* model1 = Framework.GetModelManager().Get(
 		Framework.GetPath().GetSolutionPath() / (R"(assets\models\viking_room.obj)")
@@ -76,19 +71,16 @@ void KtRenderer::CreateShaderAndModels() const
 		Framework.GetPath().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)"
 	);
 
-	mesh1 = new KtMesh();
-	mesh1->SetShader(shader1);
-	mesh1->SetModel(model1);
+	image1 = KtImage();
+	image1.SetShader(shader1);
 
-	mesh2 = new KtMesh();
-	mesh2->SetShader(shader1);
-	mesh2->SetModel(model2);
+	mesh1 = KtMesh();
+	mesh1.SetShader(shader2);
+	mesh1.SetModel(model1);
 
-	image1 = new KtImage();
-	image1->SetShader(shader2);
-
-	shader1->Init();
-	shader2->Init();
+	mesh2 = KtMesh();
+	mesh2.SetShader(shader2);
+	mesh2.SetModel(model2);
 }
 
 void KtRenderer::CreateSwapChain()
@@ -519,7 +511,7 @@ void KtRenderer::DrawFrame()
 	modelMatrix = glm::rotate(modelMatrix, angle, axis);
 	modelMatrix = glm::scale(modelMatrix, scale);
 
-	mesh1->AddToRenderQueue3D(modelMatrix);
+	mesh1.AddToRenderQueue3D(modelMatrix);
 
 	for (uint32_t i = 0; i < 1000; i++)
 	{
@@ -531,7 +523,7 @@ void KtRenderer::DrawFrame()
 		modelMatrix = glm::rotate(modelMatrix, angle, axis);
 		modelMatrix = glm::scale(modelMatrix, scale);
 		
-		mesh2->AddToRenderQueue3D(modelMatrix);
+		mesh2.AddToRenderQueue3D(modelMatrix);
 	}
 
 	position = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -543,7 +535,7 @@ void KtRenderer::DrawFrame()
 	modelMatrix = glm::rotate(modelMatrix, angle, axis);
 	modelMatrix = glm::scale(modelMatrix, scale);
 
-	image1->AddToRenderQueue2D(modelMatrix);
+	image1.AddToRenderQueue2D(modelMatrix);
 
 	vkWaitForFences(Framework.GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
 

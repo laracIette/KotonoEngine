@@ -27,7 +27,7 @@ private:
 	};
 	struct RenderQueue2DData
 	{
-		std::unordered_map<KtShader2D*, RenderQueue2DShaderData> Shaders;
+		std::unordered_map<KtShader*, RenderQueue2DShaderData> Shaders;
 	};
 
 	RenderQueue2DData _renderQueue2DData;

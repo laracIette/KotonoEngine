@@ -3,8 +3,6 @@
 #include "frames_in_flight.h"
 #include "ObjectData2D.h"
 #include "ObjectData3D.h"
-#include "Shader2D.h"
-#include "Shader3D.h"
 #include "Model.h"
 #include <vector>
 #include <array>

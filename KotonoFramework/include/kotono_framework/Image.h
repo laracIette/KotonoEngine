@@ -3,15 +3,15 @@
 #include <vma/vk_mem_alloc.h>
 #include "glm_includes.h"
 #include "ImageTexture.h"
-#include "Shader2D.h"
+#include "Shader.h"
 class KtImage
 {
 public:    
     void AddToRenderQueue2D(const glm::mat4& modelMatrix) const;
 
-    KtShader2D* GetShader() const;
-    void SetShader(KtShader2D* shader);
+    KtShader* GetShader() const;
+    void SetShader(KtShader* shader);
 
 private:
-    KtShader2D* _shader;
+    KtShader* _shader;
 };

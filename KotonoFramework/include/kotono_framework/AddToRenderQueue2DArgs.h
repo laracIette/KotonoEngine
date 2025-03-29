@@ -1,10 +1,10 @@
 #pragma once
 #include "Viewport.h"
-#include "Shader2D.h"
+#include "Shader.h"
 #include "ObjectData2D.h"
 struct KtAddToRenderQueue2DArgs
 {
-	KtShader2D* Shader;
+	KtShader* Shader;
 	KtViewport* Viewport;
 	KtObjectData2D ObjectData;
 };

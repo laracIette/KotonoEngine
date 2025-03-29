@@ -31,7 +31,7 @@ private:
 	};
 	struct RenderQueue3DData
 	{
-		std::unordered_map<KtShader3D*, RenderQueue3DShaderData> Shaders;
+		std::unordered_map<KtShader*, RenderQueue3DShaderData> Shaders;
 	};
 
 	RenderQueue3DData _renderQueue3DData;

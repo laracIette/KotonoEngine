@@ -7,7 +7,7 @@
 #include "AllocatedBuffer.h"
 #include "ShaderLayout.h"
 #include "ImageTexture.h"
-class KtShader
+class KtShader final
 {
 public:	
 	struct DescriptorSetLayoutBindingData
@@ -31,10 +31,12 @@ public:
 	    std::vector<DescriptorSetLayoutBindingData>         DescriptorSetLayoutBindingDatas;
 	};
 
-	virtual ~KtShader() = default;
+	KtShader(const std::filesystem::path& path);
 
-	virtual void Init();
+	void Init();
 	void Cleanup();
+
+	const std::filesystem::path& GetPath() const;
 
 	const std::string& GetName() const;
 	void SetName(const std::string& name);
@@ -55,7 +57,7 @@ public:
 protected:
 	std::string _name;
 
-	std::filesystem::path _shaderPath;
+	const std::filesystem::path _path;
 
 	KtShaderLayout _shaderLayout;
 
@@ -68,8 +70,6 @@ protected:
 	VkDescriptorPool _descriptorPool;
 	std::vector<DescriptorSetLayoutData> _descriptorSetLayoutDatas;
 	std::array<VkDeviceSize, KT_FRAMES_IN_FLIGHT> _objectCounts;
-
-	void SetShaderPath(const std::filesystem::path& path);
 
 	void CreateShaderLayout();
 	void PopulateShaderLayout(const std::span<uint8_t> spirvData, const VkShaderStageFlagBits shaderStage);

@@ -6,6 +6,11 @@
 #include <nlohmann/json.hpp>
 #include "Serializer.h"
 
+KtShader::KtShader(const std::filesystem::path& path) :
+	_path(path)
+{
+}
+
 void KtShader::Init()
 {
 	KT_DEBUG_LOG("initializing shader '%s'", _name.c_str());
@@ -47,6 +52,11 @@ void KtShader::Cleanup()
 	KT_DEBUG_LOG("cleaned up shader");
 }
 
+const std::filesystem::path& KtShader::GetPath() const
+{
+	return _path;
+}
+
 const std::string& KtShader::GetName() const
 {
 	return _name;
@@ -85,11 +95,6 @@ void KtShader::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32
 	}
 
 	// TODO: put in 1 command
-}
-
-void KtShader::SetShaderPath(const std::filesystem::path& path)
-{
-	_shaderPath = path;
 }
 
 void KtShader::CreateDescriptorSetLayouts()
@@ -292,7 +297,7 @@ void KtShader::CreateGraphicsPipeline()
 	std::vector<VkShaderModule> shaderModules;
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
 
-	const auto data = KtSerializer().ReadData(_shaderPath);
+	const auto data = KtSerializer().ReadData(_path);
 	for (const auto& shader : data["shaders"])
 	{
 		const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders)" / shader["path"];
@@ -666,7 +671,7 @@ void KtShader::CreateDescriptorPools()
 
 void KtShader::CreateShaderLayout()
 {
-	const auto data = KtSerializer().ReadData(_shaderPath);
+	const auto data = KtSerializer().ReadData(_path);
 	for (const auto& shader : data["shaders"])
 	{
 		const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders)" / shader["path"];

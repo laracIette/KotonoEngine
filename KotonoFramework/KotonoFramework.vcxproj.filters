@@ -71,13 +71,7 @@
     <ClCompile Include="src\Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Shader3D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Shader2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer2D.cpp">
@@ -169,9 +163,6 @@
     <ClInclude Include="include\kotono_framework\Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\kotono_framework\Shader3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\kotono_framework\SwapChainSupportDetails.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -194,9 +185,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\kotono_framework\frames_in_flight.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\kotono_framework\Shader2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\kotono_framework\ObjectData2D.h">
