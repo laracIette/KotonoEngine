@@ -1,0 +1,8 @@
+{
+  "guid": "guid",
+  "type": "OScene",
+  "name": "Scene",
+  "objects": [
+    "guid1"
+  ]
+}

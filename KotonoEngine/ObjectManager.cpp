@@ -1,5 +1,7 @@
 #include "ObjectManager.h"
 #include <kotono_framework/Framework.h>
+#include <kotono_framework/Serializer.h>
+#include <nlohmann/json.hpp>
 
 void KObjectManager::Init()
 {
@@ -36,6 +38,23 @@ void KObjectManager::Init()
 	_image1.SetShader(shader2D);
 	_image1.GetRect().SetBaseSize(glm::uvec2(1024, 1024));
 	_image1.GetRect().SetRelativeScale(glm::vec2(0.5f));
+
+
+
+
+
+
+
+
+
+
+	KtSerializer serializer;
+	OObject object;
+
+	serializer.WriteData(
+		Framework.GetPath().GetSolutionPath() / R"(assets/objects)" / static_cast<std::string>(object.GetGuid()),
+		object.Serialize()
+	);
 }
 
 void KObjectManager::Update()
