@@ -1,15 +1,9 @@
 #include "Renderer.h"
 #include "Framework.h"
 #include <chrono>
-#include "Mesh.h"
 #include "log.h"
 #include "vk_utils.h"
 #include "Viewport.h"
-#include "Image.h"
-
-static KtImage image1;
-static KtMesh mesh1;
-static KtMesh mesh2;
 
 void KtRenderer::Init()
 {
@@ -24,8 +18,6 @@ void KtRenderer::Init()
 
 	_renderer2D.Init();
 	_renderer3D.Init();
-
-	CreateShaderAndModels();
 
 	_framebufferResized = false;
 	_currentFrame = 0;
@@ -50,37 +42,6 @@ void KtRenderer::Cleanup()
 	}
 
 	KT_DEBUG_LOG("cleaned up renderer");
-}
-
-void KtRenderer::CreateShaderAndModels() const
-{
-	auto* shader1 = Framework.GetShaderManager().Get(
-		Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)"
-	);
-	shader1->SetName("2D Shader");
-
-	auto* shader2 = Framework.GetShaderManager().Get(
-		Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3D.ktshader)"
-	);
-	shader2->SetName("3D Shader");
-	
-	KtModel* model1 = Framework.GetModelManager().Get(
-		Framework.GetPath().GetSolutionPath() / (R"(assets\models\viking_room.obj)")
-	);
-	KtModel* model2 = Framework.GetModelManager().Get(
-		Framework.GetPath().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)"
-	);
-
-	image1 = KtImage();
-	image1.SetShader(shader1);
-
-	mesh1 = KtMesh();
-	mesh1.SetShader(shader2);
-	mesh1.SetModel(model1);
-
-	mesh2 = KtMesh();
-	mesh2.SetShader(shader2);
-	mesh2.SetModel(model2);
 }
 
 void KtRenderer::CreateSwapChain()
@@ -488,55 +449,6 @@ void KtRenderer::ResetRenderers()
 
 void KtRenderer::DrawFrame()
 {
-	static const auto startTime = std::chrono::high_resolution_clock::now();
-	const auto currentTime = std::chrono::high_resolution_clock::now();
-	const float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-	const float uboTime = time / 10.0f;
-
-	KtUniformData3D ubo{};
-	ubo.View = glm::lookAt(glm::vec3(cos(uboTime) * 10.0f, sin(uboTime) * 10.0f, 3.0f), glm::vec3(cos(uboTime) * 5.0f, sin(uboTime) * 5.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.Projection = glm::perspective(glm::radians(45.0f), _swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 1000.0f);
-	ubo.Projection[1][1] *= -1.0f;
-
-	_renderer3D.SetUniformData(ubo);
-
-	glm::mat4 modelMatrix = glm::identity<glm::mat4>();
-	glm::vec3 position = glm::vec3(0.0f);
-	glm::vec3 axis = glm::vec3(0.0f, 0.0f, 1.0f);
-	float angle = time * glm::radians(90.0f);
-	glm::vec3 scale = glm::vec3(1.0f);
-
-	modelMatrix = glm::identity<glm::mat4>();
-	modelMatrix = glm::translate(modelMatrix, position);
-	modelMatrix = glm::rotate(modelMatrix, angle, axis);
-	modelMatrix = glm::scale(modelMatrix, scale);
-
-	mesh1.AddToRenderQueue3D(modelMatrix);
-
-	for (uint32_t i = 0; i < 1000; i++)
-	{
-		position = glm::vec3(cos(i), sin(i), 0.0f) * 0.01f * static_cast<float>(i);
-		scale = glm::vec3(0.1f);
-
-	    modelMatrix = glm::identity<glm::mat4>();
-		modelMatrix = glm::translate(modelMatrix, position);
-		modelMatrix = glm::rotate(modelMatrix, angle, axis);
-		modelMatrix = glm::scale(modelMatrix, scale);
-		
-		mesh2.AddToRenderQueue3D(modelMatrix);
-	}
-
-	position = glm::vec3(0.0f, 0.0f, 0.0f);
-	angle = 0.0f;
-	scale = glm::vec3(1.0f, 1.0f, 1.0f);
-
-	modelMatrix = glm::identity<glm::mat4>();
-	modelMatrix = glm::translate(modelMatrix, position);
-	modelMatrix = glm::rotate(modelMatrix, angle, axis);
-	modelMatrix = glm::scale(modelMatrix, scale);
-
-	image1.AddToRenderQueue2D(modelMatrix);
-
 	vkWaitForFences(Framework.GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
 
 	uint32_t imageIndex;
@@ -551,7 +463,6 @@ void KtRenderer::DrawFrame()
 	{
 		throw std::runtime_error("failed to acquire swap chain image!");
 	}
-
 	vkResetFences(Framework.GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame]);
 
 	vkResetCommandBuffer(_commandBuffers[_currentFrame], 0);

@@ -149,12 +149,10 @@
     <ClCompile Include="src\Event.cpp" />
     <ClCompile Include="src\File.cpp" />
     <ClCompile Include="src\Framework.cpp" />
-    <ClCompile Include="src\Image.cpp" />
     <ClCompile Include="src\ImageTexture.cpp" />
     <ClCompile Include="src\implementations.cpp" />
     <ClCompile Include="src\InputManager.cpp" />
     <ClCompile Include="src\Keyboard.cpp" />
-    <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\Mouse.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
@@ -173,13 +171,11 @@
     <ClInclude Include="include\kotono_framework\File.h" />
     <ClInclude Include="include\kotono_framework\Framework.h" />
     <ClInclude Include="include\kotono_framework\glm_includes.h" />
-    <ClInclude Include="include\kotono_framework\Image.h" />
     <ClInclude Include="include\kotono_framework\ImageTexture.h" />
     <ClInclude Include="include\kotono_framework\InputManager.h" />
     <ClInclude Include="include\kotono_framework\Keyboard.h" />
     <ClInclude Include="include\kotono_framework\log.h" />
     <ClInclude Include="include\kotono_framework\frames_in_flight.h" />
-    <ClInclude Include="include\kotono_framework\Mesh.h" />
     <ClInclude Include="include\kotono_framework\Model.h" />
     <ClInclude Include="include\kotono_framework\Mouse.h" />
     <ClInclude Include="include\kotono_framework\ObjectData3D.h" />

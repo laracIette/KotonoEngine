@@ -28,8 +28,6 @@ public:
 	VkRenderPass GetRenderPass() const;
 
 private:
-	void CreateShaderAndModels() const;
-
 	KtRenderer2D _renderer2D;
 	KtRenderer3D _renderer3D;
 
