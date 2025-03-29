@@ -1,6 +1,6 @@
 #pragma once
-#include <Windows.h>
 #include <string>
+#include <array>
 class UGuid
 {
 public:
@@ -12,6 +12,6 @@ public:
 	bool operator==(const UGuid& other) const;
 
 private:
-	GUID _guid;
+	std::array<uint64_t, 4> _data;
 };
 

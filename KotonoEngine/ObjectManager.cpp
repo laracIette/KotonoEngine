@@ -49,12 +49,14 @@ void KObjectManager::Init()
 
 
 	KtSerializer serializer;
-	OObject object;
 
-	serializer.WriteData(
-		Framework.GetPath().GetSolutionPath() / R"(assets/objects)" / static_cast<std::string>(object.GetGuid()),
-		object.Serialize()
-	);
+	OObject object;
+	object.SetName("tetes");
+	const auto path = Framework.GetPath().GetSolutionPath() / R"(assets/objects)" / static_cast<std::string>(object.GetGuid());
+	serializer.WriteData(path,object.Serialize());
+
+	OObject object2;
+	object2.Deserialize(serializer.ReadData(path));
 }
 
 void KObjectManager::Update()

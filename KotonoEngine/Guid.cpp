@@ -1,48 +1,60 @@
 #include "Guid.h"
-#include <iostream>
+#include <random>
 #include <sstream>
 #include <iomanip>
 
 UGuid::UGuid()
 {
-	if (CoCreateGuid(&_guid) != S_OK)
-	{
-		std::cerr << "Failed to create GUID!" << std::endl;
-	}
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
+    std::uniform_int_distribution<uint64_t> dist;
+
+    for (auto& part : _data)
+    {
+        part = dist(gen);
+    }
+
+    // Set the version bits (4 bits for GUID v4)
+    _data[0] &= 0xFFFFFFFFFFFFFF0F; // Clear version bits
+    _data[0] |= 0x0000000000000040; // Set version 4 (random GUID)
 }
 
 UGuid::operator std::string() const
 {
     std::ostringstream oss;
-    oss << std::hex << std::setfill('0');
-
-    oss << std::setw(8) << _guid.Data1
-        << std::setw(4) << _guid.Data2
-        << std::setw(4) << _guid.Data3;
-
-    for (auto byte : _guid.Data4)
-        oss << std::setw(2) << static_cast<int>(byte);
-
+    for (size_t i = 0; i < _data.size(); i++)
+    {
+        if (i != 0)
+        {
+            oss << '-';
+        }
+        oss << std::hex << std::setw(16) << std::setfill('0') << _data[i];
+    }
     return oss.str();
 }
 
 void UGuid::operator=(const std::string& string)
 {
     std::istringstream iss(string);
-
-    iss >> std::hex >> _guid.Data1
-        >> _guid.Data2
-        >> _guid.Data3;
-
-    for (int i = 0; i < 8; ++i)
+    char dash;
+    for (auto& part : _data)
     {
-        int byte;
-        iss >> std::hex >> byte;
-        _guid.Data4[i] = static_cast<uint8_t>(byte);
+        if (iss >> std::hex >> part)
+        {
+            // Skip the dash characters
+            iss >> dash;
+        }
     }
 }
 
 bool UGuid::operator==(const UGuid& other) const
 {
-	return _guid == other._guid;
+	for (size_t i = 0; i < _data.size(); i++)
+	{
+		if (_data[i] != other._data[i])
+		{
+			return false;
+		}
+	}
+	return true;
 }
