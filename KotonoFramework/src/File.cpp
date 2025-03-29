@@ -33,7 +33,7 @@ const std::string KtFile::GetStem() const
     return _path.stem().string();
 }
 
-const std::string KtFile::GetTextContent() const
+const std::string KtFile::ReadString() const
 {
     // Check if path exists.
     if (!std::filesystem::exists(_path))
@@ -54,10 +54,13 @@ const std::string KtFile::GetTextContent() const
     // Read file
     std::ostringstream fileContents;
     fileContents << file.rdbuf();
+
+    file.close();
+
     return fileContents.str();
 }
 
-const std::vector<uint8_t> KtFile::GetBinaryContent() const
+const std::vector<uint8_t> KtFile::ReadBinary() const
 {
     if (!std::filesystem::exists(_path))
     {
@@ -73,7 +76,7 @@ const std::vector<uint8_t> KtFile::GetBinaryContent() const
         return {};
     }
 
-    size_t fileSize = static_cast<size_t>(file.tellg());
+    const size_t fileSize = static_cast<size_t>(file.tellg());
     std::vector<uint8_t> buffer(fileSize);
 
     file.seekg(0);
@@ -82,4 +85,40 @@ const std::vector<uint8_t> KtFile::GetBinaryContent() const
     file.close();
 
     return buffer;
+}
+
+void KtFile::WriteString(const std::string_view data) const
+{
+    // Open file for writing
+    std::ofstream file(_path, std::ios::out | std::ios::trunc);
+
+    if (!file.is_open())
+    {
+        std::cerr << "Failed to open the file at '" << _path << "' for writing." << std::endl;
+        return;
+    }
+
+    // Write data to file
+    file << data;
+
+    // Close file
+    file.close();
+}
+
+void KtFile::WriteBinary(const std::span<uint32_t> data) const
+{
+    // Open file for writing in binary mode
+    std::ofstream file(_path, std::ios::out | std::ios::binary | std::ios::trunc);
+
+    if (!file.is_open())
+    {
+        std::cerr << "Failed to open the file at '" << _path << "' for writing." << std::endl;
+        return;
+    }
+
+    // Write data to file as binary
+    file.write(reinterpret_cast<const char*>(data.data()), data.size_bytes());
+
+    // Close file
+    file.close();
 }

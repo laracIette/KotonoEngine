@@ -298,8 +298,8 @@ void KtShader::CreateGraphicsPipeline(
 	const std::span<VkDescriptorSetLayout> setLayouts
 )
 {
-	std::vector<uint8_t> vertShaderCode = KtFile(_vertPath).GetBinaryContent();
-	std::vector<uint8_t> fragShaderCode = KtFile(_fragPath).GetBinaryContent();
+	std::vector<uint8_t> vertShaderCode = KtFile(_vertPath).ReadBinary();
+	std::vector<uint8_t> fragShaderCode = KtFile(_fragPath).ReadBinary();
 
 	VkShaderModule vertShaderModule;
 	VkShaderModule fragShaderModule;
@@ -617,8 +617,8 @@ void KtShader::CreateDescriptorPools()
 
 void KtShader::CreateShaderLayout()
 {
-	std::vector<uint8_t> vertShaderCode = KtFile(_vertPath).GetBinaryContent();
-	std::vector<uint8_t> fragShaderCode = KtFile(_fragPath).GetBinaryContent();
+	std::vector<uint8_t> vertShaderCode = KtFile(_vertPath).ReadBinary();
+	std::vector<uint8_t> fragShaderCode = KtFile(_fragPath).ReadBinary();
 
 	PopulateShaderLayout(vertShaderCode, VK_SHADER_STAGE_VERTEX_BIT);
 	PopulateShaderLayout(fragShaderCode, VK_SHADER_STAGE_FRAGMENT_BIT);

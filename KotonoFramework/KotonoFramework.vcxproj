@@ -134,6 +134,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Serializer.cpp" />
     <ClCompile Include="src\Path.cpp" />
     <ClCompile Include="src\ShaderManager.cpp" />
     <ClCompile Include="src\ItemManager.cpp" />
@@ -207,6 +208,7 @@
     <ClInclude Include="include\kotono_framework\ShaderManager.h" />
     <ClInclude Include="include\kotono_framework\ShaderLayout.h" />
     <ClInclude Include="include\kotono_framework\Path.h" />
+    <ClInclude Include="include\kotono_framework\Serializer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

@@ -1,9 +1,10 @@
 #pragma once
 #include <filesystem>
+#include <span>
 class KtFile final
 {
 public:
-	KtFile(const std::filesystem::path& path);
+	explicit KtFile(const std::filesystem::path& path);
 
 	// Get the path to the file.
 	const std::filesystem::path& GetPath() const;
@@ -16,9 +17,13 @@ public:
 	// Get the name of the file without extension.
 	const std::string GetStem() const;
 	// Get the content of the file, for text files.
-	const std::string GetTextContent() const;
-	// Get the content of the file, for all files.
-	const std::vector<uint8_t> GetBinaryContent() const;
+	const std::string ReadString() const;
+	// Get the content of the file, for binary files.
+	const std::vector<uint8_t> ReadBinary() const;
+	// Set the content of the file, for text files.
+	void WriteString(const std::string_view data) const;
+	// Set the content of the file, for binary files.
+	void WriteBinary(const std::span<uint32_t> data) const;
 
 private:
 	const std::filesystem::path _path;
