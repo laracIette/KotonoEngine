@@ -25,6 +25,7 @@ void OScene::Unload()
 	{
 		sceneObject->SetIsDelete(true);
 	}
+	_sceneObjects.clear();
 }
 
 void OScene::Reload()

@@ -27,7 +27,7 @@ const glm::vec3 UTransform::GetWorldLocation() const
 {
 	if (_parent)
 	{
-		return _relativeLocation + _parent->GetWorldLocation();
+		return _parent->GetWorldLocation() * _relativeLocation;
 	}
 	return _relativeLocation;
 }
@@ -36,7 +36,7 @@ const glm::quat UTransform::GetWorldRotation() const
 {
 	if (_parent)
 	{
-		return _relativeRotation + _parent->GetWorldRotation();
+		return _parent->GetWorldRotation() * _relativeRotation;
 	}
 	return _relativeRotation;
 }
@@ -45,9 +45,24 @@ const glm::vec3 UTransform::GetWorldScale() const
 {
 	if (_parent)
 	{
-		return _relativeScale * _parent->GetWorldScale();
+		return _parent->GetWorldScale() * _relativeScale;
 	}
 	return _relativeScale;
+}
+
+const glm::vec3 UTransform::GetRightVector() const
+{
+	return GetWorldRotation() * glm::vec3(1.0f, 0.0f, 0.0f);
+}
+
+const glm::vec3 UTransform::GetForwardVector() const
+{
+	return GetWorldRotation() * glm::vec3(0.0f, 1.0f, 0.0f);
+}
+
+const glm::vec3 UTransform::GetUpVector() const
+{
+	return GetWorldRotation() * glm::vec3(0.0f, 0.0f, 1.0f);;
 }
 
 UTransform* UTransform::GetParent() const
@@ -84,7 +99,7 @@ void UTransform::SetWorldRotation(const glm::quat& worldRotation)
 {
 	if (_parent)
 	{
-		_relativeRotation = worldRotation - _parent->GetWorldRotation();
+		_relativeRotation = glm::inverse(_parent->GetWorldRotation()) * worldRotation;
 		return;
 	}
 	_relativeRotation = worldRotation;

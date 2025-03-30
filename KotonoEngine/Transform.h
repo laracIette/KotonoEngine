@@ -13,6 +13,10 @@ public:
 	const glm::quat GetWorldRotation() const;
 	const glm::vec3 GetWorldScale() const;
 
+	const glm::vec3 GetRightVector() const;
+	const glm::vec3 GetForwardVector() const;
+	const glm::vec3 GetUpVector() const;
+
 	UTransform* GetParent() const;
 
 

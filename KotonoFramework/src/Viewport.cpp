@@ -22,6 +22,11 @@ void KtViewport::SetOffset(const VkOffset2D& offset)
     _offset = offset;
 }
 
+const float KtViewport::GetAspectRatio() const
+{
+	return static_cast<float>(_extent.width) / _extent.height;
+}
+
 void KtViewport::CmdUse(VkCommandBuffer commandBuffer) const
 {
 	// Sets the render region

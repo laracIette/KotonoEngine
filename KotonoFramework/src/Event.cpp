@@ -4,6 +4,9 @@ void KtEvent::Broadcast()
 {
     for (const Listener& listener : _listeners)
     {
-        listener.Callback();
+        if (listener.Instance)
+        {
+            listener.Callback();
+        }
     }
 }

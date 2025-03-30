@@ -3,13 +3,15 @@
 #include "Mesh.h"
 #include "Image.h"
 #include "Scene.h"
+#include "Camera.h"
+
+static TCamera* camera = nullptr;
 
 void KObjectManager::Init()
 {
 	Framework.GetInputManager().GetKeyboard()
 		.GetEvent(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
 		.AddListener(this, &KObjectManager::Quit);
-
 
 	auto* shader2D = Framework.GetShaderManager().Create(
 		Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)"
@@ -26,7 +28,6 @@ void KObjectManager::Init()
 	auto* model2 = Framework.GetModelManager().Create(
 		Framework.GetPath().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)"
 	);
-
 
 	auto* scene = Create<OScene>();
 	scene->SetPath(Framework.GetPath().GetSolutionPath() / R"(assets\objects\scene.oscene)");
@@ -58,25 +59,13 @@ void KObjectManager::Init()
 		scene, &OScene::Reload
 	);
 #endif
+	camera = Create<TCamera>();
 }
 
 void KObjectManager::Update()
 {
-	static const auto startTime = std::chrono::high_resolution_clock::now();
-	const auto currentTime = std::chrono::high_resolution_clock::now();
-	const float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-	const float uboTime = time / 10.0f;
-
-	const VkExtent2D swapChainExtent = Framework.GetRenderer().GetSwapChainExtent();
-
-	KtUniformData3D ubo{};
-	ubo.View = glm::lookAt(glm::vec3(cos(uboTime) * 10.0f, sin(uboTime) * 10.0f, 3.0f), glm::vec3(cos(uboTime) * 5.0f, sin(uboTime) * 5.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.Projection = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 1000.0f);
-	ubo.Projection[1][1] *= -1.0f;
-
-	Framework.GetRenderer().GetRenderer3D().SetUniformData(ubo);
-
 	InitObjects();
+	camera->Use();
 	UpdateObjects();
 }
 
