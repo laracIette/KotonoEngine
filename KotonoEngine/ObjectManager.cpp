@@ -55,7 +55,7 @@ void KObjectManager::Init()
 	);
 #else
 	Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED).AddListener(
-		scene, &OScene::Deserialize
+		scene, &OScene::Reload
 	);
 #endif
 }

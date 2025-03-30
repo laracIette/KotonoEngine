@@ -12,7 +12,7 @@ void OScene::Init()
 
 void OScene::Load()
 {
-	Base::Deserialize();
+	Deserialize();
 	for (auto* sceneObject : _sceneObjects)
 	{
 		sceneObject->SetViewport(_viewport);
@@ -25,7 +25,12 @@ void OScene::Unload()
 	{
 		sceneObject->SetIsDelete(true);
 	}
-	SetIsDelete(true);
+}
+
+void OScene::Reload()
+{
+	Unload();
+	Load();
 }
 
 void OScene::Add(TSceneObject* sceneObject)

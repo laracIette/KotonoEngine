@@ -11,6 +11,7 @@ public:
 
 	void Load();
 	void Unload();
+	void Reload();
 
 	void Add(TSceneObject* sceneObject);
 	void Remove(TSceneObject* sceneObject);
