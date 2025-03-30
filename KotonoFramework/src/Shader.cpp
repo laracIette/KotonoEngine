@@ -27,7 +27,7 @@ void KtShader::Init()
 
 void KtShader::Cleanup()
 {
-	KT_DEBUG_LOG("cleaning up shader");
+	KT_DEBUG_LOG("cleaning up shader '%s'", _name.c_str());
 
 	vkDestroyPipeline(Framework.GetContext().GetDevice(), _graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(Framework.GetContext().GetDevice(), _pipelineLayout, nullptr);
@@ -49,7 +49,7 @@ void KtShader::Cleanup()
 
 	vkDestroyDescriptorPool(Framework.GetContext().GetDevice(), _descriptorPool, nullptr);
 
-	KT_DEBUG_LOG("cleaned up shader");
+	KT_DEBUG_LOG("cleaned up shader '%s'", _name.c_str());
 }
 
 const std::filesystem::path& KtShader::GetPath() const
@@ -297,8 +297,9 @@ void KtShader::CreateGraphicsPipeline()
 	std::vector<VkShaderModule> shaderModules;
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
 
-	const auto data = KtSerializer().ReadData(_path);
-	for (const auto& shader : data["shaders"])
+	nlohmann::json json;
+	KtSerializer().ReadData(_path, json);
+	for (const auto& shader : json["shaders"])
 	{
 		const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders)" / shader["path"];
 		std::vector<uint8_t> shaderCode = KtFile(path).ReadBinary();
@@ -316,7 +317,7 @@ void KtShader::CreateGraphicsPipeline()
 		shaderStages.push_back(shaderStageInfo);
 	}
 	
-	auto& dataRasterizer = data["rasterizer"];
+	auto& dataRasterizer = json["rasterizer"];
 	VkPipelineRasterizationStateCreateInfo rasterizer{};
 	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 	rasterizer.depthClampEnable = dataRasterizer["depthClampEnable"];
@@ -331,7 +332,7 @@ void KtShader::CreateGraphicsPipeline()
 	rasterizer.depthBiasClamp = dataRasterizer["depthBiasClamp"]; // Optional
 	rasterizer.depthBiasSlopeFactor = dataRasterizer["depthBiasSlopeFactor"]; // Optional
 
-	auto& dataMultisampling = data["multisampling"];
+	auto& dataMultisampling = json["multisampling"];
 	VkPipelineMultisampleStateCreateInfo multisampling{};
 	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 	multisampling.sampleShadingEnable = dataMultisampling["sampleShadingEnable"]; // enable sample shading in the pipeline
@@ -341,7 +342,7 @@ void KtShader::CreateGraphicsPipeline()
 	multisampling.alphaToCoverageEnable = dataMultisampling["alphaToCoverageEnable"]; // Optional
 	multisampling.alphaToOneEnable = dataMultisampling["alphaToOneEnable"]; // Optional
 
-	auto& dataDepthStencil = data["depthStencil"];
+	auto& dataDepthStencil = json["depthStencil"];
 	VkPipelineDepthStencilStateCreateInfo depthStencil{};
 	depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 	depthStencil.depthTestEnable = dataDepthStencil["depthTestEnable"];
@@ -354,7 +355,7 @@ void KtShader::CreateGraphicsPipeline()
 	depthStencil.front = {}; // Optional
 	depthStencil.back = {}; // Optional
 
-	auto& dataColorBlendAttachment = data["colorBlendAttachment"];
+	auto& dataColorBlendAttachment = json["colorBlendAttachment"];
 	VkPipelineColorBlendAttachmentState colorBlendAttachment{};
 	colorBlendAttachment.colorWriteMask = 0;
 	for (const auto& component : dataColorBlendAttachment["colorWriteMask"])
@@ -671,8 +672,9 @@ void KtShader::CreateDescriptorPools()
 
 void KtShader::CreateShaderLayout()
 {
-	const auto data = KtSerializer().ReadData(_path);
-	for (const auto& shader : data["shaders"])
+	nlohmann::json json;
+	KtSerializer().ReadData(_path, json);
+	for (const auto& shader : json["shaders"])
 	{
 		const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders)" / shader["path"];
 		std::vector<uint8_t> shaderCode = KtFile(path).ReadBinary();

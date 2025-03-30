@@ -6,6 +6,8 @@ class RImage : public RInterfaceObject
 	BASECLASS(RInterfaceObject)
 
 public:
+	void Update() override;
+
 	KtShader* GetShader() const;
 	void SetShader(KtShader* shader);
 

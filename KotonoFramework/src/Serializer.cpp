@@ -4,27 +4,35 @@
 #include <fstream>
 #include <iostream>
 
-nlohmann::json KtSerializer::ReadData(const std::filesystem::path& path) const
+void KtSerializer::ReadData(const std::filesystem::path& path, nlohmann::json& json) const
 {
-	nlohmann::json data;
-
-	const KtFile file(path);
-	std::istringstream stream(file.ReadString());
-	stream >> data;
-
-	return data;
-}
-
-void KtSerializer::WriteData(const std::filesystem::path& path, const nlohmann::json& data) const
-{
-	if (data.is_null())
+	if (path.empty())
 	{
-		std::cerr << "Error: Cannot write null JSON data to " << path << std::endl;
+		std::cerr << "Can't read data from empty path" << std::endl;
 		return;
 	}
 
 	const KtFile file(path);
-	const std::string jsonString = data.dump(4);
+	std::istringstream stream(file.ReadString());
+	stream >> json;
+}
+
+void KtSerializer::WriteData(const std::filesystem::path& path, const nlohmann::json& json) const
+{
+	if (path.empty())
+	{
+		std::cerr << "Can't write data to empty path" << std::endl;
+		return;
+	}
+
+	if (json.is_null())
+	{
+		std::cerr << "Error: Cannot write null json to " << path << std::endl;
+		return;
+	}
+
+	const KtFile file(path);
+	const std::string jsonString = json.dump(4);
 
 	file.WriteString(jsonString); 
 }

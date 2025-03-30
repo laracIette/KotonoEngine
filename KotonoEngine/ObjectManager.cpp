@@ -1,7 +1,7 @@
 #include "ObjectManager.h"
 #include <kotono_framework/Framework.h>
-#include <kotono_framework/Serializer.h>
-#include <nlohmann/json.hpp>
+#include "Mesh.h"
+#include "Image.h"
 
 void KObjectManager::Init()
 {
@@ -26,44 +26,25 @@ void KObjectManager::Init()
 		Framework.GetPath().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)"
 	);
 
+	TMesh* mesh1 = Create<TMesh>();
+	TMesh* mesh2 = Create<TMesh>();
+	RImage* image1 = Create<RImage>();
 
-	_mesh1.SetShader(shader3D);
-	_mesh1.SetModel(model1);
+	mesh1->SetShader(shader3D);
+	mesh1->SetModel(model1);
 
-	_mesh2.SetShader(shader3D);
-	_mesh2.SetModel(model2);
-	_mesh2.GetTransform().SetRelativeLocation(glm::vec3(2.0f, 0.0f, 0.0f));
-	_mesh2.GetTransform().SetRelativeScale(glm::vec3(0.2f));
+	mesh2->SetShader(shader3D);
+	mesh2->SetModel(model2);
+	mesh2->GetTransform().SetRelativeLocation(glm::vec3(2.0f, 0.0f, 0.0f));
+	mesh2->GetTransform().SetRelativeScale(glm::vec3(0.2f));
 
-	_image1.SetShader(shader2D);
-	_image1.GetRect().SetBaseSize(glm::uvec2(1024, 1024));
-	_image1.GetRect().SetRelativeScale(glm::vec2(0.5f));
-
-
-
-
-
-
-
-
-
-
-	KtSerializer serializer;
-
-	OObject object;
-	object.SetName("tetes");
-	const auto path = Framework.GetPath().GetSolutionPath() / R"(assets/objects)" / static_cast<std::string>(object.GetGuid());
-	serializer.WriteData(path,object.Serialize());
-
-	OObject object2;
-	object2.Deserialize(serializer.ReadData(path));
+	image1->SetShader(shader2D);
+	image1->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
+	image1->GetRect().SetRelativeScale(glm::vec2(0.5f));
 }
 
 void KObjectManager::Update()
 {
-	WindowViewport.SetOffset({ 0, 0 });
-	WindowViewport.SetExtent(Framework.GetRenderer().GetSwapChainExtent());
-
 	static const auto startTime = std::chrono::high_resolution_clock::now();
 	const auto currentTime = std::chrono::high_resolution_clock::now();
 	const float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
@@ -78,16 +59,65 @@ void KObjectManager::Update()
 
 	Framework.GetRenderer().GetRenderer3D().SetUniformData(ubo);
 
-	_mesh1.AddToRenderQueue();
-	_mesh2.AddToRenderQueue();
-	_image1.AddToRenderQueue();
+	InitObjects();
+	UpdateObjects();
 }
 
 void KObjectManager::Cleanup()
 {
+	for (auto* object : _objects)
+	{
+		object->Cleanup();
+		delete object;
+	}
 }
 
 void KObjectManager::Quit()
 {
 	Framework.GetWindow().Close();
+}
+
+void KObjectManager::InitObjects()
+{
+	for (auto* object : _inits)
+	{
+		object->Init();
+	}
+	_inits.clear();
+}
+
+void KObjectManager::UpdateObjects()
+{
+	for (auto* object : _objects)
+	{
+		object->Update();
+	}
+}
+
+void KObjectManager::DeleteObjects()
+{
+	for (auto it = _objects.begin(); it != _objects.end();)
+	{
+		auto* object = *it;
+		if (object->GetIsDelete())
+		{
+			KT_DEBUG_LOG("deleting object '%s'", object->GetName().c_str());
+			object->Cleanup();
+			delete object;    
+
+			
+			it = _objects.erase(it);  // Erase the object and move the iterator to the next element
+		}
+		else
+		{
+			++it;  // Only increment if not deleting
+		}
+	}
+}
+
+void KObjectManager::Create(OObject* object)
+{
+	KT_DEBUG_LOG("creating object");
+	_objects.insert(object);
+	_inits.insert(object);
 }

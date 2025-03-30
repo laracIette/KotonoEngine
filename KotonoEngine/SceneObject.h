@@ -2,20 +2,24 @@
 #include "Object.h"
 #include "Transform.h"
 #include "Visibility.h"
+#include <kotono_framework/Viewport.h>
 class TSceneObject : public OObject
 {
 	BASECLASS(OObject)
 
 public:
-	TSceneObject();
+	void Init() override;
 
 	const UTransform& GetTransform() const;
 	UTransform& GetTransform();
-
 	const EVisibility GetVisibility() const;
-	void SetVisibility(const EVisibility visibility);
+	KtViewport* GetViewport() const;
 
-protected:
+	void SetVisibility(const EVisibility visibility);
+	void SetViewport(KtViewport* viewport);
+
+private:
 	UTransform _transform;
 	EVisibility _visibility;
+	KtViewport* _viewport;
 };

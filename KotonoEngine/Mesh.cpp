@@ -1,6 +1,11 @@
 #include "Mesh.h"
 #include <kotono_framework/Framework.h>
 
+void TMesh::Update()
+{
+    AddToRenderQueue();
+}
+
 KtShader* TMesh::GetShader() const
 {
     return _shader;
@@ -26,7 +31,7 @@ void TMesh::AddToRenderQueue() const
     KtAddToRenderQueue3DArgs args{};
     args.Shader = _shader;
     args.Model = _model;
-    args.Viewport = &WindowViewport;
-    args.ObjectData = { _transform.GetModelMatrix() };
+    args.Viewport = GetViewport();
+    args.ObjectData = { GetTransform().GetModelMatrix() };
 	Framework.GetRenderer().GetRenderer3D().AddToRenderQueue(args);
 }

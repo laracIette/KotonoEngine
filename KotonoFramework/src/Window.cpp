@@ -36,6 +36,8 @@ void KtWindow::Init()
     glfwSetFramebufferSizeCallback(_window, framebuffer_size_callback);
     glfwSetCursorPosCallback(_window, cursor_position_callback);
 
+    framebuffer_size_callback(_window, _size.x, _size.y);
+
     // Show the window after initialization
     glfwShowWindow(_window);
 }
@@ -80,12 +82,22 @@ void KtWindow::SetSize(const glm::uvec2& size)
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    //Framework.GetWindow().SetSize(glm::uvec2(width, height));
-    //Framework.GetFramebuffer().ResizeTextures();
+{   
+    // Replace to only freeze render
+    while (width == 0 || height == 0)                                                   
+    {                                                                                   
+        glfwGetFramebufferSize(Framework.GetWindow().GetGLFWWindow(), &width, &height); 
+        glfwWaitEvents();                                                               
+    }                                                                                   
+
+    VkExtent2D windowExtent{};
+    windowExtent.width = static_cast<uint32_t>(width);
+    windowExtent.height = static_cast<uint32_t>(height);
+    WindowViewport.SetExtent(windowExtent);
 
     Framework.GetRenderer().OnFramebufferResized();
-    std::cout << "Window resized: " << width << 'x' << height << std::endl;
+
+    KT_DEBUG_LOG("window resized: %d x %d", width, height);
 }
 
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)

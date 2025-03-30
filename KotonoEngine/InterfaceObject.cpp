@@ -1,8 +1,9 @@
 #include "InterfaceObject.h"
 
-RInterfaceObject::RInterfaceObject() :
-	_visibility(VISIBILITY_EDITOR_AND_GAME)
+void RInterfaceObject::Init()
 {
+	_visibility = VISIBILITY_EDITOR_AND_GAME;
+	_viewport = &WindowViewport;
 }
 
 const URect& RInterfaceObject::GetRect() const
@@ -15,6 +16,11 @@ URect& RInterfaceObject::GetRect()
 	return _rect;
 }
 
+KtViewport* RInterfaceObject::GetViewport() const
+{
+	return _viewport;
+}
+
 const EVisibility RInterfaceObject::GetVisibility() const
 {
 	return _visibility;
@@ -23,4 +29,9 @@ const EVisibility RInterfaceObject::GetVisibility() const
 void RInterfaceObject::SetVisibility(const EVisibility visibility)
 {
 	_visibility = visibility;
+}
+
+void RInterfaceObject::SetViewport(KtViewport* viewport)
+{
+	_viewport = viewport;
 }

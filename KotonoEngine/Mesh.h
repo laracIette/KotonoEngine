@@ -7,6 +7,8 @@ class TMesh : public TSceneObject
 	BASECLASS(TSceneObject)
 
 public:
+	void Update() override;
+
 	KtShader* GetShader() const;
 	KtModel* GetModel() const;
 

@@ -11,16 +11,11 @@ public:
 	}
 	void Cleanup()
 	{
-		const char* typeName = typeid(T).name();
-		KT_DEBUG_LOG("cleaning up %s", typeName);
-
 		for (auto& [path, item] : _items)
 		{
 			CleanupItem(item);
 			delete item;
 		}
-
-		KT_DEBUG_LOG("cleaned up %s", typeName);
 	}
 
 	T* Get(const std::filesystem::path& path)

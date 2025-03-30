@@ -1,8 +1,9 @@
 #include "SceneObject.h"
 
-TSceneObject::TSceneObject() :
-	_visibility(VISIBILITY_EDITOR_AND_GAME)
+void TSceneObject::Init()
 {
+	_visibility = VISIBILITY_EDITOR_AND_GAME;
+	_viewport = &WindowViewport;
 }
 
 const UTransform& TSceneObject::GetTransform() const
@@ -20,7 +21,17 @@ const EVisibility TSceneObject::GetVisibility() const
 	return _visibility;
 }
 
+KtViewport* TSceneObject::GetViewport() const
+{
+	return _viewport;
+}
+
 void TSceneObject::SetVisibility(const EVisibility visibility)
 {
 	_visibility = visibility;
+}
+
+void TSceneObject::SetViewport(KtViewport* viewport)
+{
+	_viewport = viewport;
 }

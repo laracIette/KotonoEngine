@@ -520,14 +520,6 @@ void KtRenderer::DrawFrame()
 
 void KtRenderer::RecreateSwapChain()
 {
-	int width = 0, height = 0;
-	glfwGetFramebufferSize(Framework.GetWindow().GetGLFWWindow(), &width, &height);     // Replace to only freeze render
-	while (width == 0 || height == 0)                                                   //
-	{                                                                                   //
-		glfwGetFramebufferSize(Framework.GetWindow().GetGLFWWindow(), &width, &height); //
-		glfwWaitEvents();                                                               //
-	}                                                                                   //
-
 	vkDeviceWaitIdle(Framework.GetContext().GetDevice());
 
 	CleanupSwapChain();
