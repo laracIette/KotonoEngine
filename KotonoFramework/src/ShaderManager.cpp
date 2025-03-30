@@ -1,9 +1,10 @@
 #include "ShaderManager.h"
 
-KtShader* KtShaderManager::CreateItem(const std::filesystem::path& path) const
+KtShader* KtShaderManager::Create(const std::filesystem::path& path)
 {
     auto* item = new KtShader(path);
     item->Init();
+    _items[path] = item;
     return item;
 }
 

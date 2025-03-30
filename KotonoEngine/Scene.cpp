@@ -2,8 +2,11 @@
 #include "Scene.h"
 #include "Engine.h"
 
+#include "Mesh.h"
+
 void OScene::Init()
 {
+	Base::Init();
 	_viewport = &WindowViewport;
 }
 
@@ -25,23 +28,37 @@ void OScene::Unload()
 	SetIsDelete(true);
 }
 
-void OScene::Serialize(nlohmann::json& json) const
+void OScene::Add(TSceneObject* sceneObject)
 {
-	Base::Serialize(json);
+	_sceneObjects.insert(sceneObject);
+}
+
+void OScene::Remove(TSceneObject* sceneObject)
+{
+	_sceneObjects.erase(sceneObject);
+}
+
+void OScene::SerializeTo(nlohmann::json& json) const
+{
+	Base::SerializeTo(json);
 	for (const auto* sceneObject : _sceneObjects)
 	{
-		json["sceneObjects"].push_back(sceneObject->GetGuid());
+		nlohmann::json jsonSceneObject;
+		sceneObject->SerializeTo(jsonSceneObject);
+		json["sceneObjects"].push_back(jsonSceneObject);
 	}
 }
 
-void OScene::Deserialize(const nlohmann::json& json)
+void OScene::DeserializeFrom(const nlohmann::json& json)
 {
-	Base::Deserialize(json);
-	for (const auto& sceneObjectPath : json["sceneObjects"])
+	Base::DeserializeFrom(json);
+	for (const auto& jsonSceneObject : json["sceneObjects"])
 	{
-		auto* sceneObject = Engine.GetObjectManager().Create<TSceneObject>();
-		sceneObject->SetPath(sceneObjectPath);
-		sceneObject->Deserialize();
-		_sceneObjects.push_back(sceneObject);
+		
+		TSceneObject* sceneObject = nullptr; 
+		if (jsonSceneObject["type"] == "TSceneObject") sceneObject = Engine.GetObjectManager().Create<TSceneObject>();
+		else if (jsonSceneObject["type"] == "TMesh")   sceneObject = Engine.GetObjectManager().Create<TMesh>();
+		sceneObject->DeserializeFrom(jsonSceneObject);
+		Add(sceneObject);
 	}
 }

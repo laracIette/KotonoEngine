@@ -14,12 +14,18 @@ public:
 	UTransform& GetTransform();
 	const EVisibility GetVisibility() const;
 	KtViewport* GetViewport() const;
+	TSceneObject* GetParent() const;
 
 	void SetVisibility(const EVisibility visibility);
 	void SetViewport(KtViewport* viewport);
+	void SetParent(TSceneObject* sceneObject);
+
+	void SerializeTo(nlohmann::json& json) const override;
+	void DeserializeFrom(const nlohmann::json& json) override;
 
 private:
 	UTransform _transform;
 	EVisibility _visibility;
 	KtViewport* _viewport;
+	TSceneObject* _parent;
 };

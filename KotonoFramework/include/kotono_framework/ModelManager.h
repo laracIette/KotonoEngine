@@ -4,7 +4,9 @@
 class KtModelManager final : public KtItemManager<KtModel>
 {
 public:
-	KtModel* CreateItem(const std::filesystem::path& path) const override;
+	KtModel* Create(const std::filesystem::path& path) override;
+
+protected:
 	void CleanupItem(KtModel* item) const override;
 };
 

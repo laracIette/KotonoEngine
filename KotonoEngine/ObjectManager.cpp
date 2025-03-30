@@ -2,6 +2,7 @@
 #include <kotono_framework/Framework.h>
 #include "Mesh.h"
 #include "Image.h"
+#include "Scene.h"
 
 void KObjectManager::Init()
 {
@@ -10,37 +11,53 @@ void KObjectManager::Init()
 		.AddListener(this, &KObjectManager::Quit);
 
 
-	KtShader* shader2D = Framework.GetShaderManager().Get(
+	auto* shader2D = Framework.GetShaderManager().Create(
 		Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)"
 	);
-	KtShader* shader3D = Framework.GetShaderManager().Get(
+	auto* shader3D = Framework.GetShaderManager().Create(
 		Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3D.ktshader)"
 	);
 	shader2D->SetName("2D Shader");
 	shader3D->SetName("3D Shader");
 
-	KtModel* model1 = Framework.GetModelManager().Get(
+	auto* model1 = Framework.GetModelManager().Create(
 		Framework.GetPath().GetSolutionPath() / (R"(assets\models\viking_room.obj)")
 	);
-	KtModel* model2 = Framework.GetModelManager().Get(
+	auto* model2 = Framework.GetModelManager().Create(
 		Framework.GetPath().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)"
 	);
 
+
+	auto* scene = Create<OScene>();
+	scene->SetPath(Framework.GetPath().GetSolutionPath() / R"(assets\objects\scene.oscene)");
+#if false
 	TMesh* mesh1 = Create<TMesh>();
 	TMesh* mesh2 = Create<TMesh>();
 	RImage* image1 = Create<RImage>();
-
+	
 	mesh1->SetShader(shader3D);
 	mesh1->SetModel(model1);
-
+	
 	mesh2->SetShader(shader3D);
 	mesh2->SetModel(model2);
 	mesh2->GetTransform().SetRelativeLocation(glm::vec3(2.0f, 0.0f, 0.0f));
 	mesh2->GetTransform().SetRelativeScale(glm::vec3(0.2f));
-
+	
 	image1->SetShader(shader2D);
 	image1->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
 	image1->GetRect().SetRelativeScale(glm::vec2(0.5f));
+
+	scene->Add(mesh1);
+	scene->Add(mesh2);
+
+	Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED).AddListener(
+		scene, &OScene::Serialize
+	);
+#else
+	Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED).AddListener(
+		scene, &OScene::Deserialize
+	);
+#endif
 }
 
 void KObjectManager::Update()

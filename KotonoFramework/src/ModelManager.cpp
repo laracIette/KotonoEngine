@@ -1,9 +1,10 @@
 #include "ModelManager.h"
 
-KtModel* KtModelManager::CreateItem(const std::filesystem::path& path) const
+KtModel* KtModelManager::Create(const std::filesystem::path& path)
 {
     auto* item = new KtModel(path);
     item->Init();
+    _items[path] = item;
     return item;
 }
 

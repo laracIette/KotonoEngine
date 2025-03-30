@@ -4,7 +4,9 @@
 class KtShaderManager final : public KtItemManager<KtShader>
 {
 public:
-	KtShader* CreateItem(const std::filesystem::path& path) const override;
+	KtShader* Create(const std::filesystem::path& path) override;
+
+protected:
 	void CleanupItem(KtShader* item) const override;
 };
 

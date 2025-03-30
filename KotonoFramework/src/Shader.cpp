@@ -567,9 +567,16 @@ void KtShader::CreateDescriptorSetLayoutBindingImage(DescriptorSetLayoutBindingD
 {
 	if (descriptorSetLayoutBindingData.DescriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
 	{
-		descriptorSetLayoutBindingData.ImageTexture = Framework.GetImageTextureManager().Get(
-			Framework.GetPath().GetSolutionPath() / R"(assets\models\viking_room.png)"
-		);
+		const auto path = Framework.GetPath().GetSolutionPath() / R"(assets\models\viking_room.png)";
+		auto* imageTexture = Framework.GetImageTextureManager().Get(path);
+		if (imageTexture)
+		{
+			descriptorSetLayoutBindingData.ImageTexture = imageTexture;
+		}
+		else
+		{
+			descriptorSetLayoutBindingData.ImageTexture = Framework.GetImageTextureManager().Create(path);
+		}
 	}
 }
 

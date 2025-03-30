@@ -1,8 +1,10 @@
 #include "Mesh.h"
 #include <kotono_framework/Framework.h>
+#include <nlohmann/json.hpp>
 
 void TMesh::Update()
 {
+    Base::Update();
     AddToRenderQueue();
 }
 
@@ -34,4 +36,18 @@ void TMesh::AddToRenderQueue() const
     args.Viewport = GetViewport();
     args.ObjectData = { GetTransform().GetModelMatrix() };
 	Framework.GetRenderer().GetRenderer3D().AddToRenderQueue(args);
+}
+
+void TMesh::SerializeTo(nlohmann::json& json) const
+{
+    Base::SerializeTo(json);
+    json["shader"] = _shader ? _shader->GetPath() : "";
+    json["model"] = _model ? _model->GetPath() : "";
+}
+
+void TMesh::DeserializeFrom(const nlohmann::json& json)
+{
+    Base::DeserializeFrom(json);
+    _shader = Framework.GetShaderManager().Get(json["shader"]);
+    _model = Framework.GetModelManager().Get(json["model"]);
 }

@@ -1,0 +1,59 @@
+{
+    "guid": "6c47c965afd22849-73151ba2339e9334-4c8e87a594e41a3a-d6284781f6ed3bbf",
+    "name": "OScene",
+    "sceneObjects": [
+        {
+            "guid": "f246314e6c23f640-93003a5ab8755567-c245cf6d9b8cb547-a3c89d4464f919a7",
+            "model": "C:\\Users\\nicos\\source\\repos\\KotonoEngine\\assets\\models\\viking_room.obj",
+            "name": "TMesh",
+            "parent": "",
+            "shader": "C:\\Users\\nicos\\source\\repos\\KotonoEngine\\KotonoFramework\\shaders\\shader3D.ktshader",
+            "transform": {
+                "location": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "rotation": {
+                    "w": 1.0,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
+            },
+            "type": "TMesh"
+        },
+        {
+            "guid": "0e519951fba69445-bc049e609159b1c4-c0f8056522225fa6-78c6259b8c13e045",
+            "model": "C:\\Users\\nicos\\source\\repos\\KotonoEngine\\assets\\models\\SM_Column_low.fbx",
+            "name": "TMesh",
+            "parent": "",
+            "shader": "C:\\Users\\nicos\\source\\repos\\KotonoEngine\\KotonoFramework\\shaders\\shader3D.ktshader",
+            "transform": {
+                "location": {
+                    "x": 2.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "rotation": {
+                    "w": 1.0,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 0.20000000298023224,
+                    "y": 0.20000000298023224,
+                    "z": 0.20000000298023224
+                }
+            },
+            "type": "TMesh"
+        }
+    ],
+    "type": "OScene"
+}

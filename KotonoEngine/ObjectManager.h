@@ -9,7 +9,8 @@ public:
 	void Update();
 	void Cleanup();
 
-	template <class T> requires std::is_base_of_v<OObject, T>
+	template <class T> 
+	requires std::is_base_of_v<OObject, T>
 	T* Create()
 	{
 		T* object = new T();

@@ -1,9 +1,10 @@
 #include "ImageTextureManager.h"
 
-KtImageTexture* KtImageTextureManager::CreateItem(const std::filesystem::path& path) const
+KtImageTexture* KtImageTextureManager::Create(const std::filesystem::path& path)
 {
     auto* item = new KtImageTexture(path);
     item->Init();
+    _items[path] = item;
     return item;
 }
 

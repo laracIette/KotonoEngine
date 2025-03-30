@@ -16,21 +16,23 @@ public:
 			CleanupItem(item);
 			delete item;
 		}
+		_items.clear();
 	}
 
 	T* Get(const std::filesystem::path& path)
 	{
 		if (!_items.contains(path))
 		{
-			_items[path] = CreateItem(path);
+			return nullptr;
 		}
 
 		return _items[path];
 	}
 
-	virtual T* CreateItem(const std::filesystem::path& path) const = 0;
-	virtual void CleanupItem(T* item) const = 0;
+	virtual T* Create(const std::filesystem::path& path) = 0;
 
-private:
+protected:
 	std::unordered_map<std::filesystem::path, T*> _items;
+
+	virtual void CleanupItem(T* item) const = 0;
 };

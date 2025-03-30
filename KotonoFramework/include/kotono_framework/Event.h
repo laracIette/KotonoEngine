@@ -6,8 +6,19 @@
 class KtEvent
 {
 public:
-    template<class T, typename... Args>
-    void AddListener(T* instance, void (T::* function)(Args...), Args... args)
+    template<class Tinst, class Tfunc, typename... Args >
+    requires std::is_base_of_v<Tfunc, Tinst>
+    void AddListener(Tinst* instance, void (Tfunc::* function)(Args...), Args... args)
+    {
+        _listeners.push_back({
+            instance,
+            [instance, function, args...]() { (instance->*function)(args...); }
+        });
+    }
+
+    template<class Tinst, class Tfunc, typename... Args >
+    requires std::is_base_of_v<Tfunc, Tinst>
+    void AddListener(Tinst* instance, void (Tfunc::* function)(Args...) const, Args... args)
     {
         _listeners.push_back({
             instance,

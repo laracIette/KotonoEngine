@@ -1,6 +1,6 @@
 #pragma once
 #include "Object.h"
-#include <vector>
+#include <unordered_set>
 #include "SceneObject.h"
 class OScene : public OObject
 {
@@ -12,12 +12,14 @@ public:
 	void Load();
 	void Unload();
 
-protected:
-	void Serialize(nlohmann::json& json) const override;
-	void Deserialize(const nlohmann::json& json) override;
+	void Add(TSceneObject* sceneObject);
+	void Remove(TSceneObject* sceneObject);
+
+	void SerializeTo(nlohmann::json& json) const override;
+	void DeserializeFrom(const nlohmann::json& json) override;
 
 private:
 	KtViewport* _viewport;
-	std::vector<TSceneObject*> _sceneObjects;
+	std::unordered_set<TSceneObject*> _sceneObjects;
 };
 

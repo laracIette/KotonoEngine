@@ -3,6 +3,7 @@
 
 void RImage::Update()
 {
+	Base::Update();
 	AddToRenderQueue();
 }
 

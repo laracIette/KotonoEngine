@@ -17,6 +17,9 @@ public:
 
 	void AddToRenderQueue() const;
 
+	void SerializeTo(nlohmann::json& json) const override;
+	void DeserializeFrom(const nlohmann::json& json) override;
+
 private:
 	KtShader* _shader;
 	KtModel* _model;

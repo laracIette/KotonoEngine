@@ -5,6 +5,7 @@
 
 void OObject::Init()
 {
+    _name = GetTypeName();
 }
 
 void OObject::Update() 
@@ -35,6 +36,11 @@ const bool OObject::GetIsDelete() const
     return _isDelete;
 }
 
+const std::string OObject::GetTypeName() const
+{
+    return std::regex_replace(typeid(*this).name(), std::regex(R"(^(class ))"), "");
+}
+
 void OObject::SetName(const std::string& name)
 {
     _name = name;
@@ -54,7 +60,7 @@ void OObject::Serialize() const
 {
     nlohmann::json json;
     KtSerializer serializer;
-    Serialize(json);
+    SerializeTo(json);
     serializer.WriteData(_path, json);
 }
 
@@ -63,17 +69,17 @@ void OObject::Deserialize()
     nlohmann::json json;
     KtSerializer serializer;
     serializer.ReadData(_path, json);
-    Deserialize(json);
+    DeserializeFrom(json);
 }
 
-void OObject::Serialize(nlohmann::json& json) const
+void OObject::SerializeTo(nlohmann::json& json) const
 {
     json["guid"] = _guid;
-    json["type"] = std::regex_replace(typeid(*this).name(), std::regex(R"(^(class |struct ))"), "");
+    json["type"] = GetTypeName();
     json["name"] = _name;
 }
 
-void OObject::Deserialize(const nlohmann::json& json)
+void OObject::DeserializeFrom(const nlohmann::json& json)
 {
     _guid = json["guid"];
     _name = json["name"];
