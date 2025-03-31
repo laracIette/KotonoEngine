@@ -28,6 +28,7 @@
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="Rect.cpp" />
     <ClCompile Include="SceneObject.cpp" />
+    <ClCompile Include="Task.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>
@@ -41,6 +42,7 @@
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="SceneObject.h" />
+    <ClInclude Include="Task.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Visibility.h" />
