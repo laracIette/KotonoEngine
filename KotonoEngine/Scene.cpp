@@ -3,6 +3,7 @@
 #include "Engine.h"
 
 #include "Mesh.h"
+#include <iostream>
 
 void OScene::Init()
 {
@@ -60,11 +61,21 @@ void OScene::DeserializeFrom(const nlohmann::json& json)
 	Base::DeserializeFrom(json);
 	for (const auto& jsonSceneObject : json["sceneObjects"])
 	{
-		
-		TSceneObject* sceneObject = nullptr; 
-		if      (jsonSceneObject["type"] == "TSceneObject")    sceneObject = Engine.GetObjectManager().Create<TSceneObject>();
-		else if (jsonSceneObject["type"] == "TMesh")           sceneObject = Engine.GetObjectManager().Create<TMesh>();
-		sceneObject->DeserializeFrom(jsonSceneObject);
-		Add(sceneObject);
+		if (TSceneObject* sceneObject = GetSceneObject(jsonSceneObject["type"]))
+		{
+			sceneObject->DeserializeFrom(jsonSceneObject);
+			Add(sceneObject);
+		}
+		else
+		{
+			std::cerr << "Type of not supported by scene deserialization" << std::endl;
+		}
 	}
+}
+
+TSceneObject* OScene::GetSceneObject(const std::string_view type)
+{
+	if (type == "TSceneObject")    return Engine.GetObjectManager().Create<TSceneObject>();
+	else if (type == "TMesh")      return Engine.GetObjectManager().Create<TMesh>();
+	return nullptr;
 }
