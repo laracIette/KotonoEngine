@@ -28,9 +28,16 @@ public:
 	void SetWorldRotation(const glm::quat& worldRotation);
 	void SetWorldScale(const glm::vec3& worldScale);
 
+	void AddLocation(const glm::vec3& location);
+	void AddRotation(const glm::quat& rotation);
+	void AddScale(const glm::vec3& scale);
+
 	void SetParent(UTransform* parent);
 
 
+	const glm::mat4 GetTranslationMatrix() const;
+	const glm::mat4 GetRotationMatrix() const;
+	const glm::mat4 GetScaleMatrix() const;
 	const glm::mat4 GetModelMatrix() const;
 
 

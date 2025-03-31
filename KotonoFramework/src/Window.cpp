@@ -4,7 +4,6 @@
 #include "log.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 
 KtWindow::KtWindow() :
     _window(nullptr),
@@ -34,7 +33,6 @@ void KtWindow::Init()
     glfwMakeContextCurrent(_window);
 
     glfwSetFramebufferSizeCallback(_window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(_window, cursor_position_callback);
 
     framebuffer_size_callback(_window, _size.x, _size.y);
 
@@ -98,9 +96,4 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     Framework.GetRenderer().OnFramebufferResized();
 
     KT_DEBUG_LOG("window resized: %d x %d", width, height);
-}
-
-void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
-{
-    Framework.GetInputManager().GetMouse().SetCursorPosition(glm::vec2(xpos, ypos));
 }

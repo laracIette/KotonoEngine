@@ -1,6 +1,5 @@
 #include "Keyboard.h"
 #include "Framework.h"
-#include <ranges>
 
 void KtKeyboard::Update()
 {

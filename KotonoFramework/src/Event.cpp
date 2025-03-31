@@ -1,4 +1,6 @@
 #include "Event.h"
+#include "log.h"
+#include <iostream>
 
 void KtEvent::Broadcast()
 {
@@ -7,6 +9,10 @@ void KtEvent::Broadcast()
         if (listener.Instance)
         {
             listener.Callback();
+        }
+        else
+        {
+            std::cerr << "can't call listener.Callback(), listener.Instance is nullptr" << std::endl;
         }
     }
 }

@@ -6,11 +6,8 @@ class TCamera final : public TSceneObject
 
 public:
 	void Init() override;
-	void Cleanup() override;
 
-	void Use();	
-
-	void Move(const glm::vec3& direction);
+	void Use();
 
 private:
 	// Vertical fov in degrees
@@ -18,5 +15,8 @@ private:
 	float _depthNear;
 	float _depthFar;
 	float _speed;
+	float _sensitivity;
+	float _pitch;
+	float _yaw;
 };
 
