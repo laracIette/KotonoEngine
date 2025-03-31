@@ -67,6 +67,7 @@ void KObjectManager::Update()
 	InitObjects();
 	camera->Use();
 	UpdateObjects();
+	DeleteObjects();
 }
 
 void KObjectManager::Cleanup()
@@ -123,7 +124,7 @@ void KObjectManager::DeleteObjects()
 
 void KObjectManager::Create(OObject* object)
 {
-	KT_DEBUG_LOG("creating object");
+	KT_DEBUG_LOG("creating object of type '%s'", object->GetTypeName().c_str());
 	_objects.insert(object);
 	_inits.insert(object);
 }

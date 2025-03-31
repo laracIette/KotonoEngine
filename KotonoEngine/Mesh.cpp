@@ -1,11 +1,27 @@
 #include "Mesh.h"
 #include <kotono_framework/Framework.h>
 #include <nlohmann/json.hpp>
+#include "Engine.h"
+
+void TMesh::Init()
+{
+    _spinTask = Engine.GetObjectManager().Create<OTask>();
+    _spinTask->GetEventUpdate().AddListener(this, &TMesh::Spin);
+    _spinTask->SetDuration(5.0f);
+    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED)
+        .AddListener(_spinTask, &OTask::Start);
+}
 
 void TMesh::Update()
 {
     Base::Update();
     AddToRenderQueue();
+}
+
+void TMesh::Cleanup()
+{
+    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED)
+        .RemoveListener(this);
 }
 
 KtShader* TMesh::GetShader() const
@@ -50,4 +66,11 @@ void TMesh::DeserializeFrom(const nlohmann::json& json)
     Base::DeserializeFrom(json);
     _shader = Framework.GetShaderManager().Get(json["shader"]);
     _model = Framework.GetModelManager().Get(json["model"]);
+}
+
+void TMesh::Spin()
+{
+    const float speed = 10.0f * Engine.GetTime().GetDelta();
+    const glm::quat rotation = glm::quat(glm::radians(glm::vec3(0.0f, speed, 0.0f)));
+    GetTransform().AddRotation(rotation);
 }

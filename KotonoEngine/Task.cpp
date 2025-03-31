@@ -1,18 +1,12 @@
 #include "Task.h"
-#include <kotono_framework/Framework.h>
-
-void OTask::Init()
-{
-    //_startTime = Framework.GetTime().GetNow();
-}
+#include "Engine.h"
 
 void OTask::Update()
 {
     
     if (_isPlaying)
     {
-        //if (Framework.GetTime().GetNow() - _startTime < _duration)
-        if (true)
+        if (Engine.GetTime().GetNow() - _startTime < _duration)
         {
             _updateEvent.Broadcast();
         }
@@ -38,13 +32,13 @@ void OTask::SetDuration(const float duration)
     _duration = duration;
 }
 
-void OTask::Play()
+void OTask::Start()
 {
     _isPlaying = true;
+    _startTime = Engine.GetTime().GetNow();
 }
 
 void OTask::Stop()
 {
     _isPlaying = false;
-    //SetIsDelete(true);
 }

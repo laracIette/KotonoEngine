@@ -6,15 +6,14 @@ class OTask : public OObject
 	BASECLASS(OObject)
 
 public:
-	void Init(); // add override after merge
-	void Update(); // add override after merge
+	void Update() override;
 
 	const float GetDuration() const;
 	KtEvent& GetEventUpdate();
 
 	void SetDuration(const float duration);
 
-	void Play();
+	void Start();
 	void Stop();
 
 private:

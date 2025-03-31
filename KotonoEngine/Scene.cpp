@@ -62,8 +62,8 @@ void OScene::DeserializeFrom(const nlohmann::json& json)
 	{
 		
 		TSceneObject* sceneObject = nullptr; 
-		if (jsonSceneObject["type"] == "TSceneObject") sceneObject = Engine.GetObjectManager().Create<TSceneObject>();
-		else if (jsonSceneObject["type"] == "TMesh")   sceneObject = Engine.GetObjectManager().Create<TMesh>();
+		if      (jsonSceneObject["type"] == "TSceneObject")    sceneObject = Engine.GetObjectManager().Create<TSceneObject>();
+		else if (jsonSceneObject["type"] == "TMesh")           sceneObject = Engine.GetObjectManager().Create<TMesh>();
 		sceneObject->DeserializeFrom(jsonSceneObject);
 		Add(sceneObject);
 	}
