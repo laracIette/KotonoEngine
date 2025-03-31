@@ -31,34 +31,17 @@ void KObjectManager::Init()
 
 	auto* scene = Create<OScene>();
 	scene->SetPath(Framework.GetPath().GetSolutionPath() / R"(assets\objects\scene.oscene)");
-#if false
-	TMesh* mesh1 = Create<TMesh>();
-	TMesh* mesh2 = Create<TMesh>();
-	RImage* image1 = Create<RImage>();
-	
-	mesh1->SetShader(shader3D);
-	mesh1->SetModel(model1);
-	
-	mesh2->SetShader(shader3D);
-	mesh2->SetModel(model2);
-	mesh2->GetTransform().SetRelativeLocation(glm::vec3(2.0f, 0.0f, 0.0f));
-	mesh2->GetTransform().SetRelativeScale(glm::vec3(0.2f));
-	
+
+	auto* image1 = Create<RImage>();
+
 	image1->SetShader(shader2D);
 	image1->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
 	image1->GetRect().SetRelativeScale(glm::vec2(0.5f));
 
-	scene->Add(mesh1);
-	scene->Add(mesh2);
-
-	Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED).AddListener(
-		scene, &OScene::Serialize
-	);
-#else
 	Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED).AddListener(
 		scene, &OScene::Reload
 	);
-#endif
+
 	camera = Create<TCamera>();
 }
 
