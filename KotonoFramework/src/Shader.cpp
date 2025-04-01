@@ -97,10 +97,13 @@ void KtShader::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32
 
 void KtShader::CreateDescriptorSetLayouts()
 {
+	_descriptorSetLayoutDatas.reserve(_shaderLayout.DescriptorSetLayouts.size());
 	for (const auto& [set, setLayout] : _shaderLayout.DescriptorSetLayouts)
 	{
 		std::vector<VkDescriptorSetLayoutBinding> setBindings;
 		std::vector<DescriptorSetLayoutBindingData> setBindingDatas;
+		setBindings.reserve(setLayout.DescriptorSetLayoutBindings.size());
+		setBindingDatas.reserve(setLayout.DescriptorSetLayoutBindings.size());
 		for (const auto& ktBinding : setLayout.DescriptorSetLayoutBindings)
 		{
 			VkDescriptorSetLayoutBinding vkBinding{};
@@ -118,6 +121,8 @@ void KtShader::CreateDescriptorSetLayouts()
 			bindingData.DescriptorType = ktBinding.DescriptorType;
 			bindingData.DescriptorCount = ktBinding.DescriptorCount;
 			bindingData.StageFlags = ktBinding.StageFlags;
+			bindingData.ImageTexture = nullptr; // Optional
+			bindingData.MemberCounts.fill(1);
 			setBindingDatas.push_back(bindingData);
 		}
 		VkDescriptorSetLayout newSetLayout = nullptr;
