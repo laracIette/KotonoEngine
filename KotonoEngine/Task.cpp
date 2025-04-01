@@ -3,12 +3,12 @@
 
 void OTask::Update()
 {
-    
+    Base::Update();
     if (_isPlaying)
     {
         if (Engine.GetTime().GetNow() - _startTime < _duration)
         {
-            _updateEvent.Broadcast();
+            _eventUpdate.Broadcast();
         }
         else
         {
@@ -24,7 +24,12 @@ const float OTask::GetDuration() const
 
 KtEvent& OTask::GetEventUpdate()
 {
-    return _updateEvent;
+    return _eventUpdate;
+}
+
+KtEvent& OTask::GetEventCompleted()
+{
+    return _eventCompleted;
 }
 
 void OTask::SetDuration(const float duration)
@@ -41,4 +46,5 @@ void OTask::Start()
 void OTask::Stop()
 {
     _isPlaying = false;
+    _eventCompleted.Broadcast();
 }

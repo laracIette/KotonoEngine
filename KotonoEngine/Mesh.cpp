@@ -5,6 +5,7 @@
 
 void TMesh::Init()
 {
+    Base::Init();
     _spinTask = Engine.GetObjectManager().Create<OTask>();
     _spinTask->GetEventUpdate().AddListener(this, &TMesh::Spin);
     _spinTask->SetDuration(5.0f);
@@ -20,6 +21,8 @@ void TMesh::Update()
 
 void TMesh::Cleanup()
 {
+    Base::Cleanup();
+    _spinTask->SetIsDelete(true);
     Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED)
         .RemoveListener(this);
 }

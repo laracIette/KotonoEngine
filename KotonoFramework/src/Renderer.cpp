@@ -46,7 +46,7 @@ void KtRenderer::Cleanup()
 
 void KtRenderer::CreateSwapChain()
 {
-	const KtSwapChainSupportDetails swapChainSupport = Framework.GetContext().QuerySwapChainSupport(Framework.GetContext().GetPhysicalDevice());
+	KtSwapChainSupportDetails swapChainSupport = Framework.GetContext().QuerySwapChainSupport(Framework.GetContext().GetPhysicalDevice());
 
 	const VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.Formats);
 	const VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.PresentModes);
@@ -110,7 +110,7 @@ void KtRenderer::CreateSwapChain()
 	_swapChainExtent = extent;
 }
 
-const VkSurfaceFormatKHR KtRenderer::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const
+const VkSurfaceFormatKHR KtRenderer::ChooseSwapSurfaceFormat(const std::span<VkSurfaceFormatKHR> availableFormats) const
 {
 	for (const auto& availableFormat : availableFormats)
 	{
@@ -123,7 +123,7 @@ const VkSurfaceFormatKHR KtRenderer::ChooseSwapSurfaceFormat(const std::vector<V
 	return availableFormats[0];
 }
 
-const VkPresentModeKHR KtRenderer::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const
+const VkPresentModeKHR KtRenderer::ChooseSwapPresentMode(const std::span<VkPresentModeKHR> availablePresentModes) const
 {
 	for (const auto& availablePresentMode : availablePresentModes)
 	{
@@ -338,9 +338,9 @@ void KtRenderer::CreateDepthResources()
 	);
 }
 
-const VkFormat KtRenderer::FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const
+const VkFormat KtRenderer::FindSupportedFormat(const std::span<VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const
 {
-	for (VkFormat format : candidates)
+	for (const VkFormat format : candidates)
 	{
 		VkFormatProperties props;
 		vkGetPhysicalDeviceFormatProperties(Framework.GetContext().GetPhysicalDevice(), format, &props);
@@ -360,14 +360,11 @@ const VkFormat KtRenderer::FindSupportedFormat(const std::vector<VkFormat>& cand
 
 const VkFormat KtRenderer::FindDepthFormat() const
 {
-	return FindSupportedFormat(
-		{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-	);
+	std::vector<VkFormat> formats = { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT };
+	return FindSupportedFormat(formats, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
 
-const bool KtRenderer::HasStencilComponent(VkFormat format) const
+const bool KtRenderer::HasStencilComponent(const VkFormat format) const
 {
 	return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 }
@@ -482,7 +479,7 @@ void KtRenderer::DrawFrame()
 
 	const std::array<VkSemaphore, 1> waitSemaphores = { _imageAvailableSemaphores[_currentFrame] };
 	const std::array<VkPipelineStageFlags, 1> waitStages = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-	submitInfo.waitSemaphoreCount = waitSemaphores.size();
+	submitInfo.waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size());
 	submitInfo.pWaitSemaphores = waitSemaphores.data();
 	submitInfo.pWaitDstStageMask = waitStages.data();
 
@@ -490,7 +487,7 @@ void KtRenderer::DrawFrame()
 	submitInfo.pCommandBuffers = &_commandBuffers[_currentFrame];
 
 	const std::array<VkSemaphore, 1> signalSemaphores = { _renderFinishedSemaphores[_currentFrame] };
-	submitInfo.signalSemaphoreCount = signalSemaphores.size();
+	submitInfo.signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size());
 	submitInfo.pSignalSemaphores = signalSemaphores.data();
 
 	VK_CHECK_THROW(
@@ -500,11 +497,11 @@ void KtRenderer::DrawFrame()
 
 	VkPresentInfoKHR presentInfo{};
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-	presentInfo.waitSemaphoreCount = signalSemaphores.size();
+	presentInfo.waitSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size());
 	presentInfo.pWaitSemaphores = signalSemaphores.data();
 
 	const std::array<VkSwapchainKHR, 1> swapChains = { _swapChain };
-	presentInfo.swapchainCount = swapChains.size();
+	presentInfo.swapchainCount = static_cast<uint32_t>(swapChains.size());
 	presentInfo.pSwapchains = swapChains.data();
 	presentInfo.pImageIndices = &imageIndex;
 	presentInfo.pResults = nullptr; // Optional

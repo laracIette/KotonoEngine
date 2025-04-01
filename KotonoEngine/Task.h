@@ -10,6 +10,7 @@ public:
 
 	const float GetDuration() const;
 	KtEvent& GetEventUpdate();
+	KtEvent& GetEventCompleted();
 
 	void SetDuration(const float duration);
 
@@ -20,6 +21,7 @@ private:
 	bool _isPlaying;
 	float _startTime;
 	float _duration;
-	KtEvent _updateEvent;
+	KtEvent _eventUpdate;
+	KtEvent _eventCompleted;
 };
 

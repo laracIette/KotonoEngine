@@ -6,6 +6,7 @@
 #include "Model.h"
 #include <vector>
 #include <array>
+#include <span>
 #include <unordered_map>
 #include "Renderer2D.h"
 #include "Renderer3D.h"
@@ -61,8 +62,8 @@ private:
 
 	void CreateSwapChain();
 	void RecreateSwapChain();
-	const VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
-	const VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const;
+	const VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::span<VkSurfaceFormatKHR> availableFormats) const;
+	const VkPresentModeKHR ChooseSwapPresentMode(const std::span<VkPresentModeKHR> availablePresentModes) const;
 	const VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
 	void CreateImageViews();
 
@@ -71,9 +72,9 @@ private:
 
 	void CreateColorResources();
 	void CreateDepthResources();
-	const VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
+	const VkFormat FindSupportedFormat(const std::span<VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const;
 	const VkFormat FindDepthFormat() const;
-	const bool HasStencilComponent(VkFormat format) const;
+	const bool HasStencilComponent(const VkFormat format) const;
 
 	void CreateCommandBuffers();
 	void CmdRecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const;
