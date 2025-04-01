@@ -2,12 +2,11 @@
 #include "Culler3D.h"
 #include "Framework.h"
 
-const KtRenderQueue3DData KtCuller3D::ComputeCulling(const KtRenderQueue3DData& renderQueueData) const
+const KtRenderQueue3DData KtCuller3D::ComputeCulling(KtRenderQueue3DData renderQueueData) const
 {
-	KtRenderQueue3DData culledData = renderQueueData;
-	culledData = ComputeNullCulling(culledData);
-	culledData = ComputeDistanceCulling(culledData);
-	return culledData;
+	renderQueueData = ComputeNullCulling(renderQueueData);
+	renderQueueData = ComputeDistanceCulling(renderQueueData);
+	return renderQueueData;
 }
 
 const KtRenderQueue3DData KtCuller3D::ComputeNullCulling(const KtRenderQueue3DData& renderQueueData) const
