@@ -229,7 +229,7 @@ void KtRenderer::CreateRenderPass()
 	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
-	std::array<VkAttachmentDescription, 3> attachments = 
+	const std::array<VkAttachmentDescription, 3> attachments = 
 	{ 
 		colorAttachment, 
 		depthAttachment, 
@@ -257,7 +257,7 @@ void KtRenderer::CreateFramebuffers()
 
 	for (size_t i = 0; i < _swapChainImageViews.size(); i++)
 	{
-		std::array<VkImageView, 3> attachments = 
+		const std::array<VkImageView, 3> attachments = 
 		{
 			_colorImageView,
 			_depthImageView,
@@ -441,7 +441,6 @@ void KtRenderer::CreateSyncObjects()
 			vkCreateSemaphore(Framework.GetContext().GetDevice(), &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS ||
 			vkCreateFence(Framework.GetContext().GetDevice(), &fenceInfo, nullptr, &_inFlightFences[i]) != VK_SUCCESS)
 		{
-
 			throw std::runtime_error("failed to create synchronization objects for a frame!");
 		}
 	}

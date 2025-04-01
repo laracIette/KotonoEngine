@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include "UniformData2D.h"
 #include "AddToRenderQueue2DArgs.h"
-class KtRenderer2D
+class KtRenderer2D final
 {
 public:
 	void Init();

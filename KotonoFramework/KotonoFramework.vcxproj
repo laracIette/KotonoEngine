@@ -134,6 +134,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Culler3D.cpp" />
     <ClCompile Include="src\Serializer.cpp" />
     <ClCompile Include="src\Path.cpp" />
     <ClCompile Include="src\ShaderManager.cpp" />
@@ -159,6 +160,7 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\kotono_framework\Culler3D.h" />
     <ClInclude Include="include\kotono_framework\Button.h" />
     <ClInclude Include="include\kotono_framework\ImageTextureManager.h" />
     <ClInclude Include="include\kotono_framework\AddToRenderQueue3DArgs.h" />
@@ -200,6 +202,7 @@
     <ClInclude Include="include\kotono_framework\ShaderLayout.h" />
     <ClInclude Include="include\kotono_framework\Path.h" />
     <ClInclude Include="include\kotono_framework\Serializer.h" />
+    <ClInclude Include="include\kotono_framework\RenderQueue3DData.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

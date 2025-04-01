@@ -1,9 +1,8 @@
 #pragma once
-#include <vector>
-#include <unordered_map>
-#include "UniformData3D.h"
 #include "AddToRenderQueue3DArgs.h"
-class KtRenderer3D
+#include "UniformData3D.h"
+#include "Culler3D.h"
+class KtRenderer3D final
 {
 public:
 	void Init();
@@ -17,24 +16,8 @@ public:
 	void Reset();
 
 private:
-	struct RenderQueue3DViewportData
-	{
-		std::vector<KtObjectData3D> ObjectDatas;
-	};
-	struct RenderQueue3DModelData
-	{
-		std::unordered_map<KtViewport*, RenderQueue3DViewportData> Viewports;
-	};
-	struct RenderQueue3DShaderData
-	{
-		std::unordered_map<KtModel*, RenderQueue3DModelData> Models;
-	};
-	struct RenderQueue3DData
-	{
-		std::unordered_map<KtShader*, RenderQueue3DShaderData> Shaders;
-	};
-
-	RenderQueue3DData _renderQueue3DData;
+	KtRenderQueue3DData _renderQueueData;
 	KtUniformData3D _uniformData;
+	KtCuller3D _culler;
 };
 
