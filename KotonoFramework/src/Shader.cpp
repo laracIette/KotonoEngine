@@ -32,7 +32,6 @@ void KtShader::Cleanup()
 	vkDestroyPipeline(Framework.GetContext().GetDevice(), _graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(Framework.GetContext().GetDevice(), _pipelineLayout, nullptr);
 
-	
 	for (const auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
 	{
 		for (const auto& descriptorSetLayoutBindingData : descriptorSetLayoutData.DescriptorSetLayoutBindingDatas)
@@ -84,17 +83,16 @@ void KtShader::CmdBind(VkCommandBuffer commandBuffer) const
 
 void KtShader::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const
 {
-	uint32_t offset = 0;
+	std::vector<VkDescriptorSet> descriptorSets;
+	descriptorSets.reserve(_descriptorSetLayoutDatas.size());
 	for (const auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
 	{
-		vkCmdBindDescriptorSets(
-			commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout,
-			offset, 1, &descriptorSetLayoutData.DescriptorSets[imageIndex], 0, nullptr
-		);
-		++offset;
+		descriptorSets.push_back(descriptorSetLayoutData.DescriptorSets[imageIndex]);
 	}
-
-	// TODO: put in 1 command
+	vkCmdBindDescriptorSets(
+		commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout,
+		0, static_cast<uint32_t>(descriptorSets.size()), descriptorSets.data(), 0, nullptr
+	);
 }
 
 void KtShader::CreateDescriptorSetLayouts()

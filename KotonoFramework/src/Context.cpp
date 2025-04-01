@@ -586,10 +586,10 @@ void KtContext::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemo
 	allocCreateInfo.requiredFlags = properties;
 	allocCreateInfo.flags = flags;
 
-	if (vmaCreateBuffer(_allocator, &bufferInfo, &allocCreateInfo, &buffer.Buffer, &buffer.Allocation, &buffer.AllocationInfo) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create buffer with VMA!");
-	}
+	VK_CHECK_THROW(
+		vmaCreateBuffer(_allocator, &bufferInfo, &allocCreateInfo, &buffer.Buffer, &buffer.Allocation, &buffer.AllocationInfo),
+		"failed to create buffer with VMA!"
+	);
 
 	if ((flags & VMA_ALLOCATION_CREATE_MAPPED_BIT) && !buffer.AllocationInfo.pMappedData)
 	{
