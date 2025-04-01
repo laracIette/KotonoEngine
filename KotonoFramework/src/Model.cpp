@@ -33,9 +33,9 @@ const std::filesystem::path& KtModel::GetPath() const
 
 void KtModel::CmdBind(VkCommandBuffer commandBuffer) const
 {
-	VkBuffer vertexBuffers[] = { _vertexBuffer.Buffer };
-	VkDeviceSize offsets[] = { 0 };
-	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+	const std::array<VkBuffer, 1> vertexBuffers = { _vertexBuffer.Buffer };
+	const std::array<VkDeviceSize, 1> offsets = { 0 };
+	vkCmdBindVertexBuffers(commandBuffer, 0, vertexBuffers.size(), vertexBuffers.data(), offsets.data());
 	vkCmdBindIndexBuffer(commandBuffer, _indexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
 }
 

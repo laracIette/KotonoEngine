@@ -70,13 +70,17 @@ void KtRenderer::CreateSwapChain()
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
 	const KtQueueFamilyIndices indices = Framework.GetContext().FindQueueFamilies(Framework.GetContext().GetPhysicalDevice());
-	const uint32_t queueFamilyIndices[] = { indices.GraphicsFamily.value(), indices.PresentFamily.value() };
+	const std::array<uint32_t, 2> queueFamilyIndices = 
+	{ 
+		indices.GraphicsFamily.value(), 
+		indices.PresentFamily.value() 
+	};
 
 	if (indices.GraphicsFamily != indices.PresentFamily)
 	{
 		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-		createInfo.queueFamilyIndexCount = 2;
-		createInfo.pQueueFamilyIndices = queueFamilyIndices;
+		createInfo.queueFamilyIndexCount = static_cast<uint32_t>(queueFamilyIndices.size());
+		createInfo.pQueueFamilyIndices = queueFamilyIndices.data();
 	}
 	else
 	{
@@ -225,7 +229,12 @@ void KtRenderer::CreateRenderPass()
 	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
-	std::array<VkAttachmentDescription, 3> attachments = { colorAttachment, depthAttachment, colorAttachmentResolve };
+	std::array<VkAttachmentDescription, 3> attachments = 
+	{ 
+		colorAttachment, 
+		depthAttachment, 
+		colorAttachmentResolve 
+	};
 
 	VkRenderPassCreateInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
@@ -471,18 +480,18 @@ void KtRenderer::DrawFrame()
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-	VkSemaphore waitSemaphores[] = { _imageAvailableSemaphores[_currentFrame] };
-	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-	submitInfo.waitSemaphoreCount = 1;
-	submitInfo.pWaitSemaphores = waitSemaphores;
-	submitInfo.pWaitDstStageMask = waitStages;
+	const std::array<VkSemaphore, 1> waitSemaphores = { _imageAvailableSemaphores[_currentFrame] };
+	const std::array<VkPipelineStageFlags, 1> waitStages = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+	submitInfo.waitSemaphoreCount = waitSemaphores.size();
+	submitInfo.pWaitSemaphores = waitSemaphores.data();
+	submitInfo.pWaitDstStageMask = waitStages.data();
 
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &_commandBuffers[_currentFrame];
 
-	VkSemaphore signalSemaphores[] = { _renderFinishedSemaphores[_currentFrame] };
-	submitInfo.signalSemaphoreCount = 1;
-	submitInfo.pSignalSemaphores = signalSemaphores;
+	const std::array<VkSemaphore, 1> signalSemaphores = { _renderFinishedSemaphores[_currentFrame] };
+	submitInfo.signalSemaphoreCount = signalSemaphores.size();
+	submitInfo.pSignalSemaphores = signalSemaphores.data();
 
 	VK_CHECK_THROW(
 		vkQueueSubmit(Framework.GetContext().GetGraphicsQueue(), 1, &submitInfo, _inFlightFences[_currentFrame]),
@@ -491,12 +500,12 @@ void KtRenderer::DrawFrame()
 
 	VkPresentInfoKHR presentInfo{};
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-	presentInfo.waitSemaphoreCount = 1;
-	presentInfo.pWaitSemaphores = signalSemaphores;
+	presentInfo.waitSemaphoreCount = signalSemaphores.size();
+	presentInfo.pWaitSemaphores = signalSemaphores.data();
 
-	VkSwapchainKHR swapChains[] = { _swapChain };
-	presentInfo.swapchainCount = 1;
-	presentInfo.pSwapchains = swapChains;
+	const std::array<VkSwapchainKHR, 1> swapChains = { _swapChain };
+	presentInfo.swapchainCount = swapChains.size();
+	presentInfo.pSwapchains = swapChains.data();
 	presentInfo.pImageIndices = &imageIndex;
 	presentInfo.pResults = nullptr; // Optional
 
