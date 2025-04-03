@@ -388,8 +388,11 @@ void KtRenderer::CreateCommandBuffers()
 	);
 }
 
-void KtRenderer::CmdRecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const
+void KtRenderer::RecordCommandBuffer(const uint32_t imageIndex, const uint32_t currentFrame) const
 {
+	VkCommandBuffer commandBuffer = _commandBuffers[currentFrame];
+	vkResetCommandBuffer(commandBuffer, 0);
+
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	beginInfo.flags = 0; // Optional
@@ -462,6 +465,7 @@ void KtRenderer::ResetRenderers()
 
 void KtRenderer::DrawFrame()
 {
+	// probably stalling every frame
 	vkWaitForFences(Framework.GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
 
 	uint32_t imageIndex;
@@ -478,28 +482,42 @@ void KtRenderer::DrawFrame()
 	}
 	vkResetFences(Framework.GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame]);
 
-	JoinRenderThread();
-	vkResetCommandBuffer(_commandBuffers[_currentFrame], 0);
-	CmdRecordCommandBuffer(_commandBuffers[_currentFrame], imageIndex);
+	//JoinRenderThread();
+	//const uint32_t renderThreadFrame = GetRenderThreadFrame(_currentFrame);
+	//_renderThread = std::thread(&KtRenderer::RecordCommandBuffer, this, imageIndex, renderThreadFrame);
+	RecordCommandBuffer(imageIndex, _currentFrame);
 
+	//JoinRHIThread();
+	//const uint32_t renderRHIFrame = GetRHIThreadFrame(_currentFrame);
+	//_rhiThread = std::thread(&KtRenderer::SubmitCommandBuffer, this, imageIndex, renderRHIFrame);
+	SubmitCommandBuffer(imageIndex, _currentFrame);
+
+	ResetRenderers();
+
+	++_frameCount;
+	_currentFrame = _frameCount % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
+}
+
+void KtRenderer::SubmitCommandBuffer(const uint32_t imageIndex, const uint32_t currentFrame)
+{
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-	const std::array<VkSemaphore, 1> waitSemaphores = { _imageAvailableSemaphores[_currentFrame] };
+	const std::array<VkSemaphore, 1> waitSemaphores = { _imageAvailableSemaphores[currentFrame] };
 	const std::array<VkPipelineStageFlags, 1> waitStages = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 	submitInfo.waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size());
 	submitInfo.pWaitSemaphores = waitSemaphores.data();
 	submitInfo.pWaitDstStageMask = waitStages.data();
 
 	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &_commandBuffers[_currentFrame];
+	submitInfo.pCommandBuffers = &_commandBuffers[currentFrame];
 
-	const std::array<VkSemaphore, 1> signalSemaphores = { _renderFinishedSemaphores[_currentFrame] };
+	const std::array<VkSemaphore, 1> signalSemaphores = { _renderFinishedSemaphores[currentFrame] };
 	submitInfo.signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size());
 	submitInfo.pSignalSemaphores = signalSemaphores.data();
 
 	VK_CHECK_THROW(
-		vkQueueSubmit(Framework.GetContext().GetGraphicsQueue(), 1, &submitInfo, _inFlightFences[_currentFrame]),
+		vkQueueSubmit(Framework.GetContext().GetGraphicsQueue(), 1, &submitInfo, _inFlightFences[currentFrame]),
 		"failed to submit draw command buffer!"
 	);
 
@@ -514,7 +532,7 @@ void KtRenderer::DrawFrame()
 	presentInfo.pImageIndices = &imageIndex;
 	presentInfo.pResults = nullptr; // Optional
 
-	result = vkQueuePresentKHR(Framework.GetContext().GetPresentQueue(), &presentInfo);
+	const VkResult result = vkQueuePresentKHR(Framework.GetContext().GetPresentQueue(), &presentInfo);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || _framebufferResized)
 	{
@@ -522,14 +540,9 @@ void KtRenderer::DrawFrame()
 		RecreateSwapChain();
 	}
 	else VK_CHECK_THROW(
-		result, 
+		result,
 		"failed to present swap chain image!"
 	);
-	
-	ResetRenderers();
-
-	++_frameCount;
-	_currentFrame = _frameCount % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
 void KtRenderer::JoinRenderThread()
@@ -538,6 +551,16 @@ void KtRenderer::JoinRenderThread()
 	{
 		_renderThread.join();
 	}
+}
+
+const uint32_t KtRenderer::GetRenderThreadFrame(const uint32_t currentFrame) const
+{
+	return (currentFrame - 1) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
+}
+
+const uint32_t KtRenderer::GetRHIThreadFrame(const uint32_t currentFrame) const
+{
+	return (currentFrame - 2) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
 void KtRenderer::JoinRHIThread()

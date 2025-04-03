@@ -20,7 +20,7 @@ public:
 
 	void DrawFrame();
 
-	void JoinRenderThread();
+
 
 	void OnFramebufferResized();
 
@@ -67,8 +67,8 @@ private:
 	uint32_t _currentFrame;
 
 	void CreateSwapChain();
+	void CleanupSwapChain();
 	void RecreateSwapChain();
-	void JoinRHIThread();
 	const VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::span<VkSurfaceFormatKHR> availableFormats) const;
 	const VkPresentModeKHR ChooseSwapPresentMode(const std::span<VkPresentModeKHR> availablePresentModes) const;
 	const VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
@@ -84,13 +84,17 @@ private:
 	const bool HasStencilComponent(const VkFormat format) const;
 
 	void CreateCommandBuffers();
-	void CmdRecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const;
-
+	void RecordCommandBuffer(const uint32_t imageIndex, const uint32_t currentFrame) const;
+	void SubmitCommandBuffer(const uint32_t imageIndex, const uint32_t currentFrame);
 
 	void CreateSyncObjects();
 
 	void CmdDrawRenderers(VkCommandBuffer commandBuffer) const;
 	void ResetRenderers();
 
-	void CleanupSwapChain();
+	void JoinRHIThread();
+	void JoinRenderThread();
+
+	const uint32_t GetRenderThreadFrame(const uint32_t currentFrame) const;
+	const uint32_t GetRHIThreadFrame(const uint32_t currentFrame) const;
 };
