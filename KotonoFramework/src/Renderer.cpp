@@ -1,9 +1,9 @@
-#include "Renderer.h"
 #include "Framework.h"
-#include <chrono>
 #include "log.h"
-#include "vk_utils.h"
+#include "Renderer.h"
 #include "Viewport.h"
+#include "vk_utils.h"
+#include <chrono>
 
 void KtRenderer::Init()
 {
@@ -26,6 +26,9 @@ void KtRenderer::Init()
 void KtRenderer::Cleanup()
 {
 	KT_DEBUG_LOG("cleaning up renderer");
+
+	JoinRenderThread();
+	JoinRHIThread();
 
 	_renderer2D.Cleanup();
 	_renderer3D.Cleanup();
@@ -414,8 +417,7 @@ void KtRenderer::CmdRecordCommandBuffer(VkCommandBuffer commandBuffer, const uin
 	// Begin RenderPass
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	_renderer3D.CmdDraw(commandBuffer, _currentFrame);
-	_renderer2D.CmdDraw(commandBuffer, _currentFrame);
+	CmdDrawRenderers(commandBuffer);
 
 	// End RenderPass
 	vkCmdEndRenderPass(commandBuffer);
@@ -424,6 +426,12 @@ void KtRenderer::CmdRecordCommandBuffer(VkCommandBuffer commandBuffer, const uin
 		vkEndCommandBuffer(commandBuffer), 
 		"failed to record command buffer!"
 	);
+}
+
+void KtRenderer::CmdDrawRenderers(VkCommandBuffer commandBuffer) const
+{
+	_renderer3D.CmdDraw(commandBuffer, _currentFrame);
+	_renderer2D.CmdDraw(commandBuffer, _currentFrame);
 }
 
 void KtRenderer::CreateSyncObjects()
@@ -470,6 +478,7 @@ void KtRenderer::DrawFrame()
 	}
 	vkResetFences(Framework.GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame]);
 
+	JoinRenderThread();
 	vkResetCommandBuffer(_commandBuffers[_currentFrame], 0);
 	CmdRecordCommandBuffer(_commandBuffers[_currentFrame], imageIndex);
 
@@ -523,8 +532,29 @@ void KtRenderer::DrawFrame()
 	_currentFrame = _frameCount % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
+void KtRenderer::JoinRenderThread()
+{
+	if (_renderThread.joinable())
+	{
+		_renderThread.join();
+	}
+}
+
+void KtRenderer::JoinRHIThread()
+{
+	if (_rhiThread.joinable())
+	{
+		_rhiThread.join();
+	}
+}
+
 void KtRenderer::RecreateSwapChain()
 {
+	// wait for cpu
+	JoinRenderThread();
+	JoinRHIThread();
+
+	// wait for gpu
 	vkDeviceWaitIdle(Framework.GetContext().GetDevice());
 
 	CleanupSwapChain();

@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include "Renderer2D.h"
 #include "Renderer3D.h"
+#include <thread>
 
 class KtRenderer final
 {
@@ -18,6 +19,8 @@ public:
 	void Cleanup();
 
 	void DrawFrame();
+
+	void JoinRenderThread();
 
 	void OnFramebufferResized();
 
@@ -43,6 +46,9 @@ private:
 
 	std::vector<VkCommandBuffer> _commandBuffers;
 
+	std::thread _renderThread;
+	std::thread _rhiThread;
+
 	VkImage _colorImage;
 	VmaAllocation _colorImageAllocation;
 	VkImageView _colorImageView;
@@ -62,6 +68,7 @@ private:
 
 	void CreateSwapChain();
 	void RecreateSwapChain();
+	void JoinRHIThread();
 	const VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::span<VkSurfaceFormatKHR> availableFormats) const;
 	const VkPresentModeKHR ChooseSwapPresentMode(const std::span<VkPresentModeKHR> availablePresentModes) const;
 	const VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
@@ -79,8 +86,10 @@ private:
 	void CreateCommandBuffers();
 	void CmdRecordCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const;
 
+
 	void CreateSyncObjects();
 
+	void CmdDrawRenderers(VkCommandBuffer commandBuffer) const;
 	void ResetRenderers();
 
 	void CleanupSwapChain();
