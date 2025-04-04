@@ -64,7 +64,6 @@ private:
 	bool _framebufferResized;
 
 	uint32_t _frameCount;
-	uint32_t _currentFrame;
 
 	void CreateSwapChain();
 	void CleanupSwapChain();
@@ -82,6 +81,8 @@ private:
 	const VkFormat FindSupportedFormat(const std::span<VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const;
 	const VkFormat FindDepthFormat() const;
 	const bool HasStencilComponent(const VkFormat format) const;
+
+	const uint32_t AcquireNextImage(const uint32_t currentFrame);
 
 	void CreateCommandBuffers();
 	void RecordCommandBuffer(const uint32_t imageIndex, const uint32_t currentFrame) const;
