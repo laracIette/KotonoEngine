@@ -14,7 +14,7 @@ public:
 
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const;
 
-	void Reset();
+	void Reset(const uint32_t currentFrame);
 
 private:
 	struct RenderQueue2DViewportData
@@ -30,8 +30,8 @@ private:
 		std::unordered_map<KtShader*, RenderQueue2DShaderData> Shaders;
 	};
 
-	RenderQueue2DData _renderQueue2DData;
-	KtUniformData2D _uniformData;
+	std::array<RenderQueue2DData, KT_FRAMES_IN_FLIGHT> _renderQueueData;
+	std::array<KtUniformData2D, KT_FRAMES_IN_FLIGHT> _uniformData;
 
 	KtAllocatedBuffer _vertexBuffer;
 	KtAllocatedBuffer _indexBuffer;

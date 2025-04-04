@@ -13,11 +13,11 @@ public:
 
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const;
 	
-	void Reset();
+	void Reset(const uint32_t currentFrame);
 
 private:
-	KtRenderQueue3DData _renderQueueData;
-	KtUniformData3D _uniformData;
+	std::array<KtRenderQueue3DData, KT_FRAMES_IN_FLIGHT> _renderQueueData;
+	std::array<KtUniformData3D, KT_FRAMES_IN_FLIGHT> _uniformData;
 	KtCuller3D _culler;
 };
 

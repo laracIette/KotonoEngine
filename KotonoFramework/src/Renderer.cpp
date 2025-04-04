@@ -27,8 +27,8 @@ void KtRenderer::Cleanup()
 {
 	KT_DEBUG_LOG("cleaning up renderer");
 
-	JoinRenderThread();
-	JoinRHIThread();
+	JoinThread(_renderThread);
+	JoinThread(_rhiThread);
 
 	_renderer2D.Cleanup();
 	_renderer3D.Cleanup();
@@ -457,45 +457,46 @@ void KtRenderer::CreateSyncObjects()
 	}
 }
 
-void KtRenderer::ResetRenderers()
+void KtRenderer::ResetRenderers(const uint32_t currentFrame)
 {
-	_renderer2D.Reset();
-	_renderer3D.Reset();
+	_renderer2D.Reset(currentFrame);
+	_renderer3D.Reset(currentFrame);
 }
 
 void KtRenderer::DrawFrame()
 {
-	// probably stalling every frame
+	// buffer this
 	vkWaitForFences(Framework.GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
 
 	uint32_t imageIndex;
 	VkResult result = vkAcquireNextImageKHR(Framework.GetContext().GetDevice(), _swapChain, UINT64_MAX, _imageAvailableSemaphores[_currentFrame], VK_NULL_HANDLE, &imageIndex);
-
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
 		RecreateSwapChain();
+		KT_DEBUG_LOG("KtRenderer::DrawFrame(): frame skipped");
 		return;
 	}
 	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
 	{
 		throw std::runtime_error("failed to acquire swap chain image!");
 	}
+
 	vkResetFences(Framework.GetContext().GetDevice(), 1, &_inFlightFences[_currentFrame]);
 
-	//JoinRenderThread();
+	//JoinThread(_renderThread);
 	//const uint32_t renderThreadFrame = GetRenderThreadFrame(_currentFrame);
 	//_renderThread = std::thread(&KtRenderer::RecordCommandBuffer, this, imageIndex, renderThreadFrame);
 	RecordCommandBuffer(imageIndex, _currentFrame);
 
-	//JoinRHIThread();
+	//JoinThread(_rhiThread);
 	//const uint32_t renderRHIFrame = GetRHIThreadFrame(_currentFrame);
 	//_rhiThread = std::thread(&KtRenderer::SubmitCommandBuffer, this, imageIndex, renderRHIFrame);
 	SubmitCommandBuffer(imageIndex, _currentFrame);
 
-	ResetRenderers();
-
-	++_frameCount;
+	_frameCount++;
 	_currentFrame = _frameCount % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
+
+	ResetRenderers(_currentFrame);
 }
 
 void KtRenderer::SubmitCommandBuffer(const uint32_t imageIndex, const uint32_t currentFrame)
@@ -545,39 +546,38 @@ void KtRenderer::SubmitCommandBuffer(const uint32_t imageIndex, const uint32_t c
 	);
 }
 
-void KtRenderer::JoinRenderThread()
+void KtRenderer::JoinThread(std::thread& thread) const
 {
-	if (_renderThread.joinable())
+	if (thread.joinable())
 	{
-		_renderThread.join();
+		thread.join();
 	}
 }
 
-void KtRenderer::JoinRHIThread()
+const uint32_t KtRenderer::GetCurrentFrame() const
 {
-	if (_rhiThread.joinable())
-	{
-		_rhiThread.join();
-	}
+	return _frameCount % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
 const uint32_t KtRenderer::GetRenderThreadFrame(const uint32_t currentFrame) const
 {
-	return (currentFrame - 1) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
+	// Prepare render thread for RHI thread
+	return (_frameCount - 1) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
 const uint32_t KtRenderer::GetRHIThreadFrame(const uint32_t currentFrame) const
 {
-	return (currentFrame - 2) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
+	// Prepare RHI thread for game thread
+	return (_frameCount - 2) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
 void KtRenderer::RecreateSwapChain()
 {
-	// wait for cpu
-	JoinRenderThread();
-	JoinRHIThread();
+	// Wait for CPU
+	JoinThread(_renderThread);
+	JoinThread(_rhiThread);
 
-	// wait for gpu
+	// Wait for GPU
 	vkDeviceWaitIdle(Framework.GetContext().GetDevice());
 
 	CleanupSwapChain();

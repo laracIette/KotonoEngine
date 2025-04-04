@@ -28,7 +28,7 @@ void KtRenderer2D::Cleanup() const
 
 void KtRenderer2D::AddToRenderQueue(const KtAddToRenderQueue2DArgs& args)
 {
-	_renderQueue2DData
+	_renderQueueData[Framework.GetRenderer().GetCurrentFrame()]
 		.Shaders[args.Shader]
 		.Viewports[args.Viewport]
 		.ObjectDatas.push_back(args.ObjectData);
@@ -36,12 +36,12 @@ void KtRenderer2D::AddToRenderQueue(const KtAddToRenderQueue2DArgs& args)
 
 void KtRenderer2D::SetUniformData(const KtUniformData2D& uniformData)
 {
-	_uniformData = uniformData;
+	_uniformData[Framework.GetRenderer().GetCurrentFrame()] = uniformData;
 }
 
 void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const
 {
-	for (auto& [shader, shaderData] : _renderQueue2DData.Shaders)
+	for (auto& [shader, shaderData] : _renderQueueData[currentFrame].Shaders)
 	{
 		if (!shader)
 		{
@@ -101,10 +101,10 @@ void KtRenderer2D::CmdBindBuffers(VkCommandBuffer commandBuffer) const
 	vkCmdBindIndexBuffer(commandBuffer, _indexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
 }
 
-void KtRenderer2D::Reset()
+void KtRenderer2D::Reset(const uint32_t currentFrame)
 {
-	_uniformData = {};
-	_renderQueue2DData = {};
+	_uniformData[currentFrame] = {};
+	_renderQueueData[currentFrame] = {};
 }
 
 void KtRenderer2D::CreateVertexBuffer()

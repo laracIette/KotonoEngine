@@ -1,5 +1,6 @@
 #include "Renderer3D.h"
 #include "log.h"
+#include "Framework.h"
 
 void KtRenderer3D::Init()
 {
@@ -11,7 +12,7 @@ void KtRenderer3D::Cleanup()
 
 void KtRenderer3D::AddToRenderQueue(const KtAddToRenderQueue3DArgs& args)
 {
-	_renderQueueData
+	_renderQueueData[Framework.GetRenderer().GetCurrentFrame()]
 		.Shaders[args.Shader]
 		.Models[args.Model]
 		.Viewports[args.Viewport]
@@ -20,12 +21,12 @@ void KtRenderer3D::AddToRenderQueue(const KtAddToRenderQueue3DArgs& args)
 
 void KtRenderer3D::SetUniformData(const KtUniformData3D& uniformData)
 {
-	_uniformData = uniformData;
+	_uniformData[Framework.GetRenderer().GetCurrentFrame()] = uniformData;
 }
 
 void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const
 {
-	const auto culledData = _culler.ComputeCulling(_renderQueueData);
+	const auto culledData = _culler.ComputeCulling(_renderQueueData[currentFrame]);
 
 	for (auto& [shader, shaderData] : culledData.Shaders)
 	{
@@ -72,8 +73,8 @@ void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 	}
 }
 
-void KtRenderer3D::Reset()
+void KtRenderer3D::Reset(const uint32_t currentFrame)
 {
-	_uniformData = {};
-	_renderQueueData = {};
+	_uniformData[currentFrame] = {};
+	_renderQueueData[currentFrame] = {};
 }

@@ -20,7 +20,7 @@ public:
 
 	void DrawFrame();
 
-
+	const uint32_t GetCurrentFrame() const;
 
 	void OnFramebufferResized();
 
@@ -90,10 +90,9 @@ private:
 	void CreateSyncObjects();
 
 	void CmdDrawRenderers(VkCommandBuffer commandBuffer) const;
-	void ResetRenderers();
+	void ResetRenderers(const uint32_t currentFrame);
 
-	void JoinRenderThread();
-	void JoinRHIThread();
+	void JoinThread(std::thread& thread) const;
 
 	const uint32_t GetRenderThreadFrame(const uint32_t currentFrame) const;
 	const uint32_t GetRHIThreadFrame(const uint32_t currentFrame) const;
