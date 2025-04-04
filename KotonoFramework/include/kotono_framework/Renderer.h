@@ -92,8 +92,8 @@ private:
 	void CmdDrawRenderers(VkCommandBuffer commandBuffer) const;
 	void ResetRenderers();
 
-	void JoinRHIThread();
 	void JoinRenderThread();
+	void JoinRHIThread();
 
 	const uint32_t GetRenderThreadFrame(const uint32_t currentFrame) const;
 	const uint32_t GetRHIThreadFrame(const uint32_t currentFrame) const;

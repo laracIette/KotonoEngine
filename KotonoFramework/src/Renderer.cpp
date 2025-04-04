@@ -553,6 +553,14 @@ void KtRenderer::JoinRenderThread()
 	}
 }
 
+void KtRenderer::JoinRHIThread()
+{
+	if (_rhiThread.joinable())
+	{
+		_rhiThread.join();
+	}
+}
+
 const uint32_t KtRenderer::GetRenderThreadFrame(const uint32_t currentFrame) const
 {
 	return (currentFrame - 1) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
@@ -561,14 +569,6 @@ const uint32_t KtRenderer::GetRenderThreadFrame(const uint32_t currentFrame) con
 const uint32_t KtRenderer::GetRHIThreadFrame(const uint32_t currentFrame) const
 {
 	return (currentFrame - 2) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
-}
-
-void KtRenderer::JoinRHIThread()
-{
-	if (_rhiThread.joinable())
-	{
-		_rhiThread.join();
-	}
 }
 
 void KtRenderer::RecreateSwapChain()
