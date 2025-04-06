@@ -1,5 +1,5 @@
-#include "Framework.h"
 #include "Mouse.h"
+#include "Framework.h"
 #include "Window.h"
 #include <GLFW/glfw3.h>
 

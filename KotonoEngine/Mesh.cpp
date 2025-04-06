@@ -6,6 +6,8 @@
 #include <kotono_framework/ModelManager.h>
 #include <nlohmann/json.hpp>
 #include "Engine.h"
+#include "ObjectManager.h"
+#include "Time.h"
 
 void TMesh::Init()
 {

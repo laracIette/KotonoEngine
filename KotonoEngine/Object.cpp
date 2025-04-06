@@ -1,5 +1,5 @@
-#include <nlohmann/json.hpp>
 #include "Object.h"
+#include <nlohmann/json.hpp>
 #include <kotono_framework/Serializer.h>
 #include <regex>
 

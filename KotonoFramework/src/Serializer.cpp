@@ -1,4 +1,4 @@
-#include <nlohmann/json.hpp>
+#include <nlohmann/json.hpp> // because fwd in Serializer.h
 #include "Serializer.h"
 #include "File.h"
 #include <fstream>

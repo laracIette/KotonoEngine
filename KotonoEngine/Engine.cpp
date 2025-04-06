@@ -1,25 +1,30 @@
 #include "Engine.h"
+#include "Time.h"
+#include "ObjectManager.h"
 
 KEngine Engine;
 
+static KTime Time;
+static KObjectManager ObjectManager;
+
 void KEngine::Init()
 {
-    _time.Init();
-    _objectManager.Init();
+    Time.Init();
+    ObjectManager.Init();
 }
 
 void KEngine::Cleanup()
 {
-    _time.Cleanup();
-    _objectManager.Cleanup();
+    Time.Cleanup();
+    ObjectManager.Cleanup();
 }
 
 KTime& KEngine::GetTime()
 {
-    return _time;
+    return Time;
 }
 
 KObjectManager& KEngine::GetObjectManager()
 {
-    return _objectManager;
+    return ObjectManager;
 }

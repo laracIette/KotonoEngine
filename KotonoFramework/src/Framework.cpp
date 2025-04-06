@@ -21,19 +21,6 @@ static KtModelManager ModelManager;
 static KtShaderManager ShaderManager;
 static KtImageTextureManager ImageTextureManager;
 
-void KtFramework::Cleanup()
-{
-    ImageTextureManager.Cleanup();
-    ShaderManager.Cleanup();
-    ModelManager.Cleanup();
-    InputManager.Cleanup();
-    AudioManager.Cleanup();
-    Renderer.Cleanup();
-    Context.Cleanup();
-    Window.Cleanup();
-    Path.Cleanup();
-}
-
 void KtFramework::Init()
 {
     Path.Init();
@@ -45,6 +32,19 @@ void KtFramework::Init()
     ModelManager.Init();
     ShaderManager.Init();
     ImageTextureManager.Init();
+}
+
+void KtFramework::Cleanup()
+{
+    ImageTextureManager.Cleanup();
+    ShaderManager.Cleanup();
+    ModelManager.Cleanup();
+    InputManager.Cleanup();
+    AudioManager.Cleanup();
+    Renderer.Cleanup();
+    Context.Cleanup();
+    Window.Cleanup();
+    Path.Cleanup();
 }
 
 KtPath& KtFramework::GetPath()

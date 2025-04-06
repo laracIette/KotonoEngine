@@ -3,6 +3,8 @@
 #include <kotono_framework/Renderer.h>
 #include <kotono_framework/InputManager.h>
 #include "Engine.h"
+#include "Time.h"
+#include "ObjectManager.h"
 
 int main()
 {

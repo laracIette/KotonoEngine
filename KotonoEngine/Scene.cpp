@@ -1,9 +1,9 @@
-#include <nlohmann/json.hpp>
 #include "Scene.h"
-#include "Engine.h"
-
-#include "Mesh.h"
+#include <nlohmann/json.hpp>
 #include <iostream>
+#include "Engine.h"
+#include "ObjectManager.h"
+#include "Mesh.h"
 
 void OScene::Init()
 {

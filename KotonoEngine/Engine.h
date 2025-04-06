@@ -1,6 +1,6 @@
 #pragma once
-#include "Time.h"
-#include "ObjectManager.h"
+class KTime;
+class KObjectManager;
 class KEngine
 {
 public:
@@ -9,10 +9,6 @@ public:
 
 	KTime& GetTime();
 	KObjectManager& GetObjectManager();
-
-private:
-	KTime _time;
-	KObjectManager _objectManager;
 };
 
 extern KEngine Engine;
