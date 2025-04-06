@@ -1,72 +1,93 @@
 #include "Framework.h"
+#include "Path.h"
+#include "Window.h"
+#include "Context.h"
+#include "Renderer.h"
+#include "AudioManager.h"
+#include "InputManager.h"
+#include "ModelManager.h"
+#include "ShaderManager.h"
+#include "ImageTextureManager.h"
+
+KtFramework Framework;
+
+static KtPath Path;
+static KtWindow Window;
+static KtContext Context;
+static KtRenderer Renderer;
+static KtAudioManager AudioManager;
+static KtInputManager InputManager;
+static KtModelManager ModelManager;
+static KtShaderManager ShaderManager;
+static KtImageTextureManager ImageTextureManager;
 
 void KtFramework::Cleanup()
 {
-    _imageTextureManager.Cleanup();
-    _shaderManager.Cleanup();
-    _modelManager.Cleanup();
-    _inputManager.Cleanup();
-    _audioManager.Cleanup();
-    _renderer.Cleanup();
-    _context.Cleanup();
-    _window.Cleanup();
-    _path.Cleanup();
+    ImageTextureManager.Cleanup();
+    ShaderManager.Cleanup();
+    ModelManager.Cleanup();
+    InputManager.Cleanup();
+    AudioManager.Cleanup();
+    Renderer.Cleanup();
+    Context.Cleanup();
+    Window.Cleanup();
+    Path.Cleanup();
 }
 
 void KtFramework::Init()
 {
-    _path.Init();
-    _window.Init();
-    _context.Init();
-    _renderer.Init();
-    _audioManager.Init();
-    _inputManager.Init();
-    _modelManager.Init();
-    _shaderManager.Init();
-    _imageTextureManager.Init();
+    Path.Init();
+    Window.Init();
+    Context.Init();
+    Renderer.Init();
+    AudioManager.Init();
+    InputManager.Init();
+    ModelManager.Init();
+    ShaderManager.Init();
+    ImageTextureManager.Init();
 }
 
 KtPath& KtFramework::GetPath()
 {
-    return _path;
+    return Path;
 }
 
 KtWindow& KtFramework::GetWindow()
 {
-    return _window;
+    return Window;
 }
 
 KtContext& KtFramework::GetContext()
 {
-    return _context;
+    return Context;
 }
 
 KtRenderer& KtFramework::GetRenderer()
 {
-    return _renderer;
+    return Renderer;
 }
 
 KtAudioManager& KtFramework::GetAudioManager()
 {
-    return _audioManager;
+    return AudioManager;
 }
 
 KtInputManager& KtFramework::GetInputManager()
 {
-    return _inputManager;
+    return InputManager;
 }
 
 KtModelManager& KtFramework::GetModelManager()
 {
-    return _modelManager;
+    return ModelManager;
 }
 
 KtShaderManager& KtFramework::GetShaderManager()
 {
-    return _shaderManager;
+    return ShaderManager;
 }
 
 KtImageTextureManager& KtFramework::GetImageTextureManager()
 {
-    return _imageTextureManager;
+    return ImageTextureManager;
 }

@@ -1,8 +1,8 @@
 #include <kotono_framework/Framework.h>
+#include <kotono_framework/Window.h>
+#include <kotono_framework/Renderer.h>
+#include <kotono_framework/InputManager.h>
 #include "Engine.h"
-
-KtFramework Framework;
-KEngine Engine;
 
 int main()
 {

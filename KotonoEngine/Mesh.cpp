@@ -1,5 +1,9 @@
 #include "Mesh.h"
 #include <kotono_framework/Framework.h>
+#include <kotono_framework/Renderer.h>
+#include <kotono_framework/InputManager.h>
+#include <kotono_framework/ShaderManager.h>
+#include <kotono_framework/ModelManager.h>
 #include <nlohmann/json.hpp>
 #include "Engine.h"
 

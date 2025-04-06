@@ -1,5 +1,10 @@
 #include "ObjectManager.h"
 #include <kotono_framework/Framework.h>
+#include <kotono_framework/Window.h>
+#include <kotono_framework/InputManager.h>
+#include <kotono_framework/ShaderManager.h>
+#include <kotono_framework/ModelManager.h>
+#include <kotono_framework/Path.h>
 #include "Mesh.h"
 #include "Image.h"
 #include "Scene.h"

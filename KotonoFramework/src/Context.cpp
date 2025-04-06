@@ -1,5 +1,6 @@
-#include "Context.h"
 #include "Framework.h"
+#include "Context.h"
+#include "Window.h"
 #include <set>
 #include <fstream>
 #include "Vertex3D.h"

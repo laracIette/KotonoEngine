@@ -1,5 +1,7 @@
 #include "Engine.h"
 
+KEngine Engine;
+
 void KEngine::Init()
 {
     _time.Init();

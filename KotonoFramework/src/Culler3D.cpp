@@ -1,6 +1,7 @@
 #define KT_DEBUG_LOG_DISABLED
-#include "Culler3D.h"
 #include "Framework.h"
+#include "Culler3D.h"
+#include "log.h"
 
 const KtRenderQueue3DData KtCuller3D::ComputeCulling(KtRenderQueue3DData renderQueueData) const
 {

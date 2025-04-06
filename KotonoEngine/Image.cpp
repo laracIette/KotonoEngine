@@ -1,5 +1,6 @@
 #include "Image.h"
 #include <kotono_framework/Framework.h>
+#include <kotono_framework/Renderer.h>
 
 void RImage::Update()
 {

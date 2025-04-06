@@ -1,5 +1,7 @@
-#include "Mouse.h"
 #include "Framework.h"
+#include "Mouse.h"
+#include "Window.h"
+#include <GLFW/glfw3.h>
 
 void KtMouse::Update()
 {

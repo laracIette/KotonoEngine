@@ -1,5 +1,6 @@
-#include "ImageTexture.h"
 #include "Framework.h"
+#include "ImageTexture.h"
+#include "Context.h"
 #include "log.h"
 
 KtImageTexture::KtImageTexture(const std::filesystem::path& path) :

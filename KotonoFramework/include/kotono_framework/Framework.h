@@ -1,13 +1,13 @@
 #pragma once
-#include "Path.h"
-#include "Window.h"
-#include "Context.h"
-#include "Renderer.h"
-#include "AudioManager.h"
-#include "InputManager.h"
-#include "ModelManager.h"
-#include "ShaderManager.h"
-#include "ImageTextureManager.h"
+class KtPath;
+class KtWindow;
+class KtContext;
+class KtRenderer;
+class KtAudioManager;
+class KtInputManager;
+class KtModelManager;
+class KtShaderManager;
+class KtImageTextureManager;
 class KtFramework final
 {
 public:
@@ -23,17 +23,6 @@ public:
 	KtModelManager& GetModelManager();
 	KtShaderManager& GetShaderManager();
 	KtImageTextureManager& GetImageTextureManager();
-
-private:
-	KtPath _path;
-	KtWindow _window;
-	KtContext _context;
-	KtRenderer _renderer;
-	KtAudioManager _audioManager;
-	KtInputManager _inputManager;
-	KtModelManager _modelManager;
-	KtShaderManager _shaderManager;
-	KtImageTextureManager _imageTextureManager;
 };
 
 extern KtFramework Framework;
