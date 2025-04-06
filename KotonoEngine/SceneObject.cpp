@@ -46,19 +46,16 @@ void TSceneObject::SetViewport(KtViewport* viewport)
 void TSceneObject::SetParent(TSceneObject* sceneObject)
 {
 	_parent = sceneObject;
-	if (_parent)
-	{
-		_transform.SetParent(&_parent->_transform);
-	}
+	_transform.SetParent(_parent ? &_parent->_transform : nullptr);
 }
 
 void TSceneObject::SerializeTo(nlohmann::json& json) const
 {
 	Base::SerializeTo(json);
 	json["parent"] = _parent ? static_cast<std::string>(_parent->GetGuid()) : "";
-	json["transform"]["location"]["x"] = _transform.GetRelativeLocation().x;
-	json["transform"]["location"]["y"] = _transform.GetRelativeLocation().y;
-	json["transform"]["location"]["z"] = _transform.GetRelativeLocation().z;
+	json["transform"]["position"]["x"] = _transform.GetRelativePosition().x;
+	json["transform"]["position"]["y"] = _transform.GetRelativePosition().y;
+	json["transform"]["position"]["z"] = _transform.GetRelativePosition().z;
 	json["transform"]["rotation"]["w"] = _transform.GetRelativeRotation().w;
 	json["transform"]["rotation"]["x"] = _transform.GetRelativeRotation().x;
 	json["transform"]["rotation"]["y"] = _transform.GetRelativeRotation().y;
@@ -72,10 +69,10 @@ void TSceneObject::DeserializeFrom(const nlohmann::json& json)
 {
 	Base::DeserializeFrom(json);
 	// parent
-	_transform.SetRelativeLocation({
-		json["transform"]["location"]["x"],
-		json["transform"]["location"]["y"],
-		json["transform"]["location"]["z"]
+	_transform.SetRelativePosition({
+		json["transform"]["position"]["x"],
+		json["transform"]["position"]["y"],
+		json["transform"]["position"]["z"]
 	});
 	_transform.SetRelativeRotation({
 		json["transform"]["rotation"]["w"],

@@ -5,7 +5,7 @@
 #include "Scene.h"
 #include "Camera.h"
 
-static TCamera* camera = nullptr;
+static TCamera* Camera = nullptr;
 
 void KObjectManager::Init()
 {
@@ -42,13 +42,13 @@ void KObjectManager::Init()
 		scene, &OScene::Reload
 	);
 
-	camera = Create<TCamera>();
+	Camera = Create<TCamera>();
 }
 
 void KObjectManager::Update()
 {
 	InitObjects();
-	camera->Use();
+	Camera->Use();
 	UpdateObjects();
 	DeleteObjects();
 }

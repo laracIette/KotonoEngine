@@ -9,7 +9,7 @@
             "parent": "",
             "shader": "C:\\Users\\nicos\\source\\repos\\KotonoEngine\\KotonoFramework\\shaders\\shader3D.ktshader",
             "transform": {
-                "location": {
+                "position": {
                     "x": 0.0,
                     "y": 0.0,
                     "z": 0.0
@@ -35,7 +35,7 @@
             "parent": "",
             "shader": "C:\\Users\\nicos\\source\\repos\\KotonoEngine\\KotonoFramework\\shaders\\shader3D.ktshader",
             "transform": {
-                "location": {
+                "position": {
                     "x": 2.0,
                     "y": 0.0,
                     "z": 0.0

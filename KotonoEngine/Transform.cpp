@@ -1,16 +1,16 @@
 #include "Transform.h"
 
 UTransform::UTransform() :
-	_relativeLocation(0.0f, 0.0f, 0.0f),
+	_relativePosition(0.0f, 0.0f, 0.0f),
 	_relativeRotation(glm::identity<glm::quat>()),
 	_relativeScale(1.0f, 1.0f, 1.0f),
 	_parent(nullptr)
 {
 }
 
-const glm::vec3& UTransform::GetRelativeLocation() const
+const glm::vec3& UTransform::GetRelativePosition() const
 {
-	return _relativeLocation;
+	return _relativePosition;
 }
 
 const glm::quat& UTransform::GetRelativeRotation() const
@@ -23,13 +23,13 @@ const glm::vec3& UTransform::GetRelativeScale() const
 	return _relativeScale;
 }
 
-const glm::vec3 UTransform::GetWorldLocation() const
+const glm::vec3 UTransform::GetWorldPosition() const
 {
 	if (_parent)
 	{
-		return _parent->GetWorldLocation() * _relativeLocation;
+		return _parent->GetWorldPosition() * _relativePosition;
 	}
-	return _relativeLocation;
+	return _relativePosition;
 }
 
 const glm::quat UTransform::GetWorldRotation() const
@@ -70,9 +70,9 @@ UTransform* UTransform::GetParent() const
 	return _parent;
 }
 
-void UTransform::SetRelativeLocation(const glm::vec3& relativeLocation)
+void UTransform::SetRelativePosition(const glm::vec3& relativePosition)
 {
-	_relativeLocation = relativeLocation;
+	_relativePosition = relativePosition;
 }
 
 void UTransform::SetRelativeRotation(const glm::quat& relativeRotation)
@@ -85,14 +85,14 @@ void UTransform::SetRelativeScale(const glm::vec3& relativeScale)
 	_relativeScale = relativeScale;
 }
 
-void UTransform::SetWorldLocation(const glm::vec3& worldLocation)
+void UTransform::SetWorldPosition(const glm::vec3& worldPosition)
 {
 	if (_parent)
 	{
-		SetRelativeLocation(worldLocation - _parent->GetWorldLocation());
+		SetRelativePosition(worldPosition - _parent->GetWorldPosition());
 		return;
 	}
-	SetRelativeLocation(worldLocation);
+	SetRelativePosition(worldPosition);
 }
 
 void UTransform::SetWorldRotation(const glm::quat& worldRotation)
@@ -115,9 +115,9 @@ void UTransform::SetWorldScale(const glm::vec3& worldScale)
 	SetRelativeScale(worldScale);
 }
 
-void UTransform::AddLocation(const glm::vec3& location)
+void UTransform::AddPosition(const glm::vec3& position)
 {
-	SetRelativeLocation(_relativeLocation + location);
+	SetRelativePosition(_relativePosition + position);
 }
 
 void UTransform::AddRotation(const glm::quat& rotation)
@@ -137,7 +137,7 @@ void UTransform::SetParent(UTransform* parent)
 
 const glm::mat4 UTransform::GetTranslationMatrix() const
 {
-	return glm::translate(glm::identity<glm::mat4>(), GetWorldLocation());
+	return glm::translate(glm::identity<glm::mat4>(), GetWorldPosition());
 }
 
 const glm::mat4 UTransform::GetRotationMatrix() const
@@ -157,11 +157,11 @@ const glm::mat4 UTransform::GetModelMatrix() const
 
 const glm::vec3 UTransform::GetDirection(UTransform* target) const
 {
-	return target->GetWorldLocation() - GetWorldLocation();
+	return target->GetWorldPosition() - GetWorldPosition();
 }
 
 const float UTransform::GetDistance(UTransform* other) const
 {
-	return glm::distance(GetWorldLocation(), other->GetWorldLocation());
+	return glm::distance(GetWorldPosition(), other->GetWorldPosition());
 }
 

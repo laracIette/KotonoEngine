@@ -12,15 +12,18 @@ public:
 
 	const URect& GetRect() const;
 	URect& GetRect();
-	KtViewport* GetViewport() const;
-
 	const EVisibility GetVisibility() const;
+	KtViewport* GetViewport() const;
+	RInterfaceObject* GetParent() const;
+
 	void SetVisibility(const EVisibility visibility);
 	void SetViewport(KtViewport* viewport);
+	void SetParent(RInterfaceObject* parent);
 
 private:
 	URect _rect;
 	EVisibility _visibility;
 	KtViewport* _viewport;
+	RInterfaceObject* _parent;
 };
 

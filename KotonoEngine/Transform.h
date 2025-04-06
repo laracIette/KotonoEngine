@@ -5,11 +5,11 @@ class UTransform final
 public:
 	UTransform();
 
-	const glm::vec3& GetRelativeLocation() const;
+	const glm::vec3& GetRelativePosition() const;
 	const glm::quat& GetRelativeRotation() const;
 	const glm::vec3& GetRelativeScale() const;
 
-	const glm::vec3 GetWorldLocation() const;
+	const glm::vec3 GetWorldPosition() const;
 	const glm::quat GetWorldRotation() const;
 	const glm::vec3 GetWorldScale() const;
 
@@ -20,15 +20,15 @@ public:
 	UTransform* GetParent() const;
 
 
-	void SetRelativeLocation(const glm::vec3& relativeLocation);
+	void SetRelativePosition(const glm::vec3& relativePosition);
 	void SetRelativeRotation(const glm::quat& relativeRotation);
 	void SetRelativeScale(const glm::vec3& relativeScale);
 
-	void SetWorldLocation(const glm::vec3& worldLocation);
+	void SetWorldPosition(const glm::vec3& worldPosition);
 	void SetWorldRotation(const glm::quat& worldRotation);
 	void SetWorldScale(const glm::vec3& worldScale);
 
-	void AddLocation(const glm::vec3& location);
+	void AddPosition(const glm::vec3& position);
 	void AddRotation(const glm::quat& rotation);
 	void AddScale(const glm::vec3& scale);
 
@@ -45,7 +45,7 @@ public:
 	const float GetDistance(UTransform* other) const;
 
 private:
-	glm::vec3 _relativeLocation;
+	glm::vec3 _relativePosition;
 	glm::quat _relativeRotation;
 	glm::vec3 _relativeScale;
 

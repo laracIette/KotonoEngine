@@ -21,6 +21,11 @@ KtViewport* RInterfaceObject::GetViewport() const
 	return _viewport;
 }
 
+RInterfaceObject* RInterfaceObject::GetParent() const
+{
+	return _parent;
+}
+
 const EVisibility RInterfaceObject::GetVisibility() const
 {
 	return _visibility;
@@ -34,4 +39,10 @@ void RInterfaceObject::SetVisibility(const EVisibility visibility)
 void RInterfaceObject::SetViewport(KtViewport* viewport)
 {
 	_viewport = viewport;
+}
+
+void RInterfaceObject::SetParent(RInterfaceObject* parent)
+{
+	_parent = parent;
+	_rect.SetParent(_parent ? &_parent->_rect : nullptr);
 }
