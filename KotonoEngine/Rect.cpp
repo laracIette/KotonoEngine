@@ -43,6 +43,11 @@ const float URect::GetWorldRotation() const
 	return _relativeRotation;
 }
 
+const glm::vec2 URect::GetScreenPosition() const
+{
+	return glm::vec2();
+}
+
 const glm::vec2 URect::GetWorldScale() const
 {
 	if (_parent)
@@ -117,15 +122,25 @@ void URect::SetBaseSize(const glm::uvec2& baseSize)
 	_baseSize = baseSize;
 }
 
-const glm::mat4 URect::GetModelMatrix() const
+const glm::mat4 URect::GetTranslationMatrix() const
+{
+	return glm::translate(glm::identity<glm::mat4>(), glm::vec3(GetWorldPosition(), 0.0f));
+}
+
+const glm::mat4 URect::GetRotationMatrix() const
+{
+	return glm::rotate(glm::identity<glm::mat4>(), GetWorldRotation(), glm::vec3(0.0f, 0.0f, 1.0f));
+}
+
+const glm::mat4 URect::GetScaleMatrix() const
 {
 	const auto& viewportExtent = WindowViewport.GetExtent();
 	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
-	const auto size = glm::vec2(_baseSize) * GetWorldScale() / viewportSize;
+	const auto size = glm::vec2(_baseSize) * GetWorldScale() / viewportSize * 2.0f;
+	return glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.0f));
+}
 
-	const glm::mat4 translationMatrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(GetWorldPosition(), 0.0f));
-	const glm::mat4 rotationMatrix = glm::rotate(glm::identity<glm::mat4>(), GetWorldRotation(), glm::vec3(0.0f, 0.0f, 1.0f));
-	const glm::mat4 scaleMatrix = glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.0f));
-
-	return translationMatrix * rotationMatrix * scaleMatrix;
+const glm::mat4 URect::GetModelMatrix() const
+{
+	return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix();
 }

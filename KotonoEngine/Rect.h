@@ -5,40 +5,43 @@ class URect final
 public:
 	URect();
 
+	const glm::uvec2& GetBaseSize() const;
 	const glm::vec2& GetRelativePosition() const;
-	const float GetRelativeRotation() const;
 	const glm::vec2& GetRelativeScale() const;
+	const float GetRelativeRotation() const;
 
 	const glm::vec2 GetWorldPosition() const;
-	const float GetWorldRotation() const;
 	const glm::vec2 GetWorldScale() const;
+	const float GetWorldRotation() const;
 
-	const glm::uvec2& GetBaseSize() const;
+	const glm::vec2 GetScreenPosition() const;
 
 	URect* GetParent() const;
 
 
 	void SetRelativePosition(const glm::vec2& relativePosition);
-	void SetRelativeRotation(const float relativeRotation);
 	void SetRelativeScale(const glm::vec2& relativeScale);
+	void SetRelativeRotation(const float relativeRotation);
 
 	void SetWorldPosition(const glm::vec2& worldPosition);
-	void SetWorldRotation(const float worldRotation);
 	void SetWorldScale(const glm::vec2& worldScale);
+	void SetWorldRotation(const float worldRotation);
 
 	void SetParent(URect* parent);
 
 	void SetBaseSize(const glm::uvec2& baseSize);
 
 
+	const glm::mat4 GetTranslationMatrix() const;
+	const glm::mat4 GetRotationMatrix() const;
+	const glm::mat4 GetScaleMatrix() const;
 	const glm::mat4 GetModelMatrix() const;
 
 private:
-	glm::vec2 _relativePosition;
-	float _relativeRotation;
-	glm::vec2 _relativeScale;
-
 	glm::uvec2 _baseSize;
+	glm::vec2 _relativePosition;
+	glm::vec2 _relativeScale;
+	float _relativeRotation;
 
 	URect* _parent;
 };
