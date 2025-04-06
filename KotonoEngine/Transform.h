@@ -40,6 +40,7 @@ public:
 	const glm::mat4 GetScaleMatrix() const;
 	const glm::mat4 GetModelMatrix() const;
 
+	const glm::vec3 GetScreenPosition() const;
 
 	const glm::vec3 GetDirection(UTransform* target) const;
 	const float GetDistance(UTransform* other) const;

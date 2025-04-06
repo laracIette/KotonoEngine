@@ -1,4 +1,6 @@
 #include "Transform.h"
+#include <kotono_framework/log.h>
+#include <stdexcept>
 
 UTransform::UTransform() :
 	_relativePosition(0.0f, 0.0f, 0.0f),
@@ -153,6 +155,12 @@ const glm::mat4 UTransform::GetScaleMatrix() const
 const glm::mat4 UTransform::GetModelMatrix() const
 {
 	return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix();
+}
+
+const glm::vec3 UTransform::GetScreenPosition() const
+{
+	// cannot use camera in .h, circular include
+	throw std::logic_error("not implemented");
 }
 
 const glm::vec3 UTransform::GetDirection(UTransform* target) const
