@@ -42,6 +42,7 @@ void KObjectManager::Init()
 	image1->SetShader(shader2D);
 	image1->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
 	image1->GetRect().SetRelativeScale(glm::vec2(0.5f));
+	image1->GetRect().SetScreenPosition(glm::vec2(1120.0f, 585.0f));
 
 	Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED).AddListener(
 		scene, &OScene::Reload

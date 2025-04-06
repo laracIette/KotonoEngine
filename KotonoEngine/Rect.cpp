@@ -45,7 +45,10 @@ const float URect::GetWorldRotation() const
 
 const glm::vec2 URect::GetScreenPosition() const
 {
-	return glm::vec2();
+	const auto& viewportExtent = WindowViewport.GetExtent();
+	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
+	const auto newPosition = (GetWorldPosition() + glm::vec2(1.0f)) * viewportSize / 2.0f;
+	return newPosition;
 }
 
 const glm::vec2 URect::GetWorldScale() const
@@ -100,6 +103,14 @@ void URect::SetWorldRotation(const float worldRotation)
 		return;
 	}
 	_relativeRotation = worldRotation;
+}
+
+void URect::SetScreenPosition(const glm::vec2& screenPosition)
+{
+	const auto& viewportExtent = WindowViewport.GetExtent();
+	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
+	const auto newPosition = (screenPosition / viewportSize) * 2.0f - glm::vec2(1.0f);
+	SetWorldPosition(newPosition);
 }
 
 void URect::SetWorldScale(const glm::vec2& worldScale)

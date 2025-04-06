@@ -19,6 +19,7 @@ public:
 	URect* GetParent() const;
 
 
+	void SetBaseSize(const glm::uvec2& baseSize);
 	void SetRelativePosition(const glm::vec2& relativePosition);
 	void SetRelativeScale(const glm::vec2& relativeScale);
 	void SetRelativeRotation(const float relativeRotation);
@@ -27,9 +28,9 @@ public:
 	void SetWorldScale(const glm::vec2& worldScale);
 	void SetWorldRotation(const float worldRotation);
 
-	void SetParent(URect* parent);
+	void SetScreenPosition(const glm::vec2& screenPosition);
 
-	void SetBaseSize(const glm::uvec2& baseSize);
+	void SetParent(URect* parent);
 
 
 	const glm::mat4 GetTranslationMatrix() const;
