@@ -12,7 +12,7 @@ void KtRenderer3D::Cleanup()
 
 void KtRenderer3D::AddToRenderQueue(const KtAddToRenderQueue3DArgs& args)
 {
-	_renderQueueData[Framework.GetRenderer().GetCurrentFrame()]
+	_renderQueueData[Framework.GetRenderer().GetGameThreadFrame()]
 		.Shaders[args.Shader]
 		.Models[args.Model]
 		.Viewports[args.Viewport]
@@ -21,7 +21,7 @@ void KtRenderer3D::AddToRenderQueue(const KtAddToRenderQueue3DArgs& args)
 
 void KtRenderer3D::SetUniformData(const KtUniformData3D& uniformData)
 {
-	_uniformData[Framework.GetRenderer().GetCurrentFrame()] = uniformData;
+	_uniformData[Framework.GetRenderer().GetGameThreadFrame()] = uniformData;
 }
 
 void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const

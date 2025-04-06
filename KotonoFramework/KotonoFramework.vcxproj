@@ -203,6 +203,7 @@
     <ClInclude Include="include\kotono_framework\Path.h" />
     <ClInclude Include="include\kotono_framework\Serializer.h" />
     <ClInclude Include="include\kotono_framework\RenderQueue3DData.h" />
+    <ClInclude Include="include\kotono_framework\time_utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

@@ -11,6 +11,7 @@
 #include "Renderer2D.h"
 #include "Renderer3D.h"
 #include <thread>
+#include <mutex>
 
 class KtRenderer final
 {
@@ -20,9 +21,7 @@ public:
 
 	void DrawFrame();
 
-	const uint32_t GetCurrentFrame() const;
-
-	void OnFramebufferResized();
+	const uint32_t GetGameThreadFrame() const;
 
 	const VkExtent2D GetSwapChainExtent() const;
 
@@ -48,6 +47,7 @@ private:
 
 	std::thread _renderThread;
 	std::thread _rhiThread;
+	std::mutex _renderMutex;
 
 	VkImage _colorImage;
 	VmaAllocation _colorImageAllocation;
@@ -60,8 +60,7 @@ private:
 	std::array<VkSemaphore, KT_FRAMES_IN_FLIGHT> _imageAvailableSemaphores;
 	std::array<VkSemaphore, KT_FRAMES_IN_FLIGHT> _renderFinishedSemaphores;
 	std::array<VkFence, KT_FRAMES_IN_FLIGHT> _inFlightFences;
-
-	bool _framebufferResized;
+	std::array<uint32_t, KT_FRAMES_IN_FLIGHT> _imageIndices;
 
 	uint32_t _frameCount;
 
@@ -82,15 +81,15 @@ private:
 	const VkFormat FindDepthFormat() const;
 	const bool HasStencilComponent(const VkFormat format) const;
 
-	const uint32_t AcquireNextImage(const uint32_t currentFrame);
+	const bool TryAcquireNextImage(const uint32_t currentFrame);
 
 	void CreateCommandBuffers();
-	void RecordCommandBuffer(const uint32_t imageIndex, const uint32_t currentFrame) const;
-	void SubmitCommandBuffer(const uint32_t imageIndex, const uint32_t currentFrame);
+	void RecordCommandBuffer(const uint32_t currentFrame);
+	void SubmitCommandBuffer(const uint32_t currentFrame);
 
 	void CreateSyncObjects();
 
-	void CmdDrawRenderers(VkCommandBuffer commandBuffer) const;
+	void CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const;
 	void ResetRenderers(const uint32_t currentFrame);
 
 	void JoinThread(std::thread& thread) const;

@@ -93,7 +93,5 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     windowExtent.height = static_cast<uint32_t>(height);
     WindowViewport.SetExtent(windowExtent);
 
-    Framework.GetRenderer().OnFramebufferResized();
-
     KT_DEBUG_LOG("window resized: %d x %d", width, height);
 }

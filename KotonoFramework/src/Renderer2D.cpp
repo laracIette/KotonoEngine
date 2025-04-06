@@ -28,7 +28,7 @@ void KtRenderer2D::Cleanup() const
 
 void KtRenderer2D::AddToRenderQueue(const KtAddToRenderQueue2DArgs& args)
 {
-	_renderQueueData[Framework.GetRenderer().GetCurrentFrame()]
+	_renderQueueData[Framework.GetRenderer().GetGameThreadFrame()]
 		.Shaders[args.Shader]
 		.Viewports[args.Viewport]
 		.ObjectDatas.push_back(args.ObjectData);
@@ -36,7 +36,7 @@ void KtRenderer2D::AddToRenderQueue(const KtAddToRenderQueue2DArgs& args)
 
 void KtRenderer2D::SetUniformData(const KtUniformData2D& uniformData)
 {
-	_uniformData[Framework.GetRenderer().GetCurrentFrame()] = uniformData;
+	_uniformData[Framework.GetRenderer().GetGameThreadFrame()] = uniformData;
 }
 
 void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const
