@@ -29,7 +29,7 @@ public:
 	void SetWorldRotation(const glm::quat& worldRotation);
 	void SetWorldScale(const glm::vec3& worldScale);
 
-	void AddPosition(const glm::vec3& position);
+	void AddOffset(const glm::vec3& offset);
 	void AddRotation(const glm::quat& rotation);
 	void AddScale(const glm::vec3& scale);
 

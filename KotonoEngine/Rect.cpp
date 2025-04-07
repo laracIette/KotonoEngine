@@ -6,13 +6,14 @@ URect::URect():
 	_relativeRotation(0.0f),
 	_relativeScale(1.0f, 1.0f),
 	_baseSize(0.0f, 0.0f),
+	_anchor(EAnchor::Center),
 	_parent(nullptr)
 {
 }
 
 const glm::vec2& URect::GetRelativePosition() const
 {
-	return _relativePosition;
+	return _relativePosition; // TODO: anchor offset
 }
 
 const float URect::GetRelativeRotation() const
@@ -49,6 +50,11 @@ const glm::vec2 URect::GetScreenPosition() const
 	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
 	const auto newPosition = (GetWorldPosition() + glm::vec2(1.0f)) * viewportSize / 2.0f;
 	return newPosition;
+}
+
+const EAnchor URect::GetAnchor() const
+{
+	return _anchor;
 }
 
 const glm::vec2 URect::GetWorldScale() const
@@ -121,6 +127,11 @@ void URect::SetScreenSize(const glm::vec2& screenSize)
 	SetWorldScale(newScale);
 }
 
+void URect::SetAnchor(const EAnchor anchor)
+{
+	_anchor = anchor;
+}
+
 void URect::SetWorldScale(const glm::vec2& worldScale)
 {
 	if (_parent)
@@ -180,4 +191,16 @@ const glm::mat4 URect::GetScaleMatrix() const
 const glm::mat4 URect::GetModelMatrix() const
 {
 	return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix();
+}
+
+const glm::vec2 URect::GetAnchorOffset() const
+{
+	return glm::vec2(
+		(_anchor & EAnchor::Left) == EAnchor::Left ? _relativeScale.x / 2.0f
+		: (_anchor & EAnchor::Right) == EAnchor::Right ? -_relativeScale.x / 2.0f
+		: 0.0f,
+		(_anchor & EAnchor::Top) == EAnchor::Top ? _relativeScale.y / 2.0f
+		: (_anchor & EAnchor::Bottom) == EAnchor::Bottom ? -_relativeScale.y / 2.0f
+		: 0.0f
+	);
 }

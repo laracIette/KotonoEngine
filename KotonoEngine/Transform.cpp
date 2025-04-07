@@ -116,9 +116,9 @@ void UTransform::SetWorldScale(const glm::vec3& worldScale)
 	SetRelativeScale(worldScale);
 }
 
-void UTransform::AddPosition(const glm::vec3& position)
+void UTransform::AddOffset(const glm::vec3& offset)
 {
-	SetRelativePosition(_relativePosition + position);
+	SetRelativePosition(_relativePosition + offset);
 }
 
 void UTransform::AddRotation(const glm::quat& rotation)

@@ -1,6 +1,7 @@
 #pragma once
 #include <kotono_framework/glm_includes.h>
 #include "CoordinateSpace.h"
+#include "Anchor.h"
 class URect final
 {
 public:
@@ -17,6 +18,8 @@ public:
 
 	const glm::vec2 GetScreenPosition() const;
 
+	const EAnchor GetAnchor() const;
+
 	URect* GetParent() const;
 
 
@@ -32,6 +35,8 @@ public:
 	void SetScreenPosition(const glm::vec2& screenPosition);
 	void SetScreenSize(const glm::vec2& screenSize);
 
+	void SetAnchor(const EAnchor anchor);
+
 	void SetParent(URect* parent, const ECoordinateSpace keepRect);
 
 
@@ -46,6 +51,10 @@ private:
 	glm::vec2 _relativeScale;
 	float _relativeRotation;
 
+	EAnchor _anchor;
+
 	URect* _parent;
+
+	const glm::vec2 GetAnchorOffset() const;
 };
 
