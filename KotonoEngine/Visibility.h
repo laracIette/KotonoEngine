@@ -1,8 +1,8 @@
 #pragma once
-enum EVisibility
+enum class EVisibility
 {
-	VISIBILITY_NONE = 0x00000000,
-	VISIBILITY_EDITOR_ONLY = 0x00000001,
-	VISIBILITY_GAME_ONLY = 0x00000002,
-	VISIBILITY_EDITOR_AND_GAME = VISIBILITY_EDITOR_ONLY | VISIBILITY_GAME_ONLY
+	None = 0x00000000,
+	EditorOnly = 0x00000001,
+	GameOnly = 0x00000002,
+	EditorAndGame = EditorOnly | GameOnly
 };

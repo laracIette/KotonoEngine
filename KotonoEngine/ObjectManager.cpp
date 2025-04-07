@@ -18,35 +18,42 @@ void KObjectManager::Init()
 		.GetEvent(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
 		.AddListener(this, &KObjectManager::Quit);
 
-	auto* shader2D = Framework.GetShaderManager().Create(
-		Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)"
-	);
-	auto* shader3D = Framework.GetShaderManager().Create(
-		Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3D.ktshader)"
-	);
+	auto* shader2D = Framework.GetShaderManager().Create(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)");
+	auto* shader3D = Framework.GetShaderManager().Create(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3D.ktshader)");
 	shader2D->SetName("2D Shader");
 	shader3D->SetName("3D Shader");
 
-	auto* model1 = Framework.GetModelManager().Create(
-		Framework.GetPath().GetSolutionPath() / (R"(assets\models\viking_room.obj)")
-	);
-	auto* model2 = Framework.GetModelManager().Create(
-		Framework.GetPath().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)"
-	);
+	auto* model1 = Framework.GetModelManager().Create(Framework.GetPath().GetSolutionPath() / (R"(assets\models\viking_room.obj)"));
+	auto* model2 = Framework.GetModelManager().Create(Framework.GetPath().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)");
 
-	auto* scene = Create<OScene>();
-	scene->SetPath(Framework.GetPath().GetSolutionPath() / R"(assets\objects\scene.oscene)");
+	{
+		auto* scene = Create<OScene>();
+		scene->SetPath(Framework.GetPath().GetSolutionPath() / R"(assets\objects\scene.oscene)");
 
-	auto* image1 = Create<RImage>();
+		Framework.GetInputManager().GetKeyboard()
+			.GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED)
+			.AddListener(scene, &OScene::Reload);
+	}
+	{
+		auto* image1 = Create<RImage>();
+		image1->SetShader(shader2D);
+		image1->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
+		image1->GetRect().SetRelativeScale(glm::vec2(0.25f));
+		image1->GetRect().SetScreenPosition(glm::vec2(1120.0f, 585.0f));
+	}
+	{
+		auto mesh1 = Create<TMesh>();
+		mesh1->SetShader(shader3D);
+		mesh1->SetModel(model1);
+		mesh1->GetTransform().SetRelativePosition(glm::vec3(-1.0f, 0.0f, 0.0f));
 
-	image1->SetShader(shader2D);
-	image1->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
-	image1->GetRect().SetRelativeScale(glm::vec2(0.5f));
-	image1->GetRect().SetScreenPosition(glm::vec2(1120.0f, 585.0f));
-
-	Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED).AddListener(
-		scene, &OScene::Reload
-	);
+		auto mesh2 = Create<TMesh>();
+		mesh2->SetShader(shader3D);
+		mesh2->SetModel(model2);
+		mesh2->GetTransform().SetRelativePosition(glm::vec3(1.0f, 0.0f, 0.0f));
+		mesh2->GetTransform().SetRelativeScale(glm::vec3(0.2f));
+		mesh2->SetParent(mesh1, ETransformSpace::World);
+	}
 
 	Camera = Create<TCamera>();
 }

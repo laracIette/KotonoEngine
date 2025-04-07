@@ -1,5 +1,6 @@
 #pragma once
 #include <kotono_framework/glm_includes.h>
+#include "TransformSpace.h"
 class UTransform final
 {
 public:
@@ -32,7 +33,7 @@ public:
 	void AddRotation(const glm::quat& rotation);
 	void AddScale(const glm::vec3& scale);
 
-	void SetParent(UTransform* parent);
+	void SetParent(UTransform* parent, const ETransformSpace keepTransform);
 
 
 	const glm::mat4 GetTranslationMatrix() const;

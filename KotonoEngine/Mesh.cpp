@@ -59,7 +59,7 @@ void TMesh::AddToRenderQueue() const
     args.Shader = _shader;
     args.Model = _model;
     args.Viewport = GetViewport();
-    args.ObjectData = { GetTransform().GetModelMatrix() };
+    args.ObjectData.Model = GetTransform().GetModelMatrix();
 	Framework.GetRenderer().GetRenderer3D().AddToRenderQueue(args);
 }
 

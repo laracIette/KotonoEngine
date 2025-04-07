@@ -23,6 +23,6 @@ void RImage::AddToRenderQueue() const
 	KtAddToRenderQueue2DArgs args{};
 	args.Shader = _shader;
 	args.Viewport = GetViewport();
-	args.ObjectData = { GetRect().GetModelMatrix()};
+	args.ObjectData.Model = GetRect().GetModelMatrix();
 	Framework.GetRenderer().GetRenderer2D().AddToRenderQueue(args);
 }

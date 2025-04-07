@@ -2,7 +2,7 @@
 
 void RInterfaceObject::Init()
 {
-	_visibility = VISIBILITY_EDITOR_AND_GAME;
+	_visibility = EVisibility::EditorAndGame;
 	_viewport = &WindowViewport;
 }
 

@@ -1,5 +1,4 @@
 #include "Transform.h"
-#include <kotono_framework/log.h>
 #include <stdexcept>
 
 UTransform::UTransform() :
@@ -29,7 +28,7 @@ const glm::vec3 UTransform::GetWorldPosition() const
 {
 	if (_parent)
 	{
-		return _parent->GetWorldPosition() * _relativePosition;
+		return _parent->GetWorldPosition() + _relativePosition;
 	}
 	return _relativePosition;
 }
@@ -132,9 +131,27 @@ void UTransform::AddScale(const glm::vec3& scale)
 	SetRelativeScale(_relativeScale * scale);
 }
 
-void UTransform::SetParent(UTransform* parent)
+void UTransform::SetParent(UTransform* parent, const ETransformSpace keepTransform)
 {
-	_parent = parent;
+	switch (keepTransform)
+	{
+	case ETransformSpace::Relative:
+	{
+		_parent = parent;
+		break;
+	}
+	case ETransformSpace::World:
+	{
+		const UTransform clone = *this;
+		_parent = parent;
+		SetWorldPosition(clone.GetWorldPosition());
+		SetWorldRotation(clone.GetWorldRotation());
+		SetWorldScale(clone.GetWorldScale());
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 const glm::mat4 UTransform::GetTranslationMatrix() const

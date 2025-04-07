@@ -1,10 +1,11 @@
 #include "SceneObject.h"
 #include <nlohmann/json.hpp>
+#include <kotono_framework/log.h>
 
 void TSceneObject::Init()
 {
 	Base::Init();
-	_visibility = VISIBILITY_EDITOR_AND_GAME;
+	_visibility = EVisibility::EditorAndGame;
 	_viewport = &WindowViewport;
 }
 
@@ -43,16 +44,26 @@ void TSceneObject::SetViewport(KtViewport* viewport)
 	_viewport = viewport;
 }
 
-void TSceneObject::SetParent(TSceneObject* sceneObject)
+void TSceneObject::SetParent(TSceneObject* parent, const ETransformSpace keepTransform)
 {
-	_parent = sceneObject;
-	_transform.SetParent(_parent ? &_parent->_transform : nullptr);
+	if (parent == this)
+	{
+		KT_DEBUG_LOG("TSceneObject::SetParent(): couldn't set the parent of '%s' to itself", GetName().c_str());
+		return;
+	}
+	if (parent == _parent)
+	{
+		KT_DEBUG_LOG("TSceneObject::SetParent(): couldn't set the parent of '%s' to the same", GetName().c_str());
+		return;
+	}
+	_parent = parent;
+	_transform.SetParent(_parent ? &_parent->_transform : nullptr, keepTransform);
 }
 
 void TSceneObject::SerializeTo(nlohmann::json& json) const
 {
 	Base::SerializeTo(json);
-	json["parent"] = _parent ? static_cast<std::string>(_parent->GetGuid()) : "";
+	json["parent"] = _parent ? static_cast<std::string>(_parent->GetGuid()) : ""; // ??
 	json["transform"]["position"]["x"] = _transform.GetRelativePosition().x;
 	json["transform"]["position"]["y"] = _transform.GetRelativePosition().y;
 	json["transform"]["position"]["z"] = _transform.GetRelativePosition().z;
