@@ -51,7 +51,7 @@
     <ClInclude Include="Task.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
-    <ClInclude Include="TransformSpace.h" />
+    <ClInclude Include="CoordinateSpace.h" />
     <ClInclude Include="Visibility.h" />
   </ItemGroup>
   <ItemGroup>

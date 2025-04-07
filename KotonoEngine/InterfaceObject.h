@@ -18,7 +18,7 @@ public:
 
 	void SetVisibility(const EVisibility visibility);
 	void SetViewport(KtViewport* viewport);
-	void SetParent(RInterfaceObject* parent);
+	void SetParent(RInterfaceObject* parent, const ECoordinateSpace keepRect);
 
 private:
 	URect _rect;

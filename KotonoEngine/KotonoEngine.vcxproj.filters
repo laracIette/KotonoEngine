@@ -110,7 +110,7 @@
     <ClInclude Include="Task.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TransformSpace.h">
+    <ClInclude Include="CoordinateSpace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

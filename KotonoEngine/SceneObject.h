@@ -18,7 +18,7 @@ public:
 
 	void SetVisibility(const EVisibility visibility);
 	void SetViewport(KtViewport* viewport);
-	void SetParent(TSceneObject* parent, const ETransformSpace keepTransform);
+	void SetParent(TSceneObject* parent, const ECoordinateSpace keepTransform);
 
 	void SerializeTo(nlohmann::json& json) const override;
 	void DeserializeFrom(const nlohmann::json& json) override;

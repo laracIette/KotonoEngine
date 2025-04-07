@@ -39,20 +39,27 @@ void KObjectManager::Init()
 		image1->SetShader(shader2D);
 		image1->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
 		image1->GetRect().SetRelativeScale(glm::vec2(0.25f));
-		image1->GetRect().SetScreenPosition(glm::vec2(1120.0f, 585.0f));
+		image1->GetRect().SetRelativePosition(glm::vec2(0.3f, -0.5f));
+
+		auto* image2 = Create<RImage>();
+		image2->SetShader(shader2D);
+		image2->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
+		image2->GetRect().SetRelativeScale(glm::vec2(0.10f));
+		image2->GetRect().SetScreenPosition(glm::vec2(1000.0f, 600.0f));
+		image2->SetParent(image1, ECoordinateSpace::World);
 	}
 	{
-		auto mesh1 = Create<TMesh>();
+		auto* mesh1 = Create<TMesh>();
 		mesh1->SetShader(shader3D);
 		mesh1->SetModel(model1);
 		mesh1->GetTransform().SetRelativePosition(glm::vec3(-1.0f, 0.0f, 0.0f));
 
-		auto mesh2 = Create<TMesh>();
+		auto* mesh2 = Create<TMesh>();
 		mesh2->SetShader(shader3D);
 		mesh2->SetModel(model2);
 		mesh2->GetTransform().SetRelativePosition(glm::vec3(1.0f, 0.0f, 0.0f));
 		mesh2->GetTransform().SetRelativeScale(glm::vec3(0.2f));
-		mesh2->SetParent(mesh1, ETransformSpace::World);
+		mesh2->SetParent(mesh1, ECoordinateSpace::World);
 	}
 
 	Camera = Create<TCamera>();

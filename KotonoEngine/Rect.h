@@ -1,5 +1,6 @@
 #pragma once
 #include <kotono_framework/glm_includes.h>
+#include "CoordinateSpace.h"
 class URect final
 {
 public:
@@ -29,8 +30,9 @@ public:
 	void SetWorldRotation(const float worldRotation);
 
 	void SetScreenPosition(const glm::vec2& screenPosition);
+	void SetScreenSize(const glm::vec2& screenSize);
 
-	void SetParent(URect* parent);
+	void SetParent(URect* parent, const ECoordinateSpace keepRect);
 
 
 	const glm::mat4 GetTranslationMatrix() const;

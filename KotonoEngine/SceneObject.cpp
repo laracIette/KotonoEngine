@@ -44,7 +44,7 @@ void TSceneObject::SetViewport(KtViewport* viewport)
 	_viewport = viewport;
 }
 
-void TSceneObject::SetParent(TSceneObject* parent, const ETransformSpace keepTransform)
+void TSceneObject::SetParent(TSceneObject* parent, const ECoordinateSpace keepTransform)
 {
 	if (parent == this)
 	{

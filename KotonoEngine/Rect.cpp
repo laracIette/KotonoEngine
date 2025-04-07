@@ -109,8 +109,16 @@ void URect::SetScreenPosition(const glm::vec2& screenPosition)
 {
 	const auto& viewportExtent = WindowViewport.GetExtent();
 	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
-	const auto newPosition = (screenPosition / viewportSize) * 2.0f - glm::vec2(1.0f);
+	const auto newPosition = screenPosition / viewportSize * 2.0f - glm::vec2(1.0f);
 	SetWorldPosition(newPosition);
+}
+
+void URect::SetScreenSize(const glm::vec2& screenSize)
+{
+	const auto& viewportExtent = WindowViewport.GetExtent();
+	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
+	const auto newScale = screenSize / glm::vec2(_baseSize);
+	SetWorldScale(newScale);
 }
 
 void URect::SetWorldScale(const glm::vec2& worldScale)
@@ -123,9 +131,27 @@ void URect::SetWorldScale(const glm::vec2& worldScale)
 	_relativeScale = worldScale;
 }
 
-void URect::SetParent(URect* parent)
+void URect::SetParent(URect* parent, const ECoordinateSpace keepRect)
 {
-	_parent = parent;
+	switch (keepRect)
+	{
+	case ECoordinateSpace::Relative:
+	{
+		_parent = parent;
+		break;
+	}
+	case ECoordinateSpace::World:
+	{
+		const URect clone = *this;
+		_parent = parent;
+		SetWorldPosition(clone.GetWorldPosition());
+		SetWorldScale(clone.GetWorldScale());
+		SetWorldRotation(clone.GetWorldRotation());
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 void URect::SetBaseSize(const glm::uvec2& baseSize)

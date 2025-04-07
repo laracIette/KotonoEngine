@@ -131,16 +131,16 @@ void UTransform::AddScale(const glm::vec3& scale)
 	SetRelativeScale(_relativeScale * scale);
 }
 
-void UTransform::SetParent(UTransform* parent, const ETransformSpace keepTransform)
+void UTransform::SetParent(UTransform* parent, const ECoordinateSpace keepTransform)
 {
 	switch (keepTransform)
 	{
-	case ETransformSpace::Relative:
+	case ECoordinateSpace::Relative:
 	{
 		_parent = parent;
 		break;
 	}
-	case ETransformSpace::World:
+	case ECoordinateSpace::World:
 	{
 		const UTransform clone = *this;
 		_parent = parent;

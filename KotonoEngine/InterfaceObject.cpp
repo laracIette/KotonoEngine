@@ -1,4 +1,5 @@
 #include "InterfaceObject.h"
+#include <kotono_framework/log.h>
 
 void RInterfaceObject::Init()
 {
@@ -41,8 +42,18 @@ void RInterfaceObject::SetViewport(KtViewport* viewport)
 	_viewport = viewport;
 }
 
-void RInterfaceObject::SetParent(RInterfaceObject* parent)
+void RInterfaceObject::SetParent(RInterfaceObject* parent, const ECoordinateSpace keepRect)
 {
+	if (parent == this)
+	{
+		KT_DEBUG_LOG("RInterfaceObject::SetParent(): couldn't set the parent of '%s' to itself", GetName().c_str());
+		return;
+	}
+	if (parent == _parent)
+	{
+		KT_DEBUG_LOG("RInterfaceObject::SetParent(): couldn't set the parent of '%s' to the same", GetName().c_str());
+		return;
+	}
 	_parent = parent;
-	_rect.SetParent(_parent ? &_parent->_rect : nullptr);
+	_rect.SetParent(_parent ? &_parent->_rect : nullptr, keepRect);
 }
