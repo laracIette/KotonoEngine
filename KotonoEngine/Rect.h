@@ -2,6 +2,7 @@
 #include <kotono_framework/glm_includes.h>
 #include "CoordinateSpace.h"
 #include "Anchor.h"
+#include "RotationUnit.h"
 class URect final
 {
 public:
@@ -10,11 +11,11 @@ public:
 	const glm::uvec2& GetBaseSize() const;
 	const glm::vec2& GetRelativePosition() const;
 	const glm::vec2& GetRelativeScale() const;
-	const float GetRelativeRotation() const;
+	const float GetRelativeRotation(const ERotationUnit unit = ERotationUnit::Radians) const;
 
 	const glm::vec2 GetWorldPosition() const;
 	const glm::vec2 GetWorldScale() const;
-	const float GetWorldRotation() const;
+	const float GetWorldRotation(const ERotationUnit unit = ERotationUnit::Radians) const;
 
 	const glm::vec2 GetScreenPosition() const;
 
@@ -26,11 +27,15 @@ public:
 	void SetBaseSize(const glm::uvec2& baseSize);
 	void SetRelativePosition(const glm::vec2& relativePosition);
 	void SetRelativeScale(const glm::vec2& relativeScale);
-	void SetRelativeRotation(const float relativeRotation);
+	void SetRelativeRotation(float relativeRotation, const ERotationUnit unit = ERotationUnit::Radians);
 
 	void SetWorldPosition(const glm::vec2& worldPosition);
 	void SetWorldScale(const glm::vec2& worldScale);
-	void SetWorldRotation(const float worldRotation);
+	void SetWorldRotation(const float worldRotation, const ERotationUnit unit = ERotationUnit::Radians);
+
+	void AddOffset(const glm::vec2& offset);
+	void AddScale(const glm::vec2& scale);
+	void AddRotation(const float rotation, const ERotationUnit unit = ERotationUnit::Radians);
 
 	void SetScreenPosition(const glm::vec2& screenPosition);
 	void SetScreenSize(const glm::vec2& screenSize);
@@ -56,5 +61,7 @@ private:
 	URect* _parent;
 
 	const glm::vec2 GetAnchorOffset() const;
+	const glm::vec2 GetWorldPositionWithAnchorOffset() const;
+	const glm::vec2 GetAnchorRelativePosition() const;
 };
 

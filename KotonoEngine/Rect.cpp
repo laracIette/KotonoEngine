@@ -13,11 +13,15 @@ URect::URect():
 
 const glm::vec2& URect::GetRelativePosition() const
 {
-	return _relativePosition; // TODO: anchor offset
+	return _relativePosition;
 }
 
-const float URect::GetRelativeRotation() const
+const float URect::GetRelativeRotation(const ERotationUnit unit) const
 {
+	if (unit == ERotationUnit::Degrees)
+	{
+		return glm::degrees(_relativeRotation);
+	}
 	return _relativeRotation;
 }
 
@@ -35,13 +39,27 @@ const glm::vec2 URect::GetWorldPosition() const
 	return _relativePosition;
 }
 
-const float URect::GetWorldRotation() const
+const glm::vec2 URect::GetWorldPositionWithAnchorOffset() const
 {
 	if (_parent)
 	{
-		return _relativeRotation + _parent->GetWorldRotation();
+		return _relativePosition + GetAnchorOffset() + _parent->GetWorldPositionWithAnchorOffset();
 	}
-	return _relativeRotation;
+	return _relativePosition + GetAnchorOffset();
+}
+
+const glm::vec2 URect::GetAnchorRelativePosition() const
+{
+	return _relativePosition - GetAnchorOffset();
+}
+
+const float URect::GetWorldRotation(const ERotationUnit unit) const
+{
+	if (_parent)
+	{
+		return GetRelativeRotation(unit) + _parent->GetWorldRotation(unit);
+	}
+	return GetRelativeRotation(unit);
 }
 
 const glm::vec2 URect::GetScreenPosition() const
@@ -81,34 +99,74 @@ void URect::SetRelativePosition(const glm::vec2& relativePosition)
 	_relativePosition = relativePosition;
 }
 
-void URect::SetRelativeRotation(const float relativeRotation)
-{
-	_relativeRotation = relativeRotation;
-}
-
 void URect::SetRelativeScale(const glm::vec2& relativeScale)
 {
 	_relativeScale = relativeScale;
+}
+
+void URect::SetRelativeRotation(float relativeRotation, const ERotationUnit unit)
+{
+	if (unit == ERotationUnit::Degrees)
+	{
+		relativeRotation = glm::radians(relativeRotation);
+	}
+
+	const glm::vec2 translated = GetAnchorOffset();
+
+	const float cosA = cos(relativeRotation);
+	const float sinA = sin(relativeRotation);
+	const auto rotated = glm::vec2(
+		translated.x * cosA - translated.y * sinA,
+		translated.x * sinA + translated.y * cosA
+	);
+
+	_relativePosition = rotated + GetAnchorRelativePosition();
+	_relativeRotation = relativeRotation;
 }
 
 void URect::SetWorldPosition(const glm::vec2& worldPosition)
 {
 	if (_parent)
 	{
-		_relativePosition = worldPosition - _parent->GetWorldPosition();
+		SetRelativePosition(worldPosition - _parent->GetWorldPosition());
 		return;
 	}
-	_relativePosition = worldPosition;
+	SetRelativePosition(worldPosition);
 }
 
-void URect::SetWorldRotation(const float worldRotation)
+void URect::SetWorldScale(const glm::vec2& worldScale)
 {
 	if (_parent)
 	{
-		_relativeRotation = worldRotation - _parent->GetWorldRotation();
+		SetRelativeScale(worldScale / _parent->GetWorldScale());
 		return;
 	}
-	_relativeRotation = worldRotation;
+	SetRelativeScale(worldScale);
+}
+
+void URect::SetWorldRotation(const float worldRotation, const ERotationUnit unit)
+{
+	if (_parent)
+	{
+		SetRelativeRotation(worldRotation - _parent->GetWorldRotation(unit), unit);
+		return;
+	}
+	SetRelativeRotation(worldRotation, unit);
+}
+
+void URect::AddOffset(const glm::vec2& offset)
+{
+	SetRelativePosition(_relativePosition + offset);
+}
+
+void URect::AddScale(const glm::vec2& scale)
+{
+	SetRelativeScale(_relativeScale * scale);
+}
+
+void URect::AddRotation(const float rotation, const ERotationUnit unit)
+{
+	SetRelativeRotation(GetRelativeRotation(unit) + rotation, unit);
 }
 
 void URect::SetScreenPosition(const glm::vec2& screenPosition)
@@ -130,16 +188,6 @@ void URect::SetScreenSize(const glm::vec2& screenSize)
 void URect::SetAnchor(const EAnchor anchor)
 {
 	_anchor = anchor;
-}
-
-void URect::SetWorldScale(const glm::vec2& worldScale)
-{
-	if (_parent)
-	{
-		_relativeScale = worldScale / _parent->GetWorldScale();
-		return;
-	}
-	_relativeScale = worldScale;
 }
 
 void URect::SetParent(URect* parent, const ECoordinateSpace keepRect)
@@ -172,7 +220,7 @@ void URect::SetBaseSize(const glm::uvec2& baseSize)
 
 const glm::mat4 URect::GetTranslationMatrix() const
 {
-	return glm::translate(glm::identity<glm::mat4>(), glm::vec3(GetWorldPosition(), 0.0f));
+	return glm::translate(glm::identity<glm::mat4>(), glm::vec3(GetWorldPositionWithAnchorOffset(), 0.0f));
 }
 
 const glm::mat4 URect::GetRotationMatrix() const
