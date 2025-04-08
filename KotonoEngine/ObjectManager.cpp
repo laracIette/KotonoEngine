@@ -39,14 +39,15 @@ void KObjectManager::Init()
 		image1->SetShader(shader2D);
 		image1->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
 		image1->GetRect().SetRelativeScale(glm::vec2(0.25f));
-		image1->GetRect().SetRelativePosition(glm::vec2(0.3f, -0.5f));
+		image1->GetRect().SetRelativePosition(glm::vec2(0.0f, 0.0f));
+		//image1->GetRect().SetAnchor(EAnchor::TopLeft);
 
-		auto* image2 = Create<RImage>();
-		image2->SetShader(shader2D);
-		image2->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
-		image2->GetRect().SetRelativeScale(glm::vec2(0.10f));
-		image2->GetRect().SetScreenPosition(glm::vec2(1000.0f, 600.0f));
-		image2->SetParent(image1, ECoordinateSpace::World);
+		//auto* image2 = Create<RImage>();
+		//image2->SetShader(shader2D);
+		//image2->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
+		//image2->GetRect().SetRelativeScale(glm::vec2(0.10f));
+		//image2->GetRect().SetScreenPosition(glm::vec2(1000.0f, 600.0f));
+		//image2->SetParent(image1, ECoordinateSpace::World);
 	}
 	{
 		auto* mesh1 = Create<TMesh>();
@@ -78,6 +79,9 @@ void KObjectManager::Cleanup()
 	for (auto* object : _objects)
 	{
 		object->Cleanup();
+	}
+	for (auto* object : _objects)
+	{
 		delete object;
 	}
 }
@@ -106,6 +110,7 @@ void KObjectManager::UpdateObjects()
 
 void KObjectManager::DeleteObjects()
 {
+	std::unordered_set<OObject*> deleteObjects;
 	for (auto it = _objects.begin(); it != _objects.end();)
 	{
 		auto* object = *it;
@@ -113,15 +118,19 @@ void KObjectManager::DeleteObjects()
 		{
 			KT_DEBUG_LOG("deleting object '%s'", object->GetName().c_str());
 			object->Cleanup();
-			delete object;    
-
 			
 			it = _objects.erase(it);  // Erase the object and move the iterator to the next element
+			
+			deleteObjects.insert(object);
 		}
 		else
 		{
 			++it;  // Only increment if not deleting
 		}
+	}
+	for (auto* object : deleteObjects)
+	{
+		delete object;
 	}
 }
 

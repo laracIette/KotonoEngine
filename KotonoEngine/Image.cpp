@@ -11,7 +11,7 @@ void RImage::Init()
 	Base::Init();
 	_spinTask = Engine.GetObjectManager().Create<OTask>();
 	_spinTask->GetEventUpdate().AddListener(this, &RImage::Spin);
-	_spinTask->SetDuration(5.0f);
+	_spinTask->SetDuration(10.0f);
 	Framework.GetInputManager().GetKeyboard()
 		.GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED)
 		.AddListener(_spinTask, &OTask::Start);
