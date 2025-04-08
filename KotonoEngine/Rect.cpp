@@ -241,10 +241,10 @@ const glm::mat4 URect::GetScaleMatrix() const
 	// x *= aspectRatio at rot pi/2
 	// y *= 1 / aspectRatio at rot pi/2
 
-	glm::vec2 size = glm::vec2(_baseSize) * GetWorldScale() / viewportSize * 2.0f;
 	const float value = (cos((rotation + glm::half_pi<float>()) * 2.0f) + 1.0f) / 2.0f;
-	size.x *= std::lerp(1.0f, aspectRatio, value);
-	size.y *= std::lerp(1.0f, 1.0f / aspectRatio, value);
+	const auto stretchCorrection = glm::vec2(std::lerp(1.0f, aspectRatio, value), std::lerp(1.0f, 1.0f / aspectRatio, value));
+	
+	const auto size = glm::vec2(_baseSize) * GetWorldScale() / viewportSize * 2.0f * stretchCorrection;
 	
 	return glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.0f));
 }
