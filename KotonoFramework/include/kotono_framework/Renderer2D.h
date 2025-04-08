@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include "UniformData2D.h"
 #include "AddToRenderQueue2DArgs.h"
+#include "RenderQueue2DData.h"
+#include "Culler2D.h"
 class KtRenderer2D final
 {
 public:
@@ -17,21 +19,9 @@ public:
 	void Reset(const uint32_t currentFrame);
 
 private:
-	struct RenderQueue2DViewportData
-	{
-		std::vector<KtObjectData2D> ObjectDatas;
-	};
-	struct RenderQueue2DShaderData
-	{
-		std::unordered_map<KtViewport*, RenderQueue2DViewportData> Viewports;
-	};
-	struct RenderQueue2DData
-	{
-		std::unordered_map<KtShader*, RenderQueue2DShaderData> Shaders;
-	};
-
-	std::array<RenderQueue2DData, KT_FRAMES_IN_FLIGHT> _renderQueueData;
+	std::array<KtRenderQueue2DData, KT_FRAMES_IN_FLIGHT> _renderQueueData;
 	std::array<KtUniformData2D, KT_FRAMES_IN_FLIGHT> _uniformData;
+	KtCuller2D _culler;
 
 	KtAllocatedBuffer _vertexBuffer;
 	KtAllocatedBuffer _indexBuffer;

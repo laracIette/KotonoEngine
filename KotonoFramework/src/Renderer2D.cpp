@@ -42,14 +42,10 @@ void KtRenderer2D::SetUniformData(const KtUniformData2D& uniformData)
 
 void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const
 {
-	for (auto& [shader, shaderData] : _renderQueueData[currentFrame].Shaders)
-	{
-		if (!shader)
-		{
-			KT_DEBUG_LOG("shader is nullptr");
-			continue;
-		}
+	const auto culledData = _culler.ComputeCulling(_renderQueueData[currentFrame]);
 
+	for (auto& [shader, shaderData] : culledData.Shaders)
+	{
 		std::vector<KtObjectData2D> objectBufferData;
 		for (auto& [viewport, viewportData] : shaderData.Viewports)
 		{
@@ -75,19 +71,8 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 		{
 			const uint32_t instanceCount = static_cast<uint32_t>(viewportData.ObjectDatas.size());
 
-			if (!viewport)
-			{
-				KT_DEBUG_LOG("viewport is nullptr");
-			}
-			else if (instanceCount == 0)
-			{
-				KT_DEBUG_LOG("model doesn't have any instance");
-			}
-			else
-			{
-				viewport->CmdUse(commandBuffer);
-				vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(SquareIndices.size()), instanceCount, 0, 0, instanceIndex);
-			}
+			viewport->CmdUse(commandBuffer);
+			vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(SquareIndices.size()), instanceCount, 0, 0, instanceIndex);
 
 			instanceIndex += instanceCount;
 		}
