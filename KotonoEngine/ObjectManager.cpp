@@ -39,16 +39,15 @@ void KObjectManager::Init()
 		image1->SetShader(shader2D);
 		image1->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
 		image1->GetRect().SetRelativeScale(glm::vec2(0.25f));
-		image1->GetRect().SetRelativePosition(glm::vec2(0.0f, 0.0f));
-		image1->GetEventOverlap().AddListener()
+		image1->GetRect().SetRelativePosition(glm::vec2(0.3f, 0.3f));
 		//image1->GetRect().SetAnchor(EAnchor::TopLeft);
 
-		//auto* image2 = Create<RImage>();
-		//image2->SetShader(shader2D);
-		//image2->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
-		//image2->GetRect().SetRelativeScale(glm::vec2(0.10f));
-		//image2->GetRect().SetScreenPosition(glm::vec2(1000.0f, 600.0f));
-		//image2->SetParent(image1, ECoordinateSpace::World);
+		auto* image2 = Create<RImage>();
+		image2->SetShader(shader2D);
+		image2->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
+		image2->GetRect().SetRelativeScale(glm::vec2(0.10f));
+		image2->SetParent(image1, ECoordinateSpace::World);
+		image1->GetRect().SetRelativePosition(glm::vec2(0.3f, 0.3f));
 	}
 	{
 		auto* mesh1 = Create<TMesh>();
@@ -92,7 +91,7 @@ void KObjectManager::Cleanup()
 
 void KObjectManager::Quit()
 {
-	Framework.GetWindow().Close();
+	Framework.GetWindow().SetShouldClose(true);
 }
 
 void KObjectManager::InitObjects()

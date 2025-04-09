@@ -11,8 +11,8 @@ public:
 
 	// Executes vkDeviceWaitIdle(VkDevice) if true, else executes glfwPollEvents()
 	const bool GetShouldClose() const;
-	// Sets the window to close at the end of the main loop
-	void Close();
+	// Sets whether the window should close at the end of the main loop
+	void SetShouldClose(const bool shouldClose);
 
 	GLFWwindow* GetGLFWWindow() const;
 

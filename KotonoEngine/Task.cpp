@@ -23,12 +23,12 @@ const float OTask::GetDuration() const
     return _duration;
 }
 
-KtEvent& OTask::GetEventUpdate()
+KtEvent<>& OTask::GetEventUpdate()
 {
     return _eventUpdate;
 }
 
-KtEvent& OTask::GetEventCompleted()
+KtEvent<>& OTask::GetEventCompleted()
 {
     return _eventCompleted;
 }

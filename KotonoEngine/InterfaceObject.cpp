@@ -1,4 +1,7 @@
 #include "InterfaceObject.h"
+#include <kotono_framework/Framework.h>
+#include <kotono_framework/Window.h>
+#include <kotono_framework/InputManager.h>
 #include <kotono_framework/log.h>
 #include "Engine.h"
 #include "ObjectManager.h"
@@ -7,15 +10,24 @@ void RInterfaceObject::Init()
 {
 	_visibility = EVisibility::EditorAndGame;
 	_viewport = &WindowViewport;
+	_eventOverlap.AddListener(this, &RInterfaceObject::OnEventOverlap);
+	Framework.GetInputManager().GetMouse()
+		.GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
+		.AddListener(this, &RInterfaceObject::OnEventMouseLeftButtonDown);
 }
 
 void RInterfaceObject::Update()
 {
 	UpdateOverlaps();
-	for (auto* interfaceObject : _overlaps)
-	{
-		interfaceObject->_eventOverlap.Broadcast();
-	}
+	BroadcastOverlaps();
+}
+
+void RInterfaceObject::Cleanup()
+{
+	_eventOverlap.RemoveListener(this);
+	Framework.GetInputManager().GetMouse()
+		.GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
+		.RemoveListener(this);
 }
 
 void RInterfaceObject::UpdateOverlaps()
@@ -31,6 +43,14 @@ void RInterfaceObject::UpdateOverlaps()
 		{
 			_overlaps.insert(interfaceObject);
 		}
+	}
+}
+
+void RInterfaceObject::BroadcastOverlaps()
+{
+	for (auto* interfaceObject : _overlaps)
+	{
+		_eventOverlap.Broadcast(interfaceObject);
 	}
 }
 
@@ -54,7 +74,7 @@ RInterfaceObject* RInterfaceObject::GetParent() const
 	return _parent;
 }
 
-KtEvent& RInterfaceObject::GetEventOverlap()
+KtEvent<RInterfaceObject*>& RInterfaceObject::GetEventOverlap()
 {
 	return _eventOverlap;
 }
@@ -88,4 +108,22 @@ void RInterfaceObject::SetParent(RInterfaceObject* parent, const ECoordinateSpac
 	}
 	_parent = parent;
 	_rect.SetParent(_parent ? &_parent->_rect : nullptr, keepRect);
+}
+
+void RInterfaceObject::OnEventOverlap(RInterfaceObject* other)
+{
+	KT_DEBUG_LOG("'%s' overlapping '%s'", other->GetName().c_str(), GetName().c_str());
+}
+
+void RInterfaceObject::OnEventMouseLeftButtonDown()
+{
+	const auto& cursorPosition = Framework.GetInputManager().GetMouse().GetCursorPosition();
+	if (_rect.GetIsOverlapping(cursorPosition))
+	{
+		const auto& windowSize = Framework.GetWindow().GetSize();
+		const auto cursorPositionDelta = Framework.GetInputManager().GetMouse().GetCursorPositionDelta();
+		const auto cursorPositionDeltaNormalized = 2.0f * cursorPositionDelta / glm::vec2(windowSize);
+		_rect.AddOffset(cursorPositionDeltaNormalized);
+		KT_DEBUG_LOG("added offset: %s to '%s'", glm::to_string(cursorPositionDeltaNormalized).c_str(), GetName().c_str());
+	}
 }

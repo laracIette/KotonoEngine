@@ -7,9 +7,7 @@ class RImage : public RInterfaceObject
 	BASECLASS(RInterfaceObject)
 
 public:
-	void Init() override;
 	void Update() override;
-	void Cleanup() override;
 
 	KtShader* GetShader() const;
 	void SetShader(KtShader* shader);
@@ -18,8 +16,5 @@ public:
 
 private:
 	KtShader* _shader;
-	OTask* _spinTask;
-
-	void Spin();
 };
 

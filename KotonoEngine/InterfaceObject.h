@@ -12,6 +12,7 @@ class RInterfaceObject : public OObject
 public:
 	void Init() override;
 	void Update() override;
+	void Cleanup() override;
 
 	const URect& GetRect() const;
 	URect& GetRect();
@@ -19,21 +20,26 @@ public:
 	KtViewport* GetViewport() const;
 	RInterfaceObject* GetParent() const;
 
-	KtEvent& GetEventOverlap();
+	KtEvent<RInterfaceObject*>& GetEventOverlap();
 
 	void SetVisibility(const EVisibility visibility);
 	void SetViewport(KtViewport* viewport);
 	void SetParent(RInterfaceObject* parent, const ECoordinateSpace keepRect);
 
 private:
+	void OnEventOverlap(RInterfaceObject* other);
+	void OnEventMouseLeftButtonDown();
+
 	URect _rect;
 	EVisibility _visibility;
 	KtViewport* _viewport;
 	RInterfaceObject* _parent;
 
 	std::unordered_set<RInterfaceObject*> _overlaps;
-	KtEvent _eventOverlap;
+	KtEvent<RInterfaceObject*> _eventOverlap;
+	KtEvent<> _eventClicked;
 
 	void UpdateOverlaps();
+	void BroadcastOverlaps();
 };
 

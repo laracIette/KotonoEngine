@@ -23,7 +23,7 @@ public:
 		return object;
 	}
 
-	// Very slow function, potentially going through the whole list
+	// Very slow function, potentially going through the whole list, performing dynamic cast
 	template <Object T> 
 	T* GetFirstOfType()
 	{
@@ -37,7 +37,7 @@ public:
 		return nullptr;
 	}
 
-	// Very slow function, going through the whole list
+	// Slow function, going through the whole list
 	template <Object T> 
 	const std::unordered_set<T*> GetAllOfType()
 	{
@@ -46,7 +46,7 @@ public:
 		result.reserve(objects.size());
 		for (OObject* obj : objects)
 		{
-			result.push_back(static_cast<T*>(obj));
+			result.insert(static_cast<T*>(obj));
 		}
 		return result;
 	}

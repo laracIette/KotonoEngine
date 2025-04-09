@@ -53,9 +53,9 @@ const bool KtWindow::GetShouldClose() const
     return false;
 }
 
-void KtWindow::Close()
+void KtWindow::SetShouldClose(const bool shouldClose)
 {
-    _shouldClose = true;
+    _shouldClose = shouldClose;
 }
 
 void KtWindow::Cleanup()

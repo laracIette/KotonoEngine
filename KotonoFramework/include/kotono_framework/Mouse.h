@@ -14,15 +14,15 @@ public:
 	const glm::vec2& GetCursorPosition() const;
 	const glm::vec2 GetCursorPositionNormalized() const;
 	const glm::vec2 GetCursorPositionDelta() const;
-	KtEvent& GetEvent(const KtButton button, const KtInputState inputState);
-	KtEvent& GetMoveEvent();
+	KtEvent<>& GetButtonEvent(const KtButton button, const KtInputState inputState);
+	KtEvent<>& GetMoveEvent();
 
 private:
 	glm::vec2 _previousCursorPosition;
 	glm::vec2 _cursorPosition;
 
-	std::map<KtButton, std::map<KtInputState, KtEvent>> _events;
+	std::map<KtButton, std::map<KtInputState, KtEvent<>>> _buttonEvents;
 	std::map<KtButton, std::unordered_set<KtInputState>> _buttonStates;
-	KtEvent _moveEvent;
+	KtEvent<> _moveEvent;
 };
 

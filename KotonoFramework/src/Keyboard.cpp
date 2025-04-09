@@ -49,7 +49,7 @@ void KtKeyboard::Update()
     }
 }
 
-KtEvent& KtKeyboard::GetEvent(const KtKey key, const KtInputState inputState)
+KtEvent<>& KtKeyboard::GetEvent(const KtKey key, const KtInputState inputState)
 {
     return _events[key][inputState];
 }

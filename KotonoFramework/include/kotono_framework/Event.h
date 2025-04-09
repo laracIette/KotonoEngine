@@ -1,68 +1,21 @@
 #pragma once
 #include <vector>
 #include <functional>
-#include <algorithm>
+#include <type_traits>
+#include <memory>
+#include <iostream>
+template<typename... Args>
 class KtEvent
 {
 public:
-    template<class Tinst, class Tfunc, typename... Args >
+    template<class Tinst, class Tfunc>
     requires std::is_base_of_v<Tfunc, Tinst>
-    void AddListener(Tinst* instance, void (Tfunc::* function)(Args...), Args... args)
+    void AddListener(Tinst* instance, void (Tfunc::* function)(Args...))
     {
-        _listeners.push_back({
-            instance,
-            [instance, function, args...]() { (instance->*function)(args...); }
-        });
-    }
-
-    template<class Tinst, class Tfunc, typename... Args >
-    requires std::is_base_of_v<Tfunc, Tinst>
-    void AddListener(Tinst* instance, void (Tfunc::* function)(Args...) const, Args... args)
-    {
-        _listeners.push_back({
-            instance,
-            [instance, function, args...]() { (instance->*function)(args...); }
-        });
-    }
-
-    template<class Tinst, class Tfunc, typename... Args >
-    requires std::is_base_of_v<Tfunc, Tinst>
-    void AddListener(Tinst* instance, void (Tfunc::* function)(Args&...), Args&... args)
-    {
-        _listeners.push_back({
-            instance,
-            [instance, function, args...]() { (instance->*function)(args...); }
-        });
-    }
-
-    template<class Tinst, class Tfunc, typename... Args >
-    requires std::is_base_of_v<Tfunc, Tinst>
-    void AddListener(Tinst* instance, void (Tfunc::* function)(const Args&...), const Args&... args)
-    {
-        _listeners.push_back({
-            instance,
-            [instance, function, args...]() { (instance->*function)(args...); }
-        });
-    }
-
-    template<class Tinst, class Tfunc, typename... Args >
-    requires std::is_base_of_v<Tfunc, Tinst>
-    void AddListener(Tinst* instance, void (Tfunc::* function)(Args&...) const, Args&... args)
-    {
-        _listeners.push_back({
-            instance,
-            [instance, function, args...]() { (instance->*function)(args...); }
-        });
-    }
-
-    template<class Tinst, class Tfunc, typename... Args >
-    requires std::is_base_of_v<Tfunc, Tinst>
-    void AddListener(Tinst* instance, void (Tfunc::* function)(const Args&...) const, const Args&... args)
-    {
-        _listeners.push_back({
-            instance,
-            [instance, function, args...]() { (instance->*function)(args...); }
-        });
+        Listener listener{};
+        listener.Instance = instance;
+        listener.Callback = [instance, function](Args... args) { (instance->*function)(args...); };
+        _listeners.push_back(std::move(listener));
     }
 
     template<class T>
@@ -75,20 +28,27 @@ public:
         );
     }
 
-    void Broadcast();
+    void Broadcast(Args... args)
+    {
+        for (const Listener& listener : _listeners)
+        {
+            if (listener.Instance)
+            {
+                listener.Callback(args...);
+            }
+            else
+            {
+                std::cerr << "can't call listener.Callback(), listener.Instance is nullptr" << std::endl;
+            }
+        }
+    }
 
 private:
     struct Listener
     {
         void* Instance;
-        std::function<void()> Callback;
-
-        bool operator==(const Listener& other) const
-        {
-            return Instance == other.Instance;
-        }
+        std::function<void(Args...)> Callback;
     };
 
     std::vector<Listener> _listeners;
 };
-

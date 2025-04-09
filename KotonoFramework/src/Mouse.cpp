@@ -2,10 +2,11 @@
 #include "Framework.h"
 #include "Window.h"
 #include <GLFW/glfw3.h>
+#include "log.h"
 
 void KtMouse::Update()
 {
-    for (auto& [button, events] : _events)
+    for (auto& [button, events] : _buttonEvents)
     {
         std::unordered_set<KtInputState> buttonStates;
 
@@ -50,11 +51,12 @@ void KtMouse::Update()
 
     double x, y;
     glfwGetCursorPos(Framework.GetWindow().GetGLFWWindow(), &x, &y);
-    auto newPos = glm::vec2(x, y);
+    const auto newPos = glm::vec2(x, y);
+    _previousCursorPosition = _cursorPosition;
+    _cursorPosition = newPos;
+
     if (_cursorPosition != newPos)
     {
-        _previousCursorPosition = _cursorPosition;
-        _cursorPosition = newPos;
         _moveEvent.Broadcast();
     }
 }
@@ -71,12 +73,8 @@ const glm::vec2& KtMouse::GetCursorPosition() const
 
 const glm::vec2 KtMouse::GetCursorPositionNormalized() const
 {
-    const glm::uvec2 windowSize = Framework.GetWindow().GetSize();
-
-    const float normalizedX = (2.0f * _cursorPosition.x / windowSize.x) - 1.0f;
-    const float normalizedY = (2.0f * _cursorPosition.y / windowSize.y) - 1.0f;
-
-    return glm::vec2(normalizedX, normalizedY);
+    const auto& windowSize = Framework.GetWindow().GetSize();
+    return 2.0f * _cursorPosition / glm::vec2(windowSize) - 1.0f;
 }
 
 const glm::vec2 KtMouse::GetCursorPositionDelta() const
@@ -84,12 +82,12 @@ const glm::vec2 KtMouse::GetCursorPositionDelta() const
     return _cursorPosition - _previousCursorPosition;
 }
 
-KtEvent& KtMouse::GetEvent(const KtButton button, const KtInputState inputState)
+KtEvent<>& KtMouse::GetButtonEvent(const KtButton button, const KtInputState inputState)
 {
-    return _events[button][inputState];
+    return _buttonEvents[button][inputState];
 }
 
-KtEvent& KtMouse::GetMoveEvent()
+KtEvent<>& KtMouse::GetMoveEvent()
 {
     return _moveEvent;
 }
