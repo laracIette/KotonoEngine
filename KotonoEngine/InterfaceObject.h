@@ -20,6 +20,9 @@ public:
 	KtViewport* GetViewport() const;
 	RInterfaceObject* GetParent() const;
 
+	// interface objects dont necesarily have anything to draw
+	// TODO: move colliders / overlap events to classes who directly need them 
+
 	KtEvent<RInterfaceObject*>& GetEventOverlap();
 
 	void SetVisibility(const EVisibility visibility);

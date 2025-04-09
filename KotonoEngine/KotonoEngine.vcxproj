@@ -28,6 +28,7 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="Rect.cpp" />
+    <ClCompile Include="InterfaceCollider.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -46,6 +47,7 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="Rect.h" />
+    <ClInclude Include="InterfaceCollider.h" />
     <ClInclude Include="RotationUnit.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneObject.h" />

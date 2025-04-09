@@ -37,5 +37,16 @@ const KtRenderQueue2DData KtCuller2D::ComputeNullCulling(const KtRenderQueue2DDa
 
 const KtRenderQueue2DData KtCuller2D::ComputeScreenCulling(const KtRenderQueue2DData& renderQueueData) const
 {
-	return renderQueueData;
+	KtRenderQueue2DData culledData{};
+	for (const auto& [shader, shaderData] : renderQueueData.Shaders)
+	{
+		for (const auto& [viewport, viewportData] : shaderData.Viewports)
+		{
+			// check out of bounds
+
+			culledData.Shaders[shader].Viewports[viewport] = viewportData;
+		}
+
+	}
+	return culledData;
 }

@@ -124,6 +124,5 @@ void RInterfaceObject::OnEventMouseLeftButtonDown()
 		const auto cursorPositionDelta = Framework.GetInputManager().GetMouse().GetCursorPositionDelta();
 		const auto cursorPositionDeltaNormalized = 2.0f * cursorPositionDelta / glm::vec2(windowSize);
 		_rect.AddOffset(cursorPositionDeltaNormalized);
-		KT_DEBUG_LOG("added offset: %s to '%s'", glm::to_string(cursorPositionDeltaNormalized).c_str(), GetName().c_str());
 	}
 }
