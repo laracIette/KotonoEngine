@@ -1,10 +1,37 @@
 #include "InterfaceObject.h"
 #include <kotono_framework/log.h>
+#include "Engine.h"
+#include "ObjectManager.h"
 
 void RInterfaceObject::Init()
 {
 	_visibility = EVisibility::EditorAndGame;
 	_viewport = &WindowViewport;
+}
+
+void RInterfaceObject::Update()
+{
+	UpdateOverlaps();
+	for (auto* interfaceObject : _overlaps)
+	{
+		interfaceObject->_eventOverlap.Broadcast();
+	}
+}
+
+void RInterfaceObject::UpdateOverlaps()
+{
+	auto interfaceObjects = Engine.GetObjectManager().GetAllOfType<RInterfaceObject>();
+	interfaceObjects.erase(this);
+
+	_overlaps.clear();
+
+	for (auto* interfaceObject : interfaceObjects)
+	{
+		if (_rect.GetIsOverlapping(interfaceObject->_rect))
+		{
+			_overlaps.insert(interfaceObject);
+		}
+	}
 }
 
 const URect& RInterfaceObject::GetRect() const
@@ -25,6 +52,11 @@ KtViewport* RInterfaceObject::GetViewport() const
 RInterfaceObject* RInterfaceObject::GetParent() const
 {
 	return _parent;
+}
+
+KtEvent& RInterfaceObject::GetEventOverlap()
+{
+	return _eventOverlap;
 }
 
 const EVisibility RInterfaceObject::GetVisibility() const

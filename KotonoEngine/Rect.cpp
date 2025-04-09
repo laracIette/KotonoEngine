@@ -54,6 +54,14 @@ const glm::vec2 URect::GetAnchorRelativePosition() const
 	return _relativePosition - GetAnchorOffset();
 }
 
+const bool URect::GetIsOverlapping(const glm::vec2& screenPosition, const glm::vec2& screenSize) const
+{
+	const auto distance = glm::abs(GetScreenPosition() - screenPosition);
+	const auto maxDistance = (GetScreenSize() + screenSize) / 2.0f;
+	return distance.x < maxDistance.x
+		&& distance.y < maxDistance.y;
+}
+
 const float URect::GetWorldRotation(const ERotationUnit unit) const
 {
 	if (_parent)
@@ -69,6 +77,11 @@ const glm::vec2 URect::GetScreenPosition() const
 	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
 	const auto newPosition = (GetWorldPosition() + glm::vec2(1.0f)) * viewportSize / 2.0f;
 	return newPosition;
+}
+
+const glm::vec2 URect::GetScreenSize() const
+{
+	return glm::vec2(_baseSize) * GetWorldScale();
 }
 
 const EAnchor URect::GetAnchor() const
@@ -244,14 +257,34 @@ const glm::mat4 URect::GetScaleMatrix() const
 	const float value = (cos((rotation + glm::half_pi<float>()) * 2.0f) + 1.0f) / 2.0f;
 	const auto stretchCorrection = glm::vec2(std::lerp(1.0f, aspectRatio, value), std::lerp(1.0f, 1.0f / aspectRatio, value));
 	
-	const auto size = glm::vec2(_baseSize) * GetWorldScale() / viewportSize * 2.0f * stretchCorrection;
-	
+	const auto size = GetScreenSize() / viewportSize * 2.0f * stretchCorrection;
+
 	return glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.0f));
 }
 
 const glm::mat4 URect::GetModelMatrix() const
 {
 	return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix();
+}
+
+const glm::vec2 URect::GetDirection(const URect& target) const
+{
+	return target.GetWorldPosition() - GetWorldPosition();
+}
+
+const float URect::GetDistance(const URect& other) const
+{
+	return glm::distance(GetWorldPosition(), other.GetWorldPosition());
+}
+
+const bool URect::GetIsOverlapping(const glm::vec2& screenPosition) const
+{
+	return GetIsOverlapping(screenPosition, glm::vec2(0.0f));
+}
+
+const bool URect::GetIsOverlapping(const URect& other) const
+{
+	return GetIsOverlapping(other.GetScreenPosition(), other.GetScreenSize());
 }
 
 const glm::vec2 URect::GetAnchorOffset() const

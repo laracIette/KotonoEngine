@@ -180,13 +180,13 @@ const glm::vec3 UTransform::GetScreenPosition() const
 	throw std::logic_error("not implemented");
 }
 
-const glm::vec3 UTransform::GetDirection(UTransform* target) const
+const glm::vec3 UTransform::GetDirection(const UTransform& target) const
 {
-	return target->GetWorldPosition() - GetWorldPosition();
+	return target.GetWorldPosition() - GetWorldPosition();
 }
 
-const float UTransform::GetDistance(UTransform* other) const
+const float UTransform::GetDistance(const UTransform& other) const
 {
-	return glm::distance(GetWorldPosition(), other->GetWorldPosition());
+	return glm::distance(GetWorldPosition(), other.GetWorldPosition());
 }
 

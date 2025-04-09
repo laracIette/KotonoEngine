@@ -43,8 +43,8 @@ public:
 
 	const glm::vec3 GetScreenPosition() const;
 
-	const glm::vec3 GetDirection(UTransform* target) const;
-	const float GetDistance(UTransform* other) const;
+	const glm::vec3 GetDirection(const UTransform& target) const;
+	const float GetDistance(const UTransform& other) const;
 
 private:
 	glm::vec3 _relativePosition;

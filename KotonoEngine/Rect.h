@@ -18,6 +18,7 @@ public:
 	const float GetWorldRotation(const ERotationUnit unit = ERotationUnit::Radians) const;
 
 	const glm::vec2 GetScreenPosition() const;
+	const glm::vec2 GetScreenSize() const;
 
 	const EAnchor GetAnchor() const;
 
@@ -50,6 +51,12 @@ public:
 	const glm::mat4 GetScaleMatrix() const;
 	const glm::mat4 GetModelMatrix() const;
 
+
+	const glm::vec2 GetDirection(const URect& target) const;
+	const float GetDistance(const URect& other) const;
+	const bool GetIsOverlapping(const glm::vec2& screenPosition) const;
+	const bool GetIsOverlapping(const URect& other) const;
+
 private:
 	glm::uvec2 _baseSize;
 	glm::vec2 _relativePosition;
@@ -63,5 +70,7 @@ private:
 	const glm::vec2 GetAnchorOffset() const;
 	const glm::vec2 GetWorldPositionWithAnchorOffset() const;
 	const glm::vec2 GetAnchorRelativePosition() const;
+
+	const bool GetIsOverlapping(const glm::vec2& screenPosition, const glm::vec2& screenSize) const;
 };
 

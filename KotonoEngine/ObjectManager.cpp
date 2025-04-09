@@ -40,6 +40,7 @@ void KObjectManager::Init()
 		image1->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
 		image1->GetRect().SetRelativeScale(glm::vec2(0.25f));
 		image1->GetRect().SetRelativePosition(glm::vec2(0.0f, 0.0f));
+		image1->GetEventOverlap().AddListener()
 		//image1->GetRect().SetAnchor(EAnchor::TopLeft);
 
 		//auto* image2 = Create<RImage>();
@@ -84,6 +85,9 @@ void KObjectManager::Cleanup()
 	{
 		delete object;
 	}
+	_objects.clear();
+	_inits.clear();
+	_typeRegistry.clear();
 }
 
 void KObjectManager::Quit()
@@ -130,6 +134,7 @@ void KObjectManager::DeleteObjects()
 	}
 	for (auto* object : deleteObjects)
 	{
+		_typeRegistry[typeid(*object)].erase(object);
 		delete object;
 	}
 }
@@ -139,4 +144,5 @@ void KObjectManager::Create(OObject* object)
 	KT_DEBUG_LOG("creating object of type '%s'", object->GetTypeName().c_str());
 	_objects.insert(object);
 	_inits.insert(object);
+	_typeRegistry[typeid(*object)].insert(object);
 }

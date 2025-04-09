@@ -2,7 +2,6 @@
 #include <vector>
 #include <functional>
 #include <algorithm>
-
 class KtEvent
 {
 public:

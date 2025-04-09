@@ -2,7 +2,10 @@
 #include "Object.h"
 #include <type_traits>
 #include <unordered_set>
+#include <vector>
 #include <concepts>
+#include <unordered_map>
+#include <typeindex>
 template <class T>
 concept Object = std::is_base_of_v<OObject, T>;
 class KObjectManager
@@ -22,7 +25,7 @@ public:
 
 	// Very slow function, potentially going through the whole list
 	template <Object T> 
-	T* GetFirst()
+	T* GetFirstOfType()
 	{
 		for (const OObject* object : _objects)
 		{
@@ -33,12 +36,28 @@ public:
 		}
 		return nullptr;
 	}
+
+	// Very slow function, going through the whole list
+	template <Object T> 
+	const std::unordered_set<T*> GetAllOfType()
+	{
+		std::unordered_set<T*> result;
+		const auto& objects = _typeRegistry[typeid(T)];
+		result.reserve(objects.size());
+		for (OObject* obj : objects)
+		{
+			result.push_back(static_cast<T*>(obj));
+		}
+		return result;
+	}
 	
 private:
 	void Quit();
 
 	std::unordered_set<OObject*> _objects;
 	std::unordered_set<OObject*> _inits;
+
+	std::unordered_map<std::type_index, std::unordered_set<OObject*>> _typeRegistry;
 
 	void InitObjects();
 	void UpdateObjects();
