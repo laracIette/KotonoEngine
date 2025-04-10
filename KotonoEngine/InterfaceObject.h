@@ -21,7 +21,8 @@ public:
 	RInterfaceObject* GetParent() const;
 
 	// interface objects dont necesarily have anything to draw
-	// TODO: move colliders / overlap events to classes who directly need them 
+	// TODO: move colliders to classes who directly need them, 
+	// move events to colliders
 
 	KtEvent<RInterfaceObject*>& GetEventOverlap();
 
