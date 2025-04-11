@@ -47,7 +47,7 @@ void KObjectManager::Init()
 		image2->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
 		image2->GetRect().SetRelativeScale(glm::vec2(0.10f));
 		image2->SetParent(image1, ECoordinateSpace::World);
-		image1->GetRect().SetRelativePosition(glm::vec2(0.3f, 0.3f));
+		image2->SetLayer(-2);
 	}
 	{
 		auto* mesh1 = Create<TMesh>();

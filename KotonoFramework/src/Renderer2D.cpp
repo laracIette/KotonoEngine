@@ -32,6 +32,7 @@ void KtRenderer2D::AddToRenderQueue(const KtAddToRenderQueue2DArgs& args)
 	_renderQueueData[Framework.GetRenderer().GetGameThreadFrame()]
 		.Shaders[args.Shader]
 		.Viewports[args.Viewport]
+		.Layers[args.Layer]
 		.ObjectDatas.push_back(args.ObjectData);
 }
 
@@ -47,11 +48,14 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 	for (auto& [shader, shaderData] : culledData.Shaders)
 	{
 		std::vector<KtObjectData2D> objectBufferData;
-		for (auto& [viewport, viewportData] : shaderData.Viewports)
+		for (const auto& [viewport, viewportData] : shaderData.Viewports)
 		{
-			objectBufferData.insert(objectBufferData.end(),
-				viewportData.ObjectDatas.begin(), viewportData.ObjectDatas.end()
-			);
+			for (const auto& [layer, layerData] : viewportData.Layers)
+			{
+				objectBufferData.insert(objectBufferData.end(),
+					layerData.ObjectDatas.begin(), layerData.ObjectDatas.end()
+				);
+			}
 		}
 		// NOT A CMD, UPDATE ONCE PER FRAME //
 		if (auto* binding = shader->GetDescriptorSetLayoutBinding("objectBuffer"))
@@ -67,9 +71,13 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 		CmdBindBuffers(commandBuffer);
 
 		uint32_t instanceIndex = 0;
-		for (auto& [viewport, viewportData] : shaderData.Viewports)
+		for (const auto& [viewport, viewportData] : shaderData.Viewports)
 		{
-			const uint32_t instanceCount = static_cast<uint32_t>(viewportData.ObjectDatas.size());
+			uint32_t instanceCount = 0;
+			for (const auto& [layer, layerData] : viewportData.Layers)
+			{
+				instanceCount += static_cast<uint32_t>(layerData.ObjectDatas.size());
+			}
 
 			viewport->CmdUse(commandBuffer);
 			vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(SquareIndices.size()), instanceCount, 0, 0, instanceIndex);

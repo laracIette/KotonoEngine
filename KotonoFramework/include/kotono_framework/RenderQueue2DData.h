@@ -1,14 +1,19 @@
 #pragma once
 #include <vector>
 #include <unordered_map>
+#include <map>
 #include "Shader.h"
 #include "Viewport.h"
 #include "ObjectData2D.h"
 struct KtRenderQueue2DData
 {
-	struct RenderQueue2DViewportData
+	struct RenderQueue2DLayerData
 	{
 		std::vector<KtObjectData2D> ObjectDatas;
+	};
+	struct RenderQueue2DViewportData
+	{
+		std::map<int32_t, RenderQueue2DLayerData> Layers;
 	};
 	struct RenderQueue2DShaderData
 	{

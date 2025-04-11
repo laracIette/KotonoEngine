@@ -7,5 +7,6 @@ struct KtAddToRenderQueue2DArgs
 	KtShader* Shader;
 	KtViewport* Viewport;
 	KtObjectData2D ObjectData;
+	int32_t Layer;
 };
 

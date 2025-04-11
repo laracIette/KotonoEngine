@@ -38,6 +38,15 @@ RInterfaceObject* RInterfaceObject::GetParent() const
 	return _parent;
 }
 
+const int32_t RInterfaceObject::GetLayer() const
+{
+	if (_parent)
+	{
+		return _layer + _parent->GetLayer() + 1;
+	}
+	return _layer;
+}
+
 const EVisibility RInterfaceObject::GetVisibility() const
 {
 	return _visibility;
@@ -67,5 +76,10 @@ void RInterfaceObject::SetParent(RInterfaceObject* parent, const ECoordinateSpac
 	}
 	_parent = parent;
 	_rect.SetParent(_parent ? &_parent->_rect : nullptr, keepRect);
+}
+
+void RInterfaceObject::SetLayer(const int32_t layer)
+{
+	_layer = layer;
 }
 
