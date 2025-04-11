@@ -37,7 +37,6 @@ public:
 		return nullptr;
 	}
 
-	// Slow function, going through the whole list
 	template <Object T> 
 	const std::unordered_set<T*> GetAllOfType()
 	{

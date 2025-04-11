@@ -3,7 +3,6 @@
 #include "Rect.h"
 #include "Visibility.h"
 #include <kotono_framework/Viewport.h>
-#include <kotono_framework/Event.h>
 #include <unordered_set>
 class RInterfaceObject : public OObject
 {
@@ -18,32 +17,18 @@ public:
 	URect& GetRect();
 	const EVisibility GetVisibility() const;
 	KtViewport* GetViewport() const;
-	RInterfaceObject* GetParent() const;
-
-	// interface objects dont necesarily have anything to draw
-	// TODO: move colliders to classes who directly need them, 
-	// move events to colliders
-
-	KtEvent<RInterfaceObject*>& GetEventOverlap();
+	RInterfaceObject* GetParent() const;	
 
 	void SetVisibility(const EVisibility visibility);
 	void SetViewport(KtViewport* viewport);
 	void SetParent(RInterfaceObject* parent, const ECoordinateSpace keepRect);
 
 private:
-	void OnEventOverlap(RInterfaceObject* other);
-	void OnEventMouseLeftButtonDown();
-
 	URect _rect;
 	EVisibility _visibility;
 	KtViewport* _viewport;
 	RInterfaceObject* _parent;
 
-	std::unordered_set<RInterfaceObject*> _overlaps;
-	KtEvent<RInterfaceObject*> _eventOverlap;
-	KtEvent<> _eventClicked;
-
-	void UpdateOverlaps();
-	void BroadcastOverlaps();
+	int _zIndex;//TODO
 };
 
