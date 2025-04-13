@@ -8,7 +8,7 @@
 #include <typeindex>
 template <class T>
 concept Object = std::is_base_of_v<OObject, T>;
-class KObjectManager
+class KObjectManager final
 {
 public:
 	void Init();
