@@ -1,5 +1,5 @@
 #pragma once
-enum class ERotationUnit
+enum class ERotationUnit : char
 {
 	Radians,
 	Degrees

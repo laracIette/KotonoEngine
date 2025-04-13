@@ -1,0 +1,12 @@
+{
+    "guid": "6c47c965afd22849-73151ba2339e9334-4c8e87a594e41a3a-d6284781f6ed3bbf",
+    "name": "OScene",
+    "interfaceComponents": [
+        {
+            "guid": "f246314e6c23f640-93003a5ab8755567-c245cf6d9b8cb547-a3c89d4464f919a7",
+            "name": "Viewport Component",
+            "type": "RInterfaceComponent"
+        }
+    ],
+    "type": "OScene"
+}

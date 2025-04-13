@@ -58,7 +58,7 @@ void RImage::AddToRenderQueue() const
 
 void RImage::OnEventOverlap(RInterfaceCollider* other)
 {
-	KT_DEBUG_LOG("'%s' overlapping '%s'", other->GetName().c_str(), GetName().c_str());
+	//KT_DEBUG_LOG("'%s' overlapping '%s'", other->GetName().c_str(), GetName().c_str());
 }
 
 void RImage::OnEventMouseLeftButtonDown()

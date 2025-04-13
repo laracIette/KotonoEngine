@@ -7,9 +7,11 @@ class OInterface : public OObject
 	BASECLASS(OObject)
 
 public:
+	void Init() override;
+
 	void SetLayout();
 
 private:
-	std::unordered_set<RInterfaceComponent*> _components;
+	std::unordered_set<RInterfaceComponent*> _interfaceComponents;
 };
 

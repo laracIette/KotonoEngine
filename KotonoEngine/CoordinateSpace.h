@@ -1,5 +1,5 @@
 #pragma once
-enum class ECoordinateSpace
+enum class ECoordinateSpace : char
 {
 	Relative,
 	World
