@@ -75,7 +75,7 @@ void KtModel::Load()
 				vertex.TexCoord = { texCoord.x, texCoord.y };
 				vertex.Color = { 1.0f, 1.0f, 1.0f };
 
-				if (uniqueVertices.count(vertex) == 0)
+				if (!uniqueVertices.contains(vertex))
 				{
 					uniqueVertices[vertex] = static_cast<uint32_t>(_vertices.size());
 					_vertices.push_back(vertex);

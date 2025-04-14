@@ -4,6 +4,7 @@
 #include <kotono_framework/InputManager.h>
 #include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/ModelManager.h>
+#include <kotono_framework/ModelWireframeManager.h>
 #include <nlohmann/json.hpp>
 #include "Engine.h"
 #include "ObjectManager.h"
@@ -61,11 +62,18 @@ void TMesh::SetModel(KtModel* model)
 
 void TMesh::Draw()
 {
-    if (!Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::SceneObject))
+    if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::SceneObject))
     {
-        return;
+        AddToRenderQueue();
     }
-    AddToRenderQueue();
+    if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::Wireframe))
+    {
+        if (!_wireframe)
+        {
+            _wireframe = Framework.GetModelWireframeManager().Create(_model->GetPath());
+        }
+        AddToWireframeQueue();
+    }
 }
 
 void TMesh::AddToRenderQueue() const
@@ -76,6 +84,15 @@ void TMesh::AddToRenderQueue() const
     args.Viewport = GetViewport();
     args.ObjectData.Model = GetTransform().GetModelMatrix();
 	Framework.GetRenderer().GetRenderer3D().AddToRenderQueue(args);
+}
+
+void TMesh::AddToWireframeQueue() const
+{
+    KtAddToWireframeQueue3DArgs args{};
+    args.Model = _wireframe;
+    args.Viewport = GetViewport();
+    args.ObjectData.Model = GetTransform().GetModelMatrix();
+    Framework.GetRenderer().GetRenderer3D().AddToWireframeQueue(args);
 }
 
 void TMesh::SerializeTo(nlohmann::json& json) const

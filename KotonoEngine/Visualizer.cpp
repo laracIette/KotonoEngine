@@ -7,6 +7,7 @@ void KVisualizer::Init()
 	SetIsFieldVisible(EVisualizationField::InterfaceObject, true);
 	SetIsFieldVisible(EVisualizationField::InterfaceObjectBounds, true);
 	SetIsFieldVisible(EVisualizationField::InterfaceCollider, true);
+	SetIsFieldVisible(EVisualizationField::Wireframe, true);
 }
 
 void KVisualizer::Cleanup()

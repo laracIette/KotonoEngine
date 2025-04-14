@@ -9,6 +9,7 @@ public:
 	void Init()
 	{
 	}
+
 	void Cleanup()
 	{
 		for (auto& [path, item] : _items)
@@ -19,14 +20,14 @@ public:
 		_items.clear();
 	}
 
-	T* Get(const std::filesystem::path& path)
+	T* Get(const std::filesystem::path& path) const
 	{
-		if (!_items.contains(path))
+		const auto it = _items.find(path);
+		if (it != _items.end())
 		{
-			return nullptr;
+			return it->second;
 		}
-
-		return _items[path];
+		return nullptr;
 	}
 
 	virtual T* Create(const std::filesystem::path& path) = 0;

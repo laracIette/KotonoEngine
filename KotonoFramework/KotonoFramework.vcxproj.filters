@@ -101,6 +101,12 @@
     <ClCompile Include="src\Culler2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ModelWireframe.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ModelWireframeManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\kotono_framework\AllocatedBuffer.h">
@@ -241,6 +247,18 @@
     <ClInclude Include="include\kotono_framework\RenderQueue2DData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\kotono_framework\ModelWireframe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kotono_framework\WireframeQueue3DData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kotono_framework\AddToWireframeQueue3DArgs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kotono_framework\ModelWireframeManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\shader3D.frag">
@@ -256,5 +274,11 @@
       <Filter>Shaders\Vertex</Filter>
     </None>
     <None Include="cpp.hint" />
+    <None Include="shaders\wireframe.frag">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="shaders\wireframe3D.vert">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
   </ItemGroup>
 </Project>

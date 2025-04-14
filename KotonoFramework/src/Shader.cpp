@@ -308,7 +308,7 @@ void KtShader::CreateGraphicsPipeline()
 	KtSerializer().ReadData(_path, json);
 	for (const auto& shader : json["shaders"])
 	{
-		const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders)" / shader["path"];
+		const auto path = Framework.GetPath().GetFrameworkPath() / "shaders" / shader["path"];
 		std::vector<uint8_t> shaderCode = KtFile(path).ReadBinary();
 
 		VkShaderModule shaderModule;
@@ -690,7 +690,7 @@ void KtShader::CreateShaderLayout()
 	KtSerializer().ReadData(_path, json);
 	for (const auto& shader : json["shaders"])
 	{
-		const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders)" / shader["path"];
+		const auto path = Framework.GetPath().GetFrameworkPath() / "shaders" / shader["path"];
 		std::vector<uint8_t> shaderCode = KtFile(path).ReadBinary();
 		PopulateShaderLayout(shaderCode, shader["shaderStage"]);
 	}

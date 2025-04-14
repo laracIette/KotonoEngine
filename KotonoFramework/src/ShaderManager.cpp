@@ -2,10 +2,15 @@
 
 KtShader* KtShaderManager::Create(const std::filesystem::path& path)
 {
-    auto* item = new KtShader(path);
-    item->Init();
-    _items[path] = item;
-    return item;
+    if (auto* shader = Get(path))
+    {
+        return shader;
+    }
+
+    auto* shader = new KtShader(path);
+    shader->Init();
+    _items[path] = shader;
+    return shader;
 }
 
 void KtShaderManager::CleanupItem(KtShader* item) const

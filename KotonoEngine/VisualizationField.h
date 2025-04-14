@@ -6,5 +6,6 @@ enum class EVisualizationField : char
 	InterfaceObject,
 	InterfaceObjectBounds,
 	InterfaceCollider,
+	Wireframe,
 };
 
