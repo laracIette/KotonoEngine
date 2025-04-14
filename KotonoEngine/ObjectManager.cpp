@@ -76,6 +76,7 @@ void KObjectManager::Update()
 	Camera->Use();
 	UpdateObjects();
 	DeleteObjects();
+	DrawObjects();
 }
 
 void KObjectManager::Cleanup()
@@ -91,6 +92,11 @@ void KObjectManager::Cleanup()
 	_objects.clear();
 	_inits.clear();
 	_typeRegistry.clear();
+}
+
+KtEvent<>& KObjectManager::GetEventDrawObjects()
+{
+	return _eventDrawObjects;
 }
 
 void KObjectManager::Quit()
@@ -140,6 +146,11 @@ void KObjectManager::DeleteObjects()
 		_typeRegistry[typeid(*object)].erase(object);
 		delete object;
 	}
+}
+
+void KObjectManager::DrawObjects()
+{
+	_eventDrawObjects.Broadcast();
 }
 
 void KObjectManager::Create(OObject* object)

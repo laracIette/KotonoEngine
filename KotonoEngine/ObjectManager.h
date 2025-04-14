@@ -6,6 +6,7 @@
 #include <concepts>
 #include <unordered_map>
 #include <typeindex>
+#include <kotono_framework/Event.h>
 template <class T>
 concept Object = std::is_base_of_v<OObject, T>;
 class KObjectManager final
@@ -15,6 +16,8 @@ public:
 	void Update();
 	void Cleanup();
 
+	KtEvent<>& GetEventDrawObjects();
+
 	template <Object T> 
 	T* Create()
 	{
@@ -23,29 +26,35 @@ public:
 		return object;
 	}
 
-	// Very slow function, potentially going through the whole list, performing dynamic cast
 	template <Object T> 
-	T* GetFirstOfType()
+	T* GetFirstOfType() const
 	{
-		for (const OObject* object : _objects)
+		const auto it = _typeRegistry.find(typeid(T));
+		if (it != _typeRegistry.end())
 		{
-			if (T* casted = dynamic_cast<T*>(object))
+			const auto& objects = it->second;
+			if (!objects.empty())
 			{
-				return casted;
+				return static_cast<T*>(objects[0]);
 			}
 		}
 		return nullptr;
 	}
 
 	template <Object T> 
-	const std::unordered_set<T*> GetAllOfType()
+	const std::unordered_set<T*> GetAllOfType() const
 	{
 		std::unordered_set<T*> result;
-		const auto& objects = _typeRegistry[typeid(T)];
-		result.reserve(objects.size());
-		for (OObject* obj : objects)
+		const auto it = _typeRegistry.find(typeid(T));
+		if (it != _typeRegistry.end())
 		{
-			result.insert(static_cast<T*>(obj));
+			const auto& objects = it->second;
+			result.reserve(objects.size());
+
+			for (OObject* obj : objects)
+			{
+				result.insert(static_cast<T*>(obj));
+			}
 		}
 		return result;
 	}
@@ -58,9 +67,12 @@ private:
 
 	std::unordered_map<std::type_index, std::unordered_set<OObject*>> _typeRegistry;
 
+	KtEvent<> _eventDrawObjects;
+
 	void InitObjects();
 	void UpdateObjects();
 	void DeleteObjects();
+	void DrawObjects();
 
 	void Create(OObject* object);
 };

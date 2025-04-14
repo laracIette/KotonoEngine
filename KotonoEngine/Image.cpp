@@ -5,11 +5,13 @@
 #include <kotono_framework/InputManager.h>
 #include "Engine.h"
 #include "ObjectManager.h"
+#include "Visualizer.h"
 #include <kotono_framework/log.h>
 
 void RImage::Init()
 {
 	Base::Init();
+
 	_collider = Engine.GetObjectManager().Create<RInterfaceCollider>();
 	_collider->GetRect().SetBaseSize(GetRect().GetBaseSize());
 	_collider->SetParent(this, ECoordinateSpace::Relative);
@@ -17,12 +19,13 @@ void RImage::Init()
 	Framework.GetInputManager().GetMouse()
 		.GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
 		.AddListener(this, &RImage::OnEventMouseLeftButtonDown);
+
+	Engine.GetObjectManager().GetEventDrawObjects().AddListener(this, &RImage::Draw);
 }
 
 void RImage::Update()
 {
 	Base::Update();
-	AddToRenderQueue();
 }
 
 void RImage::Cleanup()
@@ -33,6 +36,8 @@ void RImage::Cleanup()
 		.GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
 		.RemoveListener(this);
 	_collider->SetIsDelete(true);
+
+	Engine.GetObjectManager().GetEventDrawObjects().RemoveListener(this);
 }
 
 KtShader* RImage::GetShader() const
@@ -45,6 +50,15 @@ void RImage::SetShader(KtShader* shader)
 	_shader = shader;
 }
 
+void RImage::Draw()
+{
+	if (!Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObject))
+	{
+		return;
+	}
+	AddToRenderQueue();
+}
+
 void RImage::AddToRenderQueue() const
 {
 	KtAddToRenderQueue2DArgs args{};
@@ -54,7 +68,6 @@ void RImage::AddToRenderQueue() const
 	args.Layer = GetLayer();
 	Framework.GetRenderer().GetRenderer2D().AddToRenderQueue(args);
 }
-
 
 void RImage::OnEventOverlap(RInterfaceCollider* other)
 {

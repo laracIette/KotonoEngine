@@ -14,13 +14,12 @@ public:
 	KtShader* GetShader() const;
 	void SetShader(KtShader* shader);
 
-	void AddToRenderQueue() const;
-
 private:
 	KtShader* _shader;
 	RInterfaceCollider* _collider;
 
-
+	void Draw();
+	void AddToRenderQueue() const;
 
 	// temp
 	void OnEventOverlap(RInterfaceCollider* other);

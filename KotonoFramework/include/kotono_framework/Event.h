@@ -43,6 +43,11 @@ public:
         }
     }
 
+    void ClearListeners()
+    {
+        _listeners = {};
+    }
+
 private:
     struct Listener
     {

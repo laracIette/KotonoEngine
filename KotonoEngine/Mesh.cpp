@@ -7,6 +7,7 @@
 #include <nlohmann/json.hpp>
 #include "Engine.h"
 #include "ObjectManager.h"
+#include "Visualizer.h"
 #include "Time.h"
 
 void TMesh::Init()
@@ -18,12 +19,13 @@ void TMesh::Init()
     Framework.GetInputManager().GetKeyboard()
         .GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED)
         .AddListener(_spinTask, &OTask::Start);
+
+    Engine.GetObjectManager().GetEventDrawObjects().AddListener(this, &TMesh::Draw);
 }
 
 void TMesh::Update()
 {
     Base::Update();
-    AddToRenderQueue();
 }
 
 void TMesh::Cleanup()
@@ -33,6 +35,8 @@ void TMesh::Cleanup()
     Framework.GetInputManager().GetKeyboard()
         .GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED)
         .RemoveListener(this);
+
+    Engine.GetObjectManager().GetEventDrawObjects().RemoveListener(this);
 }
 
 KtShader* TMesh::GetShader() const
@@ -53,6 +57,15 @@ void TMesh::SetShader(KtShader* shader)
 void TMesh::SetModel(KtModel* model)
 {
     _model = model;
+}
+
+void TMesh::Draw()
+{
+    if (!Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::SceneObject))
+    {
+        return;
+    }
+    AddToRenderQueue();
 }
 
 void TMesh::AddToRenderQueue() const

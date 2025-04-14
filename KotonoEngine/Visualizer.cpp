@@ -13,6 +13,16 @@ void KVisualizer::Cleanup()
 {
 }
 
+const bool KVisualizer::GetIsFieldVisible(const EVisualizationField field) const
+{
+	const auto it = _fieldVisibilities.find(field);
+	if (it != _fieldVisibilities.end())
+	{
+		return it->second;
+	}
+	return false;
+}
+
 void KVisualizer::SetIsFieldVisible(const EVisualizationField field, bool isVisible)
 {
 	_fieldVisibilities[field] = isVisible;
