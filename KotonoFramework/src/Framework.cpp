@@ -6,7 +6,6 @@
 #include "AudioManager.h"
 #include "InputManager.h"
 #include "ModelManager.h"
-#include "ModelWireframeManager.h"
 #include "ShaderManager.h"
 #include "ImageTextureManager.h"
 
@@ -19,7 +18,6 @@ static KtRenderer Renderer;
 static KtAudioManager AudioManager;
 static KtInputManager InputManager;
 static KtModelManager ModelManager;
-static KtModelWireframeManager ModelWireframeManager;
 static KtShaderManager ShaderManager;
 static KtImageTextureManager ImageTextureManager;
 
@@ -32,7 +30,6 @@ void KtFramework::Init()
     AudioManager.Init();
     InputManager.Init();
     ModelManager.Init();
-    ModelWireframeManager.Init();
     ShaderManager.Init();
     ImageTextureManager.Init();
 }
@@ -41,7 +38,6 @@ void KtFramework::Cleanup()
 {
     ImageTextureManager.Cleanup();
     ShaderManager.Cleanup();
-    ModelWireframeManager.Cleanup();
     ModelManager.Cleanup();
     InputManager.Cleanup();
     AudioManager.Cleanup();
@@ -84,11 +80,6 @@ KtInputManager& KtFramework::GetInputManager()
 KtModelManager& KtFramework::GetModelManager()
 {
     return ModelManager;
-}
-
-KtModelWireframeManager& KtFramework::GetModelWireframeManager()
-{
-    return ModelWireframeManager;
 }
 
 KtShaderManager& KtFramework::GetShaderManager()

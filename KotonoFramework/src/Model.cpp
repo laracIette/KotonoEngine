@@ -22,6 +22,8 @@ void KtModel::Init()
 void KtModel::Cleanup() const
 {
 	KT_DEBUG_LOG("cleaning up model");
+	_wireframe.Cleanup();
+
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _indexBuffer.Buffer, _indexBuffer.Allocation);
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _vertexBuffer.Buffer, _vertexBuffer.Allocation);
 	KT_DEBUG_LOG("cleaned up model");
@@ -30,6 +32,15 @@ void KtModel::Cleanup() const
 const std::filesystem::path& KtModel::GetPath() const
 {
 	return _path;
+}
+
+KtModelWireframe& KtModel::GetWireframe()
+{
+	if (!_wireframe.GetIsInit())
+	{
+		_wireframe.Init(_vertices, _indices);
+	}
+	return _wireframe;
 }
 
 void KtModel::CmdBind(VkCommandBuffer commandBuffer) const

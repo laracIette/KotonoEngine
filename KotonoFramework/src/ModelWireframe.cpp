@@ -1,35 +1,33 @@
 #include "ModelWireframe.h"
 #include "Framework.h"
 #include "Context.h"
-#include <unordered_map>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 #include "log.h"
 
-KtModelWireframe::KtModelWireframe(const std::filesystem::path& path) :
-	_path(path)
+void KtModelWireframe::Init(const std::span<KtVertex3D> vertices, const std::span<uint32_t> indices)
 {
-}
+	for (const auto& vertex : vertices)
+	{
+		_vertices.push_back(vertex.Position);
+	}
+	_indices = std::vector<uint32_t>(indices.begin(), indices.end());
 
-void KtModelWireframe::Init()
-{
-	Load();
 	CreateVertexBuffer();
 	CreateIndexBuffer();
+
+	_isInit = true;
 }
 
 void KtModelWireframe::Cleanup() const
 {
-	KT_DEBUG_LOG("cleaning up model");
+	KT_DEBUG_LOG("cleaning up model wireframe");
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _indexBuffer.Buffer, _indexBuffer.Allocation);
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _vertexBuffer.Buffer, _vertexBuffer.Allocation);
-	KT_DEBUG_LOG("cleaned up model");
+	KT_DEBUG_LOG("cleaned up model wireframe");
 }
 
-const std::filesystem::path& KtModelWireframe::GetPath() const
+const bool KtModelWireframe::GetIsInit() const
 {
-	return _path;
+	return _isInit;
 }
 
 void KtModelWireframe::CmdBind(VkCommandBuffer commandBuffer) const
@@ -43,45 +41,6 @@ void KtModelWireframe::CmdBind(VkCommandBuffer commandBuffer) const
 void KtModelWireframe::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t instanceCount, const uint32_t firstInstance) const
 {
 	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(_indices.size()), instanceCount, 0, 0, firstInstance);
-}
-
-void KtModelWireframe::Load()
-{
-	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(_path.string().c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
-
-	if (!scene || !scene->HasMeshes())
-	{
-		throw std::runtime_error("Failed to load model: " + _path.string());
-	}
-
-	std::unordered_map<glm::vec3, uint32_t> uniqueVertices{};
-
-	for (unsigned int m = 0; m < scene->mNumMeshes; ++m)
-	{
-		const aiMesh* mesh = scene->mMeshes[m];
-
-		for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
-		{
-			const aiFace& face = mesh->mFaces[i];
-
-			for (unsigned int j = 0; j < face.mNumIndices; ++j)
-			{
-				const aiVector3D pos = mesh->mVertices[face.mIndices[j]];
-				const aiVector3D texCoord = mesh->mTextureCoords[0] ? mesh->mTextureCoords[0][face.mIndices[j]] : aiVector3D(0.0f, 0.0f, 0.0f);
-
-				const auto vertex = glm::vec3(pos.x, pos.y, pos.z);
-
-				if (!uniqueVertices.contains(vertex))
-				{
-					uniqueVertices[vertex] = static_cast<uint32_t>(_vertices.size());
-					_vertices.push_back(vertex);
-				}
-
-				_indices.push_back(uniqueVertices[vertex]);
-			}
-		}
-	}
 }
 
 void KtModelWireframe::CreateVertexBuffer()

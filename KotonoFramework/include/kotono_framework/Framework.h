@@ -6,7 +6,6 @@ class KtRenderer;
 class KtAudioManager;
 class KtInputManager;
 class KtModelManager;
-class KtModelWireframeManager;
 class KtShaderManager;
 class KtImageTextureManager;
 class KtFramework final
@@ -22,7 +21,6 @@ public:
 	KtAudioManager& GetAudioManager();
 	KtInputManager& GetInputManager();
 	KtModelManager& GetModelManager();
-	KtModelWireframeManager& GetModelWireframeManager();
 	KtShaderManager& GetShaderManager();
 	KtImageTextureManager& GetImageTextureManager();
 };

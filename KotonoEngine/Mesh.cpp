@@ -4,12 +4,14 @@
 #include <kotono_framework/InputManager.h>
 #include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/ModelManager.h>
-#include <kotono_framework/ModelWireframeManager.h>
+#include <kotono_framework/Path.h>
 #include <nlohmann/json.hpp>
 #include "Engine.h"
 #include "ObjectManager.h"
 #include "Visualizer.h"
 #include "Time.h"
+
+static KtShader* ModelWireframeShader = nullptr;
 
 void TMesh::Init()
 {
@@ -22,6 +24,12 @@ void TMesh::Init()
         .AddListener(_spinTask, &OTask::Start);
 
     Engine.GetObjectManager().GetEventDrawObjects().AddListener(this, &TMesh::Draw);
+
+    if (!ModelWireframeShader)
+    {
+        const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\wireframe3D.ktshader)";
+        ModelWireframeShader = Framework.GetShaderManager().Create(path);
+    }
 }
 
 void TMesh::Update()
@@ -64,35 +72,32 @@ void TMesh::Draw()
 {
     if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::SceneObject))
     {
-        AddToRenderQueue();
+        AddModelToRenderQueue();
     }
     if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::Wireframe))
     {
-        if (!_wireframe)
-        {
-            _wireframe = Framework.GetModelWireframeManager().Create(_model->GetPath());
-        }
-        AddToWireframeQueue();
+        AddWireframeToRenderQueue();
     }
 }
 
-void TMesh::AddToRenderQueue() const
+void TMesh::AddModelToRenderQueue() const
 {
     KtAddToRenderQueue3DArgs args{};
     args.Shader = _shader;
-    args.Model = _model;
+    args.Renderable = _model;
     args.Viewport = GetViewport();
     args.ObjectData.Model = GetTransform().GetModelMatrix();
-	Framework.GetRenderer().GetRenderer3D().AddToRenderQueue(args);
+    Framework.GetRenderer().GetRenderer3D().AddToRenderQueue(args);
 }
 
-void TMesh::AddToWireframeQueue() const
+void TMesh::AddWireframeToRenderQueue() const
 {
-    KtAddToWireframeQueue3DArgs args{};
-    args.Model = _wireframe;
+    KtAddToRenderQueue3DArgs args{};
+    args.Shader = ModelWireframeShader;
+    args.Renderable = &_model->GetWireframe();
     args.Viewport = GetViewport();
     args.ObjectData.Model = GetTransform().GetModelMatrix();
-    Framework.GetRenderer().GetRenderer3D().AddToWireframeQueue(args);
+    Framework.GetRenderer().GetRenderer3D().AddToRenderQueue(args);
 }
 
 void TMesh::SerializeTo(nlohmann::json& json) const

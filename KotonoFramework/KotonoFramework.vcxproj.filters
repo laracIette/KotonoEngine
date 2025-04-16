@@ -104,9 +104,6 @@
     <ClCompile Include="src\ModelWireframe.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ModelWireframeManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\kotono_framework\AllocatedBuffer.h">
@@ -250,13 +247,7 @@
     <ClInclude Include="include\kotono_framework\ModelWireframe.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\kotono_framework\WireframeQueue3DData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\kotono_framework\AddToWireframeQueue3DArgs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\kotono_framework\ModelWireframeManager.h">
+    <ClInclude Include="include\kotono_framework\Renderable3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

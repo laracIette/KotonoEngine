@@ -137,7 +137,6 @@
     <ClCompile Include="src\Culler2D.cpp" />
     <ClCompile Include="src\Culler3D.cpp" />
     <ClCompile Include="src\ModelWireframe.cpp" />
-    <ClCompile Include="src\ModelWireframeManager.cpp" />
     <ClCompile Include="src\Serializer.cpp" />
     <ClCompile Include="src\Path.cpp" />
     <ClCompile Include="src\ShaderManager.cpp" />
@@ -163,7 +162,6 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\kotono_framework\AddToWireframeQueue3DArgs.h" />
     <ClInclude Include="include\kotono_framework\Culler2D.h" />
     <ClInclude Include="include\kotono_framework\Culler3D.h" />
     <ClInclude Include="include\kotono_framework\Button.h" />
@@ -184,7 +182,6 @@
     <ClInclude Include="include\kotono_framework\frames_in_flight.h" />
     <ClInclude Include="include\kotono_framework\Model.h" />
     <ClInclude Include="include\kotono_framework\ModelWireframe.h" />
-    <ClInclude Include="include\kotono_framework\ModelWireframeManager.h" />
     <ClInclude Include="include\kotono_framework\Mouse.h" />
     <ClInclude Include="include\kotono_framework\ObjectData3D.h" />
     <ClInclude Include="include\kotono_framework\QueueFamilyIndices.h" />
@@ -212,7 +209,7 @@
     <ClInclude Include="include\kotono_framework\RenderQueue3DData.h" />
     <ClInclude Include="include\kotono_framework\time_utils.h" />
     <ClInclude Include="include\kotono_framework\RenderQueue2DData.h" />
-    <ClInclude Include="include\kotono_framework\WireframeQueue3DData.h" />
+    <ClInclude Include="include\kotono_framework\Renderable3D.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
