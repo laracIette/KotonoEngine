@@ -17,7 +17,7 @@ public:
 
 private:
     // File path of the texture
-    std::filesystem::path _path;
+    const std::filesystem::path _path;
 
     // Vulkan image handle
     VkImage _image;
