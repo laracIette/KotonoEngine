@@ -800,11 +800,11 @@ void KtShader::PopulateShaderLayout(const std::span<uint8_t> spirvData, const Vk
 		for (auto* input : inputs)
 		{
 			KT_DEBUG_LOG("Vertex Input: Location %d, Format %d, Size %llu bytes, Name: %s", input->location, input->format, GetTypeSize(input->type_description), input->name);
-			if (input->location != -1) // TODO: wtf it's an uint32_t
+			if (input->location != UINT32_MAX)
 			{
 				VkVertexInputAttributeDescription vertexInputAttributeDescription{};
 				vertexInputAttributeDescription.location = input->location;
-				vertexInputAttributeDescription.binding = 0; // TODO: from VkVertexInputBindingDescription ?
+				vertexInputAttributeDescription.binding = 0; // todo: may need to be custom
 				vertexInputAttributeDescription.format = static_cast<VkFormat>(input->format);
 				vertexInputAttributeDescription.offset = static_cast<uint32_t>(offset);
 				_shaderLayout.VertexInputAttributeDescriptions.push_back(vertexInputAttributeDescription);

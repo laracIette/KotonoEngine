@@ -213,12 +213,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
-    <None Include="shaders\shader2D.frag" />
-    <None Include="shaders\shader2D.vert" />
-    <None Include="shaders\shader3D.frag" />
-    <None Include="shaders\shader3D.vert" />
-    <None Include="shaders\wireframe.frag" />
-    <None Include="shaders\wireframe3D.vert" />
+    <None Include="shaders\frag\shader2D.frag" />
+    <None Include="shaders\frag\shader3D.frag" />
+    <None Include="shaders\frag\wireframe.frag" />
+    <None Include="shaders\shader2D.ktshader" />
+    <None Include="shaders\shader3D.ktshader" />
+    <None Include="shaders\vert\shader2D.vert" />
+    <None Include="shaders\vert\shader3D.vert" />
+    <None Include="shaders\vert\wireframe3D.vert" />
+    <None Include="shaders\wireframe3D.ktshader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

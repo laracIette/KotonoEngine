@@ -15,6 +15,7 @@
     </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{fb47ce88-be4a-4e55-8fca-d4164838b033}</UniqueIdentifier>
+      <Extensions>ktshader</Extensions>
     </Filter>
     <Filter Include="Shaders\Vertex">
       <UniqueIdentifier>{3c57e5ac-1efb-4411-b5d5-ecdfcba3da58}</UniqueIdentifier>
@@ -252,24 +253,33 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\shader3D.frag">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="shaders\shader3D.vert">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
-    <None Include="shaders\shader2D.frag">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="shaders\shader2D.vert">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
     <None Include="cpp.hint" />
-    <None Include="shaders\wireframe.frag">
+    <None Include="shaders\frag\shader2D.frag">
       <Filter>Shaders\Fragment</Filter>
     </None>
-    <None Include="shaders\wireframe3D.vert">
+    <None Include="shaders\frag\shader3D.frag">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="shaders\frag\wireframe.frag">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="shaders\vert\shader2D.vert">
       <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="shaders\vert\shader3D.vert">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="shaders\vert\wireframe3D.vert">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="shaders\shader2D.ktshader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\shader3D.ktshader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\wireframe3D.ktshader">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

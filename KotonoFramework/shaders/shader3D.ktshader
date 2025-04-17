@@ -1,11 +1,11 @@
 {
   "shaders": [
     {
-      "path": "shader3DVert.spv",
+      "path": "vert/shader3DVert.spv",
       "shaderStage": 1
     },
     {
-      "path": "shader3DFrag.spv",
+      "path": "frag/shader3DFrag.spv",
       "shaderStage": 16
     }
   ],
