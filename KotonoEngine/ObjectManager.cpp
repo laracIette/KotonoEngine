@@ -20,8 +20,10 @@ void KObjectManager::Init()
 		.AddListener(this, &KObjectManager::Quit);
 
 	auto* shader2D = Framework.GetShaderManager().Create(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)");
+	auto* newShader2D = Framework.GetShaderManager().Create(Framework.GetPath().GetFrameworkPath() / R"(shaders\newShader2D.ktshader)");
 	auto* shader3D = Framework.GetShaderManager().Create(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3D.ktshader)");
 	shader2D->SetName("2D Shader");
+	newShader2D->SetName("New 2D Shader");
 	shader3D->SetName("3D Shader");
 
 	auto* model1 = Framework.GetModelManager().Create(Framework.GetPath().GetSolutionPath() / (R"(assets\models\viking_room.obj)"));

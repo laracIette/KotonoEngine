@@ -114,7 +114,7 @@ void KtShader::CreateDescriptorSetLayouts()
 			vkBinding.binding = ktBinding.Binding;
 			vkBinding.descriptorCount = ktBinding.DescriptorCount;
 			vkBinding.descriptorType = ktBinding.DescriptorType;
-			vkBinding.stageFlags = ktBinding.StageFlags;
+			vkBinding.stageFlags = ktBinding.ShaderStageFlags;
 			vkBinding.pImmutableSamplers = nullptr; // Optional
 			setBindings.push_back(vkBinding);
 
@@ -124,7 +124,7 @@ void KtShader::CreateDescriptorSetLayouts()
 			bindingData.MemberSize = ktBinding.Size;
 			bindingData.DescriptorType = ktBinding.DescriptorType;
 			bindingData.DescriptorCount = ktBinding.DescriptorCount;
-			bindingData.StageFlags = ktBinding.StageFlags;
+			bindingData.ShaderStageFlags = ktBinding.ShaderStageFlags;
 			bindingData.ImageTexture = nullptr; // Optional
 			bindingData.MemberCounts.fill(1);
 			setBindingDatas.push_back(bindingData);
@@ -605,7 +605,7 @@ void KtShader::DebugLogDescriptorSetLayoutData() const
 			KT_DEBUG_LOG("| | DescriptorCount: %u", descriptorSetLayoutBindingData.DescriptorCount);
 			KT_DEBUG_LOG("| | DescriptorType: %u", descriptorSetLayoutBindingData.DescriptorType);
 			KT_DEBUG_LOG("| | MemberSize: %llu", descriptorSetLayoutBindingData.MemberSize);
-			KT_DEBUG_LOG("| | StageFlags: %u", descriptorSetLayoutBindingData.StageFlags);
+			KT_DEBUG_LOG("| | StageFlags: %u", descriptorSetLayoutBindingData.ShaderStageFlags);
 			KT_DEBUG_LOG("| | Buffers");
 			for (const auto& buffer : descriptorSetLayoutBindingData.Buffers)
 			{
@@ -772,7 +772,7 @@ void KtShader::PopulateShaderLayout(const std::span<uint8_t> spirvData, const Vk
 			ktBinding.Binding = binding->binding;
 			ktBinding.DescriptorCount = binding->count;
 			ktBinding.DescriptorType = static_cast<VkDescriptorType>(binding->descriptor_type);
-			ktBinding.StageFlags = shaderStage;
+			ktBinding.ShaderStageFlags = shaderStage;
 			ktBinding.Size = GetTypeSize(binding->type_description);
 
 			_shaderLayout.DescriptorSetLayouts[set->set].DescriptorSetLayoutBindings.push_back(ktBinding);

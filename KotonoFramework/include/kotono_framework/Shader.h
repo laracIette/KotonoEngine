@@ -20,7 +20,7 @@ public:
 		VkDescriptorType                                      DescriptorType;
 		uint32_t                                              Binding;
 		uint32_t                                              DescriptorCount;
-		VkShaderStageFlags                                    StageFlags;
+		VkShaderStageFlags                                    ShaderStageFlags;
 		KtImageTexture*                                       ImageTexture;
 
 	};

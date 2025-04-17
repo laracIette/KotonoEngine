@@ -213,11 +213,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
+    <None Include="shaders\frag\newShader2D.frag" />
     <None Include="shaders\frag\shader2D.frag" />
     <None Include="shaders\frag\shader3D.frag" />
     <None Include="shaders\frag\wireframe.frag" />
+    <None Include="shaders\newShader2D.ktshader" />
     <None Include="shaders\shader2D.ktshader" />
     <None Include="shaders\shader3D.ktshader" />
+    <None Include="shaders\vert\newShader2D.vert" />
     <None Include="shaders\vert\shader2D.vert" />
     <None Include="shaders\vert\shader3D.vert" />
     <None Include="shaders\vert\wireframe3D.vert" />

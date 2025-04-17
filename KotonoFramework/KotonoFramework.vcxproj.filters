@@ -281,5 +281,14 @@
     <None Include="shaders\wireframe3D.ktshader">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\frag\newShader2D.frag">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="shaders\vert\newShader2D.vert">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="shaders\newShader2D.ktshader">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

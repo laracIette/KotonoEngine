@@ -15,7 +15,7 @@ struct KtShaderLayout
 			uint32_t              Binding;
 			VkDescriptorType      DescriptorType;
 			uint32_t              DescriptorCount;
-			VkShaderStageFlags    StageFlags;
+			VkShaderStageFlags    ShaderStageFlags;
 			size_t                Size;
 		};
 		std::vector<DescriptorSetLayoutBinding>     DescriptorSetLayoutBindings;
