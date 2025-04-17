@@ -282,7 +282,7 @@ const bool KtContext::IsDeviceSuitable(VkPhysicalDevice device)
 		&& indexingFeatures.descriptorBindingVariableDescriptorCount
 		&& indexingFeatures.descriptorBindingPartiallyBound;
 
-	return indices.IsComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy && indexingSupported;
+	return indices.IsComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy && supportedFeatures.fillModeNonSolid && indexingSupported;
 }
 
 bool KtContext::CheckDeviceExtensionSupport(VkPhysicalDevice device)
@@ -361,6 +361,7 @@ void KtContext::CreateLogicalDevice()
 	VkPhysicalDeviceFeatures deviceFeatures{};
 	deviceFeatures.samplerAnisotropy = VK_TRUE;
 	deviceFeatures.sampleRateShading = VK_TRUE; // enable sample shading feature for the device
+	deviceFeatures.fillModeNonSolid = VK_TRUE; // enable wireframe
 
 	// Enable shader draw parameters
 	VkPhysicalDeviceShaderDrawParametersFeatures shaderDrawParametersFeatures{};
