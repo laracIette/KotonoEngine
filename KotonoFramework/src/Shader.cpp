@@ -558,14 +558,14 @@ void KtShader::UpdateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutB
 		return;
 	}
 
-	//if (descriptorSetLayoutBindingData.ImageInfo.imageLayout == imageInfo.imageLayout && 
-	//	descriptorSetLayoutBindingData.ImageInfo.imageView == imageInfo.imageView &&
-	//	descriptorSetLayoutBindingData.ImageInfo.sampler == imageInfo.sampler)
-	//{
-	//	return;
-	//}
+	if (descriptorSetLayoutBindingData.ImageInfos[imageIndex].imageLayout == imageInfo.imageLayout && 
+		descriptorSetLayoutBindingData.ImageInfos[imageIndex].imageView == imageInfo.imageView &&
+		descriptorSetLayoutBindingData.ImageInfos[imageIndex].sampler == imageInfo.sampler)
+	{
+		return;
+	}
 
-	descriptorSetLayoutBindingData.ImageInfo = imageInfo;
+	descriptorSetLayoutBindingData.ImageInfos[imageIndex] = imageInfo;
 
 	UpdateDescriptorSetLayoutBindingImageSamplerDescriptorSet(descriptorSetLayoutBindingData, imageIndex);
 }
@@ -599,7 +599,7 @@ void KtShader::UpdateDescriptorSetLayoutBindingImageSamplerDescriptorSet(Descrip
 	writeDescriptorSet.descriptorType = descriptorSetLayoutBindingData.DescriptorType;
 	//writeDescriptorSet.descriptorCount = descriptorSetLayoutBindingData.DescriptorCount;
 	writeDescriptorSet.descriptorCount = 1;
-	writeDescriptorSet.pImageInfo = &descriptorSetLayoutBindingData.ImageInfo;
+	writeDescriptorSet.pImageInfo = &descriptorSetLayoutBindingData.ImageInfos[imageIndex];
 
 	vkUpdateDescriptorSets(Framework.GetContext().GetDevice(), 1, &writeDescriptorSet, 0, nullptr);
 }
