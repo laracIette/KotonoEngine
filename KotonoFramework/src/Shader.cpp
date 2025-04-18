@@ -203,7 +203,7 @@ void KtShader::UpdateDescriptorSets(const uint32_t imageIndex)
 		}
 	}
 	std::vector<VkDescriptorBufferInfo> descriptorBufferInfos;
-	descriptorBufferInfos.reserve(descriptorBufferCount);
+	descriptorBufferInfos.reserve(descriptorBufferCount); // reserve so that the vector doesnt change the references by resizing
 
 	for (const auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
 	{
