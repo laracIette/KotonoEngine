@@ -21,7 +21,7 @@ public:
 		uint32_t                                              Binding;
 		uint32_t                                              DescriptorCount;
 		VkShaderStageFlags                                    ShaderStageFlags;
-		KtImageTexture*                                       ImageTexture;
+		VkDescriptorImageInfo                                 ImageInfo;
 
 	};
 	struct DescriptorSetLayoutData
@@ -52,7 +52,7 @@ public:
 	void UpdateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, void* data, const uint32_t imageIndex);
 	void UpdateDescriptorSetLayoutBindingBufferMemberCount(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const size_t memberCount, const uint32_t imageIndex);
 
-	void UpdateDescriptorSetLayoutBindingImage(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, KtImageTexture* imageTexture);
+	void UpdateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const VkDescriptorImageInfo& imageInfo);
 
 protected:
 	std::string _name;

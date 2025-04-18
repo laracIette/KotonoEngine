@@ -87,10 +87,9 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 				if (auto* imageTexture = dynamic_cast<KtImageTexture*>(renderable))
 				{
 					imageInfos.push_back(imageTexture->GetDescriptorImageInfo());
-					shader->UpdateDescriptorSetLayoutBindingImage(*binding, imageTexture);
 				}
 			}
-			//shader->UpdateDescriptorSetLayoutBindingCombinedImageSampler(*binding, imageInfos, currentFrame);
+			shader->UpdateDescriptorSetLayoutBindingImageSampler(*binding, imageInfos[0]);
 		}
 		// -------------------------------- //
 

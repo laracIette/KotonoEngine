@@ -16,7 +16,7 @@ public:
     const std::filesystem::path& GetPath() const;
     const glm::uvec2& GetSize() const;
 
-    const VkDescriptorImageInfo GetDescriptorImageInfo() const;
+    const VkDescriptorImageInfo& GetDescriptorImageInfo() const;
 
 private:
     // File path of the texture
@@ -36,6 +36,9 @@ private:
     glm::uvec2 _size;
     // Number of levels of mipmaps
     uint32_t _mipLevels;
+
+
+    VkDescriptorImageInfo _imageInfo;
 
     void CreateTextureImage();
     void CreateTextureImageView();

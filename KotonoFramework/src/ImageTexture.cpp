@@ -18,13 +18,9 @@ const glm::uvec2& KtImageTexture::GetSize() const
 	return _size;
 }
 
-const VkDescriptorImageInfo KtImageTexture::GetDescriptorImageInfo() const
+const VkDescriptorImageInfo& KtImageTexture::GetDescriptorImageInfo() const
 {
-	VkDescriptorImageInfo imageInfo{};
-	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	imageInfo.imageView = _imageView;
-	imageInfo.sampler = _sampler;
-	return imageInfo;
+	return _imageInfo;
 }
 
 void KtImageTexture::Init()
@@ -32,6 +28,10 @@ void KtImageTexture::Init()
 	CreateTextureImage();
 	CreateTextureImageView();
 	CreateTextureSampler();
+
+	_imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	_imageInfo.imageView = _imageView;
+	_imageInfo.sampler = _sampler;
 }
 
 void KtImageTexture::Cleanup() const

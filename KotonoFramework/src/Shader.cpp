@@ -125,7 +125,6 @@ void KtShader::CreateDescriptorSetLayouts()
 			bindingData.DescriptorType = ktBinding.DescriptorType;
 			bindingData.DescriptorCount = ktBinding.DescriptorCount;
 			bindingData.ShaderStageFlags = ktBinding.ShaderStageFlags;
-			bindingData.ImageTexture = nullptr; // Optional
 			bindingData.MemberCounts.fill(1);
 			setBindingDatas.push_back(bindingData);
 		}
@@ -229,7 +228,7 @@ void KtShader::UpdateDescriptorSets(const uint32_t imageIndex)
 			{
 			case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
 			{
-				VkDescriptorImageInfo imageInfo = descriptorSetLayoutBindingData.ImageTexture->GetDescriptorImageInfo();
+				const auto& imageInfo = descriptorSetLayoutBindingData.ImageInfo;
 				descriptorImageInfos.push_back(imageInfo);
 				writeDescriptorSet.pImageInfo = &descriptorImageInfos.back();
 				KT_DEBUG_LOG("imageInfo ptr: %p", (void*)&descriptorImageInfos.back());
@@ -574,16 +573,9 @@ void KtShader::CreateDescriptorSetLayoutBindingImage(DescriptorSetLayoutBindingD
 {
 	if (descriptorSetLayoutBindingData.DescriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
 	{
-		const auto path = Framework.GetPath().GetSolutionPath() / R"(assets\models\viking_room.png)";
-		auto* imageTexture = Framework.GetImageTextureManager().Get(path);
-		if (imageTexture)
-		{
-			descriptorSetLayoutBindingData.ImageTexture = imageTexture;
-		}
-		else
-		{
-			descriptorSetLayoutBindingData.ImageTexture = Framework.GetImageTextureManager().Create(path);
-		}
+		const auto path = Framework.GetPath().GetSolutionPath() / R"(assets\textures\default_texture.jpg)";
+		const auto* imageTexture = Framework.GetImageTextureManager().Create(path);
+		descriptorSetLayoutBindingData.ImageInfo = imageTexture->GetDescriptorImageInfo();
 	}
 }
 
@@ -647,9 +639,9 @@ void KtShader::UpdateDescriptorSetLayoutBindingBufferMemberCount(DescriptorSetLa
 	}
 }
 
-void KtShader::UpdateDescriptorSetLayoutBindingImage(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, KtImageTexture* imageTexture)
+void KtShader::UpdateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const VkDescriptorImageInfo& imageInfo)
 {
-	descriptorSetLayoutBindingData.ImageTexture = imageTexture;
+	descriptorSetLayoutBindingData.ImageInfo = imageInfo;
 }
 
 KtShader::DescriptorSetLayoutBindingData* KtShader::GetDescriptorSetLayoutBinding(const std::string_view name)
