@@ -3,6 +3,7 @@
 #include <span>
 #include <filesystem>
 #include <array>
+#include <unordered_map>
 #include "frames_in_flight.h"
 #include "AllocatedBuffer.h"
 #include "ShaderLayout.h"
@@ -47,7 +48,7 @@ public:
 	void CmdBind(VkCommandBuffer commandBuffer) const;
 	void CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const;
 
-	DescriptorSetLayoutBindingData* GetDescriptorSetLayoutBinding(const std::string_view name);
+	DescriptorSetLayoutBindingData* GetDescriptorSetLayoutBinding(const std::string& name);
 	
 	void UpdateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, void* data, const uint32_t imageIndex);
 	void UpdateDescriptorSetLayoutBindingBufferMemberCount(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const size_t memberCount, const uint32_t imageIndex);
@@ -62,15 +63,12 @@ protected:
 
 	KtShaderLayout _shaderLayout;
 
-	VkDeviceSize _uniformDataSize;
-	VkDeviceSize _objectDataSize;
-
 	VkPipelineLayout _pipelineLayout;
 	VkPipeline _graphicsPipeline;
 
 	VkDescriptorPool _descriptorPool;
 	std::vector<DescriptorSetLayoutData> _descriptorSetLayoutDatas;
-	std::array<VkDeviceSize, KT_FRAMES_IN_FLIGHT> _objectCounts;
+	std::unordered_map<std::string, DescriptorSetLayoutBindingData*> _descriptorSetLayoutBindingDataRegistry;
 
 	void CreateShaderLayout();
 	void PopulateShaderLayout(const std::span<uint8_t> spirvData, const VkShaderStageFlagBits shaderStage);

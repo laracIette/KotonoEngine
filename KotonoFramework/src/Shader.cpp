@@ -135,6 +135,14 @@ void KtShader::CreateDescriptorSetLayouts()
 		descriptorSetLayoutData.DescriptorSetLayoutBindingDatas = setBindingDatas;
 		_descriptorSetLayoutDatas.push_back(descriptorSetLayoutData);
 	}
+
+	for (auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
+	{
+		for (auto& descriptorSetLayoutBindingData : descriptorSetLayoutData.DescriptorSetLayoutBindingDatas)
+		{
+			_descriptorSetLayoutBindingDataRegistry[descriptorSetLayoutBindingData.Name] = &descriptorSetLayoutBindingData;
+		}
+	}
 }
 
 void KtShader::CreateDescriptorSetLayout(VkDescriptorSetLayout& layout, const std::span<VkDescriptorSetLayoutBinding> layoutBindings)
@@ -185,8 +193,8 @@ void KtShader::CreateDescriptorSetLayoutBindings()
 		{
 			for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
 			{
-				UpdateDescriptorSetLayoutBindingBufferMemberCount(descriptorSetLayoutBindingData, 1, i);
-				CreateDescriptorSetLayoutBindingImageSampler(descriptorSetLayoutBindingData, i);
+				UpdateDescriptorSetLayoutBindingBufferMemberCount(descriptorSetLayoutBindingData, 1, static_cast<uint32_t>(i));
+				CreateDescriptorSetLayoutBindingImageSampler(descriptorSetLayoutBindingData, static_cast<uint32_t>(i));
 			}
 		}
 	}
@@ -565,6 +573,7 @@ void KtShader::UpdateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutB
 		return;
 	}
 
+	descriptorSetLayoutBindingData.DescriptorCount = 1;
 	descriptorSetLayoutBindingData.ImageInfos[imageIndex] = imageInfo;
 
 	UpdateDescriptorSetLayoutBindingImageSamplerDescriptorSet(descriptorSetLayoutBindingData, imageIndex);
@@ -597,26 +606,19 @@ void KtShader::UpdateDescriptorSetLayoutBindingImageSamplerDescriptorSet(Descrip
 	writeDescriptorSet.dstBinding = descriptorSetLayoutBindingData.Binding;
 	writeDescriptorSet.dstArrayElement = 0;
 	writeDescriptorSet.descriptorType = descriptorSetLayoutBindingData.DescriptorType;
-	//writeDescriptorSet.descriptorCount = descriptorSetLayoutBindingData.DescriptorCount;
-	writeDescriptorSet.descriptorCount = 1;
+	writeDescriptorSet.descriptorCount = descriptorSetLayoutBindingData.DescriptorCount;
 	writeDescriptorSet.pImageInfo = &descriptorSetLayoutBindingData.ImageInfos[imageIndex];
 
 	vkUpdateDescriptorSets(Framework.GetContext().GetDevice(), 1, &writeDescriptorSet, 0, nullptr);
 }
 
-KtShader::DescriptorSetLayoutBindingData* KtShader::GetDescriptorSetLayoutBinding(const std::string_view name)
+KtShader::DescriptorSetLayoutBindingData* KtShader::GetDescriptorSetLayoutBinding(const std::string& name) 
 {
-	for (auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
+	const auto it = _descriptorSetLayoutBindingDataRegistry.find(name);
+	if (it != _descriptorSetLayoutBindingDataRegistry.end())
 	{
-		for (auto& descriptorSetLayoutBindingData : descriptorSetLayoutData.DescriptorSetLayoutBindingDatas)
-		{
-			if (descriptorSetLayoutBindingData.Name == name)
-			{
-				return &descriptorSetLayoutBindingData;
-			}
-		}
+		return it->second;
 	}
-
 	return nullptr;
 }
 
