@@ -6,12 +6,13 @@
 #include "frames_in_flight.h"
 #include "AllocatedBuffer.h"
 #include "ShaderLayout.h"
-#include "ImageTexture.h"
 class KtShader final
 {
 public:	
 	struct DescriptorSetLayoutBindingData
 	{														  
+		VkDescriptorSetLayout                                 DescriptorSetLayout;
+		std::array<VkDescriptorSet, KT_FRAMES_IN_FLIGHT>      DescriptorSets;
 		std::string                                           Name;
 		std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT>    Buffers;
 		std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT>    StagingBuffers;
@@ -22,7 +23,6 @@ public:
 		uint32_t                                              DescriptorCount;
 		VkShaderStageFlags                                    ShaderStageFlags;
 		VkDescriptorImageInfo                                 ImageInfo;
-
 	};
 	struct DescriptorSetLayoutData
 	{
@@ -52,7 +52,7 @@ public:
 	void UpdateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, void* data, const uint32_t imageIndex);
 	void UpdateDescriptorSetLayoutBindingBufferMemberCount(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const size_t memberCount, const uint32_t imageIndex);
 
-	void UpdateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const VkDescriptorImageInfo& imageInfo);
+	void UpdateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const VkDescriptorImageInfo& imageInfo, const uint32_t imageIndex);
 
 protected:
 	std::string _name;
@@ -95,5 +95,8 @@ protected:
 	void CreateShaderModule(VkShaderModule& shaderModule, const std::span<uint8_t> code);
 
 	void DebugLogDescriptorSetLayoutData() const;
+
+	const bool GetIsBufferDescriptorType(const VkDescriptorType descriptorType) const;
+	const bool GetIsImageSamplerDescriptorType(const VkDescriptorType descriptorType) const;
 };
 

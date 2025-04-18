@@ -89,7 +89,7 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 					imageInfos.push_back(imageTexture->GetDescriptorImageInfo());
 				}
 			}
-			shader->UpdateDescriptorSetLayoutBindingImageSampler(*binding, imageInfos[0]);
+			shader->UpdateDescriptorSetLayoutBindingImageSampler(*binding, imageInfos[0], currentFrame);
 		}
 		// -------------------------------- //
 
