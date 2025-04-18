@@ -31,6 +31,7 @@ void KtRenderer2D::AddToRenderQueue(const KtAddToRenderQueue2DArgs& args)
 {
 	_renderQueueData[Framework.GetRenderer().GetGameThreadFrame()]
 		.Shaders[args.Shader]
+		.Renderables[args.Renderable]
 		.Viewports[args.Viewport]
 		.Layers[args.Layer]
 		.ObjectDatas.push_back(args.ObjectData);
@@ -48,20 +49,48 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 	for (auto& [shader, shaderData] : culledData.Shaders)
 	{
 		std::vector<KtObjectData2D> objectBufferData;
-		for (const auto& [viewport, viewportData] : shaderData.Viewports)
+		std::vector<KtRenderable2D*> renderables;
+		renderables.reserve(shaderData.Renderables.size());
+		std::vector<uint32_t> renderableIndices;
+		for (const auto& [renderable, renderableData] : shaderData.Renderables)
 		{
-			for (const auto& [layer, layerData] : viewportData.Layers)
+			for (const auto& [viewport, viewportData] : renderableData.Viewports)
 			{
-				objectBufferData.insert(objectBufferData.end(),
-					layerData.ObjectDatas.begin(), layerData.ObjectDatas.end()
-				);
+				for (const auto& [layer, layerData] : viewportData.Layers)
+				{
+					objectBufferData.insert(objectBufferData.end(),
+						layerData.ObjectDatas.begin(), layerData.ObjectDatas.end()
+					);
+					renderableIndices.push_back(static_cast<uint32_t>(renderables.size()));
+				}
 			}
+			renderables.push_back(renderable);
 		}
+		
 		// NOT A CMD, UPDATE ONCE PER FRAME //
 		if (auto* binding = shader->GetDescriptorSetLayoutBinding("objectBuffer"))
 		{
-			shader->UpdateDescriptorSetLayoutBindingMemberCount(*binding, objectBufferData.size(), currentFrame);
+			shader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, objectBufferData.size(), currentFrame);
 			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, objectBufferData.data(), currentFrame);
+		}
+		if (auto* binding = shader->GetDescriptorSetLayoutBinding("textureIndexBuffer"))
+		{
+			shader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, renderableIndices.size(), currentFrame);
+			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, renderableIndices.data(), currentFrame);
+		}
+		if (auto* binding = shader->GetDescriptorSetLayoutBinding("textures"))
+		{
+			std::vector<VkDescriptorImageInfo> imageInfos{};
+			imageInfos.reserve(renderables.size());
+			for (auto* renderable : renderables)
+			{
+				if (auto* imageTexture = dynamic_cast<KtImageTexture*>(renderable))
+				{
+					imageInfos.push_back(imageTexture->GetDescriptorImageInfo());
+					shader->UpdateDescriptorSetLayoutBindingImage(*binding, imageTexture);
+				}
+			}
+			//shader->UpdateDescriptorSetLayoutBindingCombinedImageSampler(*binding, imageInfos, currentFrame);
 		}
 		// -------------------------------- //
 
@@ -71,18 +100,21 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 		CmdBindBuffers(commandBuffer);
 
 		uint32_t instanceIndex = 0;
-		for (const auto& [viewport, viewportData] : shaderData.Viewports)
+		for (const auto& [renderable, renderableData] : shaderData.Renderables)
 		{
-			uint32_t instanceCount = 0;
-			for (const auto& [layer, layerData] : viewportData.Layers)
+			for (const auto& [viewport, viewportData] : renderableData.Viewports)
 			{
-				instanceCount += static_cast<uint32_t>(layerData.ObjectDatas.size());
+				uint32_t instanceCount = 0;
+				for (const auto& [layer, layerData] : viewportData.Layers)
+				{
+					instanceCount += static_cast<uint32_t>(layerData.ObjectDatas.size());
+				}
+
+				viewport->CmdUse(commandBuffer);
+				vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(SquareIndices.size()), instanceCount, 0, 0, instanceIndex);
+
+				instanceIndex += instanceCount;
 			}
-
-			viewport->CmdUse(commandBuffer);
-			vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(SquareIndices.size()), instanceCount, 0, 0, instanceIndex);
-
-			instanceIndex += instanceCount;
 		}
 	}
 }

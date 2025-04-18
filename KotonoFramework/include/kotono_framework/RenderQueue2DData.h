@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <map>
 #include "Shader.h"
+#include "Renderable2D.h"
 #include "Viewport.h"
 #include "ObjectData2D.h"
 struct KtRenderQueue2DData
@@ -15,9 +16,13 @@ struct KtRenderQueue2DData
 	{
 		std::map<int32_t, RenderQueue2DLayerData> Layers;
 	};
-	struct RenderQueue2DShaderData
+	struct RenderQueue2DRenderableData
 	{
 		std::unordered_map<KtViewport*, RenderQueue2DViewportData> Viewports;
+	};
+	struct RenderQueue2DShaderData
+	{
+		std::unordered_map<KtRenderable2D*, RenderQueue2DRenderableData> Renderables;
 	};
 
 	std::unordered_map<KtShader*, RenderQueue2DShaderData> Shaders;

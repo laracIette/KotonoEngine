@@ -3,7 +3,9 @@
 #include <stbimage/stb_image.h>
 #include <filesystem>
 #include <vma/vk_mem_alloc.h>
-class KtImageTexture
+#include "glm_includes.h"
+#include "Renderable2D.h"
+class KtImageTexture final : public KtRenderable2D
 {
 public:
     KtImageTexture(const std::filesystem::path& path);
@@ -12,6 +14,7 @@ public:
     void Cleanup() const;
 
     const std::filesystem::path& GetPath() const;
+    const glm::uvec2& GetSize() const;
 
     const VkDescriptorImageInfo GetDescriptorImageInfo() const;
 
@@ -30,7 +33,7 @@ private:
     // Descriptor set for binding image in shaders
     VkDescriptorSet _descriptorSet;
     // Width and height of the texture
-    VkExtent2D _size;
+    glm::uvec2 _size;
     // Number of levels of mipmaps
     uint32_t _mipLevels;
 

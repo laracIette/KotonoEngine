@@ -12,7 +12,8 @@ layout(set = 0, binding = 0, std430) readonly buffer ObjectBuffer
 	ObjectData objectDatas[];
 } objectBuffer;
 
-layout(set = 0, binding = 1, std430) readonly buffer TextureIndexBuffer {
+layout(set = 0, binding = 1, std430) readonly buffer TextureIndexBuffer 
+{
     uint texIndices[];
 } textureIndexBuffer;
 

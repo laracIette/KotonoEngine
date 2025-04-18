@@ -50,7 +50,7 @@ void KtRenderer3D::CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRen
 		// NOT A CMD, UPDATE ONCE PER FRAME //
 		if (auto* binding = shader->GetDescriptorSetLayoutBinding("objectBuffer"))
 		{
-			shader->UpdateDescriptorSetLayoutBindingMemberCount(*binding, objectBufferData.size(), currentFrame);
+			shader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, objectBufferData.size(), currentFrame);
 			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, objectBufferData.data(), currentFrame);
 		}
 		if (auto* binding = shader->GetDescriptorSetLayoutBinding("cameraData"))

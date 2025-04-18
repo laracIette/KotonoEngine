@@ -632,7 +632,7 @@ void KtShader::UpdateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBinding
 	);
 }
 
-void KtShader::UpdateDescriptorSetLayoutBindingMemberCount(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const size_t memberCount, const uint32_t imageIndex)
+void KtShader::UpdateDescriptorSetLayoutBindingBufferMemberCount(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const size_t memberCount, const uint32_t imageIndex)
 {
 	if (descriptorSetLayoutBindingData.MemberCounts[imageIndex] != memberCount)
 	{

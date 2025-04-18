@@ -13,6 +13,11 @@ const std::filesystem::path& KtImageTexture::GetPath() const
 	return _path;
 }
 
+const glm::uvec2& KtImageTexture::GetSize() const
+{
+	return _size;
+}
+
 const VkDescriptorImageInfo KtImageTexture::GetDescriptorImageInfo() const
 {
 	VkDescriptorImageInfo imageInfo{};
@@ -99,7 +104,7 @@ void KtImageTexture::CreateTextureImage()
 
 	Framework.GetContext().GenerateMipmaps(_image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, _mipLevels);
 
-	_size = { static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight) };
+	_size = glm::uvec2(static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
 }
 
 void KtImageTexture::CreateTextureImageView()

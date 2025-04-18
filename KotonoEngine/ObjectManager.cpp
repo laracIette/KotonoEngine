@@ -4,6 +4,7 @@
 #include <kotono_framework/InputManager.h>
 #include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/ModelManager.h>
+#include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/Path.h>
 #include "Mesh.h"
 #include "Image.h"
@@ -19,15 +20,16 @@ void KObjectManager::Init()
 		.GetEvent(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
 		.AddListener(this, &KObjectManager::Quit);
 
-	auto* shader2D = Framework.GetShaderManager().Create(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)");
-	auto* newShader2D = Framework.GetShaderManager().Create(Framework.GetPath().GetFrameworkPath() / R"(shaders\newShader2D.ktshader)");
+	auto* shader2D = Framework.GetShaderManager().Create(Framework.GetPath().GetFrameworkPath() / R"(shaders\newShader2D.ktshader)");
 	auto* shader3D = Framework.GetShaderManager().Create(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3D.ktshader)");
 	shader2D->SetName("2D Shader");
-	newShader2D->SetName("New 2D Shader");
 	shader3D->SetName("3D Shader");
 
-	auto* model1 = Framework.GetModelManager().Create(Framework.GetPath().GetSolutionPath() / (R"(assets\models\viking_room.obj)"));
+	auto* model1 = Framework.GetModelManager().Create(Framework.GetPath().GetSolutionPath() / R"(assets\models\viking_room.obj)");
 	auto* model2 = Framework.GetModelManager().Create(Framework.GetPath().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)");
+
+	auto* imageTexture1 = Framework.GetImageTextureManager().Create(Framework.GetPath().GetSolutionPath() / R"(assets\models\viking_room.png)");
+	auto* imageTexture2 = Framework.GetImageTextureManager().Create(Framework.GetPath().GetSolutionPath() / R"(assets\textures\default_texture.jpg)");
 
 	{
 		auto* scene = Create<OScene>();
@@ -40,15 +42,14 @@ void KObjectManager::Init()
 	{
 		auto* image1 = Create<RImage>();
 		image1->SetShader(shader2D);
-		image1->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
+		image1->SetImageTexture(imageTexture1);
 		image1->GetRect().SetRelativeScale(glm::vec2(0.25f));
 		//image1->GetRect().SetAnchor(EAnchor::TopLeft);
 
 		auto* image2 = Create<RImage>();
 		image2->SetShader(shader2D);
-		image2->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
+		image2->SetImageTexture(imageTexture2);
 		image2->GetRect().SetRelativeScale(glm::vec2(0.10f));
-		image2->SetLayer(1);
 
 		auto* horizontalStack = Create<RHorizontalInterfaceObjectStack>();
 		horizontalStack->SetItemSpacing(0.1f);
@@ -60,7 +61,7 @@ void KObjectManager::Init()
 		mesh1->SetShader(shader3D);
 		mesh1->SetModel(model1);
 		mesh1->GetTransform().SetRelativePosition(glm::vec3(-1.0f, 0.0f, 0.0f));
-
+	
 		auto* mesh2 = Create<TMesh>();
 		mesh2->SetShader(shader3D);
 		mesh2->SetModel(model2);

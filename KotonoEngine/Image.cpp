@@ -1,7 +1,9 @@
 #include "Image.h"
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/Window.h>
+#include <kotono_framework/Path.h>
 #include <kotono_framework/Renderer.h>
+#include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/InputManager.h>
 #include "Engine.h"
 #include "ObjectManager.h"
@@ -12,6 +14,8 @@ void RImage::Init()
 {
 	Base::Init();
 
+	Engine.GetObjectManager().GetEventDrawObjects().AddListener(this, &RImage::Draw);
+
 	_collider = Engine.GetObjectManager().Create<RInterfaceCollider>();
 	_collider->GetRect().SetBaseSize(GetRect().GetBaseSize());
 	_collider->SetParent(this, ECoordinateSpace::Relative);
@@ -19,8 +23,6 @@ void RImage::Init()
 	Framework.GetInputManager().GetMouse()
 		.GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
 		.AddListener(this, &RImage::OnEventMouseLeftButtonDown);
-
-	Engine.GetObjectManager().GetEventDrawObjects().AddListener(this, &RImage::Draw);
 }
 
 void RImage::Update()
@@ -45,9 +47,20 @@ KtShader* RImage::GetShader() const
 	return _shader;
 }
 
+KtImageTexture* RImage::GetImageTexture() const
+{
+	return _imageTexture;
+}
+
 void RImage::SetShader(KtShader* shader)
 {
 	_shader = shader;
+}
+
+void RImage::SetImageTexture(KtImageTexture* imageTexture)
+{
+	_imageTexture = imageTexture;
+    GetRect().SetBaseSize(_imageTexture ? _imageTexture->GetSize() : glm::uvec2(0));
 }
 
 void RImage::Draw()
@@ -63,6 +76,7 @@ void RImage::AddToRenderQueue() const
 {
 	KtAddToRenderQueue2DArgs args{};
 	args.Shader = _shader;
+	args.Renderable = _imageTexture;
 	args.Viewport = GetViewport();
 	args.ObjectData.Model = GetRect().GetModelMatrix();
 	args.Layer = GetLayer();
