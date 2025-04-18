@@ -54,6 +54,7 @@ public:
 
 	void UpdateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const VkDescriptorImageInfo& imageInfo, const uint32_t imageIndex);
 
+
 protected:
 	std::string _name;
 
@@ -77,16 +78,11 @@ protected:
 	void CreateDescriptorSetLayouts();
 	void CreateDescriptorSetLayout(VkDescriptorSetLayout& layout, const std::span<VkDescriptorSetLayoutBinding> layoutBindings);
 
-	void CreateDescriptorSetLayoutBindingBuffers();
-	void CreateDescriptorSetLayoutBindingBuffers(const uint32_t imageIndex);
-	void CreateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData);
 	void CreateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const uint32_t imageIndex);
-
-	void CreateDescriptorSetLayoutBindingImages();
-	void CreateDescriptorSetLayoutBindingImage(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData);
+	void CreateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const uint32_t imageIndex);
 	
 	void CreateDescriptorSets();
-	void UpdateDescriptorSets(const uint32_t imageIndex);
+	void CreateDescriptorSetLayoutBindings();
 
 	void CreateDescriptorPools();
 	void CreateDescriptorPool(const std::span<VkDescriptorPoolSize> poolSizes, const uint32_t setCount);
@@ -98,5 +94,8 @@ protected:
 
 	const bool GetIsBufferDescriptorType(const VkDescriptorType descriptorType) const;
 	const bool GetIsImageSamplerDescriptorType(const VkDescriptorType descriptorType) const;
+	
+	void UpdateDescriptorSetLayoutBindingBufferDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const uint32_t imageIndex);
+	void UpdateDescriptorSetLayoutBindingImageSamplerDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const uint32_t imageIndex);
 };
 
