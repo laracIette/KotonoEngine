@@ -180,9 +180,6 @@ void KtShader::UpdateDescriptorSets(const uint32_t imageIndex)
 {
 	std::vector<VkWriteDescriptorSet> writeDescriptorSets;
 
-	std::vector<VkDescriptorImageInfo> descriptorImageInfos;
-	std::vector<VkDescriptorBufferInfo> descriptorBufferInfos;
-	size_t descriptorImageCount = 0;
 	size_t descriptorBufferCount = 0;
 	for (const auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
 	{
@@ -190,11 +187,6 @@ void KtShader::UpdateDescriptorSets(const uint32_t imageIndex)
 		{
 			switch (descriptorSetLayoutBindingData.DescriptorType)
 			{
-			case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
-			{
-				++descriptorImageCount;
-				break;
-			}
 			case VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:
 			case VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:
 			case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
@@ -210,7 +202,7 @@ void KtShader::UpdateDescriptorSets(const uint32_t imageIndex)
 			}
 		}
 	}
-	descriptorImageInfos.reserve(descriptorImageCount);
+	std::vector<VkDescriptorBufferInfo> descriptorBufferInfos;
 	descriptorBufferInfos.reserve(descriptorBufferCount);
 
 	for (const auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
@@ -228,10 +220,7 @@ void KtShader::UpdateDescriptorSets(const uint32_t imageIndex)
 			{
 			case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
 			{
-				const auto& imageInfo = descriptorSetLayoutBindingData.ImageInfo;
-				descriptorImageInfos.push_back(imageInfo);
-				writeDescriptorSet.pImageInfo = &descriptorImageInfos.back();
-				KT_DEBUG_LOG("imageInfo ptr: %p", (void*)&descriptorImageInfos.back());
+				writeDescriptorSet.pImageInfo = &descriptorSetLayoutBindingData.ImageInfo;
 				break;
 			}
 			case VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:
@@ -247,7 +236,6 @@ void KtShader::UpdateDescriptorSets(const uint32_t imageIndex)
 				bufferInfo.range = descriptorSetLayoutBindingData.MemberSize * descriptorSetLayoutBindingData.MemberCounts[imageIndex];
 				descriptorBufferInfos.push_back(bufferInfo);
 				writeDescriptorSet.pBufferInfo = &descriptorBufferInfos.back();
-				KT_DEBUG_LOG("bufferInfo ptr: %p", (void*)&descriptorBufferInfos.back());
 				break;
 			}
 			default:
@@ -255,17 +243,6 @@ void KtShader::UpdateDescriptorSets(const uint32_t imageIndex)
 			}
 			writeDescriptorSets.push_back(writeDescriptorSet);
 		}
-	}
-
-	KT_DEBUG_LOG("ImageInfos");
-	for (const auto& imageInfo : descriptorImageInfos)
-	{
-		KT_DEBUG_LOG("  %p", (void*)&imageInfo);
-	}
-	KT_DEBUG_LOG("BufferInfos");
-	for (const auto& bufferInfo : descriptorBufferInfos)
-	{
-		KT_DEBUG_LOG("  %p", (void*)&bufferInfo);
 	}
 
 	vkUpdateDescriptorSets(Framework.GetContext().GetDevice(), static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
