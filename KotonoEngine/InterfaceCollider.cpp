@@ -101,7 +101,9 @@ void RInterfaceCollider::OnEventMouseLeftButtonPressed()
 
 	for (const auto* interfaceCollider : _overlaps)
 	{
-		if (interfaceCollider->GetLayer() > GetLayer() && interfaceCollider->GetIsMouseOverlapping())
+		if (interfaceCollider->GetVisibility() != EVisibility::None &&
+			interfaceCollider->GetLayer() > GetLayer() && 
+			interfaceCollider->GetIsMouseOverlapping())
 		{
 			return;
 		}
