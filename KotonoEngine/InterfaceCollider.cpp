@@ -99,6 +99,14 @@ void RInterfaceCollider::OnEventMouseLeftButtonPressed()
 		return;
 	}
 
+	for (const auto* interfaceCollider : _overlaps)
+	{
+		if (interfaceCollider->GetLayer() > GetLayer() && interfaceCollider->GetIsMouseOverlapping())
+		{
+			return;
+		}
+	}
+
 	_isPressed = true;
 	_eventPressed.Broadcast();
 }

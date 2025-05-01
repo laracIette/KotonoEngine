@@ -50,11 +50,12 @@ void KObjectManager::Init()
 		image2->SetShader(shader2D);
 		image2->SetImageTexture(imageTexture2);
 		image2->GetRect().SetRelativeScale(glm::vec2(0.10f));
+		image2->SetParent(image1, ECoordinateSpace::World);
 
-		auto* horizontalStack = Create<RHorizontalInterfaceObjectStack>();
-		horizontalStack->SetItemSpacing(0.1f);
-		horizontalStack->AddItem(image1);
-		horizontalStack->AddItem(image2);
+		//auto* horizontalStack = Create<RHorizontalInterfaceObjectStack>();
+		//horizontalStack->SetItemSpacing(0.1f);
+		//horizontalStack->AddItem(image1);
+		//horizontalStack->AddItem(image2);
 	}
 	{
 		auto* mesh1 = Create<TMesh>();
