@@ -10,6 +10,13 @@
 #include "Serializer.h"
 #include "log.h"
 
+static constexpr uint32_t MAX_BINDLESS_TEXTURES = 8192;
+
+static constexpr VkDescriptorBindingFlags BINDLESS_TEXTURE_FLAGS =
+VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT |
+VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT |
+VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT;
+
 KtShader::KtShader(const std::filesystem::path& path) :
 	_path(path)
 {
@@ -17,7 +24,7 @@ KtShader::KtShader(const std::filesystem::path& path) :
 
 void KtShader::Init()
 {
-	KT_DEBUG_LOG("initializing shader '%s'", _name.c_str());
+	KT_DEBUG_LOG("initializing shader '%s'", _path.string().c_str()); // todo: replace by name
 	CreateShaderLayout();
 	CreateDescriptorSetLayouts();
 	DebugLogDescriptorSetLayoutData();
@@ -25,7 +32,7 @@ void KtShader::Init()
 	CreateDescriptorSets();
 	CreateDescriptorSetLayoutBindings();
 	CreateGraphicsPipeline();
-	KT_DEBUG_LOG("initialized shader '%s'", _name.c_str());
+	KT_DEBUG_LOG("initialized shader '%s'", _path.string().c_str());
 }
 
 void KtShader::Cleanup()
@@ -98,8 +105,6 @@ void KtShader::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32
 	);
 }
 
-static constexpr uint32_t MAX_BINDLESS_TEXTURES = 8192;
-
 void KtShader::CreateDescriptorSetLayouts()
 {
 	_descriptorSetLayoutDatas.reserve(_shaderLayout.DescriptorSetLayouts.size());
@@ -115,18 +120,13 @@ void KtShader::CreateDescriptorSetLayouts()
 		setBindingDatas.reserve(bindingCount);
 		for (const auto& ktBinding : setLayout.DescriptorSetLayoutBindings)
 		{
+
 			VkDescriptorSetLayoutBinding vkBinding{};
 			vkBinding.binding = ktBinding.Binding;
 			if (ktBinding.DescriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
 			{
 				vkBinding.descriptorCount = MAX_BINDLESS_TEXTURES;
-
-				const VkDescriptorBindingFlags bindingFlags =
-					VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT |
-					VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT |
-					VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT;
-
-				setBindingFlags.push_back(bindingFlags);
+				setBindingFlags.push_back(BINDLESS_TEXTURE_FLAGS);
 			}
 			else
 			{
@@ -145,6 +145,14 @@ void KtShader::CreateDescriptorSetLayouts()
 			bindingData.DescriptorType = ktBinding.DescriptorType;
 			bindingData.DescriptorCount = ktBinding.DescriptorCount;
 			bindingData.ShaderStageFlags = ktBinding.ShaderStageFlags;
+			if (ktBinding.DescriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+			{
+				bindingData.BindingFlags = BINDLESS_TEXTURE_FLAGS;
+			}
+			else
+			{
+				bindingData.BindingFlags = 0;
+			}
 			//bindingData.MemberCounts.fill(1);
 			setBindingDatas.push_back(bindingData);
 		}
@@ -210,7 +218,14 @@ void KtShader::CreateDescriptorSets()
 		allocInfo.descriptorPool = _descriptorPool;
 		allocInfo.descriptorSetCount = static_cast<uint32_t>(layouts.size());
 		allocInfo.pSetLayouts = layouts.data();
-		allocInfo.pNext = &countInfo;
+		for (const auto& binding : descriptorSetLayoutData.DescriptorSetLayoutBindingDatas)
+		{
+			if (binding.BindingFlags == BINDLESS_TEXTURE_FLAGS)
+			{
+				allocInfo.pNext = &countInfo;
+				break;
+			}
+		}
 
 		VK_CHECK_THROW(
 			vkAllocateDescriptorSets(Framework.GetContext().GetDevice(), &allocInfo, descriptorSetLayoutData.DescriptorSets.data()),

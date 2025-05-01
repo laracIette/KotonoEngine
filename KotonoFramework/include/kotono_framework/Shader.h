@@ -12,17 +12,18 @@ class KtShader final
 public:	
 	struct DescriptorSetLayoutBindingData
 	{														  
-		VkDescriptorSetLayout                                     DescriptorSetLayout;
-		std::array<VkDescriptorSet, KT_FRAMES_IN_FLIGHT>          DescriptorSets;
-		std::string                                               Name;
-		std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT>        Buffers;
-		std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT>        StagingBuffers;
-		std::array<size_t, KT_FRAMES_IN_FLIGHT>                   MemberCounts;
-		size_t                                                    MemberSize;
-		VkDescriptorType                                          DescriptorType;
-		uint32_t                                                  Binding;
-		uint32_t                                                  DescriptorCount;
-		VkShaderStageFlags                                        ShaderStageFlags;
+		VkDescriptorSetLayout                                                  DescriptorSetLayout;
+		std::array<VkDescriptorSet, KT_FRAMES_IN_FLIGHT>                       DescriptorSets;
+		std::string                                                            Name;
+		std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT>                     Buffers;
+		std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT>                     StagingBuffers;
+		std::array<size_t, KT_FRAMES_IN_FLIGHT>                                MemberCounts;
+		size_t                                                                 MemberSize;
+		VkDescriptorType                                                       DescriptorType;
+		uint32_t                                                               Binding;
+		uint32_t                                                               DescriptorCount;
+		VkShaderStageFlags                                                     ShaderStageFlags;
+		VkDescriptorBindingFlags                                               BindingFlags;
 		std::array<std::vector<VkDescriptorImageInfo>, KT_FRAMES_IN_FLIGHT>    ImageInfos;
 	};
 	struct DescriptorSetLayoutData
