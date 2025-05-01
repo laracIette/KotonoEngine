@@ -23,7 +23,7 @@ public:
 		uint32_t                                                  Binding;
 		uint32_t                                                  DescriptorCount;
 		VkShaderStageFlags                                        ShaderStageFlags;
-		std::array<VkDescriptorImageInfo, KT_FRAMES_IN_FLIGHT>    ImageInfos;
+		std::array<std::vector<VkDescriptorImageInfo>, KT_FRAMES_IN_FLIGHT>    ImageInfos;
 	};
 	struct DescriptorSetLayoutData
 	{
@@ -53,7 +53,7 @@ public:
 	void UpdateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, void* data, const uint32_t imageIndex);
 	void UpdateDescriptorSetLayoutBindingBufferMemberCount(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const size_t memberCount, const uint32_t imageIndex);
 
-	void UpdateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const VkDescriptorImageInfo& imageInfo, const uint32_t imageIndex);
+	void UpdateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const std::vector<VkDescriptorImageInfo>& imageInfos, const uint32_t imageIndex);
 
 
 protected:
