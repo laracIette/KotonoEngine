@@ -11,15 +11,29 @@ public:
 	void Update() override;
 	void Cleanup() override;
 
+	KtEvent<>& GetEventPressed();
+	KtEvent<>& GetEventReleased();
+	KtEvent<>& GetEventDown();
+
 	KtEvent<RInterfaceCollider*>& GetEventOverlap();
+
+	const bool GetIsMouseOverlapping() const;
 
 private:
 	std::unordered_set<RInterfaceCollider*> _overlaps;
 	KtEvent<RInterfaceCollider*> _eventOverlap;
 
-	KtEvent<> _eventClicked; // todo: maybe
+	KtEvent<> _eventPressed;
+	KtEvent<> _eventReleased;
+	KtEvent<> _eventDown;
+
+	bool _isPressed;
 
 	void UpdateOverlaps();
 	void BroadcastOverlaps();
+
+	void OnEventMouseLeftButtonPressed();
+	void OnEventMouseLeftButtonReleased();
+	void OnEventMouseLeftButtonDown();
 };
 

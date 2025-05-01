@@ -14,33 +14,30 @@ void KtMouse::Update()
         switch (glfwKeyState)
         {
         case GLFW_PRESS:
+        {
             buttonStates.insert(KT_INPUT_STATE_DOWN);
             if (!_buttonStates[button].contains(KT_INPUT_STATE_DOWN))
             {
                 buttonStates.insert(KT_INPUT_STATE_PRESSED);
             }
             break;
-
+        }
         case GLFW_RELEASE:
+        {
             buttonStates.insert(KT_INPUT_STATE_UP);
             if (!_buttonStates[button].contains(KT_INPUT_STATE_UP))
             {
                 buttonStates.insert(KT_INPUT_STATE_RELEASED);
             }
             break;
-
-        case GLFW_REPEAT:
-            buttonStates.insert(KT_INPUT_STATE_DOWN);
-            buttonStates.insert(KT_INPUT_STATE_REPEATED);
-            break;
-
+        }
         default:
             break;
         }
 
         _buttonStates[button] = buttonStates;
 
-        for (auto inputState : _buttonStates[button])
+        for (const auto inputState : _buttonStates[button])
         {
             if (events.contains(inputState))
             {

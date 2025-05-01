@@ -27,7 +27,6 @@ private:
 	void AddToRenderQueue() const;
 
 	// temp
-	void OnEventOverlap(RInterfaceCollider* other);
-	void OnEventMouseLeftButtonDown();
+	void OnEventColliderMouseLeftButtonDown();
 };
 
