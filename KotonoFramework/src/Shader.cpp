@@ -98,20 +98,42 @@ void KtShader::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32
 	);
 }
 
+
+
 void KtShader::CreateDescriptorSetLayouts()
 {
 	_descriptorSetLayoutDatas.reserve(_shaderLayout.DescriptorSetLayouts.size());
 	for (const auto& [set, setLayout] : _shaderLayout.DescriptorSetLayouts)
 	{
+		const size_t bindingCount = setLayout.DescriptorSetLayoutBindings.size();
+
 		std::vector<VkDescriptorSetLayoutBinding> setBindings;
+		std::vector<VkDescriptorBindingFlags> setBindingFlags;
 		std::vector<DescriptorSetLayoutBindingData> setBindingDatas;
-		setBindings.reserve(setLayout.DescriptorSetLayoutBindings.size());
-		setBindingDatas.reserve(setLayout.DescriptorSetLayoutBindings.size());
+		setBindings.reserve(bindingCount);
+		setBindingFlags.reserve(bindingCount);
+		setBindingDatas.reserve(bindingCount);
 		for (const auto& ktBinding : setLayout.DescriptorSetLayoutBindings)
 		{
 			VkDescriptorSetLayoutBinding vkBinding{};
 			vkBinding.binding = ktBinding.Binding;
-			vkBinding.descriptorCount = ktBinding.DescriptorCount;
+			if (ktBinding.DescriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+			{
+				static constexpr uint32_t MAX_BINDLESS_TEXTURES = 8192;
+				vkBinding.descriptorCount = MAX_BINDLESS_TEXTURES;
+
+				static constexpr VkDescriptorBindingFlags bindingFlags = // static so the reference doesn't expire
+					VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT |
+					VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT |
+					VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT;
+
+				setBindingFlags.push_back(bindingFlags);
+			}
+			else
+			{
+				vkBinding.descriptorCount = ktBinding.DescriptorCount;
+				setBindingFlags.push_back(0);
+			}
 			vkBinding.descriptorType = ktBinding.DescriptorType;
 			vkBinding.stageFlags = ktBinding.ShaderStageFlags;
 			vkBinding.pImmutableSamplers = nullptr; // Optional
@@ -128,7 +150,7 @@ void KtShader::CreateDescriptorSetLayouts()
 			setBindingDatas.push_back(bindingData);
 		}
 		VkDescriptorSetLayout newSetLayout = nullptr;
-		CreateDescriptorSetLayout(newSetLayout, setBindings);
+		CreateDescriptorSetLayout(newSetLayout, setBindings, setBindingFlags);
 
 		DescriptorSetLayoutData descriptorSetLayoutData{};
 		descriptorSetLayoutData.DescriptorSetLayout = newSetLayout;
@@ -145,12 +167,22 @@ void KtShader::CreateDescriptorSetLayouts()
 	}
 }
 
-void KtShader::CreateDescriptorSetLayout(VkDescriptorSetLayout& layout, const std::span<VkDescriptorSetLayoutBinding> layoutBindings)
+void KtShader::CreateDescriptorSetLayout(
+	VkDescriptorSetLayout& layout, 
+	const std::span<VkDescriptorSetLayoutBinding> layoutBindings,
+	const std::span<VkDescriptorBindingFlags> bindingFlags)
 {
+	VkDescriptorSetLayoutBindingFlagsCreateInfo bindingFlagsInfo{};
+	bindingFlagsInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO;
+	bindingFlagsInfo.bindingCount = bindingFlags.size();
+	bindingFlagsInfo.pBindingFlags = bindingFlags.data();
+
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
 	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 	layoutInfo.bindingCount = static_cast<uint32_t>(layoutBindings.size());
 	layoutInfo.pBindings = layoutBindings.data();
+	layoutInfo.pNext = &bindingFlagsInfo;
+	layoutInfo.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT;
 
 	VK_CHECK_THROW(
 		vkCreateDescriptorSetLayout(Framework.GetContext().GetDevice(), &layoutInfo, nullptr, &layout),

@@ -275,10 +275,11 @@ const bool KtContext::IsDeviceSuitable(VkPhysicalDevice device)
 
 	vkGetPhysicalDeviceFeatures2(device, &deviceFeatures2);
 
-	const bool indexingSupported = indexingFeatures.runtimeDescriptorArray
-		&& indexingFeatures.shaderSampledImageArrayNonUniformIndexing
+	const bool indexingSupported = indexingFeatures.shaderSampledImageArrayNonUniformIndexing
+		&& indexingFeatures.runtimeDescriptorArray
 		&& indexingFeatures.descriptorBindingVariableDescriptorCount
-		&& indexingFeatures.descriptorBindingPartiallyBound;
+		&& indexingFeatures.descriptorBindingPartiallyBound
+		&& indexingFeatures.descriptorBindingSampledImageUpdateAfterBind;
 
 	return indices.IsComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy && supportedFeatures.fillModeNonSolid && indexingSupported;
 }
@@ -369,10 +370,11 @@ void KtContext::CreateLogicalDevice()
 
 	VkPhysicalDeviceDescriptorIndexingFeatures indexingFeatures{};
 	indexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
+	indexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
 	indexingFeatures.runtimeDescriptorArray = VK_TRUE;
 	indexingFeatures.descriptorBindingVariableDescriptorCount = VK_TRUE;
 	indexingFeatures.descriptorBindingPartiallyBound = VK_TRUE;
-	indexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+	indexingFeatures.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
 	indexingFeatures.pNext = &shaderDrawParametersFeatures;
 
 	VkPhysicalDeviceFeatures2 deviceFeatures2{};
