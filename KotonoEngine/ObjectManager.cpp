@@ -20,7 +20,7 @@ void KObjectManager::Init()
 		.GetEvent(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
 		.AddListener(this, &KObjectManager::Quit);
 
-	auto* shader2D = Framework.GetShaderManager().Create(Framework.GetPath().GetFrameworkPath() / R"(shaders\newShader2D.ktshader)");
+	auto* shader2D = Framework.GetShaderManager().Create(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)");
 	auto* shader3D = Framework.GetShaderManager().Create(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3D.ktshader)");
 	shader2D->SetName("2D Shader");
 	shader3D->SetName("3D Shader");
