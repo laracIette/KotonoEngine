@@ -11,7 +11,7 @@ layout(set = 0, binding = 0) uniform CameraData
     mat4 projection;
 } cameraData;
 
-layout(std430, set = 1, binding = 0) readonly buffer ObjectBuffer
+layout(set = 1, binding = 0, std430) readonly buffer ObjectBuffer
 {
 	ObjectData objectDatas[];
 } objectBuffer;

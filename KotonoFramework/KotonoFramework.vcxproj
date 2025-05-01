@@ -221,7 +221,9 @@
     <None Include="shaders\shader3D.ktshader" />
     <None Include="shaders\vert\shader2D.vert" />
     <None Include="shaders\vert\shader3D.vert" />
+    <None Include="shaders\vert\wireframe2D.vert" />
     <None Include="shaders\vert\wireframe3D.vert" />
+    <None Include="shaders\wireframe2D.ktshader" />
     <None Include="shaders\wireframe3D.ktshader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
