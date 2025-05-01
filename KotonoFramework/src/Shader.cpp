@@ -98,7 +98,7 @@ void KtShader::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32
 	);
 }
 
-
+static constexpr uint32_t MAX_BINDLESS_TEXTURES = 8192;
 
 void KtShader::CreateDescriptorSetLayouts()
 {
@@ -119,10 +119,9 @@ void KtShader::CreateDescriptorSetLayouts()
 			vkBinding.binding = ktBinding.Binding;
 			if (ktBinding.DescriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
 			{
-				static constexpr uint32_t MAX_BINDLESS_TEXTURES = 8192;
 				vkBinding.descriptorCount = MAX_BINDLESS_TEXTURES;
 
-				static constexpr VkDescriptorBindingFlags bindingFlags = // static so the reference doesn't expire
+				const VkDescriptorBindingFlags bindingFlags =
 					VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT |
 					VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT |
 					VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT;
@@ -194,6 +193,15 @@ void KtShader::CreateDescriptorSets()
 {
 	for (auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
 	{
+		std::array<uint32_t, KT_FRAMES_IN_FLIGHT> variableDescriptorCounts{};
+		variableDescriptorCounts.fill(MAX_BINDLESS_TEXTURES);
+
+		VkDescriptorSetVariableDescriptorCountAllocateInfo countInfo = {};
+		countInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO;
+		countInfo.descriptorSetCount = static_cast<uint32_t>(variableDescriptorCounts.size());
+		countInfo.pDescriptorCounts = variableDescriptorCounts.data();
+
+
 		std::array<VkDescriptorSetLayout, KT_FRAMES_IN_FLIGHT> layouts{};
 		layouts.fill(descriptorSetLayoutData.DescriptorSetLayout);
 
@@ -202,6 +210,7 @@ void KtShader::CreateDescriptorSets()
 		allocInfo.descriptorPool = _descriptorPool;
 		allocInfo.descriptorSetCount = static_cast<uint32_t>(layouts.size());
 		allocInfo.pSetLayouts = layouts.data();
+		allocInfo.pNext = &countInfo;
 
 		VK_CHECK_THROW(
 			vkAllocateDescriptorSets(Framework.GetContext().GetDevice(), &allocInfo, descriptorSetLayoutData.DescriptorSets.data()),
@@ -236,9 +245,10 @@ void KtShader::CreateDescriptorPool(const std::span<VkDescriptorPoolSize> poolSi
 {
 	VkDescriptorPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	poolInfo.maxSets = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT) * setCount;
 	poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 	poolInfo.pPoolSizes = poolSizes.data();
-	poolInfo.maxSets = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT) * setCount;
+	poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
 
 	VK_CHECK_THROW(
 		vkCreateDescriptorPool(Framework.GetContext().GetDevice(), &poolInfo, nullptr, &_descriptorPool),
