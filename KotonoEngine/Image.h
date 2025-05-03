@@ -24,8 +24,7 @@ private:
 	RInterfaceCollider* _collider;
 
 	void Draw();
-	void AddTextureToRenderQueue() const;
-	void AddWireframeToRenderQueue() const;
+	void AddToRenderQueue() const;
 
 	// temp
 	void OnEventColliderMouseLeftButtonDown();

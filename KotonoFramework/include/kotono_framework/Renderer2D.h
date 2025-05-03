@@ -24,11 +24,15 @@ private:
 	KtCuller2D _culler;
 
 	KtAllocatedBuffer _vertexBuffer;
+	KtAllocatedBuffer _wireframeVertexBuffer;
 	KtAllocatedBuffer _indexBuffer;
 
 	void CreateVertexBuffer();
+	void CreateWireframeVertexBuffer();
 	void CreateIndexBuffer();
 
-	void CmdBindBuffers(VkCommandBuffer commandBuffer) const;
+	void CmdBindVertexBuffer(VkCommandBuffer commandBuffer) const;
+	void CmdBindWireframeVertexBuffer(VkCommandBuffer commandBuffer) const;
+	void CmdBindIndexBuffer(VkCommandBuffer commandBuffer) const;
 };
 
