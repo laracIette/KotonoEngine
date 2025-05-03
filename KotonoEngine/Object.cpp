@@ -14,6 +14,13 @@ void OObject::Update()
 
 void OObject::Cleanup() 
 {
+    for (auto* event : _listenedEvents)
+    {
+        if (event)
+        {
+            event->RemoveListener(this);
+        }
+    }
 }
 
 const UGuid& OObject::GetGuid() const

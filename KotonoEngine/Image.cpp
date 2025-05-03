@@ -17,12 +17,12 @@ void RImage::Init()
 {
 	Base::Init();
 
-	Engine.GetObjectManager().GetEventDrawObjects().AddListener(this, &RImage::Draw);
-
 	_collider = Engine.GetObjectManager().Create<RInterfaceCollider>();
 	_collider->GetRect().SetBaseSize(GetRect().GetBaseSize());
 	_collider->SetParent(this, ECoordinateSpace::Relative);
-	_collider->GetEventDown().AddListener(this, &RImage::OnEventColliderMouseLeftButtonDown);
+
+	ListenEvent(Engine.GetObjectManager().GetEventDrawObjects(), &RImage::Draw);
+	ListenEvent(_collider->GetEventDown(), &RImage::OnEventColliderMouseLeftButtonDown);
 
 	if (!WireframeShader)
 	{
@@ -46,10 +46,8 @@ void RImage::Update()
 void RImage::Cleanup()
 {
 	Base::Cleanup();
-	_collider->GetEventDown().RemoveListener(this);
-	_collider->SetIsDelete(true);
 
-	Engine.GetObjectManager().GetEventDrawObjects().RemoveListener(this);
+	_collider->SetIsDelete(true);
 }
 
 KtShader* RImage::GetShader() const

@@ -9,15 +9,9 @@ void RInterfaceCollider::Init()
 {
 	Base::Init();	
 
-	Framework.GetInputManager().GetMouse()
-		.GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
-		.AddListener(this, &RInterfaceCollider::OnEventMouseLeftButtonPressed);
-	Framework.GetInputManager().GetMouse()
-		.GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
-		.AddListener(this, &RInterfaceCollider::OnEventMouseLeftButtonReleased);
-	Framework.GetInputManager().GetMouse()
-		.GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
-		.AddListener(this, &RInterfaceCollider::OnEventMouseLeftButtonDown);
+	ListenEvent(Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED), &RInterfaceCollider::OnEventMouseLeftButtonPressed);
+	ListenEvent(Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED), &RInterfaceCollider::OnEventMouseLeftButtonReleased);
+	ListenEvent(Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN), &RInterfaceCollider::OnEventMouseLeftButtonDown);
 }
 
 void RInterfaceCollider::Update()
@@ -30,16 +24,6 @@ void RInterfaceCollider::Update()
 void RInterfaceCollider::Cleanup()
 {
 	Base::Cleanup();
-
-	Framework.GetInputManager().GetMouse()
-		.GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
-		.RemoveListener(this);
-	Framework.GetInputManager().GetMouse()
-		.GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
-		.RemoveListener(this);
-	Framework.GetInputManager().GetMouse()
-		.GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
-		.RemoveListener(this);
 }
 
 KtEvent<>& RInterfaceCollider::GetEventPressed()

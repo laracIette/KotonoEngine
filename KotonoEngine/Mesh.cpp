@@ -16,14 +16,13 @@ static KtShader* WireframeShader = nullptr;
 void TMesh::Init()
 {
     Base::Init();
-    _spinTask = Engine.GetObjectManager().Create<OTask>();
-    _spinTask->GetEventUpdate().AddListener(this, &TMesh::Spin);
-    _spinTask->SetDuration(5.0f);
-    Framework.GetInputManager().GetKeyboard()
-        .GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED)
-        .AddListener(_spinTask, &OTask::Start);
 
-    Engine.GetObjectManager().GetEventDrawObjects().AddListener(this, &TMesh::Draw);
+    _spinTask = Engine.GetObjectManager().Create<OTask>();
+    _spinTask->SetDuration(5.0f);
+
+    ListenEvent(_spinTask->GetEventUpdate(), &TMesh::Spin);
+    _spinTask->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED), &OTask::Start);
+    ListenEvent(Engine.GetObjectManager().GetEventDrawObjects(), &TMesh::Draw);
 
     if (!WireframeShader)
     {
@@ -40,12 +39,8 @@ void TMesh::Update()
 void TMesh::Cleanup()
 {
     Base::Cleanup();
-    _spinTask->SetIsDelete(true);
-    Framework.GetInputManager().GetKeyboard()
-        .GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED)
-        .RemoveListener(this);
 
-    Engine.GetObjectManager().GetEventDrawObjects().RemoveListener(this);
+    _spinTask->SetIsDelete(true);
 }
 
 KtShader* TMesh::GetShader() const

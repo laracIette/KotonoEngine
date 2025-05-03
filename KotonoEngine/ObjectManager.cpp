@@ -34,10 +34,7 @@ void KObjectManager::Init()
 	{
 		auto* scene = Create<OScene>();
 		scene->SetPath(Framework.GetPath().GetSolutionPath() / R"(assets\objects\scene.oscene)");
-
-		Framework.GetInputManager().GetKeyboard()
-			.GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED)
-			.AddListener(scene, &OScene::Reload);
+		scene->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), &OScene::Reload);
 	}
 	{
 		auto* image1 = Create<RImage>();

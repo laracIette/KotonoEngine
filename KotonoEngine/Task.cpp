@@ -5,6 +5,7 @@
 void OTask::Update()
 {
     Base::Update();
+
     if (_isPlaying)
     {
         if (Engine.GetTime().GetNow() - _startTime < _duration)

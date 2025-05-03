@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <nlohmann/json_fwd.hpp>
 #include "Guid.h"
+#include "kotono_framework/Event.h"
+#include <unordered_set>
 class OObject
 {
 public:
@@ -31,10 +33,21 @@ public:
 	// Deserialize from json
 	virtual void DeserializeFrom(const nlohmann::json& json);
 
+protected:
+	template<class Tinst, class Tfunc, typename... Args>
+		requires std::is_base_of_v<Tfunc, Tinst>
+	void ListenEvent(KtEvent<Args...>& event, Tinst* instance, void (Tfunc::* function)(Args...))
+	{
+		event.AddListener(instance, function);
+		_listenedEvents.insert(&event);
+	}
+
 private:
 	UGuid _guid;
 	std::filesystem::path _path;
 	std::string _name;
 	bool _isDelete;
+
+	std::unordered_set<KtEventBase*> _listenedEvents;
 };
 
