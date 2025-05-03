@@ -25,7 +25,6 @@ void KtRenderer2D::Cleanup() const
 	KT_DEBUG_LOG("cleaning up 2D renderer");
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _indexBuffer.Buffer, _indexBuffer.Allocation);
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _vertexBuffer.Buffer, _vertexBuffer.Allocation);
-	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _wireframeVertexBuffer.Buffer, _wireframeVertexBuffer.Allocation);
 	KT_DEBUG_LOG("cleaned up 2D renderer");
 }
 
@@ -35,7 +34,7 @@ void KtRenderer2D::AddToRenderQueue(const KtAddToRenderQueue2DArgs& args)
 		.Shaders[args.Shader]
 		.Renderables[args.Renderable]
 		.Viewports[args.Viewport]
-		.Layers[args.Layer]
+		.Layers[args.Layer] // todo: change to unordered_map and sort in culler or sorter
 		.ObjectDatas.push_back(args.ObjectData);
 }
 

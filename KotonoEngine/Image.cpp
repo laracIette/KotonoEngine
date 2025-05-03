@@ -11,6 +11,7 @@
 #include <kotono_framework/log.h>
 
 static KtShader* WireframeShader = nullptr;
+static KtShader* FlatColorShader = nullptr;
 
 void RImage::Init()
 {
@@ -28,6 +29,12 @@ void RImage::Init()
 		const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\wireframe2D.ktshader)";
 		WireframeShader = Framework.GetShaderManager().Create(path);
 		WireframeShader->SetName("2D Wireframe Shader");
+	}
+	if (!FlatColorShader)
+	{
+		const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
+		FlatColorShader = Framework.GetShaderManager().Create(path);
+		FlatColorShader->SetName("2D Flat Color Shader");
 	}
 }
 
@@ -72,9 +79,13 @@ void RImage::Draw()
 	{
 		AddTextureToRenderQueue();
 	}
-	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::Wireframe))
+	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObjectWireframe))
 	{
 		AddWireframeToRenderQueue();
+	}
+	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObjectBounds))
+	{
+		AddBoundsToRenderQueue();
 	}
 }
 
@@ -93,6 +104,17 @@ void RImage::AddWireframeToRenderQueue() const
 {
 	KtAddToRenderQueue2DArgs args{};
 	args.Shader = WireframeShader;
+	args.Renderable = _imageTexture;
+	args.Viewport = GetViewport();
+	args.ObjectData.Model = GetRect().GetModelMatrix();
+	args.Layer = GetLayer();
+	Framework.GetRenderer().GetRenderer2D().AddToRenderQueue(args);
+}
+
+void RImage::AddBoundsToRenderQueue() const
+{
+	KtAddToRenderQueue2DArgs args{};
+	args.Shader = FlatColorShader;
 	args.Renderable = _imageTexture;
 	args.Viewport = GetViewport();
 	args.ObjectData.Model = GetRect().GetModelMatrix();

@@ -26,6 +26,7 @@ private:
 	void Draw();
 	void AddTextureToRenderQueue() const;
 	void AddWireframeToRenderQueue() const;
+	void AddBoundsToRenderQueue() const;
 
 	// temp
 	void OnEventColliderMouseLeftButtonDown();

@@ -4,10 +4,12 @@ void KVisualizer::Init()
 {
 	SetIsFieldVisible(EVisualizationField::SceneObject, true);
 	SetIsFieldVisible(EVisualizationField::SceneObjectBounds, true);
+	SetIsFieldVisible(EVisualizationField::SceneObjectCollider, true);
+	SetIsFieldVisible(EVisualizationField::SceneObjectWireframe, true);
 	SetIsFieldVisible(EVisualizationField::InterfaceObject, true);
 	SetIsFieldVisible(EVisualizationField::InterfaceObjectBounds, true);
-	SetIsFieldVisible(EVisualizationField::InterfaceCollider, true);
-	SetIsFieldVisible(EVisualizationField::Wireframe, true);
+	SetIsFieldVisible(EVisualizationField::InterfaceObjectCollider, true);
+	SetIsFieldVisible(EVisualizationField::InterfaceObjectWireframe, true);
 }
 
 void KVisualizer::Cleanup()

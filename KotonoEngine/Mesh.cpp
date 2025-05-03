@@ -74,7 +74,7 @@ void TMesh::Draw()
     {
         AddModelToRenderQueue();
     }
-    if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::Wireframe))
+    if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::SceneObjectWireframe))
     {
         AddWireframeToRenderQueue();
     }

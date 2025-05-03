@@ -1,6 +1,4 @@
 #pragma once
-#include <vector>
-#include <unordered_map>
 #include "UniformData2D.h"
 #include "AddToRenderQueue2DArgs.h"
 #include "RenderQueue2DData.h"
@@ -16,7 +14,6 @@ public:
 
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const;
 
-
 	void Reset(const uint32_t currentFrame);
 
 private:
@@ -25,7 +22,6 @@ private:
 	KtCuller2D _culler;
 
 	KtAllocatedBuffer _vertexBuffer;
-	KtAllocatedBuffer _wireframeVertexBuffer;
 	KtAllocatedBuffer _indexBuffer;
 
 	void CreateVertexBuffer();

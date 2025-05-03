@@ -1,11 +1,13 @@
 #pragma once
-enum class EVisualizationField : char
+enum class EVisualizationField
 {
 	SceneObject,
 	SceneObjectBounds,
+	SceneObjectCollider,
+	SceneObjectWireframe,
 	InterfaceObject,
 	InterfaceObjectBounds,
-	InterfaceCollider,
-	Wireframe,
+	InterfaceObjectCollider,
+	InterfaceObjectWireframe,
 };
 
