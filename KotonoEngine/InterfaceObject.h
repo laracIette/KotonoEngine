@@ -30,5 +30,7 @@ private:
 	KtViewport* _viewport;
 	RInterfaceObject* _parent;
 	int32_t _layer;
+
+	void AddBoundsToRenderQueue();
 };
 

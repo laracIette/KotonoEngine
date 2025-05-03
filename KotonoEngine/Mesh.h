@@ -27,9 +27,8 @@ private:
 	KtModel* _model;
 	OTask* _spinTask;
 
-	void Draw();
-	void AddModelToRenderQueue() const;
-	void AddWireframeToRenderQueue() const;
+	void AddModelToRenderQueue();
+	void AddWireframeToRenderQueue();
 
 	// temp
 	void Spin();

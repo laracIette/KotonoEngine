@@ -11,6 +11,8 @@
 #include "Scene.h"
 #include "Camera.h"
 #include "InterfaceObjectStack.h"
+#include "Engine.h"
+#include "Visualizer.h"
 
 static TCamera* Camera = nullptr;
 
@@ -95,9 +97,29 @@ void KObjectManager::Cleanup()
 	_typeRegistry.clear();
 }
 
-KtEvent<>& KObjectManager::GetEventDrawObjects()
+KtEvent<>& KObjectManager::GetEventDrawSceneObjects()
 {
-	return _eventDrawObjects;
+	return _eventDrawSceneObjects;
+}
+
+KtEvent<>& KObjectManager::GetEventDrawSceneObjectWireframes()
+{
+	return _eventDrawSceneObjectWireframes;
+}
+
+KtEvent<>& KObjectManager::GetEventDrawInterfaceObjects()
+{
+	return _eventDrawInterfaceObjects;
+}
+
+KtEvent<>& KObjectManager::GetEventDrawInterfaceObjectBounds()
+{
+	return _eventDrawInterfaceObjectBounds;
+}
+
+KtEvent<>& KObjectManager::GetEventDrawInterfaceObjectWireframes()
+{
+	return _eventDrawInterfaceObjectWireframes;
 }
 
 void KObjectManager::Quit()
@@ -151,7 +173,26 @@ void KObjectManager::DeleteObjects()
 
 void KObjectManager::DrawObjects()
 {
-	_eventDrawObjects.Broadcast();
+	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::SceneObject))
+	{
+		_eventDrawSceneObjects.Broadcast();
+	}
+	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::SceneObjectWireframe))
+	{
+		_eventDrawSceneObjectWireframes.Broadcast();
+	}
+	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObject))
+	{
+		_eventDrawInterfaceObjects.Broadcast();
+	}
+	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObjectBounds))
+	{
+		_eventDrawInterfaceObjectBounds.Broadcast();
+	}
+	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObjectWireframe))
+	{
+		_eventDrawInterfaceObjectWireframes.Broadcast();
+	}
 }
 
 void KObjectManager::Create(OObject* object)

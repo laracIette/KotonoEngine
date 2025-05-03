@@ -16,7 +16,11 @@ public:
 	void Update();
 	void Cleanup();
 
-	KtEvent<>& GetEventDrawObjects();
+	KtEvent<>& GetEventDrawSceneObjects();
+	KtEvent<>& GetEventDrawSceneObjectWireframes();
+	KtEvent<>& GetEventDrawInterfaceObjects();
+	KtEvent<>& GetEventDrawInterfaceObjectBounds();
+	KtEvent<>& GetEventDrawInterfaceObjectWireframes();
 
 	template <Object T> 
 	T* Create()
@@ -67,7 +71,11 @@ private:
 
 	std::unordered_map<std::type_index, std::unordered_set<OObject*>> _typeRegistry;
 
-	KtEvent<> _eventDrawObjects;
+	KtEvent<> _eventDrawSceneObjects;
+	KtEvent<> _eventDrawSceneObjectWireframes;
+	KtEvent<> _eventDrawInterfaceObjects;
+	KtEvent<> _eventDrawInterfaceObjectBounds;
+	KtEvent<> _eventDrawInterfaceObjectWireframes;
 
 	void InitObjects();
 	void UpdateObjects();

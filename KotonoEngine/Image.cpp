@@ -8,10 +8,8 @@
 #include "Engine.h"
 #include "ObjectManager.h"
 #include "Visualizer.h"
-#include <kotono_framework/log.h>
 
 static KtShader* WireframeShader = nullptr;
-static KtShader* FlatColorShader = nullptr;
 
 void RImage::Init()
 {
@@ -21,20 +19,15 @@ void RImage::Init()
 	_collider->GetRect().SetBaseSize(GetRect().GetBaseSize());
 	_collider->SetParent(this, ECoordinateSpace::Relative);
 
-	ListenEvent(Engine.GetObjectManager().GetEventDrawObjects(), &RImage::Draw);
 	ListenEvent(_collider->GetEventDown(), &RImage::OnEventColliderMouseLeftButtonDown);
+	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjects(), &RImage::AddTextureToRenderQueue);
+	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjectWireframes(), &RImage::AddWireframeToRenderQueue);
 
 	if (!WireframeShader)
 	{
 		const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\wireframe2D.ktshader)";
 		WireframeShader = Framework.GetShaderManager().Create(path);
 		WireframeShader->SetName("2D Wireframe Shader");
-	}
-	if (!FlatColorShader)
-	{
-		const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
-		FlatColorShader = Framework.GetShaderManager().Create(path);
-		FlatColorShader->SetName("2D Flat Color Shader");
 	}
 }
 
@@ -71,23 +64,7 @@ void RImage::SetImageTexture(KtImageTexture* imageTexture)
     GetRect().SetBaseSize(_imageTexture ? _imageTexture->GetSize() : glm::uvec2(0));
 }
 
-void RImage::Draw()
-{
-	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObject))
-	{
-		AddTextureToRenderQueue();
-	}
-	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObjectWireframe))
-	{
-		AddWireframeToRenderQueue();
-	}
-	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObjectBounds))
-	{
-		AddBoundsToRenderQueue();
-	}
-}
-
-void RImage::AddTextureToRenderQueue() const
+void RImage::AddTextureToRenderQueue()
 {
 	KtAddToRenderQueue2DArgs args{};
 	args.Shader = _shader;
@@ -98,21 +75,10 @@ void RImage::AddTextureToRenderQueue() const
 	Framework.GetRenderer().GetRenderer2D().AddToRenderQueue(args);
 }
 
-void RImage::AddWireframeToRenderQueue() const
+void RImage::AddWireframeToRenderQueue()
 {
 	KtAddToRenderQueue2DArgs args{};
 	args.Shader = WireframeShader;
-	args.Renderable = _imageTexture;
-	args.Viewport = GetViewport();
-	args.ObjectData.Model = GetRect().GetModelMatrix();
-	args.Layer = GetLayer();
-	Framework.GetRenderer().GetRenderer2D().AddToRenderQueue(args);
-}
-
-void RImage::AddBoundsToRenderQueue() const
-{
-	KtAddToRenderQueue2DArgs args{};
-	args.Shader = FlatColorShader;
 	args.Renderable = _imageTexture;
 	args.Viewport = GetViewport();
 	args.ObjectData.Model = GetRect().GetModelMatrix();

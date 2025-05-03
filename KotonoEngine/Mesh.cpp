@@ -20,9 +20,10 @@ void TMesh::Init()
     _spinTask = Engine.GetObjectManager().Create<OTask>();
     _spinTask->SetDuration(5.0f);
 
-    ListenEvent(_spinTask->GetEventUpdate(), &TMesh::Spin);
     _spinTask->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED), &OTask::Start);
-    ListenEvent(Engine.GetObjectManager().GetEventDrawObjects(), &TMesh::Draw);
+    ListenEvent(_spinTask->GetEventUpdate(), &TMesh::Spin);
+    ListenEvent(Engine.GetObjectManager().GetEventDrawSceneObjects(), &TMesh::AddModelToRenderQueue);
+    ListenEvent(Engine.GetObjectManager().GetEventDrawSceneObjectWireframes(), &TMesh::AddWireframeToRenderQueue);
 
     if (!WireframeShader)
     {
@@ -63,19 +64,7 @@ void TMesh::SetModel(KtModel* model)
     _model = model;
 }
 
-void TMesh::Draw()
-{
-    if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::SceneObject))
-    {
-        AddModelToRenderQueue();
-    }
-    if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::SceneObjectWireframe))
-    {
-        AddWireframeToRenderQueue();
-    }
-}
-
-void TMesh::AddModelToRenderQueue() const
+void TMesh::AddModelToRenderQueue()
 {
     KtAddToRenderQueue3DArgs args{};
     args.Shader = _shader;
@@ -85,7 +74,7 @@ void TMesh::AddModelToRenderQueue() const
     Framework.GetRenderer().GetRenderer3D().AddToRenderQueue(args);
 }
 
-void TMesh::AddWireframeToRenderQueue() const
+void TMesh::AddWireframeToRenderQueue()
 {
     KtAddToRenderQueue3DArgs args{};
     args.Shader = WireframeShader;

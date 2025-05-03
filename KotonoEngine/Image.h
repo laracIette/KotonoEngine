@@ -23,10 +23,8 @@ private:
 	KtImageTexture* _imageTexture;
 	RInterfaceCollider* _collider;
 
-	void Draw();
-	void AddTextureToRenderQueue() const;
-	void AddWireframeToRenderQueue() const;
-	void AddBoundsToRenderQueue() const;
+	void AddTextureToRenderQueue();
+	void AddWireframeToRenderQueue();
 
 	// temp
 	void OnEventColliderMouseLeftButtonDown();
