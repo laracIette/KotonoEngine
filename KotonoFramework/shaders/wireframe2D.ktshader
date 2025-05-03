@@ -1,11 +1,11 @@
 {
   "shaders": [
     {
-      "path": "vert/wireframe2DVert.spv",
+      "path": "vert/flatColor2DVert.spv",
       "shaderStage": 1
     },
     {
-      "path": "frag/wireframeFrag.spv",
+      "path": "frag/flatColorFrag.spv",
       "shaderStage": 16
     }
   ],

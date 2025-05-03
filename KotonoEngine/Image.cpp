@@ -10,6 +10,8 @@
 #include "Visualizer.h"
 #include <kotono_framework/log.h>
 
+static KtShader* WireframeShader = nullptr;
+
 void RImage::Init()
 {
 	Base::Init();
@@ -20,6 +22,13 @@ void RImage::Init()
 	_collider->GetRect().SetBaseSize(GetRect().GetBaseSize());
 	_collider->SetParent(this, ECoordinateSpace::Relative);
 	_collider->GetEventDown().AddListener(this, &RImage::OnEventColliderMouseLeftButtonDown);
+
+	if (!WireframeShader)
+	{
+		const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\wireframe2D.ktshader)";
+		WireframeShader = Framework.GetShaderManager().Create(path);
+		WireframeShader->SetName("2D Wireframe Shader");
+	}
 }
 
 void RImage::Update()
@@ -61,18 +70,29 @@ void RImage::Draw()
 {
 	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObject))
 	{
-		AddToRenderQueue();
+		AddTextureToRenderQueue();
 	}
 	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::Wireframe))
 	{
-		// ?
+		AddWireframeToRenderQueue();
 	}
 }
 
-void RImage::AddToRenderQueue() const
+void RImage::AddTextureToRenderQueue() const
 {
 	KtAddToRenderQueue2DArgs args{};
 	args.Shader = _shader;
+	args.Renderable = _imageTexture;
+	args.Viewport = GetViewport();
+	args.ObjectData.Model = GetRect().GetModelMatrix();
+	args.Layer = GetLayer();
+	Framework.GetRenderer().GetRenderer2D().AddToRenderQueue(args);
+}
+
+void RImage::AddWireframeToRenderQueue() const
+{
+	KtAddToRenderQueue2DArgs args{};
+	args.Shader = WireframeShader;
 	args.Renderable = _imageTexture;
 	args.Viewport = GetViewport();
 	args.ObjectData.Model = GetRect().GetModelMatrix();

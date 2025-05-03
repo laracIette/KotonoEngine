@@ -102,9 +102,6 @@
     <ClCompile Include="src\Culler2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ModelWireframe.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\kotono_framework\AllocatedBuffer.h">
@@ -245,9 +242,6 @@
     <ClInclude Include="include\kotono_framework\RenderQueue2DData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\kotono_framework\ModelWireframe.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\kotono_framework\Renderable3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -260,13 +254,7 @@
     <None Include="shaders\frag\shader3D.frag">
       <Filter>Shaders\Fragment</Filter>
     </None>
-    <None Include="shaders\frag\wireframe.frag">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
     <None Include="shaders\vert\shader3D.vert">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
-    <None Include="shaders\vert\wireframe3D.vert">
       <Filter>Shaders\Vertex</Filter>
     </None>
     <None Include="shaders\shader3D.ktshader">
@@ -287,7 +275,16 @@
     <None Include="shaders\wireframe2D.ktshader">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\vert\wireframe2D.vert">
+    <None Include="shaders\vert\flatColor2D.vert">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="shaders\flatColor2D.ktshader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\frag\flatColor.frag">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="shaders\vert\flatColor3D.vert">
       <Filter>Shaders\Vertex</Filter>
     </None>
   </ItemGroup>

@@ -1,7 +1,5 @@
 #include "Renderer2D.h"
 #include "Framework.h"
-#include "Path.h"
-#include "ShaderManager.h"
 #include "log.h"
 #include "Context.h"
 #include "Vertex2D.h"
@@ -14,27 +12,12 @@ static constexpr std::array<KtVertex2D, 4> Vertices =
 	KtVertex2D { {-0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f} }  // Top-left
 };
 
-static constexpr std::array<glm::vec2, 4> WireframeVertices =
-{
-	glm::vec2 { -0.5f, -0.5f }, // Bottom-left
-	glm::vec2 {  0.5f, -0.5f }, // Bottom-right
-	glm::vec2 {  0.5f,  0.5f }, // Top-right
-	glm::vec2 { -0.5f,  0.5f }  // Top-left
-};
-
 static constexpr std::array<uint32_t, 6> Indices = { 0, 1, 2, 2, 3, 0 };
-
-static KtShader* WireframeShader;
 
 void KtRenderer2D::Init()
 {
 	CreateVertexBuffer();
-	CreateWireframeVertexBuffer();
 	CreateIndexBuffer();
-
-	const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\wireframe2D.ktshader)";
-	WireframeShader = Framework.GetShaderManager().Create(path);
-	WireframeShader->SetName("2D Wireframe Shader");
 }
 
 void KtRenderer2D::Cleanup() const
@@ -136,71 +119,11 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 			}
 		}
 	}
-
-
-	std::vector<KtObjectData2D> objectBufferData;
-	for (auto& [shader, shaderData] : culledData.Shaders)
-	{
-		for (const auto& [renderable, renderableData] : shaderData.Renderables)
-		{
-			for (const auto& [viewport, viewportData] : renderableData.Viewports)
-			{
-				for (const auto& [layer, layerData] : viewportData.Layers)
-				{
-					objectBufferData.insert(objectBufferData.end(),
-						layerData.ObjectDatas.begin(), layerData.ObjectDatas.end()
-					);
-				}
-			}
-		}
-	}
-
-	// NOT A CMD, UPDATE ONCE PER FRAME //
-	if (auto* binding = WireframeShader->GetDescriptorSetLayoutBinding("objectBuffer"))
-	{
-		WireframeShader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, objectBufferData.size(), currentFrame);
-		WireframeShader->UpdateDescriptorSetLayoutBindingBuffer(*binding, objectBufferData.data(), currentFrame);
-	}
-	// -------------------------------- //
-
-	WireframeShader->CmdBind(commandBuffer);
-	WireframeShader->CmdBindDescriptorSets(commandBuffer, currentFrame);
-
-	CmdBindWireframeVertexBuffer(commandBuffer);
-	CmdBindIndexBuffer(commandBuffer);
-
-	uint32_t instanceIndex = 0;
-	for (auto& [shader, shaderData] : culledData.Shaders)
-	{
-		for (const auto& [renderable, renderableData] : shaderData.Renderables)
-		{
-			for (const auto& [viewport, viewportData] : renderableData.Viewports)
-			{
-				uint32_t instanceCount = 0;
-				for (const auto& [layer, layerData] : viewportData.Layers)
-				{
-					instanceCount += static_cast<uint32_t>(layerData.ObjectDatas.size());
-				}
-
-				viewport->CmdUse(commandBuffer);
-				vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(Indices.size()), instanceCount, 0, 0, instanceIndex);
-
-				instanceIndex += instanceCount;
-			}
-		}
-	}
 }
 
 void KtRenderer2D::CmdBindVertexBuffer(VkCommandBuffer commandBuffer) const
 {
 	const std::array<VkBuffer, 1> vertexBuffers = { _vertexBuffer.Buffer };
-	const std::array<VkDeviceSize, 1> offsets = { 0 };
-	vkCmdBindVertexBuffers(commandBuffer, 0, static_cast<uint32_t>(vertexBuffers.size()), vertexBuffers.data(), offsets.data());
-}
-
-void KtRenderer2D::CmdBindWireframeVertexBuffer(VkCommandBuffer commandBuffer) const
-{
-	const std::array<VkBuffer, 1> vertexBuffers = { _wireframeVertexBuffer.Buffer };
 	const std::array<VkDeviceSize, 1> offsets = { 0 };
 	vkCmdBindVertexBuffers(commandBuffer, 0, static_cast<uint32_t>(vertexBuffers.size()), vertexBuffers.data(), offsets.data());
 }
@@ -240,34 +163,6 @@ void KtRenderer2D::CreateVertexBuffer()
 	);
 
 	Framework.GetContext().CopyBuffer(stagingBuffer.Buffer, _vertexBuffer.Buffer, bufferSize);
-
-	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingBuffer.Buffer, stagingBuffer.Allocation);
-}
-
-void KtRenderer2D::CreateWireframeVertexBuffer()
-{
-	const VkDeviceSize bufferSize = sizeof(glm::vec2) * WireframeVertices.size();
-
-	KtAllocatedBuffer stagingBuffer;
-	Framework.GetContext().CreateBuffer(
-		bufferSize,
-		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
-		stagingBuffer
-	);
-
-	memcpy(stagingBuffer.AllocationInfo.pMappedData, WireframeVertices.data(), (size_t)bufferSize);
-
-	Framework.GetContext().CreateBuffer(
-		bufferSize,
-		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
-		_wireframeVertexBuffer
-	);
-
-	Framework.GetContext().CopyBuffer(stagingBuffer.Buffer, _wireframeVertexBuffer.Buffer, bufferSize);
 
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingBuffer.Buffer, stagingBuffer.Allocation);
 }

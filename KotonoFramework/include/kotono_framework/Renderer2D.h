@@ -16,6 +16,7 @@ public:
 
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const;
 
+
 	void Reset(const uint32_t currentFrame);
 
 private:
@@ -28,11 +29,9 @@ private:
 	KtAllocatedBuffer _indexBuffer;
 
 	void CreateVertexBuffer();
-	void CreateWireframeVertexBuffer();
 	void CreateIndexBuffer();
 
 	void CmdBindVertexBuffer(VkCommandBuffer commandBuffer) const;
-	void CmdBindWireframeVertexBuffer(VkCommandBuffer commandBuffer) const;
 	void CmdBindIndexBuffer(VkCommandBuffer commandBuffer) const;
 };
 

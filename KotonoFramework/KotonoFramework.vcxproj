@@ -136,7 +136,6 @@
   <ItemGroup>
     <ClCompile Include="src\Culler2D.cpp" />
     <ClCompile Include="src\Culler3D.cpp" />
-    <ClCompile Include="src\ModelWireframe.cpp" />
     <ClCompile Include="src\Serializer.cpp" />
     <ClCompile Include="src\Path.cpp" />
     <ClCompile Include="src\ShaderManager.cpp" />
@@ -181,7 +180,6 @@
     <ClInclude Include="include\kotono_framework\log.h" />
     <ClInclude Include="include\kotono_framework\frames_in_flight.h" />
     <ClInclude Include="include\kotono_framework\Model.h" />
-    <ClInclude Include="include\kotono_framework\ModelWireframe.h" />
     <ClInclude Include="include\kotono_framework\Mouse.h" />
     <ClInclude Include="include\kotono_framework\ObjectData3D.h" />
     <ClInclude Include="include\kotono_framework\QueueFamilyIndices.h" />
@@ -214,15 +212,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
+    <None Include="shaders\flatColor2D.ktshader" />
+    <None Include="shaders\frag\flatColor.frag" />
     <None Include="shaders\frag\shader2D.frag" />
     <None Include="shaders\frag\shader3D.frag" />
-    <None Include="shaders\frag\wireframe.frag" />
     <None Include="shaders\shader2D.ktshader" />
     <None Include="shaders\shader3D.ktshader" />
+    <None Include="shaders\vert\flatColor2D.vert" />
+    <None Include="shaders\vert\flatColor3D.vert" />
     <None Include="shaders\vert\shader2D.vert" />
     <None Include="shaders\vert\shader3D.vert" />
-    <None Include="shaders\vert\wireframe2D.vert" />
-    <None Include="shaders\vert\wireframe3D.vert" />
     <None Include="shaders\wireframe2D.ktshader" />
     <None Include="shaders\wireframe3D.ktshader" />
   </ItemGroup>

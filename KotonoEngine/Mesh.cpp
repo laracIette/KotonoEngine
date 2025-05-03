@@ -11,7 +11,7 @@
 #include "Visualizer.h"
 #include "Time.h"
 
-static KtShader* Wireframe3DShader = nullptr;
+static KtShader* WireframeShader = nullptr;
 
 void TMesh::Init()
 {
@@ -25,10 +25,10 @@ void TMesh::Init()
 
     Engine.GetObjectManager().GetEventDrawObjects().AddListener(this, &TMesh::Draw);
 
-    if (!Wireframe3DShader)
+    if (!WireframeShader)
     {
         const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\wireframe3D.ktshader)";
-        Wireframe3DShader = Framework.GetShaderManager().Create(path);
+        WireframeShader = Framework.GetShaderManager().Create(path);
     }
 }
 
@@ -93,8 +93,8 @@ void TMesh::AddModelToRenderQueue() const
 void TMesh::AddWireframeToRenderQueue() const
 {
     KtAddToRenderQueue3DArgs args{};
-    args.Shader = Wireframe3DShader;
-    args.Renderable = &_model->GetWireframe();
+    args.Shader = WireframeShader;
+    args.Renderable = _model;
     args.Viewport = GetViewport();
     args.ObjectData.Model = GetTransform().GetModelMatrix();
     Framework.GetRenderer().GetRenderer3D().AddToRenderQueue(args);
