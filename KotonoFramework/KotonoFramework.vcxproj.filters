@@ -251,6 +251,9 @@
     <ClInclude Include="include\kotono_framework\EventBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\kotono_framework\Collection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
