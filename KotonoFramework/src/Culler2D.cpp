@@ -18,16 +18,25 @@ const KtRenderQueue2DData KtCuller2D::ComputeNullCulling(const KtRenderQueue2DDa
 			KT_DEBUG_LOG("KtCuller2D::ComputeNullCulling(): shader is nullptr");
 			continue;
 		}
-
-		for (const auto& [viewport, viewportData] : shaderData.Viewports)
+		
+		for (const auto& [renderable, renderableData] : shaderData.Renderables)
 		{
-			if (!viewport)
+			if (!renderable)
 			{
-				KT_DEBUG_LOG("KtCuller2D::ComputeNullCulling(): viewport is nullptr");
+				KT_DEBUG_LOG("KtCuller2D::ComputeNullCulling(): renderable is nullptr");
 				continue;
 			}
 
-			culledData.Shaders[shader].Viewports[viewport] = viewportData;
+			for (const auto& [viewport, viewportData] : renderableData.Viewports)
+			{
+				if (!viewport)
+				{
+					KT_DEBUG_LOG("KtCuller2D::ComputeNullCulling(): viewport is nullptr");
+					continue;
+				}
+
+				culledData.Shaders[shader].Renderables[renderable].Viewports[viewport] = viewportData;
+			}
 		}
 		
 	}
@@ -40,16 +49,18 @@ const KtRenderQueue2DData KtCuller2D::ComputeScreenCulling(const KtRenderQueue2D
 	KtRenderQueue2DData culledData{};
 	for (const auto& [shader, shaderData] : renderQueueData.Shaders)
 	{
-		for (const auto& [viewport, viewportData] : shaderData.Viewports)
+		for (const auto& [renderable, renderableData] : shaderData.Renderables)
 		{
-			for (const auto& [layer, layerData] : viewportData.Layers)
+			for (const auto& [viewport, viewportData] : renderableData.Viewports)
 			{
-				// check out of bounds
+				for (const auto& [layer, layerData] : viewportData.Layers)
+				{
+					// check out of bounds
 
-				culledData.Shaders[shader].Viewports[viewport].Layers[layer] = layerData;
+					culledData.Shaders[shader].Renderables[renderable].Viewports[viewport].Layers[layer] = layerData;
+				}
 			}
 		}
-
 	}
 	return culledData;
 }

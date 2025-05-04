@@ -38,6 +38,7 @@
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="Visualizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Anchor.h" />
@@ -64,6 +65,8 @@
     <ClInclude Include="Transform.h" />
     <ClInclude Include="CoordinateSpace.h" />
     <ClInclude Include="Visibility.h" />
+    <ClInclude Include="VisualizationField.h" />
+    <ClInclude Include="Visualizer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

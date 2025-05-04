@@ -1,12 +1,12 @@
 #pragma once
 #include "Shader.h"
-#include "Model.h"
+#include "Renderable3D.h"
 #include "Viewport.h"
 #include "ObjectData3D.h"
 struct KtAddToRenderQueue3DArgs
 {
 	KtShader* Shader;
-	KtModel* Model;
+	KtRenderable3D* Renderable;
 	KtViewport* Viewport;
 	KtObjectData3D ObjectData;
 };

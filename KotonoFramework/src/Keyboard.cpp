@@ -13,26 +13,23 @@ void KtKeyboard::Update()
         switch (glfwKeyState)
         {
         case GLFW_PRESS:
+        {
             keyStates.insert(KT_INPUT_STATE_DOWN);
             if (!_keyStates[key].contains(KT_INPUT_STATE_DOWN))
             {
                 keyStates.insert(KT_INPUT_STATE_PRESSED);
             }
             break;
-
+        }
         case GLFW_RELEASE:
+        {
             keyStates.insert(KT_INPUT_STATE_UP);
             if (!_keyStates[key].contains(KT_INPUT_STATE_UP))
             {
                 keyStates.insert(KT_INPUT_STATE_RELEASED);
             }
             break;
-
-        case GLFW_REPEAT:
-            keyStates.insert(KT_INPUT_STATE_DOWN);
-            keyStates.insert(KT_INPUT_STATE_REPEATED);
-            break;
-
+        }
         default:
             break;
         }

@@ -2,21 +2,20 @@
 #include "Framework.h"
 #include "Window.h"
 #include <set>
-#include <fstream>
-#include "Vertex3D.h"
-#include <chrono>
+#include <array>
 #include "log.h"
 #include "vk_utils.h"
 
-constexpr std::array<const char*, 1> validationLayers =
+constexpr std::array<const char*, 1> ValidationLayers =
 {
 	"VK_LAYER_KHRONOS_validation"
 };
 
-constexpr std::array<const char*, 2> deviceExtensions =
+constexpr std::array<const char*, 3> DeviceExtensions =
 {
 	VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-	VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME
+	VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME,
+	VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME
 };
 
 #ifdef _DEBUG
@@ -81,10 +80,10 @@ void KtContext::CreateInstance()
 
 	VkApplicationInfo appInfo{};
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = "Kotono Engine";
-	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+	appInfo.pApplicationName = "Kotono Engine Application";
+	appInfo.applicationVersion = VK_MAKE_VERSION(0, 0, 1);
 	appInfo.pEngineName = "Kotono Engine";
-	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+	appInfo.engineVersion = VK_MAKE_VERSION(0, 0, 1);
 	appInfo.apiVersion = VK_API_VERSION_1_3;
 
 	VkInstanceCreateInfo createInfo{};
@@ -98,8 +97,8 @@ void KtContext::CreateInstance()
 	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
 	if (enableValidationLayers)
 	{
-		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		createInfo.ppEnabledLayerNames = validationLayers.data();
+		createInfo.enabledLayerCount = static_cast<uint32_t>(ValidationLayers.size());
+		createInfo.ppEnabledLayerNames = ValidationLayers.data();
 
 		PopulateDebugMessengerCreateInfo(debugCreateInfo);
 		createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
@@ -147,7 +146,7 @@ const bool KtContext::CheckValidationLayerSupport()
 	std::vector<VkLayerProperties> availableLayers(layerCount);
 	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
-	for (const char* layerName : validationLayers)
+	for (const char* layerName : ValidationLayers)
 	{
 		bool layerFound = false;
 
@@ -266,7 +265,23 @@ const bool KtContext::IsDeviceSuitable(VkPhysicalDevice device)
 	VkPhysicalDeviceFeatures supportedFeatures;
 	vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
 
-	return indices.IsComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
+	
+	VkPhysicalDeviceDescriptorIndexingFeatures indexingFeatures{};
+	indexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
+
+	VkPhysicalDeviceFeatures2 deviceFeatures2{};
+	deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+	deviceFeatures2.pNext = &indexingFeatures;
+
+	vkGetPhysicalDeviceFeatures2(device, &deviceFeatures2);
+
+	const bool indexingSupported = indexingFeatures.shaderSampledImageArrayNonUniformIndexing
+		&& indexingFeatures.runtimeDescriptorArray
+		&& indexingFeatures.descriptorBindingVariableDescriptorCount
+		&& indexingFeatures.descriptorBindingPartiallyBound
+		&& indexingFeatures.descriptorBindingSampledImageUpdateAfterBind;
+
+	return indices.IsComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy && supportedFeatures.fillModeNonSolid && indexingSupported;
 }
 
 bool KtContext::CheckDeviceExtensionSupport(VkPhysicalDevice device)
@@ -277,7 +292,7 @@ bool KtContext::CheckDeviceExtensionSupport(VkPhysicalDevice device)
 	std::vector<VkExtensionProperties> availableExtensions(extensionCount);
 	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
 
-	std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+	std::set<std::string> requiredExtensions(DeviceExtensions.begin(), DeviceExtensions.end());
 
 	for (const auto& extension : availableExtensions)
 	{
@@ -345,6 +360,7 @@ void KtContext::CreateLogicalDevice()
 	VkPhysicalDeviceFeatures deviceFeatures{};
 	deviceFeatures.samplerAnisotropy = VK_TRUE;
 	deviceFeatures.sampleRateShading = VK_TRUE; // enable sample shading feature for the device
+	deviceFeatures.fillModeNonSolid = VK_TRUE; // enable wireframe
 
 	// Enable shader draw parameters
 	VkPhysicalDeviceShaderDrawParametersFeatures shaderDrawParametersFeatures{};
@@ -352,21 +368,35 @@ void KtContext::CreateLogicalDevice()
 	shaderDrawParametersFeatures.pNext = nullptr; // No further extensions
 	shaderDrawParametersFeatures.shaderDrawParameters = VK_TRUE;
 
+	VkPhysicalDeviceDescriptorIndexingFeatures indexingFeatures{};
+	indexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
+	indexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+	indexingFeatures.runtimeDescriptorArray = VK_TRUE;
+	indexingFeatures.descriptorBindingVariableDescriptorCount = VK_TRUE;
+	indexingFeatures.descriptorBindingPartiallyBound = VK_TRUE;
+	indexingFeatures.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
+	indexingFeatures.pNext = &shaderDrawParametersFeatures;
+
+	VkPhysicalDeviceFeatures2 deviceFeatures2{};
+	deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+	deviceFeatures2.features = deviceFeatures;
+	deviceFeatures2.pNext = &indexingFeatures;
+
 	VkDeviceCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
 	createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 	createInfo.pQueueCreateInfos = queueCreateInfos.data();
 
-	createInfo.pEnabledFeatures = &deviceFeatures;
+	//createInfo.pEnabledFeatures = &deviceFeatures;
 
-	createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
-	createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+	createInfo.enabledExtensionCount = static_cast<uint32_t>(DeviceExtensions.size());
+	createInfo.ppEnabledExtensionNames = DeviceExtensions.data();
 
 	if (enableValidationLayers)
 	{
-		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		createInfo.ppEnabledLayerNames = validationLayers.data();
+		createInfo.enabledLayerCount = static_cast<uint32_t>(ValidationLayers.size());
+		createInfo.ppEnabledLayerNames = ValidationLayers.data();
 	}
 	else
 	{
@@ -374,7 +404,7 @@ void KtContext::CreateLogicalDevice()
 	}
 
 	// Attach the shader draw parameters feature via pNext
-	createInfo.pNext = &shaderDrawParametersFeatures;
+	createInfo.pNext = &deviceFeatures2;
 
 	VK_CHECK_THROW(
 		vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device),

@@ -2,10 +2,15 @@
 
 KtModel* KtModelManager::Create(const std::filesystem::path& path)
 {
-    auto* item = new KtModel(path);
-    item->Init();
-    _items[path] = item;
-    return item;
+    if (auto* model = Get(path))
+    {
+        return model;
+    }
+
+    auto* model = new KtModel(path);
+    model->Init();
+    _items[path] = model;
+    return model;
 }
 
 void KtModelManager::CleanupItem(KtModel* item) const

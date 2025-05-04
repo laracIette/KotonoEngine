@@ -18,16 +18,19 @@ public:
 	void SetShader(KtShader* shader);
 	void SetModel(KtModel* model);
 
-	void AddToRenderQueue() const;
-
 	void SerializeTo(nlohmann::json& json) const override;
 	void DeserializeFrom(const nlohmann::json& json) override;
 
-	void Spin();
 
 private:
 	KtShader* _shader;
 	KtModel* _model;
 	OTask* _spinTask;
+
+	void AddModelToRenderQueue();
+	void AddWireframeToRenderQueue();
+
+	// temp
+	void Spin();
 };
 

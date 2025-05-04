@@ -1,14 +1,13 @@
 #pragma once
-class KTime;
-class KObjectManager;
 class KEngine
 {
 public:
 	void Init();
 	void Cleanup();
 
-	KTime& GetTime();
-	KObjectManager& GetObjectManager();
+	class KTime& GetTime();
+	class KObjectManager& GetObjectManager();
+	class KVisualizer& GetVisualizer();
 };
 
 extern KEngine Engine;

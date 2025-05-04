@@ -3,26 +3,28 @@
 #include <span>
 #include <filesystem>
 #include <array>
+#include <unordered_map>
 #include "frames_in_flight.h"
 #include "AllocatedBuffer.h"
 #include "ShaderLayout.h"
-#include "ImageTexture.h"
 class KtShader final
 {
 public:	
 	struct DescriptorSetLayoutBindingData
 	{														  
-		std::string                                           Name;
-		std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT>    Buffers;
-		std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT>    StagingBuffers;
-		std::array<size_t, KT_FRAMES_IN_FLIGHT>               MemberCounts;
-		size_t                                                MemberSize;
-		VkDescriptorType                                      DescriptorType;
-		uint32_t                                              Binding;
-		uint32_t                                              DescriptorCount;
-		VkShaderStageFlags                                    StageFlags;
-		KtImageTexture*                                       ImageTexture;
-
+		VkDescriptorSetLayout                                                  DescriptorSetLayout;
+		std::array<VkDescriptorSet, KT_FRAMES_IN_FLIGHT>                       DescriptorSets;
+		std::string                                                            Name;
+		std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT>                     Buffers;
+		std::array<KtAllocatedBuffer, KT_FRAMES_IN_FLIGHT>                     StagingBuffers;
+		std::array<size_t, KT_FRAMES_IN_FLIGHT>                                MemberCounts;
+		size_t                                                                 MemberSize;
+		VkDescriptorType                                                       DescriptorType;
+		uint32_t                                                               Binding;
+		uint32_t                                                               DescriptorCount;
+		VkShaderStageFlags                                                     ShaderStageFlags;
+		VkDescriptorBindingFlags                                               BindingFlags;
+		std::array<std::vector<VkDescriptorImageInfo>, KT_FRAMES_IN_FLIGHT>    ImageInfos;
 	};
 	struct DescriptorSetLayoutData
 	{
@@ -47,12 +49,13 @@ public:
 	void CmdBind(VkCommandBuffer commandBuffer) const;
 	void CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const;
 
-	DescriptorSetLayoutBindingData* GetDescriptorSetLayoutBinding(const std::string_view name);
+	DescriptorSetLayoutBindingData* GetDescriptorSetLayoutBinding(const std::string& name);
 	
 	void UpdateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, void* data, const uint32_t imageIndex);
-	void UpdateDescriptorSetLayoutBindingMemberCount(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const size_t memberCount, const uint32_t imageIndex);
+	void UpdateDescriptorSetLayoutBindingBufferMemberCount(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const size_t memberCount, const uint32_t imageIndex);
 
-	void UpdateDescriptorSetLayoutBindingImage(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, KtImageTexture* imageTexture);
+	void UpdateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const std::vector<VkDescriptorImageInfo>& imageInfos, const uint32_t imageIndex);
+
 
 protected:
 	std::string _name;
@@ -61,32 +64,24 @@ protected:
 
 	KtShaderLayout _shaderLayout;
 
-	VkDeviceSize _uniformDataSize;
-	VkDeviceSize _objectDataSize;
-
 	VkPipelineLayout _pipelineLayout;
 	VkPipeline _graphicsPipeline;
 
 	VkDescriptorPool _descriptorPool;
 	std::vector<DescriptorSetLayoutData> _descriptorSetLayoutDatas;
-	std::array<VkDeviceSize, KT_FRAMES_IN_FLIGHT> _objectCounts;
+	std::unordered_map<std::string, DescriptorSetLayoutBindingData*> _descriptorSetLayoutBindingDataRegistry;
 
 	void CreateShaderLayout();
 	void PopulateShaderLayout(const std::span<uint8_t> spirvData, const VkShaderStageFlagBits shaderStage);
 
 	void CreateDescriptorSetLayouts();
-	void CreateDescriptorSetLayout(VkDescriptorSetLayout& layout, const std::span<VkDescriptorSetLayoutBinding> layoutBindings);
+	void CreateDescriptorSetLayout(VkDescriptorSetLayout& layout, const std::span<VkDescriptorSetLayoutBinding> layoutBindings, const std::span<VkDescriptorBindingFlags> bindingFlags);
 
-	void CreateDescriptorSetLayoutBindingBuffers();
-	void CreateDescriptorSetLayoutBindingBuffers(const uint32_t imageIndex);
-	void CreateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData);
 	void CreateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const uint32_t imageIndex);
-
-	void CreateDescriptorSetLayoutBindingImages();
-	void CreateDescriptorSetLayoutBindingImage(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData);
+	void CreateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const uint32_t imageIndex);
 	
 	void CreateDescriptorSets();
-	void UpdateDescriptorSets(const uint32_t imageIndex);
+	void CreateDescriptorSetLayoutBindings();
 
 	void CreateDescriptorPools();
 	void CreateDescriptorPool(const std::span<VkDescriptorPoolSize> poolSizes, const uint32_t setCount);
@@ -95,5 +90,11 @@ protected:
 	void CreateShaderModule(VkShaderModule& shaderModule, const std::span<uint8_t> code);
 
 	void DebugLogDescriptorSetLayoutData() const;
+
+	const bool GetIsBufferDescriptorType(const VkDescriptorType descriptorType) const;
+	const bool GetIsImageSamplerDescriptorType(const VkDescriptorType descriptorType) const;
+	
+	void UpdateDescriptorSetLayoutBindingBufferDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const uint32_t imageIndex);
+	void UpdateDescriptorSetLayoutBindingImageSamplerDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const uint32_t imageIndex);
 };
 

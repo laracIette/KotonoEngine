@@ -1,6 +1,4 @@
 #pragma once
-#include <vector>
-#include <unordered_map>
 #include "UniformData2D.h"
 #include "AddToRenderQueue2DArgs.h"
 #include "RenderQueue2DData.h"
@@ -29,6 +27,7 @@ private:
 	void CreateVertexBuffer();
 	void CreateIndexBuffer();
 
-	void CmdBindBuffers(VkCommandBuffer commandBuffer) const;
+	void CmdBindVertexBuffer(VkCommandBuffer commandBuffer) const;
+	void CmdBindIndexBuffer(VkCommandBuffer commandBuffer) const;
 };
 

@@ -13,13 +13,14 @@ const std::filesystem::path& KtImageTexture::GetPath() const
 	return _path;
 }
 
-const VkDescriptorImageInfo KtImageTexture::GetDescriptorImageInfo() const
+const glm::uvec2& KtImageTexture::GetSize() const
 {
-	VkDescriptorImageInfo imageInfo{};
-	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	imageInfo.imageView = _imageView;
-	imageInfo.sampler = _sampler;
-	return imageInfo;
+	return _size;
+}
+
+const VkDescriptorImageInfo& KtImageTexture::GetDescriptorImageInfo() const
+{
+	return _imageInfo;
 }
 
 void KtImageTexture::Init()
@@ -27,6 +28,10 @@ void KtImageTexture::Init()
 	CreateTextureImage();
 	CreateTextureImageView();
 	CreateTextureSampler();
+
+	_imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	_imageInfo.imageView = _imageView;
+	_imageInfo.sampler = _sampler;
 }
 
 void KtImageTexture::Cleanup() const
@@ -99,7 +104,7 @@ void KtImageTexture::CreateTextureImage()
 
 	Framework.GetContext().GenerateMipmaps(_image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, _mipLevels);
 
-	_size = { static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight) };
+	_size = glm::uvec2(static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
 }
 
 void KtImageTexture::CreateTextureImageView()

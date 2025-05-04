@@ -22,6 +22,7 @@ void KtModel::Init()
 void KtModel::Cleanup() const
 {
 	KT_DEBUG_LOG("cleaning up model");
+
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _indexBuffer.Buffer, _indexBuffer.Allocation);
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _vertexBuffer.Buffer, _vertexBuffer.Allocation);
 	KT_DEBUG_LOG("cleaned up model");
@@ -75,7 +76,7 @@ void KtModel::Load()
 				vertex.TexCoord = { texCoord.x, texCoord.y };
 				vertex.Color = { 1.0f, 1.0f, 1.0f };
 
-				if (uniqueVertices.count(vertex) == 0)
+				if (!uniqueVertices.contains(vertex))
 				{
 					uniqueVertices[vertex] = static_cast<uint32_t>(_vertices.size());
 					_vertices.push_back(vertex);

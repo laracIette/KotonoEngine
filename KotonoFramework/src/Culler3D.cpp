@@ -21,15 +21,15 @@ const KtRenderQueue3DData KtCuller3D::ComputeNullCulling(const KtRenderQueue3DDa
 			continue;
 		}
 
-		for (const auto& [model, modelData] : shaderData.Models)
+		for (const auto& [renderable, renderableData] : shaderData.Renderables)
 		{
-			if (!model)
+			if (!renderable)
 			{
-				KT_DEBUG_LOG("KtCuller3D::ComputeNullCulling(): model is nullptr");
+				KT_DEBUG_LOG("KtCuller3D::ComputeNullCulling(): renderable is nullptr");
 				continue;
 			}
 
-			for (const auto& [viewport, viewportData] : modelData.Viewports)
+			for (const auto& [viewport, viewportData] : renderableData.Viewports)
 			{
 				if (!viewport)
 				{
@@ -37,7 +37,7 @@ const KtRenderQueue3DData KtCuller3D::ComputeNullCulling(const KtRenderQueue3DDa
 					continue;
 				}
 
-				culledData.Shaders[shader].Models[model].Viewports[viewport] = viewportData;
+				culledData.Shaders[shader].Renderables[renderable].Viewports[viewport] = viewportData;
 			}
 		}
 	}
@@ -50,9 +50,9 @@ const KtRenderQueue3DData KtCuller3D::ComputeDistanceCulling(const KtRenderQueue
 	KtRenderQueue3DData culledData{};
 	for (const auto& [shader, shaderData] : renderQueueData.Shaders)
 	{
-		for (const auto& [model, modelData] : shaderData.Models)
+		for (const auto& [renderable, renderableData] : shaderData.Renderables)
 		{
-			for (const auto& [viewport, viewportData] : modelData.Viewports)
+			for (const auto& [viewport, viewportData] : renderableData.Viewports)
 			{
 				for (const auto& objectData : viewportData.ObjectDatas)
 				{
@@ -65,7 +65,7 @@ const KtRenderQueue3DData KtCuller3D::ComputeDistanceCulling(const KtRenderQueue
 						continue;
 					}
 
-					culledData.Shaders[shader].Models[model].Viewports[viewport].ObjectDatas.push_back(objectData);
+					culledData.Shaders[shader].Renderables[renderable].Viewports[viewport].ObjectDatas.push_back(objectData);
 				}
 			}
 		}

@@ -4,12 +4,15 @@
 #include <kotono_framework/InputManager.h>
 #include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/ModelManager.h>
+#include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/Path.h>
 #include "Mesh.h"
 #include "Image.h"
 #include "Scene.h"
 #include "Camera.h"
 #include "InterfaceObjectStack.h"
+#include "Engine.h"
+#include "Visualizer.h"
 
 static TCamera* Camera = nullptr;
 
@@ -24,41 +27,41 @@ void KObjectManager::Init()
 	shader2D->SetName("2D Shader");
 	shader3D->SetName("3D Shader");
 
-	auto* model1 = Framework.GetModelManager().Create(Framework.GetPath().GetSolutionPath() / (R"(assets\models\viking_room.obj)"));
+	auto* model1 = Framework.GetModelManager().Create(Framework.GetPath().GetSolutionPath() / R"(assets\models\viking_room.obj)");
 	auto* model2 = Framework.GetModelManager().Create(Framework.GetPath().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)");
+
+	auto* imageTexture1 = Framework.GetImageTextureManager().Create(Framework.GetPath().GetSolutionPath() / R"(assets\models\viking_room.png)");
+	auto* imageTexture2 = Framework.GetImageTextureManager().Create(Framework.GetPath().GetSolutionPath() / R"(assets\textures\default_texture.jpg)");
 
 	{
 		auto* scene = Create<OScene>();
 		scene->SetPath(Framework.GetPath().GetSolutionPath() / R"(assets\objects\scene.oscene)");
-
-		Framework.GetInputManager().GetKeyboard()
-			.GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED)
-			.AddListener(scene, &OScene::Reload);
+		scene->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), &OScene::Reload);
 	}
 	{
 		auto* image1 = Create<RImage>();
 		image1->SetShader(shader2D);
-		image1->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
+		image1->SetImageTexture(imageTexture1);
 		image1->GetRect().SetRelativeScale(glm::vec2(0.25f));
 		//image1->GetRect().SetAnchor(EAnchor::TopLeft);
 
 		auto* image2 = Create<RImage>();
 		image2->SetShader(shader2D);
-		image2->GetRect().SetBaseSize(glm::uvec2(1024, 1024));
+		image2->SetImageTexture(imageTexture2);
 		image2->GetRect().SetRelativeScale(glm::vec2(0.10f));
-		image2->SetLayer(1);
+		image2->SetParent(image1, ECoordinateSpace::World);
 
-		auto* horizontalStack = Create<RHorizontalInterfaceObjectStack>();
-		horizontalStack->SetItemSpacing(0.1f);
-		horizontalStack->AddItem(image1);
-		horizontalStack->AddItem(image2);
+		//auto* horizontalStack = Create<RHorizontalInterfaceObjectStack>();
+		//horizontalStack->SetItemSpacing(0.1f);
+		//horizontalStack->AddItem(image1);
+		//horizontalStack->AddItem(image2);
 	}
 	{
 		auto* mesh1 = Create<TMesh>();
 		mesh1->SetShader(shader3D);
 		mesh1->SetModel(model1);
 		mesh1->GetTransform().SetRelativePosition(glm::vec3(-1.0f, 0.0f, 0.0f));
-
+	
 		auto* mesh2 = Create<TMesh>();
 		mesh2->SetShader(shader3D);
 		mesh2->SetModel(model2);
@@ -76,6 +79,7 @@ void KObjectManager::Update()
 	Camera->Use();
 	UpdateObjects();
 	DeleteObjects();
+	DrawObjects();
 }
 
 void KObjectManager::Cleanup()
@@ -91,6 +95,31 @@ void KObjectManager::Cleanup()
 	_objects.clear();
 	_inits.clear();
 	_typeRegistry.clear();
+}
+
+KtEvent<>& KObjectManager::GetEventDrawSceneObjects()
+{
+	return _eventDrawSceneObjects;
+}
+
+KtEvent<>& KObjectManager::GetEventDrawSceneObjectWireframes()
+{
+	return _eventDrawSceneObjectWireframes;
+}
+
+KtEvent<>& KObjectManager::GetEventDrawInterfaceObjects()
+{
+	return _eventDrawInterfaceObjects;
+}
+
+KtEvent<>& KObjectManager::GetEventDrawInterfaceObjectBounds()
+{
+	return _eventDrawInterfaceObjectBounds;
+}
+
+KtEvent<>& KObjectManager::GetEventDrawInterfaceObjectWireframes()
+{
+	return _eventDrawInterfaceObjectWireframes;
 }
 
 void KObjectManager::Quit()
@@ -139,6 +168,30 @@ void KObjectManager::DeleteObjects()
 	{
 		_typeRegistry[typeid(*object)].erase(object);
 		delete object;
+	}
+}
+
+void KObjectManager::DrawObjects()
+{
+	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::SceneObject))
+	{
+		_eventDrawSceneObjects.Broadcast();
+	}
+	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::SceneObjectWireframe))
+	{
+		_eventDrawSceneObjectWireframes.Broadcast();
+	}
+	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObject))
+	{
+		_eventDrawInterfaceObjects.Broadcast();
+	}
+	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObjectBounds))
+	{
+		_eventDrawInterfaceObjectBounds.Broadcast();
+	}
+	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObjectWireframe))
+	{
+		_eventDrawInterfaceObjectWireframes.Broadcast();
 	}
 }
 

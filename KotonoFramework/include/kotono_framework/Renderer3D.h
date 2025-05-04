@@ -19,5 +19,7 @@ private:
 	std::array<KtRenderQueue3DData, KT_FRAMES_IN_FLIGHT> _renderQueueData;
 	std::array<KtUniformData3D, KT_FRAMES_IN_FLIGHT> _uniformData;
 	KtCuller3D _culler;
+
+	void CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRenderQueue3DData& renderQueueData, const uint32_t currentFrame) const;
 };
 

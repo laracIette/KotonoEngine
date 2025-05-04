@@ -4,8 +4,10 @@
 #include <type_traits>
 #include <memory>
 #include <iostream>
+#include "EventBase.h"
+#include "log.h"
 template<typename... Args>
-class KtEvent
+class KtEvent : public KtEventBase
 {
 public:
     template<class Tinst, class Tfunc>
@@ -18,12 +20,15 @@ public:
         _listeners.push_back(std::move(listener));
     }
 
-    template<class T>
-    void RemoveListener(T* instance)
+    void RemoveListener(void* instance) override
     {
         _listeners.erase(
             std::remove_if(_listeners.begin(), _listeners.end(),
-                [instance](const Listener& listener) { return listener.Instance == instance; }),
+                [instance](const Listener& listener)
+                { 
+                    return listener.Instance == instance; 
+                }
+            ),
             _listeners.end()
         );
     }
@@ -41,6 +46,11 @@ public:
                 std::cerr << "can't call listener.Callback(), listener.Instance is nullptr" << std::endl;
             }
         }
+    }
+
+    void ClearListeners()
+    {
+        _listeners = {};
     }
 
 private:
