@@ -61,7 +61,12 @@ void RImage::SetShader(KtShader* shader)
 void RImage::SetImageTexture(KtImageTexture* imageTexture)
 {
 	_imageTexture = imageTexture;
-    GetRect().SetBaseSize(_imageTexture ? _imageTexture->GetSize() : glm::uvec2(0));
+	if (_imageTexture)
+	{
+		GetRect().SetBaseSize(_imageTexture->GetSize());
+		return;
+	}
+    GetRect().SetBaseSize(glm::vec2(0.0f));
 }
 
 void RImage::AddTextureToRenderQueue()

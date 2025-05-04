@@ -31,7 +31,7 @@ KtViewport* TSceneObject::GetViewport() const
 
 TSceneObject* TSceneObject::GetParent() const
 {
-	return _parent;
+	return parent_;
 }
 
 void TSceneObject::SetVisibility(const EVisibility visibility)
@@ -51,19 +51,19 @@ void TSceneObject::SetParent(TSceneObject* parent, const ECoordinateSpace keepTr
 		KT_DEBUG_LOG("TSceneObject::SetParent(): couldn't set the parent of '%s' to itself", GetName().c_str());
 		return;
 	}
-	if (parent == _parent)
+	if (parent == parent_)
 	{
 		KT_DEBUG_LOG("TSceneObject::SetParent(): couldn't set the parent of '%s' to the same", GetName().c_str());
 		return;
 	}
-	_parent = parent;
-	_transform.SetParent(_parent ? &_parent->_transform : nullptr, keepTransform);
+	parent_ = parent;
+	_transform.SetParent(parent_ ? &parent_->_transform : nullptr, keepTransform);
 }
 
 void TSceneObject::SerializeTo(nlohmann::json& json) const
 {
 	Base::SerializeTo(json);
-	json["parent"] = _parent ? static_cast<std::string>(_parent->GetGuid()) : ""; // ??
+	json["parent"] = parent_ ? static_cast<std::string>(parent_->GetGuid()) : ""; // ??
 	json["transform"]["position"]["x"] = _transform.GetRelativePosition().x;
 	json["transform"]["position"]["y"] = _transform.GetRelativePosition().y;
 	json["transform"]["position"]["z"] = _transform.GetRelativePosition().z;

@@ -1,4 +1,6 @@
 #include "InterfaceObjectStack.h"
+#include <kotono_framework/Framework.h>
+#include <kotono_framework/Window.h>
 #include <kotono_framework/log.h>
 #include "Engine.h"
 #include "ObjectManager.h"
@@ -6,19 +8,19 @@
 template <EOrientation Orientation>
 const size_t RInterfaceObjectStack<Orientation>::GetItemCount() const
 {
-    return _placeholders.size();
+    return placeholders_.size();
 }
 
 template <EOrientation Orientation>
 const float RInterfaceObjectStack<Orientation>::GetItemSpacing() const
 {
-    return _spacing;
+    return spacing_;
 }
 
 template <EOrientation Orientation>
 void RInterfaceObjectStack<Orientation>::SetItemSpacing(const float spacing)
 {
-    _spacing = spacing;
+    spacing_ = spacing;
     UpdatePositions();
 }
 
@@ -26,9 +28,13 @@ template <EOrientation Orientation>
 void RInterfaceObjectStack<Orientation>::AddItem(RInterfaceObject* item)
 {
     auto* placeholder = Engine.GetObjectManager().Create<RInterfaceObject>();
-    _placeholders.push_back(placeholder);
+    placeholders_.push_back(placeholder);
     item->SetParent(placeholder, ECoordinateSpace::Relative);
     UpdatePositions();
+
+    const float worldSize = GetItemCount() * spacing_;
+    const float screenSize = worldSize * Framework.GetWindow().GetSize().x / 2.0f;
+    GetRect().SetBaseSize(glm::vec2(screenSize, 100.0f));
 }
 
 template <EOrientation Orientation>
@@ -36,8 +42,8 @@ void RInterfaceObjectStack<Orientation>::UpdatePositions()
 {
     for (size_t i = 0; i < GetItemCount(); i++)
     {
-        auto* placeholder = _placeholders[i];
-        const float offset = _spacing * i;
+        auto* placeholder = placeholders_[i];
+        const float offset = spacing_ * i;
 
         if constexpr (Orientation == EOrientation::Horizontal)
         {

@@ -25,11 +25,11 @@ public:
 	void SetLayer(const int32_t layer);
 
 private:
-	URect _rect;
-	EVisibility _visibility;
-	KtViewport* _viewport;
-	RInterfaceObject* _parent;
-	int32_t _layer;
+	URect rect_;
+	EVisibility visibility_;
+	KtViewport* viewport_;
+	RInterfaceObject* parent_;
+	int32_t layer_;
 
 	void AddBoundsToRenderQueue();
 };

@@ -8,7 +8,7 @@ class URect final
 public:
 	URect();
 
-	const glm::uvec2& GetBaseSize() const;
+	const glm::vec2& GetBaseSize() const;
 	const glm::vec2& GetRelativePosition() const;
 	const glm::vec2& GetRelativeScale() const;
 	const float GetRelativeRotation(const ERotationUnit unit = ERotationUnit::Radians) const;
@@ -25,7 +25,7 @@ public:
 	URect* GetParent() const;
 
 
-	void SetBaseSize(const glm::uvec2& baseSize);
+	void SetBaseSize(const glm::vec2& baseSize);
 	void SetRelativePosition(const glm::vec2& relativePosition);
 	void SetRelativeScale(const glm::vec2& relativeScale);
 	void SetRelativeRotation(float relativeRotation, const ERotationUnit unit = ERotationUnit::Radians);
@@ -58,14 +58,14 @@ public:
 	const bool GetIsOverlapping(const URect& other) const;
 
 private:
-	glm::uvec2 _baseSize;
-	glm::vec2 _relativePosition;
-	glm::vec2 _relativeScale;
-	float _relativeRotation;
+	glm::vec2 baseSize_;
+	glm::vec2 relativePosition_;
+	glm::vec2 relativeScale_;
+	float relativeRotation_;
 
-	EAnchor _anchor;
+	EAnchor anchor_;
 
-	URect* _parent;
+	URect* parent_;
 
 	const glm::vec2 GetAnchorOffset() const;
 	const glm::vec2 GetWorldPositionWithAnchorOffset() const;

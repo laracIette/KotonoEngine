@@ -1,6 +1,7 @@
 #pragma once
 #include "InterfaceObject.h"
 #include "Orientation.h"
+#include <vector>
 template <EOrientation Orientation>
 class RInterfaceObjectStack : public RInterfaceObject
 {
@@ -15,9 +16,8 @@ public:
     void AddItem(RInterfaceObject* item);
 
 private:
-    std::vector<RInterfaceObject*> _placeholders;
-
-    float _spacing;
+    std::vector<RInterfaceObject*> placeholders_;
+    float spacing_;
 
     void UpdatePositions();
 };

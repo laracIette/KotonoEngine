@@ -27,5 +27,5 @@ private:
 	UTransform _transform;
 	EVisibility _visibility;
 	KtViewport* _viewport;
-	TSceneObject* _parent;
+	TSceneObject* parent_;
 };

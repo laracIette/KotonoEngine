@@ -18,8 +18,8 @@ void RInterfaceObject::Init()
 {
 	Base::Init();
 
-	_visibility = EVisibility::EditorAndGame;
-	_viewport = &WindowViewport;
+	visibility_ = EVisibility::EditorAndGame;
+	viewport_ = &WindowViewport;
 
 	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjectBounds(), &RInterfaceObject::AddBoundsToRenderQueue);
 
@@ -48,46 +48,46 @@ void RInterfaceObject::Cleanup()
 
 const URect& RInterfaceObject::GetRect() const
 {
-	return _rect;
+	return rect_;
 }
 
 URect& RInterfaceObject::GetRect() 
 {
-	return _rect;
+	return rect_;
 }
 
 KtViewport* RInterfaceObject::GetViewport() const
 {
-	return _viewport;
+	return viewport_;
 }
 
 RInterfaceObject* RInterfaceObject::GetParent() const
 {
-	return _parent;
+	return parent_;
 }
 
 const int32_t RInterfaceObject::GetLayer() const
 {
-	if (_parent)
+	if (parent_)
 	{
-		return _layer + _parent->GetLayer() + 1;
+		return layer_ + parent_->GetLayer() + 1;
 	}
-	return _layer;
+	return layer_;
 }
 
 const EVisibility RInterfaceObject::GetVisibility() const
 {
-	return _visibility;
+	return visibility_;
 }
 
 void RInterfaceObject::SetVisibility(const EVisibility visibility)
 {
-	_visibility = visibility;
+	visibility_ = visibility;
 }
 
 void RInterfaceObject::SetViewport(KtViewport* viewport)
 {
-	_viewport = viewport;
+	viewport_ = viewport;
 }
 
 void RInterfaceObject::SetParent(RInterfaceObject* parent, const ECoordinateSpace keepRect)
@@ -97,18 +97,18 @@ void RInterfaceObject::SetParent(RInterfaceObject* parent, const ECoordinateSpac
 		KT_DEBUG_LOG("RInterfaceObject::SetParent(): couldn't set the parent of '%s' to itself", GetName().c_str());
 		return;
 	}
-	if (parent == _parent)
+	if (parent == parent_)
 	{
 		KT_DEBUG_LOG("RInterfaceObject::SetParent(): couldn't set the parent of '%s' to the same", GetName().c_str());
 		return;
 	}
-	_parent = parent;
-	_rect.SetParent(_parent ? &_parent->_rect : nullptr, keepRect);
+	parent_ = parent;
+	rect_.SetParent(parent_ ? &parent_->rect_ : nullptr, keepRect);
 }
 
 void RInterfaceObject::SetLayer(const int32_t layer)
 {
-	_layer = layer;
+	layer_ = layer;
 }
 
 void RInterfaceObject::AddBoundsToRenderQueue() 

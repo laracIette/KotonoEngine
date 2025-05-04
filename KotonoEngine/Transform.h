@@ -47,10 +47,10 @@ public:
 	const float GetDistance(const UTransform& other) const;
 
 private:
-	glm::vec3 _relativePosition;
-	glm::quat _relativeRotation;
-	glm::vec3 _relativeScale;
+	glm::vec3 relativePosition_;
+	glm::quat relativeRotation_;
+	glm::vec3 relativeScale_;
 
-	UTransform* _parent;
+	UTransform* parent_;
 };
 
