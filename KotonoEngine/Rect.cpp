@@ -1,12 +1,11 @@
 #include "Rect.h"
 #include <kotono_framework/Viewport.h>
-#include <kotono_framework/log.h>
 
 URect::URect(): 
+	size_(0.0f, 0.0f),
 	relativePosition_(0.0f, 0.0f),
 	relativeRotation_(0.0f),
 	relativeScale_(1.0f, 1.0f),
-	baseSize_(0.0f, 0.0f),
 	anchor_(EAnchor::Center),
 	parent_(nullptr)
 {
@@ -60,6 +59,8 @@ const bool URect::GetIsOverlapping(const glm::vec2& screenPosition, const glm::v
 	const auto maxDistance = (GetScreenSize() + screenSize) / 2.0f;
 	return distance.x < maxDistance.x
 		&& distance.y < maxDistance.y;
+
+	// todo: replace by get world position, get world size
 }
 
 const float URect::GetWorldRotation(const ERotationUnit unit) const
@@ -81,7 +82,10 @@ const glm::vec2 URect::GetScreenPosition() const
 
 const glm::vec2 URect::GetScreenSize() const
 {
-	return glm::vec2(baseSize_) * GetWorldScale();
+	const auto& viewportExtent = WindowViewport.GetExtent();
+	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
+	const auto newSize = size_ * GetWorldScale() * viewportSize / 2.0f;
+	return newSize;
 }
 
 const EAnchor URect::GetAnchor() const
@@ -98,9 +102,9 @@ const glm::vec2 URect::GetWorldScale() const
 	return relativeScale_;
 }
 
-const glm::vec2& URect::GetBaseSize() const
+const glm::vec2& URect::GetSize() const
 {
-	return baseSize_;
+	return size_;
 }
 
 URect* URect::GetParent() const
@@ -195,8 +199,8 @@ void URect::SetScreenSize(const glm::vec2& screenSize)
 {
 	const auto& viewportExtent = WindowViewport.GetExtent();
 	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
-	const auto newScale = screenSize / glm::vec2(baseSize_);
-	SetWorldScale(newScale);
+	const auto newSize = screenSize / viewportSize * 2.0f;
+	SetSize(newSize);
 }
 
 void URect::SetAnchor(const EAnchor anchor)
@@ -227,9 +231,9 @@ void URect::SetParent(URect* parent, const ECoordinateSpace keepRect)
 	}
 }
 
-void URect::SetBaseSize(const glm::vec2& baseSize)
+void URect::SetSize(const glm::vec2& size)
 {
-	baseSize_ = baseSize;
+	size_ = size;
 }
 
 const glm::mat4 URect::GetTranslationMatrix() const

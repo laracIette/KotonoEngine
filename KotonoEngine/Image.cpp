@@ -16,7 +16,7 @@ void RImage::Init()
 	Base::Init();
 
 	_collider = Engine.GetObjectManager().Create<RInterfaceCollider>();
-	_collider->GetRect().SetBaseSize(GetRect().GetBaseSize());
+	_collider->GetRect().SetSize(GetRect().GetSize());
 	_collider->SetParent(this, ECoordinateSpace::Relative);
 
 	ListenEvent(_collider->GetEventDown(), &RImage::OnEventColliderMouseLeftButtonDown);
@@ -61,12 +61,6 @@ void RImage::SetShader(KtShader* shader)
 void RImage::SetImageTexture(KtImageTexture* imageTexture)
 {
 	_imageTexture = imageTexture;
-	if (_imageTexture)
-	{
-		GetRect().SetBaseSize(_imageTexture->GetSize());
-		return;
-	}
-    GetRect().SetBaseSize(glm::vec2(0.0f));
 }
 
 void RImage::AddTextureToRenderQueue()

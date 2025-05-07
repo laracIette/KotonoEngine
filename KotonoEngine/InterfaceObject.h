@@ -31,6 +31,8 @@ private:
 	RInterfaceObject* parent_;
 	int32_t layer_;
 
+	bool sizeToContent_; // todo
+
 	void AddBoundsToRenderQueue();
 };
 
