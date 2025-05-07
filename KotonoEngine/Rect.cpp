@@ -2,7 +2,7 @@
 #include <kotono_framework/Viewport.h>
 
 URect::URect(): 
-	size_(0.0f, 0.0f),
+	relativeSize_(0.0f, 0.0f),
 	relativePosition_(0.0f, 0.0f),
 	relativeRotation_(0.0f),
 	relativeScale_(1.0f, 1.0f),
@@ -28,6 +28,11 @@ const float URect::GetRelativeRotation(const ERotationUnit unit) const
 const glm::vec2& URect::GetRelativeScale() const
 {
 	return relativeScale_;
+}
+
+const glm::vec2 URect::GetWorldSize() const
+{
+	return relativeSize_ * GetWorldScale();
 }
 
 const glm::vec2 URect::GetWorldPosition() const
@@ -84,7 +89,7 @@ const glm::vec2 URect::GetScreenSize() const
 {
 	const auto& viewportExtent = WindowViewport.GetExtent();
 	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
-	const auto newSize = size_ * GetWorldScale() * viewportSize / 2.0f;
+	const auto newSize = GetWorldSize() * viewportSize / 2.0f;
 	return newSize;
 }
 
@@ -102,9 +107,9 @@ const glm::vec2 URect::GetWorldScale() const
 	return relativeScale_;
 }
 
-const glm::vec2& URect::GetSize() const
+const glm::vec2& URect::GetRelativeSize() const
 {
-	return size_;
+	return relativeSize_;
 }
 
 URect* URect::GetParent() const
@@ -140,6 +145,16 @@ void URect::SetRelativeRotation(float relativeRotation, const ERotationUnit unit
 
 	relativePosition_ = rotated + GetAnchorRelativePosition();
 	relativeRotation_ = relativeRotation;
+}
+
+void URect::SetWorldSize(const glm::vec2& worldSize)
+{
+	if (parent_)
+	{
+		SetRelativeSize(worldSize / parent_->GetWorldScale());
+		return;
+	}
+	SetRelativeSize(worldSize);
 }
 
 void URect::SetWorldPosition(const glm::vec2& worldPosition)
@@ -200,7 +215,7 @@ void URect::SetScreenSize(const glm::vec2& screenSize)
 	const auto& viewportExtent = WindowViewport.GetExtent();
 	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
 	const auto newSize = screenSize / viewportSize * 2.0f;
-	SetSize(newSize);
+	SetRelativeSize(newSize);
 }
 
 void URect::SetAnchor(const EAnchor anchor)
@@ -231,9 +246,29 @@ void URect::SetParent(URect* parent, const ECoordinateSpace keepRect)
 	}
 }
 
-void URect::SetSize(const glm::vec2& size)
+const float URect::GetLeft() const
 {
-	size_ = size;
+	return GetWorldPosition().x - relativeSize_.x / 2.0f * GetWorldScale().x;
+}
+
+const float URect::GetRight() const
+{
+	return GetWorldPosition().x + relativeSize_.x / 2.0f * GetWorldScale().x;
+}
+
+const float URect::GetTop() const
+{
+	return GetWorldPosition().y - relativeSize_.y / 2.0f * GetWorldScale().y;
+}
+
+const float URect::GetBottom() const
+{
+	return GetWorldPosition().y + relativeSize_.y / 2.0f * GetWorldScale().y;
+}
+
+void URect::SetRelativeSize(const glm::vec2& size)
+{
+	relativeSize_ = size;
 }
 
 const glm::mat4 URect::GetTranslationMatrix() const

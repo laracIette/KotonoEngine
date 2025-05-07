@@ -60,6 +60,8 @@ void KObjectManager::Init()
 		}
 		else
 		{
+			image2->SetLayer(1);
+
 			auto* horizontalStack = Create<RHorizontalInterfaceObjectStack>();
 			horizontalStack->SetItemSpacing(0.1f);
 			horizontalStack->AddItem(image1);

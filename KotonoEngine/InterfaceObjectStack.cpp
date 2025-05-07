@@ -1,14 +1,10 @@
 #include "InterfaceObjectStack.h"
-#include <kotono_framework/Framework.h>
-#include <kotono_framework/Window.h>
-#include <kotono_framework/log.h>
-#include "Engine.h"
-#include "ObjectManager.h"
 
-template <EOrientation Orientation>
-const size_t RInterfaceObjectStack<Orientation>::GetItemCount() const
+template<EOrientation Orientation>
+void RInterfaceObjectStack<Orientation>::Update()
 {
-    return placeholders_.size();
+    Base::Update();
+    //SetIsSizeToContent(false);
 }
 
 template <EOrientation Orientation>
@@ -27,38 +23,34 @@ void RInterfaceObjectStack<Orientation>::SetItemSpacing(const float spacing)
 template <EOrientation Orientation>
 void RInterfaceObjectStack<Orientation>::AddItem(RInterfaceObject* item)
 {
-    auto* placeholder = Engine.GetObjectManager().Create<RInterfaceObject>();
-    placeholders_.push_back(placeholder);
-    item->SetParent(placeholder, ECoordinateSpace::Relative);
+    Base::AddItem(item);
     UpdatePositions();
-
-    const float sizeX = GetItemCount() * spacing_;
-    GetRect().SetSize(glm::vec2(sizeX, 0.1f));
 }
 
 template <EOrientation Orientation>
 void RInterfaceObjectStack<Orientation>::UpdatePositions()
 {
-    for (size_t i = 0; i < GetItemCount(); i++)
+    const auto& items = GetItems();
+    for (size_t i = 0; i < items.size(); i++)
     {
-        auto* placeholder = placeholders_[i];
+        auto* item = items[i];
         const float offset = spacing_ * i;
 
         if constexpr (Orientation == EOrientation::Horizontal)
         {
-            placeholder->GetRect().SetRelativePosition(glm::vec2(offset, 0.0f));
+            item->GetRect().SetRelativePosition(glm::vec2(offset, 0.0f));
         }
         else if constexpr (Orientation == EOrientation::Vertical)
         {
-            placeholder->GetRect().SetRelativePosition(glm::vec2(0.0f, offset));
+            item->GetRect().SetRelativePosition(glm::vec2(0.0f, offset));
         }
     }
 }
 
 
 
-template const size_t RHorizontalInterfaceObjectStack::GetItemCount() const;
-template const size_t RVerticalInterfaceObjectStack::GetItemCount() const;
+template void RHorizontalInterfaceObjectStack::Update();
+template void RVerticalInterfaceObjectStack::Update();
  
 template const float RHorizontalInterfaceObjectStack::GetItemSpacing() const;
 template const float RVerticalInterfaceObjectStack::GetItemSpacing() const;

@@ -7,7 +7,6 @@
 #include <kotono_framework/InputManager.h>
 #include "Engine.h"
 #include "ObjectManager.h"
-#include "Visualizer.h"
 
 static KtShader* WireframeShader = nullptr;
 
@@ -16,7 +15,7 @@ void RImage::Init()
 	Base::Init();
 
 	_collider = Engine.GetObjectManager().Create<RInterfaceCollider>();
-	_collider->GetRect().SetSize(GetRect().GetSize());
+	_collider->GetRect().SetRelativeSize(GetRect().GetRelativeSize());
 	_collider->SetParent(this, ECoordinateSpace::Relative);
 
 	ListenEvent(_collider->GetEventDown(), &RImage::OnEventColliderMouseLeftButtonDown);

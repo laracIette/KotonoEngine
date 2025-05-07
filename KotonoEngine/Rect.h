@@ -8,12 +8,12 @@ class URect final
 public:
 	URect();
 
-	const glm::vec2& GetSize() const;
-
+	const glm::vec2& GetRelativeSize() const;
 	const glm::vec2& GetRelativePosition() const;
 	const glm::vec2& GetRelativeScale() const;
 	const float GetRelativeRotation(const ERotationUnit unit = ERotationUnit::Radians) const;
 
+	const glm::vec2 GetWorldSize() const;
 	const glm::vec2 GetWorldPosition() const;
 	const glm::vec2 GetWorldScale() const;
 	const float GetWorldRotation(const ERotationUnit unit = ERotationUnit::Radians) const;
@@ -26,12 +26,12 @@ public:
 	URect* GetParent() const;
 
 
-	void SetSize(const glm::vec2& size);
-
+	void SetRelativeSize(const glm::vec2& size);
 	void SetRelativePosition(const glm::vec2& relativePosition);
 	void SetRelativeScale(const glm::vec2& relativeScale);
 	void SetRelativeRotation(float relativeRotation, const ERotationUnit unit = ERotationUnit::Radians);
 
+	void SetWorldSize(const glm::vec2& worldSize);
 	void SetWorldPosition(const glm::vec2& worldPosition);
 	void SetWorldScale(const glm::vec2& worldScale);
 	void SetWorldRotation(const float worldRotation, const ERotationUnit unit = ERotationUnit::Radians);
@@ -48,6 +48,12 @@ public:
 	void SetParent(URect* parent, const ECoordinateSpace keepRect);
 
 
+	const float GetLeft() const;
+	const float GetRight() const;
+	const float GetTop() const;
+	const float GetBottom() const;
+
+
 	const glm::mat4 GetTranslationMatrix() const;
 	const glm::mat4 GetRotationMatrix() const;
 	const glm::mat4 GetScaleMatrix() const;
@@ -60,8 +66,7 @@ public:
 	const bool GetIsOverlapping(const URect& other) const;
 
 private:
-	glm::vec2 size_;
-
+	glm::vec2 relativeSize_;
 	glm::vec2 relativePosition_;
 	glm::vec2 relativeScale_;
 	float relativeRotation_;

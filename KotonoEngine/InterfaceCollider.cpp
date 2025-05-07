@@ -4,6 +4,7 @@
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/InputManager.h>
 #include <kotono_framework/log.h>
+#include <kotono_framework/Collection.h>
 
 void RInterfaceCollider::Init()
 {
@@ -54,18 +55,10 @@ const bool RInterfaceCollider::GetIsMouseOverlapping() const
 
 void RInterfaceCollider::UpdateOverlaps()
 {
-	auto interfaceColliders = Engine.GetObjectManager().GetAllOfType<RInterfaceCollider>();
-	interfaceColliders.erase(this);
-
-	_overlaps.clear();
-
-	for (auto* interfaceCollider : interfaceColliders)
-	{
-		if (GetRect().GetIsOverlapping(interfaceCollider->GetRect()))
-		{
-			_overlaps.insert(interfaceCollider);
-		}
-	}
+	auto overlaps = KtCollection(Engine.GetObjectManager().GetAllOfType<RInterfaceCollider>());
+	overlaps.AddFilter([this](auto* collider) { return collider != this; });
+	overlaps.AddFilter([this](auto* collider) { return GetRect().GetIsOverlapping(collider->GetRect()); });
+	_overlaps = overlaps.GetUnorderedSet();
 }
 
 void RInterfaceCollider::BroadcastOverlaps()

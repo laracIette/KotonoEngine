@@ -25,6 +25,7 @@
     <ClCompile Include="Interface.cpp" />
     <ClCompile Include="InterfaceComponent.cpp" />
     <ClCompile Include="InterfaceObject.cpp" />
+    <ClCompile Include="InterfaceObjectContainer.cpp" />
     <ClCompile Include="InterfaceObjectStack.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -50,6 +51,7 @@
     <ClInclude Include="Interface.h" />
     <ClInclude Include="InterfaceComponent.h" />
     <ClInclude Include="InterfaceObject.h" />
+    <ClInclude Include="InterfaceObjectContainer.h" />
     <ClInclude Include="InterfaceObjectStack.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Object.h" />

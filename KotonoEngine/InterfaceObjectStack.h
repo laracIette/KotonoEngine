@@ -1,22 +1,21 @@
 #pragma once
-#include "InterfaceObject.h"
+#include "InterfaceObjectContainer.h"
 #include "Orientation.h"
-#include <vector>
 template <EOrientation Orientation>
-class RInterfaceObjectStack : public RInterfaceObject
+class RInterfaceObjectStack : public RInterfaceObjectContainer
 {
-    BASECLASS(RInterfaceObject)
+    BASECLASS(RInterfaceObjectContainer)
 
 public:
-    const size_t GetItemCount() const;
+    void Update() override;
+
     const float GetItemSpacing() const;
 
     void SetItemSpacing(const float spacing);
 
-    void AddItem(RInterfaceObject* item);
+    void AddItem(RInterfaceObject* item) override;
 
 private:
-    std::vector<RInterfaceObject*> placeholders_;
     float spacing_;
 
     void UpdatePositions();
