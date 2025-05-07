@@ -58,16 +58,6 @@ const glm::vec2 URect::GetAnchorRelativePosition() const
 	return relativePosition_ - GetAnchorOffset();
 }
 
-const bool URect::GetIsOverlapping(const glm::vec2& screenPosition, const glm::vec2& screenSize) const
-{
-	const auto distance = glm::abs(GetScreenPosition() - screenPosition);
-	const auto maxDistance = (GetScreenSize() + screenSize) / 2.0f;
-	return distance.x < maxDistance.x
-		&& distance.y < maxDistance.y;
-
-	// todo: replace by get world position, get world size
-}
-
 const float URect::GetWorldRotation(const ERotationUnit unit) const
 {
 	if (parent_)
@@ -316,14 +306,14 @@ const float URect::GetDistance(const URect& other) const
 	return glm::distance(GetWorldPosition(), other.GetWorldPosition());
 }
 
-const bool URect::GetIsOverlapping(const glm::vec2& screenPosition) const
+const bool URect::GetIsOverlapping(const glm::vec2& worldPosition) const
 {
-	return GetIsOverlapping(screenPosition, glm::vec2(0.0f));
+	return GetIsOverlapping(worldPosition, glm::vec2(0.0f));
 }
 
 const bool URect::GetIsOverlapping(const URect& other) const
 {
-	return GetIsOverlapping(other.GetScreenPosition(), other.GetScreenSize());
+	return GetIsOverlapping(other.GetWorldPosition(), other.GetWorldSize());
 }
 
 const glm::vec2 URect::GetAnchorOffset() const
@@ -336,4 +326,12 @@ const glm::vec2 URect::GetAnchorOffset() const
 		: (anchor_ & EAnchor::Bottom) == EAnchor::Bottom ? -relativeScale_.y / 2.0f
 		: 0.0f
 	);
+}
+
+const bool URect::GetIsOverlapping(const glm::vec2& worldPosition, const glm::vec2& worldSize) const
+{
+	const auto distance = glm::abs(GetWorldPosition() - worldPosition);
+	const auto maxDistance = (GetWorldSize() + worldSize) / 2.0f;
+	return distance.x < maxDistance.x
+		&& distance.y < maxDistance.y;
 }

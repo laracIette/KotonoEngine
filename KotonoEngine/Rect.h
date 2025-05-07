@@ -62,7 +62,7 @@ public:
 
 	const glm::vec2 GetDirection(const URect& target) const;
 	const float GetDistance(const URect& other) const;
-	const bool GetIsOverlapping(const glm::vec2& screenPosition) const;
+	const bool GetIsOverlapping(const glm::vec2& worldPosition) const;
 	const bool GetIsOverlapping(const URect& other) const;
 
 private:
@@ -79,6 +79,6 @@ private:
 	const glm::vec2 GetWorldPositionWithAnchorOffset() const;
 	const glm::vec2 GetAnchorRelativePosition() const;
 
-	const bool GetIsOverlapping(const glm::vec2& screenPosition, const glm::vec2& screenSize) const;
+	const bool GetIsOverlapping(const glm::vec2& worldPosition, const glm::vec2& worldSize) const;
 };
 

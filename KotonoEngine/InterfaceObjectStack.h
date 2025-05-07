@@ -7,7 +7,7 @@ class RInterfaceObjectStack : public RInterfaceObjectContainer
     BASECLASS(RInterfaceObjectContainer)
 
 public:
-    void Update() override;
+    void Init() override;
 
     const float GetItemSpacing() const;
 

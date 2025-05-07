@@ -1,9 +1,9 @@
 #include "InterfaceObjectStack.h"
 
 template<EOrientation Orientation>
-void RInterfaceObjectStack<Orientation>::Update()
+void RInterfaceObjectStack<Orientation>::Init()
 {
-    Base::Update();
+    Base::Init();
     //SetIsSizeToContent(false);
 }
 
@@ -49,8 +49,8 @@ void RInterfaceObjectStack<Orientation>::UpdatePositions()
 
 
 
-template void RHorizontalInterfaceObjectStack::Update();
-template void RVerticalInterfaceObjectStack::Update();
+template void RHorizontalInterfaceObjectStack::Init();
+template void RVerticalInterfaceObjectStack::Init();
  
 template const float RHorizontalInterfaceObjectStack::GetItemSpacing() const;
 template const float RVerticalInterfaceObjectStack::GetItemSpacing() const;
