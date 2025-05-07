@@ -39,6 +39,8 @@ void KObjectManager::Init()
 		scene->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), &OScene::Reload);
 	}
 	{
+		constexpr bool HS = true;
+
 		auto* image1 = Create<RImage>();
 		image1->SetShader(shader2D);
 		image1->SetImageTexture(imageTexture1);
@@ -51,12 +53,18 @@ void KObjectManager::Init()
 		image2->SetImageTexture(imageTexture2);
 		image2->GetRect().SetScreenSize(glm::vec2(1024.0f, 1024.0f));
 		image2->GetRect().SetRelativeScale(glm::vec2(0.10f));
-		image2->SetParent(image1, ECoordinateSpace::World);
-
-		//auto* horizontalStack = Create<RHorizontalInterfaceObjectStack>();
-		//horizontalStack->SetItemSpacing(0.1f);
-		//horizontalStack->AddItem(image1);
-		//horizontalStack->AddItem(image2);
+		
+		if (!HS)
+		{
+			image2->SetParent(image1, ECoordinateSpace::World);
+		}
+		else
+		{
+			auto* horizontalStack = Create<RHorizontalInterfaceObjectStack>();
+			horizontalStack->SetItemSpacing(0.1f);
+			horizontalStack->AddItem(image1);
+			horizontalStack->AddItem(image2);
+		}
 	}
 	{
 		auto* mesh1 = Create<TMesh>();

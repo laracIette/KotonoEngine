@@ -32,9 +32,8 @@ void RInterfaceObjectStack<Orientation>::AddItem(RInterfaceObject* item)
     item->SetParent(placeholder, ECoordinateSpace::Relative);
     UpdatePositions();
 
-    const float worldSize = GetItemCount() * spacing_;
-    const float screenSize = worldSize * Framework.GetWindow().GetSize().x / 2.0f;
-    GetRect().SetSize(glm::vec2(screenSize, 100.0f));
+    const float sizeX = GetItemCount() * spacing_;
+    GetRect().SetSize(glm::vec2(sizeX, 0.1f));
 }
 
 template <EOrientation Orientation>
