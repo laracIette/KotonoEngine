@@ -7,17 +7,23 @@ public:
 	const glm::uvec2& GetExtent() const;
 	const glm::ivec2& GetOffset() const;
 
+	const bool GetIsKeepAspectRatio() const;
+	const float GetAspectRatio() const;
+
 	void SetExtent(const glm::uvec2& extent);
 	void SetOffset(const glm::ivec2& offset);
 
-	const float GetAspectRatio() const;
+	void SetIsKeepAspectRatio(const bool isKeepAspectRatio);
+	void SetAspectRatio(const float aspectRatio);
 
 	void CmdUse(VkCommandBuffer commandBuffer) const;
 
 private:
-	// perchance change to glm::vec2
-	glm::ivec2 _offset;
-	glm::uvec2 _extent;
+	glm::uvec2 extent_;
+	glm::ivec2 offset_;
+
+	bool isKeepAspectRatio_;
+	float aspectRatio_;
 };
 
 extern KtViewport WindowViewport;

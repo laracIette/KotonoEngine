@@ -1,7 +1,7 @@
 #pragma once
 #include <GLFW/glfw3.h>
 #include "glm_includes.h"
-class KtWindow
+class KtWindow final
 {
 public:
 	KtWindow();
@@ -21,10 +21,10 @@ public:
 	void SetSize(const glm::uvec2& size);
 
 private:
-	GLFWwindow* _window;
+	GLFWwindow* window_;
 
-	bool _shouldClose;
+	bool shouldClose_;
 
-	glm::uvec2 _size;
+	glm::uvec2 size_;
 };
 
