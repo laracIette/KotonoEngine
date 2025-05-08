@@ -3,12 +3,14 @@
 void RInterfaceObjectContainer::Init()
 {
     Base::Init();
+
     isSizeToContent_ = true;
 }
 
 void RInterfaceObjectContainer::Update()
 {
 	Base::Update();
+
     if (isSizeToContent_)
     {
         UpdateSize();

@@ -13,23 +13,29 @@
 
 static KtShader* WireframeShader = nullptr;
 
-void TMesh::Init()
+void TMesh::Construct()
 {
-    Base::Init();
+    Base::Construct();
 
     _spinTask = Engine.GetObjectManager().Create<OTask>();
-    _spinTask->SetDuration(5.0f);
-
-    _spinTask->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED), &OTask::Start);
-    ListenEvent(_spinTask->GetEventUpdate(), &TMesh::Spin);
-    ListenEvent(Engine.GetObjectManager().GetEventDrawSceneObjects(), &TMesh::AddModelToRenderQueue);
-    ListenEvent(Engine.GetObjectManager().GetEventDrawSceneObjectWireframes(), &TMesh::AddWireframeToRenderQueue);
 
     if (!WireframeShader)
     {
         const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\wireframe3D.ktshader)";
         WireframeShader = Framework.GetShaderManager().Create(path);
     }
+}
+
+void TMesh::Init()
+{
+    Base::Init();
+
+    _spinTask->SetDuration(5.0f);
+    _spinTask->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED), &OTask::Start);
+    
+    ListenEvent(_spinTask->GetEventUpdate(), &TMesh::Spin);
+    ListenEvent(Engine.GetObjectManager().GetEventDrawSceneObjects(), &TMesh::AddModelToRenderQueue);
+    ListenEvent(Engine.GetObjectManager().GetEventDrawSceneObjectWireframes(), &TMesh::AddWireframeToRenderQueue);
 }
 
 void TMesh::Update()

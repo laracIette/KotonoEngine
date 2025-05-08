@@ -4,6 +4,7 @@ template<EOrientation Orientation>
 void RInterfaceObjectStack<Orientation>::Init()
 {
     Base::Init();
+
     //SetIsSizeToContent(false);
 }
 

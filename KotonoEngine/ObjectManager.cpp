@@ -39,8 +39,6 @@ void KObjectManager::Init()
 		scene->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), &OScene::Reload);
 	}
 	{
-		constexpr bool HS = true;
-
 		auto* image1 = Create<RImage>();
 		image1->SetShader(shader2D);
 		image1->SetImageTexture(imageTexture1);
@@ -54,7 +52,7 @@ void KObjectManager::Init()
 		image2->GetRect().SetScreenSize(glm::vec2(1024.0f, 1024.0f));
 		image2->GetRect().SetRelativeScale(glm::vec2(0.10f));
 		
-		if (!HS)
+		if (false)
 		{
 			image2->SetParent(image1, ECoordinateSpace::World);
 		}
@@ -209,8 +207,9 @@ void KObjectManager::DrawObjects()
 
 void KObjectManager::Create(OObject* object)
 {
+	object->Construct();
 	KT_DEBUG_LOG("creating object of type '%s'", object->GetTypeName().c_str());
-	_objects.insert(object);
 	_inits.insert(object);
+	_objects.insert(object);
 	_typeRegistry[typeid(*object)].insert(object);
 }

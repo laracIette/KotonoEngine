@@ -5,6 +5,7 @@
 void TSceneObject::Init()
 {
 	Base::Init();
+
 	_visibility = EVisibility::EditorAndGame;
 	_viewport = &WindowViewport;
 }

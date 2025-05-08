@@ -8,6 +8,7 @@
 void OScene::Init()
 {
 	Base::Init();
+
 	_viewport = &WindowViewport;
 }
 

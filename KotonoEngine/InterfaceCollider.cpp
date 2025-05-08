@@ -18,6 +18,7 @@ void RInterfaceCollider::Init()
 void RInterfaceCollider::Update()
 {
 	Base::Update();
+
 	UpdateOverlaps();
 	BroadcastOverlaps();
 }

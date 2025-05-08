@@ -14,14 +14,9 @@
 static KtShader* FlatColorShader = nullptr;
 static KtImageTexture* FlatColorTexture = nullptr;
 
-void RInterfaceObject::Init()
+void RInterfaceObject::Construct()
 {
-	Base::Init();
-
-	visibility_ = EVisibility::EditorAndGame;
-	viewport_ = &WindowViewport;
-
-	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjectBounds(), &RInterfaceObject::AddBoundsToRenderQueue);
+	Base::Construct();
 
 	if (!FlatColorShader)
 	{
@@ -34,6 +29,16 @@ void RInterfaceObject::Init()
 		const auto path = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
 		FlatColorTexture = Framework.GetImageTextureManager().Create(path);
 	}
+}
+
+void RInterfaceObject::Init()
+{
+	Base::Init();
+
+	visibility_ = EVisibility::EditorAndGame;
+	viewport_ = &WindowViewport;
+
+	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjectBounds(), &RInterfaceObject::AddBoundsToRenderQueue);
 }
 
 void RInterfaceObject::Update()

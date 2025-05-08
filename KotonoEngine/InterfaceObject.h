@@ -8,6 +8,7 @@ class RInterfaceObject : public OObject
 	BASECLASS(OObject)
 
 public:
+	void Construct() override;
 	void Init() override;
 	void Update() override;
 	void Cleanup() override;

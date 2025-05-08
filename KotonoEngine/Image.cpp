@@ -10,17 +10,11 @@
 
 static KtShader* WireframeShader = nullptr;
 
-void RImage::Init()
+void RImage::Construct()
 {
-	Base::Init();
+	Base::Construct();
 
 	_collider = Engine.GetObjectManager().Create<RInterfaceCollider>();
-	_collider->GetRect().SetRelativeSize(GetRect().GetRelativeSize());
-	_collider->SetParent(this, ECoordinateSpace::Relative);
-
-	ListenEvent(_collider->GetEventDown(), &RImage::OnEventColliderMouseLeftButtonDown);
-	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjects(), &RImage::AddTextureToRenderQueue);
-	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjectWireframes(), &RImage::AddWireframeToRenderQueue);
 
 	if (!WireframeShader)
 	{
@@ -28,6 +22,18 @@ void RImage::Init()
 		WireframeShader = Framework.GetShaderManager().Create(path);
 		WireframeShader->SetName("2D Wireframe Shader");
 	}
+}
+
+void RImage::Init()
+{
+	Base::Init();
+
+	_collider->GetRect().SetRelativeSize(GetRect().GetRelativeSize());
+	_collider->SetParent(this, ECoordinateSpace::Relative);
+
+	ListenEvent(_collider->GetEventDown(), &RImage::OnEventColliderMouseLeftButtonDown);
+	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjects(), &RImage::AddTextureToRenderQueue);
+	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjectWireframes(), &RImage::AddWireframeToRenderQueue);
 }
 
 void RImage::Update()

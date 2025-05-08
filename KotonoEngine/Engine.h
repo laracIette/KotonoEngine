@@ -1,5 +1,5 @@
 #pragma once
-class KEngine
+class KEngine final
 {
 public:
 	void Init();

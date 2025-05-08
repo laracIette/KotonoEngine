@@ -2,6 +2,8 @@
 
 void OInterface::Init()
 {
+	Base::Init();
+
 	SetLayout();
 }
 
