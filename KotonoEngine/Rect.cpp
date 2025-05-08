@@ -69,16 +69,14 @@ const float URect::GetWorldRotation(const ERotationUnit unit) const
 
 const glm::vec2 URect::GetScreenPosition() const
 {
-	const auto& viewportExtent = WindowViewport.GetExtent();
-	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
+	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
 	const auto newPosition = (GetWorldPosition() + glm::vec2(1.0f)) * viewportSize / 2.0f;
 	return newPosition;
 }
 
 const glm::vec2 URect::GetScreenSize() const
 {
-	const auto& viewportExtent = WindowViewport.GetExtent();
-	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
+	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
 	const auto newSize = GetWorldSize() * viewportSize / 2.0f;
 	return newSize;
 }
@@ -194,18 +192,16 @@ void URect::AddRotation(const float rotation, const ERotationUnit unit)
 
 void URect::SetScreenPosition(const glm::vec2& screenPosition)
 {
-	const auto& viewportExtent = WindowViewport.GetExtent();
-	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
+	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
 	const auto newPosition = screenPosition / viewportSize * 2.0f - glm::vec2(1.0f);
 	SetWorldPosition(newPosition);
 }
 
 void URect::SetScreenSize(const glm::vec2& screenSize)
 {
-	const auto& viewportExtent = WindowViewport.GetExtent();
-	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
+	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
 	const auto newSize = screenSize / viewportSize * 2.0f;
-	SetRelativeSize(newSize);
+	SetWorldSize(newSize);
 }
 
 void URect::SetAnchor(const EAnchor anchor)
@@ -273,8 +269,7 @@ const glm::mat4 URect::GetRotationMatrix() const
 
 const glm::mat4 URect::GetScaleMatrix() const
 {
-	const auto& viewportExtent = WindowViewport.GetExtent();
-	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
+	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
 	const float aspectRatio = WindowViewport.GetAspectRatio();
 	const float rotation = GetWorldRotation(ERotationUnit::Radians);
 

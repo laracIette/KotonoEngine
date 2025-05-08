@@ -1,13 +1,14 @@
 #pragma once
 #include <vulkan/vulkan_core.h>
+#include "glm_includes.h"
 class KtViewport final
 {
 public:
-	const VkOffset2D& GetOffset() const;
-	const VkExtent2D& GetExtent() const;
+	const glm::uvec2& GetExtent() const;
+	const glm::ivec2& GetOffset() const;
 
-	void SetExtent(const VkExtent2D& extent);
-	void SetOffset(const VkOffset2D& offset);
+	void SetExtent(const glm::uvec2& extent);
+	void SetOffset(const glm::ivec2& offset);
 
 	const float GetAspectRatio() const;
 
@@ -15,8 +16,8 @@ public:
 
 private:
 	// perchance change to glm::vec2
-	VkOffset2D _offset;
-	VkExtent2D _extent;
+	glm::ivec2 _offset;
+	glm::uvec2 _extent;
 };
 
 extern KtViewport WindowViewport;

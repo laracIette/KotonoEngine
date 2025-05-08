@@ -49,9 +49,8 @@ KtEvent<RInterfaceCollider*>& RInterfaceCollider::GetEventOverlap()
 
 const bool RInterfaceCollider::GetIsMouseOverlapping() const
 {
-	const auto& viewportExtent = WindowViewport.GetExtent();
 	const auto& cursorPosition = Framework.GetInputManager().GetMouse().GetCursorPosition();
-	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
+	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
 	const auto worldPosition = cursorPosition / viewportSize * 2.0f - glm::vec2(1.0f);
 	return GetRect().GetIsOverlapping(worldPosition);
 }
