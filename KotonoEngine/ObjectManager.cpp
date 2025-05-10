@@ -13,6 +13,7 @@
 #include "InterfaceObjectStack.h"
 #include "Engine.h"
 #include "Visualizer.h"
+#include "Text.h"
 
 static TCamera* Camera = nullptr;
 
@@ -65,6 +66,13 @@ void KObjectManager::Init()
 			horizontalStack->AddItem(image1);
 			horizontalStack->AddItem(image2);
 		}
+
+
+		auto text = Create<RText>();
+		text->SetFontSize(32.0f);
+		text->SetSpacing(0.05f);
+		text->SetShader(shader2D);
+		text->SetText("hello world !");
 	}
 	{
 		auto* mesh1 = Create<TMesh>();

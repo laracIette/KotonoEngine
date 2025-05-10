@@ -71,6 +71,15 @@ RInterfaceObject* RInterfaceObject::GetParent() const
 	return parent_;
 }
 
+RInterfaceObject* RInterfaceObject::GetRoot()
+{
+	if (parent_)
+	{
+		return parent_->GetRoot();
+	}
+	return this;
+}
+
 const int32_t RInterfaceObject::GetLayer() const
 {
 	if (parent_)

@@ -8,7 +8,5 @@ public:
 private:
 	const KtRenderQueue2DData ComputeNullCulling(const KtRenderQueue2DData& renderQueueData) const;
 	const KtRenderQueue2DData ComputeScreenCulling(const KtRenderQueue2DData& renderQueueData) const;
-
-	KtRenderQueue2DData _renderQueueData;
 };
 

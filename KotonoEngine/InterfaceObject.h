@@ -18,6 +18,7 @@ public:
 	const EVisibility GetVisibility() const;
 	KtViewport* GetViewport() const;
 	RInterfaceObject* GetParent() const;	
+	RInterfaceObject* GetRoot();	
 	const int32_t GetLayer() const;
 
 	void SetVisibility(const EVisibility visibility);

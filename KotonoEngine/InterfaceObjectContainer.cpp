@@ -17,6 +17,11 @@ void RInterfaceObjectContainer::Update()
     }
 }
 
+void RInterfaceObjectContainer::Cleanup()
+{
+    Base::Cleanup();
+}
+
 const std::vector<RInterfaceObject*>& RInterfaceObjectContainer::GetItems() const
 {
 	return items_;
@@ -30,6 +35,11 @@ const bool RInterfaceObjectContainer::GetIsSizeToContent() const
 void RInterfaceObjectContainer::SetIsSizeToContent(const bool isSizeToContent)
 {
     isSizeToContent_ = isSizeToContent;
+}
+
+void RInterfaceObjectContainer::ClearItems()
+{
+    items_.clear();
 }
 
 void RInterfaceObjectContainer::AddItem(RInterfaceObject* item)

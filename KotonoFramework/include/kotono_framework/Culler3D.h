@@ -9,6 +9,6 @@ private:
 	const KtRenderQueue3DData ComputeNullCulling(const KtRenderQueue3DData& renderQueueData) const;
 	const KtRenderQueue3DData ComputeDistanceCulling(const KtRenderQueue3DData& renderQueueData) const;
 
-	KtRenderQueue3DData _renderQueueData;
+	KtRenderQueue3DData renderQueueData_;
 };
 

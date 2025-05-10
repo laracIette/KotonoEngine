@@ -647,9 +647,8 @@ void KtShader::UpdateDescriptorSetLayoutBindingImageSampler(
 	{
 		descriptorSetLayoutBindingData.DescriptorCount = static_cast<uint32_t>(imageInfos.size());
 		descriptorSetLayoutBindingData.ImageInfos[imageIndex] = imageInfos;
+		UpdateDescriptorSetLayoutBindingImageSamplerDescriptorSet(descriptorSetLayoutBindingData, imageIndex);
 	}
-
-	UpdateDescriptorSetLayoutBindingImageSamplerDescriptorSet(descriptorSetLayoutBindingData, imageIndex);
 }
 
 void KtShader::UpdateDescriptorSetLayoutBindingBufferDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const uint32_t imageIndex)

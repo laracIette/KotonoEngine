@@ -7,11 +7,14 @@ class RInterfaceObjectContainer : public RInterfaceObject
 public:
     void Init() override;
     void Update() override;
+    void Cleanup() override;
 
     const std::vector<RInterfaceObject*>& GetItems() const;
     const bool GetIsSizeToContent() const;
 
     void SetIsSizeToContent(const bool isSizeToContent);
+    
+    void ClearItems();
 
     virtual void AddItem(RInterfaceObject* item);
 
