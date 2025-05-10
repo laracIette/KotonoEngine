@@ -8,6 +8,7 @@
 #include "ModelManager.h"
 #include "ShaderManager.h"
 #include "ImageTextureManager.h"
+#include "KtSpvCompiler.h"
 
 KtFramework Framework;
 
@@ -24,6 +25,7 @@ static KtImageTextureManager ImageTextureManager;
 void KtFramework::Init()
 {
     Path.Init();
+    KtSpvCompiler().CompileAll();
     Window.Init();
     Context.Init();
     Renderer.Init();

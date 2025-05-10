@@ -134,6 +134,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\KtSpvCompiler.cpp" />
     <ClCompile Include="src\Font.cpp" />
     <ClCompile Include="src\Culler2D.cpp" />
     <ClCompile Include="src\Culler3D.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="include\kotono_framework\RenderQueue2DData.h" />
     <ClInclude Include="include\kotono_framework\Renderable3D.h" />
     <ClInclude Include="include\kotono_framework\Renderable2D.h" />
+    <ClInclude Include="include\kotono_framework\KtSpvCompiler.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
