@@ -3,6 +3,7 @@
 #include "log.h"
 #include "Context.h"
 #include "Vertex2D.h"
+#include "Culler2D.h"
 
 static constexpr std::array<KtVertex2D, 4> Vertices =
 {//                   Position,              Color,      TexCoords
@@ -23,14 +24,14 @@ void KtRenderer2D::Init()
 void KtRenderer2D::Cleanup() const
 {
 	KT_DEBUG_LOG("cleaning up 2D renderer");
-	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _indexBuffer.Buffer, _indexBuffer.Allocation);
-	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _vertexBuffer.Buffer, _vertexBuffer.Allocation);
+	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), indexBuffer_.Buffer, indexBuffer_.Allocation);
+	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), vertexBuffer_.Buffer, vertexBuffer_.Allocation);
 	KT_DEBUG_LOG("cleaned up 2D renderer");
 }
 
 void KtRenderer2D::AddToRenderQueue(const KtAddToRenderQueue2DArgs& args)
 {
-	_renderQueueData[Framework.GetRenderer().GetGameThreadFrame()]
+	renderQueueData_[Framework.GetRenderer().GetGameThreadFrame()]
 		.Shaders[args.Shader]
 		.Renderables[args.Renderable]
 		.Viewports[args.Viewport]
@@ -40,14 +41,21 @@ void KtRenderer2D::AddToRenderQueue(const KtAddToRenderQueue2DArgs& args)
 
 void KtRenderer2D::SetUniformData(const KtUniformData2D& uniformData)
 {
-	_uniformData[Framework.GetRenderer().GetGameThreadFrame()] = uniformData;
+	uniformData_[Framework.GetRenderer().GetGameThreadFrame()] = uniformData;
 }
 
 void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const
 {
-	const auto culledData = _culler.ComputeCulling(_renderQueueData[currentFrame]);
+	const KtCuller2D culler{};
+	const auto culledData = culler.ComputeCulling(renderQueueData_[currentFrame]);
+	CmdDrawRenderQueue(commandBuffer, culledData, currentFrame);
+}
 
-	for (auto& [shader, shaderData] : culledData.Shaders)
+void KtRenderer2D::CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRenderQueue2DData& renderQueueData, const uint32_t currentFrame) const
+{
+	KtViewport* currentViewport = nullptr;
+
+	for (auto& [shader, shaderData] : renderQueueData.Shaders)
 	{
 		std::vector<KtObjectData2D> objectBufferData;
 		std::vector<KtRenderable2D*> renderables;
@@ -59,16 +67,21 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 			{
 				for (const auto& [layer, layerData] : viewportData.Layers)
 				{
+					// insert layerData.ObjectDatas.begin() to layerData.ObjectDatas.end()
 					objectBufferData.insert(objectBufferData.end(),
 						layerData.ObjectDatas.begin(), layerData.ObjectDatas.end()
 					);
-					renderableIndices.push_back(static_cast<uint32_t>(renderables.size()));
+
+					// insert layerData.ObjectDatas.size(), renderables.size() times
+					renderableIndices.insert(renderableIndices.end(),
+						layerData.ObjectDatas.size(), static_cast<uint32_t>(renderables.size())
+					);
 				}
 			}
 			renderables.push_back(renderable);
 		}
-		
-		// NOT A CMD, UPDATE ONCE PER FRAME //
+
+		// NOT A CMD, UPDATE ONCE PER FRAME PER SHADER //
 		if (auto* binding = shader->GetDescriptorSetLayoutBinding("objectBuffer"))
 		{
 			shader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, objectBufferData.size(), currentFrame);
@@ -81,18 +94,17 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 		}
 		if (auto* binding = shader->GetDescriptorSetLayoutBinding("textures"))
 		{
-			std::vector<VkDescriptorImageInfo> imageInfos{};
+			std::vector<VkDescriptorImageInfo> imageInfos;
 			imageInfos.reserve(renderables.size());
-			for (auto* renderable : renderables)
+			for (const auto* renderable : renderables)
 			{
-				if (auto* imageTexture = dynamic_cast<KtImageTexture*>(renderable))
-				{
-					imageInfos.push_back(imageTexture->GetDescriptorImageInfo());
-				}
+				// static_cast is safe because 'textures' expects only KtImageTexture
+				const auto* imageTexture = static_cast<const KtImageTexture*>(renderable);
+				imageInfos.push_back(imageTexture->GetDescriptorImageInfo());
 			}
 			shader->UpdateDescriptorSetLayoutBindingImageSampler(*binding, imageInfos, currentFrame);
 		}
-		// -------------------------------- //
+		// ------------------------------------------- //
 
 		shader->CmdBind(commandBuffer);
 		shader->CmdBindDescriptorSets(commandBuffer, currentFrame);
@@ -111,9 +123,13 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 					instanceCount += static_cast<uint32_t>(layerData.ObjectDatas.size());
 				}
 
-				viewport->CmdUse(commandBuffer);
-				vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(Indices.size()), instanceCount, 0, 0, instanceIndex);
+				if (currentViewport != viewport)
+				{
+					currentViewport = viewport;
+					currentViewport->CmdUse(commandBuffer);
+				}
 
+				vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(Indices.size()), instanceCount, 0, 0, instanceIndex);
 				instanceIndex += instanceCount;
 			}
 		}
@@ -122,20 +138,20 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 
 void KtRenderer2D::CmdBindVertexBuffer(VkCommandBuffer commandBuffer) const
 {
-	const std::array<VkBuffer, 1> vertexBuffers = { _vertexBuffer.Buffer };
+	const std::array<VkBuffer, 1> vertexBuffers = { vertexBuffer_.Buffer };
 	const std::array<VkDeviceSize, 1> offsets = { 0 };
 	vkCmdBindVertexBuffers(commandBuffer, 0, static_cast<uint32_t>(vertexBuffers.size()), vertexBuffers.data(), offsets.data());
 }
 
 void KtRenderer2D::CmdBindIndexBuffer(VkCommandBuffer commandBuffer) const
 {
-	vkCmdBindIndexBuffer(commandBuffer, _indexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
+	vkCmdBindIndexBuffer(commandBuffer, indexBuffer_.Buffer, 0, VK_INDEX_TYPE_UINT32);
 }
 
 void KtRenderer2D::Reset(const uint32_t currentFrame)
 {
-	_uniformData[currentFrame] = {};
-	_renderQueueData[currentFrame] = {};
+	uniformData_[currentFrame] = {};
+	renderQueueData_[currentFrame] = {};
 }
 
 void KtRenderer2D::CreateVertexBuffer()
@@ -158,10 +174,10 @@ void KtRenderer2D::CreateVertexBuffer()
 		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
-		_vertexBuffer
+		vertexBuffer_
 	);
 
-	Framework.GetContext().CopyBuffer(stagingBuffer.Buffer, _vertexBuffer.Buffer, bufferSize);
+	Framework.GetContext().CopyBuffer(stagingBuffer.Buffer, vertexBuffer_.Buffer, bufferSize);
 
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingBuffer.Buffer, stagingBuffer.Allocation);
 }
@@ -186,10 +202,10 @@ void KtRenderer2D::CreateIndexBuffer()
 		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
-		_indexBuffer
+		indexBuffer_
 	);
 
-	Framework.GetContext().CopyBuffer(stagingBuffer.Buffer, _indexBuffer.Buffer, bufferSize);
+	Framework.GetContext().CopyBuffer(stagingBuffer.Buffer, indexBuffer_.Buffer, bufferSize);
 
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingBuffer.Buffer, stagingBuffer.Allocation);
 }

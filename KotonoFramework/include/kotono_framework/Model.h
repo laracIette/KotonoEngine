@@ -21,8 +21,8 @@ private:
 
 	std::vector<KtVertex3D> _vertices;
 	std::vector<uint32_t> _indices;
-	KtAllocatedBuffer _vertexBuffer;
-	KtAllocatedBuffer _indexBuffer;
+	KtAllocatedBuffer vertexBuffer_;
+	KtAllocatedBuffer indexBuffer_;
 
 	void Load();
 	void CreateVertexBuffer();

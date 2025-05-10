@@ -3,7 +3,9 @@
 class RInterfaceComponent : public RInterfaceObject
 {
 	BASECLASS(RInterfaceObject)
+
 public:
+
 private:
 };
 

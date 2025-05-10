@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <array>
-class UGuid
+class UGuid final
 {
 public:
 	UGuid();

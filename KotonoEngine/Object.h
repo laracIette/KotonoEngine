@@ -9,6 +9,7 @@
 class OObject
 {
 public:
+	virtual void Construct();
 	virtual void Init();
 	virtual void Update();
 	virtual void Cleanup();

@@ -8,11 +8,12 @@ class URect final
 public:
 	URect();
 
-	const glm::uvec2& GetBaseSize() const;
+	const glm::vec2& GetRelativeSize() const;
 	const glm::vec2& GetRelativePosition() const;
 	const glm::vec2& GetRelativeScale() const;
 	const float GetRelativeRotation(const ERotationUnit unit = ERotationUnit::Radians) const;
 
+	const glm::vec2 GetWorldSize() const;
 	const glm::vec2 GetWorldPosition() const;
 	const glm::vec2 GetWorldScale() const;
 	const float GetWorldRotation(const ERotationUnit unit = ERotationUnit::Radians) const;
@@ -25,11 +26,12 @@ public:
 	URect* GetParent() const;
 
 
-	void SetBaseSize(const glm::uvec2& baseSize);
+	void SetRelativeSize(const glm::vec2& size);
 	void SetRelativePosition(const glm::vec2& relativePosition);
 	void SetRelativeScale(const glm::vec2& relativeScale);
 	void SetRelativeRotation(float relativeRotation, const ERotationUnit unit = ERotationUnit::Radians);
 
+	void SetWorldSize(const glm::vec2& worldSize);
 	void SetWorldPosition(const glm::vec2& worldPosition);
 	void SetWorldScale(const glm::vec2& worldScale);
 	void SetWorldRotation(const float worldRotation, const ERotationUnit unit = ERotationUnit::Radians);
@@ -46,6 +48,12 @@ public:
 	void SetParent(URect* parent, const ECoordinateSpace keepRect);
 
 
+	const float GetLeft() const;
+	const float GetRight() const;
+	const float GetTop() const;
+	const float GetBottom() const;
+
+
 	const glm::mat4 GetTranslationMatrix() const;
 	const glm::mat4 GetRotationMatrix() const;
 	const glm::mat4 GetScaleMatrix() const;
@@ -54,23 +62,23 @@ public:
 
 	const glm::vec2 GetDirection(const URect& target) const;
 	const float GetDistance(const URect& other) const;
-	const bool GetIsOverlapping(const glm::vec2& screenPosition) const;
+	const bool GetIsOverlapping(const glm::vec2& worldPosition) const;
 	const bool GetIsOverlapping(const URect& other) const;
 
 private:
-	glm::uvec2 _baseSize;
-	glm::vec2 _relativePosition;
-	glm::vec2 _relativeScale;
-	float _relativeRotation;
+	glm::vec2 relativeSize_;
+	glm::vec2 relativePosition_;
+	glm::vec2 relativeScale_;
+	float relativeRotation_;
 
-	EAnchor _anchor;
+	EAnchor anchor_;
 
-	URect* _parent;
+	URect* parent_;
 
 	const glm::vec2 GetAnchorOffset() const;
 	const glm::vec2 GetWorldPositionWithAnchorOffset() const;
 	const glm::vec2 GetAnchorRelativePosition() const;
 
-	const bool GetIsOverlapping(const glm::vec2& screenPosition, const glm::vec2& screenSize) const;
+	const bool GetIsOverlapping(const glm::vec2& worldPosition, const glm::vec2& worldSize) const;
 };
 

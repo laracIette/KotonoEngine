@@ -4,16 +4,20 @@
 #include <iostream>
 #include "log.h"
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void framebuffersize_callback_(GLFWwindow* window, int width, int height);
 
 KtWindow::KtWindow() :
-    _window(nullptr),
-    _size(1600, 900)
+    window_(nullptr),
+    size_(1600, 900),
+    shouldClose_(false)
 {
 }
 
 void KtWindow::Init()
 {
+    WindowViewport.SetAspectRatio(static_cast<float>(size_.x) / size_.y);
+    WindowViewport.SetIsKeepAspectRatio(true);
+
     // Initialize GLFW
     if (!glfwInit())
     {
@@ -24,26 +28,26 @@ void KtWindow::Init()
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
     // Create a windowed mode window and its OpenGL context
-    _window = glfwCreateWindow(_size.x, _size.y, "Kotono Engine", nullptr, nullptr);
-    if (!_window)
+    window_ = glfwCreateWindow(size_.x, size_.y, "Kotono Engine", nullptr, nullptr);
+    if (!window_)
     {
         throw std::runtime_error("Failed to create GLFW window");
     }
 
     // Make the window's context current
-    glfwMakeContextCurrent(_window);
+    glfwMakeContextCurrent(window_);
 
-    glfwSetFramebufferSizeCallback(_window, framebuffer_size_callback);
+    glfwSetFramebufferSizeCallback(window_, framebuffersize_callback_);
 
-    framebuffer_size_callback(_window, _size.x, _size.y);
+    framebuffersize_callback_(window_, size_.x, size_.y);
 
     // Show the window after initialization
-    glfwShowWindow(_window);
+    glfwShowWindow(window_);
 }
 
 const bool KtWindow::GetShouldClose() const
 {
-    if (_shouldClose || glfwWindowShouldClose(_window))
+    if (shouldClose_ || glfwWindowShouldClose(window_))
     {
         vkDeviceWaitIdle(Framework.GetContext().GetDevice());
         return true;
@@ -55,44 +59,41 @@ const bool KtWindow::GetShouldClose() const
 
 void KtWindow::SetShouldClose(const bool shouldClose)
 {
-    _shouldClose = shouldClose;
+    shouldClose_ = shouldClose;
 }
 
 void KtWindow::Cleanup()
 {
     // Cleanup GLFW
-    glfwDestroyWindow(_window);
+    glfwDestroyWindow(window_);
     glfwTerminate();
 }
 
 GLFWwindow* KtWindow::GetGLFWWindow() const
 {
-    return _window;
+    return window_;
 }
 
 const glm::uvec2& KtWindow::GetSize() const
 {
-    return _size;
+    return size_;
 }
 
 void KtWindow::SetSize(const glm::uvec2& size)
 {
-    _size = size;
+    size_ = size;
 }
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void framebuffersize_callback_(GLFWwindow* window, int width, int height)
 {   
     // Replace to only freeze render
     while (width == 0 || height == 0)                                                   
     {                                                                                   
         glfwGetFramebufferSize(Framework.GetWindow().GetGLFWWindow(), &width, &height); 
         glfwWaitEvents();                                                               
-    }                                                                                   
+    } 
 
-    VkExtent2D windowExtent{};
-    windowExtent.width = static_cast<uint32_t>(width);
-    windowExtent.height = static_cast<uint32_t>(height);
-    WindowViewport.SetExtent(windowExtent);
+    WindowViewport.SetExtent(glm::uvec2(width, height));
 
     KT_DEBUG_LOG("window resized: %d x %d", width, height);
 }

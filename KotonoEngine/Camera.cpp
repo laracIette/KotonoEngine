@@ -5,6 +5,7 @@
 void TCamera::Init()
 {
 	Base::Init();
+
 	_fov = 90.0f;
 	_depthNear = 0.01f;
 	_depthFar = 1000.0f;

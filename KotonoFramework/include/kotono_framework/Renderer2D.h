@@ -2,7 +2,6 @@
 #include "UniformData2D.h"
 #include "AddToRenderQueue2DArgs.h"
 #include "RenderQueue2DData.h"
-#include "Culler2D.h"
 class KtRenderer2D final
 {
 public:
@@ -17,15 +16,16 @@ public:
 	void Reset(const uint32_t currentFrame);
 
 private:
-	std::array<KtRenderQueue2DData, KT_FRAMES_IN_FLIGHT> _renderQueueData;
-	std::array<KtUniformData2D, KT_FRAMES_IN_FLIGHT> _uniformData;
-	KtCuller2D _culler;
+	std::array<KtRenderQueue2DData, KT_FRAMES_IN_FLIGHT> renderQueueData_;
+	std::array<KtUniformData2D, KT_FRAMES_IN_FLIGHT> uniformData_;
 
-	KtAllocatedBuffer _vertexBuffer;
-	KtAllocatedBuffer _indexBuffer;
+	KtAllocatedBuffer vertexBuffer_;
+	KtAllocatedBuffer indexBuffer_;
 
 	void CreateVertexBuffer();
 	void CreateIndexBuffer();
+
+	void CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRenderQueue2DData& renderQueueData, const uint32_t currentFrame) const;
 
 	void CmdBindVertexBuffer(VkCommandBuffer commandBuffer) const;
 	void CmdBindIndexBuffer(VkCommandBuffer commandBuffer) const;

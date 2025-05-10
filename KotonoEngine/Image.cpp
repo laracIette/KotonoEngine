@@ -7,21 +7,14 @@
 #include <kotono_framework/InputManager.h>
 #include "Engine.h"
 #include "ObjectManager.h"
-#include "Visualizer.h"
 
 static KtShader* WireframeShader = nullptr;
 
-void RImage::Init()
+void RImage::Construct()
 {
-	Base::Init();
+	Base::Construct();
 
 	_collider = Engine.GetObjectManager().Create<RInterfaceCollider>();
-	_collider->GetRect().SetBaseSize(GetRect().GetBaseSize());
-	_collider->SetParent(this, ECoordinateSpace::Relative);
-
-	ListenEvent(_collider->GetEventDown(), &RImage::OnEventColliderMouseLeftButtonDown);
-	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjects(), &RImage::AddTextureToRenderQueue);
-	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjectWireframes(), &RImage::AddWireframeToRenderQueue);
 
 	if (!WireframeShader)
 	{
@@ -29,6 +22,18 @@ void RImage::Init()
 		WireframeShader = Framework.GetShaderManager().Create(path);
 		WireframeShader->SetName("2D Wireframe Shader");
 	}
+}
+
+void RImage::Init()
+{
+	Base::Init();
+
+	_collider->GetRect().SetRelativeSize(GetRect().GetRelativeSize());
+	_collider->SetParent(this, ECoordinateSpace::Relative);
+
+	ListenEvent(_collider->GetEventDown(), &RImage::OnEventColliderMouseLeftButtonDown);
+	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjects(), &RImage::AddTextureToRenderQueue);
+	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjectWireframes(), &RImage::AddWireframeToRenderQueue);
 }
 
 void RImage::Update()
@@ -61,7 +66,6 @@ void RImage::SetShader(KtShader* shader)
 void RImage::SetImageTexture(KtImageTexture* imageTexture)
 {
 	_imageTexture = imageTexture;
-    GetRect().SetBaseSize(_imageTexture ? _imageTexture->GetSize() : glm::uvec2(0));
 }
 
 void RImage::AddTextureToRenderQueue()

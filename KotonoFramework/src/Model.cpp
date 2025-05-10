@@ -23,8 +23,8 @@ void KtModel::Cleanup() const
 {
 	KT_DEBUG_LOG("cleaning up model");
 
-	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _indexBuffer.Buffer, _indexBuffer.Allocation);
-	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), _vertexBuffer.Buffer, _vertexBuffer.Allocation);
+	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), indexBuffer_.Buffer, indexBuffer_.Allocation);
+	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), vertexBuffer_.Buffer, vertexBuffer_.Allocation);
 	KT_DEBUG_LOG("cleaned up model");
 }
 
@@ -35,10 +35,10 @@ const std::filesystem::path& KtModel::GetPath() const
 
 void KtModel::CmdBind(VkCommandBuffer commandBuffer) const
 {
-	const std::array<VkBuffer, 1> vertexBuffers = { _vertexBuffer.Buffer };
+	const std::array<VkBuffer, 1> vertexBuffers = { vertexBuffer_.Buffer };
 	const std::array<VkDeviceSize, 1> offsets = { 0 };
 	vkCmdBindVertexBuffers(commandBuffer, 0, static_cast<uint32_t>(vertexBuffers.size()), vertexBuffers.data(), offsets.data());
-	vkCmdBindIndexBuffer(commandBuffer, _indexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
+	vkCmdBindIndexBuffer(commandBuffer, indexBuffer_.Buffer, 0, VK_INDEX_TYPE_UINT32);
 }
 
 void KtModel::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t instanceCount, const uint32_t firstInstance) const
@@ -108,10 +108,10 @@ void KtModel::CreateVertexBuffer()
 		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
-		_vertexBuffer
+		vertexBuffer_
 	);
 
-	Framework.GetContext().CopyBuffer(stagingBuffer.Buffer, _vertexBuffer.Buffer, bufferSize);
+	Framework.GetContext().CopyBuffer(stagingBuffer.Buffer, vertexBuffer_.Buffer, bufferSize);
 
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingBuffer.Buffer, stagingBuffer.Allocation);
 }
@@ -136,10 +136,10 @@ void KtModel::CreateIndexBuffer()
 		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
-		_indexBuffer
+		indexBuffer_
 	);
 
-	Framework.GetContext().CopyBuffer(stagingBuffer.Buffer, _indexBuffer.Buffer, bufferSize);
+	Framework.GetContext().CopyBuffer(stagingBuffer.Buffer, indexBuffer_.Buffer, bufferSize);
 
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingBuffer.Buffer, stagingBuffer.Allocation);
 }

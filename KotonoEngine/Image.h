@@ -8,6 +8,7 @@ class RImage : public RInterfaceObject
 	BASECLASS(RInterfaceObject)
 
 public:
+	void Construct() override;
 	void Init() override;
 	void Update() override;
 	void Cleanup() override;

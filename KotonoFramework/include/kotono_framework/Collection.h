@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include <vector>
+#include <unordered_set>
 template<typename T>
 class KtCollection
 {
@@ -64,6 +65,9 @@ public:
 	explicit KtCollection(std::vector<T>&& data) 
 		: data_(std::move(data)) {}
 
+	explicit KtCollection(const std::unordered_set<T>& data)
+		: data_(data.begin(), data.end()) {}
+
 	void AddFilter(Filter&& filter)
 	{
 		filters_.push_back(std::move(filter));
@@ -72,6 +76,32 @@ public:
 	void AddFilter(const Filter& filter)
 	{
 		filters_.push_back(filter);
+	}
+
+	const std::vector<T> GetVector() const
+	{
+		std::vector<T> result;
+		result.reserve(data_.size());
+
+		for (const auto& item : *this)
+		{
+			result.push_back(item);
+		}
+
+		return result;
+	}
+
+	const std::unordered_set<T> GetUnorderedSet() const
+	{
+		std::unordered_set<T> result;
+		result.reserve(data_.size());
+
+		for (const auto& item : *this)
+		{
+			result.insert(item);
+		}
+
+		return result;
 	}
 
 	Iterator begin() const { return Iterator(data_, filters_, 0); }

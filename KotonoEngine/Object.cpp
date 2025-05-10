@@ -3,6 +3,10 @@
 #include <kotono_framework/Serializer.h>
 #include <regex>
 
+void OObject::Construct()
+{
+}
+
 void OObject::Init()
 {
     _name = GetTypeName();

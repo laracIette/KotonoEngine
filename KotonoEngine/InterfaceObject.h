@@ -8,6 +8,7 @@ class RInterfaceObject : public OObject
 	BASECLASS(OObject)
 
 public:
+	void Construct() override;
 	void Init() override;
 	void Update() override;
 	void Cleanup() override;
@@ -17,6 +18,7 @@ public:
 	const EVisibility GetVisibility() const;
 	KtViewport* GetViewport() const;
 	RInterfaceObject* GetParent() const;	
+	RInterfaceObject* GetRoot();	
 	const int32_t GetLayer() const;
 
 	void SetVisibility(const EVisibility visibility);
@@ -25,11 +27,13 @@ public:
 	void SetLayer(const int32_t layer);
 
 private:
-	URect _rect;
-	EVisibility _visibility;
-	KtViewport* _viewport;
-	RInterfaceObject* _parent;
-	int32_t _layer;
+	URect rect_;
+	EVisibility visibility_;
+	KtViewport* viewport_;
+	RInterfaceObject* parent_;
+	int32_t layer_;
+
+	bool sizeToContent_; // todo
 
 	void AddBoundsToRenderQueue();
 };

@@ -2,53 +2,53 @@
 #include <stdexcept>
 
 UTransform::UTransform() :
-	_relativePosition(0.0f, 0.0f, 0.0f),
-	_relativeRotation(glm::identity<glm::quat>()),
-	_relativeScale(1.0f, 1.0f, 1.0f),
-	_parent(nullptr)
+	relativePosition_(0.0f, 0.0f, 0.0f),
+	relativeRotation_(glm::identity<glm::quat>()),
+	relativeScale_(1.0f, 1.0f, 1.0f),
+	parent_(nullptr)
 {
 }
 
 const glm::vec3& UTransform::GetRelativePosition() const
 {
-	return _relativePosition;
+	return relativePosition_;
 }
 
 const glm::quat& UTransform::GetRelativeRotation() const
 {
-	return _relativeRotation;
+	return relativeRotation_;
 }
 
 const glm::vec3& UTransform::GetRelativeScale() const
 {
-	return _relativeScale;
+	return relativeScale_;
 }
 
 const glm::vec3 UTransform::GetWorldPosition() const
 {
-	if (_parent)
+	if (parent_)
 	{
-		return _parent->GetWorldPosition() + _relativePosition;
+		return parent_->GetWorldPosition() + relativePosition_;
 	}
-	return _relativePosition;
+	return relativePosition_;
 }
 
 const glm::quat UTransform::GetWorldRotation() const
 {
-	if (_parent)
+	if (parent_)
 	{
-		return glm::normalize(_parent->GetWorldRotation() * _relativeRotation);
+		return glm::normalize(parent_->GetWorldRotation() * relativeRotation_);
 	}
-	return _relativeRotation;
+	return relativeRotation_;
 }
 
 const glm::vec3 UTransform::GetWorldScale() const
 {
-	if (_parent)
+	if (parent_)
 	{
-		return _parent->GetWorldScale() * _relativeScale;
+		return parent_->GetWorldScale() * relativeScale_;
 	}
-	return _relativeScale;
+	return relativeScale_;
 }
 
 const glm::vec3 UTransform::GetRightVector() const
@@ -68,29 +68,29 @@ const glm::vec3 UTransform::GetUpVector() const
 
 UTransform* UTransform::GetParent() const
 {
-	return _parent;
+	return parent_;
 }
 
 void UTransform::SetRelativePosition(const glm::vec3& relativePosition)
 {
-	_relativePosition = relativePosition;
+	relativePosition_ = relativePosition;
 }
 
 void UTransform::SetRelativeRotation(const glm::quat& relativeRotation)
 {
-	_relativeRotation = glm::normalize(relativeRotation);
+	relativeRotation_ = glm::normalize(relativeRotation);
 }
 
 void UTransform::SetRelativeScale(const glm::vec3& relativeScale)
 {
-	_relativeScale = relativeScale;
+	relativeScale_ = relativeScale;
 }
 
 void UTransform::SetWorldPosition(const glm::vec3& worldPosition)
 {
-	if (_parent)
+	if (parent_)
 	{
-		SetRelativePosition(worldPosition - _parent->GetWorldPosition());
+		SetRelativePosition(worldPosition - parent_->GetWorldPosition());
 		return;
 	}
 	SetRelativePosition(worldPosition);
@@ -98,9 +98,9 @@ void UTransform::SetWorldPosition(const glm::vec3& worldPosition)
 
 void UTransform::SetWorldRotation(const glm::quat& worldRotation)
 {
-	if (_parent)
+	if (parent_)
 	{
-		SetRelativeRotation(glm::inverse(_parent->GetWorldRotation()) * worldRotation);
+		SetRelativeRotation(glm::inverse(parent_->GetWorldRotation()) * worldRotation);
 		return;
 	}
 	SetRelativeRotation(worldRotation);
@@ -108,9 +108,9 @@ void UTransform::SetWorldRotation(const glm::quat& worldRotation)
 
 void UTransform::SetWorldScale(const glm::vec3& worldScale)
 {
-	if (_parent)
+	if (parent_)
 	{
-		SetRelativeScale(worldScale / _parent->GetWorldScale());
+		SetRelativeScale(worldScale / parent_->GetWorldScale());
 		return;
 	}
 	SetRelativeScale(worldScale);
@@ -118,17 +118,17 @@ void UTransform::SetWorldScale(const glm::vec3& worldScale)
 
 void UTransform::AddOffset(const glm::vec3& offset)
 {
-	SetRelativePosition(_relativePosition + offset);
+	SetRelativePosition(relativePosition_ + offset);
 }
 
 void UTransform::AddRotation(const glm::quat& rotation)
 {
-	SetRelativeRotation(rotation * _relativeRotation);
+	SetRelativeRotation(rotation * relativeRotation_);
 }
 
 void UTransform::AddScale(const glm::vec3& scale)
 {
-	SetRelativeScale(_relativeScale * scale);
+	SetRelativeScale(relativeScale_ * scale);
 }
 
 void UTransform::SetParent(UTransform* parent, const ECoordinateSpace keepTransform)
@@ -137,13 +137,13 @@ void UTransform::SetParent(UTransform* parent, const ECoordinateSpace keepTransf
 	{
 	case ECoordinateSpace::Relative:
 	{
-		_parent = parent;
+		parent_ = parent;
 		break;
 	}
 	case ECoordinateSpace::World:
 	{
 		const UTransform clone = *this;
-		_parent = parent;
+		parent_ = parent;
 		SetWorldPosition(clone.GetWorldPosition());
 		SetWorldRotation(clone.GetWorldRotation());
 		SetWorldScale(clone.GetWorldScale());

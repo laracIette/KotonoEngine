@@ -8,6 +8,7 @@ class TMesh : public TSceneObject
 	BASECLASS(TSceneObject)
 
 public:
+	void Construct() override;
 	void Init() override;
 	void Update() override;
 	void Cleanup() override;

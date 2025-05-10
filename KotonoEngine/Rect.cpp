@@ -1,121 +1,118 @@
 #include "Rect.h"
 #include <kotono_framework/Viewport.h>
-#include <kotono_framework/log.h>
 
 URect::URect(): 
-	_relativePosition(0.0f, 0.0f),
-	_relativeRotation(0.0f),
-	_relativeScale(1.0f, 1.0f),
-	_baseSize(0.0f, 0.0f),
-	_anchor(EAnchor::Center),
-	_parent(nullptr)
+	relativeSize_(0.0f, 0.0f),
+	relativePosition_(0.0f, 0.0f),
+	relativeRotation_(0.0f),
+	relativeScale_(1.0f, 1.0f),
+	anchor_(EAnchor::Center),
+	parent_(nullptr)
 {
 }
 
 const glm::vec2& URect::GetRelativePosition() const
 {
-	return _relativePosition;
+	return relativePosition_;
 }
 
 const float URect::GetRelativeRotation(const ERotationUnit unit) const
 {
 	if (unit == ERotationUnit::Degrees)
 	{
-		return glm::degrees(_relativeRotation);
+		return glm::degrees(relativeRotation_);
 	}
-	return _relativeRotation;
+	return relativeRotation_;
 }
 
 const glm::vec2& URect::GetRelativeScale() const
 {
-	return _relativeScale;
+	return relativeScale_;
+}
+
+const glm::vec2 URect::GetWorldSize() const
+{
+	return relativeSize_ * GetWorldScale();
 }
 
 const glm::vec2 URect::GetWorldPosition() const
 {
-	if (_parent)
+	if (parent_)
 	{
-		return _relativePosition + _parent->GetWorldPosition();
+		return relativePosition_ + parent_->GetWorldPosition();
 	}
-	return _relativePosition;
+	return relativePosition_;
 }
 
 const glm::vec2 URect::GetWorldPositionWithAnchorOffset() const
 {
-	if (_parent)
+	if (parent_)
 	{
-		return _relativePosition + GetAnchorOffset() + _parent->GetWorldPositionWithAnchorOffset();
+		return relativePosition_ + GetAnchorOffset() + parent_->GetWorldPositionWithAnchorOffset();
 	}
-	return _relativePosition + GetAnchorOffset();
+	return relativePosition_ + GetAnchorOffset();
 }
 
 const glm::vec2 URect::GetAnchorRelativePosition() const
 {
-	return _relativePosition - GetAnchorOffset();
-}
-
-const bool URect::GetIsOverlapping(const glm::vec2& screenPosition, const glm::vec2& screenSize) const
-{
-	const auto distance = glm::abs(GetScreenPosition() - screenPosition);
-	const auto maxDistance = (GetScreenSize() + screenSize) / 2.0f;
-	return distance.x < maxDistance.x
-		&& distance.y < maxDistance.y;
+	return relativePosition_ - GetAnchorOffset();
 }
 
 const float URect::GetWorldRotation(const ERotationUnit unit) const
 {
-	if (_parent)
+	if (parent_)
 	{
-		return GetRelativeRotation(unit) + _parent->GetWorldRotation(unit);
+		return GetRelativeRotation(unit) + parent_->GetWorldRotation(unit);
 	}
 	return GetRelativeRotation(unit);
 }
 
 const glm::vec2 URect::GetScreenPosition() const
 {
-	const auto& viewportExtent = WindowViewport.GetExtent();
-	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
+	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
 	const auto newPosition = (GetWorldPosition() + glm::vec2(1.0f)) * viewportSize / 2.0f;
 	return newPosition;
 }
 
 const glm::vec2 URect::GetScreenSize() const
 {
-	return glm::vec2(_baseSize) * GetWorldScale();
+	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
+	const auto newSize = GetWorldSize() * viewportSize / 2.0f;
+	return newSize;
 }
 
 const EAnchor URect::GetAnchor() const
 {
-	return _anchor;
+	return anchor_;
 }
 
 const glm::vec2 URect::GetWorldScale() const
 {
-	if (_parent)
+	if (parent_)
 	{
-		return _relativeScale * _parent->GetWorldScale();
+		return relativeScale_ * parent_->GetWorldScale();
 	}
-	return _relativeScale;
+	return relativeScale_;
 }
 
-const glm::uvec2& URect::GetBaseSize() const
+const glm::vec2& URect::GetRelativeSize() const
 {
-	return _baseSize;
+	return relativeSize_;
 }
 
 URect* URect::GetParent() const
 {
-	return _parent;
+	return parent_;
 }
 
 void URect::SetRelativePosition(const glm::vec2& relativePosition)
 {
-	_relativePosition = relativePosition;
+	relativePosition_ = relativePosition;
 }
 
 void URect::SetRelativeScale(const glm::vec2& relativeScale)
 {
-	_relativeScale = relativeScale;
+	relativeScale_ = relativeScale;
 }
 
 void URect::SetRelativeRotation(float relativeRotation, const ERotationUnit unit)
@@ -134,15 +131,25 @@ void URect::SetRelativeRotation(float relativeRotation, const ERotationUnit unit
 		translated.x * sinA + translated.y * cosA
 	);
 
-	_relativePosition = rotated + GetAnchorRelativePosition();
-	_relativeRotation = relativeRotation;
+	relativePosition_ = rotated + GetAnchorRelativePosition();
+	relativeRotation_ = relativeRotation;
+}
+
+void URect::SetWorldSize(const glm::vec2& worldSize)
+{
+	if (parent_)
+	{
+		SetRelativeSize(worldSize / parent_->GetWorldScale());
+		return;
+	}
+	SetRelativeSize(worldSize);
 }
 
 void URect::SetWorldPosition(const glm::vec2& worldPosition)
 {
-	if (_parent)
+	if (parent_)
 	{
-		SetRelativePosition(worldPosition - _parent->GetWorldPosition());
+		SetRelativePosition(worldPosition - parent_->GetWorldPosition());
 		return;
 	}
 	SetRelativePosition(worldPosition);
@@ -150,9 +157,9 @@ void URect::SetWorldPosition(const glm::vec2& worldPosition)
 
 void URect::SetWorldScale(const glm::vec2& worldScale)
 {
-	if (_parent)
+	if (parent_)
 	{
-		SetRelativeScale(worldScale / _parent->GetWorldScale());
+		SetRelativeScale(worldScale / parent_->GetWorldScale());
 		return;
 	}
 	SetRelativeScale(worldScale);
@@ -160,9 +167,9 @@ void URect::SetWorldScale(const glm::vec2& worldScale)
 
 void URect::SetWorldRotation(const float worldRotation, const ERotationUnit unit)
 {
-	if (_parent)
+	if (parent_)
 	{
-		SetRelativeRotation(worldRotation - _parent->GetWorldRotation(unit), unit);
+		SetRelativeRotation(worldRotation - parent_->GetWorldRotation(unit), unit);
 		return;
 	}
 	SetRelativeRotation(worldRotation, unit);
@@ -170,12 +177,12 @@ void URect::SetWorldRotation(const float worldRotation, const ERotationUnit unit
 
 void URect::AddOffset(const glm::vec2& offset)
 {
-	SetRelativePosition(_relativePosition + offset);
+	SetRelativePosition(relativePosition_ + offset);
 }
 
 void URect::AddScale(const glm::vec2& scale)
 {
-	SetRelativeScale(_relativeScale * scale);
+	SetRelativeScale(relativeScale_ * scale);
 }
 
 void URect::AddRotation(const float rotation, const ERotationUnit unit)
@@ -185,23 +192,21 @@ void URect::AddRotation(const float rotation, const ERotationUnit unit)
 
 void URect::SetScreenPosition(const glm::vec2& screenPosition)
 {
-	const auto& viewportExtent = WindowViewport.GetExtent();
-	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
+	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
 	const auto newPosition = screenPosition / viewportSize * 2.0f - glm::vec2(1.0f);
 	SetWorldPosition(newPosition);
 }
 
 void URect::SetScreenSize(const glm::vec2& screenSize)
 {
-	const auto& viewportExtent = WindowViewport.GetExtent();
-	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
-	const auto newScale = screenSize / glm::vec2(_baseSize);
-	SetWorldScale(newScale);
+	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
+	const auto newSize = screenSize / viewportSize * 2.0f;
+	SetWorldSize(newSize);
 }
 
 void URect::SetAnchor(const EAnchor anchor)
 {
-	_anchor = anchor;
+	anchor_ = anchor;
 }
 
 void URect::SetParent(URect* parent, const ECoordinateSpace keepRect)
@@ -210,13 +215,13 @@ void URect::SetParent(URect* parent, const ECoordinateSpace keepRect)
 	{
 	case ECoordinateSpace::Relative:
 	{
-		_parent = parent;
+		parent_ = parent;
 		break;
 	}
 	case ECoordinateSpace::World:
 	{
 		const URect clone = *this;
-		_parent = parent;
+		parent_ = parent;
 		SetWorldPosition(clone.GetWorldPosition());
 		SetWorldScale(clone.GetWorldScale());
 		SetWorldRotation(clone.GetWorldRotation());
@@ -227,9 +232,29 @@ void URect::SetParent(URect* parent, const ECoordinateSpace keepRect)
 	}
 }
 
-void URect::SetBaseSize(const glm::uvec2& baseSize)
+const float URect::GetLeft() const
 {
-	_baseSize = baseSize;
+	return GetWorldPosition().x - relativeSize_.x / 2.0f * GetWorldScale().x;
+}
+
+const float URect::GetRight() const
+{
+	return GetWorldPosition().x + relativeSize_.x / 2.0f * GetWorldScale().x;
+}
+
+const float URect::GetTop() const
+{
+	return GetWorldPosition().y - relativeSize_.y / 2.0f * GetWorldScale().y;
+}
+
+const float URect::GetBottom() const
+{
+	return GetWorldPosition().y + relativeSize_.y / 2.0f * GetWorldScale().y;
+}
+
+void URect::SetRelativeSize(const glm::vec2& size)
+{
+	relativeSize_ = size;
 }
 
 const glm::mat4 URect::GetTranslationMatrix() const
@@ -244,8 +269,7 @@ const glm::mat4 URect::GetRotationMatrix() const
 
 const glm::mat4 URect::GetScaleMatrix() const
 {
-	const auto& viewportExtent = WindowViewport.GetExtent();
-	const auto viewportSize = glm::vec2(viewportExtent.width, viewportExtent.height);
+	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
 	const float aspectRatio = WindowViewport.GetAspectRatio();
 	const float rotation = GetWorldRotation(ERotationUnit::Radians);
 
@@ -277,24 +301,32 @@ const float URect::GetDistance(const URect& other) const
 	return glm::distance(GetWorldPosition(), other.GetWorldPosition());
 }
 
-const bool URect::GetIsOverlapping(const glm::vec2& screenPosition) const
+const bool URect::GetIsOverlapping(const glm::vec2& worldPosition) const
 {
-	return GetIsOverlapping(screenPosition, glm::vec2(0.0f));
+	return GetIsOverlapping(worldPosition, glm::vec2(0.0f));
 }
 
 const bool URect::GetIsOverlapping(const URect& other) const
 {
-	return GetIsOverlapping(other.GetScreenPosition(), other.GetScreenSize());
+	return GetIsOverlapping(other.GetWorldPosition(), other.GetWorldSize());
 }
 
 const glm::vec2 URect::GetAnchorOffset() const
 {
 	return glm::vec2(
-		(_anchor & EAnchor::Left) == EAnchor::Left ? _relativeScale.x / 2.0f
-		: (_anchor & EAnchor::Right) == EAnchor::Right ? -_relativeScale.x / 2.0f
+		(anchor_ & EAnchor::Left) == EAnchor::Left ? relativeScale_.x / 2.0f
+		: (anchor_ & EAnchor::Right) == EAnchor::Right ? -relativeScale_.x / 2.0f
 		: 0.0f,
-		(_anchor & EAnchor::Top) == EAnchor::Top ? _relativeScale.y / 2.0f
-		: (_anchor & EAnchor::Bottom) == EAnchor::Bottom ? -_relativeScale.y / 2.0f
+		(anchor_ & EAnchor::Top) == EAnchor::Top ? relativeScale_.y / 2.0f
+		: (anchor_ & EAnchor::Bottom) == EAnchor::Bottom ? -relativeScale_.y / 2.0f
 		: 0.0f
 	);
+}
+
+const bool URect::GetIsOverlapping(const glm::vec2& worldPosition, const glm::vec2& worldSize) const
+{
+	const auto distance = glm::abs(GetWorldPosition() - worldPosition);
+	const auto maxDistance = (GetWorldSize() + worldSize) / 2.0f;
+	return distance.x < maxDistance.x
+		&& distance.y < maxDistance.y;
 }

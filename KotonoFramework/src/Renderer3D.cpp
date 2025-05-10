@@ -4,6 +4,7 @@
 #include "Path.h"
 #include "log.h"
 #include "Renderer.h"
+#include "Culler3D.h"
 
 void KtRenderer3D::Init()
 {
@@ -15,7 +16,7 @@ void KtRenderer3D::Cleanup()
 
 void KtRenderer3D::AddToRenderQueue(const KtAddToRenderQueue3DArgs& args)
 {
-	_renderQueueData[Framework.GetRenderer().GetGameThreadFrame()]
+	renderQueueData_[Framework.GetRenderer().GetGameThreadFrame()]
 		.Shaders[args.Shader]
 		.Renderables[args.Renderable]
 		.Viewports[args.Viewport]
@@ -24,17 +25,20 @@ void KtRenderer3D::AddToRenderQueue(const KtAddToRenderQueue3DArgs& args)
 
 void KtRenderer3D::SetUniformData(const KtUniformData3D& uniformData)
 {
-	_uniformData[Framework.GetRenderer().GetGameThreadFrame()] = uniformData;
+	uniformData_[Framework.GetRenderer().GetGameThreadFrame()] = uniformData;
 }
 
 void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const
 {
-	const auto culledData = _culler.ComputeCulling(_renderQueueData[currentFrame]);
+	const KtCuller3D culler{};
+	const auto culledData = culler.ComputeCulling(renderQueueData_[currentFrame]);
 	CmdDrawRenderQueue(commandBuffer, culledData, currentFrame);
 }
 
 void KtRenderer3D::CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRenderQueue3DData& renderQueueData, const uint32_t currentFrame) const
 {
+	KtViewport* currentViewport = nullptr;
+
 	for (auto& [shader, shaderData] : renderQueueData.Shaders)
 	{
 		std::vector<KtObjectData3D> objectBufferData;
@@ -55,7 +59,7 @@ void KtRenderer3D::CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRen
 		}
 		if (auto* binding = shader->GetDescriptorSetLayoutBinding("cameraData"))
 		{
-			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, (void*)(&_uniformData), currentFrame);
+			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, (void*)(&uniformData_), currentFrame);
 		}
 		// -------------------------------- //
 
@@ -71,9 +75,13 @@ void KtRenderer3D::CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRen
 			{
 				const uint32_t instanceCount = static_cast<uint32_t>(viewportData.ObjectDatas.size());
 
-				viewport->CmdUse(commandBuffer);
-				renderable->CmdDraw(commandBuffer, instanceCount, instanceIndex);
+				if (currentViewport != viewport)
+				{
+					currentViewport = viewport;
+					currentViewport->CmdUse(commandBuffer);
+				}
 
+				renderable->CmdDraw(commandBuffer, instanceCount, instanceIndex);
 				instanceIndex += instanceCount;
 			}
 		}
@@ -82,6 +90,6 @@ void KtRenderer3D::CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRen
 
 void KtRenderer3D::Reset(const uint32_t currentFrame)
 {
-	_uniformData[currentFrame] = {};
-	_renderQueueData[currentFrame] = {};
+	uniformData_[currentFrame] = {};
+	renderQueueData_[currentFrame] = {};
 }
