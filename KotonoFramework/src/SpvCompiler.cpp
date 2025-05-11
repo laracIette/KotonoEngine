@@ -23,13 +23,15 @@ void KtSpvCompiler::CompileUpdated() const
                 continue;
             }
 
+            const auto entryPath = std::format("{}/{}{}", directory, entry.path().filename().string(), entry.path().extension().string());
+
             const auto ftime = entry.last_write_time();
             const auto formattedTime = std::format("{0:%F}-{0:%T}", ftime);
 
             bool isInList = false;
             for (auto& shader : json["shaders"])
             {
-                if (shader["path"] != entry.path().string())
+                if (shader["path"] != entryPath)
                 {
                     continue;
                 }
@@ -47,7 +49,7 @@ void KtSpvCompiler::CompileUpdated() const
             if (!isInList)
             {
                 nlohmann::json shader;
-                shader["path"] = entry.path().string();
+                shader["path"] = entryPath;
                 shader["modified"] = formattedTime;
                 json["shaders"].push_back(shader);
                 Compile(entry.path());
