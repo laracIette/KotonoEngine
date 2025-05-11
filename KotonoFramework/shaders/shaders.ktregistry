@@ -1,0 +1,32 @@
+{
+    "shaders": [
+        {
+            "modified": "2025-05-04-13:55:26.2363158",
+            "path": "W:\\Visual Studio\\Projects\\KotonoEngine\\KotonoFramework\\shaders\\vert\\flatColor2D.vert"
+        },
+        {
+            "modified": "2025-05-04-13:55:26.2513319",
+            "path": "W:\\Visual Studio\\Projects\\KotonoEngine\\KotonoFramework\\shaders\\vert\\flatColor3D.vert"
+        },
+        {
+            "modified": "2025-05-04-13:55:26.2653362",
+            "path": "W:\\Visual Studio\\Projects\\KotonoEngine\\KotonoFramework\\shaders\\vert\\shader2D.vert"
+        },
+        {
+            "modified": "2025-05-04-13:55:26.2794152",
+            "path": "W:\\Visual Studio\\Projects\\KotonoEngine\\KotonoFramework\\shaders\\vert\\shader3D.vert"
+        },
+        {
+            "modified": "2025-05-04-13:55:26.1906952",
+            "path": "W:\\Visual Studio\\Projects\\KotonoEngine\\KotonoFramework\\shaders\\frag\\flatColor.frag"
+        },
+        {
+            "modified": "2025-05-04-13:55:26.2067039",
+            "path": "W:\\Visual Studio\\Projects\\KotonoEngine\\KotonoFramework\\shaders\\frag\\shader2D.frag"
+        },
+        {
+            "modified": "2025-05-04-13:55:26.2142046",
+            "path": "W:\\Visual Studio\\Projects\\KotonoEngine\\KotonoFramework\\shaders\\frag\\shader3D.frag"
+        }
+    ]
+}
