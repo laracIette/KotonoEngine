@@ -9,7 +9,6 @@
 #include <kotono_framework/AddToRenderQueue2DArgs.h>
 #include "Engine.h"
 #include "ObjectManager.h"
-#include "Visualizer.h"
 
 static KtShader* FlatColorShader = nullptr;
 static KtImageTexture* FlatColorTexture = nullptr;
@@ -89,6 +88,11 @@ const int32_t RInterfaceObject::GetLayer() const
 	return layer_;
 }
 
+const std::unordered_set<RInterfaceObject*>& RInterfaceObject::GetChildren() const
+{
+	return children_;
+}
+
 const EVisibility RInterfaceObject::GetVisibility() const
 {
 	return visibility_;
@@ -115,6 +119,14 @@ void RInterfaceObject::SetParent(RInterfaceObject* parent, const ECoordinateSpac
 	{
 		KT_DEBUG_LOG("RInterfaceObject::SetParent(): couldn't set the parent of '%s' to the same", GetName().c_str());
 		return;
+	}
+	if (parent)
+	{
+		parent->children_.insert(this);
+	}
+	if (parent_)
+	{
+		parent_->children_.erase(this);
 	}
 	parent_ = parent;
 	rect_.SetParent(parent_ ? &parent_->rect_ : nullptr, keepRect);

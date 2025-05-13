@@ -20,6 +20,7 @@ public:
 	RInterfaceObject* GetParent() const;	
 	RInterfaceObject* GetRoot();	
 	const int32_t GetLayer() const;
+	const std::unordered_set<RInterfaceObject*>& GetChildren() const;
 
 	void SetVisibility(const EVisibility visibility);
 	void SetViewport(KtViewport* viewport);
@@ -33,7 +34,8 @@ private:
 	RInterfaceObject* parent_;
 	int32_t layer_;
 
-	bool sizeToContent_; // todo
+	bool isSizeToContent_; // todo
+	std::unordered_set<RInterfaceObject*> children_;
 
 	void AddBoundsToRenderQueue();
 };
