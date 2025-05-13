@@ -1,0 +1,32 @@
+{
+    "shaders": [
+        {
+            "modified": "2025-05-04-13:55:26.2363158",
+            "path": "vert/flatColor2D.vert.vert"
+        },
+        {
+            "modified": "2025-05-04-13:55:26.2513319",
+            "path": "vert/flatColor3D.vert.vert"
+        },
+        {
+            "modified": "2025-05-04-13:55:26.2653362",
+            "path": "vert/shader2D.vert.vert"
+        },
+        {
+            "modified": "2025-05-04-13:55:26.2794152",
+            "path": "vert/shader3D.vert.vert"
+        },
+        {
+            "modified": "2025-05-11-12:18:21.4067610",
+            "path": "frag/flatColor.frag.frag"
+        },
+        {
+            "modified": "2025-05-04-13:55:26.2067039",
+            "path": "frag/shader2D.frag.frag"
+        },
+        {
+            "modified": "2025-05-04-13:55:26.2142046",
+            "path": "frag/shader3D.frag.frag"
+        }
+    ]
+}
