@@ -1,13 +1,14 @@
 #pragma once
-class KEngine final
+class SEngine final
 {
 public:
 	void Init();
 	void Cleanup();
 
-	class KTime& GetTime();
-	class KObjectManager& GetObjectManager();
-	class KVisualizer& GetVisualizer();
+	class STime& GetTime();
+	class SObjectManager& GetObjectManager();
+	class SVisualizer& GetVisualizer();
+// we dont use private members because we could only store them as pointers
 };
 
-extern KEngine Engine;
+extern SEngine Engine;

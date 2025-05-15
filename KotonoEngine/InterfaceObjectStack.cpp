@@ -1,34 +1,39 @@
 #include "InterfaceObjectStack.h"
 
-template<EOrientation Orientation>
-void RInterfaceObjectStack<Orientation>::Init()
+void RInterfaceObjectStack::Init()
 {
     Base::Init();
     //SetIsSizeToContent(false);
 }
 
-template <EOrientation Orientation>
-const float RInterfaceObjectStack<Orientation>::GetItemSpacing() const
+const EOrientation RInterfaceObjectStack::GetOrientation() const
+{
+    return orientation_;
+}
+
+const float RInterfaceObjectStack::GetItemSpacing() const
 {
     return spacing_;
 }
 
-template <EOrientation Orientation>
-void RInterfaceObjectStack<Orientation>::SetItemSpacing(const float spacing)
+void RInterfaceObjectStack::SetOrientation(const EOrientation orientation)
+{
+    orientation_ = orientation;
+}
+
+void RInterfaceObjectStack::SetItemSpacing(const float spacing)
 {
     spacing_ = spacing;
     UpdatePositions();
 }
 
-template <EOrientation Orientation>
-void RInterfaceObjectStack<Orientation>::AddItem(RInterfaceObject* item)
+void RInterfaceObjectStack::AddItem(RInterfaceObject* item)
 {
     Base::AddItem(item);
     UpdatePositions();
 }
 
-template <EOrientation Orientation>
-void RInterfaceObjectStack<Orientation>::UpdatePositions()
+void RInterfaceObjectStack::UpdatePositions()
 {
     const auto& items = GetItems();
     for (size_t i = 0; i < items.size(); i++)
@@ -36,30 +41,13 @@ void RInterfaceObjectStack<Orientation>::UpdatePositions()
         auto* item = items[i];
         const float offset = spacing_ * i;
 
-        if constexpr (Orientation == EOrientation::Horizontal)
+        if (orientation_ == EOrientation::Horizontal)
         {
             item->GetRect().SetRelativePosition(glm::vec2(offset, 0.0f));
         }
-        else if constexpr (Orientation == EOrientation::Vertical)
+        else if (orientation_ == EOrientation::Vertical)
         {
             item->GetRect().SetRelativePosition(glm::vec2(0.0f, offset));
         }
     }
 }
-
-
-
-template void RHorizontalInterfaceObjectStack::Init();
-template void RVerticalInterfaceObjectStack::Init();
- 
-template const float RHorizontalInterfaceObjectStack::GetItemSpacing() const;
-template const float RVerticalInterfaceObjectStack::GetItemSpacing() const;
- 
-template void RHorizontalInterfaceObjectStack::SetItemSpacing(const float spacing);
-template void RVerticalInterfaceObjectStack::SetItemSpacing(const float spacing);
- 
-template void RHorizontalInterfaceObjectStack::AddItem(RInterfaceObject* item);
-template void RVerticalInterfaceObjectStack::AddItem(RInterfaceObject* item);
- 
-template void RHorizontalInterfaceObjectStack::UpdatePositions();
-template void RVerticalInterfaceObjectStack::UpdatePositions();

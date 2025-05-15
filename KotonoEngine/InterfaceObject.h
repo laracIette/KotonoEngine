@@ -2,10 +2,14 @@
 #include "Object.h"
 #include "Rect.h"
 #include "Visibility.h"
-#include <kotono_framework/Viewport.h>
-class RInterfaceObject : public OObject
+
+class KtViewport;
+class KInterfaceObjectComponent;
+class KInterfaceObjectColliderComponent;
+
+class RInterfaceObject : public KObject
 {
-	BASECLASS(OObject)
+	BASECLASS(KObject)
 
 public:
 	void Construct() override;
@@ -16,16 +20,18 @@ public:
 	const URect& GetRect() const;
 	URect& GetRect();
 	const EVisibility GetVisibility() const;
-	KtViewport* GetViewport() const;
-	RInterfaceObject* GetParent() const;	
-	RInterfaceObject* GetRoot();	
+	KtViewport* GetViewport() const; // todo: move that to a renderable interface object component
+	RInterfaceObject* GetParent() const;
+	RInterfaceObject* GetRoot();
 	const int32_t GetLayer() const;
 	const std::unordered_set<RInterfaceObject*>& GetChildren() const;
+	const bool GetIsSizeToContent() const;
 
 	void SetVisibility(const EVisibility visibility);
 	void SetViewport(KtViewport* viewport);
 	void SetParent(RInterfaceObject* parent, const ECoordinateSpace keepRect);
 	void SetLayer(const int32_t layer);
+	void GetIsSizeToContent(const bool isSizeToContent);
 
 private:
 	URect rect_;
@@ -33,10 +39,14 @@ private:
 	KtViewport* viewport_;
 	RInterfaceObject* parent_;
 	int32_t layer_;
-
-	bool isSizeToContent_; // todo
 	std::unordered_set<RInterfaceObject*> children_;
+	bool isSizeToContent_;
+	std::unordered_set<KInterfaceObjectComponent*> components_;
+	KInterfaceObjectColliderComponent* collider_;
 
 	void AddBoundsToRenderQueue();
+
+	// temp
+	void OnEventColliderMouseLeftButtonDown();
 };
 

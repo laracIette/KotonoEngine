@@ -1,5 +1,5 @@
 #pragma once
-class KTime final
+class STime final
 {
 public:
 	void Init();

@@ -6,6 +6,7 @@
 #include <kotono_framework/ModelManager.h>
 #include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/Path.h>
+#include "Object.h"
 #include "Mesh.h"
 #include "Image.h"
 #include "Scene.h"
@@ -17,11 +18,11 @@
 
 static TCamera* Camera = nullptr;
 
-void KObjectManager::Init()
+void SObjectManager::Init()
 {
 	Framework.GetInputManager().GetKeyboard()
 		.GetEvent(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
-		.AddListener(this, &KObjectManager::Quit);
+		.AddListener(this, &SObjectManager::Quit);
 
 	auto* shader2D = Framework.GetShaderManager().Create(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)");
 	auto* shader3D = Framework.GetShaderManager().Create(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3D.ktshader)");
@@ -35,9 +36,9 @@ void KObjectManager::Init()
 	auto* imageTexture2 = Framework.GetImageTextureManager().Create(Framework.GetPath().GetSolutionPath() / R"(assets\textures\default_texture.jpg)");
 
 	{
-		auto* scene = Create<OScene>();
-		scene->SetPath(Framework.GetPath().GetSolutionPath() / R"(assets\objects\scene.oscene)");
-		scene->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), &OScene::Reload);
+		auto* scene = Create<KScene>();
+		scene->SetPath(Framework.GetPath().GetSolutionPath() / R"(assets\objects\scene.KScene)");
+		scene->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), &KScene::Reload);
 	}
 	{
 		auto* image1 = Create<RImage>();
@@ -61,10 +62,11 @@ void KObjectManager::Init()
 		{
 			image2->SetLayer(1);
 
-			auto* horizontalStack = Create<RHorizontalInterfaceObjectStack>();
-			horizontalStack->SetItemSpacing(0.1f);
-			horizontalStack->AddItem(image1);
-			horizontalStack->AddItem(image2);
+			auto* interfaceObjectStack = Create<RInterfaceObjectStack>();
+			interfaceObjectStack->SetOrientation(EOrientation::Horizontal);
+			interfaceObjectStack->SetItemSpacing(0.1f);
+			interfaceObjectStack->AddItem(image1);
+			interfaceObjectStack->AddItem(image2);
 		}
 
 
@@ -91,7 +93,7 @@ void KObjectManager::Init()
 	Camera = Create<TCamera>();
 }
 
-void KObjectManager::Update()
+void SObjectManager::Update()
 {
 	InitObjects();
 	Camera->Use();
@@ -100,7 +102,7 @@ void KObjectManager::Update()
 	DrawObjects();
 }
 
-void KObjectManager::Cleanup()
+void SObjectManager::Cleanup()
 {
 	for (auto* object : _objects)
 	{
@@ -115,37 +117,37 @@ void KObjectManager::Cleanup()
 	_typeRegistry.clear();
 }
 
-KtEvent<>& KObjectManager::GetEventDrawSceneObjects()
+KtEvent<>& SObjectManager::GetEventDrawSceneObjects()
 {
 	return _eventDrawSceneObjects;
 }
 
-KtEvent<>& KObjectManager::GetEventDrawSceneObjectWireframes()
+KtEvent<>& SObjectManager::GetEventDrawSceneObjectWireframes()
 {
 	return _eventDrawSceneObjectWireframes;
 }
 
-KtEvent<>& KObjectManager::GetEventDrawInterfaceObjects()
+KtEvent<>& SObjectManager::GetEventDrawInterfaceObjects()
 {
 	return _eventDrawInterfaceObjects;
 }
 
-KtEvent<>& KObjectManager::GetEventDrawInterfaceObjectBounds()
+KtEvent<>& SObjectManager::GetEventDrawInterfaceObjectBounds()
 {
 	return _eventDrawInterfaceObjectBounds;
 }
 
-KtEvent<>& KObjectManager::GetEventDrawInterfaceObjectWireframes()
+KtEvent<>& SObjectManager::GetEventDrawInterfaceObjectWireframes()
 {
 	return _eventDrawInterfaceObjectWireframes;
 }
 
-void KObjectManager::Quit()
+void SObjectManager::Quit()
 {
 	Framework.GetWindow().SetShouldClose(true);
 }
 
-void KObjectManager::InitObjects()
+void SObjectManager::InitObjects()
 {
 	for (auto* object : _inits)
 	{
@@ -154,7 +156,7 @@ void KObjectManager::InitObjects()
 	_inits.clear();
 }
 
-void KObjectManager::UpdateObjects()
+void SObjectManager::UpdateObjects()
 {
 	for (auto* object : _objects)
 	{
@@ -162,9 +164,9 @@ void KObjectManager::UpdateObjects()
 	}
 }
 
-void KObjectManager::DeleteObjects()
+void SObjectManager::DeleteObjects()
 {
-	std::unordered_set<OObject*> deleteObjects;
+	std::unordered_set<KObject*> deleteObjects;
 	for (auto it = _objects.begin(); it != _objects.end();)
 	{
 		auto* object = *it;
@@ -189,7 +191,7 @@ void KObjectManager::DeleteObjects()
 	}
 }
 
-void KObjectManager::DrawObjects()
+void SObjectManager::DrawObjects()
 {
 	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::SceneObject))
 	{
@@ -213,7 +215,7 @@ void KObjectManager::DrawObjects()
 	}
 }
 
-void KObjectManager::Create(OObject* object)
+void SObjectManager::Create(KObject* object)
 {
 	object->Construct();
 	KT_DEBUG_LOG("creating object of type '%s'", object->GetTypeName().c_str());

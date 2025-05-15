@@ -2,9 +2,9 @@
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/Path.h>
-#include <kotono_framework/Window.h>
 #include <kotono_framework/Renderer.h>
-#include <kotono_framework/InputManager.h>
+#include <kotono_framework/Shader.h>
+#include <kotono_framework/ImageTexture.h>
 #include "Engine.h"
 #include "ObjectManager.h"
 
@@ -13,8 +13,6 @@ static KtShader* WireframeShader = nullptr;
 void RImage::Construct()
 {
 	Base::Construct();
-
-	_collider = Engine.GetObjectManager().Create<RInterfaceCollider>();
 
 	if (!WireframeShader)
 	{
@@ -28,10 +26,6 @@ void RImage::Init()
 {
 	Base::Init();
 
-	_collider->GetRect().SetRelativeSize(GetRect().GetRelativeSize());
-	_collider->SetParent(this, ECoordinateSpace::Relative);
-
-	ListenEvent(_collider->GetEventDown(), &RImage::OnEventColliderMouseLeftButtonDown);
 	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjects(), &RImage::AddTextureToRenderQueue);
 	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjectWireframes(), &RImage::AddWireframeToRenderQueue);
 }
@@ -44,8 +38,6 @@ void RImage::Update()
 void RImage::Cleanup()
 {
 	Base::Cleanup();
-
-	_collider->SetIsDelete(true);
 }
 
 KtShader* RImage::GetShader() const
@@ -88,12 +80,4 @@ void RImage::AddWireframeToRenderQueue()
 	args.ObjectData.Model = GetRect().GetModelMatrix();
 	args.Layer = GetLayer();
 	Framework.GetRenderer().GetRenderer2D().AddToRenderQueue(args);
-}
-
-void RImage::OnEventColliderMouseLeftButtonDown()
-{
-	const auto& windowSize = Framework.GetWindow().GetSize();
-	const auto cursorPositionDelta = Framework.GetInputManager().GetMouse().GetCursorPositionDelta();
-	const auto cursorPositionDeltaNormalized = 2.0f * cursorPositionDelta / glm::vec2(windowSize);
-	GetRect().AddOffset(cursorPositionDeltaNormalized);
 }

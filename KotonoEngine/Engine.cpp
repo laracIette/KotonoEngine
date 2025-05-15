@@ -3,37 +3,37 @@
 #include "ObjectManager.h"
 #include "Visualizer.h"
 
-KEngine Engine;
+SEngine Engine;
 
-static KTime Time;
-static KObjectManager ObjectManager;
-static KVisualizer Visualizer;
+static STime Time;
+static SObjectManager ObjectManager;
+static SVisualizer Visualizer;
 
-void KEngine::Init()
+void SEngine::Init()
 {
     Time.Init();
     ObjectManager.Init();
     Visualizer.Init();
 }
 
-void KEngine::Cleanup()
+void SEngine::Cleanup()
 {
     Time.Cleanup();
     ObjectManager.Cleanup();
     Visualizer.Cleanup();
 }
 
-KTime& KEngine::GetTime()
+STime& SEngine::GetTime()
 {
     return Time;
 }
 
-KObjectManager& KEngine::GetObjectManager()
+SObjectManager& SEngine::GetObjectManager()
 {
     return ObjectManager;
 }
 
-KVisualizer& KEngine::GetVisualizer()
+SVisualizer& SEngine::GetVisualizer()
 {
     return Visualizer;
 }

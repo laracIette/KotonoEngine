@@ -3,20 +3,20 @@
 #include <kotono_framework/Serializer.h>
 #include <regex>
 
-void OObject::Construct()
+void KObject::Construct()
 {
 }
 
-void OObject::Init()
+void KObject::Init()
 {
     _name = GetTypeName();
 }
 
-void OObject::Update() 
+void KObject::Update() 
 {
 }
 
-void OObject::Cleanup() 
+void KObject::Cleanup() 
 {
     for (auto* event : _listenedEvents)
     {
@@ -27,47 +27,47 @@ void OObject::Cleanup()
     }
 }
 
-const UGuid& OObject::GetGuid() const
+const UGuid& KObject::GetGuid() const
 {
     return _guid;
 }
 
-const std::filesystem::path& OObject::GetPath() const
+const std::filesystem::path& KObject::GetPath() const
 {
     return _path;
 }
 
-const std::string& OObject::GetName() const
+const std::string& KObject::GetName() const
 {
     return _name;
 }
 
-const bool OObject::GetIsDelete() const
+const bool KObject::GetIsDelete() const
 {
     return _isDelete;
 }
 
-const std::string OObject::GetTypeName() const
+const std::string KObject::GetTypeName() const
 {
     return std::regex_replace(typeid(*this).name(), std::regex(R"(^(class ))"), "");
 }
 
-void OObject::SetName(const std::string& name)
+void KObject::SetName(const std::string& name)
 {
     _name = name;
 }
 
-void OObject::SetPath(const std::filesystem::path& path)
+void KObject::SetPath(const std::filesystem::path& path)
 {
     _path = path;
 }
 
-void OObject::SetIsDelete(const bool isDelete)
+void KObject::SetIsDelete(const bool isDelete)
 {
     _isDelete = isDelete;
 }
 
-void OObject::Serialize() const
+void KObject::Serialize() const
 {
     nlohmann::json json;
     KtSerializer serializer;
@@ -75,7 +75,7 @@ void OObject::Serialize() const
     serializer.WriteData(_path, json);
 }
 
-void OObject::Deserialize()
+void KObject::Deserialize()
 {
     nlohmann::json json;
     KtSerializer serializer;
@@ -83,14 +83,14 @@ void OObject::Deserialize()
     DeserializeFrom(json);
 }
 
-void OObject::SerializeTo(nlohmann::json& json) const
+void KObject::SerializeTo(nlohmann::json& json) const
 {
     json["guid"] = _guid;
     json["type"] = GetTypeName();
     json["name"] = _name;
 }
 
-void OObject::DeserializeFrom(const nlohmann::json& json)
+void KObject::DeserializeFrom(const nlohmann::json& json)
 {
     _guid = json["guid"];
     _name = json["name"];

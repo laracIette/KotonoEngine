@@ -1,7 +1,7 @@
 #pragma once
-#include <map>
+#include <unordered_map>
 #include "VisualizationField.h"
-class KVisualizer final
+class SVisualizer final
 {
 public:
 	void Init();
@@ -12,6 +12,6 @@ public:
 	void SetIsFieldVisible(const EVisualizationField field, bool isVisible);
 
 private:
-	std::map<EVisualizationField, bool> _fieldVisibilities;
+	std::unordered_map<EVisualizationField, bool> _fieldVisibilities;
 };
 

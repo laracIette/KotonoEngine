@@ -1,13 +1,16 @@
 #pragma once
 #include "InterfaceObject.h"
-#include "InterfaceObjectStack.h"
-#include <kotono_framework/Shader.h>
+
+class KtShader;
+class RInterfaceObjectStack;
+
 class RText : public RInterfaceObject
 {
 	BASECLASS(RInterfaceObject)
 
 public:
 	void Construct() override;
+	void Init() override;
 
 	const std::string& GetText() const; 
 	const float GetFontSize() const;
@@ -20,7 +23,7 @@ public:
 	void SetShader(KtShader* shader);
 
 private:
-	RHorizontalInterfaceObjectStack* letters_;
+	RInterfaceObjectStack* letters_;
 
 	std::string text_;
 	float fontSize_;

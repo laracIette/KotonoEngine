@@ -1,12 +1,12 @@
 #include "Time.h"
 #include <chrono>
 
-void KTime::Init()
+void STime::Init()
 {
     _startUTC = GetExactUTC();
 }
 
-void KTime::Update()
+void STime::Update()
 {
     double currentUTC = GetExactUTC();
     _nowTime = static_cast<float>(currentUTC - _startUTC);
@@ -15,23 +15,23 @@ void KTime::Update()
     _previousTime = _nowTime;
 }
 
-void KTime::Cleanup()
+void STime::Cleanup()
 {
 }
 
-const double KTime::GetExactUTC() const
+const double STime::GetExactUTC() const
 {
     auto now = std::chrono::system_clock::now();
     auto duration = now.time_since_epoch();
     return std::chrono::duration<double>(duration).count();
 }
 
-const float KTime::GetNow() const
+const float STime::GetNow() const
 {
     return _nowTime;
 }
 
-const float KTime::GetDelta() const
+const float STime::GetDelta() const
 {
     return _deltaTime;
 }

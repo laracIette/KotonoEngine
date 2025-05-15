@@ -2,7 +2,7 @@
 #include "Engine.h"
 #include "Time.h"
 
-void OTask::Update()
+void KTask::Update()
 {
     Base::Update();
 
@@ -19,33 +19,33 @@ void OTask::Update()
     }
 }
 
-const float OTask::GetDuration() const
+const float KTask::GetDuration() const
 {
     return _duration;
 }
 
-KtEvent<>& OTask::GetEventUpdate()
+KtEvent<>& KTask::GetEventUpdate()
 {
     return _eventUpdate;
 }
 
-KtEvent<>& OTask::GetEventCompleted()
+KtEvent<>& KTask::GetEventCompleted()
 {
     return _eventCompleted;
 }
 
-void OTask::SetDuration(const float duration)
+void KTask::SetDuration(const float duration)
 {
     _duration = duration;
 }
 
-void OTask::Start()
+void KTask::Start()
 {
     _isPlaying = true;
     _startTime = Engine.GetTime().GetNow();
 }
 
-void OTask::Stop()
+void KTask::Stop()
 {
     _isPlaying = false;
     _eventCompleted.Broadcast();

@@ -1,27 +1,29 @@
 #include "Scene.h"
 #include <nlohmann/json.hpp>
 #include <iostream>
+#include <kotono_framework/Viewport.h>
 #include "Engine.h"
 #include "ObjectManager.h"
+#include "SceneObject.h"
 #include "Mesh.h"
 
-void OScene::Init()
+void KScene::Init()
 {
 	Base::Init();
 
-	_viewport = &WindowViewport;
+	viewport_ = &WindowViewport;
 }
 
-void OScene::Load()
+void KScene::Load()
 {
 	Deserialize();
 	for (auto* sceneObject : _sceneObjects)
 	{
-		sceneObject->SetViewport(_viewport);
+		sceneObject->SetViewport(viewport_);
 	}
 }
 
-void OScene::Unload()
+void KScene::Unload()
 {
 	for (auto* sceneObject : _sceneObjects)
 	{
@@ -30,23 +32,23 @@ void OScene::Unload()
 	_sceneObjects.clear();
 }
 
-void OScene::Reload()
+void KScene::Reload()
 {
 	Unload();
 	Load();
 }
 
-void OScene::Add(TSceneObject* sceneObject)
+void KScene::Add(TSceneObject* sceneObject)
 {
 	_sceneObjects.insert(sceneObject);
 }
 
-void OScene::Remove(TSceneObject* sceneObject)
+void KScene::Remove(TSceneObject* sceneObject)
 {
 	_sceneObjects.erase(sceneObject);
 }
 
-void OScene::SerializeTo(nlohmann::json& json) const
+void KScene::SerializeTo(nlohmann::json& json) const
 {
 	Base::SerializeTo(json);
 	for (const auto* sceneObject : _sceneObjects)
@@ -57,7 +59,7 @@ void OScene::SerializeTo(nlohmann::json& json) const
 	}
 }
 
-void OScene::DeserializeFrom(const nlohmann::json& json)
+void KScene::DeserializeFrom(const nlohmann::json& json)
 {
 	Base::DeserializeFrom(json);
 	for (const auto& jsonSceneObject : json["sceneObjects"])
@@ -74,7 +76,7 @@ void OScene::DeserializeFrom(const nlohmann::json& json)
 	}
 }
 
-TSceneObject* OScene::GetSceneObject(const std::string_view type)
+TSceneObject* KScene::GetSceneObject(const std::string_view type)
 {
 	if (type == "TSceneObject")    return Engine.GetObjectManager().Create<TSceneObject>();
 	else if (type == "TMesh")      return Engine.GetObjectManager().Create<TMesh>();

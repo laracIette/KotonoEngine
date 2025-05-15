@@ -1,14 +1,19 @@
 #include "InterfaceObject.h"
 #include <kotono_framework/Framework.h>
+#include <kotono_framework/Window.h>
 #include <kotono_framework/Renderer.h>
 #include <kotono_framework/Path.h>
 #include <kotono_framework/ShaderManager.h>
+#include <kotono_framework/InputManager.h>
 #include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/log.h>
 #include <kotono_framework/Shader.h>
+#include <kotono_framework/Viewport.h>
 #include <kotono_framework/AddToRenderQueue2DArgs.h>
 #include "Engine.h"
+#include "InterfaceObjectComponent.h"
 #include "ObjectManager.h"
+#include "InterfaceObjectColliderComponent.h"
 
 static KtShader* FlatColorShader = nullptr;
 static KtImageTexture* FlatColorTexture = nullptr;
@@ -16,6 +21,10 @@ static KtImageTexture* FlatColorTexture = nullptr;
 void RInterfaceObject::Construct()
 {
 	Base::Construct();
+
+	collider_ = Engine.GetObjectManager().Create<KInterfaceObjectColliderComponent>();
+	collider_->SetOwner(this);
+	components_.insert(collider_);
 
 	if (!FlatColorShader)
 	{
@@ -37,7 +46,10 @@ void RInterfaceObject::Init()
 	visibility_ = EVisibility::EditorAndGame;
 	viewport_ = &WindowViewport;
 
+	collider_->GetRect().SetRelativeSize(rect_.GetRelativeSize());
+	
 	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjectBounds(), &RInterfaceObject::AddBoundsToRenderQueue);
+	ListenEvent(collider_->GetEventDown(), &RInterfaceObject::OnEventColliderMouseLeftButtonDown);
 }
 
 void RInterfaceObject::Update()
@@ -48,6 +60,8 @@ void RInterfaceObject::Update()
 void RInterfaceObject::Cleanup()
 {
 	Base::Cleanup();
+
+	//collider_->SetIsDelete(true);
 }
 
 const URect& RInterfaceObject::GetRect() const
@@ -91,6 +105,11 @@ const int32_t RInterfaceObject::GetLayer() const
 const std::unordered_set<RInterfaceObject*>& RInterfaceObject::GetChildren() const
 {
 	return children_;
+}
+
+const bool RInterfaceObject::GetIsSizeToContent() const
+{
+	return isSizeToContent_;
 }
 
 const EVisibility RInterfaceObject::GetVisibility() const
@@ -137,14 +156,26 @@ void RInterfaceObject::SetLayer(const int32_t layer)
 	layer_ = layer;
 }
 
-void RInterfaceObject::AddBoundsToRenderQueue() 
+void RInterfaceObject::GetIsSizeToContent(const bool isSizeToContent)
+{
+	isSizeToContent_ = isSizeToContent;
+}
+
+void RInterfaceObject::AddBoundsToRenderQueue()
 {
 	KtAddToRenderQueue2DArgs args{};
 	args.Shader = FlatColorShader;
 	args.Renderable = FlatColorTexture;
 	args.Viewport = GetViewport();
-	args.ObjectData.Model = GetRect().GetModelMatrix();
+	args.ObjectData.Model = rect_.GetModelMatrix();
 	args.Layer = GetLayer();
 	Framework.GetRenderer().GetRenderer2D().AddToRenderQueue(args);
 }
 
+void RInterfaceObject::OnEventColliderMouseLeftButtonDown()
+{
+	const auto& windowSize = Framework.GetWindow().GetSize();
+	const auto cursorPositionDelta = Framework.GetInputManager().GetMouse().GetCursorPositionDelta();
+	const auto cursorPositionDeltaNormalized = 2.0f * cursorPositionDelta / glm::vec2(windowSize);
+	rect_.AddOffset(cursorPositionDeltaNormalized);
+}

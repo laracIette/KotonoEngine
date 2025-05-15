@@ -2,13 +2,15 @@
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/Renderer.h>
 #include <kotono_framework/InputManager.h>
-#include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/ModelManager.h>
+#include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/Path.h>
+#include <kotono_framework/Shader.h>
+#include <kotono_framework/Model.h>
 #include <nlohmann/json.hpp>
 #include "Engine.h"
 #include "ObjectManager.h"
-#include "Visualizer.h"
+#include "Task.h"
 #include "Time.h"
 
 static KtShader* WireframeShader = nullptr;
@@ -17,7 +19,7 @@ void TMesh::Construct()
 {
     Base::Construct();
 
-    _spinTask = Engine.GetObjectManager().Create<OTask>();
+    _spinTask = Engine.GetObjectManager().Create<KTask>();
 
     if (!WireframeShader)
     {
@@ -31,7 +33,7 @@ void TMesh::Init()
     Base::Init();
 
     _spinTask->SetDuration(5.0f);
-    _spinTask->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED), &OTask::Start);
+    _spinTask->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED), &KTask::Start);
     
     ListenEvent(_spinTask->GetEventUpdate(), &TMesh::Spin);
     ListenEvent(Engine.GetObjectManager().GetEventDrawSceneObjects(), &TMesh::AddModelToRenderQueue);

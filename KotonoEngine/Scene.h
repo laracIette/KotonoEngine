@@ -1,10 +1,13 @@
 #pragma once
 #include "Object.h"
 #include <unordered_set>
-#include "SceneObject.h"
-class OScene : public OObject
+
+class KtViewport;
+class TSceneObject;
+
+class KScene : public KObject
 {
-	BASECLASS(OObject)
+	BASECLASS(KObject)
 
 public:
 	void Init() override;
@@ -21,7 +24,7 @@ public:
 
 
 private:
-	KtViewport* _viewport;
+	KtViewport* viewport_;
 	std::unordered_set<TSceneObject*> _sceneObjects;
 
 	TSceneObject* GetSceneObject(const std::string_view type);

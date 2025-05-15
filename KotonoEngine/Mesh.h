@@ -1,8 +1,10 @@
 #pragma once
 #include "SceneObject.h"
-#include <kotono_framework/Shader.h>
-#include <kotono_framework/Model.h>
-#include "Task.h"
+
+class KtShader;
+class KtModel;
+class KTask;
+
 class TMesh : public TSceneObject
 {
 	BASECLASS(TSceneObject)
@@ -26,7 +28,7 @@ public:
 private:
 	KtShader* _shader;
 	KtModel* _model;
-	OTask* _spinTask;
+	KTask* _spinTask;
 
 	void AddModelToRenderQueue();
 	void AddWireframeToRenderQueue();

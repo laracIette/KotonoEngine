@@ -1,15 +1,15 @@
 #pragma once
-#include "Object.h"
 #include <type_traits>
 #include <unordered_set>
-#include <vector>
-#include <concepts>
 #include <unordered_map>
 #include <typeindex>
 #include <kotono_framework/Event.h>
+
+class KObject;
+
 template <class T>
-concept Object = std::is_base_of_v<OObject, T>;
-class KObjectManager final
+concept Object = std::is_base_of_v<KObject, T>;
+class SObjectManager final
 {
 public:
 	void Init();
@@ -26,7 +26,7 @@ public:
 	T* Create()
 	{
 		T* object = new T();
-		Create(static_cast<OObject*>(object));
+		Create(static_cast<KObject*>(object));
 		return object;
 	}
 
@@ -55,7 +55,7 @@ public:
 			const auto& objects = it->second;
 			result.reserve(objects.size());
 
-			for (OObject* obj : objects)
+			for (KObject* obj : objects)
 			{
 				result.insert(static_cast<T*>(obj));
 			}
@@ -66,10 +66,10 @@ public:
 private:
 	void Quit();
 
-	std::unordered_set<OObject*> _objects;
-	std::unordered_set<OObject*> _inits;
+	std::unordered_set<KObject*> _objects;
+	std::unordered_set<KObject*> _inits;
 
-	std::unordered_map<std::type_index, std::unordered_set<OObject*>> _typeRegistry;
+	std::unordered_map<std::type_index, std::unordered_set<KObject*>> _typeRegistry;
 
 	KtEvent<> _eventDrawSceneObjects;
 	KtEvent<> _eventDrawSceneObjectWireframes;
@@ -82,5 +82,5 @@ private:
 	void DeleteObjects();
 	void DrawObjects();
 
-	void Create(OObject* object);
+	void Create(KObject* object);
 };

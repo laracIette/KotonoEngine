@@ -2,15 +2,22 @@
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/Path.h>
 #include <kotono_framework/Font.h>
+#include <kotono_framework/Shader.h>
 #include "Engine.h"
 #include "ObjectManager.h"
 #include "Image.h"
+#include "InterfaceObjectStack.h"
 
 void RText::Construct()
 {
     Base::Construct();
 
-    letters_ = Engine.GetObjectManager().Create<RHorizontalInterfaceObjectStack>();
+    letters_ = Engine.GetObjectManager().Create<RInterfaceObjectStack>();
+}
+
+void RText::Init()
+{
+    letters_->SetOrientation(EOrientation::Horizontal);
 }
 
 const std::string& RText::GetText() const

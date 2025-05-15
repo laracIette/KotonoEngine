@@ -1,6 +1,6 @@
 #include "Visualizer.h"
 
-void KVisualizer::Init()
+void SVisualizer::Init()
 {
 	SetIsFieldVisible(EVisualizationField::SceneObject, true);
 	SetIsFieldVisible(EVisualizationField::SceneObjectBounds, true);
@@ -12,11 +12,11 @@ void KVisualizer::Init()
 	SetIsFieldVisible(EVisualizationField::InterfaceObjectWireframe, true);
 }
 
-void KVisualizer::Cleanup()
+void SVisualizer::Cleanup()
 {
 }
 
-const bool KVisualizer::GetIsFieldVisible(const EVisualizationField field) const
+const bool SVisualizer::GetIsFieldVisible(const EVisualizationField field) const
 {
 	const auto it = _fieldVisibilities.find(field);
 	if (it != _fieldVisibilities.end())
@@ -26,7 +26,7 @@ const bool KVisualizer::GetIsFieldVisible(const EVisualizationField field) const
 	return false;
 }
 
-void KVisualizer::SetIsFieldVisible(const EVisualizationField field, bool isVisible)
+void SVisualizer::SetIsFieldVisible(const EVisualizationField field, bool isVisible)
 {
 	_fieldVisibilities[field] = isVisible;
 }

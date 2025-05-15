@@ -6,7 +6,7 @@
 #include "Guid.h"
 #include "kotono_framework/Event.h"
 #include <unordered_set>
-class OObject
+class KObject
 {
 public:
 	virtual void Construct();

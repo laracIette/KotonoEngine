@@ -1,9 +1,9 @@
 #pragma once
 #include "Object.h"
 #include <kotono_framework/Event.h>
-class OTask : public OObject
+class KTask : public KObject
 {
-	BASECLASS(OObject)
+	BASECLASS(KObject)
 
 public:
 	void Update() override;

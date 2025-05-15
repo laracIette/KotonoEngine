@@ -2,10 +2,12 @@
 #include "Object.h"
 #include "Transform.h"
 #include "Visibility.h"
-#include <kotono_framework/Viewport.h>
-class TSceneObject : public OObject
+
+class KtViewport;
+
+class TSceneObject : public KObject
 {
-	BASECLASS(OObject)
+	BASECLASS(KObject)
 
 public:
 	void Init() override;
@@ -24,8 +26,8 @@ public:
 	void DeserializeFrom(const nlohmann::json& json) override;
 
 private:
-	UTransform _transform;
-	EVisibility _visibility;
-	KtViewport* _viewport;
+	UTransform transform_;
+	EVisibility visibility_;
+	KtViewport* viewport_;
 	TSceneObject* parent_;
 };

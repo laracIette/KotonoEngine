@@ -25,6 +25,7 @@
     <ClCompile Include="Interface.cpp" />
     <ClCompile Include="InterfaceComponent.cpp" />
     <ClCompile Include="InterfaceObject.cpp" />
+    <ClCompile Include="InterfaceObjectComponent.cpp" />
     <ClCompile Include="InterfaceObjectContainer.cpp" />
     <ClCompile Include="InterfaceObjectStack.cpp" />
     <ClCompile Include="main.cpp" />
@@ -32,7 +33,7 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="Rect.cpp" />
-    <ClCompile Include="InterfaceCollider.cpp" />
+    <ClCompile Include="InterfaceObjectColliderComponent.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -51,6 +52,7 @@
     <ClInclude Include="Interface.h" />
     <ClInclude Include="InterfaceComponent.h" />
     <ClInclude Include="InterfaceObject.h" />
+    <ClInclude Include="InterfaceObjectComponent.h" />
     <ClInclude Include="InterfaceObjectContainer.h" />
     <ClInclude Include="InterfaceObjectStack.h" />
     <ClInclude Include="Mesh.h" />
@@ -58,7 +60,7 @@
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="Orientation.h" />
     <ClInclude Include="Rect.h" />
-    <ClInclude Include="InterfaceCollider.h" />
+    <ClInclude Include="InterfaceObjectColliderComponent.h" />
     <ClInclude Include="RotationUnit.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneObject.h" />

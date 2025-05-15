@@ -1,10 +1,12 @@
 #pragma once
 #include "Object.h"
 #include <unordered_set>
-#include "InterfaceComponent.h"
-class OInterface : public OObject
+
+class RInterfaceComponent;
+
+class KInterface : public KObject
 {
-	BASECLASS(OObject)
+	BASECLASS(KObject)
 
 public:
 	void Init() override;

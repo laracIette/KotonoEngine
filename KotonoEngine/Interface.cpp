@@ -1,13 +1,13 @@
 #include "Interface.h"
 
-void OInterface::Init()
+void KInterface::Init()
 {
 	Base::Init();
 
 	SetLayout();
 }
 
-void OInterface::SetLayout()
+void KInterface::SetLayout()
 {
 	
 }
