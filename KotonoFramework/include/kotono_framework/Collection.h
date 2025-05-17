@@ -44,7 +44,7 @@ public:
 
 		bool PassesFilters(const T& item) const
 		{
-			for (const auto& filter : filters_)
+			for (const Filter& filter : filters_)
 			{
 				if (!filter(item))
 				{
@@ -83,7 +83,7 @@ public:
 		std::vector<T> result;
 		result.reserve(data_.size());
 
-		for (const auto& item : *this)
+		for (const T& item : *this)
 		{
 			result.push_back(item);
 		}
@@ -96,12 +96,20 @@ public:
 		std::unordered_set<T> result;
 		result.reserve(data_.size());
 
-		for (const auto& item : *this)
+		for (const T& item : *this)
 		{
 			result.insert(item);
 		}
 
 		return result;
+	}
+
+	T GetFirst()
+	{
+		for (const T& item : *this)
+		{
+			return item;
+		}
 	}
 
 	Iterator begin() const { return Iterator(data_, filters_, 0); }

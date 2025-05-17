@@ -33,14 +33,17 @@ public:
 	void SetLayer(const int32_t layer);
 	void GetIsSizeToContent(const bool isSizeToContent);
 
+protected:
+	void AddComponent(KInterfaceObjectComponent* component);
+
 private:
 	URect rect_;
 	EVisibility visibility_;
 	KtViewport* viewport_;
 	RInterfaceObject* parent_;
-	int32_t layer_;
 	std::unordered_set<RInterfaceObject*> children_;
-	bool isSizeToContent_;
+	int32_t layer_;
+	bool isSizeToContent_; // todo???
 	std::unordered_set<KInterfaceObjectComponent*> components_;
 	KInterfaceObjectColliderComponent* collider_;
 

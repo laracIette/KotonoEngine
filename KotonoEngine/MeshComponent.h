@@ -1,13 +1,13 @@
 #pragma once
-#include "SceneObject.h"
+#include "SceneObjectComponent.h"
 
 class KtShader;
 class KtModel;
 class KTask;
 
-class TMesh : public TSceneObject
+class KMeshComponent : public KSceneObjectComponent
 {
-	BASECLASS(TSceneObject)
+	BASECLASS(KSceneObjectComponent)
 
 public:
 	void Construct() override;

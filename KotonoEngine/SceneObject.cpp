@@ -2,6 +2,7 @@
 #include <nlohmann/json.hpp>
 #include <kotono_framework/log.h>
 #include <kotono_framework/Viewport.h>
+#include "SceneObjectComponent.h"
 
 void TSceneObject::Init()
 {
@@ -58,6 +59,14 @@ void TSceneObject::SetParent(TSceneObject* parent, const ECoordinateSpace keepTr
 		KT_DEBUG_LOG("TSceneObject::SetParent(): couldn't set the parent of '%s' to the same", GetName().c_str());
 		return;
 	}
+	if (parent)
+	{
+		parent->children_.insert(this);
+	}
+	if (parent_)
+	{
+		parent_->children_.erase(this);
+	}
 	parent_ = parent;
 	transform_.SetParent(parent_ ? &parent_->transform_ : nullptr, keepTransform);
 }
@@ -98,4 +107,11 @@ void TSceneObject::DeserializeFrom(const nlohmann::json& json)
 		json["transform"]["scale"]["y"],
 		json["transform"]["scale"]["z"] 
 	});
+}
+
+void TSceneObject::AddComponent(KSceneObjectComponent* component)
+{
+	component->SetOwner(this);
+	components_.insert(component);
+	AddObject(component);
 }

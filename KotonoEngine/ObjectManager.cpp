@@ -7,7 +7,8 @@
 #include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/Path.h>
 #include "Object.h"
-#include "Mesh.h"
+#include "MeshSceneObject.h"
+#include "MeshComponent.h"
 #include "Image.h"
 #include "Scene.h"
 #include "Camera.h"
@@ -77,14 +78,14 @@ void SObjectManager::Init()
 		text->SetText("hello world !");
 	}
 	{
-		auto* mesh1 = Create<TMesh>();
-		mesh1->SetShader(shader3D);
-		mesh1->SetModel(model1);
+		auto* mesh1 = Create<TMeshSceneObject>();
+		mesh1->GetComponent<KMeshComponent>()->SetShader(shader3D);
+		mesh1->GetComponent<KMeshComponent>()->SetModel(model1);
 		mesh1->GetTransform().SetRelativePosition(glm::vec3(-1.0f, 0.0f, 0.0f));
 	
-		auto* mesh2 = Create<TMesh>();
-		mesh2->SetShader(shader3D);
-		mesh2->SetModel(model2);
+		auto* mesh2 = Create<TMeshSceneObject>();
+		mesh2->GetComponent<KMeshComponent>()->SetShader(shader3D);
+		mesh2->GetComponent<KMeshComponent>()->SetModel(model2);
 		mesh2->GetTransform().SetRelativePosition(glm::vec3(1.0f, 0.0f, 0.0f));
 		mesh2->GetTransform().SetRelativeScale(glm::vec3(0.2f));
 		mesh2->SetParent(mesh1, ECoordinateSpace::World);

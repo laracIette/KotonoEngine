@@ -23,8 +23,7 @@ void RInterfaceObject::Construct()
 	Base::Construct();
 
 	collider_ = Engine.GetObjectManager().Create<KInterfaceObjectColliderComponent>();
-	collider_->SetOwner(this);
-	components_.insert(collider_);
+	AddComponent(collider_);
 
 	if (!FlatColorShader)
 	{
@@ -159,6 +158,13 @@ void RInterfaceObject::SetLayer(const int32_t layer)
 void RInterfaceObject::GetIsSizeToContent(const bool isSizeToContent)
 {
 	isSizeToContent_ = isSizeToContent;
+}
+
+void RInterfaceObject::AddComponent(KInterfaceObjectComponent* component)
+{
+	component->SetOwner(this);
+	components_.insert(component);
+	AddObject(component);
 }
 
 void RInterfaceObject::AddBoundsToRenderQueue()

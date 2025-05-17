@@ -40,8 +40,10 @@ protected:
 	void ListenEvent(KtEvent<Args...>& event, Tinst* instance, void (Tfunc::* function)(Args...))
 	{
 		event.AddListener(instance, function);
-		_listenedEvents.insert(&event);
+		listenedEvents_.insert(&event);
 	}
+
+	void AddObject(KObject* object);
 
 private:
 	UGuid _guid;
@@ -49,6 +51,7 @@ private:
 	std::string _name;
 	bool _isDelete;
 
-	std::unordered_set<KtEventBase*> _listenedEvents;
+	std::unordered_set<KObject*> objects_;
+	std::unordered_set<KtEventBase*> listenedEvents_;
 };
 

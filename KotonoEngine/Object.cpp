@@ -18,12 +18,17 @@ void KObject::Update()
 
 void KObject::Cleanup() 
 {
-    for (auto* event : _listenedEvents)
+    for (auto* event : listenedEvents_)
     {
         if (event)
         {
             event->RemoveListener(this);
         }
+    }
+
+    for (auto* object : objects_)
+    {
+        object->SetIsDelete(true);
     }
 }
 
@@ -94,4 +99,9 @@ void KObject::DeserializeFrom(const nlohmann::json& json)
 {
     _guid = json["guid"];
     _name = json["name"];
+}
+
+void KObject::AddObject(KObject* object)
+{
+    objects_.insert(object);
 }

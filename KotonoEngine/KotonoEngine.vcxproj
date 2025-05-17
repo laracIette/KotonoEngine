@@ -29,7 +29,7 @@
     <ClCompile Include="InterfaceObjectContainer.cpp" />
     <ClCompile Include="InterfaceObjectStack.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="Rect.cpp" />
@@ -37,7 +37,9 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="SceneObjectComponent.cpp" />
     <ClCompile Include="Task.cpp" />
+    <ClCompile Include="MeshSceneObject.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -55,7 +57,7 @@
     <ClInclude Include="InterfaceObjectComponent.h" />
     <ClInclude Include="InterfaceObjectContainer.h" />
     <ClInclude Include="InterfaceObjectStack.h" />
-    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshComponent.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="Orientation.h" />
@@ -65,7 +67,9 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneObject.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="SceneObjectComponent.h" />
     <ClInclude Include="Task.h" />
+    <ClInclude Include="MeshSceneObject.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
