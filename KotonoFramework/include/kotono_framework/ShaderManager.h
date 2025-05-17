@@ -1,6 +1,7 @@
 #pragma once
 #include "ItemManager.h"
 #include "Shader.h"
+
 class KtShaderManager final : public KtItemManager<KtShader>
 {
 public:

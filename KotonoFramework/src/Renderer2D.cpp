@@ -4,6 +4,10 @@
 #include "Context.h"
 #include "Vertex2D.h"
 #include "Culler2D.h"
+#include "Renderer.h"
+#include "ImageTexture.h"
+#include "Shader.h"
+#include "Viewport.h"
 
 static constexpr std::array<KtVertex2D, 4> Vertices =
 {//                   Position,              Color,      TexCoords

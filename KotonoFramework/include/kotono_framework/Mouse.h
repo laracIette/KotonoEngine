@@ -18,11 +18,11 @@ public:
 	KtEvent<>& GetMoveEvent();
 
 private:
-	glm::vec2 _previousCursorPosition;
-	glm::vec2 _cursorPosition;
+	glm::vec2 previousCursorPosition_;
+	glm::vec2 cursorPosition_;
 
-	std::map<KtButton, std::map<KtInputState, KtEvent<>>> _buttonEvents;
-	std::map<KtButton, std::unordered_set<KtInputState>> _buttonStates;
-	KtEvent<> _moveEvent;
+	std::map<KtButton, std::map<KtInputState, KtEvent<>>> buttonEvents_;
+	std::map<KtButton, std::unordered_set<KtInputState>> buttonStates_;
+	KtEvent<> moveEvent_;
 };
 

@@ -12,18 +12,18 @@ public:
 
 	void Cleanup()
 	{
-		for (auto& [path, item] : _items)
+		for (auto& [path, item] : items_)
 		{
 			CleanupItem(item);
 			delete item;
 		}
-		_items.clear();
+		items_.clear();
 	}
 
 	T* Get(const std::filesystem::path& path) const
 	{
-		const auto it = _items.find(path);
-		if (it != _items.end())
+		const auto it = items_.find(path);
+		if (it != items_.end())
 		{
 			return it->second;
 		}
@@ -33,7 +33,7 @@ public:
 	virtual T* Create(const std::filesystem::path& path) = 0;
 
 protected:
-	std::unordered_map<std::filesystem::path, T*> _items;
+	std::unordered_map<std::filesystem::path, T*> items_;
 
 	virtual void CleanupItem(T* item) const = 0;
 };

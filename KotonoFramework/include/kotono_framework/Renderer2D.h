@@ -2,6 +2,10 @@
 #include "UniformData2D.h"
 #include "AddToRenderQueue2DArgs.h"
 #include "RenderQueue2DData.h"
+#include "frames_in_flight.h"
+#include "AllocatedBuffer.h"
+#include <vulkan/vulkan_core.h>
+#include <array>
 class KtRenderer2D final
 {
 public:

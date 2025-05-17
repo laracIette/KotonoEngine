@@ -1,10 +1,12 @@
 #pragma once
 #include <vector>
 #include <unordered_map>
-#include "Shader.h"
-#include "Renderable3D.h"
-#include "Viewport.h"
 #include "ObjectData3D.h"
+
+class KtShader;
+class KtRenderable3D;
+class KtViewport;
+
 struct KtRenderQueue3DData
 {
 	struct RenderQueue3DViewportData

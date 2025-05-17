@@ -41,33 +41,33 @@ void KtContext::Init()
 void KtContext::Cleanup()
 {
 	KT_DEBUG_LOG("cleaning up context");
-	vkDestroyCommandPool(_device, _commandPool, nullptr);
+	vkDestroyCommandPool(device_, commandPool_, nullptr);
 
 #if false
 	VmaTotalStatistics stats;
-	vmaCalculateStatistics(_allocator, &stats);
+	vmaCalculateStatistics(allocator_, &stats);
 
 	KT_DEBUG_LOG("VMA Allocator Stats:");
 	KT_DEBUG_LOG("Total memory allocated: %llu bytes", stats.total.statistics.allocationBytes);
 	KT_DEBUG_LOG("Number of allocations: %u", stats.total.statistics.allocationCount);
 
 	char* statsString;
-	vmaBuildStatsString(_allocator, &statsString, true);
+	vmaBuildStatsString(allocator_, &statsString, true);
 	KT_DEBUG_LOG("VMA Stats:\n%s", statsString);
-	vmaFreeStatsString(_allocator, statsString);
+	vmaFreeStatsString(allocator_, statsString);
 #endif
 
-	vmaDestroyAllocator(_allocator);
+	vmaDestroyAllocator(allocator_);
 
-	vkDestroyDevice(_device, nullptr);
+	vkDestroyDevice(device_, nullptr);
 
 	if (enableValidationLayers)
 	{
-		DestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);
+		DestroyDebugUtilsMessengerEXT(instance_, debugMessenger_, nullptr);
 	}
 
-	vkDestroySurfaceKHR(_instance, _surface, nullptr);
-	vkDestroyInstance(_instance, nullptr);
+	vkDestroySurfaceKHR(instance_, surface_, nullptr);
+	vkDestroyInstance(instance_, nullptr);
 	KT_DEBUG_LOG("cleaned up context");
 }
 
@@ -110,7 +110,7 @@ void KtContext::CreateInstance()
 		createInfo.pNext = nullptr;
 	}
 
-	if (vkCreateInstance(&createInfo, nullptr, &_instance) != VK_SUCCESS)
+	if (vkCreateInstance(&createInfo, nullptr, &instance_) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create instance!");
 	}
@@ -132,7 +132,7 @@ void KtContext::SetupDebugMessenger()
 	VkDebugUtilsMessengerCreateInfoEXT createInfo;
 	PopulateDebugMessengerCreateInfo(createInfo);
 
-	if (CreateDebugUtilsMessengerEXT(_instance, &createInfo, nullptr, &_debugMessenger) != VK_SUCCESS)
+	if (CreateDebugUtilsMessengerEXT(instance_, &createInfo, nullptr, &debugMessenger_) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to set up debug messenger!");
 	}
@@ -187,7 +187,7 @@ const std::vector<const char*> KtContext::GetRequiredExtensions()
 void KtContext::PickPhysicalDevice()
 {
 	uint32_t deviceCount = 0;
-	vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
+	vkEnumeratePhysicalDevices(instance_, &deviceCount, nullptr);
 
 	if (deviceCount == 0)
 	{
@@ -195,7 +195,7 @@ void KtContext::PickPhysicalDevice()
 	}
 
 	std::vector<VkPhysicalDevice> devices(deviceCount);
-	vkEnumeratePhysicalDevices(_instance, &deviceCount, devices.data());
+	vkEnumeratePhysicalDevices(instance_, &deviceCount, devices.data());
 
 	VkPhysicalDevice bestDevice = VK_NULL_HANDLE;
 	VkDeviceSize maxVRAM = 0;
@@ -245,8 +245,8 @@ void KtContext::PickPhysicalDevice()
 		throw std::runtime_error("failed to find a suitable GPU!");
 	}
 
-	_physicalDevice = bestDevice;
-	_msaaSamples = GetMaxUsableSampleCount();
+	physicalDevice_ = bestDevice;
+	msaaSamples_ = GetMaxUsableSampleCount();
 }
 
 const bool KtContext::IsDeviceSuitable(VkPhysicalDevice device)
@@ -321,7 +321,7 @@ const KtQueueFamilyIndices KtContext::FindQueueFamilies(VkPhysicalDevice device)
 		}
 
 		VkBool32 presentSupport = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, _surface, &presentSupport);
+		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface_, &presentSupport);
 
 		if (presentSupport)
 		{
@@ -341,7 +341,7 @@ const KtQueueFamilyIndices KtContext::FindQueueFamilies(VkPhysicalDevice device)
 
 void KtContext::CreateLogicalDevice()
 {
-	const KtQueueFamilyIndices indices = FindQueueFamilies(_physicalDevice);
+	const KtQueueFamilyIndices indices = FindQueueFamilies(physicalDevice_);
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 	const std::set<uint32_t> uniqueQueueFamilies = { indices.GraphicsFamily.value(), indices.PresentFamily.value() };
@@ -407,18 +407,18 @@ void KtContext::CreateLogicalDevice()
 	createInfo.pNext = &deviceFeatures2;
 
 	VK_CHECK_THROW(
-		vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device),
+		vkCreateDevice(physicalDevice_, &createInfo, nullptr, &device_),
 		"failed to create logical device!"
 	);
 
-	vkGetDeviceQueue(_device, indices.GraphicsFamily.value(), 0, &_graphicsQueue);
-	vkGetDeviceQueue(_device, indices.PresentFamily.value(), 0, &_presentQueue);
+	vkGetDeviceQueue(device_, indices.GraphicsFamily.value(), 0, &graphicsQueue_);
+	vkGetDeviceQueue(device_, indices.PresentFamily.value(), 0, &presentQueue_);
 }
 
 void KtContext::CreateSurface()
 {
 	VK_CHECK_THROW(
-		glfwCreateWindowSurface(_instance, Framework.GetWindow().GetGLFWWindow(), nullptr, &_surface),
+		glfwCreateWindowSurface(instance_, Framework.GetWindow().GetGLFWWindow(), nullptr, &surface_),
 		"failed to create window surface!"
 	);
 }
@@ -427,24 +427,24 @@ const KtSwapChainSupportDetails KtContext::QuerySwapChainSupport(VkPhysicalDevic
 {
 	KtSwapChainSupportDetails details;
 
-	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, _surface, &details.Capabilities);
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_, &details.Capabilities);
 
 	uint32_t formatCount;
-	vkGetPhysicalDeviceSurfaceFormatsKHR(device, _surface, &formatCount, nullptr);
+	vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, nullptr);
 
 	if (formatCount != 0)
 	{
 		details.Formats.resize(formatCount);
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device, _surface, &formatCount, details.Formats.data());
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, details.Formats.data());
 	}
 
 	uint32_t presentModeCount;
-	vkGetPhysicalDeviceSurfacePresentModesKHR(device, _surface, &presentModeCount, nullptr);
+	vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, nullptr);
 
 	if (presentModeCount != 0)
 	{
 		details.PresentModes.resize(presentModeCount);
-		vkGetPhysicalDeviceSurfacePresentModesKHR(device, _surface, &presentModeCount, details.PresentModes.data());
+		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, details.PresentModes.data());
 	}
 
 	return details;
@@ -525,12 +525,12 @@ const VkExtent2D KtContext::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& cap
 void KtContext::CreateAllocator()
 {
 	VmaAllocatorCreateInfo allocatorInfo{};
-	allocatorInfo.physicalDevice = _physicalDevice;
-	allocatorInfo.device = _device;
-	allocatorInfo.instance = _instance;
+	allocatorInfo.physicalDevice = physicalDevice_;
+	allocatorInfo.device = device_;
+	allocatorInfo.instance = instance_;
 	allocatorInfo.vulkanApiVersion = VK_API_VERSION_1_3;
 
-	if (vmaCreateAllocator(&allocatorInfo, &_allocator) != VK_SUCCESS)
+	if (vmaCreateAllocator(&allocatorInfo, &allocator_) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create VMA allocator");
 	}
@@ -541,11 +541,11 @@ const VkCommandBuffer KtContext::BeginSingleTimeCommands() const
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocInfo.commandPool = _commandPool;
+	allocInfo.commandPool = commandPool_;
 	allocInfo.commandBufferCount = 1;
 
 	VkCommandBuffer commandBuffer;
-	vkAllocateCommandBuffers(_device, &allocInfo, &commandBuffer);
+	vkAllocateCommandBuffers(device_, &allocInfo, &commandBuffer);
 
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -565,22 +565,22 @@ void KtContext::EndSingleTimeCommands(VkCommandBuffer commandBuffer) const
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &commandBuffer;
 
-	vkQueueSubmit(_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(_graphicsQueue);
+	vkQueueSubmit(graphicsQueue_, 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(graphicsQueue_);
 
-	vkFreeCommandBuffers(_device, _commandPool, 1, &commandBuffer);
+	vkFreeCommandBuffers(device_, commandPool_, 1, &commandBuffer);
 }
 
 void KtContext::CreateCommandPool()
 {
-	const KtQueueFamilyIndices queueFamilyIndices = FindQueueFamilies(_physicalDevice);
+	const KtQueueFamilyIndices queueFamilyIndices = FindQueueFamilies(physicalDevice_);
 
 	VkCommandPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 	poolInfo.queueFamilyIndex = queueFamilyIndices.GraphicsFamily.value();
 
-	if (vkCreateCommandPool(_device, &poolInfo, nullptr, &_commandPool) != VK_SUCCESS)
+	if (vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool_) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create command pool!");
 	}
@@ -618,7 +618,7 @@ void KtContext::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemo
 	allocCreateInfo.flags = flags;
 
 	VK_CHECK_THROW(
-		vmaCreateBuffer(_allocator, &bufferInfo, &allocCreateInfo, &buffer.Buffer, &buffer.Allocation, &buffer.AllocationInfo),
+		vmaCreateBuffer(allocator_, &bufferInfo, &allocCreateInfo, &buffer.Buffer, &buffer.Allocation, &buffer.AllocationInfo),
 		"failed to create buffer with VMA!"
 	);
 
@@ -642,7 +642,7 @@ void KtContext::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize 
 const uint32_t KtContext::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const
 {
 	VkPhysicalDeviceMemoryProperties memProperties;
-	vkGetPhysicalDeviceMemoryProperties(_physicalDevice, &memProperties);
+	vkGetPhysicalDeviceMemoryProperties(physicalDevice_, &memProperties);
 
 	for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
 	{
@@ -677,7 +677,7 @@ void KtContext::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels,
 	allocCreateInfo.requiredFlags = properties;
 
 	// Use vmaCreateImage for image creation and memory allocation
-	if (vmaCreateImage(_allocator, &imageInfo, &allocCreateInfo, &image, &imageAllocation, nullptr) != VK_SUCCESS)
+	if (vmaCreateImage(allocator_, &imageInfo, &allocCreateInfo, &image, &imageAllocation, nullptr) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create image with memory allocation!");
 	}
@@ -688,7 +688,7 @@ const VkFormat KtContext::FindSupportedFormat(const std::vector<VkFormat>& candi
 	for (VkFormat format : candidates)
 	{
 		VkFormatProperties props;
-		vkGetPhysicalDeviceFormatProperties(_physicalDevice, format, &props);
+		vkGetPhysicalDeviceFormatProperties(physicalDevice_, format, &props);
 
 		if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
 		{
@@ -840,7 +840,7 @@ const VkImageView KtContext::CreateImageView(VkImage image, VkFormat format, VkI
 	viewInfo.subresourceRange.layerCount = 1;
 
 	VkImageView imageView;
-	if (vkCreateImageView(_device, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
+	if (vkCreateImageView(device_, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create texture image view!");
 	}
@@ -851,7 +851,7 @@ const VkImageView KtContext::CreateImageView(VkImage image, VkFormat format, VkI
 void KtContext::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
 {
 	VkFormatProperties formatProperties;
-	vkGetPhysicalDeviceFormatProperties(_physicalDevice, imageFormat, &formatProperties);
+	vkGetPhysicalDeviceFormatProperties(physicalDevice_, imageFormat, &formatProperties);
 
 	if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
 	{
@@ -944,7 +944,7 @@ void KtContext::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t tex
 const VkSampleCountFlagBits KtContext::GetMaxUsableSampleCount() const
 {
 	VkPhysicalDeviceProperties physicalDeviceProperties;
-	vkGetPhysicalDeviceProperties(_physicalDevice, &physicalDeviceProperties);
+	vkGetPhysicalDeviceProperties(physicalDevice_, &physicalDeviceProperties);
 
 	VkSampleCountFlags counts = physicalDeviceProperties.limits.framebufferColorSampleCounts & physicalDeviceProperties.limits.framebufferDepthSampleCounts;
 	if (counts & VK_SAMPLE_COUNT_64_BIT) { return VK_SAMPLE_COUNT_64_BIT; }
@@ -960,42 +960,42 @@ const VkSampleCountFlagBits KtContext::GetMaxUsableSampleCount() const
 
 VkPhysicalDevice& KtContext::GetPhysicalDevice()
 {
-	return _physicalDevice;
+	return physicalDevice_;
 }
 
 VkDevice& KtContext::GetDevice()
 {
-	return _device;
+	return device_;
 }
 
 VmaAllocator& KtContext::GetAllocator() 
 { 
-	return _allocator; 
+	return allocator_; 
 }
 
 VkQueue& KtContext::GetGraphicsQueue()
 {
-	return _graphicsQueue;
+	return graphicsQueue_;
 }
 
 VkQueue& KtContext::GetPresentQueue()
 {
-	return _presentQueue;
+	return presentQueue_;
 }
 
 VkSurfaceKHR& KtContext::GetSurface()
 {
-	return _surface;
+	return surface_;
 }
 
 VkCommandPool& KtContext::GetCommandPool()
 {
-	return _commandPool;
+	return commandPool_;
 }
 
 const VkSampleCountFlagBits KtContext::GetMSAASamples() const
 {
-	return _msaaSamples;
+	return msaaSamples_;
 }
 
 const bool KtContext::GetIsComputerPluggedIn()

@@ -1,7 +1,7 @@
 #include "Window.h"
 #include "Framework.h"
 #include "Context.h"
-#include <iostream>
+#include "Viewport.h"
 #include "log.h"
 
 void framebuffersize_callback_(GLFWwindow* window, int width, int height);

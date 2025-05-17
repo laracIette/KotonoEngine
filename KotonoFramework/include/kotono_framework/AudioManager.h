@@ -1,5 +1,8 @@
 #pragma once
-#include <AL/alc.h>
+
+struct ALCdevice;
+struct ALCcontext;
+
 class KtAudioManager final
 {
 public:
@@ -7,7 +10,7 @@ public:
 	void Cleanup();
 
 private:
-	ALCdevice* _device;
-	ALCcontext* _context;
+	ALCdevice* device_;
+	ALCcontext* context_;
 };
 

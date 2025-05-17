@@ -6,7 +6,7 @@
 
 void KtMouse::Update()
 {
-    for (auto& [button, events] : _buttonEvents)
+    for (auto& [button, events] : buttonEvents_)
     {
         std::unordered_set<KtInputState> buttonStates;
 
@@ -16,7 +16,7 @@ void KtMouse::Update()
         case GLFW_PRESS:
         {
             buttonStates.insert(KT_INPUT_STATE_DOWN);
-            if (!_buttonStates[button].contains(KT_INPUT_STATE_DOWN))
+            if (!buttonStates_[button].contains(KT_INPUT_STATE_DOWN))
             {
                 buttonStates.insert(KT_INPUT_STATE_PRESSED);
             }
@@ -25,7 +25,7 @@ void KtMouse::Update()
         case GLFW_RELEASE:
         {
             buttonStates.insert(KT_INPUT_STATE_UP);
-            if (!_buttonStates[button].contains(KT_INPUT_STATE_UP))
+            if (!buttonStates_[button].contains(KT_INPUT_STATE_UP))
             {
                 buttonStates.insert(KT_INPUT_STATE_RELEASED);
             }
@@ -35,9 +35,9 @@ void KtMouse::Update()
             break;
         }
 
-        _buttonStates[button] = buttonStates;
+        buttonStates_[button] = buttonStates;
 
-        for (const auto inputState : _buttonStates[button])
+        for (const auto inputState : buttonStates_[button])
         {
             if (events.contains(inputState))
             {
@@ -49,42 +49,42 @@ void KtMouse::Update()
     double x, y;
     glfwGetCursorPos(Framework.GetWindow().GetGLFWWindow(), &x, &y);
     const auto newPos = glm::vec2(x, y);
-    _previousCursorPosition = _cursorPosition;
-    _cursorPosition = newPos;
+    previousCursorPosition_ = cursorPosition_;
+    cursorPosition_ = newPos;
 
-    if (_cursorPosition != newPos)
+    if (cursorPosition_ != newPos)
     {
-        _moveEvent.Broadcast();
+        moveEvent_.Broadcast();
     }
 }
 
 const glm::vec2& KtMouse::GetPreviousCursorPosition() const
 {
-    return _previousCursorPosition;
+    return previousCursorPosition_;
 }
 
 const glm::vec2& KtMouse::GetCursorPosition() const
 {
-    return _cursorPosition;
+    return cursorPosition_;
 }
 
 const glm::vec2 KtMouse::GetCursorPositionNormalized() const
 {
     const auto& windowSize = Framework.GetWindow().GetSize();
-    return 2.0f * _cursorPosition / glm::vec2(windowSize) - 1.0f;
+    return 2.0f * cursorPosition_ / glm::vec2(windowSize) - 1.0f;
 }
 
 const glm::vec2 KtMouse::GetCursorPositionDelta() const
 {
-    return _cursorPosition - _previousCursorPosition;
+    return cursorPosition_ - previousCursorPosition_;
 }
 
 KtEvent<>& KtMouse::GetButtonEvent(const KtButton button, const KtInputState inputState)
 {
-    return _buttonEvents[button][inputState];
+    return buttonEvents_[button][inputState];
 }
 
 KtEvent<>& KtMouse::GetMoveEvent()
 {
-    return _moveEvent;
+    return moveEvent_;
 }

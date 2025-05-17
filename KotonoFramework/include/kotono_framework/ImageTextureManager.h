@@ -1,6 +1,7 @@
 #pragma once
 #include "ItemManager.h"
 #include "ImageTexture.h"
+
 class KtImageTextureManager final : public KtItemManager<KtImageTexture>
 {
 public:

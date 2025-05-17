@@ -12,7 +12,7 @@ public:
 	KtKeyboard& GetKeyboard();
 
 private:
-	KtMouse _mouse;
-	KtKeyboard _keyboard;
+	KtMouse mouse_;
+	KtKeyboard keyboard_;
 };
 

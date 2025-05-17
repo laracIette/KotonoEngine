@@ -17,25 +17,25 @@ public:
         Listener listener{};
         listener.Instance = instance;
         listener.Callback = [instance, function](Args... args) { (instance->*function)(args...); };
-        _listeners.push_back(std::move(listener));
+        listeners_.push_back(std::move(listener));
     }
 
     void RemoveListener(void* instance) override
     {
-        _listeners.erase(
-            std::remove_if(_listeners.begin(), _listeners.end(),
+        listeners_.erase(
+            std::remove_if(listeners_.begin(), listeners_.end(),
                 [instance](const Listener& listener)
                 { 
                     return listener.Instance == instance; 
                 }
             ),
-            _listeners.end()
+            listeners_.end()
         );
     }
 
     void Broadcast(Args... args)
     {
-        for (const Listener& listener : _listeners)
+        for (const Listener& listener : listeners_)
         {
             if (listener.Instance)
             {
@@ -50,7 +50,7 @@ public:
 
     void ClearListeners()
     {
-        _listeners = {};
+        listeners_ = {};
     }
 
 private:
@@ -60,5 +60,5 @@ private:
         std::function<void(Args...)> Callback;
     };
 
-    std::vector<Listener> _listeners;
+    std::vector<Listener> listeners_;
 };

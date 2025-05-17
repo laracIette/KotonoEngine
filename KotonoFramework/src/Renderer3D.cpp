@@ -1,10 +1,10 @@
 #include "Renderer3D.h"
 #include "Framework.h"
-#include "ShaderManager.h"
-#include "Path.h"
-#include "log.h"
 #include "Renderer.h"
 #include "Culler3D.h"
+#include "Renderable3D.h"
+#include "Viewport.h"
+#include "Shader.h"
 
 void KtRenderer3D::Init()
 {

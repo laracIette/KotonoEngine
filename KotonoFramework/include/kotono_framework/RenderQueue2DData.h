@@ -2,10 +2,12 @@
 #include <vector>
 #include <unordered_map>
 #include <map>
-#include "Shader.h"
-#include "Renderable2D.h"
-#include "Viewport.h"
 #include "ObjectData2D.h"
+
+class KtShader;
+class KtRenderable2D;
+class KtViewport;
+
 struct KtRenderQueue2DData
 {
 	struct RenderQueue2DLayerData

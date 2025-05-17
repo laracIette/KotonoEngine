@@ -17,10 +17,10 @@ public:
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t instanceCount, const uint32_t firstInstance) const override;
 
 private:
-	const std::filesystem::path _path;
+	const std::filesystem::path path_;
 
-	std::vector<KtVertex3D> _vertices;
-	std::vector<uint32_t> _indices;
+	std::vector<KtVertex3D> vertices_;
+	std::vector<uint32_t> indices_;
 	KtAllocatedBuffer vertexBuffer_;
 	KtAllocatedBuffer indexBuffer_;
 

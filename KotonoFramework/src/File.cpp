@@ -4,50 +4,50 @@
 #include <iostream>
 
 KtFile::KtFile(const std::filesystem::path& path) :
-    _path(path)
+    path_(path)
 {
 }
 
 const std::filesystem::path& KtFile::GetPath() const
 {
-    return _path;
+    return path_;
 }
 
 const std::filesystem::path KtFile::GetDirectory() const
 {
-    return _path.parent_path();
+    return path_.parent_path();
 }
 
 const std::string KtFile::GetName() const
 {
-    return _path.filename().string();
+    return path_.filename().string();
 }
 
 const std::string KtFile::GetExtension() const
 {
-    return _path.extension().string();
+    return path_.extension().string();
 }
 
 const std::string KtFile::GetStem() const
 {
-    return _path.stem().string();
+    return path_.stem().string();
 }
 
 const std::string KtFile::ReadString() const
 {
     // Check if path exists.
-    if (!std::filesystem::exists(_path))
+    if (!std::filesystem::exists(path_))
     {
-        std::cerr << "Failed to find a file at '" << _path << '\'' << std::endl;
+        std::cerr << "Failed to find a file at '" << path_ << '\'' << std::endl;
         return "";
     }
 
     // Open file
-    std::ifstream file(_path);
+    std::ifstream file(path_);
 
     if (!file.is_open())
     {
-        std::cerr << "Failed to open the file at '" << _path << '\'' << std::endl;
+        std::cerr << "Failed to open the file at '" << path_ << '\'' << std::endl;
         return "";
     }
 
@@ -62,17 +62,17 @@ const std::string KtFile::ReadString() const
 
 const std::vector<uint8_t> KtFile::ReadBinary() const
 {
-    if (!std::filesystem::exists(_path))
+    if (!std::filesystem::exists(path_))
     {
-        std::cerr << "Failed to find a file at '" << _path << '\'' << std::endl;
+        std::cerr << "Failed to find a file at '" << path_ << '\'' << std::endl;
         return {};
     }
 
-    std::ifstream file(_path, std::ios::ate | std::ios::binary);
+    std::ifstream file(path_, std::ios::ate | std::ios::binary);
 
     if (!file.is_open())
     {
-        std::cerr << "Failed to open the file at '" << _path << '\'' << std::endl;
+        std::cerr << "Failed to open the file at '" << path_ << '\'' << std::endl;
         return {};
     }
 
@@ -90,11 +90,11 @@ const std::vector<uint8_t> KtFile::ReadBinary() const
 void KtFile::WriteString(const std::string_view data) const
 {
     // Open file for writing
-    std::ofstream file(_path, std::ios::out | std::ios::trunc);
+    std::ofstream file(path_, std::ios::out | std::ios::trunc);
 
     if (!file.is_open())
     {
-        std::cerr << "Failed to open the file at '" << _path << "' for writing." << std::endl;
+        std::cerr << "Failed to open the file at '" << path_ << "' for writing." << std::endl;
         return;
     }
 
@@ -108,11 +108,11 @@ void KtFile::WriteString(const std::string_view data) const
 void KtFile::WriteBinary(const std::span<uint32_t> data) const
 {
     // Open file for writing in binary mode
-    std::ofstream file(_path, std::ios::out | std::ios::binary | std::ios::trunc);
+    std::ofstream file(path_, std::ios::out | std::ios::binary | std::ios::trunc);
 
     if (!file.is_open())
     {
-        std::cerr << "Failed to open the file at '" << _path << "' for writing." << std::endl;
+        std::cerr << "Failed to open the file at '" << path_ << "' for writing." << std::endl;
         return;
     }
 

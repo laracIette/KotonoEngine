@@ -9,7 +9,5 @@ public:
 
 private:
 	void Compile(const std::filesystem::path& path) const;
-
-	void UpdateShaderRegistry() const;
 };
 

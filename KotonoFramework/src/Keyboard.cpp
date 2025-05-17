@@ -5,7 +5,7 @@
 
 void KtKeyboard::Update()
 {
-    for (auto& [key, events] : _events)
+    for (auto& [key, events] : events_)
     {
         std::unordered_set<KtInputState> keyStates;
 
@@ -15,7 +15,7 @@ void KtKeyboard::Update()
         case GLFW_PRESS:
         {
             keyStates.insert(KT_INPUT_STATE_DOWN);
-            if (!_keyStates[key].contains(KT_INPUT_STATE_DOWN))
+            if (!keyStates_[key].contains(KT_INPUT_STATE_DOWN))
             {
                 keyStates.insert(KT_INPUT_STATE_PRESSED);
             }
@@ -24,7 +24,7 @@ void KtKeyboard::Update()
         case GLFW_RELEASE:
         {
             keyStates.insert(KT_INPUT_STATE_UP);
-            if (!_keyStates[key].contains(KT_INPUT_STATE_UP))
+            if (!keyStates_[key].contains(KT_INPUT_STATE_UP))
             {
                 keyStates.insert(KT_INPUT_STATE_RELEASED);
             }
@@ -34,9 +34,9 @@ void KtKeyboard::Update()
             break;
         }
 
-        _keyStates[key] = keyStates;
+        keyStates_[key] = keyStates;
 
-        for (auto inputState : _keyStates[key])
+        for (auto inputState : keyStates_[key])
         {
             if (events.contains(inputState)) 
             {
@@ -48,5 +48,5 @@ void KtKeyboard::Update()
 
 KtEvent<>& KtKeyboard::GetEvent(const KtKey key, const KtInputState inputState)
 {
-    return _events[key][inputState];
+    return events_[key][inputState];
 }

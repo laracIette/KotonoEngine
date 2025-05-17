@@ -1,6 +1,5 @@
 #pragma once
-#include <vulkan/vulkan.h>
-#include <stbimage/stb_image.h>
+#include <vulkan/vulkan_core.h>
 #include <filesystem>
 #include <vma/vk_mem_alloc.h>
 #include "glm_includes.h"
@@ -20,25 +19,24 @@ public:
 
 private:
     // File path of the texture
-    const std::filesystem::path _path;
+    const std::filesystem::path path_;
 
     // Vulkan image handle
-    VkImage _image;
+    VkImage image_;
     // Vulkan memory allocation handle
-    VmaAllocation _allocation;
+    VmaAllocation allocation_;
     // Image view for rendering
-    VkImageView _imageView;
+    VkImageView imageView_;
     // Sampler for texture filtering
-    VkSampler _sampler;
+    VkSampler sampler_;
     // Descriptor set for binding image in shaders
-    VkDescriptorSet _descriptorSet;
+    VkDescriptorSet descriptorSet_;
     // Width and height of the texture
-    glm::uvec2 _size;
+    glm::uvec2 size_;
     // Number of levels of mipmaps
-    uint32_t _mipLevels;
+    uint32_t mipLevels_;
 
-
-    VkDescriptorImageInfo _imageInfo;
+    VkDescriptorImageInfo imageInfo_;
 
     void CreateTextureImage();
     void CreateTextureImageView();

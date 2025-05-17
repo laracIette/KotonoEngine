@@ -1,7 +1,7 @@
 #include "Font.h"
 #include "Framework.h"
 #include "ImageTextureManager.h"
-
+#include "ImageTexture.h"
 
 KtFont::KtFont(const std::filesystem::path& path) :
     path_(path)

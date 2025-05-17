@@ -1,4 +1,5 @@
 #include "ImageTextureManager.h"
+#include "ImageTexture.h"
 
 KtImageTexture* KtImageTextureManager::Create(const std::filesystem::path& path)
 {
@@ -9,7 +10,7 @@ KtImageTexture* KtImageTextureManager::Create(const std::filesystem::path& path)
 
     auto* imageTexture = new KtImageTexture(path);
     imageTexture->Init();
-    _items[path] = imageTexture;
+    items_[path] = imageTexture;
     return imageTexture;
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "ItemManager.h"
 #include "Model.h"
+
 class KtModelManager final : public KtItemManager<KtModel>
 {
 public:

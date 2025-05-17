@@ -1,6 +1,6 @@
 #pragma once
 #include <filesystem>
-class KtPath
+class KtPath final
 {
 public:
 	void Init();
@@ -11,8 +11,8 @@ public:
 	const std::filesystem::path& GetEnginePath() const;
 
 private:
-	std::filesystem::path _solutionPath;
-	std::filesystem::path _frameworkPath;
-	std::filesystem::path _enginePath;
+	std::filesystem::path solutionPath_;
+	std::filesystem::path frameworkPath_;
+	std::filesystem::path enginePath_;
 };
 

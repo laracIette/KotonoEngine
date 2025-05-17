@@ -1,7 +1,5 @@
 #pragma once
 #include "glm_includes.h"
-#include <vulkan/vulkan.h>
-#include <array>
 struct KtVertex3D
 {
     glm::vec3 Position;
@@ -18,7 +16,8 @@ struct KtVertex3D
 
 namespace std
 {
-    template<> struct hash<KtVertex3D>
+    template<> 
+    struct hash<KtVertex3D>
     {
         size_t operator()(KtVertex3D const& vertex) const
         {

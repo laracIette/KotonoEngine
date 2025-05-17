@@ -2,6 +2,10 @@
 #include "AddToRenderQueue3DArgs.h"
 #include "UniformData3D.h"
 #include "RenderQueue3DData.h"
+#include "frames_in_flight.h"
+#include "AllocatedBuffer.h"
+#include <vulkan/vulkan_core.h>
+#include <array>
 class KtRenderer3D final
 {
 public:

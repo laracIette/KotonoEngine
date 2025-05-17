@@ -26,6 +26,6 @@ public:
 	void WriteBinary(const std::span<uint32_t> data) const;
 
 private:
-	const std::filesystem::path _path;
+	const std::filesystem::path path_;
 };
 

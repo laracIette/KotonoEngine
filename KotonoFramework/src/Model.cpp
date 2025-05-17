@@ -5,10 +5,11 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <array>
 #include "log.h"
 
 KtModel::KtModel(const std::filesystem::path& path) :
-	_path(path)
+	path_(path)
 {
 }
 
@@ -30,7 +31,7 @@ void KtModel::Cleanup() const
 
 const std::filesystem::path& KtModel::GetPath() const
 {
-	return _path;
+	return path_;
 }
 
 void KtModel::CmdBind(VkCommandBuffer commandBuffer) const
@@ -43,17 +44,17 @@ void KtModel::CmdBind(VkCommandBuffer commandBuffer) const
 
 void KtModel::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t instanceCount, const uint32_t firstInstance) const
 {
-	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(_indices.size()), instanceCount, 0, 0, firstInstance);
+	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices_.size()), instanceCount, 0, 0, firstInstance);
 }
 
 void KtModel::Load()
 {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(_path.string().c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = importer.ReadFile(path_.string().c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
 
 	if (!scene || !scene->HasMeshes())
 	{
-		throw std::runtime_error("Failed to load model: " + _path.string());
+		throw std::runtime_error("Failed to load model: " + path_.string());
 	}
 
 	std::unordered_map<KtVertex3D, uint32_t> uniqueVertices{};
@@ -78,11 +79,11 @@ void KtModel::Load()
 
 				if (!uniqueVertices.contains(vertex))
 				{
-					uniqueVertices[vertex] = static_cast<uint32_t>(_vertices.size());
-					_vertices.push_back(vertex);
+					uniqueVertices[vertex] = static_cast<uint32_t>(vertices_.size());
+					vertices_.push_back(vertex);
 				}
 
-				_indices.push_back(uniqueVertices[vertex]);
+				indices_.push_back(uniqueVertices[vertex]);
 			}
 		}
 	}
@@ -90,7 +91,7 @@ void KtModel::Load()
 
 void KtModel::CreateVertexBuffer()
 {
-	const VkDeviceSize bufferSize = sizeof(KtVertex3D) * _vertices.size();
+	const VkDeviceSize bufferSize = sizeof(KtVertex3D) * vertices_.size();
 
 	KtAllocatedBuffer stagingBuffer;
 	Framework.GetContext().CreateBuffer(
@@ -101,7 +102,7 @@ void KtModel::CreateVertexBuffer()
 		stagingBuffer
 	);
 
-	memcpy(stagingBuffer.AllocationInfo.pMappedData, _vertices.data(), (size_t)bufferSize);
+	memcpy(stagingBuffer.AllocationInfo.pMappedData, vertices_.data(), (size_t)bufferSize);
 
 	Framework.GetContext().CreateBuffer(
 		bufferSize,
@@ -118,7 +119,7 @@ void KtModel::CreateVertexBuffer()
 
 void KtModel::CreateIndexBuffer()
 {
-	const VkDeviceSize bufferSize = sizeof(uint32_t) * _indices.size();
+	const VkDeviceSize bufferSize = sizeof(uint32_t) * indices_.size();
 
 	KtAllocatedBuffer stagingBuffer;
 	Framework.GetContext().CreateBuffer(
@@ -129,7 +130,7 @@ void KtModel::CreateIndexBuffer()
 		stagingBuffer
 	);
 
-	memcpy(stagingBuffer.AllocationInfo.pMappedData, _indices.data(), (size_t)bufferSize);
+	memcpy(stagingBuffer.AllocationInfo.pMappedData, indices_.data(), (size_t)bufferSize);
 
 	Framework.GetContext().CreateBuffer(
 		bufferSize,

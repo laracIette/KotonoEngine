@@ -1,6 +1,9 @@
 #pragma once
 #include <vector>
-#include "ImageTexture.h"
+#include <filesystem>
+
+class KtImageTexture;
+
 class KtFont final
 {
 public:

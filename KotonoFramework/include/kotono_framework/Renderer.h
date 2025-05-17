@@ -1,13 +1,10 @@
 #pragma once
-#include "ImageTexture.h"
+#include <vma/vk_mem_alloc.h>
+#include <vulkan/vulkan_core.h>
 #include "frames_in_flight.h"
-#include "ObjectData2D.h"
-#include "ObjectData3D.h"
-#include "Model.h"
 #include <vector>
 #include <array>
 #include <span>
-#include <unordered_map>
 #include "Renderer2D.h"
 #include "Renderer3D.h"
 #include <thread>

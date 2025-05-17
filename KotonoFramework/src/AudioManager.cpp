@@ -1,25 +1,26 @@
 #include "AudioManager.h"
+#include <AL/alc.h>
 
 void KtAudioManager::Init()
 {
-    _device = alcOpenDevice(nullptr); // Select the default device
-    if (!_device)
+    device_ = alcOpenDevice(nullptr); // Select the default device
+    if (!device_)
     {
         throw "Failed to open OpenAL device";
     }
 
-    _context = alcCreateContext(_device, nullptr);
-    if (!_context)
+    context_ = alcCreateContext(device_, nullptr);
+    if (!context_)
     {
         throw "Failed to create OpenAL context";
     }
 
-    alcMakeContextCurrent(_context);
+    alcMakeContextCurrent(context_);
 }
 
 void KtAudioManager::Cleanup()
 {
     alcMakeContextCurrent(nullptr);
-    alcDestroyContext(_context);
-    alcCloseDevice(_device);
+    alcDestroyContext(context_);
+    alcCloseDevice(device_);
 }

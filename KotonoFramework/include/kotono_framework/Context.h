@@ -5,17 +5,11 @@
 #include <GLFW/glfw3native.h>
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <vma/vk_mem_alloc.h> 
-#include "glm_includes.h"
-#include <stbimage/stb_image.h>
 #include <vector>
-#include <unordered_set>
 #include <iostream>
+#include <cstdint>
 #include "QueueFamilyIndices.h"
 #include "SwapChainSupportDetails.h"
-#include "Vertex3D.h"
-#include "ImageTexture.h"
-#include "Model.h"
-#include "Renderer.h"
 #include "AllocatedBuffer.h"
 
 class KtContext final
@@ -45,24 +39,24 @@ public:
 	const KtSwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
 
 private:
-	VkInstance _instance;
-	VkDebugUtilsMessengerEXT _debugMessenger;
+	VkInstance instance_;
+	VkDebugUtilsMessengerEXT debugMessenger_;
 	// Window surface
-	VkSurfaceKHR _surface;
+	VkSurfaceKHR surface_;
 
-	VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE;
+	VkPhysicalDevice physicalDevice_ = VK_NULL_HANDLE;
 	// Logical device
-	VkDevice _device;
+	VkDevice device_;
 
-	VmaAllocator _allocator;
+	VmaAllocator allocator_;
 
-	VkQueue _graphicsQueue;
+	VkQueue graphicsQueue_;
 	// Presentation queue
-	VkQueue _presentQueue;
+	VkQueue presentQueue_;
 
-	VkCommandPool _commandPool;
+	VkCommandPool commandPool_;
 
-	VkSampleCountFlagBits _msaaSamples = VK_SAMPLE_COUNT_1_BIT;
+	VkSampleCountFlagBits msaaSamples_ = VK_SAMPLE_COUNT_1_BIT;
 
 	void CreateInstance();
 

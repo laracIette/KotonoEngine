@@ -60,7 +60,7 @@ public:
 protected:
 	std::string _name;
 
-	const std::filesystem::path _path;
+	const std::filesystem::path path_;
 
 	KtShaderLayout _shaderLayout;
 

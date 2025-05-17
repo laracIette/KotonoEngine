@@ -12,7 +12,7 @@ public:
 	KtEvent<>& GetEvent(const KtKey key, const KtInputState inputState);
 
 private:
-	std::map<KtKey, std::map<KtInputState, KtEvent<>>> _events;
-	std::map<KtKey, std::unordered_set<KtInputState>> _keyStates;
+	std::map<KtKey, std::map<KtInputState, KtEvent<>>> events_;
+	std::map<KtKey, std::unordered_set<KtInputState>> keyStates_;
 };
 

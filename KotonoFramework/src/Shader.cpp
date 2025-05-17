@@ -9,6 +9,7 @@
 #include <nlohmann/json.hpp>
 #include "Serializer.h"
 #include "log.h"
+#include "Renderer.h"
 
 static constexpr uint32_t MAX_BINDLESS_TEXTURES = 8192;
 
@@ -18,13 +19,13 @@ VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT |
 VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT;
 
 KtShader::KtShader(const std::filesystem::path& path) :
-	_path(path)
+	path_(path)
 {
 }
 
 void KtShader::Init()
 {
-	KT_DEBUG_LOG("initializing shader '%s'", _path.string().c_str()); // todo: replace by name
+	KT_DEBUG_LOG("initializing shader '%s'", path_.string().c_str()); // todo: replace by name
 	CreateShaderLayout();
 	CreateDescriptorSetLayouts();
 	DebugLogDescriptorSetLayoutData();
@@ -32,7 +33,7 @@ void KtShader::Init()
 	CreateDescriptorSets();
 	CreateDescriptorSetLayoutBindings();
 	CreateGraphicsPipeline();
-	KT_DEBUG_LOG("initialized shader '%s'", _path.string().c_str());
+	KT_DEBUG_LOG("initialized shader '%s'", path_.string().c_str());
 }
 
 void KtShader::Cleanup()
@@ -63,7 +64,7 @@ void KtShader::Cleanup()
 
 const std::filesystem::path& KtShader::GetPath() const
 {
-	return _path;
+	return path_;
 }
 
 const std::string& KtShader::GetName() const
@@ -289,7 +290,7 @@ void KtShader::CreateGraphicsPipeline()
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
 
 	nlohmann::json json;
-	KtSerializer().ReadData(_path, json);
+	KtSerializer().ReadData(path_, json);
 	for (const auto& shader : json["shaders"])
 	{
 		const auto path = Framework.GetPath().GetFrameworkPath() / "shaders" / shader["path"];
@@ -713,7 +714,7 @@ void KtShader::CreateDescriptorPools()
 void KtShader::CreateShaderLayout()
 {
 	nlohmann::json json;
-	KtSerializer().ReadData(_path, json);
+	KtSerializer().ReadData(path_, json);
 	for (const auto& shader : json["shaders"])
 	{
 		const auto path = Framework.GetPath().GetFrameworkPath() / "shaders" / shader["path"];

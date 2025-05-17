@@ -6,8 +6,8 @@ void KtInputManager::Init()
 
 void KtInputManager::Update()
 {
-    _mouse.Update();
-    _keyboard.Update();
+    mouse_.Update();
+    keyboard_.Update();
 }
 
 void KtInputManager::Cleanup()
@@ -16,10 +16,10 @@ void KtInputManager::Cleanup()
 
 KtMouse& KtInputManager::GetMouse()
 {
-    return _mouse;
+    return mouse_;
 }
 
 KtKeyboard& KtInputManager::GetKeyboard()
 {
-    return _keyboard;
+    return keyboard_;
 }

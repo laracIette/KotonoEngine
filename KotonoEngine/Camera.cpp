@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/Renderer.h>
+#include <kotono_framework/Viewport.h>
 
 void TCamera::Init()
 {
