@@ -5,7 +5,10 @@
 #include <kotono_framework/Collection.h>
 
 class KtViewport;
-class KSceneObjectComponent;
+class KSceneComponent; 
+
+template <class T>
+concept SceneComponent = std::is_base_of_v<KSceneComponent, T>;
 
 class TSceneObject : public KObject
 {
@@ -27,8 +30,7 @@ public:
 	void SerializeTo(nlohmann::json& json) const override;
 	void DeserializeFrom(const nlohmann::json& json) override;
 
-	template <class T>
-	requires std::is_base_of_v<KSceneObjectComponent, T>
+	template <SceneComponent T>
 	T* GetComponent() const
 	{
 		auto components = KtCollection(components_);
@@ -40,15 +42,13 @@ public:
 		return nullptr;
 	}
 
-	template <class T>
-	requires std::is_base_of_v<KSceneObjectComponent, T>
-	std::unordered_set<T*> GetComponents() const
+	template <SceneComponent T>
+	T* AddComponent()
 	{
-		
+		T* component = new T(this);
+		AddComponent(static_cast<KSceneComponent*>(component));
+		return component;
 	}
-
-protected:
-	void AddComponent(KSceneObjectComponent* component);
 
 private:
 	UTransform transform_;
@@ -56,5 +56,7 @@ private:
 	KtViewport* viewport_;
 	TSceneObject* parent_;
 	std::unordered_set<TSceneObject*> children_;
-	std::unordered_set<KSceneObjectComponent*> components_;
+	std::unordered_set<KSceneComponent*> components_;
+
+	void AddComponent(KSceneComponent* component);
 };

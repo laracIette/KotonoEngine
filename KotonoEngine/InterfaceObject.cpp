@@ -1,41 +1,19 @@
 #include "InterfaceObject.h"
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/Window.h>
-#include <kotono_framework/Renderer.h>
-#include <kotono_framework/Path.h>
-#include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/InputManager.h>
-#include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/log.h>
-#include <kotono_framework/Shader.h>
 #include <kotono_framework/Viewport.h>
-#include <kotono_framework/AddToRenderQueue2DArgs.h>
 #include "Engine.h"
-#include "InterfaceObjectComponent.h"
+#include "InterfaceComponent.h"
 #include "ObjectManager.h"
-#include "InterfaceObjectColliderComponent.h"
-
-static KtShader* FlatColorShader = nullptr;
-static KtImageTexture* FlatColorTexture = nullptr;
+#include "InterfaceColliderComponent.h"
 
 void RInterfaceObject::Construct()
 {
 	Base::Construct();
 
-	collider_ = Engine.GetObjectManager().Create<KInterfaceObjectColliderComponent>();
-	AddComponent(collider_);
-
-	if (!FlatColorShader)
-	{
-		const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
-		FlatColorShader = Framework.GetShaderManager().Create(path);
-		FlatColorShader->SetName("2D Flat Color Shader");
-	}
-	if (!FlatColorTexture)
-	{
-		const auto path = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
-		FlatColorTexture = Framework.GetImageTextureManager().Create(path);
-	}
+	collider_ = AddComponent<KInterfaceColliderComponent>();
 }
 
 void RInterfaceObject::Init()
@@ -47,7 +25,6 @@ void RInterfaceObject::Init()
 
 	collider_->GetRect().SetRelativeSize(rect_.GetRelativeSize());
 	
-	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjectBounds(), &RInterfaceObject::AddBoundsToRenderQueue);
 	ListenEvent(collider_->GetEventDown(), &RInterfaceObject::OnEventColliderMouseLeftButtonDown);
 }
 
@@ -59,8 +36,6 @@ void RInterfaceObject::Update()
 void RInterfaceObject::Cleanup()
 {
 	Base::Cleanup();
-
-	//collider_->SetIsDelete(true);
 }
 
 const URect& RInterfaceObject::GetRect() const
@@ -160,22 +135,11 @@ void RInterfaceObject::GetIsSizeToContent(const bool isSizeToContent)
 	isSizeToContent_ = isSizeToContent;
 }
 
-void RInterfaceObject::AddComponent(KInterfaceObjectComponent* component)
+void RInterfaceObject::AddComponent(KInterfaceComponent* component)
 {
-	component->SetOwner(this);
+	Engine.GetObjectManager().Register(component);
 	components_.insert(component);
 	AddObject(component);
-}
-
-void RInterfaceObject::AddBoundsToRenderQueue()
-{
-	KtAddToRenderQueue2DArgs args{};
-	args.Shader = FlatColorShader;
-	args.Renderable = FlatColorTexture;
-	args.Viewport = GetViewport();
-	args.ObjectData.Model = rect_.GetModelMatrix();
-	args.Layer = GetLayer();
-	Framework.GetRenderer().GetRenderer2D().AddToRenderQueue(args);
 }
 
 void RInterfaceObject::OnEventColliderMouseLeftButtonDown()

@@ -22,11 +22,13 @@ public:
 	KtEvent<>& GetEventDrawInterfaceObjectBounds();
 	KtEvent<>& GetEventDrawInterfaceObjectWireframes();
 
-	template <Object T> 
-	T* Create()
+	void Register(KObject* object);
+
+	template <Object T, typename... Args> 
+	T* Create(Args... args)
 	{
-		T* object = new T();
-		Create(static_cast<KObject*>(object));
+		T* object = new T(args...);
+		Register(static_cast<KObject*>(object));
 		return object;
 	}
 
@@ -81,6 +83,4 @@ private:
 	void UpdateObjects();
 	void DeleteObjects();
 	void DrawObjects();
-
-	void Create(KObject* object);
 };

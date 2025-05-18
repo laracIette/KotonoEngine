@@ -2,8 +2,6 @@
 #include "Object.h"
 #include <unordered_set>
 
-class RInterfaceComponent;
-
 class KInterface : public KObject
 {
 	BASECLASS(KObject)
@@ -14,6 +12,5 @@ public:
 	void SetLayout();
 
 private:
-	std::unordered_set<RInterfaceComponent*> _interfaceComponents;
 };
 

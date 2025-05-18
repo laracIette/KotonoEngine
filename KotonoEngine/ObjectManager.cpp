@@ -7,15 +7,17 @@
 #include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/Path.h>
 #include "Object.h"
-#include "MeshSceneObject.h"
-#include "MeshComponent.h"
-#include "Image.h"
+#include "SceneMeshObject.h"
+#include "SceneMeshComponent.h"
+#include "InterfaceImageObject.h"
+#include "InterfaceImageComponent.h"
 #include "Scene.h"
 #include "Camera.h"
-#include "InterfaceObjectStack.h"
+#include "InterfaceStackComponent.h"
 #include "Engine.h"
 #include "Visualizer.h"
-#include "Text.h"
+#include "InterfaceTextObject.h"
+#include "InterfaceTextComponent.h"
 
 static TCamera* Camera = nullptr;
 
@@ -42,50 +44,48 @@ void SObjectManager::Init()
 		scene->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), &KScene::Reload);
 	}
 	{
-		auto* image1 = Create<RImage>();
-		image1->SetShader(shader2D);
-		image1->SetImageTexture(imageTexture1);
+		auto* image1 = Create<RInterfaceImageObject>();
 		image1->GetRect().SetScreenSize(glm::vec2(1024.0f, 1024.0f));
 		image1->GetRect().SetRelativeScale(glm::vec2(0.25f));
+		image1->GetComponent<KInterfaceImageComponent>()->SetShader(shader2D);
+		image1->GetComponent<KInterfaceImageComponent>()->SetImageTexture(imageTexture1);
+		image1->GetComponent<KInterfaceImageComponent>()->GetRect().SetScreenSize(glm::vec2(1024.0f, 1024.0f));
 		//image1->GetRect().SetAnchor(EAnchor::TopLeft);
 
-		auto* image2 = Create<RImage>();
-		image2->SetShader(shader2D);
-		image2->SetImageTexture(imageTexture2);
+		auto* image2 = Create<RInterfaceImageObject>();
 		image2->GetRect().SetScreenSize(glm::vec2(1024.0f, 1024.0f));
 		image2->GetRect().SetRelativeScale(glm::vec2(0.10f));
+		image2->GetComponent<KInterfaceImageComponent>()->SetShader(shader2D);
+		image2->GetComponent<KInterfaceImageComponent>()->SetImageTexture(imageTexture2);
+		image2->GetComponent<KInterfaceImageComponent>()->GetRect().SetScreenSize(glm::vec2(1024.0f, 1024.0f));
 		
-		if (false)
-		{
-			image2->SetParent(image1, ECoordinateSpace::World);
-		}
-		else
-		{
-			image2->SetLayer(1);
+#if true
+		image2->SetParent(image1, ECoordinateSpace::World);
+#else
+		image2->SetLayer(1);
 
-			auto* interfaceObjectStack = Create<RInterfaceObjectStack>();
-			interfaceObjectStack->SetOrientation(EOrientation::Horizontal);
-			interfaceObjectStack->SetItemSpacing(0.1f);
-			interfaceObjectStack->AddItem(image1);
-			interfaceObjectStack->AddItem(image2);
-		}
+		auto* interfaceObjectStack = Create<KInterfaceStackComponent>();
+		interfaceObjectStack->SetOrientation(EOrientation::Horizontal);
+		interfaceObjectStack->SetItemSpacing(0.1f);
+		interfaceObjectStack->AddItem(image1);
+		interfaceObjectStack->AddItem(image2);
+#endif
 
-
-		auto text = Create<RText>();
-		text->SetFontSize(32.0f);
-		text->SetSpacing(0.05f);
-		text->SetShader(shader2D);
-		text->SetText("hello world !");
+		auto text = Create<RInterfaceTextObject>();
+		text->GetComponent<KInterfaceTextComponent>()->SetFontSize(32.0f);
+		text->GetComponent<KInterfaceTextComponent>()->SetSpacing(0.05f);
+		text->GetComponent<KInterfaceTextComponent>()->SetShader(shader2D);
+		text->GetComponent<KInterfaceTextComponent>()->SetText("hello world !");
 	}
 	{
-		auto* mesh1 = Create<TMeshSceneObject>();
-		mesh1->GetComponent<KMeshComponent>()->SetShader(shader3D);
-		mesh1->GetComponent<KMeshComponent>()->SetModel(model1);
+		auto* mesh1 = Create<TSceneMeshObject>();
+		mesh1->GetComponent<KSceneMeshComponent>()->SetShader(shader3D);
+		mesh1->GetComponent<KSceneMeshComponent>()->SetModel(model1);
 		mesh1->GetTransform().SetRelativePosition(glm::vec3(-1.0f, 0.0f, 0.0f));
 	
-		auto* mesh2 = Create<TMeshSceneObject>();
-		mesh2->GetComponent<KMeshComponent>()->SetShader(shader3D);
-		mesh2->GetComponent<KMeshComponent>()->SetModel(model2);
+		auto* mesh2 = Create<TSceneMeshObject>();
+		mesh2->GetComponent<KSceneMeshComponent>()->SetShader(shader3D);
+		mesh2->GetComponent<KSceneMeshComponent>()->SetModel(model2);
 		mesh2->GetTransform().SetRelativePosition(glm::vec3(1.0f, 0.0f, 0.0f));
 		mesh2->GetTransform().SetRelativeScale(glm::vec3(0.2f));
 		mesh2->SetParent(mesh1, ECoordinateSpace::World);
@@ -116,6 +116,15 @@ void SObjectManager::Cleanup()
 	_objects.clear();
 	_inits.clear();
 	_typeRegistry.clear();
+}
+
+void SObjectManager::Register(KObject* object)
+{
+	object->Construct();
+	KT_DEBUG_LOG("creating object of type '%s'", object->GetTypeName().c_str());
+	_inits.insert(object);
+	_objects.insert(object);
+	_typeRegistry[typeid(*object)].insert(object);
 }
 
 KtEvent<>& SObjectManager::GetEventDrawSceneObjects()
@@ -214,13 +223,4 @@ void SObjectManager::DrawObjects()
 	{
 		_eventDrawInterfaceObjectWireframes.Broadcast();
 	}
-}
-
-void SObjectManager::Create(KObject* object)
-{
-	object->Construct();
-	KT_DEBUG_LOG("creating object of type '%s'", object->GetTypeName().c_str());
-	_inits.insert(object);
-	_objects.insert(object);
-	_typeRegistry[typeid(*object)].insert(object);
 }

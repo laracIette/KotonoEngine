@@ -2,6 +2,7 @@
 #include "Framework.h"
 #include "ImageTextureManager.h"
 #include "ImageTexture.h"
+#include "Path.h"
 
 KtFont::KtFont(const std::filesystem::path& path) :
     path_(path)
@@ -38,12 +39,18 @@ const std::vector<KtImageTexture*> KtFont::GetTextTextures(const std::string_vie
     std::vector<KtImageTexture*> result;
     result.reserve(text.size());
 
+    const auto defaultTexturePath = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
+
     for (const auto letter : text)
     {
         const auto letterPath = path_ / std::format("{}.png", letter);
         if (std::filesystem::exists(letterPath))
         {
             result.push_back(Framework.GetImageTextureManager().Create(letterPath));
+        }
+        else
+        {
+            result.push_back(Framework.GetImageTextureManager().Create(defaultTexturePath));
         }
     }
 

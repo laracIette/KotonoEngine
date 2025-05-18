@@ -27,7 +27,7 @@
     <ClCompile Include="Transform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MeshComponent.cpp">
+    <ClCompile Include="SceneMeshComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine.cpp">
@@ -39,7 +39,7 @@
     <ClCompile Include="Time.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Image.cpp">
+    <ClCompile Include="InterfaceImageObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="InterfaceObject.cpp">
@@ -60,34 +60,37 @@
     <ClCompile Include="Task.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfaceObjectColliderComponent.cpp">
+    <ClCompile Include="InterfaceColliderComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Interface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfaceComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="InterfaceObjectStack.cpp">
+    <ClCompile Include="InterfaceStackComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Visualizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Text.cpp">
+    <ClCompile Include="InterfaceTextObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfaceObjectContainer.cpp">
+    <ClCompile Include="InterfaceContainerComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfaceObjectComponent.cpp">
+    <ClCompile Include="InterfaceComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SceneObjectComponent.cpp">
+    <ClCompile Include="SceneComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MeshSceneObject.cpp">
+    <ClCompile Include="SceneMeshObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InterfaceImageComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InterfaceTextComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -104,7 +107,7 @@
     <ClInclude Include="Transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MeshComponent.h">
+    <ClInclude Include="SceneMeshComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Visibility.h">
@@ -119,7 +122,7 @@
     <ClInclude Include="Time.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Image.h">
+    <ClInclude Include="InterfaceImageObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="InterfaceObject.h">
@@ -149,16 +152,13 @@
     <ClInclude Include="RotationUnit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfaceObjectColliderComponent.h">
+    <ClInclude Include="InterfaceColliderComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Interface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfaceComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InterfaceObjectStack.h">
+    <ClInclude Include="InterfaceStackComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Orientation.h">
@@ -170,19 +170,25 @@
     <ClInclude Include="VisualizationField.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Text.h">
+    <ClInclude Include="InterfaceTextObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfaceObjectContainer.h">
+    <ClInclude Include="InterfaceContainerComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfaceObjectComponent.h">
+    <ClInclude Include="InterfaceComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SceneObjectComponent.h">
+    <ClInclude Include="SceneComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MeshSceneObject.h">
+    <ClInclude Include="SceneMeshObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InterfaceImageComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InterfaceTextComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

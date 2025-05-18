@@ -5,8 +5,8 @@
 #include "Engine.h"
 #include "ObjectManager.h"
 #include "SceneObject.h"
-#include "MeshComponent.h"
-#include "MeshSceneObject.h"
+#include "SceneMeshComponent.h"
+#include "SceneMeshObject.h"
 
 void KScene::Init()
 {
@@ -80,6 +80,6 @@ void KScene::DeserializeFrom(const nlohmann::json& json)
 TSceneObject* KScene::GetSceneObject(const std::string_view type)
 {
 	if (type == "TSceneObject")             return Engine.GetObjectManager().Create<TSceneObject>();
-	else if (type == "TMeshSceneObject")    return Engine.GetObjectManager().Create<TMeshSceneObject>();
+	else if (type == "TSceneMeshObject")    return Engine.GetObjectManager().Create<TSceneMeshObject>();
 	return nullptr;
 }

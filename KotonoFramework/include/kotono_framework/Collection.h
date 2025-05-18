@@ -110,6 +110,8 @@ public:
 		{
 			return item;
 		}
+
+		return T();
 	}
 
 	Iterator begin() const { return Iterator(data_, filters_, 0); }

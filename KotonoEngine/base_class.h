@@ -7,4 +7,5 @@ void ListenEvent(KtEvent<Args...>& event, void (Tfunc::* function)(Args...)) \
 	KObject::ListenEvent(event, this, function); \
 } \
 private: \
-	typedef type Base;
+	typedef type Base; \
+	using Base::Base;

@@ -2,10 +2,14 @@
 #include "Object.h"
 #include "Rect.h"
 #include "Visibility.h"
+#include <kotono_framework/Collection.h>
 
 class KtViewport;
-class KInterfaceObjectComponent;
-class KInterfaceObjectColliderComponent;
+class KInterfaceComponent;
+class KInterfaceColliderComponent;
+
+template <class T>
+concept InterfaceComponent = std::is_base_of_v<KInterfaceComponent, T>;
 
 class RInterfaceObject : public KObject
 {
@@ -33,8 +37,26 @@ public:
 	void SetLayer(const int32_t layer);
 	void GetIsSizeToContent(const bool isSizeToContent);
 
-protected:
-	void AddComponent(KInterfaceObjectComponent* component);
+	template <InterfaceComponent T>
+	T* GetComponent() const
+	{
+		auto components = KtCollection(components_);
+		components.AddFilter([](auto* component) { return dynamic_cast<T*>(component); });
+		if (auto* component = components.GetFirst())
+		{
+			return static_cast<T*>(component);
+		}
+		return nullptr;
+	}
+
+	template <InterfaceComponent T>
+	T* AddComponent()
+	{
+		T* component = new T(this);
+		AddComponent(static_cast<KInterfaceComponent*>(component));
+		return component;
+	}
+
 
 private:
 	URect rect_;
@@ -44,10 +66,10 @@ private:
 	std::unordered_set<RInterfaceObject*> children_;
 	int32_t layer_;
 	bool isSizeToContent_; // todo???
-	std::unordered_set<KInterfaceObjectComponent*> components_;
-	KInterfaceObjectColliderComponent* collider_;
+	std::unordered_set<KInterfaceComponent*> components_;
+	KInterfaceColliderComponent* collider_;
 
-	void AddBoundsToRenderQueue();
+	void AddComponent(KInterfaceComponent* component);
 
 	// temp
 	void OnEventColliderMouseLeftButtonDown();

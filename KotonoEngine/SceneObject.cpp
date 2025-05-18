@@ -2,7 +2,9 @@
 #include <nlohmann/json.hpp>
 #include <kotono_framework/log.h>
 #include <kotono_framework/Viewport.h>
-#include "SceneObjectComponent.h"
+#include "SceneComponent.h"
+#include "Engine.h"
+#include "ObjectManager.h"
 
 void TSceneObject::Init()
 {
@@ -109,9 +111,9 @@ void TSceneObject::DeserializeFrom(const nlohmann::json& json)
 	});
 }
 
-void TSceneObject::AddComponent(KSceneObjectComponent* component)
+void TSceneObject::AddComponent(KSceneComponent* component)
 {
-	component->SetOwner(this);
+	Engine.GetObjectManager().Register(component);
 	components_.insert(component);
 	AddObject(component);
 }
