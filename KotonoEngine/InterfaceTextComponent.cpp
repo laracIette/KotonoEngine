@@ -3,20 +3,32 @@
 #include <kotono_framework/Path.h>
 #include <kotono_framework/Font.h>
 #include <kotono_framework/Shader.h>
+#include <kotono_framework/log.h>
 #include "InterfaceObject.h"
+#include "Engine.h"
+#include "ObjectManager.h"
 #include "InterfaceStackComponent.h"
 #include "InterfaceImageComponent.h"
+#include "Timer.h"
 
 void KInterfaceTextComponent::Construct()
 {
     Base::Construct();
 
     letters_ = GetOwner()->AddComponent<KInterfaceStackComponent>();
+
+    updateTextTimer_ = Engine.GetObjectManager().Create<KTimer>();
+    AddObject(updateTextTimer_);
 }
 
 void KInterfaceTextComponent::Init()
 {
+    Base::Init();
+
     letters_->SetOrientation(EOrientation::Horizontal);
+
+    ListenEvent(updateTextTimer_->GetEventCompleted(), &KInterfaceTextComponent::UpdateTextWithBinding);
+    updateTextTimer_->Start();
 }
 
 const std::string& KInterfaceTextComponent::GetText() const
@@ -39,8 +51,18 @@ KtShader* KInterfaceTextComponent::GetShader() const
     return shader_;
 }
 
+KTimer* KInterfaceTextComponent::GetUpdateTimer() const
+{
+    return updateTextTimer_;
+}
+
 void KInterfaceTextComponent::SetText(const std::string& text)
 {
+    if (text == text_)
+    {
+        return;
+    }
+
     text_ = text;
     UpdateLetters();
 }
@@ -58,6 +80,19 @@ void KInterfaceTextComponent::SetSpacing(const float spacing)
 void KInterfaceTextComponent::SetShader(KtShader* shader)
 {
     shader_ = shader;
+}
+
+void KInterfaceTextComponent::SetTextBinding(const TextBinding& function)
+{
+    textBinding_ = function;
+}
+
+void KInterfaceTextComponent::UpdateTextWithBinding()
+{
+    if (textBinding_)
+    {
+        SetText(textBinding_());
+    }
 }
 
 void KInterfaceTextComponent::UpdateLetters()

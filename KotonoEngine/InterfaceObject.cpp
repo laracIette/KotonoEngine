@@ -1,19 +1,13 @@
 #include "InterfaceObject.h"
-#include <kotono_framework/Framework.h>
-#include <kotono_framework/Window.h>
-#include <kotono_framework/InputManager.h>
 #include <kotono_framework/log.h>
 #include <kotono_framework/Viewport.h>
 #include "Engine.h"
 #include "InterfaceComponent.h"
 #include "ObjectManager.h"
-#include "InterfaceColliderComponent.h"
 
 void RInterfaceObject::Construct()
 {
 	Base::Construct();
-
-	collider_ = AddComponent<KInterfaceColliderComponent>();
 }
 
 void RInterfaceObject::Init()
@@ -22,10 +16,6 @@ void RInterfaceObject::Init()
 
 	visibility_ = EVisibility::EditorAndGame;
 	viewport_ = &WindowViewport;
-
-	collider_->GetRect().SetRelativeSize(rect_.GetRelativeSize());
-	
-	ListenEvent(collider_->GetEventDown(), &RInterfaceObject::OnEventColliderMouseLeftButtonDown);
 }
 
 void RInterfaceObject::Update()
@@ -81,11 +71,6 @@ const std::unordered_set<RInterfaceObject*>& RInterfaceObject::GetChildren() con
 	return children_;
 }
 
-const bool RInterfaceObject::GetIsSizeToContent() const
-{
-	return isSizeToContent_;
-}
-
 const EVisibility RInterfaceObject::GetVisibility() const
 {
 	return visibility_;
@@ -130,22 +115,9 @@ void RInterfaceObject::SetLayer(const int32_t layer)
 	layer_ = layer;
 }
 
-void RInterfaceObject::GetIsSizeToContent(const bool isSizeToContent)
-{
-	isSizeToContent_ = isSizeToContent;
-}
-
 void RInterfaceObject::AddComponent(KInterfaceComponent* component)
 {
 	Engine.GetObjectManager().Register(component);
 	components_.insert(component);
 	AddObject(component);
-}
-
-void RInterfaceObject::OnEventColliderMouseLeftButtonDown()
-{
-	const auto& windowSize = Framework.GetWindow().GetSize();
-	const auto cursorPositionDelta = Framework.GetInputManager().GetMouse().GetCursorPositionDelta();
-	const auto cursorPositionDeltaNormalized = 2.0f * cursorPositionDelta / glm::vec2(windowSize);
-	rect_.AddOffset(cursorPositionDeltaNormalized);
 }

@@ -73,6 +73,20 @@ void KSceneMeshComponent::SetModel(KtModel* model)
     _model = model;
 }
 
+void KSceneMeshComponent::SerializeTo(nlohmann::json& json) const
+{
+    Base::SerializeTo(json);
+    json["shader"] = shader_ ? shader_->GetPath() : "";
+    json["model"] = _model ? _model->GetPath() : "";
+}
+
+void KSceneMeshComponent::DeserializeFrom(const nlohmann::json& json)
+{
+    Base::DeserializeFrom(json);
+    shader_ = Framework.GetShaderManager().Get(json["shader"]);
+    _model = Framework.GetModelManager().Get(json["model"]);
+}
+
 void KSceneMeshComponent::AddModelToRenderQueue()
 {
     KtAddToRenderQueue3DArgs args{};
@@ -91,20 +105,6 @@ void KSceneMeshComponent::AddWireframeToRenderQueue()
     args.Viewport = GetOwner()->GetViewport();
     args.ObjectData.Model = GetTransform().GetModelMatrix();
     Framework.GetRenderer().GetRenderer3D().AddToRenderQueue(args);
-}
-
-void KSceneMeshComponent::SerializeTo(nlohmann::json& json) const
-{
-    Base::SerializeTo(json);
-    json["shader"] = shader_ ? shader_->GetPath() : "";
-    json["model"] = _model ? _model->GetPath() : "";
-}
-
-void KSceneMeshComponent::DeserializeFrom(const nlohmann::json& json)
-{
-    Base::DeserializeFrom(json);
-    shader_ = Framework.GetShaderManager().Get(json["shader"]);
-    _model = Framework.GetModelManager().Get(json["model"]);
 }
 
 void KSceneMeshComponent::Spin()

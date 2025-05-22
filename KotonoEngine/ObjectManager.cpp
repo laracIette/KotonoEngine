@@ -18,6 +18,9 @@
 #include "Visualizer.h"
 #include "InterfaceTextObject.h"
 #include "InterfaceTextComponent.h"
+#include "InterfaceTextBoxObject.h"
+#include "Time.h"
+#include "Timer.h"
 
 static TCamera* Camera = nullptr;
 
@@ -43,7 +46,7 @@ void SObjectManager::Init()
 		scene->SetPath(Framework.GetPath().GetSolutionPath() / R"(assets\objects\scene.KScene)");
 		scene->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), &KScene::Reload);
 	}
-	{
+#if true
 		auto* image1 = Create<RInterfaceImageObject>();
 		image1->GetRect().SetScreenSize(glm::vec2(1024.0f, 1024.0f));
 		image1->GetRect().SetRelativeScale(glm::vec2(0.25f));
@@ -58,7 +61,6 @@ void SObjectManager::Init()
 		image2->GetComponent<KInterfaceImageComponent>()->SetShader(shader2D);
 		image2->GetComponent<KInterfaceImageComponent>()->SetImageTexture(imageTexture2);
 		image2->GetComponent<KInterfaceImageComponent>()->GetRect().SetScreenSize(glm::vec2(1024.0f, 1024.0f));
-		
 #if true
 		image2->SetParent(image1, ECoordinateSpace::World);
 #else
@@ -70,13 +72,25 @@ void SObjectManager::Init()
 		interfaceObjectStack->AddItem(image1);
 		interfaceObjectStack->AddItem(image2);
 #endif
-
+#endif
+#if false
 		auto text = Create<RInterfaceTextObject>();
+		text->GetRect().SetRelativePosition(glm::vec2(0.2f, 0.0f));
 		text->GetComponent<KInterfaceTextComponent>()->SetFontSize(32.0f);
 		text->GetComponent<KInterfaceTextComponent>()->SetSpacing(0.05f);
 		text->GetComponent<KInterfaceTextComponent>()->SetShader(shader2D);
 		text->GetComponent<KInterfaceTextComponent>()->SetText("hello world !");
-	}
+#else
+		auto* textBox = Create<RInterfaceTextBoxObject>();
+		textBox->GetRect().SetRelativePosition(glm::vec2(0.3f, 0.0f));
+		textBox->GetTextComponent()->SetFontSize(32.0f);
+		textBox->GetTextComponent()->SetSpacing(0.05f);
+		textBox->GetTextComponent()->SetShader(shader2D);
+		textBox->GetTextComponent()->SetText("plz updaaaate !");
+		textBox->GetTextComponent()->SetTextBinding([]() { return std::format("{} fps", 1.0f / Engine.GetTime().GetDelta()); });
+		textBox->GetTextComponent()->GetUpdateTimer()->SetDuration(0.1f);
+		textBox->GetTextComponent()->GetUpdateTimer()->SetIsRepeat(true);
+#endif
 	{
 		auto* mesh1 = Create<TSceneMeshObject>();
 		mesh1->GetComponent<KSceneMeshComponent>()->SetShader(shader3D);
@@ -121,7 +135,7 @@ void SObjectManager::Cleanup()
 void SObjectManager::Register(KObject* object)
 {
 	object->Construct();
-	KT_DEBUG_LOG("creating object of type '%s'", object->GetTypeName().c_str());
+	//KT_DEBUG_LOG("creating object of type '%s'", object->GetTypeName().c_str());
 	_inits.insert(object);
 	_objects.insert(object);
 	_typeRegistry[typeid(*object)].insert(object);

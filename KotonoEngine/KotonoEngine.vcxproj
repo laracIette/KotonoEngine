@@ -28,6 +28,7 @@
     <ClCompile Include="InterfaceComponent.cpp" />
     <ClCompile Include="InterfaceContainerComponent.cpp" />
     <ClCompile Include="InterfaceStackComponent.cpp" />
+    <ClCompile Include="InterfaceTextBoxObject.cpp" />
     <ClCompile Include="InterfaceTextComponent.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SceneMeshComponent.cpp" />
@@ -43,6 +44,7 @@
     <ClCompile Include="SceneMeshObject.cpp" />
     <ClCompile Include="InterfaceTextObject.cpp" />
     <ClCompile Include="Time.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Visualizer.cpp" />
   </ItemGroup>
@@ -58,6 +60,7 @@
     <ClInclude Include="InterfaceComponent.h" />
     <ClInclude Include="InterfaceContainerComponent.h" />
     <ClInclude Include="InterfaceStackComponent.h" />
+    <ClInclude Include="InterfaceTextBoxObject.h" />
     <ClInclude Include="InterfaceTextComponent.h" />
     <ClInclude Include="SceneMeshComponent.h" />
     <ClInclude Include="Object.h" />
@@ -74,6 +77,7 @@
     <ClInclude Include="SceneMeshObject.h" />
     <ClInclude Include="InterfaceTextObject.h" />
     <ClInclude Include="Time.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="CoordinateSpace.h" />
     <ClInclude Include="Visibility.h" />

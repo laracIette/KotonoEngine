@@ -24,18 +24,16 @@ public:
 	const URect& GetRect() const;
 	URect& GetRect();
 	const EVisibility GetVisibility() const;
-	KtViewport* GetViewport() const; // todo: move that to a renderable interface object component
+	KtViewport* GetViewport() const; // todo: move that to a renderable interface object component ?
 	RInterfaceObject* GetParent() const;
 	RInterfaceObject* GetRoot();
 	const int32_t GetLayer() const;
 	const std::unordered_set<RInterfaceObject*>& GetChildren() const;
-	const bool GetIsSizeToContent() const;
 
 	void SetVisibility(const EVisibility visibility);
 	void SetViewport(KtViewport* viewport);
 	void SetParent(RInterfaceObject* parent, const ECoordinateSpace keepRect);
 	void SetLayer(const int32_t layer);
-	void GetIsSizeToContent(const bool isSizeToContent);
 
 	template <InterfaceComponent T>
 	T* GetComponent() const
@@ -57,7 +55,6 @@ public:
 		return component;
 	}
 
-
 private:
 	URect rect_;
 	EVisibility visibility_;
@@ -65,13 +62,8 @@ private:
 	RInterfaceObject* parent_;
 	std::unordered_set<RInterfaceObject*> children_;
 	int32_t layer_;
-	bool isSizeToContent_; // todo???
 	std::unordered_set<KInterfaceComponent*> components_;
-	KInterfaceColliderComponent* collider_;
 
 	void AddComponent(KInterfaceComponent* component);
-
-	// temp
-	void OnEventColliderMouseLeftButtonDown();
 };
 

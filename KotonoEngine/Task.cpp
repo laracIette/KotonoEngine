@@ -6,11 +6,11 @@ void KTask::Update()
 {
     Base::Update();
 
-    if (_isPlaying)
+    if (isPlaying_)
     {
-        if (Engine.GetTime().GetNow() - _startTime < _duration)
+        if (Engine.GetTime().GetNow() - startTime_ < duration_)
         {
-            _eventUpdate.Broadcast();
+            eventUpdate_.Broadcast();
         }
         else
         {
@@ -21,32 +21,32 @@ void KTask::Update()
 
 const float KTask::GetDuration() const
 {
-    return _duration;
+    return duration_;
 }
 
 KtEvent<>& KTask::GetEventUpdate()
 {
-    return _eventUpdate;
+    return eventUpdate_;
 }
 
 KtEvent<>& KTask::GetEventCompleted()
 {
-    return _eventCompleted;
+    return eventCompleted_;
 }
 
 void KTask::SetDuration(const float duration)
 {
-    _duration = duration;
+    duration_ = duration;
 }
 
 void KTask::Start()
 {
-    _isPlaying = true;
-    _startTime = Engine.GetTime().GetNow();
+    isPlaying_ = true;
+    startTime_ = Engine.GetTime().GetNow();
 }
 
 void KTask::Stop()
 {
-    _isPlaying = false;
-    _eventCompleted.Broadcast();
+    isPlaying_ = false;
+    eventCompleted_.Broadcast();
 }

@@ -18,10 +18,10 @@ public:
 	void Stop();
 
 private:
-	bool _isPlaying;
-	float _startTime;
-	float _duration;
-	KtEvent<> _eventUpdate;
-	KtEvent<> _eventCompleted;
+	bool isPlaying_;
+	float startTime_;
+	float duration_;
+	KtEvent<> eventUpdate_;
+	KtEvent<> eventCompleted_;
 };
 
