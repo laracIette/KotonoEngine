@@ -15,7 +15,7 @@ const KtRenderQueue2DData KtCuller2D::ComputeNullCulling(const KtRenderQueue2DDa
 	{
 		if (!shader)
 		{
-			KT_DEBUG_LOG("KtCuller2D::ComputeNullCulling(): shader is nullptr");
+			KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtCuller2D::ComputeNullCulling(): shader is nullptr");
 			continue;
 		}
 		
@@ -23,7 +23,7 @@ const KtRenderQueue2DData KtCuller2D::ComputeNullCulling(const KtRenderQueue2DDa
 		{
 			if (!renderable)
 			{
-				KT_DEBUG_LOG("KtCuller2D::ComputeNullCulling(): renderable is nullptr");
+				KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtCuller2D::ComputeNullCulling(): renderable is nullptr");
 				continue;
 			}
 
@@ -31,7 +31,7 @@ const KtRenderQueue2DData KtCuller2D::ComputeNullCulling(const KtRenderQueue2DDa
 			{
 				if (!viewport)
 				{
-					KT_DEBUG_LOG("KtCuller2D::ComputeNullCulling(): viewport is nullptr");
+					KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtCuller2D::ComputeNullCulling(): viewport is nullptr");
 					continue;
 				}
 

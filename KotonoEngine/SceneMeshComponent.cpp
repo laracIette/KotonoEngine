@@ -25,7 +25,7 @@ void KSceneMeshComponent::Construct()
     if (!WireframeShader)
     {
         const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\wireframe3D.ktshader)";
-        WireframeShader = Framework.GetShaderManager().Create(path);
+        WireframeShader = Framework.GetShaderManager().Get(path);
     }
 }
 

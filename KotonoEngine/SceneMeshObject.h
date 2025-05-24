@@ -10,7 +10,9 @@ class TSceneMeshObject : public TSceneObject
 public:
 	void Construct() override;
 
+	KSceneMeshComponent* GetMeshComponent() const;
+
 private:
-	KSceneMeshComponent* mesh_;
+	KSceneMeshComponent* meshComponent_;
 };
 

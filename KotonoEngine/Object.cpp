@@ -2,6 +2,8 @@
 #include <nlohmann/json.hpp>
 #include <kotono_framework/Serializer.h>
 #include <regex>
+#include "Engine.h"
+#include "ObjectManager.h"
 
 void KObject::Construct()
 {
@@ -103,5 +105,6 @@ void KObject::DeserializeFrom(const nlohmann::json& json)
 
 void KObject::AddObject(KObject* object)
 {
+    Engine.GetObjectManager().Register(object);
     objects_.insert(object);
 }

@@ -3,14 +3,9 @@
 
 KtImageTexture* KtImageTextureManager::Create(const std::filesystem::path& path)
 {
-    if (auto* imageTexture = Get(path))
-    {
-        return imageTexture;
-    }
-
     auto* imageTexture = new KtImageTexture(path);
     imageTexture->Init();
-    items_[path] = imageTexture;
+    Add(path, imageTexture);
     return imageTexture;
 }
 

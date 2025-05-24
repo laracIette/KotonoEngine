@@ -90,12 +90,12 @@ void RInterfaceObject::SetParent(RInterfaceObject* parent, const ECoordinateSpac
 {
 	if (parent == this)
 	{
-		KT_DEBUG_LOG("RInterfaceObject::SetParent(): couldn't set the parent of '%s' to itself", GetName().c_str());
+		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "RInterfaceObject::SetParent(): couldn't set the parent of '%s' to itself", GetName().c_str());
 		return;
 	}
 	if (parent == parent_)
 	{
-		KT_DEBUG_LOG("RInterfaceObject::SetParent(): couldn't set the parent of '%s' to the same", GetName().c_str());
+		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "RInterfaceObject::SetParent(): couldn't set the parent of '%s' to the same", GetName().c_str());
 		return;
 	}
 	if (parent)
@@ -117,7 +117,5 @@ void RInterfaceObject::SetLayer(const int32_t layer)
 
 void RInterfaceObject::AddComponent(KInterfaceComponent* component)
 {
-	Engine.GetObjectManager().Register(component);
 	components_.insert(component);
-	AddObject(component);
 }

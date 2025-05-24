@@ -40,22 +40,23 @@ void KtContext::Init()
 
 void KtContext::Cleanup()
 {
-	KT_DEBUG_LOG("cleaning up context");
+	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaning up context");
 	vkDestroyCommandPool(device_, commandPool_, nullptr);
 
-#if false
-	VmaTotalStatistics stats;
-	vmaCalculateStatistics(allocator_, &stats);
+	if constexpr (KT_SHOULD_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW))
+	{
+		VmaTotalStatistics stats;
+		vmaCalculateStatistics(allocator_, &stats);
 
-	KT_DEBUG_LOG("VMA Allocator Stats:");
-	KT_DEBUG_LOG("Total memory allocated: %llu bytes", stats.total.statistics.allocationBytes);
-	KT_DEBUG_LOG("Number of allocations: %u", stats.total.statistics.allocationCount);
+		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "VMA Allocator Stats:");
+		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Total memory allocated: %llu bytes", stats.total.statistics.allocationBytes);
+		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Number of allocations: %u", stats.total.statistics.allocationCount);
 
-	char* statsString;
-	vmaBuildStatsString(allocator_, &statsString, true);
-	KT_DEBUG_LOG("VMA Stats:\n%s", statsString);
-	vmaFreeStatsString(allocator_, statsString);
-#endif
+		char* statsString;
+		vmaBuildStatsString(allocator_, &statsString, true);
+		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "VMA Stats:\n%s", statsString);
+		vmaFreeStatsString(allocator_, statsString);
+	}
 
 	vmaDestroyAllocator(allocator_);
 
@@ -68,7 +69,7 @@ void KtContext::Cleanup()
 
 	vkDestroySurfaceKHR(instance_, surface_, nullptr);
 	vkDestroyInstance(instance_, nullptr);
-	KT_DEBUG_LOG("cleaned up context");
+	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaned up context");
 }
 
 void KtContext::CreateInstance()

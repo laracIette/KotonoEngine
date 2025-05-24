@@ -1,7 +1,6 @@
 #pragma once
 #include <unordered_map>
 #include <filesystem>
-#include "log.h"
 template <typename T>
 class KtItemManager
 {
@@ -20,20 +19,30 @@ public:
 		items_.clear();
 	}
 
-	T* Get(const std::filesystem::path& path) const
+	T* Get(const std::filesystem::path& path)
 	{
 		const auto it = items_.find(path);
 		if (it != items_.end())
 		{
 			return it->second;
 		}
-		return nullptr;
+		return Create(path);
 	}
 
-	virtual T* Create(const std::filesystem::path& path) = 0;
+	const bool Exists(const std::filesystem::path& path) const
+	{
+		return items_.contains(path);
+	}
 
 protected:
-	std::unordered_map<std::filesystem::path, T*> items_;
-
+	virtual T* Create(const std::filesystem::path& path) = 0;
 	virtual void CleanupItem(T* item) const = 0;
+
+	void Add(const std::filesystem::path& path, T* item)
+	{
+		items_[path] = item;
+	}
+
+private:
+	std::unordered_map<std::filesystem::path, T*> items_;
 };

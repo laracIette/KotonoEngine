@@ -4,23 +4,15 @@
 #include <kotono_framework/InputManager.h>
 #include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/ModelManager.h>
-#include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/Path.h>
 #include "Object.h"
 #include "SceneMeshObject.h"
 #include "SceneMeshComponent.h"
-#include "InterfaceImageObject.h"
-#include "InterfaceImageComponent.h"
 #include "Scene.h"
 #include "Camera.h"
-#include "InterfaceStackComponent.h"
 #include "Engine.h"
 #include "Visualizer.h"
-#include "InterfaceTextObject.h"
-#include "InterfaceTextComponent.h"
-#include "InterfaceTextBoxObject.h"
-#include "Time.h"
-#include "Timer.h"
+#include "Interface.h"
 
 static TCamera* Camera = nullptr;
 
@@ -30,76 +22,29 @@ void SObjectManager::Init()
 		.GetEvent(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
 		.AddListener(this, &SObjectManager::Quit);
 
-	auto* shader2D = Framework.GetShaderManager().Create(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)");
-	auto* shader3D = Framework.GetShaderManager().Create(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3D.ktshader)");
-	shader2D->SetName("2D Shader");
+	
+	auto* shader3D = Framework.GetShaderManager().Get(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3D.ktshader)");
 	shader3D->SetName("3D Shader");
 
-	auto* model1 = Framework.GetModelManager().Create(Framework.GetPath().GetSolutionPath() / R"(assets\models\viking_room.obj)");
-	auto* model2 = Framework.GetModelManager().Create(Framework.GetPath().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)");
+	auto* model1 = Framework.GetModelManager().Get(Framework.GetPath().GetSolutionPath() / R"(assets\models\viking_room.obj)");
+	auto* model2 = Framework.GetModelManager().Get(Framework.GetPath().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)");
 
-	auto* imageTexture1 = Framework.GetImageTextureManager().Create(Framework.GetPath().GetSolutionPath() / R"(assets\models\viking_room.png)");
-	auto* imageTexture2 = Framework.GetImageTextureManager().Create(Framework.GetPath().GetSolutionPath() / R"(assets\textures\default_texture.jpg)");
+	auto* interface = Create<KInterface>();
 
 	{
 		auto* scene = Create<KScene>();
 		scene->SetPath(Framework.GetPath().GetSolutionPath() / R"(assets\objects\scene.KScene)");
 		scene->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), &KScene::Reload);
 	}
-#if true
-		auto* image1 = Create<RInterfaceImageObject>();
-		image1->GetRect().SetScreenSize(glm::vec2(1024.0f, 1024.0f));
-		image1->GetRect().SetRelativeScale(glm::vec2(0.25f));
-		image1->GetComponent<KInterfaceImageComponent>()->SetShader(shader2D);
-		image1->GetComponent<KInterfaceImageComponent>()->SetImageTexture(imageTexture1);
-		image1->GetComponent<KInterfaceImageComponent>()->GetRect().SetScreenSize(glm::vec2(1024.0f, 1024.0f));
-		//image1->GetRect().SetAnchor(EAnchor::TopLeft);
-
-		auto* image2 = Create<RInterfaceImageObject>();
-		image2->GetRect().SetScreenSize(glm::vec2(1024.0f, 1024.0f));
-		image2->GetRect().SetRelativeScale(glm::vec2(0.10f));
-		image2->GetComponent<KInterfaceImageComponent>()->SetShader(shader2D);
-		image2->GetComponent<KInterfaceImageComponent>()->SetImageTexture(imageTexture2);
-		image2->GetComponent<KInterfaceImageComponent>()->GetRect().SetScreenSize(glm::vec2(1024.0f, 1024.0f));
-#if true
-		image2->SetParent(image1, ECoordinateSpace::World);
-#else
-		image2->SetLayer(1);
-
-		auto* interfaceObjectStack = Create<KInterfaceStackComponent>();
-		interfaceObjectStack->SetOrientation(EOrientation::Horizontal);
-		interfaceObjectStack->SetItemSpacing(0.1f);
-		interfaceObjectStack->AddItem(image1);
-		interfaceObjectStack->AddItem(image2);
-#endif
-#endif
-#if false
-		auto text = Create<RInterfaceTextObject>();
-		text->GetRect().SetRelativePosition(glm::vec2(0.2f, 0.0f));
-		text->GetComponent<KInterfaceTextComponent>()->SetFontSize(32.0f);
-		text->GetComponent<KInterfaceTextComponent>()->SetSpacing(0.05f);
-		text->GetComponent<KInterfaceTextComponent>()->SetShader(shader2D);
-		text->GetComponent<KInterfaceTextComponent>()->SetText("hello world !");
-#else
-		auto* textBox = Create<RInterfaceTextBoxObject>();
-		textBox->GetRect().SetRelativePosition(glm::vec2(0.3f, 0.0f));
-		textBox->GetTextComponent()->SetFontSize(32.0f);
-		textBox->GetTextComponent()->SetSpacing(0.05f);
-		textBox->GetTextComponent()->SetShader(shader2D);
-		textBox->GetTextComponent()->SetText("plz updaaaate !");
-		textBox->GetTextComponent()->SetTextBinding([]() { return std::format("{} fps", 1.0f / Engine.GetTime().GetDelta()); });
-		textBox->GetTextComponent()->GetUpdateTimer()->SetDuration(0.1f);
-		textBox->GetTextComponent()->GetUpdateTimer()->SetIsRepeat(true);
-#endif
 	{
 		auto* mesh1 = Create<TSceneMeshObject>();
-		mesh1->GetComponent<KSceneMeshComponent>()->SetShader(shader3D);
-		mesh1->GetComponent<KSceneMeshComponent>()->SetModel(model1);
+		mesh1->GetMeshComponent()->SetShader(shader3D);
+		mesh1->GetMeshComponent()->SetModel(model1);
 		mesh1->GetTransform().SetRelativePosition(glm::vec3(-1.0f, 0.0f, 0.0f));
-	
+
 		auto* mesh2 = Create<TSceneMeshObject>();
-		mesh2->GetComponent<KSceneMeshComponent>()->SetShader(shader3D);
-		mesh2->GetComponent<KSceneMeshComponent>()->SetModel(model2);
+		mesh2->GetMeshComponent()->SetShader(shader3D);
+		mesh2->GetMeshComponent()->SetModel(model2);
 		mesh2->GetTransform().SetRelativePosition(glm::vec3(1.0f, 0.0f, 0.0f));
 		mesh2->GetTransform().SetRelativeScale(glm::vec3(0.2f));
 		mesh2->SetParent(mesh1, ECoordinateSpace::World);
@@ -135,7 +80,7 @@ void SObjectManager::Cleanup()
 void SObjectManager::Register(KObject* object)
 {
 	object->Construct();
-	//KT_DEBUG_LOG("creating object of type '%s'", object->GetTypeName().c_str());
+	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "creating object of type '%s'", object->GetTypeName().c_str());
 	_inits.insert(object);
 	_objects.insert(object);
 	_typeRegistry[typeid(*object)].insert(object);
@@ -196,7 +141,7 @@ void SObjectManager::DeleteObjects()
 		auto* object = *it;
 		if (object->GetIsDelete())
 		{
-			KT_DEBUG_LOG("deleting object '%s'", object->GetName().c_str());
+			KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "deleting object '%s'", object->GetName().c_str());
 			object->Cleanup();
 			
 			it = _objects.erase(it);  // Erase the object and move the iterator to the next element

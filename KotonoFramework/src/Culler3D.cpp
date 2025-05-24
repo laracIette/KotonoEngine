@@ -1,6 +1,5 @@
 #include "Culler3D.h"
 #include "Framework.h"
-#define KT_DEBUG_LOG_DISABLED
 #include "log.h"
 
 const KtRenderQueue3DData KtCuller3D::ComputeCulling(KtRenderQueue3DData renderQueueData) const
@@ -17,7 +16,7 @@ const KtRenderQueue3DData KtCuller3D::ComputeNullCulling(const KtRenderQueue3DDa
 	{
 		if (!shader)
 		{
-			KT_DEBUG_LOG("KtCuller3D::ComputeNullCulling(): shader is nullptr");
+			KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtCuller3D::ComputeNullCulling(): shader is nullptr");
 			continue;
 		}
 
@@ -25,7 +24,7 @@ const KtRenderQueue3DData KtCuller3D::ComputeNullCulling(const KtRenderQueue3DDa
 		{
 			if (!renderable)
 			{
-				KT_DEBUG_LOG("KtCuller3D::ComputeNullCulling(): renderable is nullptr");
+				KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtCuller3D::ComputeNullCulling(): renderable is nullptr");
 				continue;
 			}
 
@@ -33,7 +32,7 @@ const KtRenderQueue3DData KtCuller3D::ComputeNullCulling(const KtRenderQueue3DDa
 			{
 				if (!viewport)
 				{
-					KT_DEBUG_LOG("KtCuller3D::ComputeNullCulling(): viewport is nullptr");
+					KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtCuller3D::ComputeNullCulling(): viewport is nullptr");
 					continue;
 				}
 

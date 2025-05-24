@@ -2,6 +2,7 @@
 #include "InterfaceObject.h"
 
 class KInterfaceTextComponent;
+class KInterfaceColliderComponent;
 
 class RInterfaceTextBoxObject : public RInterfaceObject
 {
@@ -15,5 +16,6 @@ public:
 
 private:
 	KInterfaceTextComponent* textComponent_;
+	KInterfaceColliderComponent* colliderComponent_;
 };
 

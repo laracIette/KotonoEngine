@@ -6,6 +6,9 @@
 #include "Guid.h"
 #include "kotono_framework/Event.h"
 #include <unordered_set>
+
+class KObject;
+
 class KObject
 {
 public:
@@ -34,6 +37,15 @@ public:
 	// Deserialize from json
 	virtual void DeserializeFrom(const nlohmann::json& json);
 
+	template <class T, typename... Args>
+		requires std::is_base_of_v<KObject, T>
+	T* AddObject(Args... args)
+	{
+		T* component = new T(args...);
+		AddObject(static_cast<KObject*>(component));
+		return component;
+	}
+
 protected:
 	template<class Tinst, class Tfunc, typename... Args>
 		requires std::is_base_of_v<Tfunc, Tinst>
@@ -43,8 +55,6 @@ protected:
 		listenedEvents_.insert(&event);
 	}
 
-	void AddObject(KObject* object);
-
 private:
 	UGuid _guid;
 	std::filesystem::path _path;
@@ -53,5 +63,7 @@ private:
 
 	std::unordered_set<KObject*> objects_;
 	std::unordered_set<KtEventBase*> listenedEvents_;
+
+	void AddObject(KObject* object);
 };
 

@@ -27,10 +27,10 @@ void KtRenderer2D::Init()
 
 void KtRenderer2D::Cleanup() const
 {
-	KT_DEBUG_LOG("cleaning up 2D renderer");
+	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaning up 2D renderer");
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), indexBuffer_.Buffer, indexBuffer_.Allocation);
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), vertexBuffer_.Buffer, vertexBuffer_.Allocation);
-	KT_DEBUG_LOG("cleaned up 2D renderer");
+	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaned up 2D renderer");
 }
 
 void KtRenderer2D::AddToRenderQueue(const KtAddToRenderQueue2DArgs& args)

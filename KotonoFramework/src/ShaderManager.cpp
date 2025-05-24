@@ -2,14 +2,9 @@
 
 KtShader* KtShaderManager::Create(const std::filesystem::path& path)
 {
-    if (auto* shader = Get(path))
-    {
-        return shader;
-    }
-
     auto* shader = new KtShader(path);
     shader->Init();
-    items_[path] = shader;
+    Add(path, shader);
     return shader;
 }
 

@@ -6,7 +6,6 @@
 
 class KtViewport;
 class KInterfaceComponent;
-class KInterfaceColliderComponent;
 
 template <class T>
 concept InterfaceComponent = std::is_base_of_v<KInterfaceComponent, T>;
@@ -50,7 +49,7 @@ public:
 	template <InterfaceComponent T>
 	T* AddComponent()
 	{
-		T* component = new T(this);
+		T* component = AddObject<T>(this);
 		AddComponent(static_cast<KInterfaceComponent*>(component));
 		return component;
 	}

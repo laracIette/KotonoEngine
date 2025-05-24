@@ -1,0 +1,10 @@
+#pragma once
+#include <cstdint>
+enum KtLogImportanceLevel : uint32_t
+{
+	KT_LOG_IMPORTANCE_LEVEL_LOW,
+	KT_LOG_IMPORTANCE_LEVEL_MEDIUM,
+	KT_LOG_IMPORTANCE_LEVEL_HIGH,
+	KT_LOG_IMPORTANCE_LEVEL_NONE = UINT32_MAX
+};
+

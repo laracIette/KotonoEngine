@@ -1,16 +1,22 @@
 #pragma once
 #include "Object.h"
-#include <unordered_set>
+
+class RInterfaceImageObject;
+class RInterfaceTextBoxObject;
 
 class KInterface : public KObject
 {
 	BASECLASS(KObject)
 
 public:
+	void Construct() override;
 	void Init() override;
 
-	void SetLayout();
+	void SetLayout() const;
 
 private:
+	RInterfaceImageObject* image1_;
+	RInterfaceImageObject* image2_;
+	RInterfaceTextBoxObject* textBox_;
 };
 

@@ -141,7 +141,6 @@
     <ClCompile Include="src\Serializer.cpp" />
     <ClCompile Include="src\Path.cpp" />
     <ClCompile Include="src\ShaderManager.cpp" />
-    <ClCompile Include="src\ItemManager.cpp" />
     <ClCompile Include="src\ModelManager.cpp" />
     <ClCompile Include="src\ImageTextureManager.cpp" />
     <ClCompile Include="src\Viewport.cpp" />
@@ -215,6 +214,7 @@
     <ClInclude Include="include\kotono_framework\Renderable3D.h" />
     <ClInclude Include="include\kotono_framework\Renderable2D.h" />
     <ClInclude Include="include\kotono_framework\SpvCompiler.h" />
+    <ClInclude Include="include\kotono_framework\LogImportanceLevel.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

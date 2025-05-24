@@ -45,7 +45,7 @@ public:
 	template <SceneComponent T>
 	T* AddComponent()
 	{
-		T* component = new T(this);
+		T* component = AddObject<T>(this);
 		AddComponent(static_cast<KSceneComponent*>(component));
 		return component;
 	}

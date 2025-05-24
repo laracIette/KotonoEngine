@@ -5,5 +5,10 @@ void RInterfaceImageObject::Construct()
 {
 	Base::Construct();
 
-	image_ = AddComponent<KInterfaceImageComponent>();
+	imageComponent_ = AddComponent<KInterfaceImageComponent>();
+}
+
+KInterfaceImageComponent* RInterfaceImageObject::GetImageComponent() const
+{
+	return imageComponent_;
 }

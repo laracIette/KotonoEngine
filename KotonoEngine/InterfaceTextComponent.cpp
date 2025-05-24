@@ -16,9 +16,7 @@ void KInterfaceTextComponent::Construct()
     Base::Construct();
 
     letters_ = GetOwner()->AddComponent<KInterfaceStackComponent>();
-
-    updateTextTimer_ = Engine.GetObjectManager().Create<KTimer>();
-    AddObject(updateTextTimer_);
+    updateTextTimer_ = AddObject<KTimer>();
 }
 
 void KInterfaceTextComponent::Init()

@@ -62,7 +62,7 @@ void KtSpvCompiler::CompileUpdated() const
 
 void KtSpvCompiler::CompileAll() const
 {
-    KT_DEBUG_LOG("compiling all spirv shaders");
+    KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "compiling all spirv shaders");
 
     const auto path = Framework.GetPath().GetFrameworkPath() / "shaders";
     for (const auto& directory : { "vert", "frag" })
@@ -76,12 +76,12 @@ void KtSpvCompiler::CompileAll() const
         }
     }
 
-    KT_DEBUG_LOG("compiled all spirv shaders");
+    KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "compiled all spirv shaders");
 }
 
 void KtSpvCompiler::Compile(const std::filesystem::path& path) const
 {
-    KT_DEBUG_LOG("%s", path.string().c_str());
+    KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "%s", path.string().c_str());
     // must have vulkan bin in environment variables path
     const auto command = std::format("glslc \"{}\" -o \"{}\".spv", path.string(), path.string());
     std::system(command.c_str());

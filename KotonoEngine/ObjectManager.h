@@ -9,6 +9,7 @@ class KObject;
 
 template <class T>
 concept Object = std::is_base_of_v<KObject, T>;
+
 class SObjectManager final
 {
 public:
@@ -33,7 +34,7 @@ public:
 	}
 
 	template <Object T> 
-	T* GetFirstOfType() const
+	T* GetFirst() const
 	{
 		const auto it = _typeRegistry.find(typeid(T));
 		if (it != _typeRegistry.end())
@@ -48,7 +49,7 @@ public:
 	}
 
 	template <Object T> 
-	const std::unordered_set<T*> GetAllOfType() const
+	const std::unordered_set<T*> GetAll() const
 	{
 		std::unordered_set<T*> result;
 		const auto it = _typeRegistry.find(typeid(T));

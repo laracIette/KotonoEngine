@@ -22,11 +22,11 @@ void KtModel::Init()
 
 void KtModel::Cleanup() const
 {
-	KT_DEBUG_LOG("cleaning up model");
+	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "cleaning up model");
 
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), indexBuffer_.Buffer, indexBuffer_.Allocation);
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), vertexBuffer_.Buffer, vertexBuffer_.Allocation);
-	KT_DEBUG_LOG("cleaned up model");
+	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "cleaned up model");
 }
 
 const std::filesystem::path& KtModel::GetPath() const

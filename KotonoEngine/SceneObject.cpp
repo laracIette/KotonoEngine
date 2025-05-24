@@ -53,12 +53,12 @@ void TSceneObject::SetParent(TSceneObject* parent, const ECoordinateSpace keepTr
 {
 	if (parent == this)
 	{
-		KT_DEBUG_LOG("TSceneObject::SetParent(): couldn't set the parent of '%s' to itself", GetName().c_str());
+		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "TSceneObject::SetParent(): couldn't set the parent of '%s' to itself", GetName().c_str());
 		return;
 	}
 	if (parent == parent_)
 	{
-		KT_DEBUG_LOG("TSceneObject::SetParent(): couldn't set the parent of '%s' to the same", GetName().c_str());
+		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "TSceneObject::SetParent(): couldn't set the parent of '%s' to the same", GetName().c_str());
 		return;
 	}
 	if (parent)
@@ -113,7 +113,5 @@ void TSceneObject::DeserializeFrom(const nlohmann::json& json)
 
 void TSceneObject::AddComponent(KSceneComponent* component)
 {
-	Engine.GetObjectManager().Register(component);
 	components_.insert(component);
-	AddObject(component);
 }

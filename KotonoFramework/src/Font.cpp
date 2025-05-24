@@ -46,11 +46,11 @@ const std::vector<KtImageTexture*> KtFont::GetTextTextures(const std::string_vie
         const auto letterPath = path_ / std::format("{}.png", letter);
         if (std::filesystem::exists(letterPath))
         {
-            result.push_back(Framework.GetImageTextureManager().Create(letterPath));
+            result.push_back(Framework.GetImageTextureManager().Get(letterPath));
         }
         else
         {
-            result.push_back(Framework.GetImageTextureManager().Create(defaultTexturePath));
+            result.push_back(Framework.GetImageTextureManager().Get(defaultTexturePath));
         }
     }
 

@@ -18,7 +18,7 @@ void KInterfaceImageComponent::Construct()
 	if (!WireframeShader)
 	{
 		const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\wireframe2D.ktshader)";
-		WireframeShader = Framework.GetShaderManager().Create(path);
+		WireframeShader = Framework.GetShaderManager().Get(path);
 		WireframeShader->SetName("2D Wireframe Shader");
 	}
 }

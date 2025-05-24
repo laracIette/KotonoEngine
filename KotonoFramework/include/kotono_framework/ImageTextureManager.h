@@ -4,10 +4,8 @@
 
 class KtImageTextureManager final : public KtItemManager<KtImageTexture>
 {
-public:
-	KtImageTexture* Create(const std::filesystem::path& path) override;
-
 protected:
+	KtImageTexture* Create(const std::filesystem::path& path) override;
 	void CleanupItem(KtImageTexture* item) const override;
 };
 

@@ -26,13 +26,13 @@ void KInterfaceComponent::Construct()
     if (!FlatColorShader)
     {
         const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
-        FlatColorShader = Framework.GetShaderManager().Create(path);
+        FlatColorShader = Framework.GetShaderManager().Get(path);
         FlatColorShader->SetName("2D Flat Color Shader");
     }
     if (!FlatColorTexture)
     {
         const auto path = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
-        FlatColorTexture = Framework.GetImageTextureManager().Create(path);
+        FlatColorTexture = Framework.GetImageTextureManager().Get(path);
     }
 }
 

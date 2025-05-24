@@ -5,5 +5,10 @@ void TSceneMeshObject::Construct()
 {
 	Base::Construct();
 
-	mesh_ = AddComponent<KSceneMeshComponent>();
+	meshComponent_ = AddComponent<KSceneMeshComponent>();
+}
+
+KSceneMeshComponent* TSceneMeshObject::GetMeshComponent() const
+{
+	return meshComponent_;
 }

@@ -95,5 +95,5 @@ void framebuffersize_callback_(GLFWwindow* window, int width, int height)
 
     WindowViewport.SetExtent(glm::uvec2(width, height));
 
-    KT_DEBUG_LOG("window resized: %d x %d", width, height);
+    KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "window resized: %d x %d", width, height);
 }
