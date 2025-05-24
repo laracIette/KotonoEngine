@@ -15,7 +15,7 @@ void KInterfaceTextComponent::Construct()
 {
     Base::Construct();
 
-    letters_ = GetOwner()->AddComponent<KInterfaceStackComponent>();
+    characters_ = GetOwner()->AddComponent<KInterfaceStackComponent>();
     updateTextTimer_ = AddObject<KTimer>();
 }
 
@@ -23,7 +23,7 @@ void KInterfaceTextComponent::Init()
 {
     Base::Init();
 
-    letters_->SetOrientation(EOrientation::Horizontal);
+    characters_->SetOrientation(EOrientation::Horizontal);
 
     ListenEvent(updateTextTimer_->GetEventCompleted(), &KInterfaceTextComponent::UpdateTextWithBinding);
     updateTextTimer_->Start();
@@ -41,7 +41,7 @@ const float KInterfaceTextComponent::GetFontSize() const
 
 const float KInterfaceTextComponent::GetSpacing() const
 {
-    return letters_->GetItemSpacing();
+    return characters_->GetItemSpacing();
 }
 
 KtShader* KInterfaceTextComponent::GetShader() const
@@ -62,7 +62,7 @@ void KInterfaceTextComponent::SetText(const std::string& text)
     }
 
     text_ = text;
-    UpdateLetters();
+    UpdateCharacters();
 }
 
 void KInterfaceTextComponent::SetFontSize(const float fontSize)
@@ -72,7 +72,7 @@ void KInterfaceTextComponent::SetFontSize(const float fontSize)
 
 void KInterfaceTextComponent::SetSpacing(const float spacing)
 {
-    letters_->SetItemSpacing(spacing);
+    characters_->SetItemSpacing(spacing);
 }
 
 void KInterfaceTextComponent::SetShader(KtShader* shader)
@@ -93,13 +93,13 @@ void KInterfaceTextComponent::UpdateTextWithBinding()
     }
 }
 
-void KInterfaceTextComponent::UpdateLetters()
+void KInterfaceTextComponent::UpdateCharacters()
 {
-    for (auto* letter : letters_->GetItems())
+    for (auto* letter : characters_->GetItems())
     {
         letter->SetIsDelete(true);
     }
-    letters_->ClearItems();
+    characters_->ClearItems();
 
     const auto path = Framework.GetPath().GetSolutionPath() / R"(assets\fonts\default)";
     const auto font = KtFont(path);
@@ -109,6 +109,6 @@ void KInterfaceTextComponent::UpdateLetters()
         letter->SetImageTexture(texture);
         letter->SetShader(shader_);
         letter->GetRect().SetScreenSize(glm::vec2(fontSize_));
-        letters_->AddItem(letter);
+        characters_->AddItem(letter);
     }
 }

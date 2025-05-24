@@ -28,7 +28,7 @@ public:
 	void SetTextBinding(const TextBinding& function);
 
 private:
-	KInterfaceStackComponent* letters_;
+	KInterfaceStackComponent* characters_;
 
 	std::string text_;
 	float fontSize_;
@@ -40,6 +40,6 @@ private:
 	KTimer* updateTextTimer_;
 
 	void UpdateTextWithBinding();
-	void UpdateLetters();
+	void UpdateCharacters();
 };
 
