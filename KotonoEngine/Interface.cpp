@@ -10,6 +10,7 @@
 #include "InterfaceTextComponent.h"
 #include "Timer.h"
 #include "Time.h"
+#include "math_utils.h"
 
 void KInterface::Construct()
 {
@@ -73,7 +74,7 @@ void KInterface::SetLayout() const
 	textBox_->GetTextComponent()->SetSpacing(0.05f);
 	textBox_->GetTextComponent()->SetShader(shader2D);
 	textBox_->GetTextComponent()->SetText("plz updaaaate !");
-	textBox_->GetTextComponent()->SetTextBinding([]() { return std::format("{} fps", 1.0f / Engine.GetTime().GetDelta()); });
+	textBox_->GetTextComponent()->SetTextBinding([]() { return std::format("{} fps", round(1.0f / Engine.GetTime().GetDelta(), 2)); });
 	textBox_->GetTextComponent()->GetUpdateTimer()->SetDuration(0.1f);
 	textBox_->GetTextComponent()->GetUpdateTimer()->SetIsRepeat(true);
 #endif

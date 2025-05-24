@@ -31,6 +31,7 @@
     <ClCompile Include="InterfaceTextBoxObject.cpp" />
     <ClCompile Include="InterfaceTextComponent.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="math_utils.cpp" />
     <ClCompile Include="SceneMeshComponent.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
@@ -62,6 +63,7 @@
     <ClInclude Include="InterfaceStackComponent.h" />
     <ClInclude Include="InterfaceTextBoxObject.h" />
     <ClInclude Include="InterfaceTextComponent.h" />
+    <ClInclude Include="math_utils.h" />
     <ClInclude Include="SceneMeshComponent.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectManager.h" />

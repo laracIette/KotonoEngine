@@ -34,13 +34,14 @@ void KInterfaceComponent::Construct()
         const auto path = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
         FlatColorTexture = Framework.GetImageTextureManager().Get(path);
     }
+
+    rect_.SetParent(&owner_->GetRect(), ECoordinateSpace::Relative);
 }
 
 void KInterfaceComponent::Init()
 {
     Base::Init();
 
-    rect_.SetParent(&owner_->GetRect(), ECoordinateSpace::Relative);
     visibility_ = EVisibility::EditorAndGame;
 
     ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjectBounds(), &KInterfaceComponent::AddBoundsToRenderQueue);

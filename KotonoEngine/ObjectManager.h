@@ -36,8 +36,8 @@ public:
 	template <Object T> 
 	T* GetFirst() const
 	{
-		const auto it = _typeRegistry.find(typeid(T));
-		if (it != _typeRegistry.end())
+		const auto it = typeRegistry_.find(typeid(T));
+		if (it != typeRegistry_.end())
 		{
 			const auto& objects = it->second;
 			if (!objects.empty())
@@ -52,8 +52,8 @@ public:
 	const std::unordered_set<T*> GetAll() const
 	{
 		std::unordered_set<T*> result;
-		const auto it = _typeRegistry.find(typeid(T));
-		if (it != _typeRegistry.end())
+		const auto it = typeRegistry_.find(typeid(T));
+		if (it != typeRegistry_.end())
 		{
 			const auto& objects = it->second;
 			result.reserve(objects.size());
@@ -69,16 +69,16 @@ public:
 private:
 	void Quit();
 
-	std::unordered_set<KObject*> _objects;
-	std::unordered_set<KObject*> _inits;
+	std::unordered_set<KObject*> inits_;
+	std::unordered_set<KObject*> objects_;
 
-	std::unordered_map<std::type_index, std::unordered_set<KObject*>> _typeRegistry;
+	std::unordered_map<std::type_index, std::unordered_set<KObject*>> typeRegistry_;
 
-	KtEvent<> _eventDrawSceneObjects;
-	KtEvent<> _eventDrawSceneObjectWireframes;
-	KtEvent<> _eventDrawInterfaceObjects;
-	KtEvent<> _eventDrawInterfaceObjectBounds;
-	KtEvent<> _eventDrawInterfaceObjectWireframes;
+	KtEvent<> eventDrawSceneObjects_;
+	KtEvent<> eventDrawSceneObjectWireframes_;
+	KtEvent<> eventDrawInterfaceObjects_;
+	KtEvent<> eventDrawInterfaceObjectBounds_;
+	KtEvent<> eventDrawInterfaceObjectWireframes_;
 
 	void InitObjects();
 	void UpdateObjects();

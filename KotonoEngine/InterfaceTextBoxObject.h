@@ -11,11 +11,14 @@ class RInterfaceTextBoxObject : public RInterfaceObject
 public:
 	void Construct() override;
 	void Init() override;
+	void Update() override;
 
 	KInterfaceTextComponent* GetTextComponent() const;
 
 private:
 	KInterfaceTextComponent* textComponent_;
 	KInterfaceColliderComponent* colliderComponent_;
+
+	void OnColliderDown();
 };
 

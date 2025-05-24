@@ -1,13 +1,12 @@
 #pragma once
-#include "InterfaceComponent.h"
+#include "InterfaceStackComponent.h"
 
 class KtShader;
-class KInterfaceStackComponent;
 class KTimer;
 
-class KInterfaceTextComponent : public KInterfaceComponent
+class KInterfaceTextComponent : public KInterfaceStackComponent
 {
-	BASECLASS(KInterfaceComponent)
+	BASECLASS(KInterfaceStackComponent)
 
 public:
 	typedef std::function<const std::string()> TextBinding;
@@ -28,8 +27,6 @@ public:
 	void SetTextBinding(const TextBinding& function);
 
 private:
-	KInterfaceStackComponent* characters_;
-
 	std::string text_;
 	float fontSize_;
 

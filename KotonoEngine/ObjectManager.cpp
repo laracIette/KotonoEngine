@@ -58,57 +58,56 @@ void SObjectManager::Update()
 	InitObjects();
 	Camera->Use();
 	UpdateObjects();
-	DeleteObjects();
 	DrawObjects();
+	DeleteObjects();
 }
 
 void SObjectManager::Cleanup()
 {
-	for (auto* object : _objects)
+	for (auto* object : objects_)
 	{
 		object->Cleanup();
 	}
-	for (auto* object : _objects)
+	for (auto* object : objects_)
 	{
 		delete object;
 	}
-	_objects.clear();
-	_inits.clear();
-	_typeRegistry.clear();
+	inits_.clear();
+	objects_.clear();
+	typeRegistry_.clear();
 }
 
 void SObjectManager::Register(KObject* object)
 {
-	object->Construct();
 	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "creating object of type '%s'", object->GetTypeName().c_str());
-	_inits.insert(object);
-	_objects.insert(object);
-	_typeRegistry[typeid(*object)].insert(object);
+	object->Construct();
+	inits_.insert(object);
+	typeRegistry_[typeid(*object)].insert(object);
 }
 
 KtEvent<>& SObjectManager::GetEventDrawSceneObjects()
 {
-	return _eventDrawSceneObjects;
+	return eventDrawSceneObjects_;
 }
 
 KtEvent<>& SObjectManager::GetEventDrawSceneObjectWireframes()
 {
-	return _eventDrawSceneObjectWireframes;
+	return eventDrawSceneObjectWireframes_;
 }
 
 KtEvent<>& SObjectManager::GetEventDrawInterfaceObjects()
 {
-	return _eventDrawInterfaceObjects;
+	return eventDrawInterfaceObjects_;
 }
 
 KtEvent<>& SObjectManager::GetEventDrawInterfaceObjectBounds()
 {
-	return _eventDrawInterfaceObjectBounds;
+	return eventDrawInterfaceObjectBounds_;
 }
 
 KtEvent<>& SObjectManager::GetEventDrawInterfaceObjectWireframes()
 {
-	return _eventDrawInterfaceObjectWireframes;
+	return eventDrawInterfaceObjectWireframes_;
 }
 
 void SObjectManager::Quit()
@@ -118,16 +117,21 @@ void SObjectManager::Quit()
 
 void SObjectManager::InitObjects()
 {
-	for (auto* object : _inits)
+	if (inits_.empty())
+	{
+		return;
+	}
+
+	for (auto* object : inits_)
 	{
 		object->Init();
 	}
-	_inits.clear();
+	objects_.merge(inits_);
 }
 
 void SObjectManager::UpdateObjects()
 {
-	for (auto* object : _objects)
+	for (auto* object : objects_)
 	{
 		object->Update();
 	}
@@ -136,7 +140,7 @@ void SObjectManager::UpdateObjects()
 void SObjectManager::DeleteObjects()
 {
 	std::unordered_set<KObject*> deleteObjects;
-	for (auto it = _objects.begin(); it != _objects.end();)
+	for (auto it = objects_.begin(); it != objects_.end();)
 	{
 		auto* object = *it;
 		if (object->GetIsDelete())
@@ -144,7 +148,7 @@ void SObjectManager::DeleteObjects()
 			KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "deleting object '%s'", object->GetName().c_str());
 			object->Cleanup();
 			
-			it = _objects.erase(it);  // Erase the object and move the iterator to the next element
+			it = objects_.erase(it);  // Erase the object and move the iterator to the next element
 			
 			deleteObjects.insert(object);
 		}
@@ -155,7 +159,7 @@ void SObjectManager::DeleteObjects()
 	}
 	for (auto* object : deleteObjects)
 	{
-		_typeRegistry[typeid(*object)].erase(object);
+		typeRegistry_[typeid(*object)].erase(object);
 		delete object;
 	}
 }
@@ -164,22 +168,22 @@ void SObjectManager::DrawObjects()
 {
 	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::SceneObject))
 	{
-		_eventDrawSceneObjects.Broadcast();
+		eventDrawSceneObjects_.Broadcast();
 	}
 	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::SceneObjectWireframe))
 	{
-		_eventDrawSceneObjectWireframes.Broadcast();
+		eventDrawSceneObjectWireframes_.Broadcast();
 	}
 	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObject))
 	{
-		_eventDrawInterfaceObjects.Broadcast();
+		eventDrawInterfaceObjects_.Broadcast();
 	}
 	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObjectBounds))
 	{
-		_eventDrawInterfaceObjectBounds.Broadcast();
+		eventDrawInterfaceObjectBounds_.Broadcast();
 	}
 	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObjectWireframe))
 	{
-		_eventDrawInterfaceObjectWireframes.Broadcast();
+		eventDrawInterfaceObjectWireframes_.Broadcast();
 	}
 }

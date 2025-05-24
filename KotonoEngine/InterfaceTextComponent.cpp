@@ -3,10 +3,7 @@
 #include <kotono_framework/Path.h>
 #include <kotono_framework/Font.h>
 #include <kotono_framework/Shader.h>
-#include <kotono_framework/log.h>
 #include "InterfaceObject.h"
-#include "Engine.h"
-#include "ObjectManager.h"
 #include "InterfaceStackComponent.h"
 #include "InterfaceImageComponent.h"
 #include "Timer.h"
@@ -15,7 +12,6 @@ void KInterfaceTextComponent::Construct()
 {
     Base::Construct();
 
-    characters_ = GetOwner()->AddComponent<KInterfaceStackComponent>();
     updateTextTimer_ = AddObject<KTimer>();
 }
 
@@ -23,7 +19,7 @@ void KInterfaceTextComponent::Init()
 {
     Base::Init();
 
-    characters_->SetOrientation(EOrientation::Horizontal);
+    SetOrientation(EOrientation::Horizontal);
 
     ListenEvent(updateTextTimer_->GetEventCompleted(), &KInterfaceTextComponent::UpdateTextWithBinding);
     updateTextTimer_->Start();
@@ -41,7 +37,7 @@ const float KInterfaceTextComponent::GetFontSize() const
 
 const float KInterfaceTextComponent::GetSpacing() const
 {
-    return characters_->GetItemSpacing();
+    return GetItemSpacing();
 }
 
 KtShader* KInterfaceTextComponent::GetShader() const
@@ -56,7 +52,7 @@ KTimer* KInterfaceTextComponent::GetUpdateTimer() const
 
 void KInterfaceTextComponent::SetText(const std::string& text)
 {
-    if (text == text_)
+    if (text_ == text)
     {
         return;
     }
@@ -72,7 +68,7 @@ void KInterfaceTextComponent::SetFontSize(const float fontSize)
 
 void KInterfaceTextComponent::SetSpacing(const float spacing)
 {
-    characters_->SetItemSpacing(spacing);
+    SetItemSpacing(spacing);
 }
 
 void KInterfaceTextComponent::SetShader(KtShader* shader)
@@ -95,11 +91,11 @@ void KInterfaceTextComponent::UpdateTextWithBinding()
 
 void KInterfaceTextComponent::UpdateCharacters()
 {
-    for (auto* letter : characters_->GetItems())
+    for (auto* letter : GetItems())
     {
         letter->SetIsDelete(true);
     }
-    characters_->ClearItems();
+    ClearItems();
 
     const auto path = Framework.GetPath().GetSolutionPath() / R"(assets\fonts\default)";
     const auto font = KtFont(path);
@@ -109,6 +105,6 @@ void KInterfaceTextComponent::UpdateCharacters()
         letter->SetImageTexture(texture);
         letter->SetShader(shader_);
         letter->GetRect().SetScreenSize(glm::vec2(fontSize_));
-        characters_->AddItem(letter);
+        AddItem(letter);
     }
 }

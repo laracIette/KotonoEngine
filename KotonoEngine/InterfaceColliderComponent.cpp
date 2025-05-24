@@ -89,7 +89,6 @@ void KInterfaceColliderComponent::OnEventMouseLeftButtonPressed()
 		}
 	}
 
-	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "collider: %s pressed", GetName().c_str());
 	_isPressed = true;
 	_eventPressed.Broadcast();
 }
