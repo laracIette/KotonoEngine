@@ -64,6 +64,7 @@ void SObjectManager::Update()
 
 void SObjectManager::Cleanup()
 {
+	objects_.merge(inits_);
 	for (auto* object : objects_)
 	{
 		object->Cleanup();
@@ -72,7 +73,6 @@ void SObjectManager::Cleanup()
 	{
 		delete object;
 	}
-	inits_.clear();
 	objects_.clear();
 	typeRegistry_.clear();
 }

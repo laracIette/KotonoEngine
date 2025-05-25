@@ -22,7 +22,6 @@ void KInterfaceTextComponent::Init()
     SetOrientation(EOrientation::Horizontal);
 
     ListenEvent(updateTextTimer_->GetEventCompleted(), &KInterfaceTextComponent::UpdateTextWithBinding);
-    updateTextTimer_->Start();
 }
 
 const std::string& KInterfaceTextComponent::GetText() const

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Guid.cpp" />
+    <ClCompile Include="InterfaceFloatTextBoxObject.cpp" />
     <ClCompile Include="InterfaceImageComponent.cpp" />
     <ClCompile Include="InterfaceImageObject.cpp" />
     <ClCompile Include="Interface.cpp" />
@@ -54,6 +55,7 @@
     <ClInclude Include="base_class.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Guid.h" />
+    <ClInclude Include="InterfaceFloatTextBoxObject.h" />
     <ClInclude Include="InterfaceImageComponent.h" />
     <ClInclude Include="InterfaceImageObject.h" />
     <ClInclude Include="Interface.h" />

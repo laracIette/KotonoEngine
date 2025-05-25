@@ -13,17 +13,42 @@ void RInterfaceTextBoxObject::Construct()
 void RInterfaceTextBoxObject::Init()
 {
 	Base::Init();
-
+	
 	colliderComponent_->GetRect().SetParent(&textComponent_->GetRect(), ECoordinateSpace::Relative);
-
-	ListenEvent(colliderComponent_->GetEventDown(), &RInterfaceTextBoxObject::OnColliderDown);
+	colliderComponent_->GetRect().SetRelativeSize(glm::vec2(0.5f, 0.2f));
 }
 
 void RInterfaceTextBoxObject::Update()
 {
 	Base::Update();
+}
 
-	colliderComponent_->GetRect().SetRelativeSize(textComponent_->GetRect().GetRelativeSize());
+const bool RInterfaceTextBoxObject::GetIsEditable() const
+{
+	return isEditable_;
+}
+
+void RInterfaceTextBoxObject::SetIsEditable(const bool isEditable)
+{
+	if (isEditable_ == isEditable)
+	{
+		return;
+	}
+
+	isEditable_ = isEditable;
+
+	if (isEditable_)
+	{
+		ListenEvent(colliderComponent_->GetEventPressed(), &RInterfaceTextBoxObject::OnMousePressed);
+		ListenEvent(colliderComponent_->GetEventReleased (), &RInterfaceTextBoxObject::OnMouseReleased);
+		ListenEvent(colliderComponent_->GetEventDown(), &RInterfaceTextBoxObject::OnMouseDown);
+	}
+	else
+	{
+		UnlistenEvent(colliderComponent_->GetEventPressed(), &RInterfaceTextBoxObject::OnMousePressed);
+		UnlistenEvent(colliderComponent_->GetEventReleased(), &RInterfaceTextBoxObject::OnMouseReleased);
+		UnlistenEvent(colliderComponent_->GetEventDown(), &RInterfaceTextBoxObject::OnMouseDown);
+	}
 }
 
 KInterfaceTextComponent* RInterfaceTextBoxObject::GetTextComponent() const
@@ -31,7 +56,15 @@ KInterfaceTextComponent* RInterfaceTextBoxObject::GetTextComponent() const
 	return textComponent_;
 }
 
-void RInterfaceTextBoxObject::OnColliderDown()
+void RInterfaceTextBoxObject::OnMousePressed()
 {
-	KT_DEBUG_LOG(KT_LOG_COMPILE_TIME_LEVEL, "text box");
+}
+
+void RInterfaceTextBoxObject::OnMouseReleased()
+{
+}
+
+void RInterfaceTextBoxObject::OnMouseDown()
+{
+	
 }

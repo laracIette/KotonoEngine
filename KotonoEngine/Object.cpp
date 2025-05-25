@@ -20,13 +20,7 @@ void KObject::Update()
 
 void KObject::Cleanup() 
 {
-    for (auto* event : listenedEvents_)
-    {
-        if (event)
-        {
-            event->RemoveListener(this);
-        }
-    }
+    UnlistenEvents();
 
     for (auto* object : objects_)
     {
@@ -107,4 +101,17 @@ void KObject::AddObject(KObject* object)
 {
     Engine.GetObjectManager().Register(object);
     objects_.insert(object);
+}
+
+void KObject::UnlistenEvents()
+{
+    for (auto& [event, count] : listenedEvents_)
+    {
+        if (event)
+        {
+            event->RemoveListener(this);
+        }
+    }
+
+    listenedEvents_.clear();
 }

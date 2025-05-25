@@ -7,6 +7,7 @@
 #include "InterfaceImageObject.h"
 #include "InterfaceImageComponent.h"
 #include "InterfaceTextBoxObject.h"
+#include "InterfaceFloatTextBoxObject.h"
 #include "InterfaceTextComponent.h"
 #include "Timer.h"
 #include "Time.h"
@@ -18,7 +19,9 @@ void KInterface::Construct()
 
 	image1_ = AddObject<RInterfaceImageObject>();
 	image2_ = AddObject<RInterfaceImageObject>();
-	textBox_ = AddObject<RInterfaceTextBoxObject>();
+	textBox1_ = AddObject<RInterfaceTextBoxObject>();
+	textBox2_ = AddObject<RInterfaceFloatTextBoxObject>();
+	textBox3_ = AddObject<RInterfaceFloatTextBoxObject>();
 	image1_->GetImageComponent()->GetRect().SetScreenSize(glm::vec2(1024.0f, 1024.0f));
 	image2_->GetImageComponent()->GetRect().SetScreenSize(glm::vec2(1024.0f, 1024.0f));
 }
@@ -30,7 +33,7 @@ void KInterface::Init()
 	SetLayout();
 }
 
-void KInterface::SetLayout() const
+void KInterface::SetLayout()
 {
 	auto* shader2D = Framework.GetShaderManager().Get(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)");
 	shader2D->SetName("2D Shader");
@@ -69,13 +72,38 @@ void KInterface::SetLayout() const
 	text->GetTextComponent()->SetShader(shader2D);
 	text->GetTextComponent()->SetText("hello world !");
 #else
-	textBox_->GetRect().SetRelativePosition(glm::vec2(0.3f, 0.0f));
-	textBox_->GetTextComponent()->SetFontSize(32.0f);
-	textBox_->GetTextComponent()->SetSpacing(0.05f);
-	textBox_->GetTextComponent()->SetShader(shader2D);
-	textBox_->GetTextComponent()->SetText("plz updaaaate !");
-	textBox_->GetTextComponent()->SetTextBinding([]() { return std::format("{} fps", round(1.0f / Engine.GetTime().GetDelta(), 2)); });
-	textBox_->GetTextComponent()->GetUpdateTimer()->SetDuration(0.1f);
-	textBox_->GetTextComponent()->GetUpdateTimer()->SetIsRepeat(true);
+	textBox1_->GetRect().SetRelativePosition(glm::vec2(0.5f, -0.85f));
+	textBox1_->GetTextComponent()->SetFontSize(32.0f);
+	textBox1_->GetTextComponent()->SetSpacing(0.05f);
+	textBox1_->GetTextComponent()->SetShader(shader2D);
+	textBox1_->GetTextComponent()->SetText("plz updaaaate !");
+	textBox1_->GetTextComponent()->SetTextBinding([]() { return std::format("{} fps", round(1.0f / Engine.GetTime().GetDelta(), 2)); });
+	textBox1_->GetTextComponent()->GetUpdateTimer()->SetDuration(1.0f / 60.0f);
+	textBox1_->GetTextComponent()->GetUpdateTimer()->SetIsRepeat(true);
+	textBox1_->GetTextComponent()->GetUpdateTimer()->Start();
+
+
+
+	textBox2_->GetRect().SetRelativePosition(glm::vec2(0.3f, 0.3f));
+	textBox2_->GetTextComponent()->SetFontSize(32.0f);
+	textBox2_->GetTextComponent()->SetSpacing(0.05f);
+	textBox2_->GetTextComponent()->SetShader(shader2D);
+	ListenEvent(textBox2_->GetValueChangedEvent(), &KInterface::OnTextBox2ValueChanged);
+
+	textBox3_->GetRect().SetRelativePosition(glm::vec2(0.3f, 0.6f));
+	textBox3_->GetTextComponent()->SetFontSize(32.0f);
+	textBox3_->GetTextComponent()->SetSpacing(0.05f);
+	textBox3_->GetTextComponent()->SetShader(shader2D);
+	ListenEvent(textBox3_->GetValueChangedEvent(), &KInterface::OnTextBox3ValueChanged);
 #endif
+}
+
+void KInterface::OnTextBox2ValueChanged(float delta)
+{
+	image1_->GetRect().AddOffset(glm::vec2(delta / 800.0f, 0.0f));
+}
+
+void KInterface::OnTextBox3ValueChanged(float delta)
+{
+	image1_->GetRect().AddOffset(glm::vec2(0.0f, delta / 450.0f));
 }

@@ -11,25 +11,37 @@ class KtEvent : public KtEventBase
 {
 public:
     template<class Tinst, class Tfunc>
-    requires std::is_base_of_v<Tfunc, Tinst>
+        requires std::is_base_of_v<Tfunc, Tinst>
     void AddListener(Tinst* instance, void (Tfunc::* function)(Args...))
     {
         Listener listener{};
-        listener.Instance = instance;
+        listener.Instance = static_cast<void*>(instance);
+        // Store the raw function pointer as a unique identity
+        listener.FunctionIdentity = *reinterpret_cast<void**>(&function);
         listener.Callback = [instance, function](Args... args) { (instance->*function)(args...); };
         listeners_.push_back(std::move(listener));
     }
 
+    template <typename Tinst, typename Tfunc>
+        requires std::is_base_of_v<Tfunc, Tinst>
+    void RemoveListener(Tinst* instance, void (Tfunc::* function)(Args...))
+    {
+        void* functionIdentity = *reinterpret_cast<void**>(&function);
+
+        std::erase_if(listeners_, [=](const Listener& listener)
+            {
+                return listener.Instance == static_cast<void*>(instance) &&
+                    listener.FunctionIdentity == functionIdentity;
+            }
+        );
+    }
+
     void RemoveListener(void* instance) override
     {
-        listeners_.erase(
-            std::remove_if(listeners_.begin(), listeners_.end(),
-                [instance](const Listener& listener)
-                { 
-                    return listener.Instance == instance; 
-                }
-            ),
-            listeners_.end()
+        std::erase_if(listeners_, [=](const Listener& listener)
+            {
+                return listener.Instance == instance;
+            }
         );
     }
 
@@ -57,6 +69,8 @@ private:
     struct Listener
     {
         void* Instance;
+        void* FunctionIdentity;
+
         std::function<void(Args...)> Callback;
     };
 

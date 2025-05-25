@@ -4,8 +4,9 @@
 #include <filesystem>
 #include <nlohmann/json_fwd.hpp>
 #include "Guid.h"
-#include "kotono_framework/Event.h"
+#include <kotono_framework/Event.h>
 #include <unordered_set>
+#include <unordered_map>
 
 class KObject;
 
@@ -52,7 +53,22 @@ protected:
 	void ListenEvent(KtEvent<Args...>& event, Tinst* instance, void (Tfunc::* function)(Args...))
 	{
 		event.AddListener(instance, function);
-		listenedEvents_.insert(&event);
+		listenedEvents_[&event] += 1;
+	}
+
+	template<class Tinst, class Tfunc, typename... Args>
+		requires std::is_base_of_v<Tfunc, Tinst>
+	void UnlistenEvent(KtEvent<Args...>& event, Tinst* instance, void (Tfunc::* function)(Args...))
+	{
+		event.RemoveListener(instance, function);
+		listenedEvents_[&event] -= 1;
+	}
+
+	template<typename... Args>
+	void UnlistenEvent(KtEvent<Args...>& event)
+	{
+		event.RemoveListener(this);
+		listenedEvents_[&event] = 0;
 	}
 
 private:
@@ -62,8 +78,9 @@ private:
 	bool _isDelete;
 
 	std::unordered_set<KObject*> objects_;
-	std::unordered_set<KtEventBase*> listenedEvents_;
+	std::unordered_map<KtEventBase*, uint32_t> listenedEvents_;
 
 	void AddObject(KObject* object);
+	void UnlistenEvents();
 };
 
