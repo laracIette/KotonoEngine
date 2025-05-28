@@ -28,12 +28,27 @@ STime& SEngine::GetTime()
     return Time;
 }
 
+const STime& SEngine::GetTime() const
+{
+    return Time;
+}
+
 SObjectManager& SEngine::GetObjectManager()
 {
     return ObjectManager;
 }
 
+const SObjectManager& SEngine::GetObjectManager() const
+{
+    return ObjectManager;
+}
+
 SVisualizer& SEngine::GetVisualizer()
+{
+    return Visualizer;
+}
+
+const SVisualizer& SEngine::GetVisualizer() const
 {
     return Visualizer;
 }

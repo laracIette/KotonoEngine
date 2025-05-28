@@ -55,7 +55,17 @@ KtPath& KtFramework::GetPath()
     return Path;
 }
 
+const KtPath& KtFramework::GetPath() const
+{
+    return Path;
+}
+
 KtWindow& KtFramework::GetWindow()
+{
+    return Window;
+}
+
+const KtWindow& KtFramework::GetWindow() const
 {
     return Window;
 }
@@ -65,7 +75,17 @@ KtContext& KtFramework::GetContext()
     return Context;
 }
 
+const KtContext& KtFramework::GetContext() const
+{
+    return Context;
+}
+
 KtRenderer& KtFramework::GetRenderer()
+{
+    return Renderer;
+}
+
+const KtRenderer& KtFramework::GetRenderer() const
 {
     return Renderer;
 }
@@ -75,7 +95,17 @@ KtAudioManager& KtFramework::GetAudioManager()
     return AudioManager;
 }
 
+const KtAudioManager& KtFramework::GetAudioManager() const
+{
+    return AudioManager;
+}
+
 KtInputManager& KtFramework::GetInputManager()
+{
+    return InputManager;
+}
+
+const KtInputManager& KtFramework::GetInputManager() const
 {
     return InputManager;
 }
@@ -85,12 +115,27 @@ KtModelManager& KtFramework::GetModelManager()
     return ModelManager;
 }
 
+const KtModelManager& KtFramework::GetModelManager() const
+{
+    return ModelManager;
+}
+
 KtShaderManager& KtFramework::GetShaderManager()
 {
     return ShaderManager;
 }
 
+const KtShaderManager& KtFramework::GetShaderManager() const
+{
+    return ShaderManager;
+}
+
 KtImageTextureManager& KtFramework::GetImageTextureManager()
+{
+    return ImageTextureManager;
+}
+
+const KtImageTextureManager& KtFramework::GetImageTextureManager() const
 {
     return ImageTextureManager;
 }
