@@ -1,6 +1,7 @@
 #include "InterfaceTextBoxObject.h"
 #include "InterfaceTextComponent.h"
 #include "InterfaceColliderComponent.h"
+#include "Timer.h"
 
 void RInterfaceTextBoxObject::Construct()
 {

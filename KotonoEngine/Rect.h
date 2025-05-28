@@ -3,6 +3,9 @@
 #include "CoordinateSpace.h"
 #include "Anchor.h"
 #include "RotationUnit.h"
+
+class KtViewport;
+
 class URect final
 {
 public:
@@ -18,8 +21,8 @@ public:
 	const glm::vec2 GetWorldScale() const;
 	const float GetWorldRotation(const ERotationUnit unit = ERotationUnit::Radians) const;
 
-	const glm::vec2 GetScreenPosition() const;
-	const glm::vec2 GetScreenSize() const;
+	const glm::vec2 GetScreenPosition(KtViewport* viewport) const;
+	const glm::vec2 GetScreenSize(KtViewport* viewport) const;
 
 	const EAnchor GetAnchor() const;
 
@@ -40,8 +43,8 @@ public:
 	void AddScale(const glm::vec2& scale);
 	void AddRotation(const float rotation, const ERotationUnit unit = ERotationUnit::Radians);
 
-	void SetScreenPosition(const glm::vec2& screenPosition);
-	void SetScreenSize(const glm::vec2& screenSize);
+	void SetScreenPosition(KtViewport* viewport, const glm::vec2& screenPosition);
+	void SetScreenSize(KtViewport* viewport, const glm::vec2& screenSize);
 
 	void SetAnchor(const EAnchor anchor);
 
@@ -56,8 +59,8 @@ public:
 
 	const glm::mat4 GetTranslationMatrix() const;
 	const glm::mat4 GetRotationMatrix() const;
-	const glm::mat4 GetScaleMatrix() const;
-	const glm::mat4 GetModelMatrix() const;
+	const glm::mat4 GetScaleMatrix(KtViewport* viewport) const;
+	const glm::mat4 GetModelMatrix(KtViewport* viewport) const;
 
 
 	const glm::vec2 GetDirection(const URect& target) const;

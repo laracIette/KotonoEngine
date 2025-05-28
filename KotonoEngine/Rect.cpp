@@ -67,16 +67,16 @@ const float URect::GetWorldRotation(const ERotationUnit unit) const
 	return GetRelativeRotation(unit);
 }
 
-const glm::vec2 URect::GetScreenPosition() const
+const glm::vec2 URect::GetScreenPosition(KtViewport* viewport) const
 {
-	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
+	const auto viewportSize = glm::vec2(viewport->GetExtent());
 	const auto newPosition = (GetWorldPosition() + glm::vec2(1.0f)) * viewportSize / 2.0f;
 	return newPosition;
 }
 
-const glm::vec2 URect::GetScreenSize() const
+const glm::vec2 URect::GetScreenSize(KtViewport* viewport) const
 {
-	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
+	const auto viewportSize = glm::vec2(viewport->GetExtent());
 	const auto newSize = GetWorldSize() * viewportSize / 2.0f;
 	return newSize;
 }
@@ -190,16 +190,16 @@ void URect::AddRotation(const float rotation, const ERotationUnit unit)
 	SetRelativeRotation(GetRelativeRotation(unit) + rotation, unit);
 }
 
-void URect::SetScreenPosition(const glm::vec2& screenPosition)
+void URect::SetScreenPosition(KtViewport* viewport, const glm::vec2& screenPosition)
 {
-	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
+	const auto viewportSize = glm::vec2(viewport->GetExtent());
 	const auto newPosition = screenPosition / viewportSize * 2.0f - glm::vec2(1.0f);
 	SetWorldPosition(newPosition);
 }
 
-void URect::SetScreenSize(const glm::vec2& screenSize)
+void URect::SetScreenSize(KtViewport* viewport, const glm::vec2& screenSize)
 {
-	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
+	const auto viewportSize = glm::vec2(viewport->GetExtent());
 	const auto newSize = screenSize / viewportSize * 2.0f;
 	SetWorldSize(newSize);
 }
@@ -267,10 +267,10 @@ const glm::mat4 URect::GetRotationMatrix() const
 	return glm::rotate(glm::identity<glm::mat4>(), GetWorldRotation(), glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
-const glm::mat4 URect::GetScaleMatrix() const
+const glm::mat4 URect::GetScaleMatrix(KtViewport* viewport) const
 {
-	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
-	const float aspectRatio = WindowViewport.GetAspectRatio();
+	const auto viewportSize = glm::vec2(viewport->GetExtent());
+	const float aspectRatio = viewport->GetAspectRatio();
 	const float rotation = GetWorldRotation(ERotationUnit::Radians);
 
 	// x *= 1 at rot 0
@@ -281,14 +281,14 @@ const glm::mat4 URect::GetScaleMatrix() const
 	const float value = (cos((rotation + glm::half_pi<float>()) * 2.0f) + 1.0f) / 2.0f;
 	const auto stretchCorrection = glm::vec2(std::lerp(1.0f, aspectRatio, value), std::lerp(1.0f, 1.0f / aspectRatio, value));
 	
-	const auto size = GetScreenSize() / viewportSize * 2.0f * stretchCorrection;
+	const auto size = GetScreenSize(viewport) / viewportSize * 2.0f * stretchCorrection;
 
 	return glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.0f));
 }
 
-const glm::mat4 URect::GetModelMatrix() const
+const glm::mat4 URect::GetModelMatrix(KtViewport* viewport) const
 {
-	return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix();
+	return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix(viewport);
 }
 
 const glm::vec2 URect::GetDirection(const URect& target) const

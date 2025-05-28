@@ -67,7 +67,7 @@ void KInterfaceImageComponent::AddTextureToRenderQueue()
 	args.Shader = shader_;
 	args.Renderable = _imageTexture;
 	args.Viewport = GetOwner()->GetViewport();
-	args.ObjectData.Model = GetRect().GetModelMatrix();
+	args.ObjectData.Model = GetRect().GetModelMatrix(GetOwner()->GetViewport());
 	args.Layer = GetLayer();
 	Framework.GetRenderer().GetRenderer2D().AddToRenderQueue(args);
 }
@@ -78,7 +78,7 @@ void KInterfaceImageComponent::AddWireframeToRenderQueue()
 	args.Shader = WireframeShader;
 	args.Renderable = _imageTexture;
 	args.Viewport = GetOwner()->GetViewport();
-	args.ObjectData.Model = GetRect().GetModelMatrix();
+	args.ObjectData.Model = GetRect().GetModelMatrix(GetOwner()->GetViewport());
 	args.Layer = GetLayer();
 	Framework.GetRenderer().GetRenderer2D().AddToRenderQueue(args);
 }

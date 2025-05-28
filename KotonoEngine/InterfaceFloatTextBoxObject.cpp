@@ -9,13 +9,6 @@ void RInterfaceFloatTextBoxObject::Init()
 	Base::Init();
 
 	SetIsEditable(true);
-
-	GetTextComponent()->SetTextBinding([this]() { return std::to_string(value_); });
-	GetTextComponent()->GetUpdateTimer()->SetDuration(1.0f / 60.0f);
-	GetTextComponent()->GetUpdateTimer()->SetIsRepeat(true);
-	GetTextComponent()->GetUpdateTimer()->Start();
-
-	// todo: looks like duplicate with value changed event
 }
 
 const float RInterfaceFloatTextBoxObject::GetValue() const

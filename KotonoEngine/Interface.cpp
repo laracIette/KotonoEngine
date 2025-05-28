@@ -3,6 +3,7 @@
 #include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/Path.h>
+#include <kotono_framework/Viewport.h>
 #include "Engine.h"
 #include "InterfaceImageObject.h"
 #include "InterfaceImageComponent.h"
@@ -22,8 +23,8 @@ void KInterface::Construct()
 	textBox1_ = AddObject<RInterfaceTextBoxObject>();
 	textBox2_ = AddObject<RInterfaceFloatTextBoxObject>();
 	textBox3_ = AddObject<RInterfaceFloatTextBoxObject>();
-	image1_->GetImageComponent()->GetRect().SetScreenSize(glm::vec2(1024.0f, 1024.0f));
-	image2_->GetImageComponent()->GetRect().SetScreenSize(glm::vec2(1024.0f, 1024.0f));
+	image1_->GetImageComponent()->GetRect().SetScreenSize(&WindowViewport, glm::vec2(1024.0f, 1024.0f));
+	image2_->GetImageComponent()->GetRect().SetScreenSize(&WindowViewport, glm::vec2(1024.0f, 1024.0f));
 }
 
 void KInterface::Init()
@@ -42,13 +43,13 @@ void KInterface::SetLayout()
 	auto* imageTexture2 = Framework.GetImageTextureManager().Get(Framework.GetPath().GetSolutionPath() / R"(assets\textures\default_texture.jpg)");
 
 #if true
-	image1_->GetRect().SetScreenSize(glm::vec2(1024.0f, 1024.0f));
+	image1_->GetRect().SetScreenSize(&WindowViewport, glm::vec2(1024.0f, 1024.0f));
 	image1_->GetRect().SetRelativeScale(glm::vec2(0.25f));
 	image1_->GetImageComponent()->SetShader(shader2D);
 	image1_->GetImageComponent()->SetImageTexture(imageTexture1);
 	//image1->GetRect().SetAnchor(EAnchor::TopLeft);
 
-	image2_->GetRect().SetScreenSize(glm::vec2(1024.0f, 1024.0f));
+	image2_->GetRect().SetScreenSize(&WindowViewport, glm::vec2(1024.0f, 1024.0f));
 	image2_->GetRect().SetRelativeScale(glm::vec2(0.10f));
 	image2_->GetImageComponent()->SetShader(shader2D);
 	image2_->GetImageComponent()->SetImageTexture(imageTexture2);
@@ -78,22 +79,20 @@ void KInterface::SetLayout()
 	textBox1_->GetTextComponent()->SetShader(shader2D);
 	textBox1_->GetTextComponent()->SetText("plz updaaaate !");
 	textBox1_->GetTextComponent()->SetTextBinding([]() { return std::format("{} fps", round(1.0f / Engine.GetTime().GetDelta(), 2)); });
-	textBox1_->GetTextComponent()->GetUpdateTimer()->SetDuration(1.0f / 60.0f);
-	textBox1_->GetTextComponent()->GetUpdateTimer()->SetIsRepeat(true);
-	textBox1_->GetTextComponent()->GetUpdateTimer()->Start();
-
 
 
 	textBox2_->GetRect().SetRelativePosition(glm::vec2(0.3f, 0.3f));
 	textBox2_->GetTextComponent()->SetFontSize(32.0f);
 	textBox2_->GetTextComponent()->SetSpacing(0.05f);
 	textBox2_->GetTextComponent()->SetShader(shader2D);
+	textBox2_->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRect().GetScreenPosition(&WindowViewport).x); });
 	ListenEvent(textBox2_->GetValueChangedEvent(), &KInterface::OnTextBox2ValueChanged);
 
 	textBox3_->GetRect().SetRelativePosition(glm::vec2(0.3f, 0.6f));
 	textBox3_->GetTextComponent()->SetFontSize(32.0f);
 	textBox3_->GetTextComponent()->SetSpacing(0.05f);
 	textBox3_->GetTextComponent()->SetShader(shader2D);
+	textBox3_->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRect().GetScreenPosition(&WindowViewport).y); });
 	ListenEvent(textBox3_->GetValueChangedEvent(), &KInterface::OnTextBox3ValueChanged);
 #endif
 }

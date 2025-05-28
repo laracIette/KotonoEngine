@@ -21,6 +21,10 @@ void KInterfaceTextComponent::Init()
 
     SetOrientation(EOrientation::Horizontal);
 
+    updateTextTimer_->SetDuration(1.0f / 60.0f);
+    updateTextTimer_->SetIsRepeat(true);
+    updateTextTimer_->Start();
+
     ListenEvent(updateTextTimer_->GetEventCompleted(), &KInterfaceTextComponent::UpdateTextWithBinding);
 }
 
@@ -103,7 +107,7 @@ void KInterfaceTextComponent::UpdateCharacters()
         auto* letter = GetOwner()->AddComponent<KInterfaceImageComponent>();
         letter->SetImageTexture(texture);
         letter->SetShader(shader_);
-        letter->GetRect().SetScreenSize(glm::vec2(fontSize_));
+        letter->GetRect().SetScreenSize(GetOwner()->GetViewport(), glm::vec2(fontSize_));
         AddItem(letter);
     }
 }
