@@ -6,6 +6,7 @@
 #include <kotono_framework/Event.h>
 
 class KObject;
+class KTimer;
 
 template <class T>
 concept Object = std::is_base_of_v<KObject, T>;
@@ -80,8 +81,12 @@ private:
 	KtEvent<> eventDrawInterfaceObjectBounds_;
 	KtEvent<> eventDrawInterfaceObjectWireframes_;
 
+	KTimer* drawTimer_;
+	bool canDraw_;
+
 	void InitObjects();
 	void UpdateObjects();
 	void DeleteObjects();
 	void DrawObjects();
+	void SubmitDrawObjects();
 };

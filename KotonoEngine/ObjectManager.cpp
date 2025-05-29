@@ -1,5 +1,6 @@
 #include "ObjectManager.h"
 #include <kotono_framework/Framework.h>
+#include <kotono_framework/Renderer.h>
 #include <kotono_framework/Window.h>
 #include <kotono_framework/InputManager.h>
 #include <kotono_framework/ShaderManager.h>
@@ -13,6 +14,7 @@
 #include "Engine.h"
 #include "Visualizer.h"
 #include "Interface.h"
+#include "Timer.h"
 
 static TCamera* Camera = nullptr;
 
@@ -51,15 +53,28 @@ void SObjectManager::Init()
 	}
 
 	Camera = Create<TCamera>();
+
+	drawTimer_ = Create<KTimer>();
+	drawTimer_->SetDuration(1.0f / 60.0f);
+	drawTimer_->SetIsRepeat(true);
+	drawTimer_->GetEventCompleted().AddListener(this, &SObjectManager::SubmitDrawObjects);
+	drawTimer_->Start();
+	
+	canDraw_ = true;
 }
 
 void SObjectManager::Update()
 {
 	InitObjects();
-	Camera->Use();
 	UpdateObjects();
-	DrawObjects();
 	DeleteObjects();
+	if (canDraw_)
+	{
+		canDraw_ = false;
+		Camera->Use();
+		DrawObjects();
+		Framework.GetRenderer().DrawFrame();
+	}
 }
 
 void SObjectManager::Cleanup()
@@ -126,6 +141,7 @@ void SObjectManager::InitObjects()
 	{
 		object->Init();
 	}
+
 	objects_.merge(inits_);
 }
 
@@ -186,4 +202,9 @@ void SObjectManager::DrawObjects()
 	{
 		eventDrawInterfaceObjectWireframes_.Broadcast();
 	}
+}
+
+void SObjectManager::SubmitDrawObjects()
+{
+	canDraw_ = true;
 }

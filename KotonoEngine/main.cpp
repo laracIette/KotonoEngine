@@ -16,7 +16,6 @@ int main()
         Framework.GetInputManager().Update();
         Engine.GetTime().Update();
         Engine.GetObjectManager().Update();
-        Framework.GetRenderer().DrawFrame();
     }
 
     Engine.Cleanup();
