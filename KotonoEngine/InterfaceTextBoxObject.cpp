@@ -40,15 +40,21 @@ void RInterfaceTextBoxObject::SetIsEditable(const bool isEditable)
 
 	if (isEditable_)
 	{
-		ListenEvent(colliderComponent_->GetEventPressed(), &RInterfaceTextBoxObject::OnMousePressed);
-		ListenEvent(colliderComponent_->GetEventReleased (), &RInterfaceTextBoxObject::OnMouseReleased);
-		ListenEvent(colliderComponent_->GetEventDown(), &RInterfaceTextBoxObject::OnMouseDown);
+		ListenEvent(colliderComponent_->GetEventPressed(), 
+			KtDelegate<>(this, &RInterfaceTextBoxObject::OnMousePressed));
+		ListenEvent(colliderComponent_->GetEventReleased(), 
+			KtDelegate<>(this, &RInterfaceTextBoxObject::OnMouseReleased));
+		ListenEvent(colliderComponent_->GetEventDown(), 
+			KtDelegate<>(this, &RInterfaceTextBoxObject::OnMouseDown));
 	}
 	else
 	{
-		UnlistenEvent(colliderComponent_->GetEventPressed(), &RInterfaceTextBoxObject::OnMousePressed);
-		UnlistenEvent(colliderComponent_->GetEventReleased(), &RInterfaceTextBoxObject::OnMouseReleased);
-		UnlistenEvent(colliderComponent_->GetEventDown(), &RInterfaceTextBoxObject::OnMouseDown);
+		UnlistenEvent(colliderComponent_->GetEventPressed(), 
+			KtDelegate<>(this, &RInterfaceTextBoxObject::OnMousePressed));
+		UnlistenEvent(colliderComponent_->GetEventReleased(), 
+			KtDelegate<>(this, &RInterfaceTextBoxObject::OnMouseReleased));
+		UnlistenEvent(colliderComponent_->GetEventDown(), 
+			KtDelegate<>(this, &RInterfaceTextBoxObject::OnMouseDown));
 	}
 }
 

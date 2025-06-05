@@ -25,7 +25,8 @@ void KInterfaceTextComponent::Init()
     updateTextTimer_->SetIsRepeat(true);
     updateTextTimer_->Start();
 
-    ListenEvent(updateTextTimer_->GetEventCompleted(), &KInterfaceTextComponent::UpdateTextWithBinding);
+    ListenEvent(updateTextTimer_->GetEventCompleted(), 
+        KtDelegate<>(this, &KInterfaceTextComponent::UpdateTextWithBinding));
 }
 
 const std::string& KInterfaceTextComponent::GetText() const

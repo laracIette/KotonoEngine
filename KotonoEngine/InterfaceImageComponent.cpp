@@ -27,8 +27,10 @@ void KInterfaceImageComponent::Init()
 {
 	Base::Init();
 
-	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjects(), &KInterfaceImageComponent::AddTextureToRenderQueue);
-	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjectWireframes(), &KInterfaceImageComponent::AddWireframeToRenderQueue);
+	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjects(), 
+		KtDelegate<>(this, &KInterfaceImageComponent::AddTextureToRenderQueue));
+	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjectWireframes(), 
+		KtDelegate<>(this, &KInterfaceImageComponent::AddWireframeToRenderQueue));
 }
 
 void KInterfaceImageComponent::Update()

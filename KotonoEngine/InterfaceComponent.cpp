@@ -44,7 +44,8 @@ void KInterfaceComponent::Init()
 
     visibility_ = EVisibility::EditorAndGame;
 
-    ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjectBounds(), &KInterfaceComponent::AddBoundsToRenderQueue);
+    ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjectBounds(), 
+        KtDelegate<>(this, &KInterfaceComponent::AddBoundsToRenderQueue));
 }
 
 RInterfaceObject* KInterfaceComponent::GetOwner() const

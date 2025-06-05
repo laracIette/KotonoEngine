@@ -86,14 +86,14 @@ void KInterface::SetLayout()
 	textBox2_->GetTextComponent()->SetSpacing(0.05f);
 	textBox2_->GetTextComponent()->SetShader(shader2D);
 	textBox2_->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRect().GetScreenPosition(&WindowViewport).x); });
-	ListenEvent(textBox2_->GetValueChangedEvent(), &KInterface::OnTextBox2ValueChanged);
+	ListenEvent(textBox2_->GetValueChangedEvent(), KtDelegate<float>(this, &KInterface::OnTextBox2ValueChanged));
 
 	textBox3_->GetRect().SetRelativePosition(glm::vec2(0.3f, 0.6f));
 	textBox3_->GetTextComponent()->SetFontSize(32.0f);
 	textBox3_->GetTextComponent()->SetSpacing(0.05f);
 	textBox3_->GetTextComponent()->SetShader(shader2D);
 	textBox3_->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRect().GetScreenPosition(&WindowViewport).y); });
-	ListenEvent(textBox3_->GetValueChangedEvent(), &KInterface::OnTextBox3ValueChanged);
+	ListenEvent(textBox3_->GetValueChangedEvent(), KtDelegate<float>(this, &KInterface::OnTextBox3ValueChanged));
 #endif
 }
 

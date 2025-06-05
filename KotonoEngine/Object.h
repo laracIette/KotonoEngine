@@ -47,28 +47,25 @@ public:
 		return component;
 	}
 
-protected:
-	template<class Tinst, class Tfunc, typename... Args>
-		requires std::is_base_of_v<Tfunc, Tinst>
-	void ListenEvent(KtEvent<Args...>& event, Tinst* instance, void (Tfunc::* function)(Args...))
+	template <typename... Args>
+	void ListenEvent(KtEvent<Args...>& event, const KtDelegate<Args...>& delegate)
 	{
-		event.AddListener(instance, function);
+		event.AddListener(delegate);
 		listenedEvents_[&event] += 1;
 	}
 
-	template<class Tinst, class Tfunc, typename... Args>
-		requires std::is_base_of_v<Tfunc, Tinst>
-	void UnlistenEvent(KtEvent<Args...>& event, Tinst* instance, void (Tfunc::* function)(Args...))
+	template <typename... Args>
+	void UnlistenEvent(KtEvent<Args...>& event, const KtDelegate<Args...>& delegate)
 	{
-		event.RemoveListener(instance, function);
+		event.RemoveListener(delegate);
 		listenedEvents_[&event] -= 1;
 	}
 
-	template<typename... Args>
+	template <typename... Args>
 	void UnlistenEvent(KtEvent<Args...>& event)
 	{
 		event.RemoveListener(this);
-		listenedEvents_[&event] = 0;
+		listenedEvents_.erase(&event);
 	}
 
 private:

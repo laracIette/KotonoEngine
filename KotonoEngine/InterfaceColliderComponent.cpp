@@ -10,9 +10,12 @@ void KInterfaceColliderComponent::Init()
 {
 	Base::Init();	
 
-	ListenEvent(Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED), &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed);
-	ListenEvent(Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED), &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased);
-	ListenEvent(Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN), &KInterfaceColliderComponent::OnEventMouseLeftButtonDown);
+	ListenEvent(Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED), 
+		KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
+	ListenEvent(Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED), 
+		KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
+	ListenEvent(Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN), 
+		KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
 }
 
 void KInterfaceColliderComponent::Update()

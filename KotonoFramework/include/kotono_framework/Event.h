@@ -1,78 +1,43 @@
 #pragma once
-#include <vector>
-#include <functional>
-#include <type_traits>
-#include <memory>
-#include <iostream>
+#include <unordered_set>
 #include "EventBase.h"
-#include "log.h"
+#include "Delegate.h"
 template<typename... Args>
 class KtEvent : public KtEventBase
 {
 public:
-    template<class Tinst, class Tfunc>
-        requires std::is_base_of_v<Tfunc, Tinst>
-    void AddListener(Tinst* instance, void (Tfunc::* function)(Args...))
+    void AddListener(const KtDelegate<Args...>& delegate)
     {
-        Listener listener{};
-        listener.Instance = static_cast<void*>(instance);
-        // Store the raw function pointer as a unique identity
-        listener.FunctionIdentity = *reinterpret_cast<void**>(&function);
-        listener.Callback = [instance, function](Args... args) { (instance->*function)(args...); };
-        listeners_.push_back(std::move(listener));
+        delegates_.insert(delegate);
     }
 
-    template <typename Tinst, typename Tfunc>
-        requires std::is_base_of_v<Tfunc, Tinst>
-    void RemoveListener(Tinst* instance, void (Tfunc::* function)(Args...))
+    void RemoveListener(const KtDelegate<Args...>& delegate)
     {
-        void* functionIdentity = *reinterpret_cast<void**>(&function);
-
-        std::erase_if(listeners_, [=](const Listener& listener)
-            {
-                return listener.Instance == static_cast<void*>(instance) &&
-                    listener.FunctionIdentity == functionIdentity;
-            }
-        );
+        delegates_.erase(delegate);
     }
 
     void RemoveListener(void* instance) override
     {
-        std::erase_if(listeners_, [=](const Listener& listener)
+        std::erase_if(delegates_, [=](const KtDelegate<Args...>& delegate)
             {
-                return listener.Instance == instance;
+                return delegate.GetIsSameInstance(instance);
             }
         );
     }
 
     void Broadcast(Args... args)
     {
-        for (const Listener& listener : listeners_)
+        for (const KtDelegate<Args...>& delegate : delegates_)
         {
-            if (listener.Instance)
-            {
-                listener.Callback(args...);
-            }
-            else
-            {
-                std::cerr << "can't call listener.Callback(), listener.Instance is nullptr" << std::endl;
-            }
+            delegate.Callback(args...);
         }
     }
 
     void ClearListeners()
     {
-        listeners_ = {};
+        delegates_ = {};
     }
 
 private:
-    struct Listener
-    {
-        void* Instance;
-        void* FunctionIdentity;
-
-        std::function<void(Args...)> Callback;
-    };
-
-    std::vector<Listener> listeners_;
+    std::unordered_set<KtDelegate<Args...>> delegates_;
 };

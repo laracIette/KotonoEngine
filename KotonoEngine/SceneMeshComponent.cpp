@@ -34,11 +34,15 @@ void KSceneMeshComponent::Init()
     Base::Init();
 
     _spinTask->SetDuration(5.0f);
-    _spinTask->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED), &KTask::Start);
+    _spinTask->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED), 
+        KtDelegate<>(_spinTask, &KTask::Start));
     
-    ListenEvent(_spinTask->GetEventUpdate(), &KSceneMeshComponent::Spin);
-    ListenEvent(Engine.GetObjectManager().GetEventDrawSceneObjects(), &KSceneMeshComponent::AddModelToRenderQueue);
-    ListenEvent(Engine.GetObjectManager().GetEventDrawSceneObjectWireframes(), &KSceneMeshComponent::AddWireframeToRenderQueue);
+    ListenEvent(_spinTask->GetEventUpdate(), 
+        KtDelegate<>(this, &KSceneMeshComponent::Spin));
+    ListenEvent(Engine.GetObjectManager().GetEventDrawSceneObjects(), 
+        KtDelegate<>(this, &KSceneMeshComponent::AddModelToRenderQueue));
+    ListenEvent(Engine.GetObjectManager().GetEventDrawSceneObjectWireframes(), 
+        KtDelegate<>(this, &KSceneMeshComponent::AddWireframeToRenderQueue));
 }
 
 void KSceneMeshComponent::Update()

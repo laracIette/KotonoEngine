@@ -6,6 +6,7 @@
 #include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/ModelManager.h>
 #include <kotono_framework/Path.h>
+#include <kotono_framework/log.h>
 #include "Object.h"
 #include "SceneMeshObject.h"
 #include "SceneMeshComponent.h"
@@ -22,8 +23,7 @@ void SObjectManager::Init()
 {
 	Framework.GetInputManager().GetKeyboard()
 		.GetEvent(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
-		.AddListener(this, &SObjectManager::Quit);
-
+		.AddListener(KtDelegate<>(this, &SObjectManager::Quit));
 	
 	auto* shader3D = Framework.GetShaderManager().Get(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3D.ktshader)");
 	shader3D->SetName("3D Shader");
@@ -36,7 +36,8 @@ void SObjectManager::Init()
 	{
 		auto* scene = Create<KScene>();
 		scene->SetPath(Framework.GetPath().GetSolutionPath() / R"(assets\objects\scene.KScene)");
-		scene->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), &KScene::Reload);
+		scene->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), 
+			KtDelegate<>(scene, &KScene::Reload));
 	}
 	{
 		auto* mesh1 = Create<TSceneMeshObject>();
@@ -57,7 +58,7 @@ void SObjectManager::Init()
 	drawTimer_ = Create<KTimer>();
 	drawTimer_->SetDuration(1.0f / 60.0f);
 	drawTimer_->SetIsRepeat(true);
-	drawTimer_->GetEventCompleted().AddListener(this, &SObjectManager::SubmitDrawObjects);
+	drawTimer_->GetEventCompleted().AddListener(KtDelegate<>(this, &SObjectManager::SubmitDrawObjects));
 	drawTimer_->Start();
 	
 	canDraw_ = true;
