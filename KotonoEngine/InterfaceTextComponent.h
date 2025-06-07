@@ -2,7 +2,6 @@
 #include "InterfaceStackComponent.h"
 
 class KtShader;
-class KTimer;
 
 class KInterfaceTextComponent : public KInterfaceStackComponent
 {
@@ -18,7 +17,6 @@ public:
 	const float GetFontSize() const;
 	const float GetSpacing() const;
 	KtShader* GetShader() const;
-	KTimer* GetUpdateTimer() const;
 
 	void SetText(const std::string& text);
 	void SetFontSize(const float fontSize);
@@ -33,8 +31,6 @@ private:
 	KtShader* shader_;
 
 	TextBinding textBinding_;
-	// Timer to avoid pre-initialization delete, also helps with performance
-	KTimer* updateTextTimer_;
 
 	void UpdateTextWithBinding();
 	void UpdateCharacters();

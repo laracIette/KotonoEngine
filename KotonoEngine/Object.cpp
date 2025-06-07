@@ -4,6 +4,7 @@
 #include <regex>
 #include "Engine.h"
 #include "ObjectManager.h"
+#include "Timer.h"
 
 void KObject::Construct()
 {
@@ -95,6 +96,15 @@ void KObject::DeserializeFrom(const nlohmann::json& json)
 {
     _guid = json["guid"];
     _name = json["name"];
+}
+
+void KObject::Repeat(const KtDelegate<>& delegate, float frequency)
+{
+    auto* timer = AddObject<KTimer>();
+    timer->SetDuration(frequency);
+    timer->SetIsRepeat(true);
+    timer->GetEventCompleted().AddListener(delegate);
+    timer->Start();
 }
 
 void KObject::AddObject(KObject* object)

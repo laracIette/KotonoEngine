@@ -3,7 +3,7 @@
 #include "EventBase.h"
 #include "Delegate.h"
 template<typename... Args>
-class KtEvent : public KtEventBase
+class KtEvent final : public KtEventBase
 {
 public:
     void AddListener(const KtDelegate<Args...>& delegate)

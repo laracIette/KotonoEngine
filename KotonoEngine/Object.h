@@ -68,6 +68,8 @@ public:
 		listenedEvents_.erase(&event);
 	}
 
+	void Repeat(const KtDelegate<>& delegate, float frequency);
+
 private:
 	UGuid _guid;
 	std::filesystem::path _path;

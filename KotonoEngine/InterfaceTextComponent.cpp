@@ -6,13 +6,10 @@
 #include "InterfaceObject.h"
 #include "InterfaceStackComponent.h"
 #include "InterfaceImageComponent.h"
-#include "Timer.h"
 
 void KInterfaceTextComponent::Construct()
 {
     Base::Construct();
-
-    updateTextTimer_ = AddObject<KTimer>();
 }
 
 void KInterfaceTextComponent::Init()
@@ -21,12 +18,7 @@ void KInterfaceTextComponent::Init()
 
     SetOrientation(EOrientation::Horizontal);
 
-    updateTextTimer_->SetDuration(1.0f / 60.0f);
-    updateTextTimer_->SetIsRepeat(true);
-    updateTextTimer_->Start();
-
-    ListenEvent(updateTextTimer_->GetEventCompleted(), 
-        KtDelegate<>(this, &KInterfaceTextComponent::UpdateTextWithBinding));
+    Repeat(KtDelegate<>(this, &KInterfaceTextComponent::UpdateTextWithBinding), 1.0f / 60.0f);
 }
 
 const std::string& KInterfaceTextComponent::GetText() const
@@ -47,11 +39,6 @@ const float KInterfaceTextComponent::GetSpacing() const
 KtShader* KInterfaceTextComponent::GetShader() const
 {
     return shader_;
-}
-
-KTimer* KInterfaceTextComponent::GetUpdateTimer() const
-{
-    return updateTextTimer_;
 }
 
 void KInterfaceTextComponent::SetText(const std::string& text)
