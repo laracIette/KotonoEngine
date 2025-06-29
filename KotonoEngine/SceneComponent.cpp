@@ -10,6 +10,8 @@ KSceneComponent::KSceneComponent(TSceneObject* owner) :
 
 void KSceneComponent::Init()
 {
+    Base::Init();
+
     if (owner_->GetRootComponent() != this)
     {
         SetParent(owner_->GetRootComponent(), ECoordinateSpace::Relative);

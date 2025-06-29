@@ -104,7 +104,7 @@ void KSceneMeshComponent::AddModelToRenderQueue()
     args.Renderable = model_;
     args.Viewport = GetOwner()->GetViewport();
     args.ObjectData.Model = GetModelMatrix();
-    Framework.GetRenderer().GetRenderer3D().AddToRenderQueue(args);
+    Framework.GetRenderer().AddToRenderQueue3D(args);
 }
 
 void KSceneMeshComponent::AddWireframeToRenderQueue()
@@ -114,7 +114,7 @@ void KSceneMeshComponent::AddWireframeToRenderQueue()
     args.Renderable = model_;
     args.Viewport = GetOwner()->GetViewport();
     args.ObjectData.Model = GetModelMatrix();
-    Framework.GetRenderer().GetRenderer3D().AddToRenderQueue(args);
+    Framework.GetRenderer().AddToRenderQueue3D(args);
 }
 
 const KtRenderable3DProxy KSceneMeshComponent::CreateProxy() const

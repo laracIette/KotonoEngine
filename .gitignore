@@ -402,3 +402,5 @@ FodyWeavers.xsd
 *.idb
 
 *.spv
+
+KotonoFramework/lib/KotonoFramework.lib

@@ -91,5 +91,5 @@ void KInterfaceComponent::AddBoundsToRenderQueue()
     args.Viewport = owner_->GetViewport();
     args.ObjectData.Model = rect_.GetModelMatrix(GetOwner()->GetViewport());
     args.Layer = GetLayer();
-    Framework.GetRenderer().GetRenderer2D().AddToRenderQueue(args);
+    Framework.GetRenderer().AddToRenderQueue2D(args);
 }

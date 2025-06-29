@@ -22,44 +22,45 @@ public:
 
 	const VkExtent2D GetSwapChainExtent() const;
 
-	KtRenderer2D& GetRenderer2D();
-	KtRenderer3D& GetRenderer3D();
+	void AddToRenderQueue2D(const KtAddToRenderQueue2DArgs& args);
+	void AddToRenderQueue3D(const KtAddToRenderQueue3DArgs& args);
+	void SetUniformData3D(const KtUniformData3D& data);
 
 	VkRenderPass GetRenderPass() const;
 
 private:
-	KtRenderer2D _renderer2D;
-	KtRenderer3D _renderer3D;
+	KtRenderer2D renderer2D_;
+	KtRenderer3D renderer3D_;
 
-	VkSwapchainKHR _swapChain;
-	std::vector<VkImage> _swapChainImages;
-	VkFormat _swapChainImageFormat;
-	VkExtent2D _swapChainExtent;
-	std::vector<VkImageView> _swapChainImageViews;
-	std::vector<VkFramebuffer> _swapChainFramebuffers;
+	VkSwapchainKHR swapChain_;
+	std::vector<VkImage> swapChainImages_;
+	VkFormat swapChainImageFormat_;
+	VkExtent2D swapChainExtent_;
+	std::vector<VkImageView> swapChainImageViews_;
+	std::vector<VkFramebuffer> swapChainFramebuffers_;
 
-	VkRenderPass _renderPass;
+	VkRenderPass renderPass_;
 
-	std::vector<VkCommandBuffer> _commandBuffers;
+	std::vector<VkCommandBuffer> commandBuffers_;
 
-	std::thread _renderThread;
-	std::thread _rhiThread;
-	std::mutex _renderMutex;
+	std::thread renderThread_;
+	std::thread rhiThread_;
+	std::mutex renderMutex_;
 
-	VkImage _colorImage;
-	VmaAllocation _colorImageAllocation;
-	VkImageView _colorImageView;
+	VkImage colorImage_;
+	VmaAllocation colorImageAllocation_;
+	VkImageView colorImageView_;
 
-	VkImage _depthImage;
-	VmaAllocation _depthImageAllocation;
-	VkImageView _depthImageView;
+	VkImage depthImage_;
+	VmaAllocation depthImageAllocation_;
+	VkImageView depthImageView_;
 
-	std::array<VkSemaphore, KT_FRAMES_IN_FLIGHT> _imageAvailableSemaphores;
-	std::array<VkSemaphore, KT_FRAMES_IN_FLIGHT> _renderFinishedSemaphores;
-	std::array<VkFence, KT_FRAMES_IN_FLIGHT> _inFlightFences;
-	std::array<uint32_t, KT_FRAMES_IN_FLIGHT> _imageIndices;
+	std::array<VkSemaphore, KT_FRAMES_IN_FLIGHT> imageAvailableSemaphores_;
+	std::array<VkSemaphore, KT_FRAMES_IN_FLIGHT> renderFinishedSemaphores_;
+	std::array<VkFence, KT_FRAMES_IN_FLIGHT> inFlightFences_;
+	std::array<uint32_t, KT_FRAMES_IN_FLIGHT> imageIndices_;
 
-	uint32_t _frameCount;
+	uint32_t frameCount_;
 
 	void CreateSwapChain();
 	void CleanupSwapChain();

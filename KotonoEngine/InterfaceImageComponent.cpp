@@ -71,7 +71,7 @@ void KInterfaceImageComponent::AddTextureToRenderQueue()
 	args.Viewport = GetOwner()->GetViewport();
 	args.ObjectData.Model = GetRect().GetModelMatrix(GetOwner()->GetViewport());
 	args.Layer = GetLayer();
-	Framework.GetRenderer().GetRenderer2D().AddToRenderQueue(args);
+	Framework.GetRenderer().AddToRenderQueue2D(args);
 }
 
 void KInterfaceImageComponent::AddWireframeToRenderQueue()
@@ -82,5 +82,5 @@ void KInterfaceImageComponent::AddWireframeToRenderQueue()
 	args.Viewport = GetOwner()->GetViewport();
 	args.ObjectData.Model = GetRect().GetModelMatrix(GetOwner()->GetViewport());
 	args.Layer = GetLayer();
-	Framework.GetRenderer().GetRenderer2D().AddToRenderQueue(args);
+	Framework.GetRenderer().AddToRenderQueue2D(args);
 }
