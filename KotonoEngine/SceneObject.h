@@ -1,7 +1,7 @@
 #pragma once
 #include "Object.h"
-#include "Transform.h"
 #include "Visibility.h"
+#include "CoordinateSpace.h"
 #include <kotono_framework/Collection.h>
 
 class KtViewport;
@@ -15,13 +15,13 @@ class TSceneObject : public KObject
 	BASECLASS(KObject)
 
 public:
+	void Construct() override;
 	void Init() override;
 
-	const UTransform& GetTransform() const;
-	UTransform& GetTransform();
 	const EVisibility GetVisibility() const;
 	KtViewport* GetViewport() const;
 	TSceneObject* GetParent() const;
+	KSceneComponent* GetRootComponent() const;
 
 	void SetVisibility(const EVisibility visibility);
 	void SetViewport(KtViewport* viewport);
@@ -51,10 +51,10 @@ public:
 	}
 
 private:
-	UTransform transform_;
 	EVisibility visibility_;
 	KtViewport* viewport_;
 	TSceneObject* parent_;
+	KSceneComponent* rootComponent_;
 	std::unordered_set<TSceneObject*> children_;
 	std::unordered_set<KSceneComponent*> components_;
 

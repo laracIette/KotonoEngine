@@ -7,6 +7,7 @@
 #include <kotono_framework/Path.h>
 #include <kotono_framework/Shader.h>
 #include <kotono_framework/Model.h>
+#include <kotono_framework/Renderable3DProxy.h>
 #include <nlohmann/json.hpp>
 #include "Engine.h"
 #include "ObjectManager.h"
@@ -20,7 +21,7 @@ void KSceneMeshComponent::Construct()
 {
     Base::Construct();
 
-    _spinTask = Engine.GetObjectManager().Create<KTask>();
+    spinTask_ = AddObject<KTask>();
 
     if (!WireframeShader)
     {
@@ -33,11 +34,13 @@ void KSceneMeshComponent::Init()
 {
     Base::Init();
 
-    _spinTask->SetDuration(5.0f);
-    _spinTask->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED), 
-        KtDelegate<>(_spinTask, &KTask::Start));
+    isProxyDirty_ = true;
+
+    spinTask_->SetDuration(5.0f);
+    spinTask_->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED), 
+        KtDelegate<>(spinTask_, &KTask::Start));
     
-    ListenEvent(_spinTask->GetEventUpdate(), 
+    ListenEvent(spinTask_->GetEventUpdate(), 
         KtDelegate<>(this, &KSceneMeshComponent::Spin));
     ListenEvent(Engine.GetObjectManager().GetEventDrawSceneObjects(), 
         KtDelegate<>(this, &KSceneMeshComponent::AddModelToRenderQueue));
@@ -53,8 +56,6 @@ void KSceneMeshComponent::Update()
 void KSceneMeshComponent::Cleanup()
 {
     Base::Cleanup();
-
-    _spinTask->SetIsDelete(true);
 }
 
 KtShader* KSceneMeshComponent::GetShader() const
@@ -64,7 +65,7 @@ KtShader* KSceneMeshComponent::GetShader() const
 
 KtModel* KSceneMeshComponent::GetModel() const
 {
-    return _model;
+    return model_;
 }
 
 void KSceneMeshComponent::SetShader(KtShader* shader)
@@ -74,30 +75,35 @@ void KSceneMeshComponent::SetShader(KtShader* shader)
 
 void KSceneMeshComponent::SetModel(KtModel* model)
 {
-    _model = model;
+    model_ = model;
 }
 
 void KSceneMeshComponent::SerializeTo(nlohmann::json& json) const
 {
     Base::SerializeTo(json);
     json["shader"] = shader_ ? shader_->GetPath() : "";
-    json["model"] = _model ? _model->GetPath() : "";
+    json["model"] = model_ ? model_->GetPath() : "";
 }
 
 void KSceneMeshComponent::DeserializeFrom(const nlohmann::json& json)
 {
     Base::DeserializeFrom(json);
     shader_ = Framework.GetShaderManager().Get(json["shader"]);
-    _model = Framework.GetModelManager().Get(json["model"]);
+    model_ = Framework.GetModelManager().Get(json["model"]);
 }
 
 void KSceneMeshComponent::AddModelToRenderQueue()
 {
+    if (isProxyDirty_)
+    {
+        const auto proxy = CreateProxy();
+    }
+
     KtAddToRenderQueue3DArgs args{};
     args.Shader = shader_;
-    args.Renderable = _model;
+    args.Renderable = model_;
     args.Viewport = GetOwner()->GetViewport();
-    args.ObjectData.Model = GetTransform().GetModelMatrix();
+    args.ObjectData.Model = GetModelMatrix();
     Framework.GetRenderer().GetRenderer3D().AddToRenderQueue(args);
 }
 
@@ -105,15 +111,25 @@ void KSceneMeshComponent::AddWireframeToRenderQueue()
 {
     KtAddToRenderQueue3DArgs args{};
     args.Shader = WireframeShader;
-    args.Renderable = _model;
+    args.Renderable = model_;
     args.Viewport = GetOwner()->GetViewport();
-    args.ObjectData.Model = GetTransform().GetModelMatrix();
+    args.ObjectData.Model = GetModelMatrix();
     Framework.GetRenderer().GetRenderer3D().AddToRenderQueue(args);
+}
+
+const KtRenderable3DProxy KSceneMeshComponent::CreateProxy() const
+{
+    KtRenderable3DProxy proxy{};
+    proxy.viewport = GetOwner()->GetViewport();
+    proxy.modelMatrix = GetModelMatrix();
+    proxy.shader = shader_;
+    proxy.renderable = model_;
+    return proxy;
 }
 
 void KSceneMeshComponent::Spin()
 {
     const float speed = 10.0f * Engine.GetTime().GetDelta();
     const glm::quat rotation = glm::quat(glm::radians(glm::vec3(0.0f, speed, 0.0f)));
-    GetTransform().AddRotation(rotation);
+    Rotate(rotation);
 }

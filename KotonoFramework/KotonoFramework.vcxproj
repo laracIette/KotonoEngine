@@ -215,6 +215,7 @@
     <ClInclude Include="include\kotono_framework\SpvCompiler.h" />
     <ClInclude Include="include\kotono_framework\LogImportanceLevel.h" />
     <ClInclude Include="include\kotono_framework\Delegate.h" />
+    <ClInclude Include="include\kotono_framework\Renderable3DProxy.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

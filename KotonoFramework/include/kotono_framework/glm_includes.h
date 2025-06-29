@@ -10,3 +10,21 @@
 #include <glm/gtx/hash.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+namespace std
+{
+    template<>
+    struct hash<glm::mat4>
+    {
+        size_t operator()(const glm::mat4& mat) const
+        {
+            const float* data = glm::value_ptr(mat);
+            size_t h = 0;
+            for (int i = 0; i < 16; ++i)
+            {
+                h ^= hash<float>()(data[i]) + 0x9e3779b9 + (h << 6) + (h >> 2);
+            }
+            return h;
+        }
+    };
+}

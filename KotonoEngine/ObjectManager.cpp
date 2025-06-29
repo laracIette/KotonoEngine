@@ -43,13 +43,13 @@ void SObjectManager::Init()
 		auto* mesh1 = Create<TSceneMeshObject>();
 		mesh1->GetMeshComponent()->SetShader(shader3D);
 		mesh1->GetMeshComponent()->SetModel(model1);
-		mesh1->GetTransform().SetRelativePosition(glm::vec3(-1.0f, 0.0f, 0.0f));
+		mesh1->GetRootComponent()->SetRelativePosition(glm::vec3(-1.0f, 0.0f, 0.0f));
 
 		auto* mesh2 = Create<TSceneMeshObject>();
 		mesh2->GetMeshComponent()->SetShader(shader3D);
 		mesh2->GetMeshComponent()->SetModel(model2);
-		mesh2->GetTransform().SetRelativePosition(glm::vec3(1.0f, 0.0f, 0.0f));
-		mesh2->GetTransform().SetRelativeScale(glm::vec3(0.2f));
+		mesh2->GetRootComponent()->SetRelativePosition(glm::vec3(1.0f, 0.0f, 0.0f));
+		mesh2->GetRootComponent()->SetRelativeScale(glm::vec3(0.2f));
 		mesh2->SetParent(mesh1, ECoordinateSpace::World);
 	}
 

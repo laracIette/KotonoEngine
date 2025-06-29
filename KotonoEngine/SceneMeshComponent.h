@@ -4,6 +4,7 @@
 class KtShader;
 class KtModel;
 class KTask;
+struct KtRenderable3DProxy;
 
 class KSceneMeshComponent : public KSceneComponent
 {
@@ -19,7 +20,7 @@ public:
 	KtModel* GetModel() const;
 
 	void SetShader(KtShader* shader);
-	void SetModel(KtModel* model);
+	void SetModel(KtModel* model); 
 
 	void SerializeTo(nlohmann::json& json) const override;
 	void DeserializeFrom(const nlohmann::json& json) override;
@@ -27,11 +28,14 @@ public:
 
 private:
 	KtShader* shader_;
-	KtModel* _model;
-	KTask* _spinTask;
+	KtModel* model_;
+	KTask* spinTask_;
+	bool isProxyDirty_;
 
 	void AddModelToRenderQueue();
 	void AddWireframeToRenderQueue();
+
+	const KtRenderable3DProxy CreateProxy() const;
 
 	// temp
 	void Spin();
