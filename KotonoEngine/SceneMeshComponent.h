@@ -1,10 +1,10 @@
 #pragma once
+#include <kotono_framework/Renderable3DProxy.h>
 #include "SceneComponent.h"
 
 class KtShader;
 class KtModel;
 class KTask;
-struct KtRenderable3DProxy;
 
 class KSceneMeshComponent : public KSceneComponent
 {
@@ -30,12 +30,25 @@ private:
 	KtShader* shader_;
 	KtModel* model_;
 	KTask* spinTask_;
-	bool isProxyDirty_;
+	KtRenderable3DProxy proxy_;
+
+	bool isProxyTransformDirty_;
+
+	void InitProxy();
+	void InitSpin();
+	void InitRenderables();
 
 	void AddModelToRenderQueue();
 	void AddWireframeToRenderQueue();
 
-	const KtRenderable3DProxy CreateProxy() const;
+	void CreateProxy();
+	void UpdateProxyModelMatrix();
+	void UpdateProxyShader();
+	void UpdateProxyRenderable();
+
+	void MarkProxyTransformDirty();
+
+	void UpdateProxy();
 
 	// temp
 	void Spin();

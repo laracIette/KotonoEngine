@@ -18,8 +18,7 @@ public:
 	TSceneObject* GetOwner() const;
 	const UTransform& GetTransform() const;
 	const EVisibility GetVisibility() const;
-
-	void SetVisibility(const EVisibility visibility);
+	KtEvent<>& GetEventUpdateTransform();
 
 	const glm::vec3& GetRelativePosition() const;
 	const glm::quat& GetRelativeRotation() const;
@@ -39,6 +38,8 @@ public:
 	const glm::mat4 GetModelMatrix() const;
 
 	const glm::vec3 GetScreenPosition() const;
+
+	void SetVisibility(const EVisibility visibility);
 
 	void SetParent(KSceneComponent* parent, const ECoordinateSpace keepTransform);
 

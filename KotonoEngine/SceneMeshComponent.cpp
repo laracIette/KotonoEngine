@@ -7,7 +7,7 @@
 #include <kotono_framework/Path.h>
 #include <kotono_framework/Shader.h>
 #include <kotono_framework/Model.h>
-#include <kotono_framework/Renderable3DProxy.h>
+#include <kotono_framework/log.h>
 #include <nlohmann/json.hpp>
 #include "Engine.h"
 #include "ObjectManager.h"
@@ -34,18 +34,33 @@ void KSceneMeshComponent::Init()
 {
     Base::Init();
 
-    isProxyDirty_ = true;
+    InitProxy();
+    InitSpin();
+    InitRenderables();
+}
 
+void KSceneMeshComponent::InitProxy()
+{
+    CreateProxy();
+    const KtDelegate<> transformDelegate(this, &KSceneMeshComponent::MarkProxyTransformDirty);
+    ListenEvent(GetEventUpdateTransform(), transformDelegate);
+}
+
+void KSceneMeshComponent::InitSpin()
+{
+    const KtDelegate<> startSpinDelegate(spinTask_, &KTask::Start);
+    const KtDelegate<> spinMeshDelegate(this, &KSceneMeshComponent::Spin);
     spinTask_->SetDuration(5.0f);
-    spinTask_->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED), 
-        KtDelegate<>(spinTask_, &KTask::Start));
-    
-    ListenEvent(spinTask_->GetEventUpdate(), 
-        KtDelegate<>(this, &KSceneMeshComponent::Spin));
-    ListenEvent(Engine.GetObjectManager().GetEventDrawSceneObjects(), 
-        KtDelegate<>(this, &KSceneMeshComponent::AddModelToRenderQueue));
-    ListenEvent(Engine.GetObjectManager().GetEventDrawSceneObjectWireframes(), 
-        KtDelegate<>(this, &KSceneMeshComponent::AddWireframeToRenderQueue));
+    spinTask_->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED), startSpinDelegate);
+    ListenEvent(spinTask_->GetEventUpdate(), spinMeshDelegate);
+}
+
+void KSceneMeshComponent::InitRenderables()
+{
+    const KtDelegate<> addModelToRenderQueueDelegate(this, &KSceneMeshComponent::AddModelToRenderQueue);
+    const KtDelegate<> addWireframeToRenderQueueDelegate(this, &KSceneMeshComponent::AddWireframeToRenderQueue);
+    ListenEvent(Engine.GetObjectManager().GetEventDrawSceneObjects(), addModelToRenderQueueDelegate);
+    ListenEvent(Engine.GetObjectManager().GetEventDrawSceneObjectWireframes(), addWireframeToRenderQueueDelegate);
 }
 
 void KSceneMeshComponent::Update()
@@ -94,10 +109,7 @@ void KSceneMeshComponent::DeserializeFrom(const nlohmann::json& json)
 
 void KSceneMeshComponent::AddModelToRenderQueue()
 {
-    if (isProxyDirty_)
-    {
-        const auto proxy = CreateProxy();
-    }
+    UpdateProxy();
 
     KtAddToRenderQueue3DArgs args{};
     args.Shader = shader_;
@@ -109,22 +121,51 @@ void KSceneMeshComponent::AddModelToRenderQueue()
 
 void KSceneMeshComponent::AddWireframeToRenderQueue()
 {
-    KtAddToRenderQueue3DArgs args{};
+    /*KtAddToRenderQueue3DArgs args{};
     args.Shader = WireframeShader;
     args.Renderable = model_;
     args.Viewport = GetOwner()->GetViewport();
     args.ObjectData.Model = GetModelMatrix();
-    Framework.GetRenderer().AddToRenderQueue3D(args);
+    Framework.GetRenderer().AddToRenderQueue3D(args);*/
 }
 
-const KtRenderable3DProxy KSceneMeshComponent::CreateProxy() const
+void KSceneMeshComponent::CreateProxy()
 {
-    KtRenderable3DProxy proxy{};
-    proxy.viewport = GetOwner()->GetViewport();
-    proxy.modelMatrix = GetModelMatrix();
-    proxy.shader = shader_;
-    proxy.renderable = model_;
-    return proxy;
+    proxy_.owner = static_cast<void*>(this);
+    proxy_.viewport = GetOwner()->GetViewport();
+    UpdateProxyModelMatrix();
+    UpdateProxyShader();
+    UpdateProxyRenderable();
+}
+
+void KSceneMeshComponent::UpdateProxyModelMatrix()
+{
+    proxy_.modelMatrix = GetModelMatrix();
+}
+
+void KSceneMeshComponent::UpdateProxyShader()
+{
+    proxy_.shader = shader_;
+}
+
+void KSceneMeshComponent::UpdateProxyRenderable()
+{
+    proxy_.renderable = model_;
+}
+
+void KSceneMeshComponent::MarkProxyTransformDirty()
+{
+    isProxyTransformDirty_ = true;
+}
+
+void KSceneMeshComponent::UpdateProxy()
+{
+    if (isProxyTransformDirty_)
+    {
+        isProxyTransformDirty_ = false;
+        UpdateProxyModelMatrix();
+        KT_DEBUG_LOG(KT_LOG_COMPILE_TIME_LEVEL, "update proxy transform");
+    }
 }
 
 void KSceneMeshComponent::Spin()

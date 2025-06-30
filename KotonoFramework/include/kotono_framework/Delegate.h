@@ -35,7 +35,7 @@ public:
         return instance == instance_;
     }
 
-    const bool operator==(const KtDelegate& other) const noexcept
+    bool operator==(const KtDelegate& other) const noexcept
     {
         return other.instance_ == instance_ && other.functionIdentity_ == functionIdentity_;
     }
@@ -54,10 +54,10 @@ namespace std
     template <typename... Args>
     struct hash<KtDelegate<Args...>>
     {
-        std::size_t operator()(const KtDelegate<Args...>& delegate) const noexcept
+        size_t operator()(const KtDelegate<Args...>& delegate) const noexcept
         {
-            std::size_t h1 = std::hash<void*>{}(delegate.instance_);
-            std::size_t h2 = std::hash<void*>{}(delegate.functionIdentity_);
+            size_t h1 = hash<void*>{}(delegate.instance_);
+            size_t h2 = hash<void*>{}(delegate.functionIdentity_);
 
             return h1 ^ (h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2));
         }

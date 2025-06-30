@@ -33,6 +33,11 @@ const EVisibility KSceneComponent::GetVisibility() const
     return visibility_;
 }
 
+KtEvent<>& KSceneComponent::GetEventUpdateTransform()
+{
+    return eventUpdateTransform_;
+}
+
 void KSceneComponent::SetVisibility(const EVisibility visibility)
 {
     visibility_ = visibility;
