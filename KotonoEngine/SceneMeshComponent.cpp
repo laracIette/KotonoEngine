@@ -36,7 +36,6 @@ void KSceneMeshComponent::Init()
 
     InitProxy();
     InitSpin();
-    InitRenderables();
 }
 
 void KSceneMeshComponent::InitProxy()
@@ -54,14 +53,6 @@ void KSceneMeshComponent::InitSpin()
     spinTask_->SetDuration(5.0f);
     spinTask_->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED), startSpinDelegate);
     ListenEvent(spinTask_->GetEventUpdate(), spinMeshDelegate);
-}
-
-void KSceneMeshComponent::InitRenderables()
-{
-    const KtDelegate<> addModelToRenderQueueDelegate(this, &KSceneMeshComponent::AddModelToRenderQueue);
-    const KtDelegate<> addWireframeToRenderQueueDelegate(this, &KSceneMeshComponent::AddWireframeToRenderQueue);
-    ListenEvent(Engine.GetObjectManager().GetEventDrawSceneObjects(), addModelToRenderQueueDelegate);
-    ListenEvent(Engine.GetObjectManager().GetEventDrawSceneObjectWireframes(), addWireframeToRenderQueueDelegate);
 }
 
 void KSceneMeshComponent::Update()
@@ -107,21 +98,6 @@ void KSceneMeshComponent::DeserializeFrom(const nlohmann::json& json)
     Base::DeserializeFrom(json);
     shader_ = Framework.GetShaderManager().Get(json["shader"]);
     model_ = Framework.GetModelManager().Get(json["model"]);
-}
-
-void KSceneMeshComponent::AddModelToRenderQueue()
-{
-    
-}
-
-void KSceneMeshComponent::AddWireframeToRenderQueue()
-{
-    /*KtAddToRenderQueue3DArgs args{};
-    args.Shader = WireframeShader;
-    args.Renderable = model_;
-    args.Viewport = GetOwner()->GetViewport();
-    args.ObjectData.Model = GetModelMatrix();
-    Framework.GetRenderer().AddToRenderQueue3D(args);*/
 }
 
 void KSceneMeshComponent::CreateProxy()

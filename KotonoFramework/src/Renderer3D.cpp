@@ -50,7 +50,7 @@ void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 
 void KtRenderer3D::UpdateProxys(const uint32_t currentFrame)
 {
-	auto proxys = KtCollection(proxys_);
+	auto proxys = KtCollection(proxys_.begin(), proxys_.end());
 	proxys.AddFilter([](const auto* proxy) { return proxy->isDirty; });
 	for (auto* proxy : proxys)
 	{

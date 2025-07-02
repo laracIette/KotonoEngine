@@ -37,7 +37,7 @@ public:
 	template <InterfaceComponent T>
 	T* GetComponent() const
 	{
-		auto components = KtCollection(components_);
+		auto components = KtCollection(components_.begin(), components_.end());
 		components.AddFilter([](auto* component) { return dynamic_cast<T*>(component); });
 		if (auto* component = components.GetFirst())
 		{

@@ -1,44 +1,45 @@
 #pragma once
 #include <functional>
 #include <vector>
-#include <unordered_set>
-template<typename T>
-class KtCollection
+#include <span>
+template <typename IteratorType>
+class KtCollection final
 {
 public:
-	typedef std::function<bool(const T&)> Filter;
+	using T = typename std::iterator_traits<IteratorType>::value_type;
+	using Filter = std::function<bool(const T&)>;
 
-	struct Iterator
+	struct Iterator final
 	{
-		Iterator(const std::vector<T>& data, const std::vector<Filter>& filters, size_t pos)
-			: data_(data), filters_(filters), pos_(pos)
+		Iterator(IteratorType current, IteratorType end, std::span<const Filter> filters)
+			: current_(current), end_(end), filters_(filters)
 		{
 			AdvanceToNextValid();
 		}
 
 		const T& operator*() const
 		{
-			return data_[pos_];
+			return *current_;
 		}
 
 		Iterator& operator++()
 		{
-			++pos_;
+			++current_;
 			AdvanceToNextValid();
 			return *this;
 		}
 
 		bool operator!=(const Iterator& other) const
 		{
-			return pos_ != other.pos_;
+			return current_ != other.current_;
 		}
 
 	private:
 		void AdvanceToNextValid()
 		{
-			while (pos_ < data_.size() && !PassesFilters(data_[pos_]))
+			while (current_ != end_ && !PassesFilters(*current_))
 			{
-				++pos_;
+				++current_;
 			}
 		}
 
@@ -54,19 +55,13 @@ public:
 			return true;
 		}
 
-		const std::vector<T>& data_;
-		const std::vector<Filter>& filters_;
-		size_t pos_;
+		IteratorType current_;
+		IteratorType end_;
+		std::span<const Filter> filters_;
 	};
 
-	explicit KtCollection(const std::vector<T>& data) 
-		: data_(data.begin(), data.end()) {}
-
-	explicit KtCollection(const std::list<T>& data) 
-		: data_(data.begin(), data.end()) {}
-
-	explicit KtCollection(const std::unordered_set<T>& data)
-		: data_(data.begin(), data.end()) {}
+	KtCollection(IteratorType begin, IteratorType end)
+		: begin_(begin), end_(end) {}
 
 	void AddFilter(Filter&& filter)
 	{
@@ -81,26 +76,20 @@ public:
 	const std::vector<T> GetVector() const
 	{
 		std::vector<T> result;
-		result.reserve(data_.size());
-
 		for (const T& item : *this)
 		{
 			result.push_back(item);
 		}
-
 		return result;
 	}
 
 	const std::unordered_set<T> GetUnorderedSet() const
 	{
 		std::unordered_set<T> result;
-		result.reserve(data_.size());
-
 		for (const T& item : *this)
 		{
 			result.insert(item);
 		}
-
 		return result;
 	}
 
@@ -114,13 +103,12 @@ public:
 		return T();
 	}
 
-	Iterator begin() const { return Iterator(data_, filters_, 0); }
-	Iterator end() const { return Iterator(data_, filters_, data_.size()); }
+	Iterator begin() const { return Iterator(begin_, end_, filters_); }
+	Iterator end() const { return Iterator(end_, end_, filters_); }
 
 private:
-	std::vector<T> data_;
-	//std::list<T>::const_iterator begin_;
-	//std::list<T>::const_iterator end_;
+	IteratorType begin_;
+	IteratorType end_;
 	std::vector<Filter> filters_;
 };
 

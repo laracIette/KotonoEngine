@@ -33,10 +33,6 @@ private:
 
 	void InitProxy();
 	void InitSpin();
-	void InitRenderables();
-
-	void AddModelToRenderQueue();
-	void AddWireframeToRenderQueue();
 
 	void CreateProxy();
 	void UpdateProxyModelMatrix();
