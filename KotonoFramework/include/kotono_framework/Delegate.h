@@ -7,7 +7,7 @@ template<typename... Args>
 struct KtDelegate
 {
 public:
-    typedef std::function<void(Args...)> CallbackFunction;
+    using CallbackFunction = std::function<void(Args...)>;
     
     template<class Tinst, class Tfunc>
         requires std::is_base_of_v<Tfunc, Tinst>

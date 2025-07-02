@@ -8,7 +8,7 @@ class KInterfaceTextComponent : public KInterfaceStackComponent
 	BASECLASS(KInterfaceStackComponent)
 
 public:
-	typedef std::function<const std::string()> TextBinding;
+	using TextBinding = std::function<const std::string()>;
 
 	void Construct() override;
 	void Init() override;
