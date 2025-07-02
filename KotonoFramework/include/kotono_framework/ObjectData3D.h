@@ -2,6 +2,6 @@
 #include "glm_includes.h"
 struct KtObjectData3D
 {
-	glm::mat4 Model;
+	glm::mat4 ModelMatrix;
 };
 

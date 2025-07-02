@@ -60,10 +60,10 @@ public:
 	};
 
 	explicit KtCollection(const std::vector<T>& data) 
-		: data_(data) {}
+		: data_(data.begin(), data.end()) {}
 
-	explicit KtCollection(std::vector<T>&& data) 
-		: data_(std::move(data)) {}
+	explicit KtCollection(const std::list<T>& data) 
+		: data_(data.begin(), data.end()) {}
 
 	explicit KtCollection(const std::unordered_set<T>& data)
 		: data_(data.begin(), data.end()) {}
@@ -119,6 +119,8 @@ public:
 
 private:
 	std::vector<T> data_;
+	//std::list<T>::const_iterator begin_;
+	//std::list<T>::const_iterator end_;
 	std::vector<Filter> filters_;
 };
 

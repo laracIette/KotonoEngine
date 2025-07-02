@@ -25,14 +25,11 @@ public:
 	void SerializeTo(nlohmann::json& json) const override;
 	void DeserializeFrom(const nlohmann::json& json) override;
 
-
 private:
 	KtShader* shader_;
 	KtModel* model_;
 	KTask* spinTask_;
 	KtRenderable3DProxy proxy_;
-
-	bool isProxyTransformDirty_;
 
 	void InitProxy();
 	void InitSpin();
@@ -47,8 +44,6 @@ private:
 	void UpdateProxyRenderable();
 
 	void MarkProxyTransformDirty();
-
-	void UpdateProxy();
 
 	// temp
 	void Spin();

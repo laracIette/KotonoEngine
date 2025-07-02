@@ -5,27 +5,12 @@ class KtViewport;
 class KtRenderable3D;
 struct KtRenderable3DProxy final
 {
-    void* owner;
+public:
 	KtShader* shader;
-	KtViewport* viewport;
 	KtRenderable3D* renderable;
+	KtViewport* viewport;
 	glm::mat4 modelMatrix;
 
-    bool operator==(const KtRenderable3DProxy& other)
-    {
-        return owner != other.owner;
-    }
+    bool isDirty;
 };
-
-namespace std
-{
-    template <>
-    struct hash<KtRenderable3DProxy>
-    {
-        size_t operator()(const KtRenderable3DProxy& proxy) const
-        {
-            return hash<void*>{}(proxy.owner);
-        }
-    };
-}
 

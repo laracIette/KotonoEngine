@@ -9,6 +9,7 @@ void TSceneObject::Construct()
 	Base::Construct();
 
 	rootComponent_ = AddComponent<KSceneComponent>();
+	viewport_ = &WindowViewport;
 }
 
 void TSceneObject::Init()
@@ -16,7 +17,6 @@ void TSceneObject::Init()
 	Base::Init();
 
 	visibility_ = EVisibility::EditorAndGame;
-	viewport_ = &WindowViewport;
 }
 
 const EVisibility TSceneObject::GetVisibility() const

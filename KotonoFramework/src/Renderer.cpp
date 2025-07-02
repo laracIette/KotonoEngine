@@ -411,7 +411,9 @@ void KtRenderer::CreateSyncObjects()
 constexpr bool MULTI_THREADED = false;
 void KtRenderer::DrawFrame()
 {
-	const uint32_t currentFrame = GetGameThreadFrame();
+	const uint32_t currentFrame = GetGameThreadFrame(); // todo: replace by enum
+														// getframe(gamethread), 
+														// has to propagate to renderer 2d and 3d
 	
 #if MULTI_THREADED
 	if (frameCount_ >= 1)
@@ -487,7 +489,7 @@ void KtRenderer::RecordCommandBuffer(const uint32_t currentFrame)
 	);
 }
 
-void KtRenderer::CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const
+void KtRenderer::CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t currentFrame)
 {
 	renderer3D_.CmdDraw(commandBuffer, currentFrame);
 	renderer2D_.CmdDraw(commandBuffer, currentFrame);
@@ -630,9 +632,14 @@ void KtRenderer::AddToRenderQueue2D(const KtAddToRenderQueue2DArgs& args)
 	renderer2D_.AddToRenderQueue(args);
 }
 
-void KtRenderer::AddToRenderQueue3D(const KtAddToRenderQueue3DArgs& args)
+void KtRenderer::AddToRenderQueue3D(KtRenderable3DProxy* proxy)
 {
-	renderer3D_.AddToRenderQueue(args);
+	renderer3D_.Register(proxy);
+}
+
+void KtRenderer::RemoveFromRenderQueue3D(KtRenderable3DProxy* proxy)
+{
+	renderer3D_.Remove(proxy);
 }
 
 void KtRenderer::SetUniformData3D(const KtUniformData3D& data)

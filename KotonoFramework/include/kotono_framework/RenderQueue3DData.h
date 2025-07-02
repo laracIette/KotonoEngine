@@ -1,17 +1,17 @@
 #pragma once
-#include <vector>
 #include <unordered_map>
 #include "ObjectData3D.h"
 
 class KtShader;
 class KtRenderable3D;
 class KtViewport;
+struct KtRenderable3DProxy;
 
 struct KtRenderQueue3DData
 {
 	struct RenderQueue3DViewportData
 	{
-		std::vector<KtObjectData3D> ObjectDatas;
+		std::unordered_map<KtRenderable3DProxy*, KtObjectData3D> ObjectDatas;
 	};
 	struct RenderQueue3DRenderableData
 	{

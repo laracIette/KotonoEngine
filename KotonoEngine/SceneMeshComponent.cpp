@@ -42,6 +42,7 @@ void KSceneMeshComponent::Init()
 void KSceneMeshComponent::InitProxy()
 {
     CreateProxy();
+    Framework.GetRenderer().AddToRenderQueue3D(&proxy_);
     const KtDelegate<> transformDelegate(this, &KSceneMeshComponent::MarkProxyTransformDirty);
     ListenEvent(GetEventUpdateTransform(), transformDelegate);
 }
@@ -71,6 +72,7 @@ void KSceneMeshComponent::Update()
 void KSceneMeshComponent::Cleanup()
 {
     Base::Cleanup();
+    Framework.GetRenderer().RemoveFromRenderQueue3D(&proxy_);
 }
 
 KtShader* KSceneMeshComponent::GetShader() const
@@ -109,14 +111,7 @@ void KSceneMeshComponent::DeserializeFrom(const nlohmann::json& json)
 
 void KSceneMeshComponent::AddModelToRenderQueue()
 {
-    UpdateProxy();
-
-    KtAddToRenderQueue3DArgs args{};
-    args.Shader = shader_;
-    args.Renderable = model_;
-    args.Viewport = GetOwner()->GetViewport();
-    args.ObjectData.Model = GetModelMatrix();
-    Framework.GetRenderer().AddToRenderQueue3D(args);
+    
 }
 
 void KSceneMeshComponent::AddWireframeToRenderQueue()
@@ -131,7 +126,6 @@ void KSceneMeshComponent::AddWireframeToRenderQueue()
 
 void KSceneMeshComponent::CreateProxy()
 {
-    proxy_.owner = static_cast<void*>(this);
     proxy_.viewport = GetOwner()->GetViewport();
     UpdateProxyModelMatrix();
     UpdateProxyShader();
@@ -155,17 +149,8 @@ void KSceneMeshComponent::UpdateProxyRenderable()
 
 void KSceneMeshComponent::MarkProxyTransformDirty()
 {
-    isProxyTransformDirty_ = true;
-}
-
-void KSceneMeshComponent::UpdateProxy()
-{
-    if (isProxyTransformDirty_)
-    {
-        isProxyTransformDirty_ = false;
-        UpdateProxyModelMatrix();
-        KT_DEBUG_LOG(KT_LOG_COMPILE_TIME_LEVEL, "update proxy transform");
-    }
+    proxy_.isDirty = true;
+    UpdateProxyModelMatrix();
 }
 
 void KSceneMeshComponent::Spin()

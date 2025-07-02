@@ -53,10 +53,10 @@ const KtRenderQueue3DData KtCuller3D::ComputeDistanceCulling(const KtRenderQueue
 		{
 			for (const auto& [viewport, viewportData] : renderableData.Viewports)
 			{
-				for (const auto& objectData : viewportData.ObjectDatas)
+				for (const auto& [proxy, objectData] : viewportData.ObjectDatas)
 				{
 					const glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-					const glm::vec3 objectPosition = glm::vec3(objectData.Model[3]);
+					const glm::vec3 objectPosition = glm::vec3(objectData.ModelMatrix[3]);
 					const float distance = glm::distance(cameraPosition, objectPosition);
 					constexpr float maxDistance = 10.0f;
 					if (distance > maxDistance)
@@ -64,7 +64,7 @@ const KtRenderQueue3DData KtCuller3D::ComputeDistanceCulling(const KtRenderQueue
 						continue;
 					}
 
-					culledData.Shaders[shader].Renderables[renderable].Viewports[viewport].ObjectDatas.push_back(objectData);
+					culledData.Shaders[shader].Renderables[renderable].Viewports[viewport].ObjectDatas[proxy] = objectData;
 				}
 			}
 		}

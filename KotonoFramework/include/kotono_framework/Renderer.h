@@ -23,7 +23,8 @@ public:
 	const VkExtent2D GetSwapChainExtent() const;
 
 	void AddToRenderQueue2D(const KtAddToRenderQueue2DArgs& args);
-	void AddToRenderQueue3D(const KtAddToRenderQueue3DArgs& args);
+	void AddToRenderQueue3D(KtRenderable3DProxy* proxy);
+	void RemoveFromRenderQueue3D(KtRenderable3DProxy* proxy);
 	void SetUniformData3D(const KtUniformData3D& data);
 
 	VkRenderPass GetRenderPass() const;
@@ -87,7 +88,7 @@ private:
 
 	void CreateSyncObjects();
 
-	void CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const;
+	void CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t currentFrame);
 	void ResetRenderers(const uint32_t currentFrame);
 
 	void JoinThread(std::thread& thread) const;
