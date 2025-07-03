@@ -155,7 +155,7 @@ void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t current
 
 	const KtCuller3D culler{};
 	const auto culledData = culler.ComputeCulling(renderQueueData_[currentFrame]);
-
+	// todo: not actually used in rendering
 	UpdateDescriptorSets(culledData, currentFrame);
 
 	instanceIndices_[currentFrame] = {};
@@ -235,4 +235,4 @@ void KtRenderer3D::CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRen
 			}
 		}
 	}
-}\
+}

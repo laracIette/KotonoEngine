@@ -495,7 +495,7 @@ VkFramebuffer& KtRenderer::GetFramebuffer(const uint32_t currentFrame)
 void KtRenderer::CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t currentFrame)
 {
 	renderer3D_.CmdDraw(commandBuffer, currentFrame);
-	//renderer2D_.CmdDraw(commandBuffer, currentFrame);
+	renderer2D_.CmdDraw(commandBuffer, currentFrame);
 }
 
 void KtRenderer::ResetRenderers(const uint32_t currentFrame)

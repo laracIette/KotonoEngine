@@ -15,11 +15,13 @@ public:
 	void AddToRenderQueue(const KtAddToRenderQueue2DArgs& args);
 	void SetUniformData(const KtUniformData2D& uniformData);
 
-	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame) const;
+	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame);
 
 	void Reset(const uint32_t currentFrame);
 
 private:
+	std::array<VkCommandBuffer, KT_FRAMES_IN_FLIGHT> commandBuffers_;
+
 	std::array<KtRenderQueue2DData, KT_FRAMES_IN_FLIGHT> renderQueueData_;
 	std::array<KtUniformData2D, KT_FRAMES_IN_FLIGHT> uniformData_;
 
@@ -29,9 +31,15 @@ private:
 	void CreateVertexBuffer();
 	void CreateIndexBuffer();
 
-	void CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRenderQueue2DData& renderQueueData, const uint32_t currentFrame) const;
-
 	void CmdBindVertexBuffer(VkCommandBuffer commandBuffer) const;
 	void CmdBindIndexBuffer(VkCommandBuffer commandBuffer) const;
+
+	void CreateCommandBuffers();
+	void RecordCommandBuffer(const uint32_t currentFrame);
+	void BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t currentFrame);
+	void EndCommandBuffer(VkCommandBuffer commandBuffer);
+	
+	void UpdateDescriptorSets(const KtRenderQueue2DData& renderQueueData, const uint32_t currentFrame);
+	void CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRenderQueue2DData& renderQueueData, const uint32_t currentFrame);
 };
 

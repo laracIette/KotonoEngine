@@ -22,10 +22,9 @@ public:
 
 private:
 	std::array<VkCommandBuffer, KT_FRAMES_IN_FLIGHT> staticCommandBuffers_;
+	std::array<VkCommandBuffer, KT_FRAMES_IN_FLIGHT> dynamicCommandBuffers_;
 	KtRenderQueue3DData staticRenderQueueData_;
 	std::array<bool, KT_FRAMES_IN_FLIGHT> isStaticCommandBufferDirty_;
-
-	std::array<VkCommandBuffer, KT_FRAMES_IN_FLIGHT> dynamicCommandBuffers_;
 
 	std::array<KtRenderQueue3DData, KT_FRAMES_IN_FLIGHT> renderQueueData_;
 	std::array<KtUniformData3D, KT_FRAMES_IN_FLIGHT> uniformData_;
