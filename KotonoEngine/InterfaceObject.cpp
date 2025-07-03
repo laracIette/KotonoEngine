@@ -1,5 +1,5 @@
 #include "InterfaceObject.h"
-#include <kotono_framework/log.h>
+#include "log.h"
 #include <kotono_framework/Viewport.h>
 #include "Engine.h"
 #include "InterfaceComponent.h"
@@ -90,12 +90,12 @@ void RInterfaceObject::SetParent(RInterfaceObject* parent, const ECoordinateSpac
 {
 	if (parent == this)
 	{
-		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "RInterfaceObject::SetParent(): couldn't set the parent of '%s' to itself", GetName().c_str());
+		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "RInterfaceObject::SetParent(): couldn't set the parent of '%s' to itself", GetName().c_str());
 		return;
 	}
 	if (parent == parent_)
 	{
-		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "RInterfaceObject::SetParent(): couldn't set the parent of '%s' to the same", GetName().c_str());
+		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "RInterfaceObject::SetParent(): couldn't set the parent of '%s' to the same", GetName().c_str());
 		return;
 	}
 	if (parent)

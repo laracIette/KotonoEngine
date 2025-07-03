@@ -27,20 +27,20 @@ void KtRenderer2D::Init()
 
 void KtRenderer2D::Cleanup() const
 {
-	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaning up 2D renderer");
+	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaning up 2D renderer");
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), indexBuffer_.Buffer, indexBuffer_.Allocation);
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), vertexBuffer_.Buffer, vertexBuffer_.Allocation);
-	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaned up 2D renderer");
+	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaned up 2D renderer");
 }
 
 void KtRenderer2D::AddToRenderQueue(const KtAddToRenderQueue2DArgs& args)
 {
 	renderQueueData_[Framework.GetRenderer().GetGameThreadFrame()]
-		.Shaders[args.Shader]
-		.Renderables[args.Renderable]
-		.Viewports[args.Viewport]
+		.shaders[args.Shader]
+		.renderables[args.Renderable]
+		.viewports[args.Viewport]
 		.Layers[args.Layer] // todo: change to unordered_map and sort in culler or sorter
-		.ObjectDatas.push_back(args.ObjectData);
+		.objectDatas.push_back(args.ObjectData);
 }
 
 void KtRenderer2D::SetUniformData(const KtUniformData2D& uniformData)
@@ -59,26 +59,26 @@ void KtRenderer2D::CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRen
 {
 	KtViewport* currentViewport = nullptr;
 
-	for (auto& [shader, shaderData] : renderQueueData.Shaders)
+	for (auto& [shader, shaderData] : renderQueueData.shaders)
 	{
 		std::vector<KtObjectData2D> objectBufferData;
 		std::vector<KtRenderable2D*> renderables;
-		renderables.reserve(shaderData.Renderables.size());
+		renderables.reserve(shaderData.renderables.size());
 		std::vector<uint32_t> renderableIndices;
-		for (const auto& [renderable, renderableData] : shaderData.Renderables)
+		for (const auto& [renderable, renderableData] : shaderData.renderables)
 		{
-			for (const auto& [viewport, viewportData] : renderableData.Viewports)
+			for (const auto& [viewport, viewportData] : renderableData.viewports)
 			{
 				for (const auto& [layer, layerData] : viewportData.Layers)
 				{
-					// insert layerData.ObjectDatas.begin() to layerData.ObjectDatas.end()
+					// insert layerData.objectDatas.begin() to layerData.objectDatas.end()
 					objectBufferData.insert(objectBufferData.end(),
-						layerData.ObjectDatas.begin(), layerData.ObjectDatas.end()
+						layerData.objectDatas.begin(), layerData.objectDatas.end()
 					);
 
-					// insert layerData.ObjectDatas.size(), renderables.size() times
+					// insert layerData.objectDatas.size(), renderables.size() times
 					renderableIndices.insert(renderableIndices.end(),
-						layerData.ObjectDatas.size(), static_cast<uint32_t>(renderables.size())
+						layerData.objectDatas.size(), static_cast<uint32_t>(renderables.size())
 					);
 				}
 			}
@@ -117,14 +117,14 @@ void KtRenderer2D::CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRen
 		CmdBindIndexBuffer(commandBuffer);
 
 		uint32_t instanceIndex = 0;
-		for (const auto& [renderable, renderableData] : shaderData.Renderables)
+		for (const auto& [renderable, renderableData] : shaderData.renderables)
 		{
-			for (const auto& [viewport, viewportData] : renderableData.Viewports)
+			for (const auto& [viewport, viewportData] : renderableData.viewports)
 			{
 				uint32_t instanceCount = 0;
 				for (const auto& [layer, layerData] : viewportData.Layers)
 				{
-					instanceCount += static_cast<uint32_t>(layerData.ObjectDatas.size());
+					instanceCount += static_cast<uint32_t>(layerData.objectDatas.size());
 				}
 
 				if (currentViewport != viewport)

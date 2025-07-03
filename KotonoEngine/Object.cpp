@@ -8,11 +8,11 @@
 
 void KObject::Construct()
 {
+    name_ = GetTypeName();
 }
 
 void KObject::Init()
 {
-    _name = GetTypeName();
 }
 
 void KObject::Update() 
@@ -31,42 +31,55 @@ void KObject::Cleanup()
 
 const UGuid& KObject::GetGuid() const
 {
-    return _guid;
+    return guid_;
+}
+
+const bool KObject::GetIsConstructed() const
+{
+    return isConstructed_;
 }
 
 const std::filesystem::path& KObject::GetPath() const
 {
-    return _path;
+    return path_;
 }
 
 const std::string& KObject::GetName() const
 {
-    return _name;
+    return name_;
 }
 
 const bool KObject::GetIsDelete() const
 {
-    return _isDelete;
+    return isDelete_;
 }
 
 const std::string KObject::GetTypeName() const
 {
-    return std::regex_replace(typeid(*this).name(), std::regex(R"(^(class ))"), "");
+    return std::format("{}_{}",
+        std::regex_replace(typeid(*this).name(), std::regex(R"(^(class ))"), ""),
+        static_cast<std::string>(guid_)
+    );
 }
 
 void KObject::SetName(const std::string& name)
 {
-    _name = name;
+    name_ = name;
+}
+
+void KObject::SetIsConstructed(const bool isConstructed)
+{
+    isConstructed_ = isConstructed;
 }
 
 void KObject::SetPath(const std::filesystem::path& path)
 {
-    _path = path;
+    path_ = path;
 }
 
 void KObject::SetIsDelete(const bool isDelete)
 {
-    _isDelete = isDelete;
+    isDelete_ = isDelete;
 }
 
 void KObject::Serialize() const
@@ -74,28 +87,28 @@ void KObject::Serialize() const
     nlohmann::json json;
     KtSerializer serializer;
     SerializeTo(json);
-    serializer.WriteData(_path, json);
+    serializer.WriteData(path_, json);
 }
 
 void KObject::Deserialize()
 {
     nlohmann::json json;
     KtSerializer serializer;
-    serializer.ReadData(_path, json);
+    serializer.ReadData(path_, json);
     DeserializeFrom(json);
 }
 
 void KObject::SerializeTo(nlohmann::json& json) const
 {
-    json["guid"] = _guid;
+    json["guid"] = guid_;
     json["type"] = GetTypeName();
-    json["name"] = _name;
+    json["name"] = name_;
 }
 
 void KObject::DeserializeFrom(const nlohmann::json& json)
 {
-    _guid = json["guid"];
-    _name = json["name"];
+    guid_ = json["guid"];
+    name_ = json["name"];
 }
 
 void KObject::Repeat(const KtDelegate<>& delegate, float frequency)

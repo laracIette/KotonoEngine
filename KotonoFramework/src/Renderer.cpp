@@ -24,7 +24,7 @@ void KtRenderer::Init()
 
 void KtRenderer::Cleanup()
 {
-	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaning up renderer");
+	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaning up renderer");
 
 	JoinThread(renderThread_);
 	JoinThread(rhiThread_);
@@ -43,7 +43,7 @@ void KtRenderer::Cleanup()
 		vkDestroyFence(Framework.GetContext().GetDevice(), inFlightFences_[i], nullptr);
 	}
 
-	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaned up renderer");
+	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaned up renderer");
 }
 
 void KtRenderer::CreateSwapChain()
@@ -60,7 +60,7 @@ void KtRenderer::CreateSwapChain()
 		imageCount = swapChainSupport.Capabilities.maxImageCount;
 	}
 	
-	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtRenderer::CreateSwapChain(): swap chain image count: %u", imageCount);
+	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtRenderer::CreateSwapChain(): swap chain image count: %u", imageCount);
 
 	VkSwapchainCreateInfoKHR createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -425,7 +425,7 @@ void KtRenderer::DrawFrame()
 
 	if (frameCount_ >= 2)
 	{
-		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "frame %u rendered", frameCount_);
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "frame %u rendered", frameCount_);
 
 		JoinThread(rhiThread_);
 		const uint32_t renderRHIFrame = GetRHIThreadFrame(currentFrame);
@@ -434,7 +434,7 @@ void KtRenderer::DrawFrame()
 #else
 	if (!TryAcquireNextImage(currentFrame))
 	{
-		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtRenderer::DrawFrame(): frame skipped");
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtRenderer::DrawFrame(): frame skipped");
 		return;
 	}
 	RecordCommandBuffer(currentFrame);
@@ -504,6 +504,7 @@ void KtRenderer::ResetRenderers(const uint32_t currentFrame)
 void KtRenderer::SubmitCommandBuffer(const uint32_t currentFrame)
 {
 	// TODO: idk
+	// todo: figure that shit out
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
@@ -549,7 +550,7 @@ void KtRenderer::SubmitCommandBuffer(const uint32_t currentFrame)
 #if MULTI_THREADED
 	if (!TryAcquireNextImage(currentFrame))
 	{
-		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtRenderer::DrawFrame(): frame skipped");
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtRenderer::DrawFrame(): frame skipped");
 		return;
 	}
 #endif

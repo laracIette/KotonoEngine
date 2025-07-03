@@ -13,15 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Shaders">
+    <Filter Include="shaders">
       <UniqueIdentifier>{fb47ce88-be4a-4e55-8fca-d4164838b033}</UniqueIdentifier>
       <Extensions>ktshader</Extensions>
     </Filter>
-    <Filter Include="Shaders\Vertex">
+    <Filter Include="shaders\Vertex">
       <UniqueIdentifier>{3c57e5ac-1efb-4411-b5d5-ecdfcba3da58}</UniqueIdentifier>
       <Extensions>vert</Extensions>
     </Filter>
-    <Filter Include="Shaders\Fragment">
+    <Filter Include="shaders\Fragment">
       <UniqueIdentifier>{a3d68882-9eed-4e59-995c-06be6d908c64}</UniqueIdentifier>
       <Extensions>frag</Extensions>
     </Filter>
@@ -197,9 +197,6 @@
     <ClInclude Include="include\kotono_framework\AddToRenderQueue2DArgs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\kotono_framework\AddToRenderQueue3DArgs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\kotono_framework\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -276,40 +273,40 @@
   <ItemGroup>
     <None Include="cpp.hint" />
     <None Include="shaders\frag\shader3D.frag">
-      <Filter>Shaders\Fragment</Filter>
+      <Filter>shaders\Fragment</Filter>
     </None>
     <None Include="shaders\vert\shader3D.vert">
-      <Filter>Shaders\Vertex</Filter>
+      <Filter>shaders\Vertex</Filter>
     </None>
     <None Include="shaders\shader3D.ktshader">
-      <Filter>Shaders</Filter>
+      <Filter>shaders</Filter>
     </None>
     <None Include="shaders\wireframe3D.ktshader">
-      <Filter>Shaders</Filter>
+      <Filter>shaders</Filter>
     </None>
     <None Include="shaders\frag\shader2D.frag">
-      <Filter>Shaders\Fragment</Filter>
+      <Filter>shaders\Fragment</Filter>
     </None>
     <None Include="shaders\vert\shader2D.vert">
-      <Filter>Shaders\Vertex</Filter>
+      <Filter>shaders\Vertex</Filter>
     </None>
     <None Include="shaders\shader2D.ktshader">
-      <Filter>Shaders</Filter>
+      <Filter>shaders</Filter>
     </None>
     <None Include="shaders\wireframe2D.ktshader">
-      <Filter>Shaders</Filter>
+      <Filter>shaders</Filter>
     </None>
     <None Include="shaders\vert\flatColor2D.vert">
-      <Filter>Shaders\Vertex</Filter>
+      <Filter>shaders\Vertex</Filter>
     </None>
     <None Include="shaders\flatColor2D.ktshader">
-      <Filter>Shaders</Filter>
+      <Filter>shaders</Filter>
     </None>
     <None Include="shaders\frag\flatColor.frag">
-      <Filter>Shaders\Fragment</Filter>
+      <Filter>shaders\Fragment</Filter>
     </None>
     <None Include="shaders\vert\flatColor3D.vert">
-      <Filter>Shaders\Vertex</Filter>
+      <Filter>shaders\Vertex</Filter>
     </None>
   </ItemGroup>
 </Project>

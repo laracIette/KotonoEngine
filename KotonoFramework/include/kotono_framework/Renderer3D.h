@@ -1,5 +1,4 @@
 #pragma once
-#include "AddToRenderQueue3DArgs.h"
 #include "UniformData3D.h"
 #include "RenderQueue3DData.h"
 #include "frames_in_flight.h"
@@ -30,7 +29,7 @@ private:
 
 	std::unordered_set<KtRenderable3DProxy*> proxys_; // todo: array?
 
-	void UpdateProxys(const uint32_t currentFrame);
+	void UpdateProxys();
 	void AddProxyToRenderQueue(KtRenderable3DProxy* proxy, const uint32_t currentFrame);
 	void RemoveProxyFromRenderQueue(KtRenderable3DProxy* proxy, const uint32_t currentFrame);
 

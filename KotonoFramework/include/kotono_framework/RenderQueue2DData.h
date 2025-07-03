@@ -12,7 +12,7 @@ struct KtRenderQueue2DData
 {
 	struct RenderQueue2DLayerData
 	{
-		std::vector<KtObjectData2D> ObjectDatas;
+		std::vector<KtObjectData2D> objectDatas;
 	};
 	struct RenderQueue2DViewportData
 	{
@@ -20,13 +20,13 @@ struct KtRenderQueue2DData
 	};
 	struct RenderQueue2DRenderableData
 	{
-		std::unordered_map<KtViewport*, RenderQueue2DViewportData> Viewports;
+		std::unordered_map<KtViewport*, RenderQueue2DViewportData> viewports;
 	};
 	struct RenderQueue2DShaderData
 	{
-		std::unordered_map<KtRenderable2D*, RenderQueue2DRenderableData> Renderables;
+		std::unordered_map<KtRenderable2D*, RenderQueue2DRenderableData> renderables;
 	};
 
-	std::unordered_map<KtShader*, RenderQueue2DShaderData> Shaders;
+	std::unordered_map<KtShader*, RenderQueue2DShaderData> shaders;
 };
 

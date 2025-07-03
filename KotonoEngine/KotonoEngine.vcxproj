@@ -64,7 +64,9 @@
     <ClInclude Include="InterfaceStackComponent.h" />
     <ClInclude Include="InterfaceTextBoxObject.h" />
     <ClInclude Include="InterfaceTextComponent.h" />
+    <ClInclude Include="log.h" />
     <ClInclude Include="math_utils.h" />
+    <ClInclude Include="Mobility.h" />
     <ClInclude Include="SceneMeshComponent.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectManager.h" />

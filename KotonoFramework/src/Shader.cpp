@@ -25,7 +25,7 @@ KtShader::KtShader(const std::filesystem::path& path) :
 
 void KtShader::Init()
 {
-	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "initializing shader '%s'", path_.string().c_str()); // todo: replace by name
+	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "initializing shader '%s'", path_.string().c_str()); // todo: replace by name
 	CreateShaderLayout();
 	CreateDescriptorSetLayouts();
 	DebugLogDescriptorSetLayoutData();
@@ -33,12 +33,12 @@ void KtShader::Init()
 	CreateDescriptorSets();
 	CreateDescriptorSetLayoutBindings();
 	CreateGraphicsPipeline();
-	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "initialized shader '%s'", path_.string().c_str());
+	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "initialized shader '%s'", path_.string().c_str());
 }
 
 void KtShader::Cleanup()
 {
-	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaning up shader '%s'", _name.c_str());
+	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaning up shader '%s'", _name.c_str());
 
 	vkDestroyPipeline(Framework.GetContext().GetDevice(), _graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(Framework.GetContext().GetDevice(), _pipelineLayout, nullptr);
@@ -59,7 +59,7 @@ void KtShader::Cleanup()
 
 	vkDestroyDescriptorPool(Framework.GetContext().GetDevice(), _descriptorPool, nullptr);
 
-	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaned up shader '%s'", _name.c_str());
+	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaned up shader '%s'", _name.c_str());
 }
 
 const std::filesystem::path& KtShader::GetPath() const
@@ -521,7 +521,7 @@ void KtShader::CreateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutB
 {
 	if (!GetIsImageSamplerDescriptorType(descriptorSetLayoutBindingData.DescriptorType))
 	{
-		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "descriptor type '%u' isn't an image sampler type", descriptorSetLayoutBindingData.DescriptorType);
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "descriptor type '%u' isn't an image sampler type", descriptorSetLayoutBindingData.DescriptorType);
 		return;
 	}
 
@@ -535,29 +535,29 @@ void KtShader::DebugLogDescriptorSetLayoutData() const
 {
 	for (const auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
 	{
-		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "DescriptorSetLayout: %p", (void*)descriptorSetLayoutData.DescriptorSetLayout);
-		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| DescriptorSets");
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "DescriptorSetLayout: %p", (void*)descriptorSetLayoutData.DescriptorSetLayout);
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| DescriptorSets");
 		for (const auto& descriptorSet : descriptorSetLayoutData.DescriptorSets)
 		{
-			KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | %p", (void*)descriptorSet);
+			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | %p", (void*)descriptorSet);
 		}
-		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| DescriptorSetLayoutBindingDatas");
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| DescriptorSetLayoutBindingDatas");
 		for (const auto& descriptorSetLayoutBindingData : descriptorSetLayoutData.DescriptorSetLayoutBindingDatas)
 		{
-			KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | Name: %s", descriptorSetLayoutBindingData.Name.c_str());
-			KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | Binding: %u", descriptorSetLayoutBindingData.Binding);
-			KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | DescriptorCount: %u", descriptorSetLayoutBindingData.DescriptorCount);
-			KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | DescriptorType: %u", descriptorSetLayoutBindingData.DescriptorType);
-			KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | MemberSize: %llu", descriptorSetLayoutBindingData.MemberSize);
-			KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | StageFlags: %u", descriptorSetLayoutBindingData.ShaderStageFlags);
-			KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | Buffers");
+			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | Name: %s", descriptorSetLayoutBindingData.Name.c_str());
+			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | Binding: %u", descriptorSetLayoutBindingData.Binding);
+			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | DescriptorCount: %u", descriptorSetLayoutBindingData.DescriptorCount);
+			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | DescriptorType: %u", descriptorSetLayoutBindingData.DescriptorType);
+			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | MemberSize: %llu", descriptorSetLayoutBindingData.MemberSize);
+			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | StageFlags: %u", descriptorSetLayoutBindingData.ShaderStageFlags);
+			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | Buffers");
 			for (const auto& buffer : descriptorSetLayoutBindingData.Buffers)
 			{
-				KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | | %p", (void*)(&buffer));
+				KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | | %p", (void*)(&buffer));
 			}
 			for (const auto& stagingBuffer : descriptorSetLayoutBindingData.StagingBuffers)
 			{
-				KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | | %p", (void*)(&stagingBuffer));
+				KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "| | | %p", (void*)(&stagingBuffer));
 			}
 		}
 	}
@@ -595,7 +595,7 @@ void KtShader::UpdateDescriptorSetLayoutBindingBufferMemberCount(DescriptorSetLa
 {
 	if (!GetIsBufferDescriptorType(descriptorSetLayoutBindingData.DescriptorType))
 	{
-		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "descriptor type '%u' isn't a buffer type", descriptorSetLayoutBindingData.DescriptorType);
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "descriptor type '%u' isn't a buffer type", descriptorSetLayoutBindingData.DescriptorType);
 		return;
 	}
 
@@ -604,7 +604,7 @@ void KtShader::UpdateDescriptorSetLayoutBindingBufferMemberCount(DescriptorSetLa
 		return;
 	}
 
-	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "descriptorSetLayoutBindingData member count at frame %u: %llu", imageIndex, memberCount);
+	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_LOW, "descriptorSetLayoutBindingData member count at frame %u: %llu", imageIndex, memberCount);
 	descriptorSetLayoutBindingData.MemberCounts[imageIndex] = std::max(1llu, memberCount);
 
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), descriptorSetLayoutBindingData.Buffers[imageIndex].Buffer, descriptorSetLayoutBindingData.Buffers[imageIndex].Allocation);
@@ -622,7 +622,7 @@ void KtShader::UpdateDescriptorSetLayoutBindingImageSampler(
 {
 	if (!GetIsImageSamplerDescriptorType(descriptorSetLayoutBindingData.DescriptorType))
 	{
-		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "descriptor type '%u' isn't an image sampler type", descriptorSetLayoutBindingData.DescriptorType);
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "descriptor type '%u' isn't an image sampler type", descriptorSetLayoutBindingData.DescriptorType);
 		return;
 	}
 
@@ -727,7 +727,7 @@ static const size_t GetTypeSize(const SpvReflectTypeDescription* type)
 {
 	if (!type)
 	{
-		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "error: type is null");
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "error: type is null");
 		return 0;
 	}
 
@@ -775,7 +775,7 @@ void KtShader::PopulateShaderLayout(const std::span<uint8_t> spirvData, const Vk
 
 	if (result != SPV_REFLECT_RESULT_SUCCESS)
 	{
-		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "spvReflectCreateShaderModule() returned: %u", result);
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "spvReflectCreateShaderModule() returned: %u", result);
 		throw std::runtime_error("couldn't create spirv reflect shader module");
 	}
 
@@ -789,7 +789,7 @@ void KtShader::PopulateShaderLayout(const std::span<uint8_t> spirvData, const Vk
 
 	for (auto* set : sets)
 	{
-		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Descriptor Set: %d, Binding Count: %d", set->set, set->binding_count);
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Descriptor Set: %d, Binding Count: %d", set->set, set->binding_count);
 		for (uint32_t i = 0; i < set->binding_count; i++)
 		{
 			const SpvReflectDescriptorBinding* binding = set->bindings[i];	
@@ -813,7 +813,7 @@ void KtShader::PopulateShaderLayout(const std::span<uint8_t> spirvData, const Vk
 	spvReflectEnumeratePushConstantBlocks(&module, &pushConstantCount, push_constants.data());
 	for (auto* push_constant : push_constants)
 	{
-		KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Push Constant Block: Size %llu bytes", GetTypeSize(push_constant->type_description));
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Push Constant Block: Size %llu bytes", GetTypeSize(push_constant->type_description));
 	}
 
 	if (shaderStage == VK_SHADER_STAGE_VERTEX_BIT)
@@ -826,7 +826,7 @@ void KtShader::PopulateShaderLayout(const std::span<uint8_t> spirvData, const Vk
 		size_t offset = 0;
 		for (auto* input : inputs)
 		{
-			KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Vertex Input: Location %d, Format %d, Size %llu bytes, Name: %s", input->location, input->format, GetTypeSize(input->type_description), input->name);
+			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Vertex Input: Location %d, Format %d, Size %llu bytes, Name: %s", input->location, input->format, GetTypeSize(input->type_description), input->name);
 			if (input->location != UINT32_MAX)
 			{
 				VkVertexInputAttributeDescription vertexInputAttributeDescription{};

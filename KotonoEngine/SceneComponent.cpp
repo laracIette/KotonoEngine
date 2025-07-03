@@ -1,21 +1,25 @@
 #include "SceneComponent.h"
 #include "SceneObject.h"
+#include "log.h"
 #include <stdexcept>
 
-KSceneComponent::KSceneComponent(TSceneObject* owner) :
-    owner_(owner),
-    parent_(nullptr)
+KSceneComponent::KSceneComponent(TSceneObject* owner) : owner_(owner)
 {
 }
 
-void KSceneComponent::Init()
+void KSceneComponent::Construct()
 {
-    Base::Init();
+    Base::Construct();
 
     if (owner_->GetRootComponent() != this)
     {
         SetParent(owner_->GetRootComponent(), ECoordinateSpace::Relative);
     }
+}
+
+void KSceneComponent::Init()
+{
+    Base::Init();
 }
 
 TSceneObject* KSceneComponent::GetOwner() const
@@ -33,6 +37,16 @@ const EVisibility KSceneComponent::GetVisibility() const
     return visibility_;
 }
 
+const EMobility KSceneComponent::GetMobility() const
+{
+    return mobility_;
+}
+
+const bool KSceneComponent::GetCanSetTransform() const
+{
+    return mobility_ == EMobility::Movable || !GetIsConstructed();
+}
+
 KtEvent<>& KSceneComponent::GetEventUpdateTransform()
 {
     return eventUpdateTransform_;
@@ -41,6 +55,11 @@ KtEvent<>& KSceneComponent::GetEventUpdateTransform()
 void KSceneComponent::SetVisibility(const EVisibility visibility)
 {
     visibility_ = visibility;
+}
+
+void KSceneComponent::SetMobility(const EMobility mobility)
+{
+    mobility_ = mobility;
 }
 
 const glm::vec3& KSceneComponent::GetRelativePosition() const
@@ -127,6 +146,12 @@ const glm::vec3 KSceneComponent::GetScreenPosition() const
 
 void KSceneComponent::SetParent(KSceneComponent* parent, const ECoordinateSpace keepTransform)
 {
+    if (!GetCanSetTransform())
+    {
+        KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "can't set parent for %s, its mobility is static", GetName().c_str());
+        return;
+    }
+
     switch (keepTransform)
     {
     case ECoordinateSpace::Relative:
@@ -152,18 +177,33 @@ void KSceneComponent::SetParent(KSceneComponent* parent, const ECoordinateSpace 
 
 void KSceneComponent::SetRelativePosition(const glm::vec3& relativePosition)
 {
+    if (!GetCanSetTransform())
+    {
+        KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "can't set position for %s, its mobility is static", GetName().c_str());
+        return;
+    }
     transform_.position = relativePosition;
     eventUpdateTransform_.Broadcast();
 }
 
 void KSceneComponent::SetRelativeRotation(const glm::quat& relativeRotation)
 {
+    if (!GetCanSetTransform())
+    {
+        KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "can't set rotation for %s, its mobility is static", GetName().c_str());
+        return;
+    }
     transform_.rotation = glm::normalize(relativeRotation);
     eventUpdateTransform_.Broadcast();
 }
 
 void KSceneComponent::SetRelativeScale(const glm::vec3& relativeScale)
 {
+    if (!GetCanSetTransform())
+    {
+        KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "can't set scale for %s, its mobility is static", GetName().c_str());
+        return;
+    }
     transform_.scale = relativeScale;
     eventUpdateTransform_.Broadcast();
 }

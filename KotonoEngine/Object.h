@@ -17,11 +17,13 @@ public:
 	virtual void Cleanup();
 
 	const UGuid& GetGuid() const;
+	const bool GetIsConstructed() const;
 	const std::filesystem::path& GetPath() const;
 	const std::string& GetName() const;
 	const bool GetIsDelete() const;
 	const std::string GetTypeName() const;
 
+	void SetIsConstructed(const bool isConstructed);
 	void SetPath(const std::filesystem::path& path);
 	void SetName(const std::string& name);
 	void SetIsDelete(const bool isDelete);
@@ -69,10 +71,11 @@ public:
 	void Repeat(const KtDelegate<>& delegate, float frequency);
 
 private:
-	UGuid _guid;
-	std::filesystem::path _path;
-	std::string _name;
-	bool _isDelete;
+	UGuid guid_;
+	bool isConstructed_;
+	std::filesystem::path path_;
+	std::string name_;
+	bool isDelete_;
 
 	std::unordered_set<KObject*> objects_;
 	std::unordered_map<KtEventBase*, uint32_t> listenedEvents_;

@@ -40,15 +40,7 @@ void KtRenderer3D::Remove(KtRenderable3DProxy* proxy)
 	}
 }
 
-void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame)
-{
-	UpdateProxys(currentFrame);
-	const KtCuller3D culler{};
-	const auto culledData = culler.ComputeCulling(renderQueueData_[currentFrame]);
-	CmdDrawRenderQueue(commandBuffer, culledData, currentFrame);
-}
-
-void KtRenderer3D::UpdateProxys(const uint32_t currentFrame)
+void KtRenderer3D::UpdateProxys()
 {
 	auto proxys = KtCollection(proxys_.begin(), proxys_.end());
 	proxys.AddFilter([](const auto* proxy) { return proxy->isDirty; });
@@ -64,19 +56,31 @@ void KtRenderer3D::UpdateProxys(const uint32_t currentFrame)
 void KtRenderer3D::AddProxyToRenderQueue(KtRenderable3DProxy* proxy, const uint32_t currentFrame)
 {
 	renderQueueData_[currentFrame]
-		.Shaders[proxy->shader]
-		.Renderables[proxy->renderable]
-		.Viewports[proxy->viewport]
-		.ObjectDatas[proxy].ModelMatrix = proxy->modelMatrix;
+		.shaders[proxy->shader]
+		.renderables[proxy->renderable]
+		.viewports[proxy->viewport]
+		.objectDatas[proxy].ModelMatrix = proxy->modelMatrix;
 }
 
 void KtRenderer3D::RemoveProxyFromRenderQueue(KtRenderable3DProxy* proxy, const uint32_t currentFrame)
 {
 	renderQueueData_[currentFrame]
-		.Shaders[proxy->shader]
-		.Renderables[proxy->renderable]
-		.Viewports[proxy->viewport]
-		.ObjectDatas.erase(proxy);
+		.shaders[proxy->shader]
+		.renderables[proxy->renderable]
+		.viewports[proxy->viewport]
+		.objectDatas.erase(proxy);
+}
+
+void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame)
+{
+	UpdateProxys();
+#if true
+	const KtCuller3D culler{};
+	const auto culledData = culler.ComputeCulling(renderQueueData_[currentFrame]);
+	CmdDrawRenderQueue(commandBuffer, culledData, currentFrame);
+#else
+	CmdDrawRenderQueue(commandBuffer, renderQueueData_[currentFrame], currentFrame);
+#endif
 }
 
 void KtRenderer3D::CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRenderQueue3DData& renderQueueData, const uint32_t currentFrame)
@@ -84,19 +88,16 @@ void KtRenderer3D::CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRen
 	stats_[currentFrame] = {};
 	KtViewport* currentViewport = nullptr;
 
-	for (const auto& [shader, shaderData] : renderQueueData.Shaders)
+	for (const auto& [shader, shaderData] : renderQueueData.shaders)
 	{
-		std::vector<KtObjectData3D> objectBufferData; // todo: unordered set ?
-		for (const auto& [renderable, renderableData] : shaderData.Renderables)
+		std::vector<KtObjectData3D> objectBufferData;
+		for (const auto& [renderable, renderableData] : shaderData.renderables)
 		{
-			for (const auto& [viewport, viewportData] : renderableData.Viewports)
+			for (const auto& [viewport, viewportData] : renderableData.viewports)
 			{
-				/*objectBufferData.insert(objectBufferData.end(),
-					viewportData.ObjectDatas.begin(), viewportData.ObjectDatas.end()
-				);*/
-				for (const auto& [proxy, objectData] : viewportData.ObjectDatas)
+				for (const auto& [proxy, objectData] : viewportData.objectDatas)
 				{
-					objectBufferData.push_back(objectData); // todo: push matrix directly ?
+					objectBufferData.push_back(objectData); 
 				}
 			}
 		}
@@ -116,13 +117,13 @@ void KtRenderer3D::CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRen
 		shader->CmdBindDescriptorSets(commandBuffer, currentFrame);
 
 		uint32_t instanceIndex = 0;
-		for (auto& [renderable, renderableData] : shaderData.Renderables)
+		for (auto& [renderable, renderableData] : shaderData.renderables)
 		{
 			renderable->CmdBind(commandBuffer);
 
-			for (auto& [viewport, viewportData] : renderableData.Viewports)
+			for (auto& [viewport, viewportData] : renderableData.viewports)
 			{
-				const uint32_t instanceCount = static_cast<uint32_t>(viewportData.ObjectDatas.size());
+				const uint32_t instanceCount = static_cast<uint32_t>(viewportData.objectDatas.size());
 
 				if (currentViewport != viewport)
 				{

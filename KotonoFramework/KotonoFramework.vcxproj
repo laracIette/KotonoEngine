@@ -168,7 +168,6 @@
     <ClInclude Include="include\kotono_framework\Culler3D.h" />
     <ClInclude Include="include\kotono_framework\Button.h" />
     <ClInclude Include="include\kotono_framework\ImageTextureManager.h" />
-    <ClInclude Include="include\kotono_framework\AddToRenderQueue3DArgs.h" />
     <ClInclude Include="include\kotono_framework\AddToRenderQueue2DArgs.h" />
     <ClInclude Include="include\kotono_framework\AllocatedBuffer.h" />
     <ClInclude Include="include\kotono_framework\AudioManager.h" />

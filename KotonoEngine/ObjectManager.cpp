@@ -6,7 +6,7 @@
 #include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/ModelManager.h>
 #include <kotono_framework/Path.h>
-#include <kotono_framework/log.h>
+#include "log.h"
 #include "Object.h"
 #include "SceneMeshObject.h"
 #include "SceneMeshComponent.h"
@@ -56,12 +56,10 @@ void SObjectManager::Init()
 	Camera = Create<TCamera>();
 
 	drawTimer_ = Create<KTimer>();
-	drawTimer_->SetDuration(1.0f / 60.0f);
+	drawTimer_->SetDuration(1.0f / 120.0f);
 	drawTimer_->SetIsRepeat(true);
 	drawTimer_->GetEventCompleted().AddListener(KtDelegate<>(this, &SObjectManager::SubmitDrawObjects));
 	drawTimer_->Start();
-	
-	canDraw_ = true;
 }
 
 void SObjectManager::Update()
@@ -95,8 +93,9 @@ void SObjectManager::Cleanup()
 
 void SObjectManager::Register(KObject* object)
 {
-	KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "creating object of type '%s'", object->GetTypeName().c_str());
+	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_LOW, "creating object of type '%s'", object->GetTypeName().c_str());
 	object->Construct();
+	object->SetIsConstructed(true);
 	inits_.insert(object);
 	typeRegistry_[typeid(*object)].insert(object);
 }
@@ -162,7 +161,7 @@ void SObjectManager::DeleteObjects()
 		auto* object = *it;
 		if (object->GetIsDelete())
 		{
-			KT_DEBUG_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "deleting object '%s'", object->GetName().c_str());
+			KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_LOW, "deleting object '%s'", object->GetName().c_str());
 			object->Cleanup();
 			
 			it = objects_.erase(it);  // Erase the object and move the iterator to the next element

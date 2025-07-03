@@ -11,16 +11,16 @@ struct KtRenderQueue3DData
 {
 	struct RenderQueue3DViewportData
 	{
-		std::unordered_map<KtRenderable3DProxy*, KtObjectData3D> ObjectDatas;
+		std::unordered_map<KtRenderable3DProxy*, KtObjectData3D> objectDatas;
 	};
 	struct RenderQueue3DRenderableData
 	{
-		std::unordered_map<KtViewport*, RenderQueue3DViewportData> Viewports;
+		std::unordered_map<KtViewport*, RenderQueue3DViewportData> viewports;
 	};
 	struct RenderQueue3DShaderData
 	{
-		std::unordered_map<KtRenderable3D*, RenderQueue3DRenderableData> Renderables;
+		std::unordered_map<KtRenderable3D*, RenderQueue3DRenderableData> renderables;
 	};
 
-	std::unordered_map<KtShader*, RenderQueue3DShaderData> Shaders;
+	std::unordered_map<KtShader*, RenderQueue3DShaderData> shaders;
 };

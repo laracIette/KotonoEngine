@@ -3,6 +3,7 @@
 #include "Transform.h"
 #include "Visibility.h"
 #include "CoordinateSpace.h"
+#include "Mobility.h"
 
 class TSceneObject;
 
@@ -13,11 +14,14 @@ class KSceneComponent : public KObject
 public:
 	KSceneComponent(TSceneObject* owner);
 
+	void Construct() override;
 	void Init() override;
 
 	TSceneObject* GetOwner() const;
 	const UTransform& GetTransform() const;
 	const EVisibility GetVisibility() const;
+	const EMobility GetMobility() const;
+	const bool GetCanSetTransform() const;
 	KtEvent<>& GetEventUpdateTransform();
 
 	const glm::vec3& GetRelativePosition() const;
@@ -40,6 +44,7 @@ public:
 	const glm::vec3 GetScreenPosition() const;
 
 	void SetVisibility(const EVisibility visibility);
+	void SetMobility(const EMobility mobility);
 
 	void SetParent(KSceneComponent* parent, const ECoordinateSpace keepTransform);
 
@@ -63,6 +68,7 @@ private:
 	KSceneComponent* parent_;
 	UTransform transform_;
 	EVisibility visibility_;
+	EMobility mobility_;
 	KtEvent<> eventUpdateTransform_;
 };
 

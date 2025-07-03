@@ -7,7 +7,7 @@
 #include <kotono_framework/Path.h>
 #include <kotono_framework/Shader.h>
 #include <kotono_framework/Model.h>
-#include <kotono_framework/log.h>
+#include "log.h"
 #include <nlohmann/json.hpp>
 #include "Engine.h"
 #include "ObjectManager.h"
