@@ -28,6 +28,7 @@ public:
 	void SetUniformData3D(const KtUniformData3D& data);
 
 	VkRenderPass GetRenderPass() const;
+	VkFramebuffer& GetFramebuffer(const uint32_t currentFrame);
 
 private:
 	KtRenderer2D renderer2D_;
@@ -42,7 +43,7 @@ private:
 
 	VkRenderPass renderPass_;
 
-	std::vector<VkCommandBuffer> commandBuffers_;
+	std::array<VkCommandBuffer, KT_FRAMES_IN_FLIGHT> commandBuffers_;
 
 	std::thread renderThread_;
 	std::thread rhiThread_;

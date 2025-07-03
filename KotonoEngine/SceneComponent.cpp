@@ -44,7 +44,7 @@ const EMobility KSceneComponent::GetMobility() const
 
 const bool KSceneComponent::GetCanSetTransform() const
 {
-    return mobility_ == EMobility::Movable || !GetIsConstructed();
+    return mobility_ == EMobility::Dynamic || !GetIsConstructed();
 }
 
 KtEvent<>& KSceneComponent::GetEventUpdateTransform()

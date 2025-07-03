@@ -375,13 +375,11 @@ const bool KtRenderer::HasStencilComponent(const VkFormat format) const
 
 void KtRenderer::CreateCommandBuffers()
 {
-	commandBuffers_.resize(KT_FRAMES_IN_FLIGHT);
-
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	allocInfo.commandPool = Framework.GetContext().GetCommandPool();
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocInfo.commandBufferCount = (uint32_t)commandBuffers_.size();
+	allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers_.size());
 
 	VK_CHECK_THROW(
 		vkAllocateCommandBuffers(Framework.GetContext().GetDevice(), &allocInfo, commandBuffers_.data()),
@@ -464,7 +462,7 @@ void KtRenderer::RecordCommandBuffer(const uint32_t currentFrame)
 	VkRenderPassBeginInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	renderPassInfo.renderPass = renderPass_;
-	renderPassInfo.framebuffer = swapChainFramebuffers_[imageIndices_[currentFrame]];
+	renderPassInfo.framebuffer = GetFramebuffer(currentFrame);
 	renderPassInfo.renderArea.offset = { 0, 0 };
 	renderPassInfo.renderArea.extent = swapChainExtent_;
 
@@ -476,7 +474,7 @@ void KtRenderer::RecordCommandBuffer(const uint32_t currentFrame)
 	renderPassInfo.pClearValues = clearValues.data();
 
 	// Begin RenderPass
-	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 	CmdDrawRenderers(commandBuffer, currentFrame);
 
@@ -489,16 +487,20 @@ void KtRenderer::RecordCommandBuffer(const uint32_t currentFrame)
 	);
 }
 
+VkFramebuffer& KtRenderer::GetFramebuffer(const uint32_t currentFrame)
+{
+	return swapChainFramebuffers_[imageIndices_[currentFrame]];
+}
+
 void KtRenderer::CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t currentFrame)
 {
 	renderer3D_.CmdDraw(commandBuffer, currentFrame);
-	renderer2D_.CmdDraw(commandBuffer, currentFrame);
+	//renderer2D_.CmdDraw(commandBuffer, currentFrame);
 }
 
 void KtRenderer::ResetRenderers(const uint32_t currentFrame)
 {
 	renderer2D_.Reset(currentFrame);
-	renderer3D_.Reset(currentFrame);
 }
 
 void KtRenderer::SubmitCommandBuffer(const uint32_t currentFrame)

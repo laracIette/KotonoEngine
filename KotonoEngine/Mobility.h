@@ -1,7 +1,7 @@
 #pragma once
 enum class EMobility
 {
-	Movable,
+	Dynamic,
 	Static
 };
 
