@@ -1,14 +1,18 @@
 #pragma once
 #include "UniformData3D.h"
-#include "RenderQueue3DData.h"
 #include "frames_in_flight.h"
 #include <vulkan/vulkan_core.h>
 #include <array>
 #include <unordered_set>
 #include "RendererFrameStats.h"
 struct KtRenderable3DProxy;
+class KtShader;
 class KtRenderer3D final
 {
+private:
+	using ProxiesVector = std::vector<KtRenderable3DProxy*>;
+	using ProxiesUnorderedSet = std::unordered_set<KtRenderable3DProxy*>;
+
 public:
 	void Init();
 	void Update(const uint32_t frameIndex);
@@ -23,10 +27,7 @@ public:
 
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 
-
 private:
-	using ProxiesVector = std::vector<KtRenderable3DProxy*>;
-	using ProxiesUnorderedSet = std::unordered_set<KtRenderable3DProxy*>;
 
 	FramesInFlightArray<KtUniformData3D> uniformDatas_;
 	FramesInFlightArray<KtRendererFrameStats> stats_;

@@ -161,6 +161,7 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\kotono_framework\Culler3DField.h" />
     <ClInclude Include="include\kotono_framework\Font.h" />
     <ClInclude Include="include\kotono_framework\Collection.h" />
     <ClInclude Include="include\kotono_framework\EventBase.h" />
@@ -206,7 +207,6 @@
     <ClInclude Include="include\kotono_framework\ShaderLayout.h" />
     <ClInclude Include="include\kotono_framework\Path.h" />
     <ClInclude Include="include\kotono_framework\Serializer.h" />
-    <ClInclude Include="include\kotono_framework\RenderQueue3DData.h" />
     <ClInclude Include="include\kotono_framework\time_utils.h" />
     <ClInclude Include="include\kotono_framework\RenderQueue2DData.h" />
     <ClInclude Include="include\kotono_framework\Renderable3D.h" />

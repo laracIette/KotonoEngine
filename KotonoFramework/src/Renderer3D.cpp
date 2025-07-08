@@ -219,11 +219,6 @@ const KtRenderer3D::ProxiesVector KtRenderer3D::GetSortedProxies(const ProxiesUn
 
 void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
 {
-
-	//const KtCuller3D culler{};
-	//const auto culledData = culler.ComputeCulling(globalRenderQueueDatas_[frameIndex]);
-	//UpdateDescriptorSets(culledData, frameIndex);
-
 	instanceIndices_[frameIndex] = {};
 	// draw calls are currently messed up by command buffers record
 	// that only records once per frame in flight at every change
@@ -233,11 +228,14 @@ void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIn
 		isDynamicCommandBufferDirty_[frameIndex] || 
 		GetIsDynamicProxiesDirty(frameIndex))
 	{
-		const ProxiesVector sortedDynamicProxies = GetSortedProxies(dynamicProxies_[frameIndex]);
-		ProxiesVector sortedGlobalProxies = GetSortedProxies(staticProxies_[frameIndex]);
-		sortedGlobalProxies.insert(sortedGlobalProxies.end(),
-			sortedDynamicProxies.begin(), sortedDynamicProxies.end()
-		);
+		const KtCuller3D culler{};
+		const auto culledStaticProxies = culler.ComputeCulling(staticProxies_[frameIndex], KT_CULLER_3D_FIELD_ALL);
+		const auto culledDynamicProxies = culler.ComputeCulling(dynamicProxies_[frameIndex], KT_CULLER_3D_FIELD_ALL);
+
+		ProxiesVector sortedGlobalProxies = GetSortedProxies(culledStaticProxies);
+		const ProxiesVector sortedDynamicProxies = GetSortedProxies(culledDynamicProxies);
+		sortedGlobalProxies.insert(sortedGlobalProxies.end(), sortedDynamicProxies.begin(), sortedDynamicProxies.end());
+		
 		UpdateDescriptorSets(sortedGlobalProxies, frameIndex);
 		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_PROXY, "update DESCRIPTOR sets frame %u", frameIndex);
 	}
