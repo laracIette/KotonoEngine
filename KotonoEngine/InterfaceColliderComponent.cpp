@@ -105,7 +105,11 @@ void KInterfaceColliderComponent::OnEventMouseLeftButtonReleased()
 	}
 
 	_isPressed = false;
-	_eventReleased.Broadcast();
+
+	if (GetIsMouseOverlapping())
+	{
+		_eventReleased.Broadcast();
+	}
 }
 
 void KInterfaceColliderComponent::OnEventMouseLeftButtonDown()

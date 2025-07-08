@@ -227,8 +227,6 @@ void URect::SetParent(URect* parent, const ECoordinateSpace keepRect)
 		SetWorldRotation(clone.GetWorldRotation());
 		break;
 	}
-	default:
-		break;
 	}
 }
 

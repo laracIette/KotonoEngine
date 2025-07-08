@@ -117,15 +117,15 @@ void KtRenderer2D::CreateCommandBuffers()
 	);
 }
 
-void KtRenderer2D::RecordCommandBuffer(const uint32_t currentFrame)
+void KtRenderer2D::RecordCommandBuffer(const uint32_t frameIndex)
 {
-	VkCommandBuffer commandBuffer = commandBuffers_[currentFrame];
-	BeginCommandBuffer(commandBuffer, currentFrame);
-	CmdDrawRenderQueue(commandBuffer, renderQueueData_[currentFrame], currentFrame);
+	VkCommandBuffer commandBuffer = commandBuffers_[frameIndex];
+	BeginCommandBuffer(commandBuffer, frameIndex);
+	CmdDrawRenderQueue(commandBuffer, renderQueueData_[frameIndex], frameIndex);
 	EndCommandBuffer(commandBuffer);
 }
 
-void KtRenderer2D::BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t currentFrame)
+void KtRenderer2D::BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
 {
 	vkResetCommandBuffer(commandBuffer, 0);
 
@@ -133,7 +133,7 @@ void KtRenderer2D::BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint3
 	inheritanceInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
 	inheritanceInfo.renderPass = Framework.GetRenderer().GetRenderPass();
 	inheritanceInfo.subpass = 0;
-	inheritanceInfo.framebuffer = Framework.GetRenderer().GetFramebuffer(currentFrame);
+	inheritanceInfo.framebuffer = Framework.GetRenderer().GetFramebuffer(frameIndex);
 
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -166,21 +166,21 @@ void KtRenderer2D::AddToRenderQueue(const KtAddToRenderQueue2DArgs& args)
 
 void KtRenderer2D::SetUniformData(const KtUniformData2D& uniformData)
 {
-	uniformData_[Framework.GetRenderer().GetGameThreadFrame()] = uniformData;
+	uniformDatas_[Framework.GetRenderer().GetGameThreadFrame()] = uniformData;
 }
 
-void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame)
+void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
 {
 	const KtCuller2D culler{};
-	const auto culledData = culler.ComputeCulling(renderQueueData_[currentFrame]);
+	const auto culledData = culler.ComputeCulling(renderQueueData_[frameIndex]);
 	// todo: not actually used in rendering
-	UpdateDescriptorSets(culledData, currentFrame);
+	UpdateDescriptorSets(culledData, frameIndex);
 
-	RecordCommandBuffer(currentFrame);
-	vkCmdExecuteCommands(commandBuffer, 1, &commandBuffers_[currentFrame]);
+	RecordCommandBuffer(frameIndex);
+	vkCmdExecuteCommands(commandBuffer, 1, &commandBuffers_[frameIndex]);
 }
 
-void KtRenderer2D::UpdateDescriptorSets(const KtRenderQueue2DData& renderQueueData, const uint32_t currentFrame)
+void KtRenderer2D::UpdateDescriptorSets(const KtRenderQueue2DData& renderQueueData, const uint32_t frameIndex)
 {
 	for (auto& [shader, shaderData] : renderQueueData.shaders)
 	{
@@ -210,13 +210,13 @@ void KtRenderer2D::UpdateDescriptorSets(const KtRenderQueue2DData& renderQueueDa
 
 		if (auto* binding = shader->GetDescriptorSetLayoutBinding("objectBuffer"))
 		{
-			shader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, objectBufferData.size(), currentFrame);
-			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, objectBufferData.data(), currentFrame);
+			shader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, objectBufferData.size(), frameIndex);
+			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, objectBufferData.data(), frameIndex);
 		}
 		if (auto* binding = shader->GetDescriptorSetLayoutBinding("textureIndexBuffer"))
 		{
-			shader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, renderableIndices.size(), currentFrame);
-			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, renderableIndices.data(), currentFrame);
+			shader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, renderableIndices.size(), frameIndex);
+			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, renderableIndices.data(), frameIndex);
 		}
 		if (auto* binding = shader->GetDescriptorSetLayoutBinding("textures"))
 		{
@@ -228,19 +228,19 @@ void KtRenderer2D::UpdateDescriptorSets(const KtRenderQueue2DData& renderQueueDa
 				const auto* imageTexture = static_cast<const KtImageTexture*>(renderable);
 				imageInfos.push_back(imageTexture->GetDescriptorImageInfo());
 			}
-			shader->UpdateDescriptorSetLayoutBindingImageSampler(*binding, imageInfos, currentFrame);
+			shader->UpdateDescriptorSetLayoutBindingImageSampler(*binding, imageInfos, frameIndex);
 		}
 	}
 }
 
-void KtRenderer2D::CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRenderQueue2DData& renderQueueData, const uint32_t currentFrame)
+void KtRenderer2D::CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRenderQueue2DData& renderQueueData, const uint32_t frameIndex)
 {
 	KtViewport* currentViewport = nullptr;
 
 	for (auto& [shader, shaderData] : renderQueueData.shaders)
 	{
 		shader->CmdBind(commandBuffer);
-		shader->CmdBindDescriptorSets(commandBuffer, currentFrame);
+		shader->CmdBindDescriptorSets(commandBuffer, frameIndex);
 
 		CmdBindVertexBuffer(commandBuffer);
 		CmdBindIndexBuffer(commandBuffer);
@@ -269,8 +269,8 @@ void KtRenderer2D::CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRen
 	}
 }
 
-void KtRenderer2D::Reset(const uint32_t currentFrame)
+void KtRenderer2D::Reset(const uint32_t frameIndex)
 {
-	uniformData_[currentFrame] = {};
-	renderQueueData_[currentFrame] = {};
+	uniformDatas_[frameIndex] = {};
+	renderQueueData_[frameIndex] = {};
 }

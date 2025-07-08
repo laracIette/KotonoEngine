@@ -16,6 +16,9 @@
 #include "Visualizer.h"
 #include "Interface.h"
 #include "Timer.h"
+#include "Time.h"
+#include "math_utils.h"
+#include <numeric>
 
 static TCamera* Camera = nullptr;
 
@@ -33,12 +36,12 @@ void SObjectManager::Init()
 
 	auto* interface = Create<KInterface>();
 
-	{
+	/*{
 		auto* scene = Create<KScene>();
 		scene->SetPath(Framework.GetPath().GetSolutionPath() / R"(assets\objects\scene.KScene)");
 		scene->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), 
 			KtDelegate<>(scene, &KScene::Reload));
-	}
+	}*/
 	{
 		auto* mesh1 = Create<TSceneMeshObject>();
 		mesh1->GetMeshComponent()->SetShader(shader3D);
@@ -60,6 +63,12 @@ void SObjectManager::Init()
 	drawTimer_->SetIsRepeat(true);
 	drawTimer_->GetEventCompleted().AddListener(KtDelegate<>(this, &SObjectManager::SubmitDrawObjects));
 	drawTimer_->Start();
+
+	auto* logUPSTimer = Create<KTimer>();
+	logUPSTimer->SetDuration(1.0f);
+	logUPSTimer->SetIsRepeat(true);
+	logUPSTimer->GetEventCompleted().AddListener(KtDelegate<>(this, &SObjectManager::LogUPS));
+	logUPSTimer->Start();
 }
 
 void SObjectManager::Update()
@@ -74,6 +83,9 @@ void SObjectManager::Update()
 		DrawObjects();
 		Framework.GetRenderer().DrawFrame();
 	}
+
+	updateTimeIndex_ = (updateTimeIndex_ + 1) % updateTimes_.size();
+	updateTimes_[updateTimeIndex_] = Engine.GetTime().GetDelta();
 }
 
 void SObjectManager::Cleanup()
@@ -207,4 +219,16 @@ void SObjectManager::DrawObjects()
 void SObjectManager::SubmitDrawObjects()
 {
 	canDraw_ = true;
+}
+
+const float SObjectManager::GetAverageUpdateTime() const
+{
+	const float sum = std::accumulate(updateTimes_.begin(), updateTimes_.end(), 0.0f);
+	const float avg = sum / updateTimes_.size();
+	return avg;
+}
+
+void SObjectManager::LogUPS()
+{
+	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "%f ups", round(1.0f / GetAverageUpdateTime(), 2));
 }

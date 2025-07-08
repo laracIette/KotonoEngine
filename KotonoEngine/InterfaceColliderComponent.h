@@ -2,7 +2,7 @@
 #include "InterfaceComponent.h"
 #include <kotono_framework/Event.h>
 #include <unordered_set>
-class KInterfaceColliderComponent : public KInterfaceComponent
+class KInterfaceColliderComponent final : public KInterfaceComponent
 {
 	BASECLASS(KInterfaceComponent)
 

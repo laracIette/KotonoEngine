@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <typeindex>
 #include <kotono_framework/Event.h>
+#include <array>
 
 class KObject;
 class KTimer;
@@ -81,6 +82,9 @@ private:
 	KtEvent<> eventDrawInterfaceObjectBounds_;
 	KtEvent<> eventDrawInterfaceObjectWireframes_;
 
+	std::array<float, 60> updateTimes_;
+	size_t updateTimeIndex_;
+
 	KTimer* drawTimer_;
 	bool canDraw_;
 
@@ -89,4 +93,8 @@ private:
 	void DeleteObjects();
 	void DrawObjects();
 	void SubmitDrawObjects();
+
+	const float GetAverageUpdateTime() const;
+
+	void LogUPS();
 };

@@ -1,5 +1,5 @@
 #pragma once
-#include "glm_includes.h"
+#include "ObjectData3D.h"
 class KtShader;
 class KtViewport;
 class KtRenderable3D;
@@ -9,7 +9,7 @@ public:
 	KtShader* shader;
 	KtRenderable3D* renderable;
 	KtViewport* viewport;
-	glm::mat4 modelMatrix;
+	KtObjectData3D objectData;
 
     bool isDirty;
 };

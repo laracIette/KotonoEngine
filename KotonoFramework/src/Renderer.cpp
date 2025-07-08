@@ -409,15 +409,15 @@ void KtRenderer::CreateSyncObjects()
 constexpr bool MULTI_THREADED = false;
 void KtRenderer::DrawFrame()
 {
-	const uint32_t currentFrame = GetGameThreadFrame(); // todo: replace by enum
-														// getframe(gamethread), 
-														// has to propagate to renderer 2d and 3d
+	const uint32_t frameIndex = GetGameThreadFrame(); // todo: replace by enum
+											          // getframe(gamethread), 
+				  						              // has to propagate to renderer 2d and 3d
 	
 #if MULTI_THREADED
 	if (frameCount_ >= 1)
 	{
 		JoinThread(renderThread_);
-		const uint32_t renderThreadFrame = GetRenderThreadFrame(currentFrame);
+		const uint32_t renderThreadFrame = GetRenderThreadFrame();
 		renderThread _= std::thread(&KtRenderer::RecordCommandBuffer, this, renderThreadFrame);
 	}
 
@@ -426,27 +426,30 @@ void KtRenderer::DrawFrame()
 		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "frame %u rendered", frameCount_);
 
 		JoinThread(rhiThread_);
-		const uint32_t renderRHIFrame = GetRHIThreadFrame(currentFrame);
+		const uint32_t renderRHIFrame = GetRHIThreadFrame();
 		rhiThread _= std::thread(&KtRenderer::SubmitCommandBuffer, this, renderRHIFrame);
 	}
 #else
-	if (!TryAcquireNextImage(currentFrame))
+	if (!TryAcquireNextImage(frameIndex))
 	{
 		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtRenderer::DrawFrame(): frame skipped");
 		return;
 	}
-	RecordCommandBuffer(currentFrame);
-	SubmitCommandBuffer(currentFrame);
+	renderer3D_.Update(frameIndex);
+	RecordCommandBuffer(frameIndex);
+	SubmitCommandBuffer(frameIndex);
 #endif
+
 	
 	frameCount_++;
 
-	ResetRenderers(GetGameThreadFrame());
+	renderer2D_.Reset(GetGameThreadFrame()); // why after framecount_++ ? 
+	                                         // gonna yoink anyway
 }
 
-void KtRenderer::RecordCommandBuffer(const uint32_t currentFrame) 
+void KtRenderer::RecordCommandBuffer(const uint32_t frameIndex) 
 {
-	VkCommandBuffer commandBuffer = commandBuffers_[currentFrame];
+	VkCommandBuffer commandBuffer = commandBuffers_[frameIndex];
 	vkResetCommandBuffer(commandBuffer, 0);
 
 	VkCommandBufferBeginInfo beginInfo{};
@@ -462,7 +465,7 @@ void KtRenderer::RecordCommandBuffer(const uint32_t currentFrame)
 	VkRenderPassBeginInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	renderPassInfo.renderPass = renderPass_;
-	renderPassInfo.framebuffer = GetFramebuffer(currentFrame);
+	renderPassInfo.framebuffer = GetFramebuffer(frameIndex);
 	renderPassInfo.renderArea.offset = { 0, 0 };
 	renderPassInfo.renderArea.extent = swapChainExtent_;
 
@@ -476,7 +479,7 @@ void KtRenderer::RecordCommandBuffer(const uint32_t currentFrame)
 	// Begin RenderPass
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
-	CmdDrawRenderers(commandBuffer, currentFrame);
+	CmdDrawRenderers(commandBuffer, frameIndex);
 
 	// End RenderPass
 	vkCmdEndRenderPass(commandBuffer);
@@ -487,44 +490,39 @@ void KtRenderer::RecordCommandBuffer(const uint32_t currentFrame)
 	);
 }
 
-VkFramebuffer& KtRenderer::GetFramebuffer(const uint32_t currentFrame)
+VkFramebuffer& KtRenderer::GetFramebuffer(const uint32_t frameIndex)
 {
-	return swapChainFramebuffers_[imageIndices_[currentFrame]];
+	return swapChainFramebuffers_[imageIndices_[frameIndex]];
 }
 
-void KtRenderer::CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t currentFrame)
+void KtRenderer::CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
 {
-	renderer3D_.CmdDraw(commandBuffer, currentFrame);
-	renderer2D_.CmdDraw(commandBuffer, currentFrame);
+	renderer3D_.CmdDraw(commandBuffer, frameIndex);
+	//renderer2D_.CmdDraw(commandBuffer, frameIndex);
 }
 
-void KtRenderer::ResetRenderers(const uint32_t currentFrame)
-{
-	renderer2D_.Reset(currentFrame);
-}
-
-void KtRenderer::SubmitCommandBuffer(const uint32_t currentFrame)
+void KtRenderer::SubmitCommandBuffer(const uint32_t frameIndex)
 {
 	// TODO: idk
 	// todo: figure that shit out
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-	const std::array<VkSemaphore, 1> waitSemaphores = { imageAvailableSemaphores_[currentFrame] };
+	const std::array<VkSemaphore, 1> waitSemaphores = { imageAvailableSemaphores_[frameIndex] };
 	const std::array<VkPipelineStageFlags, 1> waitStages = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 	submitInfo.waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size());
 	submitInfo.pWaitSemaphores = waitSemaphores.data();
 	submitInfo.pWaitDstStageMask = waitStages.data();
 
 	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &commandBuffers_[currentFrame];
+	submitInfo.pCommandBuffers = &commandBuffers_[frameIndex];
 
-	const std::array<VkSemaphore, 1> signalSemaphores = { renderFinishedSemaphores_[currentFrame] };
+	const std::array<VkSemaphore, 1> signalSemaphores = { renderFinishedSemaphores_[frameIndex] };
 	submitInfo.signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size());
 	submitInfo.pSignalSemaphores = signalSemaphores.data();
 
 	VK_CHECK_THROW(
-		vkQueueSubmit(Framework.GetContext().GetGraphicsQueue(), 1, &submitInfo, inFlightFences_[currentFrame]),
+		vkQueueSubmit(Framework.GetContext().GetGraphicsQueue(), 1, &submitInfo, inFlightFences_[frameIndex]),
 		"failed to submit draw command buffer!"
 	);
 
@@ -536,7 +534,7 @@ void KtRenderer::SubmitCommandBuffer(const uint32_t currentFrame)
 	const std::array<VkSwapchainKHR, 1> swapChains = { swapChain_ };
 	presentInfo.swapchainCount = static_cast<uint32_t>(swapChains.size());
 	presentInfo.pSwapchains = swapChains.data();
-	presentInfo.pImageIndices = &imageIndices_[currentFrame];
+	presentInfo.pImageIndices = &imageIndices_[frameIndex];
 	presentInfo.pResults = nullptr; // Optional
 
 	const VkResult result = vkQueuePresentKHR(Framework.GetContext().GetPresentQueue(), &presentInfo);
@@ -550,7 +548,7 @@ void KtRenderer::SubmitCommandBuffer(const uint32_t currentFrame)
 		"failed to present swap chain image!"
 	);
 #if MULTI_THREADED
-	if (!TryAcquireNextImage(currentFrame))
+	if (!TryAcquireNextImage(frameIndex))
 	{
 		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtRenderer::DrawFrame(): frame skipped");
 		return;
@@ -559,14 +557,14 @@ void KtRenderer::SubmitCommandBuffer(const uint32_t currentFrame)
 }
 
 
-const bool KtRenderer::TryAcquireNextImage(const uint32_t currentFrame)
+const bool KtRenderer::TryAcquireNextImage(const uint32_t frameIndex)
 {
 	// Wait for current frame to be rendered
-	vkWaitForFences(Framework.GetContext().GetDevice(), 1, &inFlightFences_[currentFrame], VK_TRUE, UINT64_MAX);
+	vkWaitForFences(Framework.GetContext().GetDevice(), 1, &inFlightFences_[frameIndex], VK_TRUE, UINT64_MAX);
 
 	// Set image index for current frame
 	constexpr uint64_t timeout = ms_to_ns(1llu);
-	const VkResult result = vkAcquireNextImageKHR(Framework.GetContext().GetDevice(), swapChain_, timeout, imageAvailableSemaphores_[currentFrame], VK_NULL_HANDLE, &imageIndices_[currentFrame]);
+	const VkResult result = vkAcquireNextImageKHR(Framework.GetContext().GetDevice(), swapChain_, timeout, imageAvailableSemaphores_[frameIndex], VK_NULL_HANDLE, &imageIndices_[frameIndex]);
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
 		RecreateSwapChain();
@@ -577,7 +575,7 @@ const bool KtRenderer::TryAcquireNextImage(const uint32_t currentFrame)
 		throw std::runtime_error("failed to acquire swap chain image!");
 	}
 
-	vkResetFences(Framework.GetContext().GetDevice(), 1, &inFlightFences_[currentFrame]);
+	vkResetFences(Framework.GetContext().GetDevice(), 1, &inFlightFences_[frameIndex]);
 
 	return true;
 }
@@ -595,16 +593,16 @@ const uint32_t KtRenderer::GetGameThreadFrame() const
 	return frameCount_ % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
-const uint32_t KtRenderer::GetRenderThreadFrame(const uint32_t currentFrame) const
+const uint32_t KtRenderer::GetRenderThreadFrame() const
 {
 	// Prepare render thread for RHI thread
-	return ((currentFrame + KT_FRAMES_IN_FLIGHT) - 1) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT); // avoid negative
+	return ((frameCount_ + KT_FRAMES_IN_FLIGHT) - 1) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
 }
 
-const uint32_t KtRenderer::GetRHIThreadFrame(const uint32_t currentFrame) const
+const uint32_t KtRenderer::GetRHIThreadFrame() const
 {
 	// Prepare RHI thread for game thread
-	return ((currentFrame + KT_FRAMES_IN_FLIGHT) - 2) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT); // avoid negative
+	return ((frameCount_ + KT_FRAMES_IN_FLIGHT) - 2) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
 }
 
 void KtRenderer::RecreateSwapChain()
@@ -630,19 +628,14 @@ const VkExtent2D KtRenderer::GetSwapChainExtent() const
 	return swapChainExtent_;
 }
 
+KtRenderer3D& KtRenderer::GetRenderer3D()
+{
+	return renderer3D_;
+}
+
 void KtRenderer::AddToRenderQueue2D(const KtAddToRenderQueue2DArgs& args)
 {
 	renderer2D_.AddToRenderQueue(args);
-}
-
-void KtRenderer::AddToRenderQueue3D(KtRenderable3DProxy* proxy)
-{
-	renderer3D_.Register(proxy);
-}
-
-void KtRenderer::RemoveFromRenderQueue3D(KtRenderable3DProxy* proxy)
-{
-	renderer3D_.Remove(proxy);
 }
 
 void KtRenderer::SetUniformData3D(const KtUniformData3D& data)

@@ -36,12 +36,19 @@ void KSceneMeshComponent::Init()
 
     InitProxy();
     InitSpin();
+
+    const KtDelegate<> keyboardSKeyPressed(this, &KSceneMeshComponent::SetMobilityStatic);
+    const KtDelegate<> keyboardDKeyPressed(this, &KSceneMeshComponent::SetMobilityDynamic);
+    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED)
+        .AddListener(keyboardSKeyPressed);
+    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_D, KT_INPUT_STATE_PRESSED)
+        .AddListener(keyboardDKeyPressed);
 }
 
 void KSceneMeshComponent::InitProxy()
 {
-    CreateProxy();
-    Framework.GetRenderer().AddToRenderQueue3D(&proxy_);
+    CreateProxies();
+    RegisterProxies();
     const KtDelegate<> transformDelegate(this, &KSceneMeshComponent::MarkProxyTransformDirty);
     ListenEvent(GetEventUpdateTransform(), transformDelegate);
 }
@@ -63,7 +70,7 @@ void KSceneMeshComponent::Update()
 void KSceneMeshComponent::Cleanup()
 {
     Base::Cleanup();
-    Framework.GetRenderer().RemoveFromRenderQueue3D(&proxy_);
+    RemoveProxies();
 }
 
 KtShader* KSceneMeshComponent::GetShader() const
@@ -100,20 +107,27 @@ void KSceneMeshComponent::DeserializeFrom(const nlohmann::json& json)
     model_ = Framework.GetModelManager().Get(json["model"]);
 }
 
-void KSceneMeshComponent::CreateProxy()
+void KSceneMeshComponent::SetMobility(const EMobility mobility)
+{
+    RemoveProxies();
+    Base::SetMobility(mobility);
+    RegisterProxies();
+}
+
+void KSceneMeshComponent::CreateProxies()
 {
     proxy_.viewport = GetOwner()->GetViewport();
     UpdateProxyModelMatrix();
-    UpdateProxyShader();
+    UpdateProxieshader();
     UpdateProxyRenderable();
 }
 
 void KSceneMeshComponent::UpdateProxyModelMatrix()
 {
-    proxy_.modelMatrix = GetModelMatrix();
+    proxy_.objectData = { GetModelMatrix() };
 }
 
-void KSceneMeshComponent::UpdateProxyShader()
+void KSceneMeshComponent::UpdateProxieshader()
 {
     proxy_.shader = shader_;
 }
@@ -129,9 +143,55 @@ void KSceneMeshComponent::MarkProxyTransformDirty()
     UpdateProxyModelMatrix();
 }
 
+void KSceneMeshComponent::RegisterProxies()
+{
+    switch (GetMobility())
+    {
+    case EMobility::Dynamic:
+    {
+        Framework.GetRenderer().GetRenderer3D().RegisterDynamic(&proxy_);
+        break;
+    }
+    case EMobility::Static:
+    {
+        Framework.GetRenderer().GetRenderer3D().RegisterStatic(&proxy_);
+        break;
+    }
+    }
+}
+
+void KSceneMeshComponent::RemoveProxies()
+{
+    switch (GetMobility())
+    {
+    case EMobility::Dynamic:
+    {
+        Framework.GetRenderer().GetRenderer3D().RemoveDynamic(&proxy_);
+        break;
+    }
+    case EMobility::Static:
+    {
+        Framework.GetRenderer().GetRenderer3D().RemoveStatic(&proxy_);
+        break;
+    }
+    }
+}
+
 void KSceneMeshComponent::Spin()
 {
     const float speed = 10.0f * Engine.GetTime().GetDelta();
     const glm::quat rotation = glm::quat(glm::radians(glm::vec3(0.0f, speed, 0.0f)));
     Rotate(rotation);
+}
+
+void KSceneMeshComponent::SetMobilityStatic()
+{
+    SetMobility(EMobility::Static);
+    KT_LOG_KE(KT_LOG_COMPILE_TIME_LEVEL, "static");
+}
+
+void KSceneMeshComponent::SetMobilityDynamic()
+{
+    SetMobility(EMobility::Dynamic);
+    KT_LOG_KE(KT_LOG_COMPILE_TIME_LEVEL, "dynamic");
 }

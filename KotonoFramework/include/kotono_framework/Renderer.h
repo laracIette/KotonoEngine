@@ -18,17 +18,17 @@ public:
 
 	void DrawFrame();
 
-	const uint32_t GetGameThreadFrame() const;
+	const uint32_t GetGameThreadFrame() const; // todo: make private
 
 	const VkExtent2D GetSwapChainExtent() const;
 
+	KtRenderer3D& GetRenderer3D();
+
 	void AddToRenderQueue2D(const KtAddToRenderQueue2DArgs& args);
-	void AddToRenderQueue3D(KtRenderable3DProxy* proxy);
-	void RemoveFromRenderQueue3D(KtRenderable3DProxy* proxy);
 	void SetUniformData3D(const KtUniformData3D& data);
 
 	VkRenderPass GetRenderPass() const;
-	VkFramebuffer& GetFramebuffer(const uint32_t currentFrame);
+	VkFramebuffer& GetFramebuffer(const uint32_t frameIndex);
 
 private:
 	KtRenderer2D renderer2D_;
@@ -43,7 +43,7 @@ private:
 
 	VkRenderPass renderPass_;
 
-	std::array<VkCommandBuffer, KT_FRAMES_IN_FLIGHT> commandBuffers_;
+	FramesInFlightArray<VkCommandBuffer> commandBuffers_;
 
 	std::thread renderThread_;
 	std::thread rhiThread_;
@@ -57,10 +57,10 @@ private:
 	VmaAllocation depthImageAllocation_;
 	VkImageView depthImageView_;
 
-	std::array<VkSemaphore, KT_FRAMES_IN_FLIGHT> imageAvailableSemaphores_;
-	std::array<VkSemaphore, KT_FRAMES_IN_FLIGHT> renderFinishedSemaphores_;
-	std::array<VkFence, KT_FRAMES_IN_FLIGHT> inFlightFences_;
-	std::array<uint32_t, KT_FRAMES_IN_FLIGHT> imageIndices_;
+	FramesInFlightArray<VkSemaphore> imageAvailableSemaphores_;
+	FramesInFlightArray<VkSemaphore> renderFinishedSemaphores_;
+	FramesInFlightArray<VkFence> inFlightFences_;
+	FramesInFlightArray<uint32_t> imageIndices_;
 
 	uint32_t frameCount_;
 
@@ -81,19 +81,18 @@ private:
 	const VkFormat FindDepthFormat() const;
 	const bool HasStencilComponent(const VkFormat format) const;
 
-	const bool TryAcquireNextImage(const uint32_t currentFrame);
+	const bool TryAcquireNextImage(const uint32_t frameIndex);
 
 	void CreateCommandBuffers();
-	void RecordCommandBuffer(const uint32_t currentFrame);
-	void SubmitCommandBuffer(const uint32_t currentFrame);
+	void RecordCommandBuffer(const uint32_t frameIndex);
+	void SubmitCommandBuffer(const uint32_t frameIndex);
 
 	void CreateSyncObjects();
 
-	void CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t currentFrame);
-	void ResetRenderers(const uint32_t currentFrame);
+	void CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 
 	void JoinThread(std::thread& thread) const;
 
-	const uint32_t GetRenderThreadFrame(const uint32_t currentFrame) const;
-	const uint32_t GetRHIThreadFrame(const uint32_t currentFrame) const;
+	const uint32_t GetRenderThreadFrame() const;
+	const uint32_t GetRHIThreadFrame() const;
 };

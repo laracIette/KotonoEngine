@@ -25,6 +25,8 @@ public:
 	void SerializeTo(nlohmann::json& json) const override;
 	void DeserializeFrom(const nlohmann::json& json) override;
 
+	void SetMobility(const EMobility mobility) override;
+
 private:
 	KtShader* shader_;
 	KtModel* model_;
@@ -34,14 +36,19 @@ private:
 	void InitProxy();
 	void InitSpin();
 
-	void CreateProxy();
+	void CreateProxies();
 	void UpdateProxyModelMatrix();
-	void UpdateProxyShader();
+	void UpdateProxieshader();
 	void UpdateProxyRenderable();
 
 	void MarkProxyTransformDirty();
 
+	void RegisterProxies();
+	void RemoveProxies();
+
 	// temp
 	void Spin();
+	void SetMobilityStatic();
+	void SetMobilityDynamic();
 };
 

@@ -202,7 +202,7 @@ void KtShader::CreateDescriptorSets()
 {
 	for (auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
 	{
-		std::array<uint32_t, KT_FRAMES_IN_FLIGHT> variableDescriptorCounts{};
+		FramesInFlightArray<uint32_t> variableDescriptorCounts{};
 		variableDescriptorCounts.fill(MAX_BINDLESS_TEXTURES);
 
 		VkDescriptorSetVariableDescriptorCountAllocateInfo countInfo{};
@@ -210,8 +210,7 @@ void KtShader::CreateDescriptorSets()
 		countInfo.descriptorSetCount = static_cast<uint32_t>(variableDescriptorCounts.size());
 		countInfo.pDescriptorCounts = variableDescriptorCounts.data();
 
-
-		std::array<VkDescriptorSetLayout, KT_FRAMES_IN_FLIGHT> layouts{};
+		FramesInFlightArray<VkDescriptorSetLayout> layouts{};
 		layouts.fill(descriptorSetLayoutData.DescriptorSetLayout);
 
 		VkDescriptorSetAllocateInfo allocInfo{};
@@ -578,7 +577,7 @@ const bool KtShader::GetIsImageSamplerDescriptorType(const VkDescriptorType desc
 	return descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 }
 
-void KtShader::UpdateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, void* data, const uint32_t imageIndex)
+void KtShader::UpdateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const void* data, const uint32_t imageIndex)
 {
 	const size_t dataSize = descriptorSetLayoutBindingData.MemberSize * descriptorSetLayoutBindingData.MemberCounts[imageIndex];
 

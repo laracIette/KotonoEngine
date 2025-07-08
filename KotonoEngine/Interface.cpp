@@ -78,7 +78,7 @@ void KInterface::SetLayout()
 	textBox1_->GetTextComponent()->SetSpacing(0.05f);
 	textBox1_->GetTextComponent()->SetShader(shader2D);
 	//textBox1_->GetTextComponent()->SetText("plz updaaaate !"); // should be in construct cause creates objects
-	textBox1_->GetTextComponent()->SetTextBinding([]() { return std::format("{} fps", round(1.0f / Engine.GetTime().GetDelta(), 2)); });
+	textBox1_->GetTextComponent()->SetTextBinding([]() { return std::format("{} ups", round(1.0f / Engine.GetTime().GetDelta(), 2)); });
 
 
 	textBox2_->GetRect().SetRelativePosition(glm::vec2(0.3f, 0.3f));

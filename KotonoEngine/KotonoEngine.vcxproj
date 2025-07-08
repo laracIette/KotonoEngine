@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Guid.cpp" />
+    <ClCompile Include="InterfaceButtonComponent.cpp" />
     <ClCompile Include="InterfaceFloatTextBoxObject.cpp" />
     <ClCompile Include="InterfaceImageComponent.cpp" />
     <ClCompile Include="InterfaceImageObject.cpp" />
@@ -30,6 +31,7 @@
     <ClCompile Include="InterfaceContainerComponent.cpp" />
     <ClCompile Include="InterfaceStackComponent.cpp" />
     <ClCompile Include="InterfaceTextBoxObject.cpp" />
+    <ClCompile Include="InterfaceTextButtonObject.cpp" />
     <ClCompile Include="InterfaceTextComponent.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math_utils.cpp" />
@@ -54,6 +56,7 @@
     <ClInclude Include="base_class.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Guid.h" />
+    <ClInclude Include="InterfaceButtonComponent.h" />
     <ClInclude Include="InterfaceFloatTextBoxObject.h" />
     <ClInclude Include="InterfaceImageComponent.h" />
     <ClInclude Include="InterfaceImageObject.h" />
@@ -63,6 +66,7 @@
     <ClInclude Include="InterfaceContainerComponent.h" />
     <ClInclude Include="InterfaceStackComponent.h" />
     <ClInclude Include="InterfaceTextBoxObject.h" />
+    <ClInclude Include="InterfaceTextButtonObject.h" />
     <ClInclude Include="InterfaceTextComponent.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="math_utils.h" />

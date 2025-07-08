@@ -170,8 +170,6 @@ void KSceneComponent::SetParent(KSceneComponent* parent, const ECoordinateSpace 
         SetWorldScale(scale);
         break;
     }
-    default:
-        break;
     }
 }
 

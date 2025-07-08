@@ -44,7 +44,7 @@ public:
 	const glm::vec3 GetScreenPosition() const;
 
 	void SetVisibility(const EVisibility visibility);
-	void SetMobility(const EMobility mobility);
+	virtual void SetMobility(const EMobility mobility);
 
 	void SetParent(KSceneComponent* parent, const ECoordinateSpace keepTransform);
 

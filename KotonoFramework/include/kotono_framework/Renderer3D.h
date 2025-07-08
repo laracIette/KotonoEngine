@@ -11,41 +11,57 @@ class KtRenderer3D final
 {
 public:
 	void Init();
+	void Update(const uint32_t frameIndex);
 	void Cleanup();
 
 	void SetUniformData(const KtUniformData3D& uniformData);
 
-	void Register(KtRenderable3DProxy* proxy);
-	void Remove(KtRenderable3DProxy* proxy);
+	void RegisterStatic(KtRenderable3DProxy* proxy);
+	void RegisterDynamic(KtRenderable3DProxy* proxy);
+	void RemoveStatic(KtRenderable3DProxy* proxy);
+	void RemoveDynamic(KtRenderable3DProxy* proxy);
 
-	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t currentFrame);
+	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
+
 
 private:
-	std::array<VkCommandBuffer, KT_FRAMES_IN_FLIGHT> staticCommandBuffers_;
-	std::array<VkCommandBuffer, KT_FRAMES_IN_FLIGHT> dynamicCommandBuffers_;
-	KtRenderQueue3DData staticRenderQueueData_;
-	std::array<bool, KT_FRAMES_IN_FLIGHT> isStaticCommandBufferDirty_;
+	using ProxiesVector = std::vector<KtRenderable3DProxy*>;
+	using ProxiesUnorderedSet = std::unordered_set<KtRenderable3DProxy*>;
 
-	std::array<KtRenderQueue3DData, KT_FRAMES_IN_FLIGHT> renderQueueData_;
-	std::array<KtUniformData3D, KT_FRAMES_IN_FLIGHT> uniformData_;
-	std::array<KtRendererFrameStats, KT_FRAMES_IN_FLIGHT> stats_;
+	FramesInFlightArray<KtUniformData3D> uniformDatas_;
+	FramesInFlightArray<KtRendererFrameStats> stats_;
 
-	std::unordered_set<KtRenderable3DProxy*> proxys_; // todo: array?
+	FramesInFlightArray<VkCommandBuffer> staticCommandBuffers_;
+	FramesInFlightArray<VkCommandBuffer> dynamicCommandBuffers_;
+	FramesInFlightArray<bool> isDynamicCommandBufferDirty_;
+	FramesInFlightArray<bool> isStaticCommandBufferDirty_;
 
-	std::array<std::unordered_map<KtShader*, uint32_t>, KT_FRAMES_IN_FLIGHT> instanceIndices_;
+	std::unordered_map<KtRenderable3DProxy*, int32_t> stagingStaticProxies_;
+	std::unordered_map<KtRenderable3DProxy*, int32_t> stagingDynamicProxies_;
+	FramesInFlightArray<ProxiesUnorderedSet> globalProxies_;
+	FramesInFlightArray<ProxiesUnorderedSet> staticProxies_;
+	FramesInFlightArray<ProxiesUnorderedSet> dynamicProxies_;
+	FramesInFlightArray<ProxiesVector> sortedGlobalProxies_;
+	FramesInFlightArray<ProxiesVector> sortedStaticProxies_;
+	FramesInFlightArray<ProxiesVector> sortedDynamicProxies_;
+
+	FramesInFlightArray<std::unordered_map<const KtShader*, uint32_t>> instanceIndices_;
 
 	void CreateStaticCommandBuffers();
 	void CreateDynamicCommandBuffers();
-	void RecordStaticCommandBuffer(const uint32_t currentFrame);
-	void RecordDynamicCommandBuffer(const uint32_t currentFrame);
-	void BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t currentFrame);
+	void RecordStaticCommandBuffer(const uint32_t frameIndex);
+	void RecordDynamicCommandBuffer(const uint32_t frameIndex);
+	void BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 	void EndCommandBuffer(VkCommandBuffer commandBuffer);
 
-	void UpdateProxys();
-	void AddProxyToRenderQueue(KtRenderable3DProxy* proxy, const uint32_t currentFrame);
-	void RemoveProxyFromRenderQueue(KtRenderable3DProxy* proxy, const uint32_t currentFrame);
+	void UpdateStaticProxies(const uint32_t frameIndex);
+	void UpdateDynamicProxies(const uint32_t frameIndex);
+	void UpdateDescriptorSets(const ProxiesVector& proxies, const uint32_t frameIndex) const;
 
-	void UpdateDescriptorSets(const KtRenderQueue3DData& renderQueueData, const uint32_t currentFrame);
-	void CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRenderQueue3DData& renderQueueData, const uint32_t currentFrame);
+	void CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesVector& proxies, const uint32_t frameIndex);
+	void CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
+
+	const ProxiesVector GetSortedProxies(const ProxiesUnorderedSet& proxies) const;
+	const bool GetIsDynamicProxiesDirty(const uint32_t frameIndex) const;
 };
 
