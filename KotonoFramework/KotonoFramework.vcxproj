@@ -169,7 +169,6 @@
     <ClInclude Include="include\kotono_framework\Culler3D.h" />
     <ClInclude Include="include\kotono_framework\Button.h" />
     <ClInclude Include="include\kotono_framework\ImageTextureManager.h" />
-    <ClInclude Include="include\kotono_framework\AddToRenderQueue2DArgs.h" />
     <ClInclude Include="include\kotono_framework\AllocatedBuffer.h" />
     <ClInclude Include="include\kotono_framework\AudioManager.h" />
     <ClInclude Include="include\kotono_framework\Context.h" />
@@ -208,7 +207,6 @@
     <ClInclude Include="include\kotono_framework\Path.h" />
     <ClInclude Include="include\kotono_framework\Serializer.h" />
     <ClInclude Include="include\kotono_framework\time_utils.h" />
-    <ClInclude Include="include\kotono_framework\RenderQueue2DData.h" />
     <ClInclude Include="include\kotono_framework\Renderable3D.h" />
     <ClInclude Include="include\kotono_framework\Renderable2D.h" />
     <ClInclude Include="include\kotono_framework\SpvCompiler.h" />
@@ -216,6 +214,7 @@
     <ClInclude Include="include\kotono_framework\Delegate.h" />
     <ClInclude Include="include\kotono_framework\Renderable3DProxy.h" />
     <ClInclude Include="include\kotono_framework\RendererFrameStats.h" />
+    <ClInclude Include="include\kotono_framework\Renderable2DProxy.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

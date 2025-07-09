@@ -15,8 +15,8 @@ void RInterfaceTextBoxObject::Init()
 {
 	Base::Init();
 	
-	colliderComponent_->GetRect().SetParent(&textComponent_->GetRect(), ECoordinateSpace::Relative);
-	colliderComponent_->GetRect().SetRelativeSize(glm::vec2(0.5f, 0.2f));
+	colliderComponent_->SetParent(textComponent_, ECoordinateSpace::Relative);
+	colliderComponent_->SetRelativeSize(glm::vec2(0.5f, 0.2f));
 }
 
 void RInterfaceTextBoxObject::Update()

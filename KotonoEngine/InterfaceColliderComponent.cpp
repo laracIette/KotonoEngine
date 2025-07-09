@@ -56,7 +56,7 @@ const bool KInterfaceColliderComponent::GetIsMouseOverlapping() const
 	const auto& cursorPosition = Framework.GetInputManager().GetMouse().GetCursorPosition();
 	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
 	const auto worldPosition = cursorPosition / viewportSize * 2.0f - glm::vec2(1.0f);
-	return GetRect().GetIsOverlapping(worldPosition);
+	return GetIsOverlapping(worldPosition);
 }
 
 void KInterfaceColliderComponent::UpdateOverlaps()
@@ -64,7 +64,7 @@ void KInterfaceColliderComponent::UpdateOverlaps()
 	auto interfaceColliderComponents = Engine.GetObjectManager().GetAll<KInterfaceColliderComponent>();
 	auto overlaps = KtCollection(interfaceColliderComponents.begin(), interfaceColliderComponents.end());
 	overlaps.AddFilter([this](auto* collider) { return collider != this; });
-	overlaps.AddFilter([this](auto* collider) { return GetRect().GetIsOverlapping(collider->GetRect()); });
+	overlaps.AddFilter([this](auto* collider) { return GetIsOverlapping(collider); });
 	_overlaps = overlaps.GetUnorderedSet();
 }
 

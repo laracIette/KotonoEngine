@@ -8,8 +8,8 @@ void TSceneObject::Construct()
 {
 	Base::Construct();
 
-	rootComponent_ = AddComponent<KSceneComponent>();
 	viewport_ = &WindowViewport;
+	rootComponent_ = AddComponent<KSceneComponent>();
 }
 
 void TSceneObject::Init()

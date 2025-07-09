@@ -23,8 +23,8 @@ void KInterface::Construct()
 	textBox1_ = AddObject<RInterfaceTextBoxObject>();
 	textBox2_ = AddObject<RInterfaceFloatTextBoxObject>();
 	textBox3_ = AddObject<RInterfaceFloatTextBoxObject>();
-	image1_->GetImageComponent()->GetRect().SetScreenSize(&WindowViewport, glm::vec2(1024.0f, 1024.0f));
-	image2_->GetImageComponent()->GetRect().SetScreenSize(&WindowViewport, glm::vec2(1024.0f, 1024.0f));
+	image1_->GetImageComponent()->SetScreenSize(glm::vec2(1024.0f, 1024.0f));
+	image2_->GetImageComponent()->SetScreenSize(glm::vec2(1024.0f, 1024.0f));
 }
 
 void KInterface::Init()
@@ -43,14 +43,14 @@ void KInterface::SetLayout()
 	auto* imageTexture2 = Framework.GetImageTextureManager().Get(Framework.GetPath().GetSolutionPath() / R"(assets\textures\default_texture.jpg)");
 
 #if true
-	image1_->GetRect().SetScreenSize(&WindowViewport, glm::vec2(1024.0f, 1024.0f));
-	image1_->GetRect().SetRelativeScale(glm::vec2(0.25f));
+	image1_->GetRootComponent()->SetScreenSize(glm::vec2(1024.0f, 1024.0f));
+	image1_->GetRootComponent()->SetRelativeScale(glm::vec2(0.25f));
 	image1_->GetImageComponent()->SetShader(shader2D);
 	image1_->GetImageComponent()->SetImageTexture(imageTexture1);
-	//image1->GetRect().SetAnchor(EAnchor::TopLeft);
+	//image1->GetRootComponent()->SetAnchor(EAnchor::TopLeft);
 
-	image2_->GetRect().SetScreenSize(&WindowViewport, glm::vec2(1024.0f, 1024.0f));
-	image2_->GetRect().SetRelativeScale(glm::vec2(0.10f));
+	image2_->GetRootComponent()->SetScreenSize(glm::vec2(1024.0f, 1024.0f));
+	image2_->GetRootComponent()->SetRelativeScale(glm::vec2(0.10f));
 	image2_->GetImageComponent()->SetShader(shader2D);
 	image2_->GetImageComponent()->SetImageTexture(imageTexture2);
 #if true
@@ -67,13 +67,13 @@ void KInterface::SetLayout()
 #endif
 #if false
 	auto text = Engine.GetObjectManager().Create<RInterfaceTextObject>();
-	text->GetRect().SetRelativePosition(glm::vec2(0.2f, 0.0f));
+	text->GetRootComponent()->SetRelativePosition(glm::vec2(0.2f, 0.0f));
 	text->GetTextComponent()->SetFontSize(32.0f);
 	text->GetTextComponent()->SetSpacing(0.05f);
 	text->GetTextComponent()->SetShader(shader2D);
 	text->GetTextComponent()->SetText("hello world !");
 #else
-	textBox1_->GetRect().SetRelativePosition(glm::vec2(0.5f, -0.85f));
+	textBox1_->GetRootComponent()->SetRelativePosition(glm::vec2(0.5f, -0.85f));
 	textBox1_->GetTextComponent()->SetFontSize(32.0f);
 	textBox1_->GetTextComponent()->SetSpacing(0.05f);
 	textBox1_->GetTextComponent()->SetShader(shader2D);
@@ -81,28 +81,28 @@ void KInterface::SetLayout()
 	textBox1_->GetTextComponent()->SetTextBinding([]() { return std::format("{} ups", round(1.0f / Engine.GetTime().GetDelta(), 2)); });
 
 
-	textBox2_->GetRect().SetRelativePosition(glm::vec2(0.3f, 0.3f));
+	textBox2_->GetRootComponent()->SetRelativePosition(glm::vec2(0.3f, 0.3f));
 	textBox2_->GetTextComponent()->SetFontSize(32.0f);
 	textBox2_->GetTextComponent()->SetSpacing(0.05f);
 	textBox2_->GetTextComponent()->SetShader(shader2D);
-	textBox2_->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRect().GetScreenPosition(&WindowViewport).x); });
+	textBox2_->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRootComponent()->GetScreenPosition().x); });
 	ListenEvent(textBox2_->GetValueChangedEvent(), KtDelegate<float>(this, &KInterface::OnTextBox2ValueChanged));
 
-	textBox3_->GetRect().SetRelativePosition(glm::vec2(0.3f, 0.6f));
+	textBox3_->GetRootComponent()->SetRelativePosition(glm::vec2(0.3f, 0.6f));
 	textBox3_->GetTextComponent()->SetFontSize(32.0f);
 	textBox3_->GetTextComponent()->SetSpacing(0.05f);
 	textBox3_->GetTextComponent()->SetShader(shader2D);
-	textBox3_->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRect().GetScreenPosition(&WindowViewport).y); });
+	textBox3_->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRootComponent()->GetScreenPosition().y); });
 	ListenEvent(textBox3_->GetValueChangedEvent(), KtDelegate<float>(this, &KInterface::OnTextBox3ValueChanged));
 #endif
 }
 
 void KInterface::OnTextBox2ValueChanged(float delta)
 {
-	image1_->GetRect().AddOffset(glm::vec2(delta / 800.0f, 0.0f));
+	image1_->GetRootComponent()->Translate(glm::vec2(delta / 800.0f, 0.0f));
 }
 
 void KInterface::OnTextBox3ValueChanged(float delta)
 {
-	image1_->GetRect().AddOffset(glm::vec2(0.0f, delta / 450.0f));
+	image1_->GetRootComponent()->Translate(glm::vec2(0.0f, delta / 450.0f));
 }

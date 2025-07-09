@@ -11,9 +11,9 @@ void KSceneComponent::Construct()
 {
     Base::Construct();
 
-    if (owner_->GetRootComponent() != this)
+    if (GetOwner()->GetRootComponent() != this)
     {
-        SetParent(owner_->GetRootComponent(), ECoordinateSpace::Relative);
+        SetParent(GetOwner()->GetRootComponent(), ECoordinateSpace::Relative);
     }
 }
 

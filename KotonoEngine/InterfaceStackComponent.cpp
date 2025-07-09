@@ -43,11 +43,11 @@ void KInterfaceStackComponent::UpdatePositions()
 
         if (orientation_ == EOrientation::Horizontal)
         {
-            item->GetRect().SetRelativePosition(glm::vec2(offset, 0.0f));
+            item->SetRelativePosition(glm::vec2(offset, 0.0f));
         }
         else if (orientation_ == EOrientation::Vertical)
         {
-            item->GetRect().SetRelativePosition(glm::vec2(0.0f, offset));
+            item->SetRelativePosition(glm::vec2(0.0f, offset));
         }
     }
 }

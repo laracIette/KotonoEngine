@@ -42,9 +42,6 @@
     <ClCompile Include="InterfaceObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Rect.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Guid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

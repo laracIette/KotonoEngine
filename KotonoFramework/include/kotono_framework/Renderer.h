@@ -18,14 +18,13 @@ public:
 
 	void DrawFrame();
 
+
 	const uint32_t GetGameThreadFrame() const; // todo: make private
 
 	const VkExtent2D GetSwapChainExtent() const;
 
+	KtRenderer2D& GetRenderer2D();
 	KtRenderer3D& GetRenderer3D();
-
-	void AddToRenderQueue2D(const KtAddToRenderQueue2DArgs& args);
-	void SetUniformData3D(const KtUniformData3D& data);
 
 	VkRenderPass GetRenderPass() const;
 	VkFramebuffer& GetFramebuffer(const uint32_t frameIndex);
@@ -89,6 +88,7 @@ private:
 
 	void CreateSyncObjects();
 
+	void UpdateRenderers(const uint32_t frameIndex);
 	void CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 
 	void JoinThread(std::thread& thread) const;

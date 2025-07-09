@@ -1,12 +1,16 @@
 #pragma once
-#include "RenderQueue2DData.h"
+#include <unordered_set>
+struct KtRenderable2DProxy;
 class KtCuller2D final
 {
+private:
+	using ProxiesUnorderedSet = std::unordered_set<KtRenderable2DProxy*>;
+
 public:
-	const KtRenderQueue2DData ComputeCulling(KtRenderQueue2DData renderQueueData) const;
+	const ProxiesUnorderedSet ComputeCulling(ProxiesUnorderedSet renderQueueData) const;
 
 private:
-	const KtRenderQueue2DData ComputeNullCulling(const KtRenderQueue2DData& renderQueueData) const;
-	const KtRenderQueue2DData ComputeScreenCulling(const KtRenderQueue2DData& renderQueueData) const;
+	const ProxiesUnorderedSet ComputeNullCulling(const ProxiesUnorderedSet& renderQueueData) const;
+	const ProxiesUnorderedSet ComputeScreenCulling(const ProxiesUnorderedSet& renderQueueData) const;
 };
 

@@ -26,11 +26,7 @@ void KInterfaceImageComponent::Construct()
 void KInterfaceImageComponent::Init()
 {
 	Base::Init();
-
-	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjects(), 
-		KtDelegate<>(this, &KInterfaceImageComponent::AddTextureToRenderQueue));
-	ListenEvent(Engine.GetObjectManager().GetEventDrawInterfaceObjectWireframes(), 
-		KtDelegate<>(this, &KInterfaceImageComponent::AddWireframeToRenderQueue));
+	InitImageTextureProxy();
 }
 
 void KInterfaceImageComponent::Update()
@@ -41,6 +37,7 @@ void KInterfaceImageComponent::Update()
 void KInterfaceImageComponent::Cleanup()
 {
 	Base::Cleanup();
+	Framework.GetRenderer().GetRenderer2D().Remove(&imageTextureProxy_);
 }
 
 KtShader* KInterfaceImageComponent::GetShader() const
@@ -50,37 +47,67 @@ KtShader* KInterfaceImageComponent::GetShader() const
 
 KtImageTexture* KInterfaceImageComponent::GetImageTexture() const
 {
-	return _imageTexture;
+	return imageTexture_;
+}
+
+KtEvent<>& KInterfaceImageComponent::GetEventShaderUpdated()
+{
+	return eventShaderUpdated_;
+}
+
+KtEvent<>& KInterfaceImageComponent::GetEventImageTextureUpdated()
+{
+	return eventImageTextureUpdated_;
 }
 
 void KInterfaceImageComponent::SetShader(KtShader* shader)
 {
 	shader_ = shader;
+	eventShaderUpdated_.Broadcast();
 }
 
 void KInterfaceImageComponent::SetImageTexture(KtImageTexture* imageTexture)
 {
-	_imageTexture = imageTexture;
+	imageTexture_ = imageTexture;
+	eventImageTextureUpdated_.Broadcast();
 }
 
-void KInterfaceImageComponent::AddTextureToRenderQueue()
+void KInterfaceImageComponent::InitImageTextureProxy()
 {
-	KtAddToRenderQueue2DArgs args{};
-	args.Shader = shader_;
-	args.Renderable = _imageTexture;
-	args.Viewport = GetOwner()->GetViewport();
-	args.ObjectData.Model = GetRect().GetModelMatrix(GetOwner()->GetViewport());
-	args.Layer = GetLayer();
-	Framework.GetRenderer().AddToRenderQueue2D(args);
+	CreateImageTextureProxy();
+	Framework.GetRenderer().GetRenderer2D().Register(&imageTextureProxy_);
+
+	const KtDelegate<> rectDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyRectDirty);
+	const KtDelegate<> shaderDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyShaderDirty);
+	const KtDelegate<> imageTextureDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyImageTextureDirty);
+	ListenEvent(GetEventRectUpdated(), rectDelegate);
+	ListenEvent(GetEventShaderUpdated(), shaderDelegate);
+	ListenEvent(GetEventImageTextureUpdated(), imageTextureDelegate);
 }
 
-void KInterfaceImageComponent::AddWireframeToRenderQueue()
+void KInterfaceImageComponent::CreateImageTextureProxy()
 {
-	KtAddToRenderQueue2DArgs args{};
-	args.Shader = WireframeShader;
-	args.Renderable = _imageTexture;
-	args.Viewport = GetOwner()->GetViewport();
-	args.ObjectData.Model = GetRect().GetModelMatrix(GetOwner()->GetViewport());
-	args.Layer = GetLayer();
-	Framework.GetRenderer().AddToRenderQueue2D(args);
+	imageTextureProxy_.shader = GetShader();
+	imageTextureProxy_.renderable = GetImageTexture();
+	imageTextureProxy_.viewport = GetOwner()->GetViewport();
+	imageTextureProxy_.layer = GetLayer();
+	imageTextureProxy_.objectData.modelMatrix = GetModelMatrix();
+}
+
+void KInterfaceImageComponent::MarkImageTextureProxyRectDirty()
+{
+	imageTextureProxy_.isDirty = true;
+	imageTextureProxy_.objectData.modelMatrix = GetModelMatrix();
+}
+
+void KInterfaceImageComponent::MarkImageTextureProxyShaderDirty()
+{
+	imageTextureProxy_.isDirty = true;
+	imageTextureProxy_.shader = GetShader();
+}
+
+void KInterfaceImageComponent::MarkImageTextureProxyImageTextureDirty()
+{
+	imageTextureProxy_.isDirty = true;
+	imageTextureProxy_.renderable = GetImageTexture();
 }

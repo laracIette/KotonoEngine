@@ -1,11 +1,10 @@
 #pragma once
 #include "ObjectData3D.h"
 class KtShader;
-class KtViewport;
 class KtRenderable3D;
+class KtViewport;
 struct KtRenderable3DProxy final
 {
-public:
 	KtShader* shader;
 	KtRenderable3D* renderable;
 	KtViewport* viewport;

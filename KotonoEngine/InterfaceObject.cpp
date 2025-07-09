@@ -8,6 +8,9 @@
 void RInterfaceObject::Construct()
 {
 	Base::Construct();
+
+	viewport_ = &WindowViewport;
+	rootComponent_ = AddComponent<KInterfaceComponent>();
 }
 
 void RInterfaceObject::Init()
@@ -15,7 +18,6 @@ void RInterfaceObject::Init()
 	Base::Init();
 
 	visibility_ = EVisibility::EditorAndGame;
-	viewport_ = &WindowViewport;
 }
 
 void RInterfaceObject::Update()
@@ -28,16 +30,6 @@ void RInterfaceObject::Cleanup()
 	Base::Cleanup();
 }
 
-const URect& RInterfaceObject::GetRect() const
-{
-	return rect_;
-}
-
-URect& RInterfaceObject::GetRect() 
-{
-	return rect_;
-}
-
 KtViewport* RInterfaceObject::GetViewport() const
 {
 	return viewport_;
@@ -48,13 +40,9 @@ RInterfaceObject* RInterfaceObject::GetParent() const
 	return parent_;
 }
 
-RInterfaceObject* RInterfaceObject::GetRoot()
+KInterfaceComponent* RInterfaceObject::GetRootComponent() const
 {
-	if (parent_)
-	{
-		return parent_->GetRoot();
-	}
-	return this;
+	return rootComponent_;
 }
 
 const int32_t RInterfaceObject::GetLayer() const
@@ -107,7 +95,7 @@ void RInterfaceObject::SetParent(RInterfaceObject* parent, const ECoordinateSpac
 		parent_->children_.erase(this);
 	}
 	parent_ = parent;
-	rect_.SetParent(parent_ ? &parent_->rect_ : nullptr, keepRect);
+	GetRootComponent()->SetParent(parent_ ? parent_->GetRootComponent() : nullptr, keepRect);
 }
 
 void RInterfaceObject::SetLayer(const int32_t layer)

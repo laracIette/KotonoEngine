@@ -258,18 +258,18 @@ void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIn
 
 void KtRenderer3D::UpdateDescriptorSets(const ProxiesVector& proxies, const uint32_t frameIndex) const
 {
-	std::unordered_map<KtShader*, std::vector<KtObjectData3D>> objectBufferDatas;
+	std::unordered_map<KtShader*, std::vector<KtObjectData3D>> shaderObjectBufferDatas;
 	for (const auto* proxy : proxies)
 	{
-		objectBufferDatas[proxy->shader].push_back(proxy->objectData);
+		shaderObjectBufferDatas[proxy->shader].push_back(proxy->objectData);
 	}
 
-	for (const auto& [shader, objectBufferData] : objectBufferDatas)
+	for (const auto& [shader, objectBufferDatas] : shaderObjectBufferDatas)
 	{
 		if (auto* binding = shader->GetDescriptorSetLayoutBinding("objectBuffer"))
 		{
-			shader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, objectBufferData.size(), frameIndex);
-			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, objectBufferData.data(), frameIndex);
+			shader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, objectBufferDatas.size(), frameIndex);
+			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, objectBufferDatas.data(), frameIndex);
 		}
 		if (auto* binding = shader->GetDescriptorSetLayoutBinding("cameraData"))
 		{
@@ -288,7 +288,6 @@ void KtRenderer3D::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesVe
 	const KtShader* currentShader = nullptr;
 	const KtRenderable3D* currentRenderable = nullptr;
 	const KtViewport* currentViewport = nullptr;
-
 	
 	for (size_t i = 0; i < proxies.size();)
 	{
@@ -332,7 +331,6 @@ void KtRenderer3D::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesVe
 		// Submit draw
 		currentRenderable->CmdDraw(commandBuffer, static_cast<uint32_t>(instanceCount), instanceIndices_[frameIndex][shader]);
 		instanceIndices_[frameIndex][shader] += static_cast<uint32_t>(instanceCount);
-		stats_[frameIndex].drawCalls++;
 
 		i += instanceCount;
 	}

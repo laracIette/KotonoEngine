@@ -9,6 +9,8 @@
 #include "Shader.h"
 #include "Viewport.h"
 #include "vk_utils.h"
+#include "Renderable2DProxy.h"
+#include "Collection.h"
 
 static constexpr std::array<KtVertex2D, 4> Vertices =
 {//                   Position,              Color,      TexCoords
@@ -25,6 +27,38 @@ void KtRenderer2D::Init()
 	CreateVertexBuffer();
 	CreateIndexBuffer();
 	CreateCommandBuffers();
+	isCommandBufferDirty_.fill(true);
+}
+
+void KtRenderer2D::Update(const uint32_t frameIndex)
+{
+	for (auto& [proxy, count] : stagingProxies_)
+	{
+		if (count == 0)
+		{
+			continue;
+		}
+
+		isCommandBufferDirty_[frameIndex] = true;
+
+		if (count > 0)
+		{
+			proxies_[frameIndex].insert(proxy);
+			--count;
+		}
+		else if (count < 0)
+		{
+			proxies_[frameIndex].erase(proxy);
+			++count;
+		}
+	}
+
+	std::erase_if(stagingProxies_,
+		[](const std::pair<KtRenderable2DProxy*, int32_t>& pair)
+		{
+			return pair.second == 0;
+		}
+	);
 }
 
 void KtRenderer2D::Cleanup() const
@@ -121,7 +155,7 @@ void KtRenderer2D::RecordCommandBuffer(const uint32_t frameIndex)
 {
 	VkCommandBuffer commandBuffer = commandBuffers_[frameIndex];
 	BeginCommandBuffer(commandBuffer, frameIndex);
-	CmdDrawRenderQueue(commandBuffer, renderQueueData_[frameIndex], frameIndex);
+	CmdDrawProxies(commandBuffer, sortedProxies_[frameIndex], frameIndex);
 	EndCommandBuffer(commandBuffer);
 }
 
@@ -154,75 +188,77 @@ void KtRenderer2D::EndCommandBuffer(VkCommandBuffer commandBuffer)
 	);
 }
 
-void KtRenderer2D::AddToRenderQueue(const KtAddToRenderQueue2DArgs& args)
-{
-	renderQueueData_[Framework.GetRenderer().GetGameThreadFrame()]
-		.shaders[args.Shader]
-		.renderables[args.Renderable]
-		.viewports[args.Viewport]
-		.Layers[args.Layer] // todo: change to unordered_map and sort in culler or sorter
-		.objectDatas.push_back(args.ObjectData);
-}
-
 void KtRenderer2D::SetUniformData(const KtUniformData2D& uniformData)
 {
 	uniformDatas_[Framework.GetRenderer().GetGameThreadFrame()] = uniformData;
 }
 
+void KtRenderer2D::Register(KtRenderable2DProxy* proxy)
+{
+	stagingProxies_[proxy] = static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
+}
+
+void KtRenderer2D::Remove(KtRenderable2DProxy* proxy)
+{
+	stagingProxies_[proxy] = -static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
+}
+
 void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
 {
-	const KtCuller2D culler{};
-	const auto culledData = culler.ComputeCulling(renderQueueData_[frameIndex]);
-	// todo: not actually used in rendering
-	UpdateDescriptorSets(culledData, frameIndex);
+	instanceIndices_[frameIndex] = {};
 
-	RecordCommandBuffer(frameIndex);
+	if (isCommandBufferDirty_[frameIndex] || GetIsDynamicProxiesDirty(frameIndex))
+	{
+		isCommandBufferDirty_[frameIndex] = false;
+
+		const KtCuller2D culler{};
+		const auto culledData = culler.ComputeCulling(proxies_[frameIndex]);
+		sortedProxies_[frameIndex] = GetSortedProxies(culledData);
+		UpdateDescriptorSets(sortedProxies_[frameIndex], frameIndex);
+
+		RecordCommandBuffer(frameIndex);
+	}
+
 	vkCmdExecuteCommands(commandBuffer, 1, &commandBuffers_[frameIndex]);
 }
 
-void KtRenderer2D::UpdateDescriptorSets(const KtRenderQueue2DData& renderQueueData, const uint32_t frameIndex)
+void KtRenderer2D::UpdateDescriptorSets(const ProxiesVector& proxies, const uint32_t frameIndex)
 {
-	for (auto& [shader, shaderData] : renderQueueData.shaders)
+	struct ShaderData final
 	{
-		std::vector<KtObjectData2D> objectBufferData;
-		std::vector<KtRenderable2D*> renderables;
-		renderables.reserve(shaderData.renderables.size());
+		std::vector<KtObjectData2D> objectBufferDatas;
 		std::vector<uint32_t> renderableIndices;
-		for (const auto& [renderable, renderableData] : shaderData.renderables)
-		{
-			for (const auto& [viewport, viewportData] : renderableData.viewports)
-			{
-				for (const auto& [layer, layerData] : viewportData.Layers)
-				{
-					// insert layerData.objectDatas.begin() to layerData.objectDatas.end()
-					objectBufferData.insert(objectBufferData.end(),
-						layerData.objectDatas.begin(), layerData.objectDatas.end()
-					);
+		std::unordered_set<KtRenderable2D*> renderables;
+	};
 
-					// insert layerData.objectDatas.size(), renderables.size() times
-					renderableIndices.insert(renderableIndices.end(),
-						layerData.objectDatas.size(), static_cast<uint32_t>(renderables.size())
-					);
-				}
-			}
-			renderables.push_back(renderable);
-		}
+	std::unordered_map<KtShader*, ShaderData> shaderDatas;
 
+	for (const auto* proxy : proxies)
+	{
+		shaderDatas[proxy->shader].objectBufferDatas.push_back(proxy->objectData);
+		shaderDatas[proxy->shader].renderableIndices.push_back(static_cast<uint32_t>(shaderDatas[proxy->shader].renderables.size()));
+		shaderDatas[proxy->shader].renderables.insert(proxy->renderable);
+	}
+
+	for (const auto& [shader, shaderData] : shaderDatas)
+	{
 		if (auto* binding = shader->GetDescriptorSetLayoutBinding("objectBuffer"))
 		{
-			shader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, objectBufferData.size(), frameIndex);
-			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, objectBufferData.data(), frameIndex);
+			shader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, shaderData.objectBufferDatas.size(), frameIndex);
+			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, shaderData.objectBufferDatas.data(), frameIndex);
 		}
+
 		if (auto* binding = shader->GetDescriptorSetLayoutBinding("textureIndexBuffer"))
 		{
-			shader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, renderableIndices.size(), frameIndex);
-			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, renderableIndices.data(), frameIndex);
+			shader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, shaderData.renderableIndices.size(), frameIndex);
+			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, shaderData.renderableIndices.data(), frameIndex);
 		}
+
 		if (auto* binding = shader->GetDescriptorSetLayoutBinding("textures"))
 		{
 			std::vector<VkDescriptorImageInfo> imageInfos;
-			imageInfos.reserve(renderables.size());
-			for (const auto* renderable : renderables)
+			imageInfos.reserve(shaderData.renderables.size());
+			for (const auto* renderable : shaderData.renderables)
 			{
 				// static_cast is safe because 'textures' expects only KtImageTexture
 				const auto* imageTexture = static_cast<const KtImageTexture*>(renderable);
@@ -233,44 +269,81 @@ void KtRenderer2D::UpdateDescriptorSets(const KtRenderQueue2DData& renderQueueDa
 	}
 }
 
-void KtRenderer2D::CmdDrawRenderQueue(VkCommandBuffer commandBuffer, const KtRenderQueue2DData& renderQueueData, const uint32_t frameIndex)
+void KtRenderer2D::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesVector& proxies, const uint32_t frameIndex)
 {
-	KtViewport* currentViewport = nullptr;
+	const KtShader* currentShader = nullptr;
+	const KtViewport* currentViewport = nullptr;
 
-	for (auto& [shader, shaderData] : renderQueueData.shaders)
+	CmdBindVertexBuffer(commandBuffer);
+	CmdBindIndexBuffer(commandBuffer);
+
+	for (size_t i = 0; i < proxies.size();)
 	{
-		shader->CmdBind(commandBuffer);
-		shader->CmdBindDescriptorSets(commandBuffer, frameIndex);
+		const auto* proxy = proxies[i];
+		const KtShader* shader = proxy->shader;
+		const KtViewport* viewport = proxy->viewport;
+		const int32_t layer = proxy->layer;
 
-		CmdBindVertexBuffer(commandBuffer);
-		CmdBindIndexBuffer(commandBuffer);
-
-		uint32_t instanceIndex = 0;
-		for (const auto& [renderable, renderableData] : shaderData.renderables)
+		size_t instanceCount = 1;
+		while (i + instanceCount < proxies.size())
 		{
-			for (const auto& [viewport, viewportData] : renderableData.viewports)
+			const auto* next = proxies[i + instanceCount];
+			if (next->shader != shader || next->viewport != viewport)
 			{
-				uint32_t instanceCount = 0;
-				for (const auto& [layer, layerData] : viewportData.Layers)
-				{
-					instanceCount += static_cast<uint32_t>(layerData.objectDatas.size());
-				}
-
-				if (currentViewport != viewport)
-				{
-					currentViewport = viewport;
-					currentViewport->CmdUse(commandBuffer);
-				}
-
-				vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(Indices.size()), instanceCount, 0, 0, instanceIndex);
-				instanceIndex += instanceCount;
+				break;
 			}
+			++instanceCount;
 		}
+
+		if (currentShader != shader)
+		{
+			currentShader = shader;
+			currentShader->CmdBind(commandBuffer);
+			currentShader->CmdBindDescriptorSets(commandBuffer, frameIndex);
+		}
+
+		if (currentViewport != viewport)
+		{
+			currentViewport = viewport;
+			currentViewport->CmdUse(commandBuffer);
+		}
+		
+		vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(Indices.size()), static_cast<uint32_t>(instanceCount), 0, 0, instanceIndices_[frameIndex][shader]);
+		instanceIndices_[frameIndex][shader] += static_cast<uint32_t>(instanceCount);
+
+		i += instanceCount;
 	}
 }
 
-void KtRenderer2D::Reset(const uint32_t frameIndex)
+const KtRenderer2D::ProxiesVector KtRenderer2D::GetSortedProxies(const ProxiesUnorderedSet& proxies) const
 {
-	uniformDatas_[frameIndex] = {};
-	renderQueueData_[frameIndex] = {};
+	ProxiesVector sortedProxies(proxies.begin(), proxies.end());
+
+	std::sort(sortedProxies.begin(), sortedProxies.end(),
+		[](const KtRenderable2DProxy* a, const KtRenderable2DProxy* b)
+		{
+			if (a->shader != b->shader)
+			{
+				return a->shader < b->shader;
+			}
+			if (a->renderable != b->renderable)
+			{
+				return a->renderable < b->renderable;
+			}
+			if (a->layer != b->layer)
+			{
+				return a->layer < b->layer;
+			}
+			return a->viewport < b->viewport;
+		}
+	);
+
+	return sortedProxies;
+}
+
+const bool KtRenderer2D::GetIsDynamicProxiesDirty(const uint32_t frameIndex) const
+{
+	auto proxies = KtCollection(proxies_[frameIndex].begin(), proxies_[frameIndex].end());
+	proxies.AddFilter([](const KtRenderable2DProxy* proxy) { return proxy->isDirty; });
+	return proxies.GetFirst() != nullptr;
 }

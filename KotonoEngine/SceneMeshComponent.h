@@ -33,15 +33,12 @@ private:
 	KTask* spinTask_;
 	KtRenderable3DProxy proxy_;
 
-	void InitProxy();
 	void InitSpin();
 
-	void CreateProxies();
-	void UpdateProxyModelMatrix();
-	void UpdateProxieshader();
-	void UpdateProxyRenderable();
+	void InitModelProxy();
+	void CreateModelProxy();
 
-	void MarkProxyTransformDirty();
+	void MarkModelProxyTransformDirty();
 
 	void RegisterProxies();
 	void RemoveProxies();

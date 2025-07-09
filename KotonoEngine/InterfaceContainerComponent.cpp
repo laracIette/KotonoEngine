@@ -55,10 +55,10 @@ void KInterfaceContainerComponent::UpdateSize()
     float bottom = -INFINITY;
     for (const auto* item : items_)
     {
-        const float itemLeft = item->GetRect().GetLeft();
-        const float itemRight = item->GetRect().GetRight();
-        const float itemTop = item->GetRect().GetTop();
-        const float itemBottom = item->GetRect().GetBottom();
+        const float itemLeft = item->GetLeft();
+        const float itemRight = item->GetRight();
+        const float itemTop = item->GetTop();
+        const float itemBottom = item->GetBottom();
         if (itemLeft < left)
         {
             left = itemLeft;
@@ -77,6 +77,6 @@ void KInterfaceContainerComponent::UpdateSize()
         }
     }
 
-    GetRect().SetWorldPosition(glm::vec2(left + right, top + bottom) / 2.0f);
-    GetRect().SetWorldSize(glm::vec2(right - left, bottom - top));
+    SetWorldPosition(glm::vec2(left + right, top + bottom) / 2.0f);
+    SetWorldSize(glm::vec2(right - left, bottom - top));
 }

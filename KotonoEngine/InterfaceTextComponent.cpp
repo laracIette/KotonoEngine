@@ -95,7 +95,7 @@ void KInterfaceTextComponent::UpdateCharacters()
         auto* letter = GetOwner()->AddComponent<KInterfaceImageComponent>();
         letter->SetImageTexture(texture);
         letter->SetShader(shader_);
-        letter->GetRect().SetScreenSize(GetOwner()->GetViewport(), glm::vec2(fontSize_));
+        letter->SetScreenSize(glm::vec2(fontSize_));
         AddItem(letter);
     }
 }

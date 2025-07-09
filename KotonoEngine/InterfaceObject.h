@@ -1,6 +1,6 @@
 #pragma once
 #include "Object.h"
-#include "Rect.h"
+#include "CoordinateSpace.h"
 #include "Visibility.h"
 #include <kotono_framework/Collection.h>
 
@@ -20,12 +20,10 @@ public:
 	void Update() override;
 	void Cleanup() override;
 
-	const URect& GetRect() const;
-	URect& GetRect();
 	const EVisibility GetVisibility() const;
-	KtViewport* GetViewport() const; // todo: move that to a renderable interface object component ?
+	KtViewport* GetViewport() const;
 	RInterfaceObject* GetParent() const;
-	RInterfaceObject* GetRoot();
+	KInterfaceComponent* GetRootComponent() const;
 	const int32_t GetLayer() const;
 	const std::unordered_set<RInterfaceObject*>& GetChildren() const;
 
@@ -55,12 +53,12 @@ public:
 	}
 
 private:
-	URect rect_;
 	EVisibility visibility_;
-	KtViewport* viewport_;
+	KtViewport* viewport_; // todo: maybe move to component ????
 	RInterfaceObject* parent_;
-	std::unordered_set<RInterfaceObject*> children_;
 	int32_t layer_;
+	KInterfaceComponent* rootComponent_;
+	std::unordered_set<RInterfaceObject*> children_;
 	std::unordered_set<KInterfaceComponent*> components_;
 
 	void AddComponent(KInterfaceComponent* component);

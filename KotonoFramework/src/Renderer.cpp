@@ -31,7 +31,7 @@ void KtRenderer::Cleanup()
 
 	renderer2D_.Cleanup();
 	renderer3D_.Cleanup();
-
+	
 	CleanupSwapChain();
 
 	vkDestroyRenderPass(Framework.GetContext().GetDevice(), renderPass_, nullptr);
@@ -412,6 +412,7 @@ void KtRenderer::DrawFrame()
 	const uint32_t frameIndex = GetGameThreadFrame(); // todo: replace by enum
 											          // getframe(gamethread), 
 				  						              // has to propagate to renderer 2d and 3d
+	UpdateRenderers(frameIndex);
 	
 #if MULTI_THREADED
 	if (frameCount_ >= 1)
@@ -435,16 +436,18 @@ void KtRenderer::DrawFrame()
 		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtRenderer::DrawFrame(): frame skipped");
 		return;
 	}
-	renderer3D_.Update(frameIndex);
+
 	RecordCommandBuffer(frameIndex);
 	SubmitCommandBuffer(frameIndex);
 #endif
-
 	
 	frameCount_++;
+}
 
-	renderer2D_.Reset(GetGameThreadFrame()); // why after framecount_++ ? 
-	                                         // gonna yoink anyway
+void KtRenderer::UpdateRenderers(const uint32_t frameIndex)
+{
+	renderer3D_.Update(frameIndex);
+	renderer2D_.Update(frameIndex);
 }
 
 void KtRenderer::RecordCommandBuffer(const uint32_t frameIndex) 
@@ -498,7 +501,7 @@ VkFramebuffer& KtRenderer::GetFramebuffer(const uint32_t frameIndex)
 void KtRenderer::CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
 {
 	renderer3D_.CmdDraw(commandBuffer, frameIndex);
-	//renderer2D_.CmdDraw(commandBuffer, frameIndex);
+	renderer2D_.CmdDraw(commandBuffer, frameIndex);
 }
 
 void KtRenderer::SubmitCommandBuffer(const uint32_t frameIndex)
@@ -628,19 +631,14 @@ const VkExtent2D KtRenderer::GetSwapChainExtent() const
 	return swapChainExtent_;
 }
 
+KtRenderer2D& KtRenderer::GetRenderer2D()
+{
+	return renderer2D_;
+}
+
 KtRenderer3D& KtRenderer::GetRenderer3D()
 {
 	return renderer3D_;
-}
-
-void KtRenderer::AddToRenderQueue2D(const KtAddToRenderQueue2DArgs& args)
-{
-	renderer2D_.AddToRenderQueue(args);
-}
-
-void KtRenderer::SetUniformData3D(const KtUniformData3D& data)
-{
-	renderer3D_.SetUniformData(data);
 }
 
 VkRenderPass KtRenderer::GetRenderPass() const

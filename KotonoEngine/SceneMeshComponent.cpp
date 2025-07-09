@@ -34,32 +34,17 @@ void KSceneMeshComponent::Init()
 {
     Base::Init();
 
-    InitProxy();
     InitSpin();
+    InitModelProxy();
 
     const KtDelegate<> keyboardSKeyPressed(this, &KSceneMeshComponent::SetMobilityStatic);
     const KtDelegate<> keyboardDKeyPressed(this, &KSceneMeshComponent::SetMobilityDynamic);
-    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED)
+    Framework.GetInputManager().GetKeyboard()
+        .GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED)
         .AddListener(keyboardSKeyPressed);
-    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_D, KT_INPUT_STATE_PRESSED)
+    Framework.GetInputManager().GetKeyboard()
+        .GetEvent(KT_KEY_D, KT_INPUT_STATE_PRESSED)
         .AddListener(keyboardDKeyPressed);
-}
-
-void KSceneMeshComponent::InitProxy()
-{
-    CreateProxies();
-    RegisterProxies();
-    const KtDelegate<> transformDelegate(this, &KSceneMeshComponent::MarkProxyTransformDirty);
-    ListenEvent(GetEventUpdateTransform(), transformDelegate);
-}
-
-void KSceneMeshComponent::InitSpin()
-{
-    const KtDelegate<> startSpinDelegate(spinTask_, &KTask::Start);
-    const KtDelegate<> spinMeshDelegate(this, &KSceneMeshComponent::Spin);
-    spinTask_->SetDuration(5.0f);
-    spinTask_->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED), startSpinDelegate);
-    ListenEvent(spinTask_->GetEventUpdate(), spinMeshDelegate);
 }
 
 void KSceneMeshComponent::Update()
@@ -114,33 +99,35 @@ void KSceneMeshComponent::SetMobility(const EMobility mobility)
     RegisterProxies();
 }
 
-void KSceneMeshComponent::CreateProxies()
+void KSceneMeshComponent::InitSpin()
 {
-    proxy_.viewport = GetOwner()->GetViewport();
-    UpdateProxyModelMatrix();
-    UpdateProxieshader();
-    UpdateProxyRenderable();
+    const KtDelegate<> startSpinDelegate(spinTask_, &KTask::Start);
+    const KtDelegate<> spinMeshDelegate(this, &KSceneMeshComponent::Spin);
+    spinTask_->SetDuration(5.0f);
+    spinTask_->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED), startSpinDelegate);
+    ListenEvent(spinTask_->GetEventUpdate(), spinMeshDelegate);
 }
 
-void KSceneMeshComponent::UpdateProxyModelMatrix()
+void KSceneMeshComponent::InitModelProxy()
 {
-    proxy_.objectData = { GetModelMatrix() };
+    CreateModelProxy();
+    RegisterProxies();
+    const KtDelegate<> transformDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty);
+    ListenEvent(GetEventUpdateTransform(), transformDelegate);
 }
 
-void KSceneMeshComponent::UpdateProxieshader()
+void KSceneMeshComponent::CreateModelProxy()
 {
     proxy_.shader = shader_;
-}
-
-void KSceneMeshComponent::UpdateProxyRenderable()
-{
     proxy_.renderable = model_;
+    proxy_.viewport = GetOwner()->GetViewport();
+    proxy_.objectData.modelMatrix = GetModelMatrix();
 }
 
-void KSceneMeshComponent::MarkProxyTransformDirty()
+void KSceneMeshComponent::MarkModelProxyTransformDirty()
 {
     proxy_.isDirty = true;
-    UpdateProxyModelMatrix();
+    proxy_.objectData.modelMatrix = GetModelMatrix();
 }
 
 void KSceneMeshComponent::RegisterProxies()

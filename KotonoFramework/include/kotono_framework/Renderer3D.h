@@ -2,7 +2,6 @@
 #include "UniformData3D.h"
 #include "frames_in_flight.h"
 #include <vulkan/vulkan_core.h>
-#include <array>
 #include <unordered_set>
 #include "RendererFrameStats.h"
 struct KtRenderable3DProxy;
@@ -28,21 +27,18 @@ public:
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 
 private:
-
 	FramesInFlightArray<KtUniformData3D> uniformDatas_;
 	FramesInFlightArray<KtRendererFrameStats> stats_;
 
 	FramesInFlightArray<VkCommandBuffer> staticCommandBuffers_;
 	FramesInFlightArray<VkCommandBuffer> dynamicCommandBuffers_;
-	FramesInFlightArray<bool> isDynamicCommandBufferDirty_;
 	FramesInFlightArray<bool> isStaticCommandBufferDirty_;
+	FramesInFlightArray<bool> isDynamicCommandBufferDirty_;
 
 	std::unordered_map<KtRenderable3DProxy*, int32_t> stagingStaticProxies_;
 	std::unordered_map<KtRenderable3DProxy*, int32_t> stagingDynamicProxies_;
-	FramesInFlightArray<ProxiesUnorderedSet> globalProxies_;
 	FramesInFlightArray<ProxiesUnorderedSet> staticProxies_;
 	FramesInFlightArray<ProxiesUnorderedSet> dynamicProxies_;
-	FramesInFlightArray<ProxiesVector> sortedGlobalProxies_;
 	FramesInFlightArray<ProxiesVector> sortedStaticProxies_;
 	FramesInFlightArray<ProxiesVector> sortedDynamicProxies_;
 

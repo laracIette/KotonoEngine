@@ -194,9 +194,6 @@
     <ClInclude Include="include\kotono_framework\Viewport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\kotono_framework\AddToRenderQueue2DArgs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\kotono_framework\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -233,9 +230,6 @@
     <ClInclude Include="include\kotono_framework\Culler2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\kotono_framework\RenderQueue2DData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\kotono_framework\Renderable3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -267,6 +261,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\kotono_framework\Culler3DField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kotono_framework\Renderable2DProxy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
