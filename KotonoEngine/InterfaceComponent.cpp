@@ -8,6 +8,7 @@
 #include <kotono_framework/ImageTexture.h>
 #include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/Viewport.h>
+#include "log.h"
 
 static KtShader* FlatColorShader = nullptr;
 static KtImageTexture* FlatColorTexture = nullptr;
@@ -75,12 +76,21 @@ const EVisibility KInterfaceComponent::GetVisibility() const
 
 const int32_t KInterfaceComponent::GetLayer() const
 {
-    return GetOwner()->GetLayer() + layer_ + 1;
+    if (parent_)
+    {
+        return parent_->GetLayer() + layer_ + 1;
+    }
+    return layer_;
 }
 
 KtEvent<>& KInterfaceComponent::GetEventRectUpdated()
 {
     return eventRectUpdated_;
+}
+
+KtEvent<>& KInterfaceComponent::GetEventLayerUpdated()
+{
+    return eventLayerUpdated_;
 }
 
 const glm::vec2& KInterfaceComponent::GetRelativeSize() const
@@ -162,15 +172,22 @@ void KInterfaceComponent::SetVisibility(const EVisibility visibility)
 void KInterfaceComponent::SetLayer(const int32_t layer)
 {
     layer_ = layer;
+    eventLayerUpdated_.Broadcast();
 }
 
 void KInterfaceComponent::SetParent(KInterfaceComponent* parent, const ECoordinateSpace keepRect)
 {
+    if (parent_)
+    {
+        parent_->GetEventRectUpdated().RemoveListener(KtDelegate<>(&eventRectUpdated_, &KtEvent<>::Broadcast));
+    }
+
     switch (keepRect)
     {
     case ECoordinateSpace::Relative:
     {
         parent_ = parent;
+        eventRectUpdated_.Broadcast();
         break;
     }
     case ECoordinateSpace::World:
@@ -184,6 +201,11 @@ void KInterfaceComponent::SetParent(KInterfaceComponent* parent, const ECoordina
         SetWorldRotation(rotation);
         break;
     }
+    }
+
+    if (parent_)
+    {
+        parent_->GetEventRectUpdated().AddListener(KtDelegate<>(&eventRectUpdated_, &KtEvent<>::Broadcast));
     }
 }
 
@@ -297,7 +319,10 @@ void KInterfaceComponent::SetScreenSize(const glm::vec2& screenSize)
 
 void KInterfaceComponent::SetAnchor(const EAnchor anchor)
 {
+    const auto worldPosition = GetWorldPosition();
     rect_.anchor = anchor;
+    SetWorldPosition(worldPosition);
+
 }
 
 const float KInterfaceComponent::GetLeft() const
@@ -404,6 +429,7 @@ void KInterfaceComponent::MarkBoundsProxyRectDirty()
 {
     boundsProxy_.isDirty = true;
     boundsProxy_.objectData.modelMatrix = GetModelMatrix();
+    KT_LOG_KE(KT_LOG_COMPILE_TIME_LEVEL, "bounds rect dirty");
 }
 
 const glm::vec2 KInterfaceComponent::GetAnchorOffset() const

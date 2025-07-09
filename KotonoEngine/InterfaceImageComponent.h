@@ -37,5 +37,6 @@ private:
 	void MarkImageTextureProxyRectDirty();
 	void MarkImageTextureProxyShaderDirty();
 	void MarkImageTextureProxyImageTextureDirty();
+	void MarkImageTextureProxyLayerDirty();
 };
 

@@ -205,18 +205,21 @@ void KtRenderer2D::Remove(KtRenderable2DProxy* proxy)
 
 void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
 {
-	instanceIndices_[frameIndex] = {};
 
-	if (isCommandBufferDirty_[frameIndex] || GetIsDynamicProxiesDirty(frameIndex))
+	if (isCommandBufferDirty_[frameIndex] || GetIsAnyProxyDirty(frameIndex))
 	{
 		isCommandBufferDirty_[frameIndex] = false;
 
 		const KtCuller2D culler{};
 		const auto culledData = culler.ComputeCulling(proxies_[frameIndex]);
 		sortedProxies_[frameIndex] = GetSortedProxies(culledData);
+
+		instanceIndices_[frameIndex] = {};
 		UpdateDescriptorSets(sortedProxies_[frameIndex], frameIndex);
 
 		RecordCommandBuffer(frameIndex);
+
+		MarkProxiesNotDirty(frameIndex);
 	}
 
 	vkCmdExecuteCommands(commandBuffer, 1, &commandBuffers_[frameIndex]);
@@ -227,17 +230,32 @@ void KtRenderer2D::UpdateDescriptorSets(const ProxiesVector& proxies, const uint
 	struct ShaderData final
 	{
 		std::vector<KtObjectData2D> objectBufferDatas;
+		std::vector<KtRenderable2D*> renderables;
 		std::vector<uint32_t> renderableIndices;
-		std::unordered_set<KtRenderable2D*> renderables;
 	};
 
 	std::unordered_map<KtShader*, ShaderData> shaderDatas;
 
 	for (const auto* proxy : proxies)
 	{
-		shaderDatas[proxy->shader].objectBufferDatas.push_back(proxy->objectData);
-		shaderDatas[proxy->shader].renderableIndices.push_back(static_cast<uint32_t>(shaderDatas[proxy->shader].renderables.size()));
-		shaderDatas[proxy->shader].renderables.insert(proxy->renderable);
+		auto& shaderData = shaderDatas[proxy->shader];
+
+		shaderData.objectBufferDatas.push_back(proxy->objectData);
+
+		const auto it = std::find(shaderData.renderables.begin(), shaderData.renderables.end(), proxy->renderable);
+
+		size_t index;
+		if (it == shaderData.renderables.end())
+		{
+			index = shaderData.renderables.size();
+			shaderData.renderables.push_back(proxy->renderable);
+		}
+		else
+		{
+			index = std::distance(shaderData.renderables.begin(), it);
+		}
+
+		shaderData.renderableIndices.push_back(static_cast<uint32_t>(index));
 	}
 
 	for (const auto& [shader, shaderData] : shaderDatas)
@@ -341,9 +359,17 @@ const KtRenderer2D::ProxiesVector KtRenderer2D::GetSortedProxies(const ProxiesUn
 	return sortedProxies;
 }
 
-const bool KtRenderer2D::GetIsDynamicProxiesDirty(const uint32_t frameIndex) const
+const bool KtRenderer2D::GetIsAnyProxyDirty(const uint32_t frameIndex) const
 {
 	auto proxies = KtCollection(proxies_[frameIndex].begin(), proxies_[frameIndex].end());
 	proxies.AddFilter([](const KtRenderable2DProxy* proxy) { return proxy->isDirty; });
 	return proxies.GetFirst() != nullptr;
+}
+
+void KtRenderer2D::MarkProxiesNotDirty(const uint32_t frameIndex)
+{
+	for (auto* proxy : proxies_[frameIndex])
+	{
+		proxy->isDirty = false;
+	}
 }

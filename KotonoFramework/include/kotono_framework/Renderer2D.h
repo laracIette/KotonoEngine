@@ -57,6 +57,8 @@ private:
 	void CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesVector& proxies, const uint32_t frameIndex);
 	
 	const ProxiesVector GetSortedProxies(const ProxiesUnorderedSet& proxies) const;
-	const bool GetIsDynamicProxiesDirty(const uint32_t frameIndex) const;
+	const bool GetIsAnyProxyDirty(const uint32_t frameIndex) const;
+
+	void MarkProxiesNotDirty(const uint32_t frameIndex);
 };
 

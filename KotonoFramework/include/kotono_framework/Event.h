@@ -10,6 +10,11 @@ public:
     {
         delegates_.insert(delegate);
     }
+    
+    void AddListener(KtDelegate<Args...>&& delegate)
+    {
+        delegates_.insert(std::move(delegate));
+    }
 
     void RemoveListener(const KtDelegate<Args...>& delegate)
     {

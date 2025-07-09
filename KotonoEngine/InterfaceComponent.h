@@ -27,6 +27,7 @@ public:
 	const EVisibility GetVisibility() const;
 	const int32_t GetLayer() const; 
 	KtEvent<>& GetEventRectUpdated();
+	KtEvent<>& GetEventLayerUpdated();
 
 	const glm::vec2& GetRelativeSize() const;
 	const glm::vec2& GetRelativePosition() const;
@@ -91,6 +92,7 @@ private:
 	int32_t layer_;
 	KtRenderable2DProxy boundsProxy_;
 	KtEvent<> eventRectUpdated_;
+	KtEvent<> eventLayerUpdated_;
 
 	void InitBoundsProxy();
 	void CreateBoundsProxy();

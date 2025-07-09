@@ -55,6 +55,13 @@ public:
 	}
 
 	template <typename... Args>
+	void ListenEvent(KtEvent<Args...>& event, KtDelegate<Args...>&& delegate)
+	{
+		event.AddListener(std::move(delegate));
+		listenedEvents_[&event] += 1;
+	}
+
+	template <typename... Args>
 	void UnlistenEvent(KtEvent<Args...>& event, const KtDelegate<Args...>& delegate)
 	{
 		event.RemoveListener(delegate);
@@ -69,6 +76,7 @@ public:
 	}
 
 	void Repeat(const KtDelegate<>& delegate, float frequency);
+	void Repeat(KtDelegate<>&& delegate, float frequency);
 
 private:
 	UGuid guid_;

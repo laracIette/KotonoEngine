@@ -45,15 +45,6 @@ KInterfaceComponent* RInterfaceObject::GetRootComponent() const
 	return rootComponent_;
 }
 
-const int32_t RInterfaceObject::GetLayer() const
-{
-	if (parent_)
-	{
-		return layer_ + parent_->GetLayer() + 1;
-	}
-	return layer_;
-}
-
 const std::unordered_set<RInterfaceObject*>& RInterfaceObject::GetChildren() const
 {
 	return children_;
@@ -96,11 +87,6 @@ void RInterfaceObject::SetParent(RInterfaceObject* parent, const ECoordinateSpac
 	}
 	parent_ = parent;
 	GetRootComponent()->SetParent(parent_ ? parent_->GetRootComponent() : nullptr, keepRect);
-}
-
-void RInterfaceObject::SetLayer(const int32_t layer)
-{
-	layer_ = layer;
 }
 
 void RInterfaceObject::AddComponent(KInterfaceComponent* component)

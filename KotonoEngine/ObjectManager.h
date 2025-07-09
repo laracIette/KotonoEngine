@@ -67,6 +67,8 @@ public:
 		}
 		return result;
 	}
+
+	const float GetAverageUpdateTime() const;
 	
 private:
 	void Quit();
@@ -84,6 +86,8 @@ private:
 
 	std::array<float, 60> updateTimes_;
 	size_t updateTimeIndex_;
+	float updateTimesSum_;
+	float updateTimesAverage_;
 
 	KTimer* drawTimer_;
 	bool canDraw_;
@@ -93,8 +97,6 @@ private:
 	void DeleteObjects();
 	void DrawObjects();
 	void SubmitDrawObjects();
-
-	const float GetAverageUpdateTime() const;
 
 	void LogUPS();
 };

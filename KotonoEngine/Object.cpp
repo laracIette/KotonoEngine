@@ -120,6 +120,15 @@ void KObject::Repeat(const KtDelegate<>& delegate, float frequency)
     timer->Start();
 }
 
+void KObject::Repeat(KtDelegate<>&& delegate, float frequency)
+{
+    auto* timer = AddObject<KTimer>();
+    timer->SetDuration(frequency);
+    timer->SetIsRepeat(true);
+    timer->GetEventCompleted().AddListener(std::move(delegate));
+    timer->Start();
+}
+
 void KObject::AddObject(KObject* object)
 {
     Engine.GetObjectManager().Register(object);

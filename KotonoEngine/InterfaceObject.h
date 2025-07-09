@@ -24,13 +24,11 @@ public:
 	KtViewport* GetViewport() const;
 	RInterfaceObject* GetParent() const;
 	KInterfaceComponent* GetRootComponent() const;
-	const int32_t GetLayer() const;
 	const std::unordered_set<RInterfaceObject*>& GetChildren() const;
 
 	void SetVisibility(const EVisibility visibility);
 	void SetViewport(KtViewport* viewport);
 	void SetParent(RInterfaceObject* parent, const ECoordinateSpace keepRect);
-	void SetLayer(const int32_t layer);
 
 	template <InterfaceComponent T>
 	T* GetComponent() const
@@ -56,7 +54,6 @@ private:
 	EVisibility visibility_;
 	KtViewport* viewport_; // todo: maybe move to component ????
 	RInterfaceObject* parent_;
-	int32_t layer_;
 	KInterfaceComponent* rootComponent_;
 	std::unordered_set<RInterfaceObject*> children_;
 	std::unordered_set<KInterfaceComponent*> components_;

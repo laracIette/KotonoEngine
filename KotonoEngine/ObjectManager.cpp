@@ -85,7 +85,9 @@ void SObjectManager::Update()
 	}
 
 	updateTimeIndex_ = (updateTimeIndex_ + 1) % updateTimes_.size();
+	updateTimesSum_ -= updateTimes_[updateTimeIndex_];
 	updateTimes_[updateTimeIndex_] = Engine.GetTime().GetDelta();
+	updateTimesSum_ += updateTimes_[updateTimeIndex_];
 }
 
 void SObjectManager::Cleanup()
@@ -223,9 +225,7 @@ void SObjectManager::SubmitDrawObjects()
 
 const float SObjectManager::GetAverageUpdateTime() const
 {
-	const float sum = std::accumulate(updateTimes_.begin(), updateTimes_.end(), 0.0f);
-	const float avg = sum / updateTimes_.size();
-	return avg;
+	return updateTimesSum_ / updateTimes_.size();
 }
 
 void SObjectManager::LogUPS()

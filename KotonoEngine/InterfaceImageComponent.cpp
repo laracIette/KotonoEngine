@@ -8,6 +8,7 @@
 #include "Engine.h"
 #include "ObjectManager.h"
 #include "InterfaceObject.h"
+#include "log.h"
 
 static KtShader* WireframeShader = nullptr;
 
@@ -77,12 +78,10 @@ void KInterfaceImageComponent::InitImageTextureProxy()
 	CreateImageTextureProxy();
 	Framework.GetRenderer().GetRenderer2D().Register(&imageTextureProxy_);
 
-	const KtDelegate<> rectDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyRectDirty);
-	const KtDelegate<> shaderDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyShaderDirty);
-	const KtDelegate<> imageTextureDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyImageTextureDirty);
-	ListenEvent(GetEventRectUpdated(), rectDelegate);
-	ListenEvent(GetEventShaderUpdated(), shaderDelegate);
-	ListenEvent(GetEventImageTextureUpdated(), imageTextureDelegate);
+	ListenEvent(GetEventRectUpdated(), KtDelegate<>(this, &KInterfaceImageComponent::MarkImageTextureProxyRectDirty));
+	ListenEvent(GetEventShaderUpdated(), KtDelegate<>(this, &KInterfaceImageComponent::MarkImageTextureProxyShaderDirty));
+	ListenEvent(GetEventImageTextureUpdated(), KtDelegate<>(this, &KInterfaceImageComponent::MarkImageTextureProxyImageTextureDirty));
+	ListenEvent(GetEventLayerUpdated(), KtDelegate<>(this, &KInterfaceImageComponent::MarkImageTextureProxyLayerDirty));
 }
 
 void KInterfaceImageComponent::CreateImageTextureProxy()
@@ -98,6 +97,7 @@ void KInterfaceImageComponent::MarkImageTextureProxyRectDirty()
 {
 	imageTextureProxy_.isDirty = true;
 	imageTextureProxy_.objectData.modelMatrix = GetModelMatrix();
+	KT_LOG_KE(KT_LOG_COMPILE_TIME_LEVEL, "image rect dirty");
 }
 
 void KInterfaceImageComponent::MarkImageTextureProxyShaderDirty()
@@ -110,4 +110,10 @@ void KInterfaceImageComponent::MarkImageTextureProxyImageTextureDirty()
 {
 	imageTextureProxy_.isDirty = true;
 	imageTextureProxy_.renderable = GetImageTexture();
+}
+
+void KInterfaceImageComponent::MarkImageTextureProxyLayerDirty()
+{
+	imageTextureProxy_.isDirty = true;
+	imageTextureProxy_.layer = GetLayer();
 }

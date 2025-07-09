@@ -12,6 +12,7 @@
 #include "InterfaceTextComponent.h"
 #include "Timer.h"
 #include "Time.h"
+#include "ObjectManager.h"
 #include "math_utils.h"
 
 void KInterface::Construct()
@@ -77,9 +78,7 @@ void KInterface::SetLayout()
 	textBox1_->GetTextComponent()->SetFontSize(32.0f);
 	textBox1_->GetTextComponent()->SetSpacing(0.05f);
 	textBox1_->GetTextComponent()->SetShader(shader2D);
-	//textBox1_->GetTextComponent()->SetText("plz updaaaate !"); // should be in construct cause creates objects
-	textBox1_->GetTextComponent()->SetTextBinding([]() { return std::format("{} ups", round(1.0f / Engine.GetTime().GetDelta(), 2)); });
-
+	textBox1_->GetTextComponent()->SetTextBinding([]() { return std::format("{} ups", round(1.0f / Engine.GetObjectManager().GetAverageUpdateTime(), 2)); });
 
 	textBox2_->GetRootComponent()->SetRelativePosition(glm::vec2(0.3f, 0.3f));
 	textBox2_->GetTextComponent()->SetFontSize(32.0f);
