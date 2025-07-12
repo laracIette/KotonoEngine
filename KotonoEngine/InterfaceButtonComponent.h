@@ -8,6 +8,7 @@ class KInterfaceButtonComponent final : public KInterfaceComponent
 public:
 	void Construct() override;
 	void Init() override;
+	void Cleanup() override;
 
 	KtEvent<>& GetEventClicked();
 

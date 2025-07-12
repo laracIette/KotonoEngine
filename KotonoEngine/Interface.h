@@ -12,6 +12,7 @@ class KInterface : public KObject
 public:
 	void Construct() override;
 	void Init() override;
+	void Cleanup() override;
 
 	void SetLayout();
 

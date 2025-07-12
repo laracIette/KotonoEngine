@@ -24,6 +24,15 @@ void RInterfaceTextBoxObject::Update()
 	Base::Update();
 }
 
+void RInterfaceTextBoxObject::Cleanup()
+{
+	Base::Cleanup();
+
+	colliderComponent_->GetEventPressed().RemoveListener(KtDelegate<>(this, &RInterfaceTextBoxObject::OnMousePressed));
+	colliderComponent_->GetEventReleased().RemoveListener(KtDelegate<>(this, &RInterfaceTextBoxObject::OnMouseReleased));
+	colliderComponent_->GetEventDown().RemoveListener(KtDelegate<>(this, &RInterfaceTextBoxObject::OnMouseDown));
+}
+
 const bool RInterfaceTextBoxObject::GetIsEditable() const
 {
 	return isEditable_;
@@ -40,21 +49,15 @@ void RInterfaceTextBoxObject::SetIsEditable(const bool isEditable)
 
 	if (isEditable_)
 	{
-		ListenEvent(colliderComponent_->GetEventPressed(), 
-			KtDelegate<>(this, &RInterfaceTextBoxObject::OnMousePressed));
-		ListenEvent(colliderComponent_->GetEventReleased(), 
-			KtDelegate<>(this, &RInterfaceTextBoxObject::OnMouseReleased));
-		ListenEvent(colliderComponent_->GetEventDown(), 
-			KtDelegate<>(this, &RInterfaceTextBoxObject::OnMouseDown));
+		colliderComponent_->GetEventPressed().AddListener(KtDelegate<>(this, &RInterfaceTextBoxObject::OnMousePressed));
+		colliderComponent_->GetEventReleased().AddListener(KtDelegate<>(this, &RInterfaceTextBoxObject::OnMouseReleased));
+		colliderComponent_->GetEventDown().AddListener(KtDelegate<>(this, &RInterfaceTextBoxObject::OnMouseDown));
 	}
 	else
 	{
-		UnlistenEvent(colliderComponent_->GetEventPressed(), 
-			KtDelegate<>(this, &RInterfaceTextBoxObject::OnMousePressed));
-		UnlistenEvent(colliderComponent_->GetEventReleased(), 
-			KtDelegate<>(this, &RInterfaceTextBoxObject::OnMouseReleased));
-		UnlistenEvent(colliderComponent_->GetEventDown(), 
-			KtDelegate<>(this, &RInterfaceTextBoxObject::OnMouseDown));
+		colliderComponent_->GetEventPressed().RemoveListener(KtDelegate<>(this, &RInterfaceTextBoxObject::OnMousePressed));
+		colliderComponent_->GetEventReleased().RemoveListener(KtDelegate<>(this, &RInterfaceTextBoxObject::OnMouseReleased));
+		colliderComponent_->GetEventDown().RemoveListener(KtDelegate<>(this, &RInterfaceTextBoxObject::OnMouseDown));
 	}
 }
 

@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <typeindex>
 #include <kotono_framework/Event.h>
+#include <kotono_framework/Pool.h>
 #include <array>
 
 class KObject;
@@ -26,6 +27,7 @@ public:
 	KtEvent<>& GetEventDrawInterfaceObjectWireframes();
 
 	void Register(KObject* object);
+	void Delete(KObject* object);
 
 	template <Object T, typename... Args> 
 	T* Create(Args... args)
@@ -73,8 +75,9 @@ public:
 private:
 	void Quit();
 
-	std::unordered_set<KObject*> inits_;
-	std::unordered_set<KObject*> objects_;
+	KtPool<KObject*> inits_;
+	KtPool<KObject*> objects_;
+	KtPool<KObject*> deletes_;
 
 	std::unordered_map<std::type_index, std::unordered_set<KObject*>> typeRegistry_;
 

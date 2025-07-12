@@ -14,6 +14,8 @@ class KInterfaceComponent : public KObject
 {
 	BASECLASS(KObject)
 
+	friend class RInterfaceObject;
+
 public:
 	KInterfaceComponent(RInterfaceObject* owner);
 
@@ -93,6 +95,7 @@ private:
 	KtRenderable2DProxy boundsProxy_;
 	KtEvent<> eventRectUpdated_;
 	KtEvent<> eventLayerUpdated_;
+	size_t componentIndex_;
 
 	void InitBoundsProxy();
 	void CreateBoundsProxy();

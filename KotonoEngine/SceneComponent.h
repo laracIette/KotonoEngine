@@ -16,6 +16,7 @@ public:
 
 	void Construct() override;
 	void Init() override;
+	void Cleanup() override;
 
 	TSceneObject* GetOwner() const;
 	const UTransform& GetTransform() const;

@@ -2,6 +2,7 @@
 #include <functional>
 #include <vector>
 #include <span>
+#include "Pool.h"
 template <typename IteratorType>
 class KtCollection final
 {
@@ -60,7 +61,7 @@ public:
 		std::span<const Filter> filters_;
 	};
 
-	KtCollection(IteratorType begin, IteratorType end)
+	KtCollection(const IteratorType& begin, const IteratorType& end)
 		: begin_(begin), end_(end) {}
 
 	void AddFilter(Filter&& filter)
@@ -83,12 +84,12 @@ public:
 		return result;
 	}
 
-	const std::unordered_set<T> GetUnorderedSet() const
+	const KtPool<T> GetPool() const
 	{
-		std::unordered_set<T> result;
+		KtPool<T> result;
 		for (const T& item : *this)
 		{
-			result.insert(item);
+			result.Add(item);
 		}
 		return result;
 	}
@@ -103,8 +104,15 @@ public:
 		return T();
 	}
 
-	Iterator begin() const { return Iterator(begin_, end_, filters_); }
-	Iterator end() const { return Iterator(end_, end_, filters_); }
+	Iterator begin() const 
+	{ 
+		return Iterator(begin_, end_, filters_);
+	}
+
+	Iterator end() const 
+	{
+		return Iterator(end_, end_, filters_);
+	}
 
 private:
 	IteratorType begin_;

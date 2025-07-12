@@ -28,7 +28,7 @@ void KScene::Unload()
 {
 	for (auto* sceneObject : _sceneObjects)
 	{
-		sceneObject->SetIsDelete(true);
+		sceneObject->Delete();
 	}
 	_sceneObjects.clear();
 }

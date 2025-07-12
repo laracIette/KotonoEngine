@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "ObjectManager.h"
 #include "Timer.h"
+#include "log.h"
 
 void KObject::Construct()
 {
@@ -21,12 +22,7 @@ void KObject::Update()
 
 void KObject::Cleanup() 
 {
-    UnlistenEvents();
-
-    for (auto* object : objects_)
-    {
-        object->SetIsDelete(true);
-    }
+    //eventCleanup_.Broadcast(this); // todo: broken
 }
 
 const UGuid& KObject::GetGuid() const
@@ -62,6 +58,11 @@ const std::string KObject::GetTypeName() const
     );
 }
 
+KtEvent<KObject*>& KObject::GetEventCleanup()
+{
+    return eventCleanup_;
+}
+
 void KObject::SetName(const std::string& name)
 {
     name_ = name;
@@ -77,9 +78,10 @@ void KObject::SetPath(const std::filesystem::path& path)
     path_ = path;
 }
 
-void KObject::SetIsDelete(const bool isDelete)
+void KObject::Delete()
 {
-    isDelete_ = isDelete;
+    isDelete_ = true;
+    Engine.GetObjectManager().Delete(this);
 }
 
 void KObject::Serialize() const
@@ -109,41 +111,4 @@ void KObject::DeserializeFrom(const nlohmann::json& json)
 {
     guid_ = json["guid"];
     name_ = json["name"];
-}
-
-void KObject::Repeat(const KtDelegate<>& delegate, float frequency)
-{
-    auto* timer = AddObject<KTimer>();
-    timer->SetDuration(frequency);
-    timer->SetIsRepeat(true);
-    timer->GetEventCompleted().AddListener(delegate);
-    timer->Start();
-}
-
-void KObject::Repeat(KtDelegate<>&& delegate, float frequency)
-{
-    auto* timer = AddObject<KTimer>();
-    timer->SetDuration(frequency);
-    timer->SetIsRepeat(true);
-    timer->GetEventCompleted().AddListener(std::move(delegate));
-    timer->Start();
-}
-
-void KObject::AddObject(KObject* object)
-{
-    Engine.GetObjectManager().Register(object);
-    objects_.insert(object);
-}
-
-void KObject::UnlistenEvents()
-{
-    for (auto& [event, count] : listenedEvents_)
-    {
-        if (event)
-        {
-            event->RemoveListener(this);
-        }
-    }
-
-    listenedEvents_.clear();
 }

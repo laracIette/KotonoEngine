@@ -10,12 +10,9 @@ void KInterfaceColliderComponent::Init()
 {
 	Base::Init();	
 
-	ListenEvent(Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED), 
-		KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
-	ListenEvent(Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED), 
-		KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
-	ListenEvent(Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN), 
-		KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
+	Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
+	Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED).AddListener(KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
+	Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN).AddListener(KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
 }
 
 void KInterfaceColliderComponent::Update()
@@ -24,6 +21,10 @@ void KInterfaceColliderComponent::Update()
 
 	UpdateOverlaps();
 	BroadcastOverlaps();
+
+	Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
+	Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED).RemoveListener(KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
+	Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
 }
 
 void KInterfaceColliderComponent::Cleanup()
@@ -63,9 +64,9 @@ void KInterfaceColliderComponent::UpdateOverlaps()
 {
 	auto interfaceColliderComponents = Engine.GetObjectManager().GetAll<KInterfaceColliderComponent>();
 	auto overlaps = KtCollection(interfaceColliderComponents.begin(), interfaceColliderComponents.end());
-	overlaps.AddFilter([this](auto* collider) { return collider != this; });
-	overlaps.AddFilter([this](auto* collider) { return GetIsOverlapping(collider); });
-	_overlaps = overlaps.GetUnorderedSet();
+	overlaps.AddFilter([this](const KInterfaceColliderComponent* collider) { return collider != this; });
+	overlaps.AddFilter([this](const KInterfaceColliderComponent* collider) { return GetIsOverlapping(collider); });
+	_overlaps = overlaps.GetPool();
 }
 
 void KInterfaceColliderComponent::BroadcastOverlaps()

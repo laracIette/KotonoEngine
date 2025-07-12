@@ -27,6 +27,7 @@ void KInterfaceImageComponent::Construct()
 void KInterfaceImageComponent::Init()
 {
 	Base::Init();
+
 	InitImageTextureProxy();
 }
 
@@ -38,7 +39,13 @@ void KInterfaceImageComponent::Update()
 void KInterfaceImageComponent::Cleanup()
 {
 	Base::Cleanup();
+
 	Framework.GetRenderer().GetRenderer2D().Remove(&imageTextureProxy_);
+
+	GetEventRectUpdated().RemoveListener(KtDelegate<>(this, &KInterfaceImageComponent::MarkImageTextureProxyRectDirty));
+	GetEventShaderUpdated().RemoveListener(KtDelegate<>(this, &KInterfaceImageComponent::MarkImageTextureProxyShaderDirty));
+	GetEventImageTextureUpdated().RemoveListener(KtDelegate<>(this, &KInterfaceImageComponent::MarkImageTextureProxyImageTextureDirty));
+	GetEventLayerUpdated().RemoveListener(KtDelegate<>(this, &KInterfaceImageComponent::MarkImageTextureProxyLayerDirty));
 }
 
 KtShader* KInterfaceImageComponent::GetShader() const
@@ -78,10 +85,10 @@ void KInterfaceImageComponent::InitImageTextureProxy()
 	CreateImageTextureProxy();
 	Framework.GetRenderer().GetRenderer2D().Register(&imageTextureProxy_);
 
-	ListenEvent(GetEventRectUpdated(), KtDelegate<>(this, &KInterfaceImageComponent::MarkImageTextureProxyRectDirty));
-	ListenEvent(GetEventShaderUpdated(), KtDelegate<>(this, &KInterfaceImageComponent::MarkImageTextureProxyShaderDirty));
-	ListenEvent(GetEventImageTextureUpdated(), KtDelegate<>(this, &KInterfaceImageComponent::MarkImageTextureProxyImageTextureDirty));
-	ListenEvent(GetEventLayerUpdated(), KtDelegate<>(this, &KInterfaceImageComponent::MarkImageTextureProxyLayerDirty));
+	GetEventRectUpdated().AddListener(KtDelegate<>(this, &KInterfaceImageComponent::MarkImageTextureProxyRectDirty));
+	GetEventShaderUpdated().AddListener(KtDelegate<>(this, &KInterfaceImageComponent::MarkImageTextureProxyShaderDirty));
+	GetEventImageTextureUpdated().AddListener(KtDelegate<>(this, &KInterfaceImageComponent::MarkImageTextureProxyImageTextureDirty));
+	GetEventLayerUpdated().AddListener(KtDelegate<>(this, &KInterfaceImageComponent::MarkImageTextureProxyLayerDirty));
 }
 
 void KInterfaceImageComponent::CreateImageTextureProxy()
@@ -97,7 +104,6 @@ void KInterfaceImageComponent::MarkImageTextureProxyRectDirty()
 {
 	imageTextureProxy_.isDirty = true;
 	imageTextureProxy_.objectData.modelMatrix = GetModelMatrix();
-	KT_LOG_KE(KT_LOG_COMPILE_TIME_LEVEL, "image rect dirty");
 }
 
 void KInterfaceImageComponent::MarkImageTextureProxyShaderDirty()

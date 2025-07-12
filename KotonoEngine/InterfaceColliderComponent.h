@@ -1,7 +1,7 @@
 #pragma once
 #include "InterfaceComponent.h"
 #include <kotono_framework/Event.h>
-#include <unordered_set>
+#include <kotono_framework/Pool.h>
 class KInterfaceColliderComponent final : public KInterfaceComponent
 {
 	BASECLASS(KInterfaceComponent)
@@ -20,7 +20,7 @@ public:
 	const bool GetIsMouseOverlapping() const;
 
 private:
-	std::unordered_set<KInterfaceColliderComponent*> _overlaps;
+	KtPool<KInterfaceColliderComponent*> _overlaps;
 	KtEvent<KInterfaceColliderComponent*> _eventOverlap;
 
 	KtEvent<> _eventPressed;

@@ -3,6 +3,7 @@
 #include "CoordinateSpace.h"
 #include "Visibility.h"
 #include <kotono_framework/Collection.h>
+#include <kotono_framework/Pool.h>
 
 class KtViewport;
 class KInterfaceComponent;
@@ -24,7 +25,7 @@ public:
 	KtViewport* GetViewport() const;
 	RInterfaceObject* GetParent() const;
 	KInterfaceComponent* GetRootComponent() const;
-	const std::unordered_set<RInterfaceObject*>& GetChildren() const;
+	const KtPool<RInterfaceObject*>& GetChildren() const;
 
 	void SetVisibility(const EVisibility visibility);
 	void SetViewport(KtViewport* viewport);
@@ -34,7 +35,7 @@ public:
 	T* GetComponent() const
 	{
 		auto components = KtCollection(components_.begin(), components_.end());
-		components.AddFilter([](auto* component) { return dynamic_cast<T*>(component); });
+		components.AddFilter([](const KInterfaceComponent* component) { return dynamic_cast<const T*>(component); });
 		if (auto* component = components.GetFirst())
 		{
 			return static_cast<T*>(component);
@@ -45,19 +46,21 @@ public:
 	template <InterfaceComponent T>
 	T* AddComponent()
 	{
-		T* component = AddObject<T>(this);
+		T* component = new T(this);
 		AddComponent(static_cast<KInterfaceComponent*>(component));
 		return component;
 	}
 
+	void AddComponent(KInterfaceComponent* component);
+	void RemoveComponent(KInterfaceComponent* component);
+
 private:
 	EVisibility visibility_;
-	KtViewport* viewport_; // todo: maybe move to component ????
+	KtViewport* viewport_;
 	RInterfaceObject* parent_;
 	KInterfaceComponent* rootComponent_;
-	std::unordered_set<RInterfaceObject*> children_;
-	std::unordered_set<KInterfaceComponent*> components_;
-
-	void AddComponent(KInterfaceComponent* component);
+	KtPool<RInterfaceObject*> children_;
+	KtPool<KInterfaceComponent*> components_;
+	size_t childrenIndex_;
 };
 

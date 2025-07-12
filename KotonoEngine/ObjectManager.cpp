@@ -6,6 +6,7 @@
 #include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/ModelManager.h>
 #include <kotono_framework/Path.h>
+#include <kotono_framework/Stopwatch.h>
 #include "log.h"
 #include "Object.h"
 #include "SceneMeshObject.h"
@@ -92,7 +93,7 @@ void SObjectManager::Update()
 
 void SObjectManager::Cleanup()
 {
-	objects_.merge(inits_);
+	objects_.Merge(inits_);
 	for (auto* object : objects_)
 	{
 		object->Cleanup();
@@ -101,7 +102,7 @@ void SObjectManager::Cleanup()
 	{
 		delete object;
 	}
-	objects_.clear();
+	objects_.Clear();
 	typeRegistry_.clear();
 }
 
@@ -110,8 +111,13 @@ void SObjectManager::Register(KObject* object)
 	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_LOW, "creating object of type '%s'", object->GetTypeName().c_str());
 	object->Construct();
 	object->SetIsConstructed(true);
-	inits_.insert(object);
+	inits_.Add(object);
 	typeRegistry_[typeid(*object)].insert(object);
+}
+
+void SObjectManager::Delete(KObject* object)
+{
+	deletes_.Add(object);
 }
 
 KtEvent<>& SObjectManager::GetEventDrawSceneObjects()
@@ -146,21 +152,27 @@ void SObjectManager::Quit()
 
 void SObjectManager::InitObjects()
 {
-	if (inits_.empty())
+	if (inits_.Empty())
 	{
 		return;
 	}
 
-	for (auto* object : inits_)
+	KtPool<KObject*> inits{};
+	inits.Merge(inits_);
+
+	for (auto* object : inits)
 	{
 		object->Init();
+		objects_.Add(object);
+		object->objectIndex_ = objects_.LastIndex();
 	}
 
-	objects_.merge(inits_);
+	inits.Clear();
 }
 
 void SObjectManager::UpdateObjects()
 {
+	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_MEDIUM, "%llu objects", objects_.Size());
 	for (auto* object : objects_)
 	{
 		object->Update();
@@ -169,25 +181,27 @@ void SObjectManager::UpdateObjects()
 
 void SObjectManager::DeleteObjects()
 {
-	std::unordered_set<KObject*> deleteObjects;
-	for (auto it = objects_.begin(); it != objects_.end();)
+	if (deletes_.Empty())
 	{
-		auto* object = *it;
-		if (object->GetIsDelete())
+		return;
+	}
+
+	KtPool<KObject*> deletes{};
+	deletes.Merge(deletes_);
+
+	for (auto* object : deletes)
+	{
+		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_MEDIUM, "deleting object '%s'", object->GetName().c_str());
+		object->Cleanup();
+
+		const size_t index = object->objectIndex_;
+		objects_.RemoveAt(index);
+		if (index < objects_.Size())
 		{
-			KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_LOW, "deleting object '%s'", object->GetName().c_str());
-			object->Cleanup();
-			
-			it = objects_.erase(it);  // Erase the object and move the iterator to the next element
-			
-			deleteObjects.insert(object);
-		}
-		else
-		{
-			++it;  // Only increment if not deleting
+			objects_[index]->objectIndex_ = index;
 		}
 	}
-	for (auto* object : deleteObjects)
+	for (auto* object : deletes)
 	{
 		typeRegistry_[typeid(*object)].erase(object);
 		delete object;

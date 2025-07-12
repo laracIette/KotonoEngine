@@ -19,11 +19,11 @@ void KInterface::Construct()
 {
 	Base::Construct();
 
-	image1_ = AddObject<RInterfaceImageObject>();
-	image2_ = AddObject<RInterfaceImageObject>();
-	textBox1_ = AddObject<RInterfaceTextBoxObject>();
-	textBox2_ = AddObject<RInterfaceFloatTextBoxObject>();
-	textBox3_ = AddObject<RInterfaceFloatTextBoxObject>();
+	image1_ = Engine.GetObjectManager().Create<RInterfaceImageObject>();
+	image2_ = Engine.GetObjectManager().Create<RInterfaceImageObject>();
+	textBox1_ = Engine.GetObjectManager().Create<RInterfaceTextBoxObject>();
+	textBox2_ = Engine.GetObjectManager().Create<RInterfaceFloatTextBoxObject>();
+	textBox3_ = Engine.GetObjectManager().Create<RInterfaceFloatTextBoxObject>();
 	image1_->GetImageComponent()->SetScreenSize(glm::vec2(1024.0f, 1024.0f));
 	image2_->GetImageComponent()->SetScreenSize(glm::vec2(1024.0f, 1024.0f));
 }
@@ -33,6 +33,20 @@ void KInterface::Init()
 	Base::Init();
 
 	SetLayout();
+}
+
+void KInterface::Cleanup()
+{
+	Base::Cleanup();
+
+	//textBox2_->GetValueChangedEvent().RemoveListener(KtDelegate<float>(this, &KInterface::OnTextBox2ValueChanged));
+	//textBox3_->GetValueChangedEvent().RemoveListener(KtDelegate<float>(this, &KInterface::OnTextBox3ValueChanged));
+
+	image1_->Delete();
+	image2_->Delete();
+	textBox1_->Delete();
+	textBox2_->Delete();
+	textBox3_->Delete();
 }
 
 void KInterface::SetLayout()
@@ -85,14 +99,14 @@ void KInterface::SetLayout()
 	textBox2_->GetTextComponent()->SetSpacing(0.05f);
 	textBox2_->GetTextComponent()->SetShader(shader2D);
 	textBox2_->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRootComponent()->GetScreenPosition().x); });
-	ListenEvent(textBox2_->GetValueChangedEvent(), KtDelegate<float>(this, &KInterface::OnTextBox2ValueChanged));
+	textBox2_->GetValueChangedEvent().AddListener(KtDelegate<float>(this, &KInterface::OnTextBox2ValueChanged));
 
 	textBox3_->GetRootComponent()->SetRelativePosition(glm::vec2(0.3f, 0.6f));
 	textBox3_->GetTextComponent()->SetFontSize(32.0f);
 	textBox3_->GetTextComponent()->SetSpacing(0.05f);
 	textBox3_->GetTextComponent()->SetShader(shader2D);
 	textBox3_->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRootComponent()->GetScreenPosition().y); });
-	ListenEvent(textBox3_->GetValueChangedEvent(), KtDelegate<float>(this, &KInterface::OnTextBox3ValueChanged));
+	textBox3_->GetValueChangedEvent().AddListener(KtDelegate<float>(this, &KInterface::OnTextBox3ValueChanged));
 #endif
 }
 

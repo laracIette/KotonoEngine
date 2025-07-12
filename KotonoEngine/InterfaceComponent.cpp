@@ -9,6 +9,8 @@
 #include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/Viewport.h>
 #include "log.h"
+#include "Engine.h"
+#include "Time.h"
 
 static KtShader* FlatColorShader = nullptr;
 static KtImageTexture* FlatColorTexture = nullptr;
@@ -51,7 +53,15 @@ void KInterfaceComponent::Init()
 void KInterfaceComponent::Cleanup()
 {
     Base::Cleanup();
+    GetOwner()->RemoveComponent(this);
+
     Framework.GetRenderer().GetRenderer2D().Remove(&boundsProxy_);
+
+    GetEventRectUpdated().RemoveListener(KtDelegate<>(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
+    if (parent_)
+    {
+        parent_->GetEventRectUpdated().RemoveListener(KtDelegate<>(&eventRectUpdated_, &KtEvent<>::Broadcast));
+    }
 }
 
 RInterfaceObject* KInterfaceComponent::GetOwner() const
@@ -412,8 +422,7 @@ void KInterfaceComponent::InitBoundsProxy()
     CreateBoundsProxy();
     Framework.GetRenderer().GetRenderer2D().Register(&boundsProxy_);
 
-    const KtDelegate<> rectDelegate(this, &KInterfaceComponent::MarkBoundsProxyRectDirty);
-    ListenEvent(GetEventRectUpdated(), rectDelegate);
+    GetEventRectUpdated().AddListener(KtDelegate<>(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
 }
 
 void KInterfaceComponent::CreateBoundsProxy()
@@ -429,7 +438,6 @@ void KInterfaceComponent::MarkBoundsProxyRectDirty()
 {
     boundsProxy_.isDirty = true;
     boundsProxy_.objectData.modelMatrix = GetModelMatrix();
-    KT_LOG_KE(KT_LOG_COMPILE_TIME_LEVEL, "bounds rect dirty");
 }
 
 const glm::vec2 KInterfaceComponent::GetAnchorOffset() const

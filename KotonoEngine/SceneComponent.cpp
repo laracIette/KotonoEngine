@@ -22,6 +22,13 @@ void KSceneComponent::Init()
     Base::Init();
 }
 
+void KSceneComponent::Cleanup()
+{
+    Base::Cleanup();
+    
+    GetOwner()->RemoveComponent(this);
+}
+
 TSceneObject* KSceneComponent::GetOwner() const
 {
     return owner_;

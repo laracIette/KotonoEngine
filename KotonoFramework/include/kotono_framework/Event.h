@@ -1,48 +1,38 @@
 #pragma once
-#include <unordered_set>
-#include "EventBase.h"
 #include "Delegate.h"
+#include "Pool.h"
 template<typename... Args>
-class KtEvent final : public KtEventBase
+class KtEvent final
 {
+private:
+    using Delegate = KtDelegate<Args...>;
+
 public:
-    void AddListener(const KtDelegate<Args...>& delegate)
+    void AddListener(const Delegate& delegate)
     {
-        delegates_.insert(delegate);
-    }
-    
-    void AddListener(KtDelegate<Args...>&& delegate)
-    {
-        delegates_.insert(std::move(delegate));
+        delegates_.Add(delegate);
     }
 
-    void RemoveListener(const KtDelegate<Args...>& delegate)
+    void AddListener(Delegate&& delegate)
     {
-        delegates_.erase(delegate);
+        delegates_.Add(std::move(delegate));
+        //KT_LOG_KF(KT_LOG_COMPILE_TIME_LEVEL, "%llu delegates", delegates_.Size());
     }
 
-    void RemoveListener(void* instance) override
+    void RemoveListener(const Delegate& delegate)
     {
-        std::erase_if(delegates_, [=](const KtDelegate<Args...>& delegate)
-            {
-                return delegate.GetIsSameInstance(instance);
-            }
-        );
+        delegates_.Remove(delegate);
     }
 
     void Broadcast(Args... args)
     {
-        for (const KtDelegate<Args...>& delegate : delegates_)
+        delegates_.RemoveIf([](const Delegate& delegate) { return !delegate.GetInstance(); });
+        for (const Delegate& delegate : delegates_)
         {
             delegate.Callback(args...);
         }
     }
 
-    void ClearListeners()
-    {
-        delegates_ = {};
-    }
-
 private:
-    std::unordered_set<KtDelegate<Args...>> delegates_;
+    KtPool<Delegate> delegates_;
 };

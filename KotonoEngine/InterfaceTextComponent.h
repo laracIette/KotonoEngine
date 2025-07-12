@@ -2,6 +2,7 @@
 #include "InterfaceStackComponent.h"
 
 class KtShader;
+class KTimer;
 
 class KInterfaceTextComponent : public KInterfaceStackComponent
 {
@@ -12,6 +13,7 @@ public:
 
 	void Construct() override;
 	void Init() override;
+	void Cleanup() override;
 
 	const std::string& GetText() const;
 	const float GetFontSize() const;
@@ -27,6 +29,7 @@ public:
 private:
 	std::string text_;
 	float fontSize_;
+	KTimer* updateTextWithBindingTimer_;
 
 	KtShader* shader_;
 

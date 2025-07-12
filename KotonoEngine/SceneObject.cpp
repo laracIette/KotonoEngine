@@ -3,6 +3,8 @@
 #include "log.h"
 #include <kotono_framework/Viewport.h>
 #include "SceneComponent.h"
+#include "Engine.h"
+#include "ObjectManager.h"
 
 void TSceneObject::Construct()
 {
@@ -17,6 +19,16 @@ void TSceneObject::Init()
 	Base::Init();
 
 	visibility_ = EVisibility::EditorAndGame;
+}
+
+void TSceneObject::Cleanup()
+{
+	Base::Cleanup();
+
+	for (auto* component : components_)
+	{
+		component->Delete();
+	}
 }
 
 const EVisibility TSceneObject::GetVisibility() const
@@ -113,5 +125,11 @@ void TSceneObject::DeserializeFrom(const nlohmann::json& json)
 
 void TSceneObject::AddComponent(KSceneComponent* component)
 {
+	Engine.GetObjectManager().Register(component);
 	components_.insert(component);
+}
+
+void TSceneObject::RemoveComponent(KSceneComponent* component)
+{
+	components_.erase(component);
 }

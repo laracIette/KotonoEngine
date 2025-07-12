@@ -6,10 +6,15 @@
 #include "InterfaceObject.h"
 #include "InterfaceStackComponent.h"
 #include "InterfaceImageComponent.h"
+#include "Timer.h"
+#include "Engine.h"
+#include "ObjectManager.h"
 
 void KInterfaceTextComponent::Construct()
 {
     Base::Construct();
+
+    updateTextWithBindingTimer_ = Engine.GetObjectManager().Create<KTimer>();
 }
 
 void KInterfaceTextComponent::Init()
@@ -18,7 +23,17 @@ void KInterfaceTextComponent::Init()
 
     SetOrientation(EOrientation::Horizontal);
 
-    Repeat(KtDelegate<>(this, &KInterfaceTextComponent::UpdateTextWithBinding), 1.0f / 60.0f);
+    updateTextWithBindingTimer_->SetDuration(1.0f / 60.0f);
+    updateTextWithBindingTimer_->SetIsRepeat(true);
+    updateTextWithBindingTimer_->GetEventCompleted().AddListener(KtDelegate<>(this, &KInterfaceTextComponent::UpdateTextWithBinding));
+    updateTextWithBindingTimer_->Start();
+}
+
+void KInterfaceTextComponent::Cleanup()
+{
+    Base::Cleanup();
+
+    updateTextWithBindingTimer_->Delete();
 }
 
 const std::string& KInterfaceTextComponent::GetText() const
@@ -84,7 +99,7 @@ void KInterfaceTextComponent::UpdateCharacters()
 {
     for (auto* letter : GetItems())
     {
-        letter->SetIsDelete(true);
+        letter->Delete();
     }
     ClearItems();
 

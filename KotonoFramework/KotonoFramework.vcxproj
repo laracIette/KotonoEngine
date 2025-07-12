@@ -159,12 +159,12 @@
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\Renderer3D.cpp" />
     <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="src\Stopwatch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\kotono_framework\Culler3DField.h" />
     <ClInclude Include="include\kotono_framework\Font.h" />
     <ClInclude Include="include\kotono_framework\Collection.h" />
-    <ClInclude Include="include\kotono_framework\EventBase.h" />
     <ClInclude Include="include\kotono_framework\Culler2D.h" />
     <ClInclude Include="include\kotono_framework\Culler3D.h" />
     <ClInclude Include="include\kotono_framework\Button.h" />
@@ -215,6 +215,8 @@
     <ClInclude Include="include\kotono_framework\Renderable3DProxy.h" />
     <ClInclude Include="include\kotono_framework\RendererFrameStats.h" />
     <ClInclude Include="include\kotono_framework\Renderable2DProxy.h" />
+    <ClInclude Include="include\kotono_framework\Pool.h" />
+    <ClInclude Include="include\kotono_framework\Stopwatch.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

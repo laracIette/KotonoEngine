@@ -3,13 +3,17 @@
 #include <type_traits>
 #include <memory>
 #include <iostream>
-template<typename... Args>
-struct KtDelegate
+#include "log.h"
+template <typename... Args>
+class KtDelegate final
 {
-public:
+    friend struct std::hash<KtDelegate>;
+
+private:
     using CallbackFunction = std::function<void(Args...)>;
-    
-    template<class Tinst, class Tfunc>
+
+public:
+    template <class Tinst, class Tfunc>
         requires std::is_base_of_v<Tfunc, Tinst>
     KtDelegate(Tinst* instance, void (Tfunc::* function)(Args...))
     {
@@ -26,21 +30,19 @@ public:
         }
         else
         {
-            std::cerr << "can't call callbackFunction_, instance_ is nullptr" << std::endl;
+            KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "can't call callbackFunction_, instance_ is nullptr");
         }
     }
 
-    const bool GetIsSameInstance(void* instance) const noexcept
+    void* GetInstance() const
     {
-        return instance == instance_;
+        return instance_;
     }
 
     bool operator==(const KtDelegate& other) const noexcept
     {
         return other.instance_ == instance_ && other.functionIdentity_ == functionIdentity_;
     }
-
-    friend struct std::hash<KtDelegate>;
 
 private:
     void* instance_;
@@ -56,8 +58,8 @@ namespace std
     {
         size_t operator()(const KtDelegate<Args...>& delegate) const noexcept
         {
-            size_t h1 = hash<void*>{}(delegate.instance_);
-            size_t h2 = hash<void*>{}(delegate.functionIdentity_);
+            const size_t h1 = hash<void*>{}(delegate.instance_);
+            const size_t h2 = hash<void*>{}(delegate.functionIdentity_);
 
             return h1 ^ (h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2));
         }

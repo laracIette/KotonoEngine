@@ -4,6 +4,7 @@
 #include "Engine.h"
 #include "InterfaceComponent.h"
 #include "ObjectManager.h"
+#include <kotono_framework/Stopwatch.h>
 
 void RInterfaceObject::Construct()
 {
@@ -28,6 +29,11 @@ void RInterfaceObject::Update()
 void RInterfaceObject::Cleanup()
 {
 	Base::Cleanup();
+
+	for (auto* component : components_)
+	{
+		component->Delete();
+	}
 }
 
 KtViewport* RInterfaceObject::GetViewport() const
@@ -45,7 +51,7 @@ KInterfaceComponent* RInterfaceObject::GetRootComponent() const
 	return rootComponent_;
 }
 
-const std::unordered_set<RInterfaceObject*>& RInterfaceObject::GetChildren() const
+const KtPool<RInterfaceObject*>& RInterfaceObject::GetChildren() const
 {
 	return children_;
 }
@@ -77,13 +83,19 @@ void RInterfaceObject::SetParent(RInterfaceObject* parent, const ECoordinateSpac
 		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "RInterfaceObject::SetParent(): couldn't set the parent of '%s' to the same", GetName().c_str());
 		return;
 	}
-	if (parent)
-	{
-		parent->children_.insert(this);
-	}
 	if (parent_)
 	{
-		parent_->children_.erase(this);
+		const size_t index = childrenIndex_;
+		parent_->children_.RemoveAt(index);
+		if (index < parent_->children_.Size())
+		{
+			parent_->children_[index]->childrenIndex_ = index;
+		}
+	}
+	if (parent)
+	{
+		parent->children_.Add(this);
+		childrenIndex_ = parent->children_.LastIndex();
 	}
 	parent_ = parent;
 	GetRootComponent()->SetParent(parent_ ? parent_->GetRootComponent() : nullptr, keepRect);
@@ -91,5 +103,17 @@ void RInterfaceObject::SetParent(RInterfaceObject* parent, const ECoordinateSpac
 
 void RInterfaceObject::AddComponent(KInterfaceComponent* component)
 {
-	components_.insert(component);
+	Engine.GetObjectManager().Register(component);
+	components_.Add(component);
+	component->componentIndex_ = components_.LastIndex();
+}
+
+void RInterfaceObject::RemoveComponent(KInterfaceComponent* component)
+{
+	const size_t index = component->componentIndex_;
+	components_.RemoveAt(index);
+	if (index < components_.Size())
+	{
+		components_[index]->componentIndex_ = index;
+	}
 }

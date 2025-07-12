@@ -23,6 +23,11 @@ KtEvent<float>& RInterfaceFloatTextBoxObject::GetValueChangedEvent()
 
 void RInterfaceFloatTextBoxObject::SetValue(const float value)
 {
+	if (value == value_)
+	{
+		return;
+	}
+
 	const float delta = value - value_;
 	value_ = value;
 	valueChangedEvent_.Broadcast(delta);
