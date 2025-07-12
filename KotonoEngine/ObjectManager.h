@@ -6,6 +6,7 @@
 #include <kotono_framework/Event.h>
 #include <kotono_framework/Pool.h>
 #include <array>
+#include <any>
 
 class KObject;
 class KTimer;
@@ -53,18 +54,19 @@ public:
 	}
 
 	template <Object T> 
-	const std::unordered_set<T*> GetAll() const
+	const std::vector<T*> GetAll() const
 	{
-		std::unordered_set<T*> result;
+		std::vector<T*> result{};
+
 		const auto it = typeRegistry_.find(typeid(T));
 		if (it != typeRegistry_.end())
 		{
 			const auto& objects = it->second;
-			result.reserve(objects.size());
 
-			for (KObject* obj : objects)
+			result.reserve(objects.size());
+			for (auto* object : objects)
 			{
-				result.insert(static_cast<T*>(obj));
+				result.push_back(static_cast<T*>(object));
 			}
 		}
 		return result;

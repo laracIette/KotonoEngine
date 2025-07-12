@@ -3,7 +3,7 @@
 #include "Visibility.h"
 #include "CoordinateSpace.h"
 #include <kotono_framework/Collection.h>
-#include <unordered_set>
+#include <kotono_framework/Pool.h>
 
 class KtViewport;
 class KSceneComponent; 
@@ -53,13 +53,14 @@ public:
 	}
 
 	void AddComponent(KSceneComponent* component);
-	void RemoveComponent(KSceneComponent* component);
+	void RemoveComponent(const KSceneComponent* component);
 
 private:
 	EVisibility visibility_;
 	KtViewport* viewport_;
 	TSceneObject* parent_;
 	KSceneComponent* rootComponent_;
-	std::unordered_set<TSceneObject*> children_;
-	std::unordered_set<KSceneComponent*> components_;
+	KtPool<TSceneObject*> children_;
+	KtPool<KSceneComponent*> components_;
+	size_t childrenIndex_;
 };

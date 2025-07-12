@@ -11,6 +11,8 @@ class KSceneComponent : public KObject
 {
 	BASECLASS(KObject)
 
+	friend class TSceneObject;
+
 public:
 	KSceneComponent(TSceneObject* owner);
 
@@ -71,5 +73,6 @@ private:
 	EVisibility visibility_;
 	EMobility mobility_;
 	KtEvent<> eventUpdateTransform_;
+	size_t componentIndex_;
 };
 

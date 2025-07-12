@@ -108,7 +108,7 @@ void RInterfaceObject::AddComponent(KInterfaceComponent* component)
 	component->componentIndex_ = components_.LastIndex();
 }
 
-void RInterfaceObject::RemoveComponent(KInterfaceComponent* component)
+void RInterfaceObject::RemoveComponent(const KInterfaceComponent* component)
 {
 	const size_t index = component->componentIndex_;
 	components_.RemoveAt(index);

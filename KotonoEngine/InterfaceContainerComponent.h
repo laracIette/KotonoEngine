@@ -22,6 +22,7 @@ private:
     std::vector<KInterfaceComponent*> items_;
     bool isSizeToContent_;
 
+    void TryUpdateSize();
     void UpdateSize();
 };
 

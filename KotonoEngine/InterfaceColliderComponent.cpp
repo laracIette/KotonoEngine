@@ -62,7 +62,7 @@ const bool KInterfaceColliderComponent::GetIsMouseOverlapping() const
 
 void KInterfaceColliderComponent::UpdateOverlaps()
 {
-	auto interfaceColliderComponents = Engine.GetObjectManager().GetAll<KInterfaceColliderComponent>();
+	const auto interfaceColliderComponents = Engine.GetObjectManager().GetAll<KInterfaceColliderComponent>();
 	auto overlaps = KtCollection(interfaceColliderComponents.begin(), interfaceColliderComponents.end());
 	overlaps.AddFilter([this](const KInterfaceColliderComponent* collider) { return collider != this; });
 	overlaps.AddFilter([this](const KInterfaceColliderComponent* collider) { return GetIsOverlapping(collider); });

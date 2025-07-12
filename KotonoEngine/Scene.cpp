@@ -30,7 +30,7 @@ void KScene::Unload()
 	{
 		sceneObject->Delete();
 	}
-	_sceneObjects.clear();
+	_sceneObjects.Clear();
 }
 
 void KScene::Reload()
@@ -41,12 +41,12 @@ void KScene::Reload()
 
 void KScene::Add(TSceneObject* sceneObject)
 {
-	_sceneObjects.insert(sceneObject);
+	_sceneObjects.Add(sceneObject);
 }
 
 void KScene::Remove(TSceneObject* sceneObject)
 {
-	_sceneObjects.erase(sceneObject);
+	_sceneObjects.Remove(sceneObject);
 }
 
 void KScene::SerializeTo(nlohmann::json& json) const

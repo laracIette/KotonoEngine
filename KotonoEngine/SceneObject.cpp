@@ -73,13 +73,19 @@ void TSceneObject::SetParent(TSceneObject* parent, const ECoordinateSpace keepTr
 		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "TSceneObject::SetParent(): couldn't set the parent of '%s' to the same", GetName().c_str());
 		return;
 	}
-	if (parent)
-	{
-		parent->children_.insert(this);
-	}
 	if (parent_)
 	{
-		parent_->children_.erase(this);
+		const size_t index = childrenIndex_;
+		parent_->children_.RemoveAt(index);
+		if (index < parent_->children_.Size())
+		{
+			parent_->children_[index]->childrenIndex_ = index;
+		}
+	}
+	if (parent)
+	{
+		parent->children_.Add(this);
+		childrenIndex_ = parent->children_.LastIndex();
 	}
 	parent_ = parent;
 	GetRootComponent()->SetParent(parent_ ? parent_->GetRootComponent() : nullptr, keepTransform);
@@ -126,10 +132,16 @@ void TSceneObject::DeserializeFrom(const nlohmann::json& json)
 void TSceneObject::AddComponent(KSceneComponent* component)
 {
 	Engine.GetObjectManager().Register(component);
-	components_.insert(component);
+	components_.Add(component);
+	component->componentIndex_ = components_.LastIndex();
 }
 
-void TSceneObject::RemoveComponent(KSceneComponent* component)
+void TSceneObject::RemoveComponent(const KSceneComponent* component)
 {
-	components_.erase(component);
+	const size_t index = component->componentIndex_;
+	components_.RemoveAt(index);
+	if (index < components_.Size())
+	{
+		components_[index]->componentIndex_ = index;
+	}
 }

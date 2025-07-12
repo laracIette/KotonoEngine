@@ -1,6 +1,6 @@
 #pragma once
 #include "Object.h"
-#include <unordered_set>
+#include <kotono_framework/Pool.h>
 
 class KtViewport;
 class TSceneObject;
@@ -22,10 +22,9 @@ public:
 	void SerializeTo(nlohmann::json& json) const override;
 	void DeserializeFrom(const nlohmann::json& json) override;
 
-
 private:
 	KtViewport* viewport_;
-	std::unordered_set<TSceneObject*> _sceneObjects;
+	KtPool<TSceneObject*> _sceneObjects;
 
 	TSceneObject* GetSceneObject(const std::string_view type);
 };

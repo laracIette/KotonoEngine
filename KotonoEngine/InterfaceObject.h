@@ -52,7 +52,7 @@ public:
 	}
 
 	void AddComponent(KInterfaceComponent* component);
-	void RemoveComponent(KInterfaceComponent* component);
+	void RemoveComponent(const KInterfaceComponent* component);
 
 private:
 	EVisibility visibility_;

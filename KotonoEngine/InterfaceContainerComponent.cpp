@@ -10,11 +10,6 @@ void KInterfaceContainerComponent::Init()
 void KInterfaceContainerComponent::Update()
 {
 	Base::Update();
-
-    if (isSizeToContent_)
-    {
-        UpdateSize();
-    }
 }
 
 void KInterfaceContainerComponent::Cleanup()
@@ -44,7 +39,16 @@ void KInterfaceContainerComponent::ClearItems()
 
 void KInterfaceContainerComponent::AddItem(KInterfaceComponent* item)
 {
-	items_.push_back(item);
+    items_.push_back(item);
+    item->GetEventRectUpdated().AddListener(KtDelegate<>(this, &KInterfaceContainerComponent::TryUpdateSize));
+}
+
+void KInterfaceContainerComponent::TryUpdateSize()
+{
+    if (isSizeToContent_)
+    {
+        UpdateSize();
+    }
 }
 
 void KInterfaceContainerComponent::UpdateSize()
