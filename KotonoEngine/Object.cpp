@@ -26,7 +26,7 @@ void KObject::Update()
 
 void KObject::Cleanup() 
 {
-    eventCleanup_.Broadcast(); // todo: broken
+    eventCleanup_.Broadcast();
 }
 
 const UGuid& KObject::GetGuid() const
@@ -83,16 +83,16 @@ void KObject::Delete()
 
 void KObject::Serialize() const
 {
-    nlohmann::json json;
-    KtSerializer serializer;
+    nlohmann::json json{};
+    KtSerializer serializer{};
     SerializeTo(json);
     serializer.WriteData(path_, json);
 }
 
 void KObject::Deserialize()
 {
-    nlohmann::json json;
-    KtSerializer serializer;
+    nlohmann::json json{};
+    KtSerializer serializer{};
     serializer.ReadData(path_, json);
     DeserializeFrom(json);
 }

@@ -58,7 +58,6 @@ private:
 	
 	const ProxiesVector GetSortedProxies(const ProxiesUnorderedSet& proxies) const;
 	const bool GetIsAnyProxyDirty(const uint32_t frameIndex) const;
-
 	void MarkProxiesNotDirty(const uint32_t frameIndex);
 };
 

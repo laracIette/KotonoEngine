@@ -18,7 +18,6 @@ public:
 
 	void DrawFrame();
 
-
 	const uint32_t GetGameThreadFrame() const; // todo: make private
 
 	const VkExtent2D GetSwapChainExtent() const;

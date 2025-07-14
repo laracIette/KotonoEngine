@@ -11,7 +11,7 @@
 #include "log.h"
 #include "vk_utils.h"
 
-#define KT_LOG_IMPORTANCE_LEVEL_PROXY KT_LOG_IMPORTANCE_LEVEL_NONE
+#define KT_LOG_IMPORTANCE_LEVEL_PROXY KT_LOG_IMPORTANCE_LEVEL_HIGH
 
 void KtRenderer3D::Init()
 {
@@ -237,6 +237,7 @@ void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIn
 		sortedGlobalProxies.insert(sortedGlobalProxies.end(), sortedDynamicProxies.begin(), sortedDynamicProxies.end());
 		
 		UpdateDescriptorSets(sortedGlobalProxies, frameIndex);
+		MarkDynamicProxiesNotDirty(frameIndex);
 		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_PROXY, "update DESCRIPTOR sets frame %u", frameIndex);
 	}
 
@@ -352,4 +353,12 @@ const bool KtRenderer3D::GetIsDynamicProxiesDirty(const uint32_t frameIndex) con
 	auto proxies = KtCollection(dynamicProxies_[frameIndex].begin(), dynamicProxies_[frameIndex].end());
 	proxies.AddFilter([](const KtRenderable3DProxy* proxy) { return proxy->isDirty; });
 	return proxies.GetFirst() != nullptr;
+}
+
+void KtRenderer3D::MarkDynamicProxiesNotDirty(const uint32_t frameIndex)
+{
+	for (auto* proxy : dynamicProxies_[frameIndex])
+	{
+		proxy->isDirty = false;
+	}
 }

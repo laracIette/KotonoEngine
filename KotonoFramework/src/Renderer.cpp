@@ -406,40 +406,41 @@ void KtRenderer::CreateSyncObjects()
 		}
 	}
 }
-constexpr bool MULTI_THREADED = false;
+static constexpr bool MULTI_THREADED = false;
 void KtRenderer::DrawFrame()
 {
-	const uint32_t frameIndex = GetGameThreadFrame(); // todo: replace by enum
-											          // getframe(gamethread), 
-				  						              // has to propagate to renderer 2d and 3d
+	const uint32_t frameIndex = GetGameThreadFrame();
 	UpdateRenderers(frameIndex);
 	
-#if MULTI_THREADED
-	if (frameCount_ >= 1)
+	if constexpr (MULTI_THREADED)
 	{
-		JoinThread(renderThread_);
-		const uint32_t renderThreadFrame = GetRenderThreadFrame();
-		renderThread _= std::thread(&KtRenderer::RecordCommandBuffer, this, renderThreadFrame);
-	}
+		if (frameCount_ >= 1)
+		{
+			JoinThread(renderThread_);
+			const uint32_t renderThreadFrame = GetRenderThreadFrame();
+			renderThread_ = std::thread(&KtRenderer::RecordCommandBuffer, this, renderThreadFrame);
+		}
 
-	if (frameCount_ >= 2)
+		if (frameCount_ >= 2)
+		{
+			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "frame %u rendered", frameCount_);
+
+			JoinThread(rhiThread_);
+			const uint32_t renderRHIFrame = GetRHIThreadFrame();
+			rhiThread_ = std::thread(&KtRenderer::SubmitCommandBuffer, this, renderRHIFrame);
+		}
+	}
+	else
 	{
-		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "frame %u rendered", frameCount_);
+		if (!TryAcquireNextImage(frameIndex))
+		{
+			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtRenderer::DrawFrame(): frame skipped");
+			return;
+		}
 
-		JoinThread(rhiThread_);
-		const uint32_t renderRHIFrame = GetRHIThreadFrame();
-		rhiThread _= std::thread(&KtRenderer::SubmitCommandBuffer, this, renderRHIFrame);
+		RecordCommandBuffer(frameIndex);
+		SubmitCommandBuffer(frameIndex);
 	}
-#else
-	if (!TryAcquireNextImage(frameIndex))
-	{
-		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtRenderer::DrawFrame(): frame skipped");
-		return;
-	}
-
-	RecordCommandBuffer(frameIndex);
-	SubmitCommandBuffer(frameIndex);
-#endif
 	
 	frameCount_++;
 }
@@ -550,13 +551,15 @@ void KtRenderer::SubmitCommandBuffer(const uint32_t frameIndex)
 		result,
 		"failed to present swap chain image!"
 	);
-#if MULTI_THREADED
-	if (!TryAcquireNextImage(frameIndex))
+
+	if constexpr (MULTI_THREADED)
 	{
-		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtRenderer::DrawFrame(): frame skipped");
-		return;
+		if (!TryAcquireNextImage(frameIndex))
+		{
+			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtRenderer::DrawFrame(): frame skipped");
+			return;
+		}
 	}
-#endif
 }
 
 
