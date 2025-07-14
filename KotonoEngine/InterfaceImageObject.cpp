@@ -1,10 +1,9 @@
 #include "InterfaceImageObject.h"
 #include "InterfaceImageComponent.h"
 
-void RInterfaceImageObject::Construct()
+RInterfaceImageObject::RInterfaceImageObject() :
+	Base()
 {
-	Base::Construct();
-
 	imageComponent_ = AddComponent<KInterfaceImageComponent>();
 }
 

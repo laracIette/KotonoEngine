@@ -11,7 +11,8 @@ class KObject
 	friend class SObjectManager;
 
 public:
-	virtual void Construct();
+	KObject();
+
 	virtual void Init();
 	virtual void Update();
 	virtual void Cleanup();
@@ -24,7 +25,6 @@ public:
 	const std::string GetTypeName() const;
 	KtEvent<KObject*>& GetEventCleanup();
 
-	void SetIsConstructed(const bool isConstructed);
 	void SetPath(const std::filesystem::path& path);
 	void SetName(const std::string& name);
 	// Stages the deletion for the end of the update.

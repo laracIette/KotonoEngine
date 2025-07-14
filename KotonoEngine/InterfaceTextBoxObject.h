@@ -9,7 +9,8 @@ class RInterfaceTextBoxObject : public RInterfaceObject
 	BASECLASS(RInterfaceObject)
 
 public:
-	void Construct() override;
+	RInterfaceTextBoxObject();
+
 	void Init() override;
 	void Update() override;
 	void Cleanup() override;

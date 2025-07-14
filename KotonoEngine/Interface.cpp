@@ -15,10 +15,9 @@
 #include "ObjectManager.h"
 #include "math_utils.h"
 
-void KInterface::Construct()
+KInterface::KInterface() : 
+	Base()
 {
-	Base::Construct();
-
 	image1_ = Engine.GetObjectManager().Create<RInterfaceImageObject>();
 	image2_ = Engine.GetObjectManager().Create<RInterfaceImageObject>();
 	textBox1_ = Engine.GetObjectManager().Create<RInterfaceTextBoxObject>();

@@ -10,7 +10,8 @@ class KInterface : public KObject
 	BASECLASS(KObject)
 
 public:
-	void Construct() override;
+	KInterface();
+
 	void Init() override;
 	void Cleanup() override;
 

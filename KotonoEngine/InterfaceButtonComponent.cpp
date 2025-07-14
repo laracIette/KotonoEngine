@@ -2,10 +2,9 @@
 #include "InterfaceColliderComponent.h"
 #include "InterfaceObject.h"
 
-void KInterfaceButtonComponent::Construct()
+KInterfaceButtonComponent::KInterfaceButtonComponent(RInterfaceObject* owner) :
+	Base(owner)
 {
-	Base::Construct();
-
 	collider_ = GetOwner()->AddComponent<KInterfaceColliderComponent>();
 }
 

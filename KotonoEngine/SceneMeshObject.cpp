@@ -1,10 +1,9 @@
 #include "SceneMeshObject.h"
 #include "SceneMeshComponent.h"
 
-void TSceneMeshObject::Construct()
+TSceneMeshObject::TSceneMeshObject() :
+	Base()
 {
-	Base::Construct();
-
 	meshComponent_ = AddComponent<KSceneMeshComponent>();
 }
 

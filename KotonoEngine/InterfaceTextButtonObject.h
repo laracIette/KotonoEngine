@@ -7,7 +7,7 @@ class RInterfaceTextButtonObject final : public RInterfaceObject
 	BASECLASS(RInterfaceObject)
 
 public:
-	void Construct() override;
+	RInterfaceTextButtonObject();
 
 private:
 	KInterfaceButtonComponent* buttonComponent_;

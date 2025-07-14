@@ -11,7 +11,8 @@ class KSceneMeshComponent : public KSceneComponent
 	BASECLASS(KSceneComponent)
 
 public:
-	void Construct() override;
+	KSceneMeshComponent(TSceneObject* owner);
+
 	void Init() override;
 	void Update() override;
 	void Cleanup() override;

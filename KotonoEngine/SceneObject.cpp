@@ -6,10 +6,9 @@
 #include "Engine.h"
 #include "ObjectManager.h"
 
-void TSceneObject::Construct()
+TSceneObject::TSceneObject() :
+	Base()
 {
-	Base::Construct();
-
 	viewport_ = &WindowViewport;
 	rootComponent_ = AddComponent<KSceneComponent>();
 }

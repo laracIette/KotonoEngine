@@ -12,10 +12,9 @@
 
 static KtShader* WireframeShader = nullptr;
 
-void KInterfaceImageComponent::Construct()
+KInterfaceImageComponent::KInterfaceImageComponent(RInterfaceObject* owner) :
+	Base(owner)
 {
-	Base::Construct();
-
 	if (!WireframeShader)
 	{
 		const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\wireframe2D.ktshader)";

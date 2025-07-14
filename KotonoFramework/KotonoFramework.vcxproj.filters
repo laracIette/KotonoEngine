@@ -105,6 +105,9 @@
     <ClCompile Include="src\Stopwatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\shit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\kotono_framework\AllocatedBuffer.h">

@@ -8,10 +8,12 @@ class KInterfaceTextComponent : public KInterfaceStackComponent
 {
 	BASECLASS(KInterfaceStackComponent)
 
-public:
+private:
 	using TextBinding = std::function<const std::string()>;
 
-	void Construct() override;
+public:
+	KInterfaceTextComponent(RInterfaceObject* owner);
+
 	void Init() override;
 	void Cleanup() override;
 

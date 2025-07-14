@@ -21,6 +21,8 @@
 #include "math_utils.h"
 #include <numeric>
 
+#define KT_LOG_IMPORTANCE_LEVEL_OBJECT KT_LOG_IMPORTANCE_LEVEL_NONE
+
 static TCamera* Camera = nullptr;
 
 void SObjectManager::Init()
@@ -81,7 +83,6 @@ void SObjectManager::Update()
 	{
 		canDraw_ = false;
 		Camera->Use();
-		DrawObjects();
 		Framework.GetRenderer().DrawFrame();
 	}
 
@@ -100,6 +101,7 @@ void SObjectManager::Cleanup()
 	}
 	for (auto* object : objects_)
 	{
+		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "DEL object %s", object->GetName().c_str());
 		delete object;
 	}
 	objects_.Clear();
@@ -108,9 +110,8 @@ void SObjectManager::Cleanup()
 
 void SObjectManager::Register(KObject* object)
 {
-	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_LOW, "creating object of type '%s'", object->GetTypeName().c_str());
-	object->Construct();
-	object->SetIsConstructed(true);
+	object->SetName(std::format("{}_{}", object->GetTypeName(), static_cast<std::string>(object->GetGuid())));
+	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "REG object %s", object->GetName().c_str());
 	inits_.Add(object);
 	typeRegistry_[typeid(*object)].insert(object);
 }
@@ -118,31 +119,6 @@ void SObjectManager::Register(KObject* object)
 void SObjectManager::Delete(KObject* object)
 {
 	deletes_.Add(object);
-}
-
-KtEvent<>& SObjectManager::GetEventDrawSceneObjects()
-{
-	return eventDrawSceneObjects_;
-}
-
-KtEvent<>& SObjectManager::GetEventDrawSceneObjectWireframes()
-{
-	return eventDrawSceneObjectWireframes_;
-}
-
-KtEvent<>& SObjectManager::GetEventDrawInterfaceObjects()
-{
-	return eventDrawInterfaceObjects_;
-}
-
-KtEvent<>& SObjectManager::GetEventDrawInterfaceObjectBounds()
-{
-	return eventDrawInterfaceObjectBounds_;
-}
-
-KtEvent<>& SObjectManager::GetEventDrawInterfaceObjectWireframes()
-{
-	return eventDrawInterfaceObjectWireframes_;
 }
 
 void SObjectManager::Quit()
@@ -167,12 +143,13 @@ void SObjectManager::InitObjects()
 		object->objectIndex_ = objects_.LastIndex();
 	}
 
+	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "object count %llu", objects_.Size());
+
 	inits.Clear();
 }
 
 void SObjectManager::UpdateObjects()
 {
-	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_MEDIUM, "%llu objects", objects_.Size());
 	for (auto* object : objects_)
 	{
 		object->Update();
@@ -191,7 +168,6 @@ void SObjectManager::DeleteObjects()
 
 	for (auto* object : deletes)
 	{
-		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_MEDIUM, "deleting object '%s'", object->GetName().c_str());
 		object->Cleanup();
 
 		const size_t index = object->objectIndex_;
@@ -203,32 +179,9 @@ void SObjectManager::DeleteObjects()
 	}
 	for (auto* object : deletes)
 	{
+		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "DEL object %s", object->GetName().c_str());
 		typeRegistry_[typeid(*object)].erase(object);
 		delete object;
-	}
-}
-
-void SObjectManager::DrawObjects()
-{
-	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::SceneObject))
-	{
-		eventDrawSceneObjects_.Broadcast();
-	}
-	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::SceneObjectWireframe))
-	{
-		eventDrawSceneObjectWireframes_.Broadcast();
-	}
-	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObject))
-	{
-		eventDrawInterfaceObjects_.Broadcast();
-	}
-	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObjectBounds))
-	{
-		eventDrawInterfaceObjectBounds_.Broadcast();
-	}
-	if (Engine.GetVisualizer().GetIsFieldVisible(EVisualizationField::InterfaceObjectWireframe))
-	{
-		eventDrawInterfaceObjectWireframes_.Broadcast();
 	}
 }
 

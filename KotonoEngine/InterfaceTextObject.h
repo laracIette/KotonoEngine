@@ -8,7 +8,7 @@ class RInterfaceTextObject : public RInterfaceObject
 	BASECLASS(RInterfaceObject)
 
 public:
-	void Construct() override;
+	RInterfaceTextObject();
 
 private:
 	KInterfaceTextComponent* text_;

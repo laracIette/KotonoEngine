@@ -8,7 +8,7 @@ class RInterfaceImageObject : public RInterfaceObject
 	BASECLASS(RInterfaceObject)
 
 public:
-	void Construct() override;
+	RInterfaceImageObject();
 
 	KInterfaceImageComponent* GetImageComponent() const;
 

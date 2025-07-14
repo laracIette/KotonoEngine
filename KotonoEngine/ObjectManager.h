@@ -21,12 +21,6 @@ public:
 	void Update();
 	void Cleanup();
 
-	KtEvent<>& GetEventDrawSceneObjects();
-	KtEvent<>& GetEventDrawSceneObjectWireframes();
-	KtEvent<>& GetEventDrawInterfaceObjects();
-	KtEvent<>& GetEventDrawInterfaceObjectBounds();
-	KtEvent<>& GetEventDrawInterfaceObjectWireframes();
-
 	void Register(KObject* object);
 	void Delete(KObject* object);
 
@@ -83,12 +77,6 @@ private:
 
 	std::unordered_map<std::type_index, std::unordered_set<KObject*>> typeRegistry_;
 
-	KtEvent<> eventDrawSceneObjects_;
-	KtEvent<> eventDrawSceneObjectWireframes_;
-	KtEvent<> eventDrawInterfaceObjects_;
-	KtEvent<> eventDrawInterfaceObjectBounds_;
-	KtEvent<> eventDrawInterfaceObjectWireframes_;
-
 	std::array<float, 60> updateTimes_;
 	size_t updateTimeIndex_;
 	float updateTimesSum_;
@@ -100,7 +88,6 @@ private:
 	void InitObjects();
 	void UpdateObjects();
 	void DeleteObjects();
-	void DrawObjects();
 	void SubmitDrawObjects();
 
 	void LogUPS();

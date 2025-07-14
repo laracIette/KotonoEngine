@@ -6,7 +6,8 @@ class KInterfaceButtonComponent final : public KInterfaceComponent
 	BASECLASS(KInterfaceComponent)
 
 public:
-	void Construct() override;
+	KInterfaceButtonComponent(RInterfaceObject* owner);
+
 	void Init() override;
 	void Cleanup() override;
 

@@ -15,14 +15,10 @@
 static KtShader* FlatColorShader = nullptr;
 static KtImageTexture* FlatColorTexture = nullptr;
 
-KInterfaceComponent::KInterfaceComponent(RInterfaceObject* owner) : owner_(owner)
+KInterfaceComponent::KInterfaceComponent(RInterfaceObject* owner) : 
+    Base(),
+    owner_(owner)
 {
-}
-
-void KInterfaceComponent::Construct()
-{
-    Base::Construct();
-
     if (GetOwner()->GetRootComponent() != this)
     {
         SetParent(GetOwner()->GetRootComponent(), ECoordinateSpace::Relative);

@@ -3,10 +3,9 @@
 #include "InterfaceColliderComponent.h"
 #include "Timer.h"
 
-void RInterfaceTextBoxObject::Construct()
+RInterfaceTextBoxObject::RInterfaceTextBoxObject() :
+	Base()
 {
-	Base::Construct();
-
 	textComponent_ = AddComponent<KInterfaceTextComponent>();
 	colliderComponent_ = AddComponent<KInterfaceColliderComponent>();
 }

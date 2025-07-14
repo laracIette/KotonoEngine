@@ -16,7 +16,8 @@ class RInterfaceObject : public KObject
 	BASECLASS(KObject)
 
 public:
-	void Construct() override;
+	RInterfaceObject();
+
 	void Init() override;
 	void Update() override;
 	void Cleanup() override;

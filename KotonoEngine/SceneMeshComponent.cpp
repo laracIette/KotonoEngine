@@ -17,10 +17,9 @@
 
 static KtShader* WireframeShader = nullptr;
 
-void KSceneMeshComponent::Construct()
+KSceneMeshComponent::KSceneMeshComponent(TSceneObject* owner) :
+    Base(owner)
 {
-    Base::Construct();
-
     spinTask_ = Engine.GetObjectManager().Create<KTask>();
 
     if (!WireframeShader)

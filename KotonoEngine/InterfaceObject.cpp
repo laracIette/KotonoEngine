@@ -6,10 +6,9 @@
 #include "ObjectManager.h"
 #include <kotono_framework/Stopwatch.h>
 
-void RInterfaceObject::Construct()
+RInterfaceObject::RInterfaceObject() :
+	Base()
 {
-	Base::Construct();
-
 	viewport_ = &WindowViewport;
 	rootComponent_ = AddComponent<KInterfaceComponent>();
 }

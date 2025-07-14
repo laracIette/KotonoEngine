@@ -10,7 +10,8 @@ class KInterfaceImageComponent : public KInterfaceComponent
 	BASECLASS(KInterfaceComponent)
 
 public:
-	void Construct() override;
+	KInterfaceImageComponent(RInterfaceObject* owner);
+
 	void Init() override;
 	void Update() override;
 	void Cleanup() override;

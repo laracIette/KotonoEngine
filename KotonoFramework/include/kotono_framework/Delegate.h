@@ -4,6 +4,7 @@
 #include <memory>
 #include <iostream>
 #include "log.h"
+
 template <typename... Args>
 class KtDelegate final
 {

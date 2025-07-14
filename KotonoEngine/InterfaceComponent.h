@@ -19,7 +19,6 @@ class KInterfaceComponent : public KObject
 public:
 	KInterfaceComponent(RInterfaceObject* owner);
 
-	void Construct() override;
 	void Init() override;
 	void Cleanup() override;
 

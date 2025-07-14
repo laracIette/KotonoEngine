@@ -8,7 +8,7 @@ class TSceneMeshObject : public TSceneObject
 	BASECLASS(TSceneObject)
 
 public:
-	void Construct() override;
+	TSceneMeshObject();
 
 	KSceneMeshComponent* GetMeshComponent() const;
 

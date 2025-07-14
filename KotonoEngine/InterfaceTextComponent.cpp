@@ -10,10 +10,9 @@
 #include "Engine.h"
 #include "ObjectManager.h"
 
-void KInterfaceTextComponent::Construct()
+KInterfaceTextComponent::KInterfaceTextComponent(RInterfaceObject* owner) :
+    Base(owner)
 {
-    Base::Construct();
-
     updateTextWithBindingTimer_ = Engine.GetObjectManager().Create<KTimer>();
 }
 

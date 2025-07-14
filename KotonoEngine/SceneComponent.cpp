@@ -3,14 +3,10 @@
 #include "log.h"
 #include <stdexcept>
 
-KSceneComponent::KSceneComponent(TSceneObject* owner) : owner_(owner)
+KSceneComponent::KSceneComponent(TSceneObject* owner) : 
+    Base(),
+    owner_(owner)
 {
-}
-
-void KSceneComponent::Construct()
-{
-    Base::Construct();
-
     if (GetOwner()->GetRootComponent() != this)
     {
         SetParent(GetOwner()->GetRootComponent(), ECoordinateSpace::Relative);

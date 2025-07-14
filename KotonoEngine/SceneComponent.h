@@ -16,7 +16,6 @@ class KSceneComponent : public KObject
 public:
 	KSceneComponent(TSceneObject* owner);
 
-	void Construct() override;
 	void Init() override;
 	void Cleanup() override;
 

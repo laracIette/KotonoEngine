@@ -16,7 +16,8 @@ class TSceneObject : public KObject
 	BASECLASS(KObject)
 
 public:
-	void Construct() override;
+	TSceneObject();
+
 	void Init() override;
 	void Cleanup() override;
 

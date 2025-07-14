@@ -7,6 +7,6 @@ enum KtInputState
 	KT_INPUT_STATE_RELEASED,
 	// Occurs every frame where the input is down.
 	KT_INPUT_STATE_DOWN,
-	// Occurs every frame where the input is up.
-	KT_INPUT_STATE_UP
+
+	KT_INPUT_STATE_COUNT = 3
 };

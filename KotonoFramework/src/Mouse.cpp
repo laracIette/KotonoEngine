@@ -1,58 +1,74 @@
 #include "Mouse.h"
 #include "Framework.h"
 #include "Window.h"
+#include "InputManager.h"
 #include <GLFW/glfw3.h>
-#include "log.h"
+
+void mousebutton_callback_(GLFWwindow* window, int button, int action, int mods);
+void cursorpos_callback_(GLFWwindow* window, double xpos, double ypos);
+
+void KtMouse::Init()
+{
+    glfwSetMouseButtonCallback(Framework.GetWindow().GetGLFWWindow(), mousebutton_callback_);
+    glfwSetCursorPosCallback(Framework.GetWindow().GetGLFWWindow(), cursorpos_callback_);
+}
 
 void KtMouse::Update()
 {
-    for (auto& [button, events] : buttonEvents_)
+    for (size_t button = 0; button < buttonStates_.size(); button++)
     {
-        std::unordered_set<KtInputState> buttonStates;
-
-        int glfwKeyState = glfwGetMouseButton(Framework.GetWindow().GetGLFWWindow(), button);
-        switch (glfwKeyState)
+        if (buttonStates_[button].empty())
         {
-        case GLFW_PRESS:
-        {
-            buttonStates.insert(KT_INPUT_STATE_DOWN);
-            if (!buttonStates_[button].contains(KT_INPUT_STATE_DOWN))
-            {
-                buttonStates.insert(KT_INPUT_STATE_PRESSED);
-            }
-            break;
+            continue;
         }
-        case GLFW_RELEASE:
-        {
-            buttonStates.insert(KT_INPUT_STATE_UP);
-            if (!buttonStates_[button].contains(KT_INPUT_STATE_UP))
-            {
-                buttonStates.insert(KT_INPUT_STATE_RELEASED);
-            }
-            break;
-        }
-        default:
-            break;
-        }
-
-        buttonStates_[button] = buttonStates;
 
         for (const auto inputState : buttonStates_[button])
         {
-            if (events.contains(inputState))
-            {
-                events[inputState].Broadcast();
-            }
+            buttonEvents_[button][inputState].Broadcast();
         }
+
+        std::erase_if(buttonStates_[button],
+            [](const KtInputState inputState) 
+            {
+                return inputState == KT_INPUT_STATE_PRESSED || inputState == KT_INPUT_STATE_RELEASED;
+            }
+        );
+    }
+}
+
+void KtMouse::UpdateButton(const KtButton button, const int action)
+{
+    std::unordered_set<KtInputState> buttonStates;
+
+    switch (action)
+    {
+    case GLFW_PRESS:
+    {
+        buttonStates.insert(KT_INPUT_STATE_DOWN);
+        if (!buttonStates_[button].contains(KT_INPUT_STATE_DOWN))
+        {
+            buttonStates.insert(KT_INPUT_STATE_PRESSED);
+        }
+        break;
+    }
+    case GLFW_RELEASE:
+    {
+        buttonStates.insert(KT_INPUT_STATE_RELEASED);
+        break;
+    }
+    default:
+        break;
     }
 
-    double x, y;
-    glfwGetCursorPos(Framework.GetWindow().GetGLFWWindow(), &x, &y);
-    const auto newPos = glm::vec2(x, y);
-    previousCursorPosition_ = cursorPosition_;
-    cursorPosition_ = newPos;
+    buttonStates_[button] = buttonStates;
+}
 
-    if (cursorPosition_ != newPos)
+void KtMouse::UpdateCursor(const glm::vec2& position)
+{
+    previousCursorPosition_ = cursorPosition_;
+    cursorPosition_ = position;
+
+    if (cursorPosition_ != previousCursorPosition_)
     {
         moveEvent_.Broadcast();
     }
@@ -87,4 +103,14 @@ KtEvent<>& KtMouse::GetButtonEvent(const KtButton button, const KtInputState inp
 KtEvent<>& KtMouse::GetMoveEvent()
 {
     return moveEvent_;
+}
+
+void mousebutton_callback_(GLFWwindow* window, int button, int action, int mods)
+{
+    Framework.GetInputManager().GetMouse().UpdateButton(static_cast<KtButton>(button), action);
+}
+
+void cursorpos_callback_(GLFWwindow* window, double xpos, double ypos)
+{
+    Framework.GetInputManager().GetMouse().UpdateCursor(glm::vec2(xpos, ypos));
 }

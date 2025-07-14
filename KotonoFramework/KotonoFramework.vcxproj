@@ -134,6 +134,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\shit.cpp" />
     <ClCompile Include="src\SpvCompiler.cpp" />
     <ClCompile Include="src\Font.cpp" />
     <ClCompile Include="src\Culler2D.cpp" />

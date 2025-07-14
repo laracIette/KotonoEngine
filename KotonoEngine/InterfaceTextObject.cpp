@@ -1,9 +1,8 @@
 #include "InterfaceTextObject.h"
 #include "InterfaceTextComponent.h"
 
-void RInterfaceTextObject::Construct()
+RInterfaceTextObject::RInterfaceTextObject() :
+	Base()
 {
-	Base::Construct();
-
 	text_ = AddComponent<KInterfaceTextComponent>();
 }

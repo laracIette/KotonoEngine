@@ -1,5 +1,5 @@
 #pragma once
-enum KtButton
+enum KtButton 
 {
 	KT_BUTTON_1 = 0,
 	KT_BUTTON_2 = 1,
@@ -12,6 +12,6 @@ enum KtButton
 	KT_BUTTON_LAST = KT_BUTTON_8,
 	KT_BUTTON_LEFT = KT_BUTTON_1,
 	KT_BUTTON_RIGHT = KT_BUTTON_2,
-	KT_BUTTON_MIDDLE = KT_BUTTON_3
+	KT_BUTTON_MIDDLE = KT_BUTTON_3,
+	KT_BUTTON_COUNT = 8
 };
-

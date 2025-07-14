@@ -7,13 +7,14 @@
 #include "Timer.h"
 #include "log.h"
 
-void KObject::Construct()
+KObject::KObject()
 {
-    name_ = GetTypeName();
+    name_ = std::format("{}_{}", GetTypeName(), static_cast<std::string>(guid_));
 }
 
 void KObject::Init()
 {
+    isConstructed_ = true; // todo: move that
 }
 
 void KObject::Update() 
@@ -52,10 +53,7 @@ const bool KObject::GetIsDelete() const
 
 const std::string KObject::GetTypeName() const
 {
-    return std::format("{}_{}",
-        std::regex_replace(typeid(*this).name(), std::regex(R"(^(class ))"), ""),
-        static_cast<std::string>(guid_)
-    );
+    return std::regex_replace(typeid(*this).name(), std::regex(R"(^(class ))"), "");
 }
 
 KtEvent<KObject*>& KObject::GetEventCleanup()
@@ -66,11 +64,6 @@ KtEvent<KObject*>& KObject::GetEventCleanup()
 void KObject::SetName(const std::string& name)
 {
     name_ = name;
-}
-
-void KObject::SetIsConstructed(const bool isConstructed)
-{
-    isConstructed_ = isConstructed;
 }
 
 void KObject::SetPath(const std::filesystem::path& path)

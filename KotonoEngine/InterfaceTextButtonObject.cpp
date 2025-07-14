@@ -2,10 +2,9 @@
 #include "InterfaceButtonComponent.h"
 #include "InterfaceTextComponent.h"
 
-void RInterfaceTextButtonObject::Construct()
+RInterfaceTextButtonObject::RInterfaceTextButtonObject() :
+	Base()
 {
-	Base::Construct();
-
 	buttonComponent_ = AddComponent<KInterfaceButtonComponent>();
 	textComponent_ = AddComponent<KInterfaceTextComponent>();
 }
