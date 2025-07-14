@@ -56,7 +56,7 @@ const KtCuller3D::ProxiesUnorderedSet KtCuller3D::ComputeDistanceCulling(const P
 		const glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 		const glm::vec3 objectPosition = glm::vec3(proxy->objectData.modelMatrix[3]);
 		const float distance = glm::distance(cameraPosition, objectPosition);
-		constexpr float maxDistance = 10.0f;
+		static constexpr float maxDistance = 10.0f;
 		if (distance > maxDistance)
 		{
 			continue;

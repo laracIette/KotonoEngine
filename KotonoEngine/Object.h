@@ -12,6 +12,7 @@ class KObject
 
 public:
 	KObject();
+	virtual ~KObject();
 
 	virtual void Init();
 	virtual void Update();
@@ -23,7 +24,7 @@ public:
 	const std::string& GetName() const;
 	const bool GetIsDelete() const;
 	const std::string GetTypeName() const;
-	KtEvent<KObject*>& GetEventCleanup();
+	KtEvent<>& GetEventCleanup();
 
 	void SetPath(const std::filesystem::path& path);
 	void SetName(const std::string& name);
@@ -46,7 +47,7 @@ private:
 	std::filesystem::path path_;
 	std::string name_;
 	bool isDelete_;
-	KtEvent<KObject*> eventCleanup_;
+	KtEvent<> eventCleanup_;
 	size_t objectIndex_;
 };
 

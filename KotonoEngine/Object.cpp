@@ -1,7 +1,6 @@
 #include "Object.h"
 #include <nlohmann/json.hpp>
 #include <kotono_framework/Serializer.h>
-#include <regex>
 #include "Engine.h"
 #include "ObjectManager.h"
 #include "Timer.h"
@@ -9,7 +8,11 @@
 
 KObject::KObject()
 {
-    name_ = std::format("{}_{}", GetTypeName(), static_cast<std::string>(guid_));
+    name_ = static_cast<std::string>(guid_);
+}
+
+KObject::~KObject()
+{
 }
 
 void KObject::Init()
@@ -23,7 +26,7 @@ void KObject::Update()
 
 void KObject::Cleanup() 
 {
-    //eventCleanup_.Broadcast(this); // todo: broken
+    eventCleanup_.Broadcast(); // todo: broken
 }
 
 const UGuid& KObject::GetGuid() const
@@ -53,10 +56,11 @@ const bool KObject::GetIsDelete() const
 
 const std::string KObject::GetTypeName() const
 {
-    return std::regex_replace(typeid(*this).name(), std::regex(R"(^(class ))"), "");
+    std::string_view name = typeid(*this).name();
+    return std::string(name.substr(6));
 }
 
-KtEvent<KObject*>& KObject::GetEventCleanup()
+KtEvent<>& KObject::GetEventCleanup()
 {
     return eventCleanup_;
 }

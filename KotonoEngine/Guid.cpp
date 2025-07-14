@@ -21,16 +21,25 @@ UGuid::UGuid()
 
 UGuid::operator std::string() const
 {
-    std::ostringstream oss;
-    for (size_t i = 0; i < _data.size(); i++)
+    static constexpr char hexDigits[] = "0123456789abcdef";
+    std::string result;
+    result.reserve(_data.size() * (16llu + 1) - 1); // 16 hex chars per u64 + (N-1) dashes
+
+    for (size_t i = 0; i < _data.size(); ++i)
     {
         if (i != 0)
         {
-            oss << '-';
+            result.push_back('-');
         }
-        oss << std::hex << std::setw(16) << std::setfill('0') << _data[i];
+
+        const uint64_t value = _data[i];
+        for (int j = 60; j >= 0; j -= 4)
+        {  // 16 nibbles (4 bits per hex digit)
+            result.push_back(hexDigits[(value >> j) & 0xF]);
+        }
     }
-    return oss.str();
+
+    return result;
 }
 
 void UGuid::operator=(const std::string& string)

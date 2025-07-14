@@ -2,11 +2,6 @@
 #include "Delegate.h"
 #include "Pool.h"
 
-#define KT_LOG_IMPORTANCE_LEVEL_EVENT KT_LOG_IMPORTANCE_LEVEL_NONE
-
-const int64_t incrementEventInstances();
-const int64_t decrementEventInstances();
-
 template<typename... Args>
 class KtEvent final
 {
@@ -14,15 +9,6 @@ private:
     using Delegate = KtDelegate<Args...>;
 
 public:
-    KtEvent()
-    { 
-        KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_EVENT, "inc %lld events", incrementEventInstances());
-    }
-    ~KtEvent()
-    { 
-        KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_EVENT, "dec %lld events", decrementEventInstances());
-    }
-
     void AddListener(const Delegate& delegate)
     {
         delegates_.Add(delegate);
