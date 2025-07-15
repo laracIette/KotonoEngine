@@ -20,4 +20,5 @@
 
 #else
 #define KT_LOG_KF(level, format, ...)
+#define KT_SHOULD_LOG(level) false
 #endif

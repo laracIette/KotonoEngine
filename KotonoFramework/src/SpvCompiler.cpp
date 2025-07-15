@@ -9,8 +9,8 @@
 void KtSpvCompiler::CompileUpdated() const
 {
     const auto path = Framework.GetPath().GetFrameworkPath() / "shaders";
-    nlohmann::json json;
-    KtSerializer serializer;
+    nlohmann::json json{};
+    KtSerializer serializer{};
 
     serializer.ReadData(path / "shaders.ktregistry", json);
     for (const auto& directory : { "vert", "frag" })
@@ -23,7 +23,7 @@ void KtSpvCompiler::CompileUpdated() const
                 continue;
             }
 
-            const auto entryPath = std::format("{}/{}{}", directory, entry.path().filename().string(), entry.path().extension().string());
+            const auto entryPath = std::format("{}/{}", directory, entry.path().filename().string());
 
             const auto ftime = entry.last_write_time();
             const auto formattedTime = std::format("{0:%F}-{0:%T}", ftime);
@@ -48,7 +48,7 @@ void KtSpvCompiler::CompileUpdated() const
 
             if (!isInList)
             {
-                nlohmann::json shader;
+                nlohmann::json shader{};
                 shader["path"] = entryPath;
                 shader["modified"] = formattedTime;
                 json["shaders"].push_back(shader);

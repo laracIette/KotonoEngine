@@ -42,7 +42,7 @@ void KtContext::Cleanup()
 
 	if constexpr (KT_SHOULD_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW))
 	{
-		VmaTotalStatistics stats;
+		VmaTotalStatistics stats{};
 		vmaCalculateStatistics(allocator_, &stats);
 
 		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_LOW, "VMA Allocator Stats:");
