@@ -2,18 +2,27 @@
 #include "Time.h"
 #include "ObjectManager.h"
 #include "Visualizer.h"
+#include "InterfacePhysicsManager.h"
 
 SEngine Engine;
 
 static STime Time;
 static SObjectManager ObjectManager;
 static SVisualizer Visualizer;
+static SInterfacePhysicsManager InterfacePhysicsManager;
 
 void SEngine::Init()
 {
     Time.Init();
     ObjectManager.Init();
     Visualizer.Init();
+}
+
+void SEngine::Update()
+{
+    Time.Update();
+    ObjectManager.Update();
+    InterfacePhysicsManager.Update();
 }
 
 void SEngine::Cleanup()
@@ -51,4 +60,14 @@ SVisualizer& SEngine::GetVisualizer()
 const SVisualizer& SEngine::GetVisualizer() const
 {
     return Visualizer;
+}
+
+SInterfacePhysicsManager& SEngine::GetInterfacePhysicsManager()
+{
+    return InterfacePhysicsManager;
+}
+
+const SInterfacePhysicsManager& SEngine::GetInterfacePhysicsManager() const
+{
+    return InterfacePhysicsManager;
 }

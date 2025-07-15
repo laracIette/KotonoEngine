@@ -26,7 +26,7 @@ public:
 	T* Create(Args... args)
 	{
 		T* object = new T(args...);
-		Register(static_cast<KObject*>(object));
+		Register(object);
 		return object;
 	}
 
@@ -75,7 +75,7 @@ private:
 
 	std::unordered_map<std::type_index, std::unordered_set<KObject*>> typeRegistry_;
 
-	std::array<float, 60> updateTimes_;
+	std::array<float, 256> updateTimes_;
 	size_t updateTimeIndex_;
 	float updateTimesSum_;
 	float updateTimesAverage_;

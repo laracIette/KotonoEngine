@@ -151,12 +151,12 @@ void KSceneMeshComponent::RemoveProxies()
     {
     case EMobility::Dynamic:
     {
-        Framework.GetRenderer().GetRenderer3D().RemoveDynamic(&proxy_);
+        Framework.GetRenderer().GetRenderer3D().UnregisterDynamic(&proxy_);
         break;
     }
     case EMobility::Static:
     {
-        Framework.GetRenderer().GetRenderer3D().RemoveStatic(&proxy_);
+        Framework.GetRenderer().GetRenderer3D().UnregisterStatic(&proxy_);
         break;
     }
     }

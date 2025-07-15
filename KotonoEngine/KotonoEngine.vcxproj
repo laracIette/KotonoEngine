@@ -29,6 +29,7 @@
     <ClCompile Include="InterfaceObject.cpp" />
     <ClCompile Include="InterfaceComponent.cpp" />
     <ClCompile Include="InterfaceContainerComponent.cpp" />
+    <ClCompile Include="InterfacePhysicsManager.cpp" />
     <ClCompile Include="InterfaceStackComponent.cpp" />
     <ClCompile Include="InterfaceTextBoxObject.cpp" />
     <ClCompile Include="InterfaceTextButtonObject.cpp" />
@@ -63,6 +64,7 @@
     <ClInclude Include="InterfaceObject.h" />
     <ClInclude Include="InterfaceComponent.h" />
     <ClInclude Include="InterfaceContainerComponent.h" />
+    <ClInclude Include="InterfacePhysicsManager.h" />
     <ClInclude Include="InterfaceStackComponent.h" />
     <ClInclude Include="InterfaceTextBoxObject.h" />
     <ClInclude Include="InterfaceTextButtonObject.h" />

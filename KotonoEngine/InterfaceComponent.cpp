@@ -51,7 +51,7 @@ void KInterfaceComponent::Cleanup()
     Base::Cleanup();
     GetOwner()->RemoveComponent(this);
 
-    Framework.GetRenderer().GetRenderer2D().Remove(&boundsProxy_);
+    Framework.GetRenderer().GetRenderer2D().Unregister(&boundsProxy_);
 
     GetEventRectUpdated().RemoveListener(KtDelegate<>(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
     if (parent_)

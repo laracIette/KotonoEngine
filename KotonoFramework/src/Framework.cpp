@@ -8,12 +8,10 @@
 #include "ModelManager.h"
 #include "ShaderManager.h"
 #include "ImageTextureManager.h"
-#include "SpvCompiler.h"
 
 KtFramework Framework;
 
 static KtPath Path;
-static KtSpvCompiler SpvCompiler;
 static KtWindow Window;
 static KtContext Context;
 static KtRenderer Renderer;
@@ -26,15 +24,17 @@ static KtImageTextureManager ImageTextureManager;
 void KtFramework::Init()
 {
     Path.Init();
-    SpvCompiler.CompileUpdated(); // todo: move to shader manager ?
     Window.Init();
     Context.Init();
     Renderer.Init();
     AudioManager.Init();
     InputManager.Init();
-    ModelManager.Init();
     ShaderManager.Init();
-    ImageTextureManager.Init();
+}
+
+void KtFramework::Update()
+{
+    InputManager.Update();
 }
 
 void KtFramework::Cleanup()

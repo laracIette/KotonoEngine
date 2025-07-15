@@ -20,8 +20,8 @@ public:
 
 	void RegisterStatic(KtRenderable3DProxy* proxy);
 	void RegisterDynamic(KtRenderable3DProxy* proxy);
-	void RemoveStatic(KtRenderable3DProxy* proxy);
-	void RemoveDynamic(KtRenderable3DProxy* proxy);
+	void UnregisterStatic(KtRenderable3DProxy* proxy);
+	void UnregisterDynamic(KtRenderable3DProxy* proxy);
 
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 

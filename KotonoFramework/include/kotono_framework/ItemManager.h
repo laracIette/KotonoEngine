@@ -5,10 +5,6 @@ template <typename T>
 class KtItemManager
 {
 public:
-	void Init()
-	{
-	}
-
 	void Cleanup()
 	{
 		for (auto& [path, item] : items_)

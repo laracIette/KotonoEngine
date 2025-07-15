@@ -32,6 +32,11 @@ void KtRenderer2D::Init()
 
 void KtRenderer2D::Update(const uint32_t frameIndex)
 {
+	if (stagingProxies_.empty())
+	{
+		return;
+	}
+
 	for (auto& [proxy, count] : stagingProxies_)
 	{
 		if (count == 0)
@@ -48,7 +53,7 @@ void KtRenderer2D::Update(const uint32_t frameIndex)
 		}
 		else if (count < 0)
 		{
-			proxies_[frameIndex].Remove(proxy);
+			proxies_[frameIndex].Remove(proxy); 
 			++count;
 		}
 	}
@@ -153,9 +158,10 @@ void KtRenderer2D::CreateCommandBuffers()
 
 void KtRenderer2D::RecordCommandBuffer(const uint32_t frameIndex)
 {
+	SortProxies(proxies_[frameIndex]);
 	VkCommandBuffer commandBuffer = commandBuffers_[frameIndex];
 	BeginCommandBuffer(commandBuffer, frameIndex);
-	CmdDrawProxies(commandBuffer, sortedProxies_[frameIndex], frameIndex);
+	CmdDrawProxies(commandBuffer, proxies_[frameIndex], frameIndex);
 	EndCommandBuffer(commandBuffer);
 }
 
@@ -198,7 +204,7 @@ void KtRenderer2D::Register(KtRenderable2DProxy* proxy)
 	stagingProxies_[proxy] = static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
-void KtRenderer2D::Remove(KtRenderable2DProxy* proxy)
+void KtRenderer2D::Unregister(KtRenderable2DProxy* proxy)
 {
 	stagingProxies_[proxy] = -static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
 }
@@ -210,11 +216,11 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIn
 		isCommandBufferDirty_[frameIndex] = false;
 
 		const KtCuller2D culler{};
-		const auto culledData = culler.ComputeCulling(proxies_[frameIndex]);
-		sortedProxies_[frameIndex] = GetSortedProxies(culledData);
+		auto culledData = culler.ComputeCulling(proxies_[frameIndex]);
+		SortProxies(culledData);
 
 		instanceIndices_[frameIndex] = {};
-		UpdateDescriptorSets(sortedProxies_[frameIndex], frameIndex);
+		UpdateDescriptorSets(culledData, frameIndex);
 
 		RecordCommandBuffer(frameIndex);
 		MarkProxiesNotDirty(frameIndex);
@@ -223,7 +229,7 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIn
 	vkCmdExecuteCommands(commandBuffer, 1, &commandBuffers_[frameIndex]);
 }
 
-void KtRenderer2D::UpdateDescriptorSets(const ProxiesVector& proxies, const uint32_t frameIndex)
+void KtRenderer2D::UpdateDescriptorSets(const ProxiesPool& proxies, const uint32_t frameIndex)
 {
 	struct ShaderData final
 	{
@@ -285,7 +291,7 @@ void KtRenderer2D::UpdateDescriptorSets(const ProxiesVector& proxies, const uint
 	}
 }
 
-void KtRenderer2D::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesVector& proxies, const uint32_t frameIndex)
+void KtRenderer2D::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex)
 {
 	const KtShader* currentShader = nullptr;
 	const KtViewport* currentViewport = nullptr;
@@ -293,7 +299,7 @@ void KtRenderer2D::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesVe
 	CmdBindVertexBuffer(commandBuffer);
 	CmdBindIndexBuffer(commandBuffer);
 
-	for (size_t i = 0; i < proxies.size();)
+	for (size_t i = 0; i < proxies.Size();)
 	{
 		const auto* proxy = proxies[i];
 		const KtShader* shader = proxy->shader;
@@ -301,7 +307,7 @@ void KtRenderer2D::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesVe
 		const int32_t layer = proxy->layer;
 
 		size_t instanceCount = 1;
-		while (i + instanceCount < proxies.size())
+		while (i + instanceCount < proxies.Size())
 		{
 			const auto* next = proxies[i + instanceCount];
 			if (next->shader != shader || next->viewport != viewport)
@@ -331,11 +337,9 @@ void KtRenderer2D::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesVe
 	}
 }
 
-const KtRenderer2D::ProxiesVector KtRenderer2D::GetSortedProxies(const ProxiesPool& proxies) const
+void KtRenderer2D::SortProxies(ProxiesPool& proxies)
 {
-	ProxiesVector sortedProxies(proxies.begin(), proxies.end());
-
-	std::sort(sortedProxies.begin(), sortedProxies.end(),
+	std::sort(proxies.begin(), proxies.end(),
 		[](const KtRenderable2DProxy* a, const KtRenderable2DProxy* b)
 		{
 			if (a->shader != b->shader)
@@ -353,8 +357,6 @@ const KtRenderer2D::ProxiesVector KtRenderer2D::GetSortedProxies(const ProxiesPo
 			return a->viewport < b->viewport;
 		}
 	);
-
-	return sortedProxies;
 }
 
 const bool KtRenderer2D::GetIsAnyProxyDirty(const uint32_t frameIndex) const

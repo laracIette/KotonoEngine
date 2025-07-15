@@ -6,7 +6,6 @@
 #include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/ModelManager.h>
 #include <kotono_framework/Path.h>
-#include <kotono_framework/Stopwatch.h>
 #include "log.h"
 #include "Object.h"
 #include "SceneMeshObject.h"
@@ -14,12 +13,10 @@
 #include "Scene.h"
 #include "Camera.h"
 #include "Engine.h"
-#include "Visualizer.h"
 #include "Interface.h"
 #include "Timer.h"
 #include "Time.h"
 #include "math_utils.h"
-#include <numeric>
 
 #define KT_LOG_IMPORTANCE_LEVEL_OBJECT KT_LOG_IMPORTANCE_LEVEL_NONE
 

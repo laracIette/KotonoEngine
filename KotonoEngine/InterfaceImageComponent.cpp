@@ -39,7 +39,7 @@ void KInterfaceImageComponent::Cleanup()
 {
 	Base::Cleanup();
 
-	Framework.GetRenderer().GetRenderer2D().Remove(&imageTextureProxy_);
+	Framework.GetRenderer().GetRenderer2D().Unregister(&imageTextureProxy_);
 
 	GetEventRectUpdated().RemoveListener(KtDelegate<>(this, &KInterfaceImageComponent::MarkImageTextureProxyRectDirty));
 	GetEventShaderUpdated().RemoveListener(KtDelegate<>(this, &KInterfaceImageComponent::MarkImageTextureProxyShaderDirty));

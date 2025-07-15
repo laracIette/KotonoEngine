@@ -14,6 +14,7 @@ class KtFramework final
 {
 public:
 	void Init();
+	void Update();
 	void Cleanup();
 
 	KtPath& GetPath();

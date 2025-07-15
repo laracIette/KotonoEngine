@@ -6,7 +6,11 @@ class KInterfaceColliderComponent final : public KInterfaceComponent
 {
 	BASECLASS(KInterfaceComponent)
 
+	friend class SInterfacePhysicsManager;
+
 public:
+	KInterfaceColliderComponent(RInterfaceObject* owner);
+
 	void Init() override;
 	void Update() override;
 	void Cleanup() override;
@@ -20,17 +24,16 @@ public:
 	const bool GetIsMouseOverlapping() const;
 
 private:
-	KtPool<KInterfaceColliderComponent*> _overlaps;
-	KtEvent<KInterfaceColliderComponent*> _eventOverlap;
+	KtPool<KInterfaceColliderComponent*> overlaps_;
+	KtEvent<KInterfaceColliderComponent*> eventOverlap_;
 
-	KtEvent<> _eventPressed;
-	KtEvent<> _eventReleased;
-	KtEvent<> _eventDown;
+	KtEvent<> eventPressed_;
+	KtEvent<> eventReleased_;
+	KtEvent<> eventDown_;
 
-	bool _isPressed;
+	bool isPressed_;
 
-	void UpdateOverlaps();
-	void BroadcastOverlaps();
+	size_t physicsIndex_;
 
 	void OnEventMouseLeftButtonPressed();
 	void OnEventMouseLeftButtonReleased();

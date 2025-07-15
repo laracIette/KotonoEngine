@@ -1,10 +1,17 @@
 #include "InterfaceColliderComponent.h"
 #include "Engine.h"
 #include "ObjectManager.h"
+#include "InterfacePhysicsManager.h"
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/InputManager.h>
 #include <kotono_framework/Viewport.h>
 #include <kotono_framework/Collection.h>
+
+KInterfaceColliderComponent::KInterfaceColliderComponent(RInterfaceObject* owner) :
+	Base(owner)
+{
+	Engine.GetInterfacePhysicsManager().Register(this);
+}
 
 void KInterfaceColliderComponent::Init()
 {
@@ -18,14 +25,13 @@ void KInterfaceColliderComponent::Init()
 void KInterfaceColliderComponent::Update()
 {
 	Base::Update();
-
-	UpdateOverlaps();
-	BroadcastOverlaps();
 }
 
 void KInterfaceColliderComponent::Cleanup()
 {
 	Base::Cleanup();
+
+	Engine.GetInterfacePhysicsManager().Unregister(this);
 
 	Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
 	Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED).RemoveListener(KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
@@ -34,22 +40,22 @@ void KInterfaceColliderComponent::Cleanup()
 
 KtEvent<>& KInterfaceColliderComponent::GetEventPressed()
 {
-	return _eventPressed;
+	return eventPressed_;
 }
 
 KtEvent<>& KInterfaceColliderComponent::GetEventReleased()
 {
-	return _eventReleased;
+	return eventReleased_;
 }
 
 KtEvent<>& KInterfaceColliderComponent::GetEventDown()
 {
-	return _eventDown;
+	return eventDown_;
 }
 
 KtEvent<KInterfaceColliderComponent*>& KInterfaceColliderComponent::GetEventOverlap()
 {
-	return _eventOverlap;
+	return eventOverlap_;
 }
 
 const bool KInterfaceColliderComponent::GetIsMouseOverlapping() const
@@ -60,23 +66,6 @@ const bool KInterfaceColliderComponent::GetIsMouseOverlapping() const
 	return GetIsOverlapping(worldPosition);
 }
 
-void KInterfaceColliderComponent::UpdateOverlaps()
-{
-	const auto interfaceColliderComponents = Engine.GetObjectManager().GetAll<KInterfaceColliderComponent>();
-	auto overlaps = KtCollection(interfaceColliderComponents.begin(), interfaceColliderComponents.end());
-	overlaps.AddFilter([this](const KInterfaceColliderComponent* collider) { return collider != this; });
-	overlaps.AddFilter([this](const KInterfaceColliderComponent* collider) { return GetIsOverlapping(collider); });
-	_overlaps = overlaps.GetPool();
-}
-
-void KInterfaceColliderComponent::BroadcastOverlaps()
-{
-	for (auto* interfaceCollider : _overlaps)
-	{
-		_eventOverlap.Broadcast(interfaceCollider);
-	}
-}
-
 void KInterfaceColliderComponent::OnEventMouseLeftButtonPressed()
 {
 	if (!GetIsMouseOverlapping())
@@ -84,7 +73,7 @@ void KInterfaceColliderComponent::OnEventMouseLeftButtonPressed()
 		return;
 	}
 
-	for (const auto* interfaceCollider : _overlaps)
+	for (const auto* interfaceCollider : overlaps_)
 	{
 		if (interfaceCollider->GetVisibility() != EVisibility::None &&
 			interfaceCollider->GetLayer() > GetLayer() && 
@@ -94,31 +83,31 @@ void KInterfaceColliderComponent::OnEventMouseLeftButtonPressed()
 		}
 	}
 
-	_isPressed = true;
-	_eventPressed.Broadcast();
+	isPressed_ = true;
+	eventPressed_.Broadcast();
 }
 
 void KInterfaceColliderComponent::OnEventMouseLeftButtonReleased()
 {
-	if (!_isPressed)
+	if (!isPressed_)
 	{
 		return;
 	}
 
-	_isPressed = false;
+	isPressed_ = false;
 
 	if (GetIsMouseOverlapping())
 	{
-		_eventReleased.Broadcast();
+		eventReleased_.Broadcast();
 	}
 }
 
 void KInterfaceColliderComponent::OnEventMouseLeftButtonDown()
 {
-	if (!_isPressed)
+	if (!isPressed_)
 	{
 		return;
 	}
 
-	_eventDown.Broadcast();
+	eventDown_.Broadcast();
 }

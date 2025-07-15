@@ -46,12 +46,12 @@ void KtRenderer3D::RegisterDynamic(KtRenderable3DProxy* proxy)
 	stagingDynamicProxies_[proxy] = static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
-void KtRenderer3D::RemoveStatic(KtRenderable3DProxy* proxy)
+void KtRenderer3D::UnregisterStatic(KtRenderable3DProxy* proxy)
 {
 	stagingStaticProxies_[proxy] = -static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
-void KtRenderer3D::RemoveDynamic(KtRenderable3DProxy* proxy)
+void KtRenderer3D::UnregisterDynamic(KtRenderable3DProxy* proxy)
 {
 	stagingDynamicProxies_[proxy] = -static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
 }
@@ -133,6 +133,11 @@ void KtRenderer3D::EndCommandBuffer(VkCommandBuffer commandBuffer)
 
 void KtRenderer3D::UpdateStaticProxies(const uint32_t frameIndex)
 {
+	if (stagingStaticProxies_.empty())
+	{
+		return;
+	}
+
 	for (auto& [proxy, count] : stagingStaticProxies_)
 	{
 		if (count == 0)
@@ -165,6 +170,11 @@ void KtRenderer3D::UpdateStaticProxies(const uint32_t frameIndex)
 
 void KtRenderer3D::UpdateDynamicProxies(const uint32_t frameIndex)
 {
+	if (stagingDynamicProxies_.empty())
+	{
+		return;
+	}
+
 	for (auto& [proxy, count] : stagingDynamicProxies_)
 	{
 		if (count == 0)
