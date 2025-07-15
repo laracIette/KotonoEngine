@@ -1,8 +1,6 @@
 #include "InterfaceFloatTextBoxObject.h"
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/InputManager.h>
-#include "InterfaceTextComponent.h"
-#include "Timer.h"
 
 void RInterfaceFloatTextBoxObject::Init()
 {

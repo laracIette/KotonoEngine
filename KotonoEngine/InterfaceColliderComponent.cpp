@@ -21,15 +21,15 @@ void KInterfaceColliderComponent::Update()
 
 	UpdateOverlaps();
 	BroadcastOverlaps();
-
-	Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
-	Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED).RemoveListener(KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
-	Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
 }
 
 void KInterfaceColliderComponent::Cleanup()
 {
 	Base::Cleanup();
+
+	Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
+	Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED).RemoveListener(KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
+	Framework.GetInputManager().GetMouse().GetButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate<>(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
 }
 
 KtEvent<>& KInterfaceColliderComponent::GetEventPressed()

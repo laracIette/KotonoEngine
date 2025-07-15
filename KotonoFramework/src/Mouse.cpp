@@ -34,6 +34,12 @@ void KtMouse::Update()
             }
         );
     }
+
+    if (cursorPosition_ != previousCursorPosition_)
+    {
+        moveEvent_.Broadcast();
+        previousCursorPosition_ = cursorPosition_;
+    }
 }
 
 void KtMouse::UpdateButton(const KtButton button, const int action)
@@ -65,13 +71,7 @@ void KtMouse::UpdateButton(const KtButton button, const int action)
 
 void KtMouse::UpdateCursor(const glm::vec2& position)
 {
-    previousCursorPosition_ = cursorPosition_;
     cursorPosition_ = position;
-
-    if (cursorPosition_ != previousCursorPosition_)
-    {
-        moveEvent_.Broadcast();
-    }
 }
 
 const glm::vec2& KtMouse::GetPreviousCursorPosition() const

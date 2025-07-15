@@ -1,7 +1,6 @@
 #include "InterfaceTextBoxObject.h"
 #include "InterfaceTextComponent.h"
 #include "InterfaceColliderComponent.h"
-#include "Timer.h"
 
 RInterfaceTextBoxObject::RInterfaceTextBoxObject() :
 	Base()
@@ -26,10 +25,6 @@ void RInterfaceTextBoxObject::Update()
 void RInterfaceTextBoxObject::Cleanup()
 {
 	Base::Cleanup();
-
-	colliderComponent_->GetEventPressed().RemoveListener(KtDelegate<>(this, &RInterfaceTextBoxObject::OnMousePressed));
-	colliderComponent_->GetEventReleased().RemoveListener(KtDelegate<>(this, &RInterfaceTextBoxObject::OnMouseReleased));
-	colliderComponent_->GetEventDown().RemoveListener(KtDelegate<>(this, &RInterfaceTextBoxObject::OnMouseDown));
 }
 
 const bool RInterfaceTextBoxObject::GetIsEditable() const
@@ -75,5 +70,4 @@ void RInterfaceTextBoxObject::OnMouseReleased()
 
 void RInterfaceTextBoxObject::OnMouseDown()
 {
-	
 }
