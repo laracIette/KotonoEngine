@@ -1,17 +1,18 @@
 #pragma once
-#include <unordered_set>
+#include "Pool.h"
 #include "Culler3DField.h"
 struct KtRenderable3DProxy;
 class KtCuller3D final
 {
 private:
-	using ProxiesUnorderedSet = std::unordered_set<KtRenderable3DProxy*>;
+	// todo: make proxy pool element to store index and not copy pool every time
+	using ProxiesPool = KtPool<KtRenderable3DProxy*>;
 
 public:
-	const ProxiesUnorderedSet ComputeCulling(ProxiesUnorderedSet renderQueueData, const KtCuller3DField field) const;
+	const ProxiesPool ComputeCulling(ProxiesPool renderQueueData, const KtCuller3DField field) const;
 
 private:
-	const ProxiesUnorderedSet ComputeNullCulling(const ProxiesUnorderedSet& renderQueueData) const;
-	const ProxiesUnorderedSet ComputeDistanceCulling(const ProxiesUnorderedSet& renderQueueData) const;
+	const ProxiesPool ComputeNullCulling(const ProxiesPool& renderQueueData) const;
+	const ProxiesPool ComputeDistanceCulling(const ProxiesPool& renderQueueData) const;
 };
 

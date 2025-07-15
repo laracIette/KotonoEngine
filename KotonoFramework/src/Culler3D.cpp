@@ -4,7 +4,7 @@
 
 #define KT_LOG_IMPORTANCE_LEVEL_NULLPTR KT_LOG_IMPORTANCE_LEVEL_HIGH
 
-const KtCuller3D::ProxiesUnorderedSet KtCuller3D::ComputeCulling(ProxiesUnorderedSet proxies, const KtCuller3DField field) const
+const KtCuller3D::ProxiesPool KtCuller3D::ComputeCulling(ProxiesPool proxies, const KtCuller3DField field) const
 {
 	if ((field & KT_CULLER_3D_FIELD_NULLPTR) == KT_CULLER_3D_FIELD_NULLPTR)
 	{
@@ -17,9 +17,9 @@ const KtCuller3D::ProxiesUnorderedSet KtCuller3D::ComputeCulling(ProxiesUnordere
 	return proxies;
 }
 
-const KtCuller3D::ProxiesUnorderedSet KtCuller3D::ComputeNullCulling(const ProxiesUnorderedSet& proxies) const
+const KtCuller3D::ProxiesPool KtCuller3D::ComputeNullCulling(const ProxiesPool& proxies) const
 {
-	ProxiesUnorderedSet culledData{};
+	ProxiesPool culledData{};
 
 	for (auto* proxy : proxies)
 	{
@@ -41,15 +41,15 @@ const KtCuller3D::ProxiesUnorderedSet KtCuller3D::ComputeNullCulling(const Proxi
 			continue;
 		}
 
-		culledData.insert(proxy);
+		culledData.Add(proxy);
 	}
 
 	return culledData;
 }
 
-const KtCuller3D::ProxiesUnorderedSet KtCuller3D::ComputeDistanceCulling(const ProxiesUnorderedSet& proxies) const
+const KtCuller3D::ProxiesPool KtCuller3D::ComputeDistanceCulling(const ProxiesPool& proxies) const
 {
-	ProxiesUnorderedSet culledData{};
+	ProxiesPool culledData{};
 
 	for (auto* proxy : proxies)
 	{
@@ -62,7 +62,7 @@ const KtCuller3D::ProxiesUnorderedSet KtCuller3D::ComputeDistanceCulling(const P
 			continue;
 		}
 
-		culledData.insert(proxy);
+		culledData.Add(proxy);
 	}
 
 	return culledData;

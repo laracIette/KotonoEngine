@@ -102,7 +102,7 @@ void KtModel::CreateVertexBuffer()
 		stagingBuffer
 	);
 
-	memcpy(stagingBuffer.AllocationInfo.pMappedData, vertices_.data(), (size_t)bufferSize);
+	memcpy(stagingBuffer.AllocationInfo.pMappedData, vertices_.data(), static_cast<size_t>(bufferSize));
 
 	Framework.GetContext().CreateBuffer(
 		bufferSize,
@@ -130,7 +130,7 @@ void KtModel::CreateIndexBuffer()
 		stagingBuffer
 	);
 
-	memcpy(stagingBuffer.AllocationInfo.pMappedData, indices_.data(), (size_t)bufferSize);
+	memcpy(stagingBuffer.AllocationInfo.pMappedData, indices_.data(), static_cast<size_t>(bufferSize));
 
 	Framework.GetContext().CreateBuffer(
 		bufferSize,

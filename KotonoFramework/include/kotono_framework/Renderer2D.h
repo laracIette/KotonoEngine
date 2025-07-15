@@ -2,9 +2,9 @@
 #include "UniformData2D.h"
 #include "frames_in_flight.h"
 #include "AllocatedBuffer.h"
+#include "Pool.h"
 #include <vulkan/vulkan_core.h>
 #include <vector>
-#include <unordered_set>
 #include <unordered_map>
 class KtShader;
 struct KtRenderable2DProxy;
@@ -12,7 +12,7 @@ class KtRenderer2D final
 {
 private:
 	using ProxiesVector = std::vector<KtRenderable2DProxy*>;
-	using ProxiesUnorderedSet = std::unordered_set<KtRenderable2DProxy*>;
+	using ProxiesPool = KtPool<KtRenderable2DProxy*>;
 
 public:
 	void Init();
@@ -36,7 +36,7 @@ private:
 	FramesInFlightArray<bool> isCommandBufferDirty_;
 
 	std::unordered_map<KtRenderable2DProxy*, int32_t> stagingProxies_;
-	FramesInFlightArray<ProxiesUnorderedSet> proxies_;
+	FramesInFlightArray<ProxiesPool> proxies_;
 	FramesInFlightArray<ProxiesVector> sortedProxies_;
 
 	FramesInFlightArray<std::unordered_map<const KtShader*, uint32_t>> instanceIndices_;
@@ -56,7 +56,7 @@ private:
 
 	void CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesVector& proxies, const uint32_t frameIndex);
 	
-	const ProxiesVector GetSortedProxies(const ProxiesUnorderedSet& proxies) const;
+	const ProxiesVector GetSortedProxies(const ProxiesPool& proxies) const;
 	const bool GetIsAnyProxyDirty(const uint32_t frameIndex) const;
 	void MarkProxiesNotDirty(const uint32_t frameIndex);
 };

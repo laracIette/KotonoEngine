@@ -4,16 +4,16 @@
 
 #define KT_LOG_IMPORTANCE_LEVEL_NULLPTR KT_LOG_IMPORTANCE_LEVEL_HIGH
 
-const KtCuller2D::ProxiesUnorderedSet KtCuller2D::ComputeCulling(ProxiesUnorderedSet proxies) const
+const KtCuller2D::ProxiesPool KtCuller2D::ComputeCulling(ProxiesPool proxies) const
 {
 	proxies = ComputeNullCulling(proxies);
 	proxies = ComputeScreenCulling(proxies);
 	return proxies;
 }
 
-const KtCuller2D::ProxiesUnorderedSet KtCuller2D::ComputeNullCulling(const ProxiesUnorderedSet& proxies) const
+const KtCuller2D::ProxiesPool KtCuller2D::ComputeNullCulling(const ProxiesPool& proxies) const
 {
-	ProxiesUnorderedSet culledData{};
+	ProxiesPool culledData{};
 
 	for (auto* proxy : proxies)
 	{
@@ -35,20 +35,20 @@ const KtCuller2D::ProxiesUnorderedSet KtCuller2D::ComputeNullCulling(const Proxi
 			continue;
 		}
 
-		culledData.insert(proxy);
+		culledData.Add(proxy);
 	}
 
 	return culledData;
 }
 
-const KtCuller2D::ProxiesUnorderedSet KtCuller2D::ComputeScreenCulling(const ProxiesUnorderedSet& proxies) const
+const KtCuller2D::ProxiesPool KtCuller2D::ComputeScreenCulling(const ProxiesPool& proxies) const
 {
-	ProxiesUnorderedSet culledData{};
+	ProxiesPool culledData{};
 
 	for (auto* proxy : proxies)
 	{
 		// check out of bounds
-		culledData.insert(proxy);
+		culledData.Add(proxy);
 	}
 
 	return culledData;

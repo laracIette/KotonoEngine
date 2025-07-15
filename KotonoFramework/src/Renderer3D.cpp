@@ -86,19 +86,19 @@ void KtRenderer3D::CreateDynamicCommandBuffers()
 
 void KtRenderer3D::RecordStaticCommandBuffer(const uint32_t frameIndex)
 {
-	sortedStaticProxies_[frameIndex] = GetSortedProxies(staticProxies_[frameIndex]);
+	SortProxies(staticProxies_[frameIndex]);
 	VkCommandBuffer commandBuffer = staticCommandBuffers_[frameIndex];
 	BeginCommandBuffer(commandBuffer, frameIndex);
-	CmdDrawProxies(commandBuffer, sortedStaticProxies_[frameIndex], frameIndex);
+	CmdDrawProxies(commandBuffer, staticProxies_[frameIndex], frameIndex);
 	EndCommandBuffer(commandBuffer);
 }
 
 void KtRenderer3D::RecordDynamicCommandBuffer(const uint32_t frameIndex)
 {
-	sortedDynamicProxies_[frameIndex] = GetSortedProxies(dynamicProxies_[frameIndex]);
+	SortProxies(dynamicProxies_[frameIndex]);
 	VkCommandBuffer commandBuffer = dynamicCommandBuffers_[frameIndex];
 	BeginCommandBuffer(commandBuffer, frameIndex);
-	CmdDrawProxies(commandBuffer, sortedDynamicProxies_[frameIndex], frameIndex);
+	CmdDrawProxies(commandBuffer, dynamicProxies_[frameIndex], frameIndex);
 	EndCommandBuffer(commandBuffer);
 }
 
@@ -145,12 +145,12 @@ void KtRenderer3D::UpdateStaticProxies(const uint32_t frameIndex)
 
 		if (count > 0)
 		{
-			staticProxies_[frameIndex].insert(proxy);
+			staticProxies_[frameIndex].Add(proxy);
 			--count;
 		}
 		else if (count < 0)
 		{
-			staticProxies_[frameIndex].erase(proxy);
+			staticProxies_[frameIndex].Remove(proxy);
 			++count;
 		}
 	}
@@ -177,12 +177,12 @@ void KtRenderer3D::UpdateDynamicProxies(const uint32_t frameIndex)
 
 		if (count > 0)
 		{
-			dynamicProxies_[frameIndex].insert(proxy);
+			dynamicProxies_[frameIndex].Add(proxy);
 			--count;
 		}
 		else if (count < 0)
 		{
-			dynamicProxies_[frameIndex].erase(proxy);
+			dynamicProxies_[frameIndex].Remove(proxy);
 			++count;
 		}
 	}
@@ -195,11 +195,9 @@ void KtRenderer3D::UpdateDynamicProxies(const uint32_t frameIndex)
 	);
 }
 
-const KtRenderer3D::ProxiesVector KtRenderer3D::GetSortedProxies(const ProxiesUnorderedSet& proxies) const
+void KtRenderer3D::SortProxies(ProxiesPool& proxies) 
 {
-	ProxiesVector sortedProxies(proxies.begin(), proxies.end());
-
-	std::sort(sortedProxies.begin(), sortedProxies.end(),
+	std::sort(proxies.begin(), proxies.end(),
 		[](const KtRenderable3DProxy* a, const KtRenderable3DProxy* b)
 		{
 			if (a->shader != b->shader)
@@ -213,8 +211,6 @@ const KtRenderer3D::ProxiesVector KtRenderer3D::GetSortedProxies(const ProxiesUn
 			return a->viewport < b->viewport;
 		}
 	);
-
-	return sortedProxies;
 }
 
 void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
@@ -229,12 +225,13 @@ void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIn
 		GetIsDynamicProxiesDirty(frameIndex))
 	{
 		const KtCuller3D culler{};
-		const auto culledStaticProxies = culler.ComputeCulling(staticProxies_[frameIndex], KT_CULLER_3D_FIELD_ALL);
-		const auto culledDynamicProxies = culler.ComputeCulling(dynamicProxies_[frameIndex], KT_CULLER_3D_FIELD_ALL);
+		auto culledStaticProxies = culler.ComputeCulling(staticProxies_[frameIndex], KT_CULLER_3D_FIELD_ALL);
+		auto culledDynamicProxies = culler.ComputeCulling(dynamicProxies_[frameIndex], KT_CULLER_3D_FIELD_ALL);
+		SortProxies(culledStaticProxies);
+		SortProxies(culledDynamicProxies);
 
-		ProxiesVector sortedGlobalProxies = GetSortedProxies(culledStaticProxies);
-		const ProxiesVector sortedDynamicProxies = GetSortedProxies(culledDynamicProxies);
-		sortedGlobalProxies.insert(sortedGlobalProxies.end(), sortedDynamicProxies.begin(), sortedDynamicProxies.end());
+		ProxiesPool sortedGlobalProxies = culledStaticProxies;
+		sortedGlobalProxies.Merge(culledDynamicProxies);
 		
 		UpdateDescriptorSets(sortedGlobalProxies, frameIndex);
 		MarkDynamicProxiesNotDirty(frameIndex);
@@ -257,7 +254,7 @@ void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIn
 	CmdExecuteCommandBuffers(commandBuffer, frameIndex);
 }
 
-void KtRenderer3D::UpdateDescriptorSets(const ProxiesVector& proxies, const uint32_t frameIndex) const
+void KtRenderer3D::UpdateDescriptorSets(const ProxiesPool& proxies, const uint32_t frameIndex) const
 {
 	std::unordered_map<KtShader*, std::vector<KtObjectData3D>> shaderObjectBufferDatas;
 	for (const auto* proxy : proxies)
@@ -279,9 +276,9 @@ void KtRenderer3D::UpdateDescriptorSets(const ProxiesVector& proxies, const uint
 	}
 }
 
-void KtRenderer3D::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesVector& proxies, const uint32_t frameIndex)
+void KtRenderer3D::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex)
 {
-	if (proxies.empty())
+	if (proxies.Empty())
 	{
 		return;
 	}
@@ -289,8 +286,8 @@ void KtRenderer3D::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesVe
 	const KtShader* currentShader = nullptr;
 	const KtRenderable3D* currentRenderable = nullptr;
 	const KtViewport* currentViewport = nullptr;
-	
-	for (size_t i = 0; i < proxies.size();)
+
+	for (size_t i = 0; i < proxies.Size();)
 	{
 		const auto* proxy = proxies[i];
 		const KtShader* shader = proxy->shader;
@@ -299,7 +296,7 @@ void KtRenderer3D::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesVe
 
 		// Find the extent of the current batch
 		size_t instanceCount = 1;
-		while (i + instanceCount < proxies.size())
+		while (i + instanceCount < proxies.Size())
 		{
 			const auto* next = proxies[i + instanceCount];
 			if (next->shader != shader || next->renderable != renderable || next->viewport != viewport)

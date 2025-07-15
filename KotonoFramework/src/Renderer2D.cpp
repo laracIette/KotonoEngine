@@ -43,12 +43,12 @@ void KtRenderer2D::Update(const uint32_t frameIndex)
 
 		if (count > 0)
 		{
-			proxies_[frameIndex].insert(proxy);
+			proxies_[frameIndex].Add(proxy);
 			--count;
 		}
 		else if (count < 0)
 		{
-			proxies_[frameIndex].erase(proxy);
+			proxies_[frameIndex].Remove(proxy);
 			++count;
 		}
 	}
@@ -82,7 +82,7 @@ void KtRenderer2D::CreateVertexBuffer()
 		stagingBuffer
 	);
 
-	memcpy(stagingBuffer.AllocationInfo.pMappedData, Vertices.data(), (size_t)bufferSize);
+	memcpy(stagingBuffer.AllocationInfo.pMappedData, Vertices.data(), static_cast<size_t>(bufferSize));
 
 	Framework.GetContext().CreateBuffer(
 		bufferSize,
@@ -110,7 +110,7 @@ void KtRenderer2D::CreateIndexBuffer()
 		stagingBuffer
 	);
 
-	memcpy(stagingBuffer.AllocationInfo.pMappedData, Indices.data(), (size_t)bufferSize);
+	memcpy(stagingBuffer.AllocationInfo.pMappedData, Indices.data(), static_cast<size_t>(bufferSize));
 
 	Framework.GetContext().CreateBuffer(
 		bufferSize,
@@ -205,7 +205,6 @@ void KtRenderer2D::Remove(KtRenderable2DProxy* proxy)
 
 void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
 {
-
 	if (isCommandBufferDirty_[frameIndex] || GetIsAnyProxyDirty(frameIndex))
 	{
 		isCommandBufferDirty_[frameIndex] = false;
@@ -332,7 +331,7 @@ void KtRenderer2D::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesVe
 	}
 }
 
-const KtRenderer2D::ProxiesVector KtRenderer2D::GetSortedProxies(const ProxiesUnorderedSet& proxies) const
+const KtRenderer2D::ProxiesVector KtRenderer2D::GetSortedProxies(const ProxiesPool& proxies) const
 {
 	ProxiesVector sortedProxies(proxies.begin(), proxies.end());
 

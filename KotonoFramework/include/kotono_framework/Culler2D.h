@@ -1,16 +1,16 @@
 #pragma once
-#include <unordered_set>
+#include "Pool.h"
 struct KtRenderable2DProxy;
 class KtCuller2D final
 {
 private:
-	using ProxiesUnorderedSet = std::unordered_set<KtRenderable2DProxy*>;
+	using ProxiesPool = KtPool<KtRenderable2DProxy*>;
 
 public:
-	const ProxiesUnorderedSet ComputeCulling(ProxiesUnorderedSet renderQueueData) const;
+	const ProxiesPool ComputeCulling(ProxiesPool renderQueueData) const;
 
 private:
-	const ProxiesUnorderedSet ComputeNullCulling(const ProxiesUnorderedSet& renderQueueData) const;
-	const ProxiesUnorderedSet ComputeScreenCulling(const ProxiesUnorderedSet& renderQueueData) const;
+	const ProxiesPool ComputeNullCulling(const ProxiesPool& renderQueueData) const;
+	const ProxiesPool ComputeScreenCulling(const ProxiesPool& renderQueueData) const;
 };
 

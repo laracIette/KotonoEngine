@@ -1,16 +1,15 @@
 #pragma once
 #include "UniformData3D.h"
 #include "frames_in_flight.h"
-#include <vulkan/vulkan_core.h>
-#include <unordered_set>
+#include "Pool.h"
 #include "RendererFrameStats.h"
+#include <vulkan/vulkan_core.h>
 struct KtRenderable3DProxy;
 class KtShader;
 class KtRenderer3D final
 {
 private:
-	using ProxiesVector = std::vector<KtRenderable3DProxy*>;
-	using ProxiesUnorderedSet = std::unordered_set<KtRenderable3DProxy*>;
+	using ProxiesPool = KtPool<KtRenderable3DProxy*>;
 
 public:
 	void Init();
@@ -37,10 +36,8 @@ private:
 
 	std::unordered_map<KtRenderable3DProxy*, int32_t> stagingStaticProxies_;
 	std::unordered_map<KtRenderable3DProxy*, int32_t> stagingDynamicProxies_;
-	FramesInFlightArray<ProxiesUnorderedSet> staticProxies_;
-	FramesInFlightArray<ProxiesUnorderedSet> dynamicProxies_;
-	FramesInFlightArray<ProxiesVector> sortedStaticProxies_;
-	FramesInFlightArray<ProxiesVector> sortedDynamicProxies_;
+	FramesInFlightArray<ProxiesPool> staticProxies_;
+	FramesInFlightArray<ProxiesPool> dynamicProxies_;
 
 	FramesInFlightArray<std::unordered_map<const KtShader*, uint32_t>> instanceIndices_;
 
@@ -53,12 +50,12 @@ private:
 
 	void UpdateStaticProxies(const uint32_t frameIndex);
 	void UpdateDynamicProxies(const uint32_t frameIndex);
-	void UpdateDescriptorSets(const ProxiesVector& proxies, const uint32_t frameIndex) const;
+	void UpdateDescriptorSets(const ProxiesPool& proxies, const uint32_t frameIndex) const;
 
-	void CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesVector& proxies, const uint32_t frameIndex);
+	void CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex);
 	void CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 
-	const ProxiesVector GetSortedProxies(const ProxiesUnorderedSet& proxies) const;
+	void SortProxies(ProxiesPool& proxies);
 	const bool GetIsDynamicProxiesDirty(const uint32_t frameIndex) const;
 	void MarkDynamicProxiesNotDirty(const uint32_t frameIndex);
 };
