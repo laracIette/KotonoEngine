@@ -210,6 +210,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)KotonoFramework\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>KotonoFramework.lib;vulkan-1.lib;glfw3.lib;assimp-vc143-mt.lib;OpenAL32.lib;SPIRV-Reflect.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
