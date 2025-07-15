@@ -218,7 +218,6 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIn
 		UpdateDescriptorSets(sortedProxies_[frameIndex], frameIndex);
 
 		RecordCommandBuffer(frameIndex);
-
 		MarkProxiesNotDirty(frameIndex);
 	}
 

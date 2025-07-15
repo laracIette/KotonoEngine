@@ -23,6 +23,15 @@ public:
         callbackFunction_ = [instance, function](Args... args) { (instance->*function)(args...); };
     }
 
+    template <class Tinst, class Tfunc>
+        requires std::is_base_of_v<Tfunc, Tinst>
+    KtDelegate(const Tinst* instance, void (Tfunc::* function)(Args...) const)
+    {
+        instance_ = const_cast<void*>(static_cast<const void*>(instance));
+        functionIdentity_ = *reinterpret_cast<void**>(&function);
+        callbackFunction_ = [instance, function](Args... args) { (instance->*function)(args...); };
+    }
+
     void Callback(Args... args) const
     {
         if (instance_)

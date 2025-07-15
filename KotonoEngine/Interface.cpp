@@ -3,14 +3,12 @@
 #include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/Path.h>
-#include <kotono_framework/Viewport.h>
 #include "Engine.h"
 #include "InterfaceImageObject.h"
 #include "InterfaceImageComponent.h"
 #include "InterfaceTextBoxObject.h"
 #include "InterfaceFloatTextBoxObject.h"
 #include "InterfaceTextComponent.h"
-#include "Timer.h"
 #include "Time.h"
 #include "ObjectManager.h"
 #include "math_utils.h"
@@ -37,9 +35,6 @@ void KInterface::Init()
 void KInterface::Cleanup()
 {
 	Base::Cleanup();
-
-	//textBox2_->GetValueChangedEvent().RemoveListener(KtDelegate<float>(this, &KInterface::OnTextBox2ValueChanged));
-	//textBox3_->GetValueChangedEvent().RemoveListener(KtDelegate<float>(this, &KInterface::OnTextBox3ValueChanged));
 
 	image1_->Delete();
 	image2_->Delete();
@@ -109,12 +104,12 @@ void KInterface::SetLayout()
 #endif
 }
 
-void KInterface::OnTextBox2ValueChanged(float delta)
+void KInterface::OnTextBox2ValueChanged(const float delta) const
 {
 	image1_->GetRootComponent()->Translate(glm::vec2(delta / 800.0f, 0.0f));
 }
 
-void KInterface::OnTextBox3ValueChanged(float delta)
+void KInterface::OnTextBox3ValueChanged(const float delta) const
 {
 	image1_->GetRootComponent()->Translate(glm::vec2(0.0f, delta / 450.0f));
 }

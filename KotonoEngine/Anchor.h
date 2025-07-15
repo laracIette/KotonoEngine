@@ -1,11 +1,11 @@
 #pragma once
-enum class EAnchor : int
+enum class EAnchor : char
 {
-    Center = 0x00000000,
-    Top = 0x00000001,
-    Bottom = 0x00000002,
-    Left = 0x00000004,
-    Right = 0x00000008,
+    Center = 0x00,
+    Top = 0x01,
+    Bottom = 0x02,
+    Left = 0x04,
+    Right = 0x08,
     TopLeft = Top | Left,
     TopRight = Top | Right,
     BottomLeft = Bottom | Left,
@@ -14,10 +14,10 @@ enum class EAnchor : int
 
 inline constexpr EAnchor operator&(EAnchor first, EAnchor second)
 {
-    return static_cast<EAnchor>(static_cast<int>(first) & static_cast<int>(second));
+    return static_cast<EAnchor>(static_cast<char>(first) & static_cast<char>(second));
 }
 
 inline constexpr EAnchor operator|(EAnchor first, EAnchor second)
 {
-    return static_cast<EAnchor>(static_cast<int>(first) | static_cast<int>(second));
+    return static_cast<EAnchor>(static_cast<char>(first) | static_cast<char>(second));
 }

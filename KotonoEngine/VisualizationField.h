@@ -1,5 +1,5 @@
 #pragma once
-enum class EVisualizationField
+enum class EVisualizationField : char
 {
 	SceneObject,
 	SceneObjectBounds,

@@ -3,10 +3,8 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <typeindex>
-#include <kotono_framework/Event.h>
 #include <kotono_framework/Pool.h>
 #include <array>
-#include <any>
 
 class KObject;
 class KTimer;

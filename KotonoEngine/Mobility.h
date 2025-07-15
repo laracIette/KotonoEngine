@@ -1,5 +1,5 @@
 #pragma once
-enum class EMobility
+enum class EMobility : char
 {
 	Dynamic,
 	Static

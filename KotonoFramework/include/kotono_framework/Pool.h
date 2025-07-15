@@ -1,11 +1,13 @@
 #pragma once
 #include <vector>
+#include <functional>
 template <typename ValueType>
 class KtPool final
 {
 private:
-	using IteratorType = std::vector<ValueType>::iterator;
-	using ConstIteratorType = std::vector<ValueType>::const_iterator;
+	using VectorType = std::vector<ValueType>;
+	using IteratorType = VectorType::iterator;
+	using ConstIteratorType = VectorType::const_iterator;
 	using ConditionFunction = std::function<bool(const ValueType&)>;
 
 public:
@@ -121,6 +123,6 @@ public:
 	}
 
 private:
-	std::vector<ValueType> data_;
+	VectorType data_;
 };
 
