@@ -2,6 +2,7 @@
 #include <vulkan/vulkan_core.h>
 #include <filesystem>
 #include <vma/vk_mem_alloc.h>
+#include "AllocatedBuffer.h"
 #include "glm_includes.h"
 #include "Renderable2D.h"
 class KtImageTexture final : public KtRenderable2D
@@ -36,9 +37,13 @@ private:
     // Number of levels of mipmaps
     uint32_t mipLevels_;
 
+    KtAllocatedBuffer stagingBuffer_;
+
     VkDescriptorImageInfo imageInfo_;
 
     void CreateTextureImage();
     void CreateTextureImageView();
 	void CreateTextureSampler();
+
+    void DestroyStagingBuffer();
 };

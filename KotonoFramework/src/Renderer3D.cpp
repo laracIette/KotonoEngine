@@ -241,7 +241,7 @@ void KtRenderer3D::SortProxies(ProxiesPool& proxies)
 
 void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
 {
-	instanceIndices_[frameIndex] = {};
+	instanceIndices_[frameIndex].clear();
 	// draw calls are currently messed up by command buffers record
 	// that only records once per frame in flight at every change
 	stats_[frameIndex] = {};

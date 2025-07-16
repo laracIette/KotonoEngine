@@ -23,9 +23,13 @@ private:
 	std::vector<uint32_t> indices_;
 	KtAllocatedBuffer vertexBuffer_;
 	KtAllocatedBuffer indexBuffer_;
+	KtAllocatedBuffer stagingVertexBuffer_;
+	KtAllocatedBuffer stagingIndexBuffer_;
 
 	void Load();
 	void CreateVertexBuffer();
 	void CreateIndexBuffer();
+	void DestroyStagingVertexBuffer();
+	void DestroyStagingIndexBuffer();
 };
 

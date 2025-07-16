@@ -78,16 +78,15 @@ void KtRenderer2D::CreateVertexBuffer()
 {
 	const VkDeviceSize bufferSize = sizeof(KtVertex2D) * Vertices.size();
 
-	KtAllocatedBuffer stagingBuffer;
 	Framework.GetContext().CreateBuffer(
 		bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
-		stagingBuffer
+		stagingVertexBuffer_
 	);
 
-	memcpy(stagingBuffer.AllocationInfo.pMappedData, Vertices.data(), static_cast<size_t>(bufferSize));
+	memcpy(stagingVertexBuffer_.AllocationInfo.pMappedData, Vertices.data(), static_cast<size_t>(bufferSize));
 
 	Framework.GetContext().CreateBuffer(
 		bufferSize,
@@ -97,25 +96,23 @@ void KtRenderer2D::CreateVertexBuffer()
 		vertexBuffer_
 	);
 
-	Framework.GetContext().CopyBuffer(stagingBuffer.Buffer, vertexBuffer_.Buffer, bufferSize);
-
-	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingBuffer.Buffer, stagingBuffer.Allocation);
+	Framework.GetContext().CopyBuffer(stagingVertexBuffer_.Buffer, vertexBuffer_.Buffer, bufferSize);
+	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate<>(this, &KtRenderer2D::DestroyStagingVertexBuffer));
 }
 
 void KtRenderer2D::CreateIndexBuffer()
 {
 	const VkDeviceSize bufferSize = sizeof(uint32_t) * Indices.size();
 
-	KtAllocatedBuffer stagingBuffer;
 	Framework.GetContext().CreateBuffer(
 		bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
-		stagingBuffer
+		stagingIndexBuffer_
 	);
 
-	memcpy(stagingBuffer.AllocationInfo.pMappedData, Indices.data(), static_cast<size_t>(bufferSize));
+	memcpy(stagingIndexBuffer_.AllocationInfo.pMappedData, Indices.data(), static_cast<size_t>(bufferSize));
 
 	Framework.GetContext().CreateBuffer(
 		bufferSize,
@@ -125,9 +122,18 @@ void KtRenderer2D::CreateIndexBuffer()
 		indexBuffer_
 	);
 
-	Framework.GetContext().CopyBuffer(stagingBuffer.Buffer, indexBuffer_.Buffer, bufferSize);
+	Framework.GetContext().CopyBuffer(stagingIndexBuffer_.Buffer, indexBuffer_.Buffer, bufferSize);
+	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate<>(this, &KtRenderer2D::DestroyStagingIndexBuffer));
+}
 
-	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingBuffer.Buffer, stagingBuffer.Allocation);
+void KtRenderer2D::DestroyStagingVertexBuffer()
+{
+	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingVertexBuffer_.Buffer, stagingVertexBuffer_.Allocation);
+}
+
+void KtRenderer2D::DestroyStagingIndexBuffer()
+{
+	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingIndexBuffer_.Buffer, stagingIndexBuffer_.Allocation);
 }
 
 void KtRenderer2D::CmdBindVertexBuffer(VkCommandBuffer commandBuffer) const
@@ -227,7 +233,7 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIn
 		auto culledData = culler.ComputeCulling(proxies_[frameIndex]);
 		SortProxies(culledData);
 
-		instanceIndices_[frameIndex] = {};
+		instanceIndices_[frameIndex].clear();
 		UpdateDescriptorSets(culledData, frameIndex);
 
 		RecordCommandBuffer(frameIndex);

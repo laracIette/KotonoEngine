@@ -33,6 +33,11 @@ public:
         }
     }
 
+    void Clear()
+    {
+        delegates_.Clear();
+    }
+
 private:
     KtPool<Delegate> delegates_;
 };

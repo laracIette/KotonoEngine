@@ -224,10 +224,10 @@ void KtContext::PickPhysicalDevice()
 			// If this device has more VRAM than the previously selected one
 			if (totalVRAM > maxVRAM)
 			{
-				bestDevice = device;
 				maxVRAM = totalVRAM;
+				bestDevice = device;
 
-				std::cout << "Selected GPU: " << deviceProperties.deviceName << ", VRAM: " << totalVRAM / (1024ull * 1024) << " MB" << std::endl;
+				KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Selected GPU: %s, VRAM: %llu MB", deviceProperties.deviceName, totalVRAM / (1024llu * 1024));
 			}
 
 			// Stop on cpu if on battery
@@ -528,13 +528,13 @@ void KtContext::CreateAllocator()
 	allocatorInfo.instance = instance_;
 	allocatorInfo.vulkanApiVersion = VK_API_VERSION_1_3;
 
-	if (vmaCreateAllocator(&allocatorInfo, &allocator_) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create VMA allocator");
-	}
+	VK_CHECK_THROW(
+		vmaCreateAllocator(&allocatorInfo, &allocator_),
+		"Failed to create VMA allocator"
+	);
 }
 
-const VkCommandBuffer KtContext::BeginSingleTimeCommands() const
+VkCommandBuffer KtContext::BeginSingleTimeCommands() const
 {
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -542,7 +542,7 @@ const VkCommandBuffer KtContext::BeginSingleTimeCommands() const
 	allocInfo.commandPool = commandPool_;
 	allocInfo.commandBufferCount = 1;
 
-	VkCommandBuffer commandBuffer;
+	VkCommandBuffer commandBuffer{};
 	vkAllocateCommandBuffers(device_, &allocInfo, &commandBuffer);
 
 	VkCommandBufferBeginInfo beginInfo{};
@@ -554,19 +554,38 @@ const VkCommandBuffer KtContext::BeginSingleTimeCommands() const
 	return commandBuffer;
 }
 
-void KtContext::EndSingleTimeCommands(VkCommandBuffer commandBuffer) const
+void KtContext::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
 {
 	vkEndCommandBuffer(commandBuffer);
+	singleTimeCommands_.push_back(commandBuffer);
+}
+
+void KtContext::ExecuteSingleTimeCommands()
+{
+	if (singleTimeCommands_.empty())
+	{
+		return;
+	}
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &commandBuffer;
+	submitInfo.commandBufferCount = static_cast<uint32_t>(singleTimeCommands_.size());
+	submitInfo.pCommandBuffers = singleTimeCommands_.data();
 
 	vkQueueSubmit(graphicsQueue_, 1, &submitInfo, VK_NULL_HANDLE);
 	vkQueueWaitIdle(graphicsQueue_);
 
-	vkFreeCommandBuffers(device_, commandPool_, 1, &commandBuffer);
+	vkFreeCommandBuffers(device_, commandPool_, static_cast<uint32_t>(singleTimeCommands_.size()), singleTimeCommands_.data());
+
+	singleTimeCommands_.clear();
+
+	eventExecuteSingleTimeCommands_.Broadcast();
+	eventExecuteSingleTimeCommands_.Clear();
+}
+
+KtEvent<>& KtContext::GetEventExecuteSingleTimeCommands()
+{
+	return eventExecuteSingleTimeCommands_;
 }
 
 void KtContext::CreateCommandPool()
@@ -626,7 +645,7 @@ void KtContext::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemo
 	}
 }
 
-void KtContext::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) const
+void KtContext::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 {
 	VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
 
@@ -675,10 +694,11 @@ void KtContext::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels,
 	allocCreateInfo.requiredFlags = properties;
 
 	// Use vmaCreateImage for image creation and memory allocation
-	if (vmaCreateImage(allocator_, &imageInfo, &allocCreateInfo, &image, &imageAllocation, nullptr) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create image with memory allocation!");
-	}
+	VK_CHECK_THROW(
+		vmaCreateImage(allocator_, &imageInfo, &allocCreateInfo, &image, &imageAllocation, nullptr),
+		"failed to create image with memory allocation!"
+	);
+	
 }
 
 const VkFormat KtContext::FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const

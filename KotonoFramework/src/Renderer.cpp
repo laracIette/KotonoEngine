@@ -442,13 +442,13 @@ void KtRenderer::CreateSyncObjects()
 		}
 	}
 }
-static constexpr bool MULTI_THREADED = false;
+static constexpr bool IS_MULTI_THREADED = false;
 void KtRenderer::DrawFrame()
 {
 	const uint32_t frameIndex = GetGameThreadFrame();
 	UpdateRenderers(frameIndex);
-	
-	if constexpr (MULTI_THREADED)
+
+	if constexpr (IS_MULTI_THREADED)
 	{
 		if (frameCount_ >= 1)
 		{
@@ -462,6 +462,7 @@ void KtRenderer::DrawFrame()
 			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "frame %u rendered", frameCount_);
 
 			JoinThread(rhiThread_);
+			Framework.GetContext().ExecuteSingleTimeCommands();
 			const uint32_t renderRHIFrame = GetRHIThreadFrame();
 			rhiThread_ = std::thread(&KtRenderer::SubmitCommandBuffer, this, renderRHIFrame);
 		}
@@ -475,6 +476,7 @@ void KtRenderer::DrawFrame()
 		}
 
 		RecordCommandBuffer(frameIndex);
+		Framework.GetContext().ExecuteSingleTimeCommands();
 		SubmitCommandBuffer(frameIndex);
 	}
 	
@@ -591,7 +593,7 @@ void KtRenderer::SubmitCommandBuffer(const uint32_t frameIndex)
 		"failed to present swap chain image!"
 	);
 
-	if constexpr (MULTI_THREADED)
+	if constexpr (IS_MULTI_THREADED)
 	{
 		if (!TryAcquireNextImage(frameIndex))
 		{

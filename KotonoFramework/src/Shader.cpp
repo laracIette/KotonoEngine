@@ -290,8 +290,9 @@ void KtShader::CreateGraphicsPipeline()
 	std::vector<VkShaderModule> shaderModules;
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
 
-	nlohmann::json json;
-	KtSerializer().ReadData(path_, json);
+	nlohmann::json json{};
+	KtSerializer serializer{};
+	serializer.ReadData(path_, json);
 	for (const auto& shader : json["shaders"])
 	{
 		const auto path = Framework.GetPath().GetFrameworkPath() / "shaders" / shader["path"];
@@ -714,8 +715,9 @@ void KtShader::CreateDescriptorPools()
 
 void KtShader::CreateShaderLayout()
 {
-	nlohmann::json json;
-	KtSerializer().ReadData(path_, json);
+	nlohmann::json json{};
+	KtSerializer serializer{};
+	serializer.ReadData(path_, json);
 	for (const auto& shader : json["shaders"])
 	{
 		const auto path = Framework.GetPath().GetFrameworkPath() / "shaders" / shader["path"];

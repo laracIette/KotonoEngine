@@ -1,5 +1,6 @@
 #include "ObjectManager.h"
 #include <kotono_framework/Framework.h>
+#include <kotono_framework/Context.h>
 #include <kotono_framework/Renderer.h>
 #include <kotono_framework/Window.h>
 #include <kotono_framework/InputManager.h>
@@ -19,6 +20,7 @@
 #include "math_utils.h"
 
 #define KT_LOG_IMPORTANCE_LEVEL_OBJECT KT_LOG_IMPORTANCE_LEVEL_NONE
+#undef interface
 
 static TCamera* Camera = nullptr;
 

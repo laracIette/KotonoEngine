@@ -11,6 +11,7 @@
 #include "QueueFamilyIndices.h"
 #include "SwapChainSupportDetails.h"
 #include "AllocatedBuffer.h"
+#include "Event.h"
 
 class KtContext final
 {
@@ -19,7 +20,6 @@ public:
 	void Cleanup();
 
 	const VkSampleCountFlagBits GetMSAASamples() const;
-
 	VkPhysicalDevice& GetPhysicalDevice();
 	VkDevice& GetDevice();
 	VmaAllocator& GetAllocator();
@@ -28,7 +28,7 @@ public:
 	VkSurfaceKHR& GetSurface();
 
 	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VmaAllocationCreateFlags flags, KtAllocatedBuffer& buffer, VmaMemoryUsage vmaUsage = VMA_MEMORY_USAGE_UNKNOWN) const;
-	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) const;
+	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 	void CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VmaAllocation& imageAllocation) const;
 	void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
 	void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
@@ -36,26 +36,29 @@ public:
 	const VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) const;
 	const KtQueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const;
 	const KtSwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
+	
+	void ExecuteSingleTimeCommands();
+	KtEvent<>& GetEventExecuteSingleTimeCommands();
 
 private:
 	VkInstance instance_;
 	VkDebugUtilsMessengerEXT debugMessenger_;
-	// Window surface
 	VkSurfaceKHR surface_;
 
-	VkPhysicalDevice physicalDevice_ = VK_NULL_HANDLE;
-	// Logical device
+	VkPhysicalDevice physicalDevice_{ VK_NULL_HANDLE };
 	VkDevice device_;
 
 	VmaAllocator allocator_;
 
 	VkQueue graphicsQueue_;
-	// Presentation queue
 	VkQueue presentQueue_;
 
 	VkCommandPool commandPool_;
 
-	VkSampleCountFlagBits msaaSamples_ = VK_SAMPLE_COUNT_1_BIT;
+	std::vector<VkCommandBuffer> singleTimeCommands_;
+	KtEvent<> eventExecuteSingleTimeCommands_;
+
+	VkSampleCountFlagBits msaaSamples_{ VK_SAMPLE_COUNT_1_BIT };
 
 	void CreateInstance();
 
@@ -76,11 +79,11 @@ private:
 
 	void CreateAllocator();
 
-	const VkCommandBuffer BeginSingleTimeCommands() const;
-	void EndSingleTimeCommands(VkCommandBuffer commandBuffer) const;
 	void CreateCommandPool();
-	const uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
+	VkCommandBuffer BeginSingleTimeCommands() const;
+	void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
 
+	const uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
 	const VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
 	const VkFormat FindDepthFormat() const;
 	const bool HasStencilComponent(VkFormat format) const;

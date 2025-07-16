@@ -93,16 +93,15 @@ void KtModel::CreateVertexBuffer()
 {
 	const VkDeviceSize bufferSize = sizeof(KtVertex3D) * vertices_.size();
 
-	KtAllocatedBuffer stagingBuffer;
 	Framework.GetContext().CreateBuffer(
 		bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
-		stagingBuffer
+		stagingVertexBuffer_
 	);
 
-	memcpy(stagingBuffer.AllocationInfo.pMappedData, vertices_.data(), static_cast<size_t>(bufferSize));
+	memcpy(stagingVertexBuffer_.AllocationInfo.pMappedData, vertices_.data(), static_cast<size_t>(bufferSize));
 
 	Framework.GetContext().CreateBuffer(
 		bufferSize,
@@ -112,25 +111,23 @@ void KtModel::CreateVertexBuffer()
 		vertexBuffer_
 	);
 
-	Framework.GetContext().CopyBuffer(stagingBuffer.Buffer, vertexBuffer_.Buffer, bufferSize);
-
-	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingBuffer.Buffer, stagingBuffer.Allocation);
+	Framework.GetContext().CopyBuffer(stagingVertexBuffer_.Buffer, vertexBuffer_.Buffer, bufferSize);
+	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate<>(this, &KtModel::DestroyStagingVertexBuffer));
 }
 
 void KtModel::CreateIndexBuffer()
 {
 	const VkDeviceSize bufferSize = sizeof(uint32_t) * indices_.size();
 
-	KtAllocatedBuffer stagingBuffer;
 	Framework.GetContext().CreateBuffer(
 		bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
-		stagingBuffer
+		stagingIndexBuffer_
 	);
 
-	memcpy(stagingBuffer.AllocationInfo.pMappedData, indices_.data(), static_cast<size_t>(bufferSize));
+	memcpy(stagingIndexBuffer_.AllocationInfo.pMappedData, indices_.data(), static_cast<size_t>(bufferSize));
 
 	Framework.GetContext().CreateBuffer(
 		bufferSize,
@@ -140,7 +137,16 @@ void KtModel::CreateIndexBuffer()
 		indexBuffer_
 	);
 
-	Framework.GetContext().CopyBuffer(stagingBuffer.Buffer, indexBuffer_.Buffer, bufferSize);
+	Framework.GetContext().CopyBuffer(stagingIndexBuffer_.Buffer, indexBuffer_.Buffer, bufferSize);
+	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate<>(this, &KtModel::DestroyStagingIndexBuffer));
+}
 
-	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingBuffer.Buffer, stagingBuffer.Allocation);
+void KtModel::DestroyStagingVertexBuffer()
+{
+	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingVertexBuffer_.Buffer, stagingVertexBuffer_.Allocation);
+}
+
+void KtModel::DestroyStagingIndexBuffer()
+{
+	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingIndexBuffer_.Buffer, stagingIndexBuffer_.Allocation);
 }

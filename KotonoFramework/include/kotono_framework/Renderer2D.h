@@ -28,6 +28,8 @@ public:
 private:
 	KtAllocatedBuffer vertexBuffer_;
 	KtAllocatedBuffer indexBuffer_;
+	KtAllocatedBuffer stagingVertexBuffer_;
+	KtAllocatedBuffer stagingIndexBuffer_;
 
 	KtFramesInFlightArray<KtUniformData2D> uniformDatas_;
 
@@ -41,6 +43,8 @@ private:
 
 	void CreateVertexBuffer();
 	void CreateIndexBuffer();
+	void DestroyStagingVertexBuffer();
+	void DestroyStagingIndexBuffer();
 
 	void CmdBindVertexBuffer(VkCommandBuffer commandBuffer) const;
 	void CmdBindIndexBuffer(VkCommandBuffer commandBuffer) const;
