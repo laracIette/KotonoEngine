@@ -3,7 +3,6 @@
 #include "Context.h"
 #include "Window.h"
 #include "log.h"
-#include "Viewport.h"
 #include "vk_utils.h"
 #include "time_utils.h"
 
@@ -15,6 +14,7 @@ void KtRenderer::Init()
 	CreateColorResources();
 	CreateDepthResources();
 	CreateFramebuffers();
+	CreateCommandPools();
 	CreateCommandBuffers();
 	CreateSyncObjects();
 
@@ -33,6 +33,11 @@ void KtRenderer::Cleanup()
 	renderer3D_.Cleanup();
 	
 	CleanupSwapChain();
+
+	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; ++i)
+	{
+		vkDestroyCommandPool(Framework.GetContext().GetDevice(), commandPools_[i], nullptr);
+	}
 
 	vkDestroyRenderPass(Framework.GetContext().GetDevice(), renderPass_, nullptr);
 
@@ -373,16 +378,47 @@ const bool KtRenderer::HasStencilComponent(const VkFormat format) const
 	return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 }
 
+void KtRenderer::CreateCommandPools()
+{
+	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; ++i)
+	{
+		CreateCommandPool(static_cast<uint32_t>(i));
+	}
+}
+
+void KtRenderer::CreateCommandPool(const uint32_t frameIndex)
+{
+	const KtQueueFamilyIndices queueFamilyIndices = Framework.GetContext().FindQueueFamilies(Framework.GetContext().GetPhysicalDevice());
+
+	VkCommandPoolCreateInfo poolInfo{};
+	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+	poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+	poolInfo.queueFamilyIndex = queueFamilyIndices.GraphicsFamily.value();
+
+	VK_CHECK_THROW(
+		vkCreateCommandPool(Framework.GetContext().GetDevice(), &poolInfo, nullptr, &commandPools_[frameIndex]),
+		"failed to create command pool!"
+	);
+}
+
 void KtRenderer::CreateCommandBuffers()
+{
+	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; ++i)
+	{
+		CreateCommandBuffer(static_cast<uint32_t>(i));
+	}
+}
+
+void KtRenderer::CreateCommandBuffer(const uint32_t frameIndex)
 {
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = Framework.GetContext().GetCommandPool();
+	allocInfo.commandPool = commandPools_[frameIndex];
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers_.size());
+	allocInfo.commandBufferCount = 1;
 
 	VK_CHECK_THROW(
-		vkAllocateCommandBuffers(Framework.GetContext().GetDevice(), &allocInfo, commandBuffers_.data()),
+		vkAllocateCommandBuffers(Framework.GetContext().GetDevice(), &allocInfo, &commandBuffers_[frameIndex]),
 		"failed to allocate command buffers!"
 	);
 }
@@ -499,6 +535,11 @@ VkFramebuffer& KtRenderer::GetFramebuffer(const uint32_t frameIndex)
 	return swapChainFramebuffers_[imageIndices_[frameIndex]];
 }
 
+VkCommandPool& KtRenderer::GetCommandPool(const uint32_t frameIndex)
+{
+	return commandPools_[frameIndex];
+}
+
 void KtRenderer::CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
 {
 	renderer3D_.CmdDraw(commandBuffer, frameIndex);
@@ -507,8 +548,6 @@ void KtRenderer::CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t 
 
 void KtRenderer::SubmitCommandBuffer(const uint32_t frameIndex)
 {
-	// TODO: idk
-	// todo: figure that shit out
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
@@ -644,7 +683,7 @@ KtRenderer3D& KtRenderer::GetRenderer3D()
 	return renderer3D_;
 }
 
-VkRenderPass KtRenderer::GetRenderPass() const
+VkRenderPass& KtRenderer::GetRenderPass()
 {
 	return renderPass_;
 }

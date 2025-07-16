@@ -29,15 +29,15 @@ private:
 	KtAllocatedBuffer vertexBuffer_;
 	KtAllocatedBuffer indexBuffer_;
 
-	FramesInFlightArray<KtUniformData2D> uniformDatas_;
+	KtFramesInFlightArray<KtUniformData2D> uniformDatas_;
 
-	FramesInFlightArray<VkCommandBuffer> commandBuffers_;
-	FramesInFlightArray<bool> isCommandBufferDirty_;
+	KtFramesInFlightArray<VkCommandBuffer> commandBuffers_;
+	KtFramesInFlightArray<bool> isCommandBufferDirty_;
 
 	std::unordered_map<KtRenderable2DProxy*, int32_t> stagingProxies_;
-	FramesInFlightArray<ProxiesPool> proxies_;
+	KtFramesInFlightArray<ProxiesPool> proxies_;
 
-	FramesInFlightArray<std::unordered_map<const KtShader*, uint32_t>> instanceIndices_;
+	KtFramesInFlightArray<std::unordered_map<const KtShader*, uint32_t>> instanceIndices_;
 
 	void CreateVertexBuffer();
 	void CreateIndexBuffer();
@@ -46,6 +46,7 @@ private:
 	void CmdBindIndexBuffer(VkCommandBuffer commandBuffer) const;
 
 	void CreateCommandBuffers();
+	void CreateCommandBuffer(const uint32_t frameIndex);
 	void RecordCommandBuffer(const uint32_t frameIndex);
 	void BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 	void EndCommandBuffer(VkCommandBuffer commandBuffer);

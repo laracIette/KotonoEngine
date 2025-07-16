@@ -13,23 +13,23 @@ public:
 	struct DescriptorSetLayoutBindingData
 	{														  
 		VkDescriptorSetLayout                                      DescriptorSetLayout;
-		FramesInFlightArray<VkDescriptorSet>                       DescriptorSets;
+		KtFramesInFlightArray<VkDescriptorSet>                       DescriptorSets;
 		std::string                                                Name;
-		FramesInFlightArray<KtAllocatedBuffer>                     Buffers;
-		FramesInFlightArray<KtAllocatedBuffer>                     StagingBuffers;
-		FramesInFlightArray<size_t>                                MemberCounts;
+		KtFramesInFlightArray<KtAllocatedBuffer>                     Buffers;
+		KtFramesInFlightArray<KtAllocatedBuffer>                     StagingBuffers;
+		KtFramesInFlightArray<size_t>                                MemberCounts;
 		size_t                                                     MemberSize;
 		VkDescriptorType                                           DescriptorType;
 		uint32_t                                                   Binding;
 		uint32_t                                                   DescriptorCount;
 		VkShaderStageFlags                                         ShaderStageFlags;
 		VkDescriptorBindingFlags                                   BindingFlags;
-		FramesInFlightArray<std::vector<VkDescriptorImageInfo>>    ImageInfos;
+		KtFramesInFlightArray<std::vector<VkDescriptorImageInfo>>    ImageInfos;
 	};
 	struct DescriptorSetLayoutData
 	{
 	    VkDescriptorSetLayout                               DescriptorSetLayout;
-		FramesInFlightArray<VkDescriptorSet>                DescriptorSets;
+		KtFramesInFlightArray<VkDescriptorSet>                DescriptorSets;
 	    std::vector<DescriptorSetLayoutBindingData>         DescriptorSetLayoutBindingDatas;
 	};
 

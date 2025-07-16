@@ -25,8 +25,10 @@ public:
 	KtRenderer2D& GetRenderer2D();
 	KtRenderer3D& GetRenderer3D();
 
-	VkRenderPass GetRenderPass() const;
+	VkRenderPass& GetRenderPass();
 	VkFramebuffer& GetFramebuffer(const uint32_t frameIndex);
+
+	VkCommandPool& GetCommandPool(const uint32_t frameIndex);
 
 private:
 	KtRenderer2D renderer2D_;
@@ -41,7 +43,8 @@ private:
 
 	VkRenderPass renderPass_;
 
-	FramesInFlightArray<VkCommandBuffer> commandBuffers_;
+	KtFramesInFlightArray<VkCommandPool> commandPools_;
+	KtFramesInFlightArray<VkCommandBuffer> commandBuffers_;
 
 	std::thread renderThread_;
 	std::thread rhiThread_;
@@ -55,10 +58,10 @@ private:
 	VmaAllocation depthImageAllocation_;
 	VkImageView depthImageView_;
 
-	FramesInFlightArray<VkSemaphore> imageAvailableSemaphores_;
-	FramesInFlightArray<VkSemaphore> renderFinishedSemaphores_;
-	FramesInFlightArray<VkFence> inFlightFences_;
-	FramesInFlightArray<uint32_t> imageIndices_;
+	KtFramesInFlightArray<VkSemaphore> imageAvailableSemaphores_;
+	KtFramesInFlightArray<VkSemaphore> renderFinishedSemaphores_;
+	KtFramesInFlightArray<VkFence> inFlightFences_;
+	KtFramesInFlightArray<uint32_t> imageIndices_;
 
 	uint32_t frameCount_;
 
@@ -81,7 +84,10 @@ private:
 
 	const bool TryAcquireNextImage(const uint32_t frameIndex);
 
+	void CreateCommandPools();
+	void CreateCommandPool(const uint32_t frameIndex);
 	void CreateCommandBuffers();
+	void CreateCommandBuffer(const uint32_t frameIndex);
 	void RecordCommandBuffer(const uint32_t frameIndex);
 	void SubmitCommandBuffer(const uint32_t frameIndex);
 

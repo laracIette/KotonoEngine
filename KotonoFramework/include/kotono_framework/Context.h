@@ -26,7 +26,6 @@ public:
 	VkQueue& GetGraphicsQueue();
 	VkQueue& GetPresentQueue();
 	VkSurfaceKHR& GetSurface();
-	VkCommandPool& GetCommandPool();
 
 	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VmaAllocationCreateFlags flags, KtAllocatedBuffer& buffer, VmaMemoryUsage vmaUsage = VMA_MEMORY_USAGE_UNKNOWN) const;
 	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) const;

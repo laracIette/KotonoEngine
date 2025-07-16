@@ -986,11 +986,6 @@ VkSurfaceKHR& KtContext::GetSurface()
 	return surface_;
 }
 
-VkCommandPool& KtContext::GetCommandPool()
-{
-	return commandPool_;
-}
-
 const VkSampleCountFlagBits KtContext::GetMSAASamples() const
 {
 	return msaaSamples_;

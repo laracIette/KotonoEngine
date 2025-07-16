@@ -27,7 +27,7 @@ KtShader::KtShader(const std::filesystem::path& path) :
 
 void KtShader::Init()
 {
-	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_SHADER, "initializing shader '%s'", path_.string().c_str()); // todo: replace by name
+	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_SHADER, "initializing shader '%s'", path_.string().c_str());
 	CreateShaderLayout();
 	CreateDescriptorSetLayouts();
 	DebugLogDescriptorSetLayoutData();
@@ -204,7 +204,7 @@ void KtShader::CreateDescriptorSets()
 {
 	for (auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
 	{
-		FramesInFlightArray<uint32_t> variableDescriptorCounts{};
+		KtFramesInFlightArray<uint32_t> variableDescriptorCounts{};
 		variableDescriptorCounts.fill(MAX_BINDLESS_TEXTURES);
 
 		VkDescriptorSetVariableDescriptorCountAllocateInfo countInfo{};
@@ -212,7 +212,7 @@ void KtShader::CreateDescriptorSets()
 		countInfo.descriptorSetCount = static_cast<uint32_t>(variableDescriptorCounts.size());
 		countInfo.pDescriptorCounts = variableDescriptorCounts.data();
 
-		FramesInFlightArray<VkDescriptorSetLayout> layouts{};
+		KtFramesInFlightArray<VkDescriptorSetLayout> layouts{};
 		layouts.fill(descriptorSetLayoutData.DescriptorSetLayout);
 
 		VkDescriptorSetAllocateInfo allocInfo{};
@@ -832,7 +832,7 @@ void KtShader::PopulateShaderLayout(const std::span<uint8_t> spirvData, const Vk
 			{
 				VkVertexInputAttributeDescription vertexInputAttributeDescription{};
 				vertexInputAttributeDescription.location = input->location;
-				vertexInputAttributeDescription.binding = 0; // todo: may need to be custom
+				vertexInputAttributeDescription.binding = 0;
 				vertexInputAttributeDescription.format = static_cast<VkFormat>(input->format);
 				vertexInputAttributeDescription.offset = static_cast<uint32_t>(offset);
 				_shaderLayout.VertexInputAttributeDescriptions.push_back(vertexInputAttributeDescription);

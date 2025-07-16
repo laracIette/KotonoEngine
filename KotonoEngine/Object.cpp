@@ -3,7 +3,6 @@
 #include <kotono_framework/Serializer.h>
 #include "Engine.h"
 #include "ObjectManager.h"
-#include "Timer.h"
 #include "log.h"
 
 KObject::KObject()
@@ -17,7 +16,7 @@ KObject::~KObject()
 
 void KObject::Init()
 {
-    isConstructed_ = true; // todo: move that
+    isConstructed_ = true; // todo: maybe move that
 }
 
 void KObject::Update() 

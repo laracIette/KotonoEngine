@@ -26,23 +26,25 @@ public:
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 
 private:
-	FramesInFlightArray<KtUniformData3D> uniformDatas_;
-	FramesInFlightArray<KtRendererFrameStats> stats_;
+	KtFramesInFlightArray<KtUniformData3D> uniformDatas_;
+	KtFramesInFlightArray<KtRendererFrameStats> stats_;
 
-	FramesInFlightArray<VkCommandBuffer> staticCommandBuffers_;
-	FramesInFlightArray<VkCommandBuffer> dynamicCommandBuffers_;
-	FramesInFlightArray<bool> isStaticCommandBufferDirty_;
-	FramesInFlightArray<bool> isDynamicCommandBufferDirty_;
+	KtFramesInFlightArray<VkCommandBuffer> staticCommandBuffers_;
+	KtFramesInFlightArray<VkCommandBuffer> dynamicCommandBuffers_;
+	KtFramesInFlightArray<bool> isStaticCommandBufferDirty_;
+	KtFramesInFlightArray<bool> isDynamicCommandBufferDirty_;
 
 	std::unordered_map<KtRenderable3DProxy*, int32_t> stagingStaticProxies_;
 	std::unordered_map<KtRenderable3DProxy*, int32_t> stagingDynamicProxies_;
-	FramesInFlightArray<ProxiesPool> staticProxies_;
-	FramesInFlightArray<ProxiesPool> dynamicProxies_;
+	KtFramesInFlightArray<ProxiesPool> staticProxies_;
+	KtFramesInFlightArray<ProxiesPool> dynamicProxies_;
 
-	FramesInFlightArray<std::unordered_map<const KtShader*, uint32_t>> instanceIndices_;
+	KtFramesInFlightArray<std::unordered_map<const KtShader*, uint32_t>> instanceIndices_;
 
 	void CreateStaticCommandBuffers();
+	void CreateStaticCommandBuffer(const uint32_t frameIndex);
 	void CreateDynamicCommandBuffers();
+	void CreateDynamicCommandBuffer(const uint32_t frameIndex);
 	void RecordStaticCommandBuffer(const uint32_t frameIndex);
 	void RecordDynamicCommandBuffer(const uint32_t frameIndex);
 	void BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t frameIndex);

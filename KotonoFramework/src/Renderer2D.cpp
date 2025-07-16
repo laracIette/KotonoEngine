@@ -144,14 +144,22 @@ void KtRenderer2D::CmdBindIndexBuffer(VkCommandBuffer commandBuffer) const
 
 void KtRenderer2D::CreateCommandBuffers()
 {
+	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; ++i)
+	{
+		CreateCommandBuffer(static_cast<uint32_t>(i));
+	}
+}
+
+void KtRenderer2D::CreateCommandBuffer(const uint32_t frameIndex)
+{
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = Framework.GetContext().GetCommandPool();
+	allocInfo.commandPool = Framework.GetRenderer().GetCommandPool(frameIndex);
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
-	allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers_.size());
+	allocInfo.commandBufferCount = 1;
 
 	VK_CHECK_THROW(
-		vkAllocateCommandBuffers(Framework.GetContext().GetDevice(), &allocInfo, commandBuffers_.data()),
+		vkAllocateCommandBuffers(Framework.GetContext().GetDevice(), &allocInfo, &commandBuffers_[frameIndex]),
 		"failed to allocate command buffers!"
 	);
 }

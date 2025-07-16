@@ -58,28 +58,44 @@ void KtRenderer3D::UnregisterDynamic(KtRenderable3DProxy* proxy)
 
 void KtRenderer3D::CreateStaticCommandBuffers()
 {
+	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; ++i)
+	{
+		CreateStaticCommandBuffer(static_cast<uint32_t>(i));
+	}
+}
+
+void KtRenderer3D::CreateStaticCommandBuffer(const uint32_t frameIndex)
+{
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = Framework.GetContext().GetCommandPool();
+	allocInfo.commandPool = Framework.GetRenderer().GetCommandPool(frameIndex);
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
-	allocInfo.commandBufferCount = static_cast<uint32_t>(staticCommandBuffers_.size());
-	
+	allocInfo.commandBufferCount = 1;
+
 	VK_CHECK_THROW(
-		vkAllocateCommandBuffers(Framework.GetContext().GetDevice(), &allocInfo, staticCommandBuffers_.data()),
+		vkAllocateCommandBuffers(Framework.GetContext().GetDevice(), &allocInfo, &staticCommandBuffers_[frameIndex]),
 		"failed to allocate command buffers!"
 	);
 }
 
 void KtRenderer3D::CreateDynamicCommandBuffers()
 {
+	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; ++i)
+	{
+		CreateDynamicCommandBuffer(static_cast<uint32_t>(i));
+	}
+}
+
+void KtRenderer3D::CreateDynamicCommandBuffer(const uint32_t frameIndex)
+{
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = Framework.GetContext().GetCommandPool();
+	allocInfo.commandPool = Framework.GetRenderer().GetCommandPool(frameIndex);
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
-	allocInfo.commandBufferCount = static_cast<uint32_t>(dynamicCommandBuffers_.size());
-	
+	allocInfo.commandBufferCount = 1;
+
 	VK_CHECK_THROW(
-		vkAllocateCommandBuffers(Framework.GetContext().GetDevice(), &allocInfo, dynamicCommandBuffers_.data()),
+		vkAllocateCommandBuffers(Framework.GetContext().GetDevice(), &allocInfo, &dynamicCommandBuffers_[frameIndex]),
 		"failed to allocate command buffers!"
 	);
 }
