@@ -6,17 +6,28 @@ class TCamera final : public TSceneObject
 
 public:
 	void Init() override;
+	void Cleanup() override;
 
 	void Use();
 
 private:
+	bool isCurrent_;
+
 	// Vertical fov in degrees
-	float _fov;
-	float _depthNear;
-	float _depthFar;
-	float _speed;
-	float _sensitivity;
-	float _pitch;
-	float _yaw;
+	float fov_;
+	float depthNear_;
+	float depthFar_;
+	float speed_;
+	float sensitivity_;
+	float pitch_;
+	float yaw_;
+
+	void OnKeyboardWKeyDown() const;
+	void OnKeyboardAKeyDown() const;
+	void OnKeyboardSKeyDown() const;
+	void OnKeyboardDKeyDown() const;
+	void OnMouseRightButtonDown();
+
+	void OnEventUpdateTransform() const;
 };
 

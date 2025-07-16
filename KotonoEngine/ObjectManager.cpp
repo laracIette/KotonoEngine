@@ -22,8 +22,6 @@
 #define KT_LOG_IMPORTANCE_LEVEL_OBJECT KT_LOG_IMPORTANCE_LEVEL_NONE
 #undef interface
 
-static TCamera* Camera = nullptr;
-
 void SObjectManager::Init()
 {
 	Framework.GetInputManager().GetKeyboard()
@@ -58,7 +56,8 @@ void SObjectManager::Init()
 		mesh2->SetParent(mesh1, ECoordinateSpace::World);
 	}
 
-	Camera = Create<TCamera>();
+	auto* camera = Create<TCamera>();
+	camera->Use();
 
 	drawTimer_ = Create<KTimer>();
 	drawTimer_->SetDuration(1.0f / 120.0f);
@@ -81,7 +80,6 @@ void SObjectManager::Update()
 	if (canDraw_)
 	{
 		canDraw_ = false;
-		Camera->Use();
 		Framework.GetRenderer().DrawFrame();
 	}
 

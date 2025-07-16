@@ -10,6 +10,7 @@
 #include "Collection.h"
 #include "log.h"
 #include "vk_utils.h"
+#include <unordered_set>
 
 #define KT_LOG_IMPORTANCE_LEVEL_PROXY KT_LOG_IMPORTANCE_LEVEL_HIGH
 
@@ -17,12 +18,14 @@ void KtRenderer3D::Init()
 {
 	CreateStaticCommandBuffers();
 	CreateDynamicCommandBuffers();
+	isUniformBufferDirty_.fill(true);
 	isStaticCommandBufferDirty_.fill(true);
 	isDynamicCommandBufferDirty_.fill(true);
 }
 
 void KtRenderer3D::Update(const uint32_t frameIndex)
 {
+	UpdateUniformData(frameIndex);
 	UpdateStaticProxies(frameIndex);
 	UpdateDynamicProxies(frameIndex);
 }
@@ -33,7 +36,7 @@ void KtRenderer3D::Cleanup()
 
 void KtRenderer3D::SetUniformData(const KtUniformData3D& uniformData)
 {
-	uniformDatas_[Framework.GetRenderer().GetGameThreadFrame()] = uniformData;
+	stagingUniformData_ = { uniformData, static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT) };
 }
 
 void KtRenderer3D::RegisterStatic(KtRenderable3DProxy* proxy)
@@ -145,6 +148,18 @@ void KtRenderer3D::EndCommandBuffer(VkCommandBuffer commandBuffer)
 		vkEndCommandBuffer(commandBuffer),
 		"failed to record command buffer!"
 	);
+}
+
+void KtRenderer3D::UpdateUniformData(const uint32_t frameIndex)
+{
+	if (stagingUniformData_.second == 0)
+	{
+		return;
+	}
+
+	isUniformBufferDirty_[frameIndex] = true;
+	uniformDatas_[frameIndex] = stagingUniformData_.first;
+	--stagingUniformData_.second;
 }
 
 void KtRenderer3D::UpdateStaticProxies(const uint32_t frameIndex)
@@ -259,9 +274,17 @@ void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIn
 		ProxiesPool sortedGlobalProxies = culledStaticProxies;
 		sortedGlobalProxies.Merge(culledDynamicProxies);
 		
-		UpdateDescriptorSets(sortedGlobalProxies, frameIndex);
+		UpdateDescriptorSetObjectBuffers(sortedGlobalProxies, frameIndex);
 		MarkDynamicProxiesNotDirty(frameIndex);
 		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_PROXY, "update DESCRIPTOR sets frame %u", frameIndex);
+	}
+
+	if (isUniformBufferDirty_[frameIndex])
+	{
+		isUniformBufferDirty_[frameIndex] = false;
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_LOW, "update uniform");
+		UpdateDescriptorSetUniformBuffers(staticProxies_[frameIndex], frameIndex);
+		UpdateDescriptorSetUniformBuffers(dynamicProxies_[frameIndex], frameIndex);
 	}
 
 	if (isStaticCommandBufferDirty_[frameIndex])
@@ -280,9 +303,9 @@ void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIn
 	CmdExecuteCommandBuffers(commandBuffer, frameIndex);
 }
 
-void KtRenderer3D::UpdateDescriptorSets(const ProxiesPool& proxies, const uint32_t frameIndex) const
+void KtRenderer3D::UpdateDescriptorSetObjectBuffers(const ProxiesPool& proxies, const uint32_t frameIndex) const
 {
-	std::unordered_map<KtShader*, std::vector<KtObjectData3D>> shaderObjectBufferDatas;
+	std::unordered_map<KtShader*, std::vector<KtObjectData3D>> shaderObjectBufferDatas{};
 	for (const auto* proxy : proxies)
 	{
 		shaderObjectBufferDatas[proxy->shader].push_back(proxy->objectData);
@@ -295,6 +318,19 @@ void KtRenderer3D::UpdateDescriptorSets(const ProxiesPool& proxies, const uint32
 			shader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, objectBufferDatas.size(), frameIndex);
 			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, objectBufferDatas.data(), frameIndex);
 		}
+	}
+}
+
+void KtRenderer3D::UpdateDescriptorSetUniformBuffers(const ProxiesPool& proxies, const uint32_t frameIndex) const
+{
+	std::unordered_set<KtShader*> shaders{};
+	for (const auto* proxy : proxies)
+	{
+		shaders.insert(proxy->shader);
+	}
+
+	for (auto* shader : shaders)
+	{
 		if (auto* binding = shader->GetDescriptorSetLayoutBinding("cameraData"))
 		{
 			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, &uniformDatas_[frameIndex], frameIndex);

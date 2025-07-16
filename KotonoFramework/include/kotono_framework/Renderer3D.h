@@ -26,8 +26,11 @@ public:
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 
 private:
-	KtFramesInFlightArray<KtUniformData3D> uniformDatas_;
 	KtFramesInFlightArray<KtRendererFrameStats> stats_;
+
+	std::pair<KtUniformData3D, uint32_t> stagingUniformData_;
+	KtFramesInFlightArray<KtUniformData3D> uniformDatas_;
+	KtFramesInFlightArray<bool> isUniformBufferDirty_;
 
 	KtFramesInFlightArray<VkCommandBuffer> staticCommandBuffers_;
 	KtFramesInFlightArray<VkCommandBuffer> dynamicCommandBuffers_;
@@ -50,9 +53,12 @@ private:
 	void BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 	void EndCommandBuffer(VkCommandBuffer commandBuffer);
 
+	void UpdateUniformData(const uint32_t frameIndex);
+
 	void UpdateStaticProxies(const uint32_t frameIndex);
 	void UpdateDynamicProxies(const uint32_t frameIndex);
-	void UpdateDescriptorSets(const ProxiesPool& proxies, const uint32_t frameIndex) const;
+	void UpdateDescriptorSetObjectBuffers(const ProxiesPool& proxies, const uint32_t frameIndex) const;
+	void UpdateDescriptorSetUniformBuffers(const ProxiesPool& proxies, const uint32_t frameIndex) const;
 
 	void CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex);
 	void CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, const uint32_t frameIndex);

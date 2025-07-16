@@ -36,8 +36,8 @@ void KSceneMeshComponent::Init()
     InitSpin();
     InitModelProxy();
 
-    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate<>(this, &KSceneMeshComponent::SetMobilityStatic));
-    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_D, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate<>(this, &KSceneMeshComponent::SetMobilityDynamic));
+    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_N, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate<>(this, &KSceneMeshComponent::SetMobilityStatic));
+    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_M, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate<>(this, &KSceneMeshComponent::SetMobilityDynamic));
 }
 
 void KSceneMeshComponent::Update()
@@ -55,8 +55,8 @@ void KSceneMeshComponent::Cleanup()
     Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate<>(spinTask_, &KTask::Start));
     spinTask_->Delete();
     
-    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate<>(this, &KSceneMeshComponent::SetMobilityStatic));
-    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_D, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate<>(this, &KSceneMeshComponent::SetMobilityDynamic));
+    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_N, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate<>(this, &KSceneMeshComponent::SetMobilityStatic));
+    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_M, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate<>(this, &KSceneMeshComponent::SetMobilityDynamic));
 }
 
 KtShader* KSceneMeshComponent::GetShader() const

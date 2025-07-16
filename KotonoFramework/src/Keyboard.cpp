@@ -70,6 +70,11 @@ KtEvent<>& KtKeyboard::GetEvent(const KtKey key, const KtInputState inputState)
 
 void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+    if (action == GLFW_REPEAT)
+    {
+        return;
+    }
+
     Framework.GetInputManager().GetKeyboard().UpdateKey(GLFWKeyToKey(key), action);
 }
 

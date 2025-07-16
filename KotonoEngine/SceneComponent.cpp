@@ -109,17 +109,17 @@ const glm::vec3 KSceneComponent::GetWorldScale() const
 
 const glm::vec3 KSceneComponent::GetRightVector() const
 {
-    return GetWorldRotation() * glm::vec3(1.0f, 0.0f, 0.0f);
+    return GetWorldRotation() * glm::vec3(-1.0f, 0.0f, 0.0f);
 }
 
 const glm::vec3 KSceneComponent::GetForwardVector() const
 {
-    return GetWorldRotation() * glm::vec3(0.0f, 1.0f, 0.0f);
+    return GetWorldRotation() * glm::vec3(0.0f, 0.0f, 1.0f);
 }
 
 const glm::vec3 KSceneComponent::GetUpVector() const
 {
-    return GetWorldRotation() * glm::vec3(0.0f, 0.0f, 1.0f);
+    return GetWorldRotation() * glm::vec3(0.0f, -1.0f, 0.0f);
 }
 
 const glm::mat4 KSceneComponent::GetTranslationMatrix() const
