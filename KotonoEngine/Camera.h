@@ -1,5 +1,6 @@
 #pragma once
 #include "SceneObject.h"
+#include <kotono_framework/glm_includes.h>
 class TCamera final : public TSceneObject
 {
 	BASECLASS(TSceneObject)
@@ -12,6 +13,7 @@ public:
 
 private:
 	bool isCurrent_;
+	bool isFocused_;
 
 	// Vertical fov in degrees
 	float fov_;
@@ -26,7 +28,10 @@ private:
 	void OnKeyboardAKeyDown() const;
 	void OnKeyboardSKeyDown() const;
 	void OnKeyboardDKeyDown() const;
-	void OnMouseRightButtonDown();
+	void OnMouseRightButtonPressed();
+	void OnMouseRightButtonReleased();
+	void OnMouseMove(const glm::vec2 delta);
+	void OnMouseVerticalScroll(const float delta);
 
 	void OnEventUpdateTransform() const;
 };

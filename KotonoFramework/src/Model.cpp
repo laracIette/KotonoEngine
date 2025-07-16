@@ -112,7 +112,7 @@ void KtModel::CreateVertexBuffer()
 	);
 
 	Framework.GetContext().CopyBuffer(stagingVertexBuffer_.Buffer, vertexBuffer_.Buffer, bufferSize);
-	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate<>(this, &KtModel::DestroyStagingVertexBuffer));
+	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtModel::DestroyStagingVertexBuffer));
 }
 
 void KtModel::CreateIndexBuffer()
@@ -138,7 +138,7 @@ void KtModel::CreateIndexBuffer()
 	);
 
 	Framework.GetContext().CopyBuffer(stagingIndexBuffer_.Buffer, indexBuffer_.Buffer, bufferSize);
-	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate<>(this, &KtModel::DestroyStagingIndexBuffer));
+	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtModel::DestroyStagingIndexBuffer));
 }
 
 void KtModel::DestroyStagingVertexBuffer()

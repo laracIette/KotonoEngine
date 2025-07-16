@@ -101,7 +101,7 @@ void KtImageTexture::CreateTextureImage()
 		static_cast<uint32_t>(texHeight)
 	);
 
-	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate<>(this, &KtImageTexture::DestroyStagingBuffer));
+	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtImageTexture::DestroyStagingBuffer));
 
 	Framework.GetContext().GenerateMipmaps(image_, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels_);
 

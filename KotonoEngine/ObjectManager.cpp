@@ -26,7 +26,7 @@ void SObjectManager::Init()
 {
 	Framework.GetInputManager().GetKeyboard()
 		.GetEvent(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
-		.AddListener(KtDelegate<>(this, &SObjectManager::Quit));
+		.AddListener(KtDelegate(this, &SObjectManager::Quit));
 	
 	auto* shader3D = Framework.GetShaderManager().Get(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3D.ktshader)");
 	shader3D->SetName("3D Shader");
@@ -40,7 +40,7 @@ void SObjectManager::Init()
 		auto* scene = Create<KScene>();
 		scene->SetPath(Framework.GetPath().GetSolutionPath() / R"(assets\objects\scene.KScene)");
 		scene->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), 
-			KtDelegate<>(scene, &KScene::Reload));
+			KtDelegate(scene, &KScene::Reload));
 	}*/
 	{
 		auto* mesh1 = Create<TSceneMeshObject>();
@@ -62,13 +62,13 @@ void SObjectManager::Init()
 	drawTimer_ = Create<KTimer>();
 	drawTimer_->SetDuration(1.0f / 120.0f);
 	drawTimer_->SetIsRepeat(true);
-	drawTimer_->GetEventCompleted().AddListener(KtDelegate<>(this, &SObjectManager::SubmitDrawObjects));
+	drawTimer_->GetEventCompleted().AddListener(KtDelegate(this, &SObjectManager::SubmitDrawObjects));
 	drawTimer_->Start();
 
 	auto* logUPSTimer = Create<KTimer>();
 	logUPSTimer->SetDuration(1.0f);
 	logUPSTimer->SetIsRepeat(true);
-	logUPSTimer->GetEventCompleted().AddListener(KtDelegate<>(this, &SObjectManager::LogUPS));
+	logUPSTimer->GetEventCompleted().AddListener(KtDelegate(this, &SObjectManager::LogUPS));
 	logUPSTimer->Start();
 }
 

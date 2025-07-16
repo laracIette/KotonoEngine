@@ -45,7 +45,7 @@ private:
 	VkDebugUtilsMessengerEXT debugMessenger_;
 	VkSurfaceKHR surface_;
 
-	VkPhysicalDevice physicalDevice_{ VK_NULL_HANDLE };
+	VkPhysicalDevice physicalDevice_;
 	VkDevice device_;
 
 	VmaAllocator allocator_;
@@ -58,7 +58,7 @@ private:
 	std::vector<VkCommandBuffer> singleTimeCommands_;
 	KtEvent<> eventExecuteSingleTimeCommands_;
 
-	VkSampleCountFlagBits msaaSamples_{ VK_SAMPLE_COUNT_1_BIT };
+	VkSampleCountFlagBits msaaSamples_;
 
 	void CreateInstance();
 

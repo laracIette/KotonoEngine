@@ -24,7 +24,7 @@ void KInterfaceTextComponent::Init()
 
     updateTextWithBindingTimer_->SetDuration(1.0f / 30.0f);
     updateTextWithBindingTimer_->SetIsRepeat(true);
-    updateTextWithBindingTimer_->GetEventCompleted().AddListener(KtDelegate<>(this, &KInterfaceTextComponent::UpdateTextWithBinding));
+    updateTextWithBindingTimer_->GetEventCompleted().AddListener(KtDelegate(this, &KInterfaceTextComponent::UpdateTextWithBinding));
     updateTextWithBindingTimer_->Start();
 }
 

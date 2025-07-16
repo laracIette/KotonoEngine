@@ -38,7 +38,7 @@ void KInterfaceContainerComponent::ClearItems()
 void KInterfaceContainerComponent::AddItem(KInterfaceComponent* item)
 {
     items_.push_back(item);
-    item->GetEventRectUpdated().AddListener(KtDelegate<>(this, &KInterfaceContainerComponent::TryUpdateSize));
+    item->GetEventRectUpdated().AddListener(KtDelegate(this, &KInterfaceContainerComponent::TryUpdateSize));
 }
 
 void KInterfaceContainerComponent::TryUpdateSize()

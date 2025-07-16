@@ -6,11 +6,13 @@
 
 void mousebutton_callback_(GLFWwindow* window, int button, int action, int mods);
 void cursorpos_callback_(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback_(GLFWwindow* window, double xoffset, double yoffset);
 
 void KtMouse::Init()
 {
     glfwSetMouseButtonCallback(Framework.GetWindow().GetGLFWWindow(), mousebutton_callback_);
     glfwSetCursorPosCallback(Framework.GetWindow().GetGLFWWindow(), cursorpos_callback_);
+    glfwSetScrollCallback(Framework.GetWindow().GetGLFWWindow(), scroll_callback_);
 }
 
 void KtMouse::Update()
@@ -37,8 +39,20 @@ void KtMouse::Update()
 
     if (cursorPosition_ != previousCursorPosition_)
     {
-        moveEvent_.Broadcast();
+        eventMove_.Broadcast(GetCursorPositionDelta());
         previousCursorPosition_ = cursorPosition_;
+    }
+
+    if (horizontalScrollDelta_ != 0.0f)
+    {
+        eventHorizontalScroll_.Broadcast(horizontalScrollDelta_);
+        horizontalScrollDelta_ = 0.0f;
+    }
+
+    if (verticalScrollDelta_ != 0.0f)
+    {
+        eventVerticalScroll_.Broadcast(verticalScrollDelta_);
+        verticalScrollDelta_ = 0.0f;
     }
 }
 
@@ -69,11 +83,6 @@ void KtMouse::UpdateButton(const KtButton button, const int action)
     buttonStates_[button] = buttonStates;
 }
 
-void KtMouse::UpdateCursor(const glm::vec2& position)
-{
-    cursorPosition_ = position;
-}
-
 const glm::vec2& KtMouse::GetPreviousCursorPosition() const
 {
     return previousCursorPosition_;
@@ -95,14 +104,34 @@ const glm::vec2 KtMouse::GetCursorPositionDelta() const
     return cursorPosition_ - previousCursorPosition_;
 }
 
-KtEvent<>& KtMouse::GetButtonEvent(const KtButton button, const KtInputState inputState)
+const float KtMouse::GetHorizontalScrollDelta() const
+{
+    return horizontalScrollDelta_;
+}
+
+const float KtMouse::GetVerticalScrollDelta() const
+{
+    return verticalScrollDelta_;
+}
+
+KtEvent<>& KtMouse::GetEvent(const KtButton button, const KtInputState inputState)
 {
     return buttonEvents_[button][inputState];
 }
 
-KtEvent<>& KtMouse::GetMoveEvent()
+KtEvent<glm::vec2>& KtMouse::GetEventMove()
 {
-    return moveEvent_;
+    return eventMove_;
+}
+
+KtEvent<float>& KtMouse::GetEventHorizontalScroll()
+{
+    return eventHorizontalScroll_;
+}
+
+KtEvent<float>& KtMouse::GetEventVerticalScroll()
+{
+    return eventVerticalScroll_;
 }
 
 void mousebutton_callback_(GLFWwindow* window, int button, int action, int mods)
@@ -112,5 +141,11 @@ void mousebutton_callback_(GLFWwindow* window, int button, int action, int mods)
 
 void cursorpos_callback_(GLFWwindow* window, double xpos, double ypos)
 {
-    Framework.GetInputManager().GetMouse().UpdateCursor(glm::vec2(xpos, ypos));
+    Framework.GetInputManager().GetMouse().cursorPosition_ = { xpos, ypos };
+}
+
+void scroll_callback_(GLFWwindow* window, double xoffset, double yoffset)
+{
+    Framework.GetInputManager().GetMouse().horizontalScrollDelta_ = static_cast<float>(xoffset);
+    Framework.GetInputManager().GetMouse().verticalScrollDelta_ = static_cast<float>(yoffset);
 }

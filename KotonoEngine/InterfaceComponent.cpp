@@ -53,10 +53,10 @@ void KInterfaceComponent::Cleanup()
 
     Framework.GetRenderer().GetRenderer2D().Unregister(&boundsProxy_);
 
-    GetEventRectUpdated().RemoveListener(KtDelegate<>(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
+    GetEventRectUpdated().RemoveListener(KtDelegate(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
     if (parent_)
     {
-        parent_->GetEventRectUpdated().RemoveListener(KtDelegate<>(&eventRectUpdated_, &KtEvent<>::Broadcast));
+        parent_->GetEventRectUpdated().RemoveListener(KtDelegate(&eventRectUpdated_, &KtEvent<>::Broadcast));
     }
 }
 
@@ -185,7 +185,7 @@ void KInterfaceComponent::SetParent(KInterfaceComponent* parent, const ECoordina
 {
     if (parent_)
     {
-        parent_->GetEventRectUpdated().RemoveListener(KtDelegate<>(&eventRectUpdated_, &KtEvent<>::Broadcast));
+        parent_->GetEventRectUpdated().RemoveListener(KtDelegate(&eventRectUpdated_, &KtEvent<>::Broadcast));
     }
 
     switch (keepRect)
@@ -211,7 +211,7 @@ void KInterfaceComponent::SetParent(KInterfaceComponent* parent, const ECoordina
 
     if (parent_)
     {
-        parent_->GetEventRectUpdated().AddListener(KtDelegate<>(&eventRectUpdated_, &KtEvent<>::Broadcast));
+        parent_->GetEventRectUpdated().AddListener(KtDelegate(&eventRectUpdated_, &KtEvent<>::Broadcast));
     }
 }
 
@@ -438,7 +438,7 @@ void KInterfaceComponent::InitBoundsProxy()
     CreateBoundsProxy();
     Framework.GetRenderer().GetRenderer2D().Register(&boundsProxy_);
 
-    GetEventRectUpdated().AddListener(KtDelegate<>(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
+    GetEventRectUpdated().AddListener(KtDelegate(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
 }
 
 void KInterfaceComponent::CreateBoundsProxy()

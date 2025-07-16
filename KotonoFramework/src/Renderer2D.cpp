@@ -97,7 +97,7 @@ void KtRenderer2D::CreateVertexBuffer()
 	);
 
 	Framework.GetContext().CopyBuffer(stagingVertexBuffer_.Buffer, vertexBuffer_.Buffer, bufferSize);
-	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate<>(this, &KtRenderer2D::DestroyStagingVertexBuffer));
+	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtRenderer2D::DestroyStagingVertexBuffer));
 }
 
 void KtRenderer2D::CreateIndexBuffer()
@@ -123,7 +123,7 @@ void KtRenderer2D::CreateIndexBuffer()
 	);
 
 	Framework.GetContext().CopyBuffer(stagingIndexBuffer_.Buffer, indexBuffer_.Buffer, bufferSize);
-	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate<>(this, &KtRenderer2D::DestroyStagingIndexBuffer));
+	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtRenderer2D::DestroyStagingIndexBuffer));
 }
 
 void KtRenderer2D::DestroyStagingVertexBuffer()
