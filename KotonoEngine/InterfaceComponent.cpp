@@ -217,18 +217,33 @@ void KInterfaceComponent::SetParent(KInterfaceComponent* parent, const ECoordina
 
 void KInterfaceComponent::SetRelativeSize(const glm::vec2& relativeSize)
 {
+    if (rect_.size == relativeSize)
+    {
+        return;
+    }
+
     rect_.size = relativeSize;
     eventRectUpdated_.Broadcast();
 }
 
 void KInterfaceComponent::SetRelativePosition(const glm::vec2& relativePosition)
 {
+    if (rect_.position == relativePosition)
+    {
+        return;
+    }
+
     rect_.position = relativePosition;
     eventRectUpdated_.Broadcast();
 }
 
 void KInterfaceComponent::SetRelativeScale(const glm::vec2& relativeScale)
 {
+    if (rect_.scale == relativeScale)
+    {
+        return;
+    }
+
     rect_.scale = relativeScale;
     eventRectUpdated_.Broadcast();
 }
@@ -238,6 +253,11 @@ void KInterfaceComponent::SetRelativeRotation(float relativeRotation, const ERot
     if (unit == ERotationUnit::Degrees)
     {
         relativeRotation = glm::radians(relativeRotation);
+    }
+
+    if (rect_.rotation == relativeRotation)
+    {
+        return;
     }
 
     const glm::vec2 translated = GetAnchorOffset();

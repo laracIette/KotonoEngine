@@ -183,6 +183,12 @@ void KSceneComponent::SetRelativePosition(const glm::vec3& relativePosition)
         KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "can't set position for %s, its mobility is static", GetName().c_str());
         return;
     }
+
+    if (transform_.position == relativePosition)
+    {
+        return;
+    }
+
     transform_.position = relativePosition;
     eventUpdateTransform_.Broadcast();
 }
@@ -194,6 +200,12 @@ void KSceneComponent::SetRelativeRotation(const glm::quat& relativeRotation)
         KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "can't set rotation for %s, its mobility is static", GetName().c_str());
         return;
     }
+
+    if (transform_.rotation == relativeRotation)
+    {
+        return;
+    }
+
     transform_.rotation = glm::normalize(relativeRotation);
     eventUpdateTransform_.Broadcast();
 }
@@ -205,6 +217,12 @@ void KSceneComponent::SetRelativeScale(const glm::vec3& relativeScale)
         KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "can't set scale for %s, its mobility is static", GetName().c_str());
         return;
     }
+
+    if (transform_.scale == relativeScale)
+    {
+        return;
+    }
+
     transform_.scale = relativeScale;
     eventUpdateTransform_.Broadcast();
 }

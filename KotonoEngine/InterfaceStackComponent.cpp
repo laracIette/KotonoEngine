@@ -3,7 +3,6 @@
 void KInterfaceStackComponent::Init()
 {
     Base::Init();
-    //SetIsSizeToContent(false);
 }
 
 const EOrientation KInterfaceStackComponent::GetOrientation() const

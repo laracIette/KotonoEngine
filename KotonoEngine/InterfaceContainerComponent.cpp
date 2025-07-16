@@ -3,8 +3,6 @@
 void KInterfaceContainerComponent::Init()
 {
     Base::Init();
-
-    isSizeToContent_ = true;
 }
 
 void KInterfaceContainerComponent::Update()
