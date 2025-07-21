@@ -1,73 +1,75 @@
 #include "Engine.h"
-#include "Time.h"
-#include "ObjectManager.h"
-#include "Visualizer.h"
-#include "InterfacePhysicsManager.h"
 
 SEngine Engine;
 
-static STime Time;
-static SObjectManager ObjectManager;
-static SVisualizer Visualizer;
-static SInterfacePhysicsManager InterfacePhysicsManager;
-
 void SEngine::Init()
 {
-    Time.Init();
-    ObjectManager.Init();
-    Visualizer.Init();
+    time_.Init();
+    objectManager_.Init();
+    visualizer_.Init();
+    interface_.Init();
 }
 
 void SEngine::Update()
 {
-    Time.Update();
-    ObjectManager.Update();
-    InterfacePhysicsManager.Update();
+    time_.Update();
+    objectManager_.Update();
+    interfacePhysicsManager_.Update();
 }
 
 void SEngine::Cleanup()
 {
-    Time.Cleanup();
-    ObjectManager.Cleanup();
-    Visualizer.Cleanup();
+    time_.Cleanup();
+    objectManager_.Cleanup();
+    visualizer_.Cleanup();
 }
 
 STime& SEngine::GetTime()
 {
-    return Time;
+    return time_;
 }
 
 const STime& SEngine::GetTime() const
 {
-    return Time;
+    return time_;
 }
 
 SObjectManager& SEngine::GetObjectManager()
 {
-    return ObjectManager;
+    return objectManager_;
 }
 
 const SObjectManager& SEngine::GetObjectManager() const
 {
-    return ObjectManager;
+    return objectManager_;
 }
 
 SVisualizer& SEngine::GetVisualizer()
 {
-    return Visualizer;
+    return visualizer_;
 }
 
 const SVisualizer& SEngine::GetVisualizer() const
 {
-    return Visualizer;
+    return visualizer_;
+}
+
+SInterface& SEngine::GetInterface()
+{
+    return interface_;
+}
+
+const SInterface& SEngine::GetInterface() const
+{
+    return interface_;
 }
 
 SInterfacePhysicsManager& SEngine::GetInterfacePhysicsManager()
 {
-    return InterfacePhysicsManager;
+    return interfacePhysicsManager_;
 }
 
 const SInterfacePhysicsManager& SEngine::GetInterfacePhysicsManager() const
 {
-    return InterfacePhysicsManager;
+    return interfacePhysicsManager_;
 }

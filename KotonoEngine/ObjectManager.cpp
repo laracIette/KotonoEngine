@@ -14,7 +14,6 @@
 #include "Scene.h"
 #include "Camera.h"
 #include "Engine.h"
-#include "Interface.h"
 #include "Timer.h"
 #include "Time.h"
 #include "math_utils.h"
@@ -33,8 +32,6 @@ void SObjectManager::Init()
 
 	auto* model1 = Framework.GetModelManager().Get(Framework.GetPath().GetSolutionPath() / R"(assets\models\viking_room.obj)");
 	auto* model2 = Framework.GetModelManager().Get(Framework.GetPath().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)");
-
-	auto* interface = Create<KInterface>();
 
 	/*{
 		auto* scene = Create<KScene>();

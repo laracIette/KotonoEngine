@@ -1,21 +1,15 @@
 #pragma once
-#include "Object.h"
-
 class RInterfaceImageObject;
 class RInterfaceTextBoxObject;
 class RInterfaceFloatTextBoxObject;
+class RInterfaceWindowObject;
 
-class KInterface : public KObject
+class SInterface final
 {
-	BASECLASS(KObject)
-
 public:
-	KInterface();
+	void Init();
 
-	void Init() override;
-	void Cleanup() override;
-
-	void SetLayout();
+	RInterfaceWindowObject* viewport_;
 
 private:
 	RInterfaceImageObject* image1_;

@@ -9,13 +9,14 @@
 #include "InterfaceTextBoxObject.h"
 #include "InterfaceFloatTextBoxObject.h"
 #include "InterfaceTextComponent.h"
-#include "Time.h"
+#include "InterfaceWindowObject.h"
 #include "ObjectManager.h"
 #include "math_utils.h"
 
-KInterface::KInterface() : 
-	Base()
+void SInterface::Init()
 {
+	viewport_ = Engine.GetObjectManager().Create<RInterfaceWindowObject>("Viewport");
+
 	image1_ = Engine.GetObjectManager().Create<RInterfaceImageObject>();
 	image2_ = Engine.GetObjectManager().Create<RInterfaceImageObject>();
 	textBox1_ = Engine.GetObjectManager().Create<RInterfaceTextBoxObject>();
@@ -23,28 +24,7 @@ KInterface::KInterface() :
 	textBox3_ = Engine.GetObjectManager().Create<RInterfaceFloatTextBoxObject>();
 	image1_->GetImageComponent()->SetScreenSize(glm::vec2(1024.0f, 1024.0f));
 	image2_->GetImageComponent()->SetScreenSize(glm::vec2(1024.0f, 1024.0f));
-}
 
-void KInterface::Init()
-{
-	Base::Init();
-
-	SetLayout();
-}
-
-void KInterface::Cleanup()
-{
-	Base::Cleanup();
-
-	image1_->Delete();
-	image2_->Delete();
-	textBox1_->Delete();
-	textBox2_->Delete();
-	textBox3_->Delete();
-}
-
-void KInterface::SetLayout()
-{
 	auto* shader2D = Framework.GetShaderManager().Get(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)");
 	shader2D->SetName("2D Shader");
 
@@ -93,23 +73,23 @@ void KInterface::SetLayout()
 	textBox2_->GetTextComponent()->SetSpacing(0.05f);
 	textBox2_->GetTextComponent()->SetShader(shader2D);
 	textBox2_->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRootComponent()->GetScreenPosition().x); });
-	textBox2_->GetValueChangedEvent().AddListener(KtDelegate(this, &KInterface::OnTextBox2ValueChanged));
+	textBox2_->GetValueChangedEvent().AddListener(KtDelegate(this, &SInterface::OnTextBox2ValueChanged));
 
 	textBox3_->GetRootComponent()->SetRelativePosition(glm::vec2(0.3f, 0.6f));
 	textBox3_->GetTextComponent()->SetFontSize(32.0f);
 	textBox3_->GetTextComponent()->SetSpacing(0.05f);
 	textBox3_->GetTextComponent()->SetShader(shader2D);
 	textBox3_->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRootComponent()->GetScreenPosition().y); });
-	textBox3_->GetValueChangedEvent().AddListener(KtDelegate(this, &KInterface::OnTextBox3ValueChanged));
+	textBox3_->GetValueChangedEvent().AddListener(KtDelegate(this, &SInterface::OnTextBox3ValueChanged));
 #endif
 }
 
-void KInterface::OnTextBox2ValueChanged(const float delta) const
+void SInterface::OnTextBox2ValueChanged(const float delta) const
 {
 	image1_->GetRootComponent()->Translate(glm::vec2(delta / 800.0f, 0.0f));
 }
 
-void KInterface::OnTextBox3ValueChanged(const float delta) const
+void SInterface::OnTextBox3ValueChanged(const float delta) const
 {
 	image1_->GetRootComponent()->Translate(glm::vec2(0.0f, delta / 450.0f));
 }

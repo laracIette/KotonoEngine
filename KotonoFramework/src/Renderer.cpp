@@ -610,7 +610,7 @@ const bool KtRenderer::TryAcquireNextImage(const uint32_t frameIndex)
 	vkWaitForFences(Framework.GetContext().GetDevice(), 1, &inFlightFences_[frameIndex], VK_TRUE, UINT64_MAX);
 
 	// Set image index for current frame
-	constexpr uint64_t timeout = ms_to_ns(1llu);
+	static constexpr uint64_t timeout = ms_to_ns(1llu);
 	const VkResult result = vkAcquireNextImageKHR(Framework.GetContext().GetDevice(), swapChain_, timeout, imageAvailableSemaphores_[frameIndex], VK_NULL_HANDLE, &imageIndices_[frameIndex]);
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
@@ -635,8 +635,9 @@ void KtRenderer::JoinThread(std::thread& thread) const
 	}
 }
 
-const uint32_t KtRenderer::GetGameThreadFrame() const
+const uint32_t KtRenderer::GetGameThreadFrame() const 
 {
+	// Prepare game thread for render thread
 	return frameCount_ % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
 }
 

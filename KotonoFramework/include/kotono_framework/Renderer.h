@@ -3,7 +3,6 @@
 #include <vulkan/vulkan_core.h>
 #include "frames_in_flight.h"
 #include <vector>
-#include <array>
 #include <span>
 #include "Renderer2D.h"
 #include "Renderer3D.h"

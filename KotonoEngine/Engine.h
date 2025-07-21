@@ -1,9 +1,9 @@
 #pragma once
-
-class STime;
-class SObjectManager;
-class SVisualizer;
-class SInterfacePhysicsManager;
+#include "Time.h"
+#include "ObjectManager.h"
+#include "Visualizer.h"
+#include "Interface.h"
+#include "InterfacePhysicsManager.h"
 
 class SEngine final
 {
@@ -18,9 +18,17 @@ public:
 	const SObjectManager& GetObjectManager() const;
 	SVisualizer& GetVisualizer();
 	const SVisualizer& GetVisualizer() const;
+	SInterface& GetInterface();
+	const SInterface& GetInterface() const;
 	SInterfacePhysicsManager& GetInterfacePhysicsManager();
 	const SInterfacePhysicsManager& GetInterfacePhysicsManager() const;
-// we dont use private members because we could only store them as pointers
+
+private:
+	STime time_;
+	SObjectManager objectManager_;
+	SVisualizer visualizer_;
+	SInterface interface_;
+	SInterfacePhysicsManager interfacePhysicsManager_;
 };
 
 extern SEngine Engine;
