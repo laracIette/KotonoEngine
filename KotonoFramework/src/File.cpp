@@ -2,10 +2,18 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include "log.h"
+
+#define KT_LOG_IMPORTANCE_LEVEL_FILE KT_LOG_IMPORTANCE_LEVEL_HIGH
 
 KtFile::KtFile(const std::filesystem::path& path) :
     path_(path)
 {
+}
+
+const bool KtFile::Exists() const
+{
+    return std::filesystem::exists(path_);
 }
 
 const std::filesystem::path& KtFile::GetPath() const
@@ -36,9 +44,9 @@ const std::string KtFile::GetStem() const
 const std::string KtFile::ReadString() const
 {
     // Check if path exists.
-    if (!std::filesystem::exists(path_))
+    if (!Exists())
     {
-        std::cerr << "Failed to find a file at '" << path_ << '\'' << std::endl;
+        KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_FILE, "Failed to find a file at '%s'", path_.string().c_str());
         return "";
     }
 
@@ -47,7 +55,7 @@ const std::string KtFile::ReadString() const
 
     if (!file.is_open())
     {
-        std::cerr << "Failed to open the file at '" << path_ << '\'' << std::endl;
+        KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_FILE, "Failed to open the file at '%s'", path_.string().c_str());
         return "";
     }
 

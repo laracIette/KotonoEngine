@@ -3,16 +3,25 @@
 #include "File.h"
 #include <fstream>
 #include <iostream>
+#include "log.h"
+
+#define KT_LOG_IMPORTANCE_LEVEL_SERIALIZER KT_LOG_IMPORTANCE_LEVEL_HIGH
 
 void KtSerializer::ReadData(const std::filesystem::path& path, nlohmann::json& json) const
 {
 	if (path.empty())
 	{
-		std::cerr << "Can't read data from empty path" << std::endl;
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "can't read data from empty path");
 		return;
 	}
 
 	const KtFile file(path);
+	if (!file.Exists())
+	{
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "file at path '%s' doesn't exist", path.string().c_str());
+		return;
+	}
+
 	std::istringstream stream(file.ReadString());
 	stream >> json;
 }
@@ -21,13 +30,13 @@ void KtSerializer::WriteData(const std::filesystem::path& path, const nlohmann::
 {
 	if (path.empty())
 	{
-		std::cerr << "Can't write data to empty path" << std::endl;
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "can't write data to empty path");
 		return;
 	}
 
 	if (json.is_null())
 	{
-		std::cerr << "Error: Cannot write null json to " << path << std::endl;
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "can't write null json to %s", path.string().c_str());
 		return;
 	}
 

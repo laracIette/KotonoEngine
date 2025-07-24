@@ -11,8 +11,8 @@ void KtSpvCompiler::CompileUpdated() const
     const auto path = Framework.GetPath().GetFrameworkPath() / "shaders";
     nlohmann::json json{};
     KtSerializer serializer{};
-
     serializer.ReadData(path / "shaders.ktregistry", json);
+
     for (const auto& directory : { "vert", "frag" })
     {
         for (const auto& entry : std::filesystem::directory_iterator(path / directory))
@@ -81,7 +81,7 @@ void KtSpvCompiler::CompileAll() const
 
 void KtSpvCompiler::Compile(const std::filesystem::path& path) const
 {
-    KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "%s", path.string().c_str());
+    KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "compiling shader at path '%s'", path.string().c_str());
     // must have vulkan bin in environment variables path
     const auto command = std::format("glslc \"{}\" -o \"{}\".spv", path.string(), path.string());
     std::system(command.c_str());
