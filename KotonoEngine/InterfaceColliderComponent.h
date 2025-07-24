@@ -11,10 +11,12 @@ class KInterfaceColliderComponent final : public KInterfaceComponent
 public:
 	KInterfaceColliderComponent(RInterfaceObject* owner);
 
+protected:
 	void Init() override;
 	void Update() override;
 	void Cleanup() override;
 
+public:
 	KtEvent<>& GetEventPressed();
 	KtEvent<>& GetEventReleased();
 	KtEvent<>& GetEventDown();

@@ -9,9 +9,10 @@ class KScene : public KObject
 {
 	BASECLASS(KObject)
 
-public:
+protected:
 	void Init() override;
 
+public:
 	void Load();
 	void Unload();
 	void Reload();

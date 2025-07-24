@@ -16,9 +16,11 @@ class KSceneComponent : public KObject
 public:
 	KSceneComponent(TSceneObject* owner);
 
+protected:
 	void Init() override;
 	void Cleanup() override;
 
+public:
 	TSceneObject* GetOwner() const;
 	const UTransform& GetTransform() const;
 	const EVisibility GetVisibility() const;

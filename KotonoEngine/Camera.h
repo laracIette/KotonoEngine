@@ -5,10 +5,11 @@ class TCamera final : public TSceneObject
 {
 	BASECLASS(TSceneObject)
 
-public:
+protected:
 	void Init() override;
 	void Cleanup() override;
 
+public:
 	void Use();
 
 private:

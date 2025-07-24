@@ -14,10 +14,12 @@ public:
 	KObject();
 	virtual ~KObject();
 
+protected:
 	virtual void Init();
 	virtual void Update();
 	virtual void Cleanup();
 
+public:
 	const UGuid& GetGuid() const;
 	const bool GetIsConstructed() const;
 	const std::filesystem::path& GetPath() const;
@@ -28,7 +30,7 @@ public:
 
 	void SetPath(const std::filesystem::path& path);
 	void SetName(const std::string& name);
-	// Stages the deletion for the end of the update.
+	// Stages the deletion at the end of the update
 	void Delete();
 
 	// Serialize and write to the object's path
@@ -40,6 +42,10 @@ public:
 	virtual void SerializeTo(nlohmann::json& json) const;
 	// Deserialize from json
 	virtual void DeserializeFrom(const nlohmann::json& json);
+
+protected:
+	void Delay(const KtDelegate<>& delegate, const float delay) const;
+	void Delay(KtDelegate<>&& delegate, const float delay) const;
 
 private:
 	UGuid guid_;

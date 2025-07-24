@@ -31,6 +31,11 @@ void KTimer::Update()
     }
 }
 
+const bool KTimer::GetIsPlaying() const
+{
+    return isPlaying_;
+}
+
 const bool KTimer::GetIsRepeat() const
 {
     return isRepeat_;
@@ -57,8 +62,13 @@ void KTimer::SetDuration(const float duration)
     currentDuration_ = targetDuration_;
 }
 
-void KTimer::Start()
+void KTimer::Start(const bool isOverride)
 {
+    if (!isOverride && isPlaying_)
+    {
+        return;
+    }
+
     isPlaying_ = true;
     startTime_ = Engine.GetTime().GetNow();
 }

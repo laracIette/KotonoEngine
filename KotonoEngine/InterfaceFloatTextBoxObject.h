@@ -1,14 +1,21 @@
 #pragma once
 #include "InterfaceTextBoxObject.h"
+
+class KTimer;
+
 class RInterfaceFloatTextBoxObject : public RInterfaceTextBoxObject
 {
 	BASECLASS(RInterfaceTextBoxObject)
 
 public:
+	RInterfaceFloatTextBoxObject();
+
+protected:
 	void Init() override;
 
+public:
 	const float GetValue() const;
-	KtEvent<float>& GetValueChangedEvent();
+	KtEvent<float>& GetEventValueChanged();
 
 	void SetValue(const float value);
 
@@ -18,6 +25,6 @@ protected:
 private:
 	float value_;
 
-	KtEvent<float> valueChangedEvent_;
+	KtEvent<float> eventValueChanged_;
 };
 

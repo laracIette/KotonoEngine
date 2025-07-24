@@ -5,9 +5,10 @@ class KInterfaceStackComponent : public KInterfaceContainerComponent
 {
     BASECLASS(KInterfaceContainerComponent)
 
-public:
+protected:
     void Init() override;
 
+public:
     const EOrientation GetOrientation() const;
     const float GetItemSpacing() const;
 

@@ -3,6 +3,7 @@
 #include <kotono_framework/Serializer.h>
 #include "Engine.h"
 #include "ObjectManager.h"
+#include "Timer.h"
 #include "log.h"
 
 KObject::KObject()
@@ -107,4 +108,20 @@ void KObject::DeserializeFrom(const nlohmann::json& json)
 {
     guid_ = json["guid"];
     name_ = json["name"];
+}
+
+void KObject::Delay(const KtDelegate<>& delegate, const float delay) const
+{
+    auto* timer = Engine.GetObjectManager().Create<KTimer>();
+    timer->SetDuration(delay);
+    timer->GetEventCompleted().AddListener(KtDelegate(timer, &KTimer::Delete));
+    timer->GetEventCompleted().AddListener(delegate);
+}
+
+void KObject::Delay(KtDelegate<>&& delegate, const float delay) const
+{
+    auto* timer = Engine.GetObjectManager().Create<KTimer>();
+    timer->SetDuration(delay);
+    timer->GetEventCompleted().AddListener(KtDelegate(timer, &KTimer::Delete));
+    timer->GetEventCompleted().AddListener(std::move(delegate));
 }

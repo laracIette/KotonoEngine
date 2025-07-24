@@ -12,10 +12,12 @@ class KInterfaceImageComponent : public KInterfaceComponent
 public:
 	KInterfaceImageComponent(RInterfaceObject* owner);
 
+protected:
 	void Init() override;
 	void Update() override;
 	void Cleanup() override;
 
+public:
 	KtShader* GetShader() const;
 	KtImageTexture* GetImageTexture() const;
 
@@ -32,9 +34,7 @@ private:
 	KtEvent<> eventShaderUpdated_;
 	KtEvent<> eventImageTextureUpdated_;
 
-	void InitImageTextureProxy();
 	void CreateImageTextureProxy();
-
 	void MarkImageTextureProxyRectDirty();
 	void MarkImageTextureProxyShaderDirty();
 	void MarkImageTextureProxyImageTextureDirty();

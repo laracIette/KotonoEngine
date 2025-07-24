@@ -16,7 +16,6 @@
 #include "Engine.h"
 #include "Timer.h"
 #include "Time.h"
-#include "math_utils.h"
 
 #define KT_LOG_IMPORTANCE_LEVEL_OBJECT KT_LOG_IMPORTANCE_LEVEL_NONE
 #undef interface
@@ -71,7 +70,7 @@ void SObjectManager::Init()
 
 void SObjectManager::Update()
 {
-	InitObjects();
+	InitObjects(); // todo: maybe put after delete
 	UpdateObjects();
 	DeleteObjects();
 	if (canDraw_)
@@ -191,5 +190,5 @@ const float SObjectManager::GetAverageUpdateTime() const
 
 void SObjectManager::LogUPS()
 {
-	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "%f ups", round(1.0f / GetAverageUpdateTime(), 2));
+	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "%.2f ups", 1.0f / GetAverageUpdateTime());
 }

@@ -6,7 +6,7 @@
 #include <vulkan/vulkan_core.h>
 struct KtRenderable3DProxy;
 class KtShader;
-class KtRenderer3D final
+class KtSceneRenderer final
 {
 private:
 	using ProxiesPool = KtPool<KtRenderable3DProxy*>;

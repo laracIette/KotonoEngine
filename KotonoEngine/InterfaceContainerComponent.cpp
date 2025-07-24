@@ -15,7 +15,7 @@ void KInterfaceContainerComponent::Cleanup()
     Base::Cleanup();
 }
 
-const std::vector<KInterfaceComponent*>& KInterfaceContainerComponent::GetItems() const
+const KtPool<KInterfaceComponent*>& KInterfaceContainerComponent::GetItems() const
 {
     return items_;
 }
@@ -32,12 +32,12 @@ void KInterfaceContainerComponent::SetIsSizeToContent(const bool isSizeToContent
 
 void KInterfaceContainerComponent::ClearItems()
 {
-    items_.clear();
+    items_.Clear();
 }
 
 void KInterfaceContainerComponent::AddItem(KInterfaceComponent* item)
 {
-    items_.push_back(item);
+    items_.Add(item);
     item->GetEventRectUpdated().AddListener(KtDelegate(this, &KInterfaceContainerComponent::TryUpdateSize));
 }
 

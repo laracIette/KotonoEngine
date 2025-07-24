@@ -8,9 +8,11 @@ class KInterfaceButtonComponent final : public KInterfaceComponent
 public:
 	KInterfaceButtonComponent(RInterfaceObject* owner);
 
+protected:
 	void Init() override;
 	void Cleanup() override;
 
+public:
 	KtEvent<>& GetEventClicked();
 
 private:

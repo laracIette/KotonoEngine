@@ -1,6 +1,12 @@
 #include "InterfaceFloatTextBoxObject.h"
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/InputManager.h>
+#include "InterfaceTextComponent.h"
+
+RInterfaceFloatTextBoxObject::RInterfaceFloatTextBoxObject() :
+	Base()
+{
+}
 
 void RInterfaceFloatTextBoxObject::Init()
 {
@@ -14,9 +20,9 @@ const float RInterfaceFloatTextBoxObject::GetValue() const
 	return value_;
 }
 
-KtEvent<float>& RInterfaceFloatTextBoxObject::GetValueChangedEvent()
+KtEvent<float>& RInterfaceFloatTextBoxObject::GetEventValueChanged()
 {
-	return valueChangedEvent_;
+	return eventValueChanged_;
 }
 
 void RInterfaceFloatTextBoxObject::SetValue(const float value)
@@ -28,7 +34,8 @@ void RInterfaceFloatTextBoxObject::SetValue(const float value)
 
 	const float delta = value - value_;
 	value_ = value;
-	valueChangedEvent_.Broadcast(delta);
+	eventValueChanged_.Broadcast(delta);
+	GetTextComponent()->UpdateTextWithBinding();
 }
 
 void RInterfaceFloatTextBoxObject::OnMouseDown()

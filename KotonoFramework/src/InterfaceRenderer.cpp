@@ -1,4 +1,4 @@
-#include "Renderer2D.h"
+#include "InterfaceRenderer.h"
 #include "Framework.h"
 #include "log.h"
 #include "Context.h"
@@ -22,7 +22,7 @@ static constexpr std::array<KtVertex2D, 4> Vertices =
 
 static constexpr std::array<uint32_t, 6> Indices = { 0, 1, 2, 2, 3, 0 };
 
-void KtRenderer2D::Init()
+void KtInterfaceRenderer::Init()
 {
 	CreateVertexBuffer();
 	CreateIndexBuffer();
@@ -30,7 +30,7 @@ void KtRenderer2D::Init()
 	isCommandBufferDirty_.fill(true);
 }
 
-void KtRenderer2D::Update(const uint32_t frameIndex)
+void KtInterfaceRenderer::Update(const uint32_t frameIndex)
 {
 	if (stagingProxies_.empty())
 	{
@@ -66,7 +66,7 @@ void KtRenderer2D::Update(const uint32_t frameIndex)
 	);
 }
 
-void KtRenderer2D::Cleanup() const
+void KtInterfaceRenderer::Cleanup() const
 {
 	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaning up 2D renderer");
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), indexBuffer_.Buffer, indexBuffer_.Allocation);
@@ -74,7 +74,7 @@ void KtRenderer2D::Cleanup() const
 	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaned up 2D renderer");
 }
 
-void KtRenderer2D::CreateVertexBuffer()
+void KtInterfaceRenderer::CreateVertexBuffer()
 {
 	const VkDeviceSize bufferSize = sizeof(KtVertex2D) * Vertices.size();
 
@@ -97,10 +97,10 @@ void KtRenderer2D::CreateVertexBuffer()
 	);
 
 	Framework.GetContext().CopyBuffer(stagingVertexBuffer_.Buffer, vertexBuffer_.Buffer, bufferSize);
-	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtRenderer2D::DestroyStagingVertexBuffer));
+	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtInterfaceRenderer::DestroyStagingVertexBuffer));
 }
 
-void KtRenderer2D::CreateIndexBuffer()
+void KtInterfaceRenderer::CreateIndexBuffer()
 {
 	const VkDeviceSize bufferSize = sizeof(uint32_t) * Indices.size();
 
@@ -123,32 +123,32 @@ void KtRenderer2D::CreateIndexBuffer()
 	);
 
 	Framework.GetContext().CopyBuffer(stagingIndexBuffer_.Buffer, indexBuffer_.Buffer, bufferSize);
-	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtRenderer2D::DestroyStagingIndexBuffer));
+	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtInterfaceRenderer::DestroyStagingIndexBuffer));
 }
 
-void KtRenderer2D::DestroyStagingVertexBuffer()
+void KtInterfaceRenderer::DestroyStagingVertexBuffer()
 {
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingVertexBuffer_.Buffer, stagingVertexBuffer_.Allocation);
 }
 
-void KtRenderer2D::DestroyStagingIndexBuffer()
+void KtInterfaceRenderer::DestroyStagingIndexBuffer()
 {
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingIndexBuffer_.Buffer, stagingIndexBuffer_.Allocation);
 }
 
-void KtRenderer2D::CmdBindVertexBuffer(VkCommandBuffer commandBuffer) const
+void KtInterfaceRenderer::CmdBindVertexBuffer(VkCommandBuffer commandBuffer) const
 {
 	const std::array<VkBuffer, 1> vertexBuffers = { vertexBuffer_.Buffer };
 	const std::array<VkDeviceSize, 1> offsets = { 0 };
 	vkCmdBindVertexBuffers(commandBuffer, 0, static_cast<uint32_t>(vertexBuffers.size()), vertexBuffers.data(), offsets.data());
 }
 
-void KtRenderer2D::CmdBindIndexBuffer(VkCommandBuffer commandBuffer) const
+void KtInterfaceRenderer::CmdBindIndexBuffer(VkCommandBuffer commandBuffer) const
 {
 	vkCmdBindIndexBuffer(commandBuffer, indexBuffer_.Buffer, 0, VK_INDEX_TYPE_UINT32);
 }
 
-void KtRenderer2D::CreateCommandBuffers()
+void KtInterfaceRenderer::CreateCommandBuffers()
 {
 	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; ++i)
 	{
@@ -156,7 +156,7 @@ void KtRenderer2D::CreateCommandBuffers()
 	}
 }
 
-void KtRenderer2D::CreateCommandBuffer(const uint32_t frameIndex)
+void KtInterfaceRenderer::CreateCommandBuffer(const uint32_t frameIndex)
 {
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -170,7 +170,7 @@ void KtRenderer2D::CreateCommandBuffer(const uint32_t frameIndex)
 	);
 }
 
-void KtRenderer2D::RecordCommandBuffer(const uint32_t frameIndex)
+void KtInterfaceRenderer::RecordCommandBuffer(const uint32_t frameIndex)
 {
 	SortProxies(proxies_[frameIndex]);
 	VkCommandBuffer commandBuffer = commandBuffers_[frameIndex];
@@ -179,7 +179,7 @@ void KtRenderer2D::RecordCommandBuffer(const uint32_t frameIndex)
 	EndCommandBuffer(commandBuffer);
 }
 
-void KtRenderer2D::BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
+void KtInterfaceRenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
 {
 	vkResetCommandBuffer(commandBuffer, 0);
 
@@ -200,7 +200,7 @@ void KtRenderer2D::BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint3
 	);
 }
 
-void KtRenderer2D::EndCommandBuffer(VkCommandBuffer commandBuffer)
+void KtInterfaceRenderer::EndCommandBuffer(VkCommandBuffer commandBuffer)
 {
 	VK_CHECK_THROW(
 		vkEndCommandBuffer(commandBuffer),
@@ -208,22 +208,22 @@ void KtRenderer2D::EndCommandBuffer(VkCommandBuffer commandBuffer)
 	);
 }
 
-void KtRenderer2D::SetUniformData(const KtUniformData2D& uniformData)
+void KtInterfaceRenderer::SetUniformData(const KtUniformData2D& uniformData)
 {
 	uniformDatas_[Framework.GetRenderer().GetGameThreadFrame()] = uniformData;
 }
 
-void KtRenderer2D::Register(KtRenderable2DProxy* proxy)
+void KtInterfaceRenderer::Register(KtRenderable2DProxy* proxy)
 {
 	stagingProxies_[proxy] = static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
-void KtRenderer2D::Unregister(KtRenderable2DProxy* proxy)
+void KtInterfaceRenderer::Unregister(KtRenderable2DProxy* proxy)
 {
 	stagingProxies_[proxy] = -static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
-void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
+void KtInterfaceRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
 {
 	if (isCommandBufferDirty_[frameIndex] || GetIsAnyProxyDirty(frameIndex))
 	{
@@ -243,7 +243,7 @@ void KtRenderer2D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIn
 	vkCmdExecuteCommands(commandBuffer, 1, &commandBuffers_[frameIndex]);
 }
 
-void KtRenderer2D::UpdateDescriptorSets(const ProxiesPool& proxies, const uint32_t frameIndex)
+void KtInterfaceRenderer::UpdateDescriptorSets(const ProxiesPool& proxies, const uint32_t frameIndex)
 {
 	struct ShaderData final
 	{
@@ -305,7 +305,7 @@ void KtRenderer2D::UpdateDescriptorSets(const ProxiesPool& proxies, const uint32
 	}
 }
 
-void KtRenderer2D::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex)
+void KtInterfaceRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex)
 {
 	const KtShader* currentShader = nullptr;
 	const KtViewport* currentViewport = nullptr;
@@ -351,7 +351,7 @@ void KtRenderer2D::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPo
 	}
 }
 
-void KtRenderer2D::SortProxies(ProxiesPool& proxies)
+void KtInterfaceRenderer::SortProxies(ProxiesPool& proxies)
 {
 	std::sort(proxies.begin(), proxies.end(),
 		[](const KtRenderable2DProxy* a, const KtRenderable2DProxy* b)
@@ -373,14 +373,14 @@ void KtRenderer2D::SortProxies(ProxiesPool& proxies)
 	);
 }
 
-const bool KtRenderer2D::GetIsAnyProxyDirty(const uint32_t frameIndex) const
+const bool KtInterfaceRenderer::GetIsAnyProxyDirty(const uint32_t frameIndex) const
 {
 	auto proxies = KtCollection(proxies_[frameIndex].begin(), proxies_[frameIndex].end());
 	proxies.AddFilter([](const KtRenderable2DProxy* proxy) { return proxy->isDirty; });
 	return proxies.GetFirst() != nullptr;
 }
 
-void KtRenderer2D::MarkProxiesNotDirty(const uint32_t frameIndex)
+void KtInterfaceRenderer::MarkProxiesNotDirty(const uint32_t frameIndex)
 {
 	for (auto* proxy : proxies_[frameIndex])
 	{

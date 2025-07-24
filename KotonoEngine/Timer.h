@@ -5,9 +5,11 @@ class KTimer : public KObject
 {
 	BASECLASS(KObject)
 
-public:
+protected:
 	void Update() override;
 
+public:
+	const bool GetIsPlaying() const;
 	const bool GetIsRepeat() const;
 	const float GetDuration() const;
 	KtEvent<>& GetEventCompleted();
@@ -15,7 +17,7 @@ public:
 	void SetIsRepeat(const bool isRepeat);
 	void SetDuration(const float duration);
 
-	void Start();
+	void Start(const bool isOverride = true);
 	void Stop();
 
 private:

@@ -18,9 +18,11 @@ class TSceneObject : public KObject
 public:
 	TSceneObject();
 
+protected:
 	void Init() override;
 	void Cleanup() override;
 
+public:
 	const EVisibility GetVisibility() const;
 	KtViewport* GetViewport() const;
 	TSceneObject* GetParent() const;

@@ -19,9 +19,11 @@ class KInterfaceComponent : public KObject
 public:
 	KInterfaceComponent(RInterfaceObject* owner);
 
+protected:
 	void Init() override;
 	void Cleanup() override;
 
+public:
 	RInterfaceObject* GetOwner() const;
 	KInterfaceComponent* GetParent() const;
 	const URect& GetRect() const;

@@ -132,5 +132,5 @@ void TCamera::OnEventUpdateTransform() const
 	ubo.Projection = glm::perspective(glm::radians(fov_), GetViewport()->GetAspectRatio(), depthNear_, depthFar_);
 	//ubo.Projection[1][1] *= -1.0f;
 
-	Framework.GetRenderer().GetRenderer3D().SetUniformData(ubo);
+	Framework.GetRenderer().GetSceneRenderer().SetUniformData(ubo);
 }

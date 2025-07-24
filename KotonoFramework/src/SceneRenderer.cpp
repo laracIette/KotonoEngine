@@ -1,4 +1,4 @@
-#include "Renderer3D.h"
+#include "SceneRenderer.h"
 #include "Framework.h"
 #include "Context.h"
 #include "Renderer.h"
@@ -14,7 +14,7 @@
 
 #define KT_LOG_IMPORTANCE_LEVEL_PROXY KT_LOG_IMPORTANCE_LEVEL_HIGH
 
-void KtRenderer3D::Init()
+void KtSceneRenderer::Init()
 {
 	CreateStaticCommandBuffers();
 	CreateDynamicCommandBuffers();
@@ -23,43 +23,43 @@ void KtRenderer3D::Init()
 	isDynamicCommandBufferDirty_.fill(true);
 }
 
-void KtRenderer3D::Update(const uint32_t frameIndex)
+void KtSceneRenderer::Update(const uint32_t frameIndex)
 {
 	UpdateUniformData(frameIndex);
 	UpdateStaticProxies(frameIndex);
 	UpdateDynamicProxies(frameIndex);
 }
 
-void KtRenderer3D::Cleanup()
+void KtSceneRenderer::Cleanup()
 {
 }
 
-void KtRenderer3D::SetUniformData(const KtUniformData3D& uniformData)
+void KtSceneRenderer::SetUniformData(const KtUniformData3D& uniformData)
 {
 	stagingUniformData_ = { uniformData, static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT) };
 }
 
-void KtRenderer3D::RegisterStatic(KtRenderable3DProxy* proxy)
+void KtSceneRenderer::RegisterStatic(KtRenderable3DProxy* proxy)
 {
 	stagingStaticProxies_[proxy] = static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
-void KtRenderer3D::RegisterDynamic(KtRenderable3DProxy* proxy)
+void KtSceneRenderer::RegisterDynamic(KtRenderable3DProxy* proxy)
 {
 	stagingDynamicProxies_[proxy] = static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
-void KtRenderer3D::UnregisterStatic(KtRenderable3DProxy* proxy)
+void KtSceneRenderer::UnregisterStatic(KtRenderable3DProxy* proxy)
 {
 	stagingStaticProxies_[proxy] = -static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
-void KtRenderer3D::UnregisterDynamic(KtRenderable3DProxy* proxy)
+void KtSceneRenderer::UnregisterDynamic(KtRenderable3DProxy* proxy)
 {
 	stagingDynamicProxies_[proxy] = -static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
-void KtRenderer3D::CreateStaticCommandBuffers()
+void KtSceneRenderer::CreateStaticCommandBuffers()
 {
 	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; ++i)
 	{
@@ -67,7 +67,7 @@ void KtRenderer3D::CreateStaticCommandBuffers()
 	}
 }
 
-void KtRenderer3D::CreateStaticCommandBuffer(const uint32_t frameIndex)
+void KtSceneRenderer::CreateStaticCommandBuffer(const uint32_t frameIndex)
 {
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -81,7 +81,7 @@ void KtRenderer3D::CreateStaticCommandBuffer(const uint32_t frameIndex)
 	);
 }
 
-void KtRenderer3D::CreateDynamicCommandBuffers()
+void KtSceneRenderer::CreateDynamicCommandBuffers()
 {
 	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; ++i)
 	{
@@ -89,7 +89,7 @@ void KtRenderer3D::CreateDynamicCommandBuffers()
 	}
 }
 
-void KtRenderer3D::CreateDynamicCommandBuffer(const uint32_t frameIndex)
+void KtSceneRenderer::CreateDynamicCommandBuffer(const uint32_t frameIndex)
 {
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -103,7 +103,7 @@ void KtRenderer3D::CreateDynamicCommandBuffer(const uint32_t frameIndex)
 	);
 }
 
-void KtRenderer3D::RecordStaticCommandBuffer(const uint32_t frameIndex)
+void KtSceneRenderer::RecordStaticCommandBuffer(const uint32_t frameIndex)
 {
 	SortProxies(staticProxies_[frameIndex]);
 	VkCommandBuffer commandBuffer = staticCommandBuffers_[frameIndex];
@@ -112,7 +112,7 @@ void KtRenderer3D::RecordStaticCommandBuffer(const uint32_t frameIndex)
 	EndCommandBuffer(commandBuffer);
 }
 
-void KtRenderer3D::RecordDynamicCommandBuffer(const uint32_t frameIndex)
+void KtSceneRenderer::RecordDynamicCommandBuffer(const uint32_t frameIndex)
 {
 	SortProxies(dynamicProxies_[frameIndex]);
 	VkCommandBuffer commandBuffer = dynamicCommandBuffers_[frameIndex];
@@ -121,7 +121,7 @@ void KtRenderer3D::RecordDynamicCommandBuffer(const uint32_t frameIndex)
 	EndCommandBuffer(commandBuffer);
 }
 
-void KtRenderer3D::BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
+void KtSceneRenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
 {
 	vkResetCommandBuffer(commandBuffer, 0);
 
@@ -142,7 +142,7 @@ void KtRenderer3D::BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint3
 	);
 }
 
-void KtRenderer3D::EndCommandBuffer(VkCommandBuffer commandBuffer)
+void KtSceneRenderer::EndCommandBuffer(VkCommandBuffer commandBuffer)
 {
 	VK_CHECK_THROW(
 		vkEndCommandBuffer(commandBuffer),
@@ -150,7 +150,7 @@ void KtRenderer3D::EndCommandBuffer(VkCommandBuffer commandBuffer)
 	);
 }
 
-void KtRenderer3D::UpdateUniformData(const uint32_t frameIndex)
+void KtSceneRenderer::UpdateUniformData(const uint32_t frameIndex)
 {
 	if (stagingUniformData_.second == 0)
 	{
@@ -162,7 +162,7 @@ void KtRenderer3D::UpdateUniformData(const uint32_t frameIndex)
 	--stagingUniformData_.second;
 }
 
-void KtRenderer3D::UpdateStaticProxies(const uint32_t frameIndex)
+void KtSceneRenderer::UpdateStaticProxies(const uint32_t frameIndex)
 {
 	if (stagingStaticProxies_.empty())
 	{
@@ -199,7 +199,7 @@ void KtRenderer3D::UpdateStaticProxies(const uint32_t frameIndex)
 	);
 }
 
-void KtRenderer3D::UpdateDynamicProxies(const uint32_t frameIndex)
+void KtSceneRenderer::UpdateDynamicProxies(const uint32_t frameIndex)
 {
 	if (stagingDynamicProxies_.empty())
 	{
@@ -236,7 +236,7 @@ void KtRenderer3D::UpdateDynamicProxies(const uint32_t frameIndex)
 	);
 }
 
-void KtRenderer3D::SortProxies(ProxiesPool& proxies) 
+void KtSceneRenderer::SortProxies(ProxiesPool& proxies) 
 {
 	std::sort(proxies.begin(), proxies.end(),
 		[](const KtRenderable3DProxy* a, const KtRenderable3DProxy* b)
@@ -254,7 +254,7 @@ void KtRenderer3D::SortProxies(ProxiesPool& proxies)
 	);
 }
 
-void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
+void KtSceneRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
 {
 	instanceIndices_[frameIndex].clear();
 	// draw calls are currently messed up by command buffers record
@@ -303,7 +303,7 @@ void KtRenderer3D::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIn
 	CmdExecuteCommandBuffers(commandBuffer, frameIndex);
 }
 
-void KtRenderer3D::UpdateDescriptorSetObjectBuffers(const ProxiesPool& proxies, const uint32_t frameIndex) const
+void KtSceneRenderer::UpdateDescriptorSetObjectBuffers(const ProxiesPool& proxies, const uint32_t frameIndex) const
 {
 	std::unordered_map<KtShader*, std::vector<KtObjectData3D>> shaderObjectBufferDatas{};
 	for (const auto* proxy : proxies)
@@ -321,7 +321,7 @@ void KtRenderer3D::UpdateDescriptorSetObjectBuffers(const ProxiesPool& proxies, 
 	}
 }
 
-void KtRenderer3D::UpdateDescriptorSetUniformBuffers(const ProxiesPool& proxies, const uint32_t frameIndex) const
+void KtSceneRenderer::UpdateDescriptorSetUniformBuffers(const ProxiesPool& proxies, const uint32_t frameIndex) const
 {
 	std::unordered_set<KtShader*> shaders{};
 	for (const auto* proxy : proxies)
@@ -338,7 +338,7 @@ void KtRenderer3D::UpdateDescriptorSetUniformBuffers(const ProxiesPool& proxies,
 	}
 }
 
-void KtRenderer3D::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex)
+void KtSceneRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex)
 {
 	if (proxies.Empty())
 	{
@@ -396,7 +396,7 @@ void KtRenderer3D::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPo
 	}
 }
 
-void KtRenderer3D::CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
+void KtSceneRenderer::CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
 {
 	const std::array<VkCommandBuffer, 2> commandBuffers =
 	{
@@ -407,14 +407,14 @@ void KtRenderer3D::CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, const
 	vkCmdExecuteCommands(commandBuffer, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
 }
 
-const bool KtRenderer3D::GetIsDynamicProxiesDirty(const uint32_t frameIndex) const
+const bool KtSceneRenderer::GetIsDynamicProxiesDirty(const uint32_t frameIndex) const
 {
 	auto proxies = KtCollection(dynamicProxies_[frameIndex].begin(), dynamicProxies_[frameIndex].end());
 	proxies.AddFilter([](const KtRenderable3DProxy* proxy) { return proxy->isDirty; });
 	return proxies.GetFirst() != nullptr;
 }
 
-void KtRenderer3D::MarkDynamicProxiesNotDirty(const uint32_t frameIndex)
+void KtSceneRenderer::MarkDynamicProxiesNotDirty(const uint32_t frameIndex)
 {
 	for (auto* proxy : dynamicProxies_[frameIndex])
 	{

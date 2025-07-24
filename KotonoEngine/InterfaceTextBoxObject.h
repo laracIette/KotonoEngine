@@ -11,10 +11,12 @@ class RInterfaceTextBoxObject : public RInterfaceObject
 public:
 	RInterfaceTextBoxObject();
 
+protected:
 	void Init() override;
 	void Update() override;
 	void Cleanup() override;
 
+public:
 	const bool GetIsEditable() const;
 
 	void SetIsEditable(const bool isEditable);

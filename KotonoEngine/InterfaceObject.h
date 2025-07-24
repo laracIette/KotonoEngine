@@ -18,10 +18,12 @@ class RInterfaceObject : public KObject
 public:
 	RInterfaceObject();
 
+protected:
 	void Init() override;
 	void Update() override;
 	void Cleanup() override;
 
+public:
 	const EVisibility GetVisibility() const;
 	KtViewport* GetViewport() const;
 	RInterfaceObject* GetParent() const;

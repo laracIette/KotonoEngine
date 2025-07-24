@@ -17,6 +17,12 @@ const KtCuller2D::ProxiesPool KtCuller2D::ComputeNullCulling(const ProxiesPool& 
 
 	for (auto* proxy : proxies)
 	{
+		if (!proxy)
+		{
+			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "KtCuller2D::ComputeNullCulling(): proxy is nullptr");
+			continue;
+		}
+
 		if (!proxy->shader)
 		{
 			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "KtCuller2D::ComputeNullCulling(): shader is nullptr");

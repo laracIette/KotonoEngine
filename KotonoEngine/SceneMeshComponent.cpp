@@ -134,12 +134,12 @@ void KSceneMeshComponent::RegisterProxies()
     {
     case EMobility::Dynamic:
     {
-        Framework.GetRenderer().GetRenderer3D().RegisterDynamic(&proxy_);
+        Framework.GetRenderer().GetSceneRenderer().RegisterDynamic(&proxy_);
         break;
     }
     case EMobility::Static:
     {
-        Framework.GetRenderer().GetRenderer3D().RegisterStatic(&proxy_);
+        Framework.GetRenderer().GetSceneRenderer().RegisterStatic(&proxy_);
         break;
     }
     }
@@ -151,12 +151,12 @@ void KSceneMeshComponent::RemoveProxies()
     {
     case EMobility::Dynamic:
     {
-        Framework.GetRenderer().GetRenderer3D().UnregisterDynamic(&proxy_);
+        Framework.GetRenderer().GetSceneRenderer().UnregisterDynamic(&proxy_);
         break;
     }
     case EMobility::Static:
     {
-        Framework.GetRenderer().GetRenderer3D().UnregisterStatic(&proxy_);
+        Framework.GetRenderer().GetSceneRenderer().UnregisterStatic(&proxy_);
         break;
     }
     }

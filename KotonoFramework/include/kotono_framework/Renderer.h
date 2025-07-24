@@ -4,8 +4,8 @@
 #include "frames_in_flight.h"
 #include <vector>
 #include <span>
-#include "Renderer2D.h"
-#include "Renderer3D.h"
+#include "InterfaceRenderer.h"
+#include "SceneRenderer.h"
 #include <thread>
 #include <mutex>
 
@@ -21,17 +21,16 @@ public:
 
 	const VkExtent2D GetSwapChainExtent() const;
 
-	KtRenderer2D& GetRenderer2D();
-	KtRenderer3D& GetRenderer3D();
+	KtInterfaceRenderer& GetInterfaceRenderer();
+	KtSceneRenderer& GetSceneRenderer();
 
 	VkRenderPass& GetRenderPass();
 	VkFramebuffer& GetFramebuffer(const uint32_t frameIndex);
-
 	VkCommandPool& GetCommandPool(const uint32_t frameIndex);
 
 private:
-	KtRenderer2D renderer2D_;
-	KtRenderer3D renderer3D_;
+	KtInterfaceRenderer interfaceRenderer_;
+	KtSceneRenderer sceneRenderer_;
 
 	VkSwapchainKHR swapChain_;
 	std::vector<VkImage> swapChainImages_;

@@ -4,12 +4,13 @@ class KInterfaceContainerComponent : public KInterfaceComponent
 {
 	BASECLASS(KInterfaceComponent)
 
-public:
+protected:
     void Init() override;
     void Update() override;
     void Cleanup() override;
 
-    const std::vector<KInterfaceComponent*>& GetItems() const;
+public:
+    const KtPool<KInterfaceComponent*>& GetItems() const;
     const bool GetIsSizeToContent() const;
 
     void SetIsSizeToContent(const bool isSizeToContent);
@@ -19,7 +20,7 @@ public:
     virtual void AddItem(KInterfaceComponent* item);
 
 private:
-    std::vector<KInterfaceComponent*> items_;
+    KtPool<KInterfaceComponent*> items_;
     bool isSizeToContent_;
 
     void TryUpdateSize();

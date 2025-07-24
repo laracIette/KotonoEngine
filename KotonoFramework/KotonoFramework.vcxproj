@@ -150,7 +150,7 @@
     <ClCompile Include="src\ImageTextureManager.cpp" />
     <ClCompile Include="src\Viewport.cpp" />
     <ClCompile Include="src\Shader.cpp" />
-    <ClCompile Include="src\Renderer2D.cpp" />
+    <ClCompile Include="src\InterfaceRenderer.cpp" />
     <ClCompile Include="src\AudioManager.cpp" />
     <ClCompile Include="src\Context.cpp" />
     <ClCompile Include="src\File.cpp" />
@@ -162,7 +162,7 @@
     <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\Mouse.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
-    <ClCompile Include="src\Renderer3D.cpp" />
+    <ClCompile Include="src\SceneRenderer.cpp" />
     <ClCompile Include="src\Window.cpp" />
     <ClCompile Include="src\Stopwatch.cpp" />
   </ItemGroup>
@@ -191,7 +191,7 @@
     <ClInclude Include="include\kotono_framework\ObjectData3D.h" />
     <ClInclude Include="include\kotono_framework\QueueFamilyIndices.h" />
     <ClInclude Include="include\kotono_framework\Renderer.h" />
-    <ClInclude Include="include\kotono_framework\Renderer3D.h" />
+    <ClInclude Include="include\kotono_framework\SceneRenderer.h" />
     <ClInclude Include="include\kotono_framework\SwapChainSupportDetails.h" />
     <ClInclude Include="include\kotono_framework\UniformData3D.h" />
     <ClInclude Include="include\kotono_framework\Vertex3D.h" />
@@ -202,7 +202,7 @@
     <ClInclude Include="include\kotono_framework\ObjectData2D.h" />
     <ClInclude Include="include\kotono_framework\UniformData2D.h" />
     <ClInclude Include="include\kotono_framework\Vertex2D.h" />
-    <ClInclude Include="include\kotono_framework\Renderer2D.h" />
+    <ClInclude Include="include\kotono_framework\InterfaceRenderer.h" />
     <ClInclude Include="include\kotono_framework\Viewport.h" />
     <ClInclude Include="include\kotono_framework\Shader.h" />
     <ClInclude Include="include\kotono_framework\ModelManager.h" />

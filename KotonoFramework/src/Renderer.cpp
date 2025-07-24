@@ -18,8 +18,8 @@ void KtRenderer::Init()
 	CreateCommandBuffers();
 	CreateSyncObjects();
 
-	renderer2D_.Init();
-	renderer3D_.Init();
+	interfaceRenderer_.Init();
+	sceneRenderer_.Init();
 }
 
 void KtRenderer::Cleanup()
@@ -29,8 +29,8 @@ void KtRenderer::Cleanup()
 	JoinThread(renderThread_);
 	JoinThread(rhiThread_);
 
-	renderer2D_.Cleanup();
-	renderer3D_.Cleanup();
+	interfaceRenderer_.Cleanup();
+	sceneRenderer_.Cleanup();
 	
 	CleanupSwapChain();
 
@@ -485,8 +485,8 @@ void KtRenderer::DrawFrame()
 
 void KtRenderer::UpdateRenderers(const uint32_t frameIndex)
 {
-	renderer3D_.Update(frameIndex);
-	renderer2D_.Update(frameIndex);
+	sceneRenderer_.Update(frameIndex);
+	interfaceRenderer_.Update(frameIndex);
 }
 
 void KtRenderer::RecordCommandBuffer(const uint32_t frameIndex) 
@@ -544,8 +544,8 @@ VkCommandPool& KtRenderer::GetCommandPool(const uint32_t frameIndex)
 
 void KtRenderer::CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
 {
-	renderer3D_.CmdDraw(commandBuffer, frameIndex);
-	renderer2D_.CmdDraw(commandBuffer, frameIndex);
+	sceneRenderer_.CmdDraw(commandBuffer, frameIndex);
+	interfaceRenderer_.CmdDraw(commandBuffer, frameIndex);
 }
 
 void KtRenderer::SubmitCommandBuffer(const uint32_t frameIndex)
@@ -676,14 +676,14 @@ const VkExtent2D KtRenderer::GetSwapChainExtent() const
 	return swapChainExtent_;
 }
 
-KtRenderer2D& KtRenderer::GetRenderer2D()
+KtInterfaceRenderer& KtRenderer::GetInterfaceRenderer()
 {
-	return renderer2D_;
+	return interfaceRenderer_;
 }
 
-KtRenderer3D& KtRenderer::GetRenderer3D()
+KtSceneRenderer& KtRenderer::GetSceneRenderer()
 {
-	return renderer3D_;
+	return sceneRenderer_;
 }
 
 VkRenderPass& KtRenderer::GetRenderPass()

@@ -3,36 +3,26 @@
 #include <kotono_framework/Path.h>
 #include <kotono_framework/Font.h>
 #include <kotono_framework/Shader.h>
+#include <kotono_framework/ShaderManager.h>
 #include "InterfaceObject.h"
-#include "InterfaceStackComponent.h"
 #include "InterfaceImageComponent.h"
-#include "Timer.h"
-#include "Engine.h"
-#include "ObjectManager.h"
 
 KInterfaceTextComponent::KInterfaceTextComponent(RInterfaceObject* owner) :
     Base(owner)
 {
-    updateTextWithBindingTimer_ = Engine.GetObjectManager().Create<KTimer>();
 }
 
 void KInterfaceTextComponent::Init()
 {
-    Base::Init();
+    Base::Init(); 
 
-    SetOrientation(EOrientation::Horizontal);
-
-    updateTextWithBindingTimer_->SetDuration(1.0f / 30.0f);
-    updateTextWithBindingTimer_->SetIsRepeat(true);
-    updateTextWithBindingTimer_->GetEventCompleted().AddListener(KtDelegate(this, &KInterfaceTextComponent::UpdateTextWithBinding));
-    updateTextWithBindingTimer_->Start();
+    static const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)";
+    SetShader(Framework.GetShaderManager().Get(path));
 }
 
 void KInterfaceTextComponent::Cleanup()
 {
     Base::Cleanup();
-
-    updateTextWithBindingTimer_->Delete();
 }
 
 const std::string& KInterfaceTextComponent::GetText() const
@@ -47,7 +37,7 @@ const float KInterfaceTextComponent::GetFontSize() const
 
 const float KInterfaceTextComponent::GetSpacing() const
 {
-    return GetItemSpacing();
+    return spacing_;
 }
 
 KtShader* KInterfaceTextComponent::GetShader() const
@@ -55,7 +45,7 @@ KtShader* KInterfaceTextComponent::GetShader() const
     return shader_;
 }
 
-void KInterfaceTextComponent::SetText(const std::string& text)
+void KInterfaceTextComponent::SetText(const std::string_view text)
 {
     if (text_ == text)
     {
@@ -73,12 +63,21 @@ void KInterfaceTextComponent::SetFontSize(const float fontSize)
 
 void KInterfaceTextComponent::SetSpacing(const float spacing)
 {
-    SetItemSpacing(spacing);
+    spacing_ = spacing;
 }
 
 void KInterfaceTextComponent::SetShader(KtShader* shader)
 {
+    if (shader_ == shader)
+    {
+        return;
+    }
+
     shader_ = shader;
+    for (auto* character : characters_)
+    {
+        character->SetShader(shader_);
+    }
 }
 
 void KInterfaceTextComponent::SetTextBinding(const TextBinding& function)
@@ -96,20 +95,28 @@ void KInterfaceTextComponent::UpdateTextWithBinding()
 
 void KInterfaceTextComponent::UpdateCharacters()
 {
-    for (auto* letter : GetItems())
+    for (auto* character : characters_)
     {
-        letter->Delete();
+        character->Delete();
     }
-    ClearItems();
+    characters_.Clear();
 
     const auto path = Framework.GetPath().GetSolutionPath() / R"(assets\fonts\default)";
     const auto font = KtFont(path);
-    for (auto* texture : font.GetTextTextures(text_))
+    const auto fontCharacters = font.GetTextTextures(text_);
+    characters_.Reserve(fontCharacters.size());
+    for (auto* texture : fontCharacters)
     {
-        auto* letter = GetOwner()->AddComponent<KInterfaceImageComponent>();
-        letter->SetImageTexture(texture);
-        letter->SetShader(shader_);
-        letter->SetScreenSize(glm::vec2(fontSize_));
-        AddItem(letter);
+        auto* character = GetOwner()->AddComponent<KInterfaceImageComponent>();
+        character->SetImageTexture(texture);
+        character->SetShader(shader_);
+        character->SetScreenSize(glm::vec2(fontSize_));
+        characters_.Add(character); // todo: was ??
+    }
+
+    for (size_t i = 0; i < characters_.Size(); i++)
+    {
+        const float offset = spacing_ * i;
+        characters_[i]->SetRelativePosition(glm::vec2(offset, 0.0f));
     }
 }

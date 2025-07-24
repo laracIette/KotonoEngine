@@ -35,7 +35,7 @@ void KInterfaceStackComponent::AddItem(KInterfaceComponent* item)
 void KInterfaceStackComponent::UpdatePositions()
 {
     const auto& items = GetItems();
-    for (size_t i = 0; i < items.size(); i++)
+    for (size_t i = 0; i < items.Size(); i++)
     {
         auto* item = items[i];
         const float offset = spacing_ * i;

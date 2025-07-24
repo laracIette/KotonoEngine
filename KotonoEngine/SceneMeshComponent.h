@@ -13,10 +13,12 @@ class KSceneMeshComponent : public KSceneComponent
 public:
 	KSceneMeshComponent(TSceneObject* owner);
 
+protected:
 	void Init() override;
 	void Update() override;
 	void Cleanup() override;
 
+public:
 	KtShader* GetShader() const;
 	KtModel* GetModel() const;
 

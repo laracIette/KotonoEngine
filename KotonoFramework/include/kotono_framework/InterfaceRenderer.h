@@ -8,7 +8,7 @@
 #include <unordered_map>
 class KtShader;
 struct KtRenderable2DProxy;
-class KtRenderer2D final
+class KtInterfaceRenderer final
 {
 private:
 	using ProxiesPool = KtPool<KtRenderable2DProxy*>;

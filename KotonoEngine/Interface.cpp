@@ -11,7 +11,7 @@
 #include "InterfaceTextComponent.h"
 #include "InterfaceWindowObject.h"
 #include "ObjectManager.h"
-#include "math_utils.h"
+#include "Timer.h"
 
 void SInterface::Init()
 {
@@ -54,34 +54,28 @@ void SInterface::Init()
 	interfaceObjectStack->AddItem(image2);
 #endif
 #endif
-#if false
-	auto text = Engine.GetObjectManager().Create<RInterfaceTextObject>();
-	text->GetRootComponent()->SetRelativePosition(glm::vec2(0.2f, 0.0f));
-	text->GetTextComponent()->SetFontSize(32.0f);
-	text->GetTextComponent()->SetSpacing(0.05f);
-	text->GetTextComponent()->SetShader(shader2D);
-	text->GetTextComponent()->SetText("hello world !");
-#else
+
 	textBox1_->GetRootComponent()->SetRelativePosition(glm::vec2(0.5f, -0.85f));
 	textBox1_->GetTextComponent()->SetFontSize(32.0f);
 	textBox1_->GetTextComponent()->SetSpacing(0.05f);
-	textBox1_->GetTextComponent()->SetShader(shader2D);
-	textBox1_->GetTextComponent()->SetTextBinding([]() { return std::format("{} ups", round(1.0f / Engine.GetObjectManager().GetAverageUpdateTime(), 2)); });
+	textBox1_->GetTextComponent()->SetTextBinding([]() { return std::format("{:.2f} ups", 1.0f / Engine.GetObjectManager().GetAverageUpdateTime()); });
+	auto* updateUPSTextTimer = Engine.GetObjectManager().Create<KTimer>();
+	updateUPSTextTimer->SetDuration(1.0f / 8.0f);
+	updateUPSTextTimer->SetIsRepeat(true);
+	updateUPSTextTimer->GetEventCompleted().AddListener(KtDelegate(textBox1_->GetTextComponent(), &KInterfaceTextComponent::UpdateTextWithBinding));
+	updateUPSTextTimer->Start();
 
 	textBox2_->GetRootComponent()->SetRelativePosition(glm::vec2(0.3f, 0.3f));
 	textBox2_->GetTextComponent()->SetFontSize(32.0f);
 	textBox2_->GetTextComponent()->SetSpacing(0.05f);
-	textBox2_->GetTextComponent()->SetShader(shader2D);
 	textBox2_->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRootComponent()->GetScreenPosition().x); });
-	textBox2_->GetValueChangedEvent().AddListener(KtDelegate(this, &SInterface::OnTextBox2ValueChanged));
+	textBox2_->GetEventValueChanged().AddListener(KtDelegate(this, &SInterface::OnTextBox2ValueChanged));
 
 	textBox3_->GetRootComponent()->SetRelativePosition(glm::vec2(0.3f, 0.6f));
 	textBox3_->GetTextComponent()->SetFontSize(32.0f);
 	textBox3_->GetTextComponent()->SetSpacing(0.05f);
-	textBox3_->GetTextComponent()->SetShader(shader2D);
 	textBox3_->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRootComponent()->GetScreenPosition().y); });
-	textBox3_->GetValueChangedEvent().AddListener(KtDelegate(this, &SInterface::OnTextBox3ValueChanged));
-#endif
+	textBox3_->GetEventValueChanged().AddListener(KtDelegate(this, &SInterface::OnTextBox3ValueChanged));
 }
 
 void SInterface::OnTextBox2ValueChanged(const float delta) const

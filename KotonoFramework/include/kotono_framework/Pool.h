@@ -1,6 +1,9 @@
 #pragma once
 #include <vector>
 #include <functional>
+/// <summary>
+/// std::vector wrapper with fast item removal
+/// </summary>
 template <typename ValueType>
 class KtPool final
 {
@@ -11,17 +14,17 @@ private:
 	using ConditionFunction = std::function<bool(const ValueType&)>;
 
 public:
-	void Add(const ValueType& value)
+	constexpr void Add(const ValueType& value)
 	{
 		data_.push_back(value);
 	}
 
-	void Add(ValueType&& value)
+	constexpr void Add(ValueType&& value)
 	{
 		data_.push_back(std::move(value));
 	}
 
-	void Remove(const ValueType& value)
+	constexpr void Remove(const ValueType& value)
 	{
 		const auto it = std::find(data_.begin(), data_.end(), value);
 		if (it == data_.end())
@@ -33,7 +36,7 @@ public:
 		RemoveAt(index);
 	}
 
-	void RemoveAt(const size_t index)
+	constexpr void RemoveAt(const size_t index) noexcept
 	{
 		if (index >= data_.size())
 		{
@@ -48,7 +51,7 @@ public:
 		data_.pop_back();
 	}
 
-	void RemoveIf(const ConditionFunction& condition)
+	constexpr void RemoveIf(const ConditionFunction& condition) noexcept
 	{
 		// Have to check backwards to avoid skipping condition checks
 		for (int64_t i = static_cast<int64_t>(data_.size()) - 1; i >= 0; i--)
@@ -65,12 +68,17 @@ public:
 		data_.clear();
 	}
 
-	constexpr void Append(const KtPool& pool) noexcept
+	constexpr void Reserve(const size_t size)
+	{
+		data_.reserve(size);
+	}
+
+	constexpr void Append(const KtPool& pool)
 	{
 		data_.insert(end(), pool.begin(), pool.end());
 	}
 
-	constexpr void Merge(KtPool& pool) noexcept
+	constexpr void Merge(KtPool& pool)
 	{
 		data_.insert(end(), std::make_move_iterator(pool.begin()), std::make_move_iterator(pool.end()));
 		pool.Clear();
