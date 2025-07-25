@@ -1,5 +1,5 @@
 #pragma once
-class STime final
+class STimeManager final
 {
 	friend class SEngine;
 

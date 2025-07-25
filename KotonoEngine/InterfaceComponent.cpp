@@ -10,7 +10,7 @@
 #include <kotono_framework/Viewport.h>
 #include "log.h"
 #include "Engine.h"
-#include "Time.h"
+#include "TimeManager.h"
 
 static KtShader* FlatColorShader = nullptr;
 static KtImageTexture* FlatColorTexture = nullptr;

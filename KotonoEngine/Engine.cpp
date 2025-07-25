@@ -2,7 +2,7 @@
 
 void SEngine::Init()
 {
-    time_.Init();
+    timeManager_.Init();
     objectManager_.Init();
     visualizer_.Init();
     interface_.Init();
@@ -10,26 +10,26 @@ void SEngine::Init()
 
 void SEngine::Update()
 {
-    time_.Update();
+    timeManager_.Update();
     objectManager_.Update();
     interfacePhysicsManager_.Update();
 }
 
 void SEngine::Cleanup()
 {
-    time_.Cleanup();
+    timeManager_.Cleanup();
     objectManager_.Cleanup();
     visualizer_.Cleanup();
 }
 
-STime& SEngine::GetTime()
+STimeManager& SEngine::GetTimeManager()
 {
-    return time_;
+    return timeManager_;
 }
 
-const STime& SEngine::GetTime() const
+const STimeManager& SEngine::GetTimeManager() const
 {
-    return time_;
+    return timeManager_;
 }
 
 SObjectManager& SEngine::GetObjectManager()

@@ -5,7 +5,7 @@
 #include <kotono_framework/InputManager.h>
 #include "SceneComponent.h"
 #include "Engine.h"
-#include "Time.h"
+#include "TimeManager.h"
 #include "log.h"
 
 void TCamera::Init()
@@ -53,28 +53,28 @@ void TCamera::Use()
 void TCamera::OnKeyboardWKeyDown() const
 {
 	const auto direction = GetRootComponent()->GetForwardVector();
-	const auto delta = direction * Engine.GetTime().GetDelta();
+	const auto delta = direction * Engine.GetTimeManager().GetDelta();
 	GetRootComponent()->Translate(delta * speed_);
 }
 
 void TCamera::OnKeyboardAKeyDown() const
 {
 	const auto direction = -GetRootComponent()->GetRightVector();
-	const auto delta = direction * Engine.GetTime().GetDelta();
+	const auto delta = direction * Engine.GetTimeManager().GetDelta();
 	GetRootComponent()->Translate(delta * speed_);
 }
 
 void TCamera::OnKeyboardSKeyDown() const
 {
 	const auto direction = -GetRootComponent()->GetForwardVector();
-	const auto delta = direction * Engine.GetTime().GetDelta();
+	const auto delta = direction * Engine.GetTimeManager().GetDelta();
 	GetRootComponent()->Translate(delta * speed_);
 }
 
 void TCamera::OnKeyboardDKeyDown() const
 {
 	const auto direction = GetRootComponent()->GetRightVector();
-	const auto delta = direction * Engine.GetTime().GetDelta();
+	const auto delta = direction * Engine.GetTimeManager().GetDelta();
 	GetRootComponent()->Translate(delta * speed_);
 }
 

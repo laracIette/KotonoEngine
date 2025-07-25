@@ -1,6 +1,6 @@
 #include "Timer.h"
 #include "Engine.h"
-#include "Time.h"
+#include "TimeManager.h"
 
 void KTimer::Update()
 {
@@ -11,7 +11,7 @@ void KTimer::Update()
         return;
     }
 
-    const float elapsedTime = Engine.GetTime().GetNow() - startTime_;
+    const float elapsedTime = Engine.GetTimeManager().GetNow() - startTime_;
     
     if (elapsedTime < currentDuration_)
     {
@@ -70,7 +70,7 @@ void KTimer::Start(const bool isOverride)
     }
 
     isPlaying_ = true;
-    startTime_ = Engine.GetTime().GetNow();
+    startTime_ = Engine.GetTimeManager().GetNow();
 }
 
 void KTimer::Stop()

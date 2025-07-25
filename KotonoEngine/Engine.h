@@ -1,5 +1,5 @@
 #pragma once
-#include "Time.h"
+#include "TimeManager.h"
 #include "ObjectManager.h"
 #include "Visualizer.h"
 #include "Interface.h"
@@ -15,8 +15,8 @@ private:
 	void Cleanup();
 
 public:
-	STime& GetTime();
-	const STime& GetTime() const;
+	STimeManager& GetTimeManager();
+	const STimeManager& GetTimeManager() const;
 	SObjectManager& GetObjectManager();
 	const SObjectManager& GetObjectManager() const;
 	SVisualizer& GetVisualizer();
@@ -27,7 +27,7 @@ public:
 	const SInterfacePhysicsManager& GetInterfacePhysicsManager() const;
 
 private:
-	STime time_;
+	STimeManager timeManager_;
 	SObjectManager objectManager_;
 	SVisualizer visualizer_;
 	SInterface interface_;

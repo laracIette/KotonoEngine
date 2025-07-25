@@ -13,7 +13,7 @@
 #include "ObjectManager.h"
 #include "SceneObject.h"
 #include "Task.h"
-#include "Time.h"
+#include "TimeManager.h"
 
 static KtShader* WireframeShader = nullptr;
 
@@ -164,7 +164,7 @@ void KSceneMeshComponent::RemoveProxies()
 
 void KSceneMeshComponent::Spin()
 {
-    const float speed = 10.0f * Engine.GetTime().GetDelta();
+    const float speed = 10.0f * Engine.GetTimeManager().GetDelta();
     const glm::quat rotation = glm::quat(glm::radians(glm::vec3(0.0f, speed, 0.0f)));
     Rotate(rotation);
 }

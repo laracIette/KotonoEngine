@@ -1,6 +1,6 @@
 #include "Task.h"
 #include "Engine.h"
-#include "Time.h"
+#include "TimeManager.h"
 
 void KTask::Update()
 {
@@ -8,7 +8,7 @@ void KTask::Update()
 
     if (isPlaying_)
     {
-        if (Engine.GetTime().GetNow() - startTime_ < duration_)
+        if (Engine.GetTimeManager().GetNow() - startTime_ < duration_)
         {
             eventUpdate_.Broadcast();
         }
@@ -42,7 +42,7 @@ void KTask::SetDuration(const float duration)
 void KTask::Start()
 {
     isPlaying_ = true;
-    startTime_ = Engine.GetTime().GetNow();
+    startTime_ = Engine.GetTimeManager().GetNow();
 }
 
 void KTask::Stop()

@@ -49,7 +49,7 @@
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="SceneMeshObject.cpp" />
     <ClCompile Include="InterfaceTextObject.cpp" />
-    <ClCompile Include="Time.cpp" />
+    <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Visualizer.cpp" />
   </ItemGroup>
@@ -90,7 +90,7 @@
     <ClInclude Include="Task.h" />
     <ClInclude Include="SceneMeshObject.h" />
     <ClInclude Include="InterfaceTextObject.h" />
-    <ClInclude Include="Time.h" />
+    <ClInclude Include="TimeManager.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="CoordinateSpace.h" />

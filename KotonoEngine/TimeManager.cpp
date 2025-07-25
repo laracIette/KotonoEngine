@@ -1,12 +1,12 @@
-#include "Time.h"
+#include "TimeManager.h"
 #include <chrono>
 
-void STime::Init()
+void STimeManager::Init()
 {
     _startUTC = GetExactUTC();
 }
 
-void STime::Update()
+void STimeManager::Update()
 {
     double currentUTC = GetExactUTC();
     _nowTime = static_cast<float>(currentUTC - _startUTC);
@@ -15,23 +15,23 @@ void STime::Update()
     _previousTime = _nowTime;
 }
 
-void STime::Cleanup()
+void STimeManager::Cleanup()
 {
 }
 
-const double STime::GetExactUTC() const
+const double STimeManager::GetExactUTC() const
 {
     auto now = std::chrono::system_clock::now();
     auto duration = now.time_since_epoch();
     return std::chrono::duration<double>(duration).count();
 }
 
-const float STime::GetNow() const
+const float STimeManager::GetNow() const
 {
     return _nowTime;
 }
 
-const float STime::GetDelta() const
+const float STimeManager::GetDelta() const
 {
     return _deltaTime;
 }

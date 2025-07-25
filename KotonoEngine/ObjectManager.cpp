@@ -17,7 +17,7 @@
 #include "Camera.h"
 #include "Engine.h"
 #include "Timer.h"
-#include "Time.h"
+#include "TimeManager.h"
 
 #define KT_LOG_IMPORTANCE_LEVEL_OBJECT KT_LOG_IMPORTANCE_LEVEL_NONE
 #undef interface
