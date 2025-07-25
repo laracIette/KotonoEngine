@@ -1,11 +1,19 @@
 #pragma once
-#include "ItemManager.h"
-#include "ImageTexture.h"
+#include <unordered_map>
+#include <filesystem>
 
-class KtImageTextureManager final : public KtItemManager<KtImageTexture>
+class KtImageTexture;
+
+class KtImageTextureManager final
 {
-protected:
-	KtImageTexture* Create(const std::filesystem::path& path) override;
-	void CleanupItem(KtImageTexture* item) const override;
+public:
+	void Cleanup(); // todo: make private and friend
+
+	KtImageTexture* Get(const std::filesystem::path& path);
+
+private:
+	std::unordered_map<std::filesystem::path, KtImageTexture*> imageTextures_;
+
+	KtImageTexture* Create(const std::filesystem::path& path);
 };
 

@@ -3,6 +3,7 @@
 #include "vk_utils.h"
 #include "Context.h"
 #include "ImageTextureManager.h"
+#include "ImageTexture.h"
 #include "Path.h"
 #include "File.h"
 #include <spirv-reflect/spirv_reflect.h>

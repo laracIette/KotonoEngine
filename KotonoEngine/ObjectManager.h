@@ -7,7 +7,6 @@
 #include <array>
 
 class KObject;
-class KTimer;
 
 template <class T>
 concept Object = std::is_base_of_v<KObject, T>;
@@ -65,6 +64,7 @@ public:
 	}
 
 	const float GetAverageUpdateTime() const;
+	const float GetAverageDrawTime() const;
 	
 private:
 	void Quit();
@@ -78,9 +78,11 @@ private:
 	std::array<float, 256> updateTimes_;
 	size_t updateTimeIndex_;
 	float updateTimesSum_;
-	float updateTimesAverage_;
 
-	KTimer* drawTimer_;
+	std::array<float, 64> drawTimes_;
+	size_t drawTimeIndex_;
+	float drawTimesSum_;
+
 	bool canDraw_;
 
 	void InitObjects();
@@ -88,5 +90,5 @@ private:
 	void DeleteObjects();
 	void SubmitDrawObjects();
 
-	void LogUPS();
+	void LogUPS() const;
 };

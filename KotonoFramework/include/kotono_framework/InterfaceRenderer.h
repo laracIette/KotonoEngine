@@ -43,8 +43,8 @@ private:
 
 	void CreateVertexBuffer();
 	void CreateIndexBuffer();
-	void DestroyStagingVertexBuffer();
-	void DestroyStagingIndexBuffer();
+	void DestroyStagingVertexBuffer() const;
+	void DestroyStagingIndexBuffer() const;
 
 	void CmdBindVertexBuffer(VkCommandBuffer commandBuffer) const;
 	void CmdBindIndexBuffer(VkCommandBuffer commandBuffer) const;

@@ -164,7 +164,6 @@
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\SceneRenderer.cpp" />
     <ClCompile Include="src\Window.cpp" />
-    <ClCompile Include="src\Stopwatch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\kotono_framework\Culler3DField.h" />
@@ -206,7 +205,6 @@
     <ClInclude Include="include\kotono_framework\Viewport.h" />
     <ClInclude Include="include\kotono_framework\Shader.h" />
     <ClInclude Include="include\kotono_framework\ModelManager.h" />
-    <ClInclude Include="include\kotono_framework\ItemManager.h" />
     <ClInclude Include="include\kotono_framework\ShaderManager.h" />
     <ClInclude Include="include\kotono_framework\ShaderLayout.h" />
     <ClInclude Include="include\kotono_framework\Path.h" />

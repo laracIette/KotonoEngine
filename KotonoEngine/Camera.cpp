@@ -16,7 +16,7 @@ void TCamera::Init()
 	depthNear_ = 0.01f;
 	depthFar_ = 1000.0f;
 	speed_ = 1.0f;
-	sensitivity_ = 0.01f;
+	sensitivity_ = 0.005f;
 
 	GetRootComponent()->GetEventUpdateTransform().AddListener(KtDelegate<>(this, &TCamera::OnEventUpdateTransform));
 	GetRootComponent()->SetWorldPosition(glm::vec3(0.0f, 0.0f, -3.0f));

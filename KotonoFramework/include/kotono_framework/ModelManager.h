@@ -1,11 +1,19 @@
 #pragma once
-#include "ItemManager.h"
-#include "Model.h"
+#include <unordered_map>
+#include <filesystem>
 
-class KtModelManager final : public KtItemManager<KtModel>
+class KtModel;
+
+class KtModelManager final
 {
-protected:
-	KtModel* Create(const std::filesystem::path& path) override;
-	void CleanupItem(KtModel* item) const override;
+public:
+	void Cleanup(); // todo: make private and friend
+
+	KtModel* Get(const std::filesystem::path& path);
+
+private:
+	std::unordered_map<std::filesystem::path, KtModel*> models_;
+
+	KtModel* Create(const std::filesystem::path& path);
 };
 

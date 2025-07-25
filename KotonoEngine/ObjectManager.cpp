@@ -5,8 +5,10 @@
 #include <kotono_framework/Window.h>
 #include <kotono_framework/InputManager.h>
 #include <kotono_framework/ShaderManager.h>
+#include <kotono_framework/Shader.h>
 #include <kotono_framework/ModelManager.h>
 #include <kotono_framework/Path.h>
+#include <kotono_framework/Stopwatch.h>
 #include "log.h"
 #include "Object.h"
 #include "SceneMeshObject.h"
@@ -55,11 +57,11 @@ void SObjectManager::Init()
 	auto* camera = Create<TCamera>();
 	camera->Use();
 
-	drawTimer_ = Create<KTimer>();
-	drawTimer_->SetDuration(1.0f / 120.0f);
-	drawTimer_->SetIsRepeat(true);
-	drawTimer_->GetEventCompleted().AddListener(KtDelegate(this, &SObjectManager::SubmitDrawObjects));
-	drawTimer_->Start();
+	auto* drawTimer = Create<KTimer>();
+	drawTimer->SetDuration(1.0f / 120.0f);
+	drawTimer->SetIsRepeat(true);
+	drawTimer->GetEventCompleted().AddListener(KtDelegate(this, &SObjectManager::SubmitDrawObjects));
+	drawTimer->Start();
 
 	auto* logUPSTimer = Create<KTimer>();
 	logUPSTimer->SetDuration(1.0f);
@@ -70,19 +72,27 @@ void SObjectManager::Init()
 
 void SObjectManager::Update()
 {
-	InitObjects(); // todo: maybe put after delete
-	UpdateObjects();
-	DeleteObjects();
-	if (canDraw_)
-	{
-		canDraw_ = false;
-		Framework.GetRenderer().DrawFrame();
-	}
+	float updateTime{ 0.0f };
+	updateTime += KtStopwatch::Time<float>(KtDelegate(this, &SObjectManager::InitObjects)); // todo: maybe put after delete
+	updateTime += KtStopwatch::Time<float>(KtDelegate(this, &SObjectManager::UpdateObjects));
+	updateTime += KtStopwatch::Time<float>(KtDelegate(this, &SObjectManager::DeleteObjects));
 
 	updateTimeIndex_ = (updateTimeIndex_ + 1) % updateTimes_.size();
 	updateTimesSum_ -= updateTimes_[updateTimeIndex_];
-	updateTimes_[updateTimeIndex_] = Engine.GetTime().GetDelta();
+	updateTimes_[updateTimeIndex_] = updateTime;
 	updateTimesSum_ += updateTimes_[updateTimeIndex_];
+
+	if (canDraw_)
+	{
+		canDraw_ = false;
+
+		float drawTime{ KtStopwatch::Time<float>(KtDelegate(&Framework.GetRenderer(), &KtRenderer::DrawFrame)) };
+
+		drawTimeIndex_ = (drawTimeIndex_ + 1) % drawTimes_.size();
+		drawTimesSum_ -= drawTimes_[drawTimeIndex_];
+		drawTimes_[drawTimeIndex_] = drawTime;
+		drawTimesSum_ += drawTimes_[drawTimeIndex_];
+	}
 }
 
 void SObjectManager::Cleanup()
@@ -188,7 +198,12 @@ const float SObjectManager::GetAverageUpdateTime() const
 	return updateTimesSum_ / updateTimes_.size();
 }
 
-void SObjectManager::LogUPS()
+const float SObjectManager::GetAverageDrawTime() const
+{
+	return drawTimesSum_ / drawTimes_.size();
+}
+
+void SObjectManager::LogUPS() const
 {
 	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "%.2f ups", 1.0f / GetAverageUpdateTime());
 }

@@ -1,11 +1,11 @@
 #pragma once
 #include <optional>
-struct KtQueueFamilyIndices
+struct KtQueueFamilyIndices final
 {
-	std::optional<uint32_t> GraphicsFamily;
-	std::optional<uint32_t> PresentFamily;
+	std::optional<uint32_t> graphicsFamily;
+	std::optional<uint32_t> presentFamily;
 	const bool IsComplete() const noexcept
 	{
-		return GraphicsFamily.has_value() && PresentFamily.has_value();
+		return graphicsFamily.has_value() && presentFamily.has_value();
 	}
 };

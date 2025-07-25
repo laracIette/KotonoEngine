@@ -16,7 +16,7 @@ void KInterfaceTextComponent::Init()
 {
     Base::Init(); 
 
-    static const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)";
+    static const auto path{ Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)" };
     SetShader(Framework.GetShaderManager().Get(path));
 }
 
@@ -101,13 +101,15 @@ void KInterfaceTextComponent::UpdateCharacters()
     }
     characters_.Clear();
 
-    const auto path = Framework.GetPath().GetSolutionPath() / R"(assets\fonts\default)";
-    const auto font = KtFont(path);
-    const auto fontCharacters = font.GetTextTextures(text_);
+    const auto path{ Framework.GetPath().GetSolutionPath() / R"(assets\fonts\default)" };
+    const KtFont font(path);
+
+    const auto fontCharacters{ font.GetTextTextures(text_) };
     characters_.Reserve(fontCharacters.size());
+
     for (auto* texture : fontCharacters)
     {
-        auto* character = GetOwner()->AddComponent<KInterfaceImageComponent>();
+        auto* character{ GetOwner()->AddComponent<KInterfaceImageComponent>() };
         character->SetImageTexture(texture);
         character->SetShader(shader_);
         character->SetScreenSize(glm::vec2(fontSize_));
@@ -116,7 +118,7 @@ void KInterfaceTextComponent::UpdateCharacters()
 
     for (size_t i = 0; i < characters_.Size(); i++)
     {
-        const float offset = spacing_ * i;
+        const float offset{ spacing_ * i };
         characters_[i]->SetRelativePosition(glm::vec2(offset, 0.0f));
     }
 }

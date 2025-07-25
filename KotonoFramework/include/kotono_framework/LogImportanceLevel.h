@@ -1,5 +1,5 @@
 #pragma once
-enum KtLogImportanceLevel
+enum KtLogImportanceLevel : char
 {
 	KT_LOG_IMPORTANCE_LEVEL_NONE,
 	KT_LOG_IMPORTANCE_LEVEL_LOW,

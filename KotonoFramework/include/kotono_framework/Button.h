@@ -1,5 +1,5 @@
 #pragma once
-enum KtButton 
+enum KtButton : char
 {
 	KT_BUTTON_1 = 0,
 	KT_BUTTON_2 = 1,

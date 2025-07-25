@@ -10,7 +10,7 @@
 class KtShader final
 {
 public:	
-	struct DescriptorSetLayoutBindingData
+	struct DescriptorSetLayoutBindingData final
 	{														  
 		VkDescriptorSetLayout                                      DescriptorSetLayout;
 		KtFramesInFlightArray<VkDescriptorSet>                       DescriptorSets;
@@ -26,7 +26,7 @@ public:
 		VkDescriptorBindingFlags                                   BindingFlags;
 		KtFramesInFlightArray<std::vector<VkDescriptorImageInfo>>    ImageInfos;
 	};
-	struct DescriptorSetLayoutData
+	struct DescriptorSetLayoutData final
 	{
 	    VkDescriptorSetLayout                               DescriptorSetLayout;
 		KtFramesInFlightArray<VkDescriptorSet>                DescriptorSets;

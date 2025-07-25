@@ -81,11 +81,11 @@ void KtRenderer::CreateSwapChain()
 	const KtQueueFamilyIndices indices = Framework.GetContext().FindQueueFamilies(Framework.GetContext().GetPhysicalDevice());
 	const std::array<uint32_t, 2> queueFamilyIndices = 
 	{ 
-		indices.GraphicsFamily.value(), 
-		indices.PresentFamily.value() 
+		indices.graphicsFamily.value(), 
+		indices.presentFamily.value() 
 	};
 
-	if (indices.GraphicsFamily != indices.PresentFamily)
+	if (indices.graphicsFamily != indices.presentFamily)
 	{
 		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
 		createInfo.queueFamilyIndexCount = static_cast<uint32_t>(queueFamilyIndices.size());
@@ -393,7 +393,7 @@ void KtRenderer::CreateCommandPool(const uint32_t frameIndex)
 	VkCommandPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-	poolInfo.queueFamilyIndex = queueFamilyIndices.GraphicsFamily.value();
+	poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
 
 	VK_CHECK_THROW(
 		vkCreateCommandPool(Framework.GetContext().GetDevice(), &poolInfo, nullptr, &commandPools_[frameIndex]),

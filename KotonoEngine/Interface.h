@@ -13,10 +13,6 @@ public:
 
 private:
 	RInterfaceImageObject* image1_;
-	RInterfaceImageObject* image2_;
-	RInterfaceTextBoxObject* textBox1_;
-	RInterfaceFloatTextBoxObject* textBox2_;
-	RInterfaceFloatTextBoxObject* textBox3_;
 
 	//temp
 	void OnTextBox2ValueChanged(const float delta) const;

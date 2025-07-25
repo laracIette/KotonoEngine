@@ -3,13 +3,13 @@
 #include <vector>
 #include <string>
 #include <map>
-struct KtShaderLayout
+struct KtShaderLayout final
 {
 	std::vector<VkShaderStageFlagBits>              ShaderStages;
 
-	struct DescriptorSetLayout
+	struct DescriptorSetLayout final
 	{
-		struct DescriptorSetLayoutBinding
+		struct DescriptorSetLayoutBinding final
 		{
 			std::string           Name; // todo: maybe const char*
 			uint32_t              Binding;

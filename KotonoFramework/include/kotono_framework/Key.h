@@ -1,5 +1,5 @@
 #pragma once
-enum KtKey
+enum KtKey : char
 {
 	KT_KEY_SPACE,
 	KT_KEY_APOSTROPHE,

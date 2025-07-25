@@ -126,12 +126,12 @@ void KtInterfaceRenderer::CreateIndexBuffer()
 	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtInterfaceRenderer::DestroyStagingIndexBuffer));
 }
 
-void KtInterfaceRenderer::DestroyStagingVertexBuffer()
+void KtInterfaceRenderer::DestroyStagingVertexBuffer() const
 {
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingVertexBuffer_.Buffer, stagingVertexBuffer_.Allocation);
 }
 
-void KtInterfaceRenderer::DestroyStagingIndexBuffer()
+void KtInterfaceRenderer::DestroyStagingIndexBuffer() const
 {
 	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingIndexBuffer_.Buffer, stagingIndexBuffer_.Allocation);
 }

@@ -1,5 +1,5 @@
 #pragma once
-enum KtInputState
+enum KtInputState : char
 {
 	// Occurs the first frame where the input is down.
 	KT_INPUT_STATE_PRESSED,

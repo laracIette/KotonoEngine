@@ -1,6 +1,6 @@
 #pragma once
 #include <nlohmann/json_fwd.hpp>
-class KtSerializer
+class KtSerializer final
 {
 public:
 	void ReadData(const std::filesystem::path& path, nlohmann::json& json) const;

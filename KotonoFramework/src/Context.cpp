@@ -315,7 +315,7 @@ const KtQueueFamilyIndices KtContext::FindQueueFamilies(VkPhysicalDevice device)
 	{
 		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
 		{
-			indices.GraphicsFamily = i;
+			indices.graphicsFamily = i;
 		}
 
 		VkBool32 presentSupport = false;
@@ -323,7 +323,7 @@ const KtQueueFamilyIndices KtContext::FindQueueFamilies(VkPhysicalDevice device)
 
 		if (presentSupport)
 		{
-			indices.PresentFamily = i;
+			indices.presentFamily = i;
 		}
 
 		if (indices.IsComplete())
@@ -342,7 +342,7 @@ void KtContext::CreateLogicalDevice()
 	const KtQueueFamilyIndices indices = FindQueueFamilies(physicalDevice_);
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-	const std::set<uint32_t> uniqueQueueFamilies = { indices.GraphicsFamily.value(), indices.PresentFamily.value() };
+	const std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
 	float queuePriority = 1.0f;
 	for (uint32_t queueFamily : uniqueQueueFamilies)
@@ -409,8 +409,8 @@ void KtContext::CreateLogicalDevice()
 		"failed to create logical device!"
 	);
 
-	vkGetDeviceQueue(device_, indices.GraphicsFamily.value(), 0, &graphicsQueue_);
-	vkGetDeviceQueue(device_, indices.PresentFamily.value(), 0, &presentQueue_);
+	vkGetDeviceQueue(device_, indices.graphicsFamily.value(), 0, &graphicsQueue_);
+	vkGetDeviceQueue(device_, indices.presentFamily.value(), 0, &presentQueue_);
 }
 
 void KtContext::CreateSurface()
@@ -595,7 +595,7 @@ void KtContext::CreateCommandPool()
 	VkCommandPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-	poolInfo.queueFamilyIndex = queueFamilyIndices.GraphicsFamily.value();
+	poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
 
 	if (vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool_) != VK_SUCCESS)
 	{

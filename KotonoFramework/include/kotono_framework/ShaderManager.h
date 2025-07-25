@@ -1,14 +1,20 @@
 #pragma once
-#include "ItemManager.h"
-#include "Shader.h"
+#include <unordered_map>
+#include <filesystem>
 
-class KtShaderManager final : public KtItemManager<KtShader>
+class KtShader;
+
+class KtShaderManager final
 {
 public:
-	void Init();
+	void Init(); // todo: make private and friend
+	void Cleanup();
 
-protected:
-	KtShader* Create(const std::filesystem::path& path) override;
-	void CleanupItem(KtShader* item) const override;
+	KtShader* Get(const std::filesystem::path& path);
+
+private:
+	std::unordered_map<std::filesystem::path, KtShader*> shaders_;
+
+	KtShader* Create(const std::filesystem::path& path);
 };
 

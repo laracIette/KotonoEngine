@@ -1,6 +1,6 @@
 #pragma once
 #include "glm_includes.h"
-struct KtVertex3D
+struct KtVertex3D final
 {
     glm::vec3 Position;
     glm::vec3 Color;
