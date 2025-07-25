@@ -6,9 +6,12 @@ class KtImageTexture;
 
 class KtImageTextureManager final
 {
-public:
-	void Cleanup(); // todo: make private and friend
+	friend class KtFramework;
 
+private:
+	void Cleanup(); 
+
+public:
 	KtImageTexture* Get(const std::filesystem::path& path);
 
 private:

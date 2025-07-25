@@ -2,10 +2,12 @@
 #include <filesystem>
 class KtPath final
 {
-public:
-	void Init();
-	void Cleanup();
+	friend class KtFramework;
 
+private:
+	void Init();
+
+public:
 	const std::filesystem::path& GetSolutionPath() const;
 	const std::filesystem::path& GetFrameworkPath() const;
 	const std::filesystem::path& GetEnginePath() const;

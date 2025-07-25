@@ -1,11 +1,14 @@
 #pragma once
 class STime final
 {
-public:
+	friend class SEngine;
+
+private:
 	void Init();
 	void Update();
 	void Cleanup();
 
+public:
 	// Current exact UTC Time since Epoch in seconds.
 	const double GetExactUTC() const;
 	// Current Time since the start of the program in seconds.

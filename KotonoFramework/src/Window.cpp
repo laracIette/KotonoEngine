@@ -6,15 +6,10 @@
 
 void framebuffersize_callback_(GLFWwindow* window, int width, int height);
 
-KtWindow::KtWindow() :
-    window_(nullptr),
-    size_(1600, 900),
-    shouldClose_(false)
-{
-}
-
 void KtWindow::Init()
 {
+    size_ = { 1600, 900 };
+
     WindowViewport.SetAspectRatio(static_cast<float>(size_.x) / size_.y);
     WindowViewport.SetIsKeepAspectRatio(true);
 
@@ -45,6 +40,13 @@ void KtWindow::Init()
     glfwShowWindow(window_);
 }
 
+void KtWindow::Cleanup()
+{
+    // Cleanup GLFW
+    glfwDestroyWindow(window_);
+    glfwTerminate();
+}
+
 const bool KtWindow::GetShouldClose() const
 {
     if (shouldClose_ || glfwWindowShouldClose(window_))
@@ -60,13 +62,6 @@ const bool KtWindow::GetShouldClose() const
 void KtWindow::SetShouldClose(const bool shouldClose)
 {
     shouldClose_ = shouldClose;
-}
-
-void KtWindow::Cleanup()
-{
-    // Cleanup GLFW
-    glfwDestroyWindow(window_);
-    glfwTerminate();
 }
 
 GLFWwindow* KtWindow::GetGLFWWindow() const

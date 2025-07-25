@@ -15,10 +15,13 @@
 
 class KtContext final
 {
-public:
+	friend class KtFramework;
+
+private:
 	void Init();
 	void Cleanup();
 
+public:
 	const VkSampleCountFlagBits GetMSAASamples() const;
 	VkPhysicalDevice& GetPhysicalDevice();
 	VkDevice& GetDevice();

@@ -7,11 +7,14 @@
 
 class SEngine final
 {
-public:
+	friend class SApplication;
+
+private:
 	void Init();
 	void Update();
 	void Cleanup();
 
+public:
 	STime& GetTime();
 	const STime& GetTime() const;
 	SObjectManager& GetObjectManager();

@@ -12,10 +12,6 @@ void KtInputManager::Update()
     mouse_.Update();
 }
 
-void KtInputManager::Cleanup()
-{
-}
-
 KtMouse& KtInputManager::GetMouse()
 {
     return mouse_;

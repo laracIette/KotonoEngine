@@ -5,7 +5,9 @@ struct ALCcontext;
 
 class KtAudioManager final
 {
-public:
+	friend class KtFramework;
+
+private:
 	void Init();
 	void Cleanup();
 

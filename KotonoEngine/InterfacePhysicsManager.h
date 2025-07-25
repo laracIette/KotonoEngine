@@ -3,9 +3,12 @@
 class KInterfaceColliderComponent;
 class SInterfacePhysicsManager final
 {
-public:
+	friend class SEngine;
+
+private:
 	void Update();
 
+public:
 	void Register(KInterfaceColliderComponent* colliderComponent);
 	void Unregister(KInterfaceColliderComponent* colliderComponent);
 

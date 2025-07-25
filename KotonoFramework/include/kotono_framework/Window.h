@@ -3,12 +3,13 @@
 #include "glm_includes.h"
 class KtWindow final
 {
-public:
-	KtWindow();
+	friend class KtFramework;
 
+private:
 	void Init(); 
 	void Cleanup();
 
+public:
 	// Executes vkDeviceWaitIdle(VkDevice) if true, else executes glfwPollEvents()
 	const bool GetShouldClose() const;
 	// Sets whether the window should close at the end of the main loop

@@ -3,11 +3,13 @@
 #include "Keyboard.h"
 class KtInputManager final
 {
-public:
+	friend class KtFramework;
+
+private:
 	void Init();
 	void Update();
-	void Cleanup();
 
+public:
 	KtMouse& GetMouse();
 	KtKeyboard& GetKeyboard();
 

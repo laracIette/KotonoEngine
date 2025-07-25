@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Application.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Guid.cpp" />
     <ClCompile Include="InterfaceButtonComponent.cpp" />
@@ -54,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Anchor.h" />
+    <ClInclude Include="Application.h" />
     <ClInclude Include="base_class.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Guid.h" />

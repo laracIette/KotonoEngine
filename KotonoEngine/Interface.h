@@ -6,9 +6,12 @@ class RInterfaceWindowObject;
 
 class SInterface final
 {
-public:
+	friend class SEngine;
+
+private:
 	void Init();
 
+public:
 	RInterfaceWindowObject* viewport_;
 
 private:

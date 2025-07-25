@@ -3,10 +3,13 @@
 #include "VisualizationField.h"
 class SVisualizer final
 {
-public:
+	friend class SEngine;
+
+private:
 	void Init();
 	void Cleanup();
 
+public:
 	const bool GetIsFieldVisible(const EVisualizationField field) const; 
 
 	void SetIsFieldVisible(const EVisualizationField field, bool isVisible);

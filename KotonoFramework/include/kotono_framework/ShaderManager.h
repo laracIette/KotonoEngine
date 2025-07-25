@@ -6,10 +6,13 @@ class KtShader;
 
 class KtShaderManager final
 {
-public:
-	void Init(); // todo: make private and friend
+	friend class KtFramework;
+
+private:
+	void Init(); 
 	void Cleanup();
 
+public:
 	KtShader* Get(const std::filesystem::path& path);
 
 private:

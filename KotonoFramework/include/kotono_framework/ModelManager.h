@@ -6,9 +6,12 @@ class KtModel;
 
 class KtModelManager final
 {
-public:
-	void Cleanup(); // todo: make private and friend
+	friend class KtFramework;
 
+private:
+	void Cleanup();
+
+public:
 	KtModel* Get(const std::filesystem::path& path);
 
 private:

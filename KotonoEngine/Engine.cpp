@@ -1,7 +1,5 @@
 #include "Engine.h"
 
-SEngine Engine;
-
 void SEngine::Init()
 {
     time_.Init();

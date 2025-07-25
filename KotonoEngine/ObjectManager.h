@@ -13,11 +13,14 @@ concept Object = std::is_base_of_v<KObject, T>;
 
 class SObjectManager final
 {
-public:
+	friend class SEngine;
+
+private:
 	void Init();
 	void Update();
 	void Cleanup();
 
+public:
 	void Register(KObject* object);
 	void Delete(KObject* object);
 

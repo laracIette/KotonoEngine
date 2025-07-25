@@ -11,10 +11,13 @@
 
 class KtRenderer final
 {
-public:
+	friend class KtFramework;
+
+private:
 	void Init();
 	void Cleanup();
 
+public:
 	void DrawFrame();
 
 	const uint32_t GetGameThreadFrame() const; // todo: make private
