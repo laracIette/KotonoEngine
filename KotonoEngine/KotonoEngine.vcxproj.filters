@@ -15,234 +15,231 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Object.cpp">
+    <ClCompile Include="src\Engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SceneObject.cpp">
+    <ClCompile Include="src\Guid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SceneMeshComponent.cpp">
+    <ClCompile Include="src\InterfaceButtonComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine.cpp">
+    <ClCompile Include="src\InterfaceFloatTextBoxObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectManager.cpp">
+    <ClCompile Include="src\InterfaceImageComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Time.cpp">
+    <ClCompile Include="src\InterfaceImageObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfaceImageObject.cpp">
+    <ClCompile Include="src\Interface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfaceObject.cpp">
+    <ClCompile Include="src\InterfaceObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Guid.cpp">
+    <ClCompile Include="src\InterfaceComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
+    <ClCompile Include="src\InterfaceContainerComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
+    <ClCompile Include="src\InterfacePhysicsManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Task.cpp">
+    <ClCompile Include="src\InterfaceStackComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfaceColliderComponent.cpp">
+    <ClCompile Include="src\InterfaceTextBoxObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Interface.cpp">
+    <ClCompile Include="src\InterfaceTextButtonObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfaceStackComponent.cpp">
+    <ClCompile Include="src\InterfaceTextComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Visualizer.cpp">
+    <ClCompile Include="src\InterfaceWindowObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfaceTextObject.cpp">
+    <ClCompile Include="src\math_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfaceContainerComponent.cpp">
+    <ClCompile Include="src\SceneMeshComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfaceComponent.cpp">
+    <ClCompile Include="src\Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SceneComponent.cpp">
+    <ClCompile Include="src\ObjectManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SceneMeshObject.cpp">
+    <ClCompile Include="src\InterfaceColliderComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfaceImageComponent.cpp">
+    <ClCompile Include="src\Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfaceTextComponent.cpp">
+    <ClCompile Include="src\SceneObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfaceTextBoxObject.cpp">
+    <ClCompile Include="src\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Timer.cpp">
+    <ClCompile Include="src\SceneComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="math_utils.cpp">
+    <ClCompile Include="src\Task.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfaceFloatTextBoxObject.cpp">
+    <ClCompile Include="src\SceneMeshObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfaceButtonComponent.cpp">
+    <ClCompile Include="src\InterfaceTextObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfaceTextButtonObject.cpp">
+    <ClCompile Include="src\TimeManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfacePhysicsManager.cpp">
+    <ClCompile Include="src\Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterfaceWindowObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Application.cpp">
+    <ClCompile Include="src\Visualizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="base_class.h">
+    <ClInclude Include="include\kotono_engine\Anchor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Object.h">
+    <ClInclude Include="include\kotono_engine\Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SceneObject.h">
+    <ClInclude Include="include\kotono_engine\base_class.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Transform.h">
+    <ClInclude Include="include\kotono_engine\Engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SceneMeshComponent.h">
+    <ClInclude Include="include\kotono_engine\Guid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Visibility.h">
+    <ClInclude Include="include\kotono_engine\InterfaceButtonComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine.h">
+    <ClInclude Include="include\kotono_engine\InterfaceFloatTextBoxObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectManager.h">
+    <ClInclude Include="include\kotono_engine\InterfaceImageComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Time.h">
+    <ClInclude Include="include\kotono_engine\InterfaceImageObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfaceImageObject.h">
+    <ClInclude Include="include\kotono_engine\Interface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfaceObject.h">
+    <ClInclude Include="include\kotono_engine\InterfaceObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Rect.h">
+    <ClInclude Include="include\kotono_engine\InterfaceComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Guid.h">
+    <ClInclude Include="include\kotono_engine\InterfaceContainerComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Scene.h">
+    <ClInclude Include="include\kotono_engine\InterfacePhysicsManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
+    <ClInclude Include="include\kotono_engine\InterfaceStackComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Task.h">
+    <ClInclude Include="include\kotono_engine\InterfaceTextBoxObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CoordinateSpace.h">
+    <ClInclude Include="include\kotono_engine\InterfaceTextButtonObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Anchor.h">
+    <ClInclude Include="include\kotono_engine\InterfaceTextComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RotationUnit.h">
+    <ClInclude Include="include\kotono_engine\InterfaceWindowObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfaceColliderComponent.h">
+    <ClInclude Include="include\kotono_engine\log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Interface.h">
+    <ClInclude Include="include\kotono_engine\math_utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfaceStackComponent.h">
+    <ClInclude Include="include\kotono_engine\Mobility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Orientation.h">
+    <ClInclude Include="include\kotono_engine\SceneMeshComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Visualizer.h">
+    <ClInclude Include="include\kotono_engine\Object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VisualizationField.h">
+    <ClInclude Include="include\kotono_engine\ObjectManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfaceTextObject.h">
+    <ClInclude Include="include\kotono_engine\Orientation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfaceContainerComponent.h">
+    <ClInclude Include="include\kotono_engine\Rect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfaceComponent.h">
+    <ClInclude Include="include\kotono_engine\InterfaceColliderComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SceneComponent.h">
+    <ClInclude Include="include\kotono_engine\RotationUnit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SceneMeshObject.h">
+    <ClInclude Include="include\kotono_engine\Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfaceImageComponent.h">
+    <ClInclude Include="include\kotono_engine\SceneObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfaceTextComponent.h">
+    <ClInclude Include="include\kotono_engine\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfaceTextBoxObject.h">
+    <ClInclude Include="include\kotono_engine\SceneComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Timer.h">
+    <ClInclude Include="include\kotono_engine\Task.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="math_utils.h">
+    <ClInclude Include="include\kotono_engine\SceneMeshObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfaceFloatTextBoxObject.h">
+    <ClInclude Include="include\kotono_engine\InterfaceTextObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Mobility.h">
+    <ClInclude Include="include\kotono_engine\TimeManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="log.h">
+    <ClInclude Include="include\kotono_engine\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfaceButtonComponent.h">
+    <ClInclude Include="include\kotono_engine\Transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfaceTextButtonObject.h">
+    <ClInclude Include="include\kotono_engine\CoordinateSpace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfacePhysicsManager.h">
+    <ClInclude Include="include\kotono_engine\Visibility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterfaceWindowObject.h">
+    <ClInclude Include="include\kotono_engine\VisualizationField.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Application.h">
+    <ClInclude Include="include\kotono_engine\Visualizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,5 +1,5 @@
 #pragma once
-class SApplication final
+class SApplication
 {
 public:
 	void Run();
