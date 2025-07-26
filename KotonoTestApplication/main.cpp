@@ -1,8 +1,8 @@
-#include "TestApplication.h"
+#include <kotono_engine/Application.h>
 
 int main()
 {
-	STestApplication().Run();
+	SApplication::Run();
 
 	return 0;
 }

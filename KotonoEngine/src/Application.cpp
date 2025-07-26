@@ -5,20 +5,23 @@
 KtFramework Framework;
 SEngine Engine;
 
+constinit static bool IsRunning{ false };
+
 void SApplication::Run()
 {
-    if (isRunning_)
+    if (IsRunning)
     {
         return;
     }
 
-    isRunning_ = true;
+    IsRunning = true;
 
-    Init();
-    MainLoop();
-    Cleanup();
+    SApplication application{};
+    application.Init();
+    application.MainLoop();
+    application.Cleanup();
 
-    isRunning_ = false;
+    IsRunning = false;
 }
 
 void SApplication::Init()
