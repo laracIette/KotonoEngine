@@ -3,12 +3,12 @@
 
 void SInterfacePhysicsManager::Update()
 {
-	for (size_t i = 0; i < colliderComponents_.Size(); ++i)
+	for (size_t i{ 0 }; i < colliderComponents_.Size(); ++i)
 	{
-		auto* current = colliderComponents_[i];
-		for (size_t j = i + 1; j < colliderComponents_.Size(); ++j)
+		auto* current{ colliderComponents_[i] };
+		for (size_t j{ i + 1 }; j < colliderComponents_.Size(); ++j)
 		{
-			auto* other = colliderComponents_[j];
+			auto* other{ colliderComponents_[j] };
 			if (current->GetIsOverlapping(other))
 			{
 				current->eventOverlap_.Broadcast(other);
@@ -26,9 +26,9 @@ void SInterfacePhysicsManager::Register(KInterfaceColliderComponent* colliderCom
 
 void SInterfacePhysicsManager::Unregister(KInterfaceColliderComponent* colliderComponent)
 {
-	const size_t index = colliderComponent->physicsIndex_;
-	colliderComponents_.RemoveAt(index);
-	if (index < colliderComponents_.Size())
+	const size_t index{ colliderComponent->physicsIndex_ };
+	const auto removeResult{ colliderComponents_.RemoveAt(index) };
+	if (removeResult == KtPoolRemoveResult::ItemSwappedAndRemoved)
 	{
 		colliderComponents_[index]->physicsIndex_ = index;
 	}

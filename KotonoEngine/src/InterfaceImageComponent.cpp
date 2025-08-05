@@ -88,6 +88,9 @@ void KInterfaceImageComponent::CreateImageTextureProxy()
 	imageTextureProxy_.viewport = GetOwner()->GetViewport();
 	imageTextureProxy_.layer = GetLayer();
 	imageTextureProxy_.objectData.modelMatrix = GetModelMatrix();
+#ifdef _DEBUG
+	imageTextureProxy_.source = this;
+#endif
 }
 
 void KInterfaceImageComponent::MarkImageTextureProxyRectDirty()

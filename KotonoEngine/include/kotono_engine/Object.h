@@ -12,7 +12,7 @@ class KObject
 
 public:
 	KObject();
-	virtual ~KObject();
+	virtual ~KObject() = default;
 
 protected:
 	virtual void Init();

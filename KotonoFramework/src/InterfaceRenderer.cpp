@@ -12,7 +12,7 @@
 #include "Renderable2DProxy.h"
 #include "Collection.h"
 
-static constexpr std::array<KtVertex2D, 4> Vertices =
+static constexpr std::array<KtVertex2D, 4> Vertices
 {//                   Position,              Color,      TexCoords
 	KtVertex2D { {-0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f} }, // Bottom-left
 	KtVertex2D { { 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f} }, // Bottom-right
@@ -20,7 +20,7 @@ static constexpr std::array<KtVertex2D, 4> Vertices =
 	KtVertex2D { {-0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f} }  // Top-left
 };
 
-static constexpr std::array<uint32_t, 6> Indices = { 0, 1, 2, 2, 3, 0 };
+static constexpr std::array<uint32_t, 6> Indices{ 0, 1, 2, 2, 3, 0 };
 
 void KtInterfaceRenderer::Init()
 {
@@ -37,33 +37,45 @@ void KtInterfaceRenderer::Update(const uint32_t frameIndex)
 		return;
 	}
 
-	for (auto& [proxy, count] : stagingProxies_)
+	for (auto& [proxy, states] : stagingProxies_)
 	{
-		if (count == 0)
+		auto& state{ states[frameIndex] };
+
+		if (state == StagingProxyState::None)
 		{
 			continue;
 		}
 
 		isCommandBufferDirty_[frameIndex] = true;
 
-		if (count > 0)
+		if (state == StagingProxyState::Add)
 		{
 			proxies_[frameIndex].Add(proxy);
-			--count;
 		}
-		else if (count < 0)
+		else if (state == StagingProxyState::Remove)
 		{
 			proxies_[frameIndex].Remove(proxy); 
-			++count;
 		}
+
+		state = StagingProxyState::None;
 	}
 
 	std::erase_if(stagingProxies_,
-		[](const std::pair<KtRenderable2DProxy*, int32_t>& pair)
+		[](const std::pair<KtRenderable2DProxy*, KtFramesInFlightArray<StagingProxyState>>& pair)
 		{
-			return pair.second == 0;
+			const auto& states{ pair.second };
+			for (size_t i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
+			{
+				if (states[i] != StagingProxyState::None)
+				{
+					return false;
+				}
+			}
+			return true;
 		}
 	);
+
+	KT_LOG_KF(KT_LOG_COMPILE_TIME_LEVEL, "%llu staging proxies", stagingProxies_.size());
 }
 
 void KtInterfaceRenderer::Cleanup() const
@@ -76,7 +88,7 @@ void KtInterfaceRenderer::Cleanup() const
 
 void KtInterfaceRenderer::CreateVertexBuffer()
 {
-	const VkDeviceSize bufferSize = sizeof(KtVertex2D) * Vertices.size();
+	const VkDeviceSize bufferSize{ sizeof(KtVertex2D) * Vertices.size() };
 
 	Framework.GetContext().CreateBuffer(
 		bufferSize,
@@ -102,7 +114,7 @@ void KtInterfaceRenderer::CreateVertexBuffer()
 
 void KtInterfaceRenderer::CreateIndexBuffer()
 {
-	const VkDeviceSize bufferSize = sizeof(uint32_t) * Indices.size();
+	const VkDeviceSize bufferSize{ sizeof(uint32_t) * Indices.size() };
 
 	Framework.GetContext().CreateBuffer(
 		bufferSize,
@@ -138,8 +150,8 @@ void KtInterfaceRenderer::DestroyStagingIndexBuffer() const
 
 void KtInterfaceRenderer::CmdBindVertexBuffer(VkCommandBuffer commandBuffer) const
 {
-	const std::array<VkBuffer, 1> vertexBuffers = { vertexBuffer_.Buffer };
-	const std::array<VkDeviceSize, 1> offsets = { 0 };
+	const std::array<VkBuffer, 1> vertexBuffers{ vertexBuffer_.Buffer };
+	const std::array<VkDeviceSize, 1> offsets{ 0 };
 	vkCmdBindVertexBuffers(commandBuffer, 0, static_cast<uint32_t>(vertexBuffers.size()), vertexBuffers.data(), offsets.data());
 }
 
@@ -150,7 +162,7 @@ void KtInterfaceRenderer::CmdBindIndexBuffer(VkCommandBuffer commandBuffer) cons
 
 void KtInterfaceRenderer::CreateCommandBuffers()
 {
-	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; ++i)
+	for (size_t i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
 	{
 		CreateCommandBuffer(static_cast<uint32_t>(i));
 	}
@@ -173,7 +185,7 @@ void KtInterfaceRenderer::CreateCommandBuffer(const uint32_t frameIndex)
 void KtInterfaceRenderer::RecordCommandBuffer(const uint32_t frameIndex)
 {
 	SortProxies(proxies_[frameIndex]);
-	VkCommandBuffer commandBuffer = commandBuffers_[frameIndex];
+	VkCommandBuffer commandBuffer{ commandBuffers_[frameIndex] };
 	BeginCommandBuffer(commandBuffer, frameIndex);
 	CmdDrawProxies(commandBuffer, proxies_[frameIndex], frameIndex);
 	EndCommandBuffer(commandBuffer);
@@ -215,12 +227,12 @@ void KtInterfaceRenderer::SetUniformData(const KtUniformData2D& uniformData)
 
 void KtInterfaceRenderer::Register(KtRenderable2DProxy* proxy)
 {
-	stagingProxies_[proxy] = static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
+	stagingProxies_[proxy].fill(StagingProxyState::Add);
 }
 
 void KtInterfaceRenderer::Unregister(KtRenderable2DProxy* proxy)
 {
-	stagingProxies_[proxy] = -static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
+	stagingProxies_[proxy].fill(StagingProxyState::Remove);
 }
 
 void KtInterfaceRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
@@ -230,7 +242,7 @@ void KtInterfaceRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t 
 		isCommandBufferDirty_[frameIndex] = false;
 
 		const KtCuller2D culler{};
-		auto culledData = culler.ComputeCulling(proxies_[frameIndex]);
+		auto culledData{ culler.ComputeCulling(proxies_[frameIndex]) };
 		SortProxies(culledData);
 
 		instanceIndices_[frameIndex].clear();
@@ -252,15 +264,15 @@ void KtInterfaceRenderer::UpdateDescriptorSets(const ProxiesPool& proxies, const
 		std::vector<uint32_t> renderableIndices;
 	};
 
-	std::unordered_map<KtShader*, ShaderData> shaderDatas;
+	std::unordered_map<KtShader*, ShaderData> shaderDatas{};
 
 	for (const auto* proxy : proxies)
 	{
-		auto& shaderData = shaderDatas[proxy->shader];
+		auto& shaderData{ shaderDatas[proxy->shader] };
 
 		shaderData.objectBufferDatas.push_back(proxy->objectData);
 
-		const auto it = std::find(shaderData.renderables.begin(), shaderData.renderables.end(), proxy->renderable);
+		const auto it{ std::find(shaderData.renderables.begin(), shaderData.renderables.end(), proxy->renderable) };
 
 		size_t index;
 		if (it == shaderData.renderables.end())
@@ -278,27 +290,27 @@ void KtInterfaceRenderer::UpdateDescriptorSets(const ProxiesPool& proxies, const
 
 	for (const auto& [shader, shaderData] : shaderDatas)
 	{
-		if (auto* binding = shader->GetDescriptorSetLayoutBinding("objectBuffer"))
+		if (auto* binding{ shader->GetDescriptorSetLayoutBinding("objectBuffer") })
 		{
 			shader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, shaderData.objectBufferDatas.size(), frameIndex);
 			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, shaderData.objectBufferDatas.data(), frameIndex);
 		}
 
-		if (auto* binding = shader->GetDescriptorSetLayoutBinding("textureIndexBuffer"))
+		if (auto* binding{ shader->GetDescriptorSetLayoutBinding("textureIndexBuffer") })
 		{
 			shader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, shaderData.renderableIndices.size(), frameIndex);
 			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, shaderData.renderableIndices.data(), frameIndex);
 		}
 
-		if (auto* binding = shader->GetDescriptorSetLayoutBinding("textures"))
+		if (auto* binding{ shader->GetDescriptorSetLayoutBinding("textures") })
 		{
-			std::vector<VkDescriptorImageInfo> imageInfos;
+			std::vector<VkDescriptorImageInfo> imageInfos{};
 			imageInfos.reserve(shaderData.renderables.size());
 			for (const auto* renderable : shaderData.renderables)
 			{
 				// static_cast is safe because 'textures' expects only KtImageTexture
-				const auto* imageTexture = static_cast<const KtImageTexture*>(renderable);
-				imageInfos.push_back(imageTexture->GetDescriptorImageInfo());
+				const auto* asImageTexture{ static_cast<const KtImageTexture*>(renderable) };
+				imageInfos.push_back(asImageTexture->GetDescriptorImageInfo());
 			}
 			shader->UpdateDescriptorSetLayoutBindingImageSampler(*binding, imageInfos, frameIndex);
 		}
@@ -307,23 +319,23 @@ void KtInterfaceRenderer::UpdateDescriptorSets(const ProxiesPool& proxies, const
 
 void KtInterfaceRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex)
 {
-	const KtShader* currentShader = nullptr;
-	const KtViewport* currentViewport = nullptr;
+	const KtShader* currentShader{ nullptr };
+	const KtViewport* currentViewport{ nullptr };
 
 	CmdBindVertexBuffer(commandBuffer);
 	CmdBindIndexBuffer(commandBuffer);
 
-	for (size_t i = 0; i < proxies.Size();)
+	for (size_t i{ 0 }; i < proxies.Size();)
 	{
-		const auto* proxy = proxies[i];
-		const KtShader* shader = proxy->shader;
-		const KtViewport* viewport = proxy->viewport;
-		const int32_t layer = proxy->layer;
+		const auto* proxy{ proxies[i] };
+		const KtShader* shader{ proxy->shader };
+		const KtViewport* viewport{ proxy->viewport };
+		const int32_t layer{ proxy->layer };
 
-		size_t instanceCount = 1;
+		size_t instanceCount{ 1 };
 		while (i + instanceCount < proxies.Size())
 		{
-			const auto* next = proxies[i + instanceCount];
+			const auto* next{ proxies[i + instanceCount] };
 			if (next->shader != shader || next->viewport != viewport)
 			{
 				break;
@@ -375,7 +387,7 @@ void KtInterfaceRenderer::SortProxies(ProxiesPool& proxies)
 
 const bool KtInterfaceRenderer::GetIsAnyProxyDirty(const uint32_t frameIndex) const
 {
-	auto proxies = KtCollection(proxies_[frameIndex].begin(), proxies_[frameIndex].end());
+	auto proxies{ KtCollection(proxies_[frameIndex].begin(), proxies_[frameIndex].end()) };
 	proxies.AddFilter([](const KtRenderable2DProxy* proxy) { return proxy->isDirty; });
 	return proxies.GetFirst() != nullptr;
 }

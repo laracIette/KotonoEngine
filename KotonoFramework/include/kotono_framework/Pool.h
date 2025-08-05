@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <functional>
+#include "PoolRemoveResult.h"
 /// <summary>
 /// std::vector wrapper with fast item removal
 /// </summary>
@@ -14,47 +15,50 @@ private:
 	using ConditionFunction = std::function<bool(const ValueType&)>;
 
 public:
-	constexpr void Add(const ValueType& value)
+	template <typename T>
+		requires std::constructible_from<ValueType, T&&>
+	constexpr void Add(T&& value)
 	{
-		data_.push_back(value);
+		data_.push_back(std::forward<T>(value));
 	}
 
-	constexpr void Add(ValueType&& value)
+	// Removes the specified item, returns true if the item was swapped before removal
+	// This is way slower than RemoveAt(size_t) because it searches for the item's index first
+	constexpr const KtPoolRemoveResult Remove(const ValueType& value)
 	{
-		data_.push_back(std::move(value));
-	}
-
-	constexpr void Remove(const ValueType& value)
-	{
-		const auto it = std::find(data_.begin(), data_.end(), value);
+		const auto it{ std::find(data_.begin(), data_.end(), value) };
 		if (it == data_.end())
 		{
-			return;
+			return KtPoolRemoveResult::ItemNotFound;
 		}
 
-		const size_t index = std::distance(data_.begin(), it);
-		RemoveAt(index);
+		const size_t index{ static_cast<size_t>(std::distance(data_.begin(), it)) };
+		return RemoveAt(index);
 	}
 
-	constexpr void RemoveAt(const size_t index) noexcept
+	// Removes the item at the specified index, returns true if the item was swapped before removal
+	constexpr const KtPoolRemoveResult RemoveAt(const size_t index) noexcept
 	{
 		if (index >= data_.size())
 		{
-			return;
+			return KtPoolRemoveResult::IndexOutOfRange;
 		}
 
+		KtPoolRemoveResult result{ KtPoolRemoveResult::ItemRemoved };
 		if (index != data_.size() - 1)
 		{
 			// Only swap if not last
-			data_[index] = std::move(data_.back());  
+			data_[index] = std::move(data_.back()); 
+			result = KtPoolRemoveResult::ItemSwappedAndRemoved;
 		}
 		data_.pop_back();
+		return result;
 	}
 
 	constexpr void RemoveIf(const ConditionFunction& condition) noexcept
 	{
 		// Have to check backwards to avoid skipping condition checks
-		for (int64_t i = static_cast<int64_t>(data_.size()) - 1; i >= 0; i--)
+		for (int64_t i{ static_cast<int64_t>(data_.size()) - 1 }; i >= 0; --i)
 		{
 			if (condition(data_[i]))
 			{

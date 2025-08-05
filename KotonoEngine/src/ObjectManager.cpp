@@ -20,7 +20,6 @@
 #include "TimeManager.h"
 
 #define KT_LOG_IMPORTANCE_LEVEL_OBJECT KT_LOG_IMPORTANCE_LEVEL_NONE
-#undef interface
 
 void SObjectManager::Init()
 {
@@ -28,25 +27,25 @@ void SObjectManager::Init()
 		.GetEvent(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &SObjectManager::Quit));
 	
-	auto* shader3D = Framework.GetShaderManager().Get(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3D.ktshader)");
+	auto* shader3D{ Framework.GetShaderManager().Get(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3D.ktshader)") };
 	shader3D->SetName("3D Shader");
 
-	auto* model1 = Framework.GetModelManager().Get(Framework.GetPath().GetSolutionPath() / R"(assets\models\viking_room.obj)");
-	auto* model2 = Framework.GetModelManager().Get(Framework.GetPath().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)");
+	auto* model1{ Framework.GetModelManager().Get(Framework.GetPath().GetSolutionPath() / R"(assets\models\viking_room.obj)") };
+	auto* model2{ Framework.GetModelManager().Get(Framework.GetPath().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)") };
 
 	/*{
-		auto* scene = Create<KScene>();
+		auto* scene{ Create<KScene>() };
 		scene->SetPath(Framework.GetPath().GetSolutionPath() / R"(assets\objects\scene.KScene)");
 		scene->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), 
 			KtDelegate(scene, &KScene::Reload));
 	}*/
 	{
-		auto* mesh1 = Create<TSceneMeshObject>();
+		auto* mesh1{ Create<TSceneMeshObject>() };
 		mesh1->GetMeshComponent()->SetShader(shader3D);
 		mesh1->GetMeshComponent()->SetModel(model1);
 		mesh1->GetRootComponent()->SetRelativePosition(glm::vec3(-1.0f, 0.0f, 0.0f));
 
-		auto* mesh2 = Create<TSceneMeshObject>();
+		auto* mesh2{ Create<TSceneMeshObject>() };
 		mesh2->GetMeshComponent()->SetShader(shader3D);
 		mesh2->GetMeshComponent()->SetModel(model2);
 		mesh2->GetRootComponent()->SetRelativePosition(glm::vec3(1.0f, 0.0f, 0.0f));
@@ -54,16 +53,16 @@ void SObjectManager::Init()
 		mesh2->SetParent(mesh1, ECoordinateSpace::World);
 	}
 
-	auto* camera = Create<TCamera>();
+	auto* camera{ Create<TCamera>() };
 	camera->Use();
 
-	auto* drawTimer = Create<KTimer>();
+	auto* drawTimer{ Create<KTimer>() };
 	drawTimer->SetDuration(1.0f / 120.0f);
 	drawTimer->SetIsRepeat(true);
 	drawTimer->GetEventCompleted().AddListener(KtDelegate(this, &SObjectManager::SubmitDrawObjects));
 	drawTimer->Start();
 
-	auto* logUPSTimer = Create<KTimer>();
+	auto* logUPSTimer{ Create<KTimer>() };
 	logUPSTimer->SetDuration(1.0f);
 	logUPSTimer->SetIsRepeat(true);
 	logUPSTimer->GetEventCompleted().AddListener(KtDelegate(this, &SObjectManager::LogUPS));
@@ -97,17 +96,19 @@ void SObjectManager::Update()
 
 void SObjectManager::Cleanup()
 {
-	objects_.Merge(inits_);
-	for (auto* object : objects_)
+	KtPool<KObject*> objects{};
+	objects.Merge(inits_);
+	objects.Merge(objects_);
+	for (auto* object : objects)
 	{
 		object->Cleanup();
 	}
-	for (auto* object : objects_)
+	for (auto* object : objects)
 	{
 		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "DEL object %s", object->GetName().c_str());
 		delete object;
 	}
-	objects_.Clear();
+	deletes_.Clear();
 	typeRegistry_.clear();
 }
 
@@ -136,19 +137,16 @@ void SObjectManager::InitObjects()
 		return;
 	}
 
-	KtPool<KObject*> inits{};
-	inits.Merge(inits_);
-
-	for (auto* object : inits)
+	for (size_t i{ 0 }; i < inits_.Size(); ++i)
 	{
+		auto* object{ inits_[i] };
 		object->Init();
 		objects_.Add(object);
 		object->objectIndex_ = objects_.LastIndex();
 	}
+	inits_.Clear();
 
 	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "object count %llu", objects_.Size());
-
-	inits.Clear();
 }
 
 void SObjectManager::UpdateObjects()
@@ -166,26 +164,27 @@ void SObjectManager::DeleteObjects()
 		return;
 	}
 
-	KtPool<KObject*> deletes{};
-	deletes.Merge(deletes_);
-
-	for (auto* object : deletes)
+	for (size_t i{ 0 }; i < deletes_.Size(); ++i)
 	{
+		auto* object{ deletes_[i] };
+
 		object->Cleanup();
 
-		const size_t index = object->objectIndex_;
-		objects_.RemoveAt(index);
-		if (index < objects_.Size())
+		const size_t index{ object->objectIndex_ };
+		const auto removeResult{ objects_.RemoveAt(index) };
+		if (removeResult == KtPoolRemoveResult::ItemSwappedAndRemoved)
 		{
 			objects_[index]->objectIndex_ = index;
 		}
 	}
-	for (auto* object : deletes)
+	for (auto* object : deletes_)
 	{
 		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "DEL object %s", object->GetName().c_str());
 		typeRegistry_[typeid(*object)].erase(object);
 		delete object;
 	}
+
+	deletes_.Clear();
 }
 
 void SObjectManager::SubmitDrawObjects()

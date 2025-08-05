@@ -95,6 +95,7 @@ void KInterfaceTextComponent::UpdateTextWithBinding()
 
 void KInterfaceTextComponent::UpdateCharacters()
 {
+    // delete old characters
     for (auto* character : characters_)
     {
         character->Delete();
@@ -107,18 +108,20 @@ void KInterfaceTextComponent::UpdateCharacters()
     const auto fontCharacters{ font.GetTextTextures(text_) };
     characters_.Reserve(fontCharacters.size());
 
+    // fill with new characters
     for (auto* texture : fontCharacters)
     {
         auto* character{ GetOwner()->AddComponent<KInterfaceImageComponent>() };
         character->SetImageTexture(texture);
         character->SetShader(shader_);
         character->SetScreenSize(glm::vec2(fontSize_));
-        characters_.Add(character); // todo: was ??
+        characters_.Add(character); 
     }
 
-    for (size_t i = 0; i < characters_.Size(); i++)
+    // offset characters
+    for (size_t i{ 0 }; i < characters_.Size(); i++)
     {
         const float offset{ spacing_ * i };
-        characters_[i]->SetRelativePosition(glm::vec2(offset, 0.0f));
+        characters_[i]->Translate(glm::vec2(offset, 0.0f));
     }
 }

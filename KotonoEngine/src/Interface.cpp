@@ -68,7 +68,7 @@ void SInterface::Init()
 	drawTextBox->GetTextComponent()->SetTextBinding([]() { return std::format("D {:.8f}s", Engine.GetObjectManager().GetAverageDrawTime()); });
 
 	auto* updateTextTimer = Engine.GetObjectManager().Create<KTimer>();
-	updateTextTimer->SetDuration(1.0f / 24.0f);
+	updateTextTimer->SetDuration(1.0f / 8.0f);
 	updateTextTimer->SetIsRepeat(true);
 	updateTextTimer->GetEventCompleted().AddListener(KtDelegate(updateTextBox->GetTextComponent(), &KInterfaceTextComponent::UpdateTextWithBinding));
 	updateTextTimer->GetEventCompleted().AddListener(KtDelegate(drawTextBox->GetTextComponent(), &KInterfaceTextComponent::UpdateTextWithBinding));

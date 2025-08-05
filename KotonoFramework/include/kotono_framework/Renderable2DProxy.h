@@ -12,5 +12,9 @@ struct KtRenderable2DProxy final
 	KtObjectData2D objectData;
 
 	bool isDirty;
+
+#ifdef _DEBUG
+	void* source;
+#endif
 };
 

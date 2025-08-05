@@ -5,6 +5,7 @@
 #include <nlohmann/json.hpp>
 #include "Serializer.h"
 #include <format>
+#include "FileExplorer.h"
 
 void KtSpvCompiler::CompileUpdated() const
 {

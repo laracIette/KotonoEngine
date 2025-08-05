@@ -6,12 +6,8 @@
 #include "Timer.h"
 #include "log.h"
 
-KObject::KObject()
-{
-    name_ = static_cast<std::string>(guid_);
-}
-
-KObject::~KObject()
+KObject::KObject() :
+    name_(static_cast<std::string>(guid_))
 {
 }
 
@@ -77,6 +73,10 @@ void KObject::SetPath(const std::filesystem::path& path)
 
 void KObject::Delete()
 {
+    if (isDelete_)
+    {
+        return;
+    }
     isDelete_ = true;
     Engine.GetObjectManager().Delete(this);
 }

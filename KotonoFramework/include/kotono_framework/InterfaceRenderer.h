@@ -13,6 +13,13 @@ class KtInterfaceRenderer final
 private:
 	using ProxiesPool = KtPool<KtRenderable2DProxy*>;
 
+	enum class StagingProxyState : char
+	{
+		None,
+		Add,
+		Remove
+	};
+
 public:
 	void Init();
 	void Update(const uint32_t frameIndex);
@@ -36,7 +43,7 @@ private:
 	KtFramesInFlightArray<VkCommandBuffer> commandBuffers_;
 	KtFramesInFlightArray<bool> isCommandBufferDirty_;
 
-	std::unordered_map<KtRenderable2DProxy*, int32_t> stagingProxies_;
+	std::unordered_map<KtRenderable2DProxy*, KtFramesInFlightArray<StagingProxyState>> stagingProxies_;
 	KtFramesInFlightArray<ProxiesPool> proxies_;
 
 	KtFramesInFlightArray<std::unordered_map<const KtShader*, uint32_t>> instanceIndices_;
