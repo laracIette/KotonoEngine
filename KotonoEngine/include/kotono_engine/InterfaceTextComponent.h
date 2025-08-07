@@ -21,8 +21,8 @@ protected:
 
 public:
 	const std::string& GetText() const;
-	const float GetFontSize() const;
-	const float GetSpacing() const;
+	float GetFontSize() const;
+	float GetSpacing() const;
 	KtShader* GetShader() const;
 
 	void SetText(const std::string_view text);
@@ -38,10 +38,9 @@ private:
 	KtPool<KInterfaceImageComponent*> characters_;
 	float fontSize_;
 	float spacing_;
-
 	KtShader* shader_;
-
 	TextBinding textBinding_;
+
 	void UpdateCharacters();
 };
 

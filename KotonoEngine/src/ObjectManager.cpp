@@ -192,12 +192,12 @@ void SObjectManager::SubmitDrawObjects()
 	canDraw_ = true;
 }
 
-const float SObjectManager::GetAverageUpdateTime() const
+float SObjectManager::GetAverageUpdateTime() const
 {
 	return updateTimesSum_ / updateTimes_.size();
 }
 
-const float SObjectManager::GetAverageDrawTime() const
+float SObjectManager::GetAverageDrawTime() const
 {
 	return drawTimesSum_ / drawTimes_.size();
 }

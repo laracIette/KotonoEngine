@@ -22,7 +22,7 @@ private:
 	void Cleanup();
 
 public:
-	const VkSampleCountFlagBits GetMSAASamples() const;
+	VkSampleCountFlagBits GetMSAASamples() const;
 	VkPhysicalDevice& GetPhysicalDevice();
 	VkDevice& GetDevice();
 	VmaAllocator& GetAllocator();
@@ -36,9 +36,9 @@ public:
 	void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
 	void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 	void GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
-	const VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) const;
-	const KtQueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const;
-	const KtSwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
+	VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) const;
+	KtQueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const;
+	KtSwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
 	
 	void ExecuteSingleTimeCommands();
 	KtEvent<>& GetEventExecuteSingleTimeCommands();
@@ -67,18 +67,18 @@ private:
 
 	void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) const;
 	void SetupDebugMessenger();
-	const VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) const;
+	VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) const;
 	void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) const;
-	const bool CheckValidationLayerSupport();
-	const std::vector<const char*> GetRequiredExtensions();
+	bool CheckValidationLayerSupport();
+	std::vector<const char*> GetRequiredExtensions();
 	void PickPhysicalDevice();
-	const bool IsDeviceSuitable(VkPhysicalDevice device);
+	bool IsDeviceSuitable(VkPhysicalDevice device);
 	bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
 	void CreateLogicalDevice();
 	void CreateSurface();
-	const VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
-	const VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const;
-	const VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
+	VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
+	VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const;
+	VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
 
 	void CreateAllocator();
 
@@ -86,14 +86,14 @@ private:
 	VkCommandBuffer BeginSingleTimeCommands() const;
 	void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
 
-	const uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
-	const VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
-	const VkFormat FindDepthFormat() const;
-	const bool HasStencilComponent(VkFormat format) const;
+	uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
+	VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
+	VkFormat FindDepthFormat() const;
+	bool HasStencilComponent(VkFormat format) const;
 
-	const VkSampleCountFlagBits GetMaxUsableSampleCount() const;
+	VkSampleCountFlagBits GetMaxUsableSampleCount() const;
 
-	const bool GetIsComputerPluggedIn();
+	bool GetIsComputerPluggedIn();
 
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 	{

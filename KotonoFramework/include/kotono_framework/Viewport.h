@@ -7,8 +7,8 @@ public:
 	const glm::uvec2& GetExtent() const;
 	const glm::ivec2& GetOffset() const;
 
-	const bool GetIsKeepAspectRatio() const;
-	const float GetAspectRatio() const;
+	bool GetIsKeepAspectRatio() const;
+	float GetAspectRatio() const;
 
 	void SetExtent(const glm::uvec2& extent);
 	void SetOffset(const glm::ivec2& offset);

@@ -30,7 +30,7 @@ const UGuid& KObject::GetGuid() const
     return guid_;
 }
 
-const bool KObject::GetIsConstructed() const
+bool KObject::GetIsConstructed() const
 {
     return isConstructed_;
 }
@@ -45,12 +45,12 @@ const std::string& KObject::GetName() const
     return name_;
 }
 
-const bool KObject::GetIsDelete() const
+bool KObject::GetIsDelete() const
 {
     return isDelete_;
 }
 
-const std::string KObject::GetTypeName() const
+std::string KObject::GetTypeName() const
 {
     std::string_view name = typeid(*this).name();
     return std::string(name.substr(6));

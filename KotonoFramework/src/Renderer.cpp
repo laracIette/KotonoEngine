@@ -119,7 +119,7 @@ void KtRenderer::CreateSwapChain()
 	swapChainExtent_ = extent;
 }
 
-const VkSurfaceFormatKHR KtRenderer::ChooseSwapSurfaceFormat(const std::span<VkSurfaceFormatKHR> availableFormats) const
+VkSurfaceFormatKHR KtRenderer::ChooseSwapSurfaceFormat(const std::span<VkSurfaceFormatKHR> availableFormats) const
 {
 	for (const auto& availableFormat : availableFormats)
 	{
@@ -132,7 +132,7 @@ const VkSurfaceFormatKHR KtRenderer::ChooseSwapSurfaceFormat(const std::span<VkS
 	return availableFormats[0];
 }
 
-const VkPresentModeKHR KtRenderer::ChooseSwapPresentMode(const std::span<VkPresentModeKHR> availablePresentModes) const
+VkPresentModeKHR KtRenderer::ChooseSwapPresentMode(const std::span<VkPresentModeKHR> availablePresentModes) const
 {
 	for (const auto& availablePresentMode : availablePresentModes)
 	{
@@ -145,7 +145,7 @@ const VkPresentModeKHR KtRenderer::ChooseSwapPresentMode(const std::span<VkPrese
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-const VkExtent2D KtRenderer::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const
+VkExtent2D KtRenderer::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const
 {
 	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
 	{
@@ -347,7 +347,7 @@ void KtRenderer::CreateDepthResources()
 	);
 }
 
-const VkFormat KtRenderer::FindSupportedFormat(const std::span<VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const
+VkFormat KtRenderer::FindSupportedFormat(const std::span<VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const
 {
 	for (const VkFormat format : candidates)
 	{
@@ -367,13 +367,13 @@ const VkFormat KtRenderer::FindSupportedFormat(const std::span<VkFormat> candida
 	throw std::runtime_error("failed to find supported format!");
 }
 
-const VkFormat KtRenderer::FindDepthFormat() const
+VkFormat KtRenderer::FindDepthFormat() const
 {
 	std::vector<VkFormat> formats = { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT };
 	return FindSupportedFormat(formats, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
 
-const bool KtRenderer::HasStencilComponent(const VkFormat format) const
+bool KtRenderer::HasStencilComponent(const VkFormat format) const
 {
 	return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 }
@@ -604,7 +604,7 @@ void KtRenderer::SubmitCommandBuffer(const uint32_t frameIndex)
 }
 
 
-const bool KtRenderer::TryAcquireNextImage(const uint32_t frameIndex)
+bool KtRenderer::TryAcquireNextImage(const uint32_t frameIndex)
 {
 	// Wait for current frame to be rendered
 	vkWaitForFences(Framework.GetContext().GetDevice(), 1, &inFlightFences_[frameIndex], VK_TRUE, UINT64_MAX);
@@ -635,19 +635,19 @@ void KtRenderer::JoinThread(std::thread& thread) const
 	}
 }
 
-const uint32_t KtRenderer::GetGameThreadFrame() const 
+uint32_t KtRenderer::GetGameThreadFrame() const 
 {
 	// Prepare game thread for render thread
 	return frameCount_ % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
-const uint32_t KtRenderer::GetRenderThreadFrame() const
+uint32_t KtRenderer::GetRenderThreadFrame() const
 {
 	// Prepare render thread for RHI thread
 	return ((frameCount_ + KT_FRAMES_IN_FLIGHT) - 1) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
 }
 
-const uint32_t KtRenderer::GetRHIThreadFrame() const
+uint32_t KtRenderer::GetRHIThreadFrame() const
 {
 	// Prepare RHI thread for game thread
 	return ((frameCount_ + KT_FRAMES_IN_FLIGHT) - 2) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
@@ -671,7 +671,7 @@ void KtRenderer::RecreateSwapChain()
 	CreateFramebuffers();
 }
 
-const VkExtent2D KtRenderer::GetSwapChainExtent() const
+VkExtent2D KtRenderer::GetSwapChainExtent() const
 {
 	return swapChainExtent_;
 }

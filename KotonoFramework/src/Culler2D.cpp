@@ -4,14 +4,14 @@
 
 #define KT_LOG_IMPORTANCE_LEVEL_NULLPTR KT_LOG_IMPORTANCE_LEVEL_HIGH
 
-const KtCuller2D::ProxiesPool KtCuller2D::ComputeCulling(ProxiesPool proxies) const
+KtCuller2D::ProxiesPool KtCuller2D::ComputeCulling(ProxiesPool proxies) const
 {
 	proxies = ComputeNullCulling(proxies);
 	proxies = ComputeScreenCulling(proxies);
 	return proxies;
 }
 
-const KtCuller2D::ProxiesPool KtCuller2D::ComputeNullCulling(const ProxiesPool& proxies) const
+KtCuller2D::ProxiesPool KtCuller2D::ComputeNullCulling(const ProxiesPool& proxies) const
 {
 	ProxiesPool culledData{};
 
@@ -47,7 +47,7 @@ const KtCuller2D::ProxiesPool KtCuller2D::ComputeNullCulling(const ProxiesPool& 
 	return culledData;
 }
 
-const KtCuller2D::ProxiesPool KtCuller2D::ComputeScreenCulling(const ProxiesPool& proxies) const
+KtCuller2D::ProxiesPool KtCuller2D::ComputeScreenCulling(const ProxiesPool& proxies) const
 {
 	ProxiesPool culledData{};
 

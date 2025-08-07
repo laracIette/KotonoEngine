@@ -19,19 +19,19 @@ void STimeManager::Cleanup()
 {
 }
 
-const double STimeManager::GetExactUTC() const
+double STimeManager::GetExactUTC() const
 {
     auto now = std::chrono::system_clock::now();
     auto duration = now.time_since_epoch();
     return std::chrono::duration<double>(duration).count();
 }
 
-const float STimeManager::GetNow() const
+float STimeManager::GetNow() const
 {
     return _nowTime;
 }
 
-const float STimeManager::GetDelta() const
+float STimeManager::GetDelta() const
 {
     return _deltaTime;
 }

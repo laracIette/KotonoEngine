@@ -80,7 +80,7 @@ public:
 		filters_.push_back(filter);
 	}
 
-	const std::vector<ValueType> GetVector() const
+	std::vector<ValueType> GetVector() const
 	{
 		std::vector<ValueType> result{};
 		result.reserve(std::distance(begin_, end_));
@@ -91,7 +91,7 @@ public:
 		return result;
 	}
 
-	const KtPool<ValueType> GetPool() const
+	KtPool<ValueType> GetPool() const
 	{
 		KtPool<ValueType> result{};
 		result.Reserve(std::distance(begin_, end_));

@@ -67,7 +67,7 @@ private:
 	void CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex);
 	
 	void SortProxies(ProxiesPool& proxies);
-	const bool GetIsAnyProxyDirty(const uint32_t frameIndex) const;
+	bool GetIsAnyProxyDirty(const uint32_t frameIndex) const;
 	void MarkProxiesNotDirty(const uint32_t frameIndex);
 };
 

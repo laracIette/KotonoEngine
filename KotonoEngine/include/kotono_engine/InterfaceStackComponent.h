@@ -9,8 +9,8 @@ protected:
     void Init() override;
 
 public:
-    const EOrientation GetOrientation() const;
-    const float GetItemSpacing() const;
+    EOrientation GetOrientation() const;
+    float GetItemSpacing() const;
 
     void SetOrientation(const EOrientation orientation);
     void SetItemSpacing(const float spacing);

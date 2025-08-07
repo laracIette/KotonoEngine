@@ -20,9 +20,9 @@ private:
 public:
 	void DrawFrame();
 
-	const uint32_t GetGameThreadFrame() const; // todo: make private
+	uint32_t GetGameThreadFrame() const; // todo: make private
 
-	const VkExtent2D GetSwapChainExtent() const;
+	VkExtent2D GetSwapChainExtent() const;
 
 	KtInterfaceRenderer& GetInterfaceRenderer();
 	KtSceneRenderer& GetSceneRenderer();
@@ -69,9 +69,9 @@ private:
 	void CreateSwapChain();
 	void CleanupSwapChain();
 	void RecreateSwapChain();
-	const VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::span<VkSurfaceFormatKHR> availableFormats) const;
-	const VkPresentModeKHR ChooseSwapPresentMode(const std::span<VkPresentModeKHR> availablePresentModes) const;
-	const VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
+	VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::span<VkSurfaceFormatKHR> availableFormats) const;
+	VkPresentModeKHR ChooseSwapPresentMode(const std::span<VkPresentModeKHR> availablePresentModes) const;
+	VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
 	void CreateImageViews();
 
 	void CreateRenderPass();
@@ -79,11 +79,11 @@ private:
 
 	void CreateColorResources();
 	void CreateDepthResources();
-	const VkFormat FindSupportedFormat(const std::span<VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const;
-	const VkFormat FindDepthFormat() const;
-	const bool HasStencilComponent(const VkFormat format) const;
+	VkFormat FindSupportedFormat(const std::span<VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const;
+	VkFormat FindDepthFormat() const;
+	bool HasStencilComponent(const VkFormat format) const;
 
-	const bool TryAcquireNextImage(const uint32_t frameIndex);
+	bool TryAcquireNextImage(const uint32_t frameIndex);
 
 	void CreateCommandPools();
 	void CreateCommandPool(const uint32_t frameIndex);
@@ -99,6 +99,6 @@ private:
 
 	void JoinThread(std::thread& thread) const;
 
-	const uint32_t GetRenderThreadFrame() const;
-	const uint32_t GetRHIThreadFrame() const;
+	uint32_t GetRenderThreadFrame() const;
+	uint32_t GetRHIThreadFrame() const;
 };

@@ -566,7 +566,7 @@ void KtShader::DebugLogDescriptorSetLayoutData() const
 	}
 }
 
-const bool KtShader::GetIsBufferDescriptorType(const VkDescriptorType descriptorType) const
+bool KtShader::GetIsBufferDescriptorType(const VkDescriptorType descriptorType) const
 {
 	return descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER ||
 		descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER ||
@@ -576,7 +576,7 @@ const bool KtShader::GetIsBufferDescriptorType(const VkDescriptorType descriptor
 		descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 }
 
-const bool KtShader::GetIsImageSamplerDescriptorType(const VkDescriptorType descriptorType) const
+bool KtShader::GetIsImageSamplerDescriptorType(const VkDescriptorType descriptorType) const
 {
 	return descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 }

@@ -56,7 +56,7 @@ KtEvent<KInterfaceColliderComponent*>& KInterfaceColliderComponent::GetEventOver
 	return eventOverlap_;
 }
 
-const bool KInterfaceColliderComponent::GetIsMouseOverlapping() const
+bool KInterfaceColliderComponent::GetIsMouseOverlapping() const
 {
 	const auto& cursorPosition = Framework.GetInputManager().GetMouse().GetCursorPosition();
 	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());

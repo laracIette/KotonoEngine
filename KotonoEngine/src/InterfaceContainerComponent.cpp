@@ -20,7 +20,7 @@ const KtPool<KInterfaceComponent*>& KInterfaceContainerComponent::GetItems() con
     return items_;
 }
 
-const bool KInterfaceContainerComponent::GetIsSizeToContent() const
+bool KInterfaceContainerComponent::GetIsSizeToContent() const
 {
     return isSizeToContent_;
 }

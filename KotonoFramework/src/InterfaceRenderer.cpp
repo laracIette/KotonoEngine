@@ -385,7 +385,7 @@ void KtInterfaceRenderer::SortProxies(ProxiesPool& proxies)
 	);
 }
 
-const bool KtInterfaceRenderer::GetIsAnyProxyDirty(const uint32_t frameIndex) const
+bool KtInterfaceRenderer::GetIsAnyProxyDirty(const uint32_t frameIndex) const
 {
 	auto proxies{ KtCollection(proxies_[frameIndex].begin(), proxies_[frameIndex].end()) };
 	proxies.AddFilter([](const KtRenderable2DProxy* proxy) { return proxy->isDirty; });

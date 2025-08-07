@@ -10,16 +10,17 @@ private:
 public:
 	KtFileExplorer();
 
+	const std::filesystem::path& GetDirectoryPath() const;
 	void SetDirectoryPath(const std::filesystem::path& directoryPath);
 
 	// Get the directories paths in the current directory.
-	const std::vector<std::filesystem::path> GetDirectories() const;
+	std::vector<std::filesystem::path> GetDirectories() const;
 	// Get the files whose name contains name.
-	const std::vector<KtFile> Find(const std::string& name) const;
-
-	const std::vector<KtFile> GetFiles(const ConditionnalFunction& condition) const;
+	std::vector<KtFile> Find(const std::string& name) const;
+	// Get the files that match the condition.
+	std::vector<KtFile> GetFiles(const ConditionnalFunction& condition) const;
 
 private:
-	std::filesystem::path _directoryPath;
+	std::filesystem::path directoryPath_;
 };
 

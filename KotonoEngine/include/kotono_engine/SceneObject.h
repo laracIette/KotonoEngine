@@ -23,7 +23,7 @@ protected:
 	void Cleanup() override;
 
 public:
-	const EVisibility GetVisibility() const;
+	EVisibility GetVisibility() const;
 	KtViewport* GetViewport() const;
 	TSceneObject* GetParent() const;
 	KSceneComponent* GetRootComponent() const;

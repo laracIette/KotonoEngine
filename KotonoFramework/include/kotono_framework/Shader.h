@@ -91,8 +91,8 @@ protected:
 
 	void DebugLogDescriptorSetLayoutData() const;
 
-	const bool GetIsBufferDescriptorType(const VkDescriptorType descriptorType) const;
-	const bool GetIsImageSamplerDescriptorType(const VkDescriptorType descriptorType) const;
+	bool GetIsBufferDescriptorType(const VkDescriptorType descriptorType) const;
+	bool GetIsImageSamplerDescriptorType(const VkDescriptorType descriptorType) const;
 	
 	void UpdateDescriptorSetLayoutBindingBufferDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const uint32_t imageIndex);
 	void UpdateDescriptorSetLayoutBindingImageSamplerDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const uint32_t imageIndex);

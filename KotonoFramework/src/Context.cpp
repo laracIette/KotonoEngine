@@ -136,7 +136,7 @@ void KtContext::SetupDebugMessenger()
 	}
 }
 
-const bool KtContext::CheckValidationLayerSupport()
+bool KtContext::CheckValidationLayerSupport()
 {
 	uint32_t layerCount;
 	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -166,7 +166,7 @@ const bool KtContext::CheckValidationLayerSupport()
 	return true;
 }
 
-const std::vector<const char*> KtContext::GetRequiredExtensions()
+std::vector<const char*> KtContext::GetRequiredExtensions()
 {
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExtensions;
@@ -247,7 +247,7 @@ void KtContext::PickPhysicalDevice()
 	msaaSamples_ = GetMaxUsableSampleCount();
 }
 
-const bool KtContext::IsDeviceSuitable(VkPhysicalDevice device)
+bool KtContext::IsDeviceSuitable(VkPhysicalDevice device)
 {
 	const KtQueueFamilyIndices indices = FindQueueFamilies(device);
 
@@ -300,7 +300,7 @@ bool KtContext::CheckDeviceExtensionSupport(VkPhysicalDevice device)
 	return requiredExtensions.empty();
 }
 
-const KtQueueFamilyIndices KtContext::FindQueueFamilies(VkPhysicalDevice device) const
+KtQueueFamilyIndices KtContext::FindQueueFamilies(VkPhysicalDevice device) const
 {
 	KtQueueFamilyIndices indices{};
 
@@ -421,7 +421,7 @@ void KtContext::CreateSurface()
 	);
 }
 
-const KtSwapChainSupportDetails KtContext::QuerySwapChainSupport(VkPhysicalDevice device) const
+KtSwapChainSupportDetails KtContext::QuerySwapChainSupport(VkPhysicalDevice device) const
 {
 	KtSwapChainSupportDetails details;
 
@@ -448,7 +448,7 @@ const KtSwapChainSupportDetails KtContext::QuerySwapChainSupport(VkPhysicalDevic
 	return details;
 }
 
-const VkResult KtContext::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) const
+VkResult KtContext::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) const
 {
 	const auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
 	if (func != nullptr)
@@ -470,7 +470,7 @@ void KtContext::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsM
 	}
 }
 
-const VkSurfaceFormatKHR KtContext::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const
+VkSurfaceFormatKHR KtContext::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const
 {
 	for (const auto& availableFormat : availableFormats)
 	{
@@ -483,7 +483,7 @@ const VkSurfaceFormatKHR KtContext::ChooseSwapSurfaceFormat(const std::vector<Vk
 	return availableFormats[0];
 }
 
-const VkPresentModeKHR KtContext::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const
+VkPresentModeKHR KtContext::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const
 {
 	for (const auto& availablePresentMode : availablePresentModes)
 	{
@@ -496,7 +496,7 @@ const VkPresentModeKHR KtContext::ChooseSwapPresentMode(const std::vector<VkPres
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-const VkExtent2D KtContext::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const
+VkExtent2D KtContext::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const
 {
 	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
 	{
@@ -656,7 +656,7 @@ void KtContext::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize 
 	EndSingleTimeCommands(commandBuffer);
 }
 
-const uint32_t KtContext::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const
+uint32_t KtContext::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const
 {
 	VkPhysicalDeviceMemoryProperties memProperties;
 	vkGetPhysicalDeviceMemoryProperties(physicalDevice_, &memProperties);
@@ -701,7 +701,7 @@ void KtContext::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels,
 	
 }
 
-const VkFormat KtContext::FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const
+VkFormat KtContext::FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const
 {
 	for (VkFormat format : candidates)
 	{
@@ -721,7 +721,7 @@ const VkFormat KtContext::FindSupportedFormat(const std::vector<VkFormat>& candi
 	throw std::runtime_error("failed to find supported format!");
 }
 
-const VkFormat KtContext::FindDepthFormat() const
+VkFormat KtContext::FindDepthFormat() const
 {
 	return FindSupportedFormat(
 		{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
@@ -730,7 +730,7 @@ const VkFormat KtContext::FindDepthFormat() const
 	);
 }
 
-const bool KtContext::HasStencilComponent(VkFormat format) const
+bool KtContext::HasStencilComponent(VkFormat format) const
 {
 	return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 }
@@ -844,7 +844,7 @@ void KtContext::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width
 	EndSingleTimeCommands(commandBuffer);
 }
 
-const VkImageView KtContext::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) const
+VkImageView KtContext::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) const
 {
 	VkImageViewCreateInfo viewInfo{};
 	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -959,7 +959,7 @@ void KtContext::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t tex
 	EndSingleTimeCommands(commandBuffer);
 }
 
-const VkSampleCountFlagBits KtContext::GetMaxUsableSampleCount() const
+VkSampleCountFlagBits KtContext::GetMaxUsableSampleCount() const
 {
 	VkPhysicalDeviceProperties physicalDeviceProperties;
 	vkGetPhysicalDeviceProperties(physicalDevice_, &physicalDeviceProperties);
@@ -1006,12 +1006,12 @@ VkSurfaceKHR& KtContext::GetSurface()
 	return surface_;
 }
 
-const VkSampleCountFlagBits KtContext::GetMSAASamples() const
+VkSampleCountFlagBits KtContext::GetMSAASamples() const
 {
 	return msaaSamples_;
 }
 
-const bool KtContext::GetIsComputerPluggedIn()
+bool KtContext::GetIsComputerPluggedIn()
 {
 	SYSTEM_POWER_STATUS powerStatus;
 	return GetSystemPowerStatus(&powerStatus) 

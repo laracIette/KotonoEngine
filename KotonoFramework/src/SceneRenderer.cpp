@@ -407,7 +407,7 @@ void KtSceneRenderer::CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, co
 	vkCmdExecuteCommands(commandBuffer, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
 }
 
-const bool KtSceneRenderer::GetIsDynamicProxiesDirty(const uint32_t frameIndex) const
+bool KtSceneRenderer::GetIsDynamicProxiesDirty(const uint32_t frameIndex) const
 {
 	auto proxies = KtCollection(dynamicProxies_[frameIndex].begin(), dynamicProxies_[frameIndex].end());
 	proxies.AddFilter([](const KtRenderable3DProxy* proxy) { return proxy->isDirty; });

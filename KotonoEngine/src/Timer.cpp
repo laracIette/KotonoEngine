@@ -31,17 +31,17 @@ void KTimer::Update()
     }
 }
 
-const bool KTimer::GetIsPlaying() const
+bool KTimer::GetIsPlaying() const
 {
     return isPlaying_;
 }
 
-const bool KTimer::GetIsRepeat() const
+bool KTimer::GetIsRepeat() const
 {
     return isRepeat_;
 }
 
-const float KTimer::GetDuration() const
+float KTimer::GetDuration() const
 {
     return targetDuration_;
 }

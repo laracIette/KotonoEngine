@@ -23,29 +23,29 @@ protected:
 public:
 	TSceneObject* GetOwner() const;
 	const UTransform& GetTransform() const;
-	const EVisibility GetVisibility() const;
-	const EMobility GetMobility() const;
-	const bool GetCanSetTransform() const;
+	EVisibility GetVisibility() const;
+	EMobility GetMobility() const;
+	bool GetCanSetTransform() const;
 	KtEvent<>& GetEventUpdateTransform();
 
 	const glm::vec3& GetRelativePosition() const;
 	const glm::quat& GetRelativeRotation() const;
 	const glm::vec3& GetRelativeScale() const;
 
-	const glm::vec3 GetWorldPosition() const;
-	const glm::quat GetWorldRotation() const;
-	const glm::vec3 GetWorldScale() const;
+	glm::vec3 GetWorldPosition() const;
+	glm::quat GetWorldRotation() const;
+	glm::vec3 GetWorldScale() const;
 
-	const glm::vec3 GetRightVector() const;
-	const glm::vec3 GetForwardVector() const;
-	const glm::vec3 GetUpVector() const;
+	glm::vec3 GetRightVector() const;
+	glm::vec3 GetForwardVector() const;
+	glm::vec3 GetUpVector() const;
 
-	const glm::mat4 GetTranslationMatrix() const;
-	const glm::mat4 GetRotationMatrix() const;
-	const glm::mat4 GetScaleMatrix() const;
-	const glm::mat4 GetModelMatrix() const;
+	glm::mat4 GetTranslationMatrix() const;
+	glm::mat4 GetRotationMatrix() const;
+	glm::mat4 GetScaleMatrix() const;
+	glm::mat4 GetModelMatrix() const;
 
-	const glm::vec3 GetScreenPosition() const;
+	glm::vec3 GetScreenPosition() const;
 
 	void SetVisibility(const EVisibility visibility);
 	virtual void SetMobility(const EMobility mobility);
@@ -64,8 +64,8 @@ public:
 	void Rotate(const glm::quat& rotation);
 	void Scale(const glm::vec3& scale);
 
-	const glm::vec3 GetDirection(const KSceneComponent* target) const;
-	const float GetDistance(const KSceneComponent* other) const;
+	glm::vec3 GetDirection(const KSceneComponent* target) const;
+	float GetDistance(const KSceneComponent* other) const;
 
 private:
 	TSceneObject* const owner_;

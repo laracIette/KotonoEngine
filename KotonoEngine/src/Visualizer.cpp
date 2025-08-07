@@ -16,17 +16,17 @@ void SVisualizer::Cleanup()
 {
 }
 
-const bool SVisualizer::GetIsFieldVisible(const EVisualizationField field) const
+bool SVisualizer::GetIsFieldVisible(const EVisualizationField field) const
 {
 	const auto it = _fieldVisibilities.find(field);
 	if (it != _fieldVisibilities.end())
 	{
 		return it->second;
 	}
-	return false;
+	return false; 
 }
 
-void SVisualizer::SetIsFieldVisible(const EVisualizationField field, bool isVisible)
+void SVisualizer::SetIsFieldVisible(const EVisualizationField field, const bool isVisible)
 {
 	_fieldVisibilities[field] = isVisible;
 }

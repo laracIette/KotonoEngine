@@ -10,9 +10,9 @@ private:
 	void Cleanup();
 
 public:
-	const bool GetIsFieldVisible(const EVisualizationField field) const; 
+	bool GetIsFieldVisible(const EVisualizationField field) const; 
 
-	void SetIsFieldVisible(const EVisualizationField field, bool isVisible);
+	void SetIsFieldVisible(const EVisualizationField field, const bool isVisible);
 
 private:
 	std::unordered_map<EVisualizationField, bool> _fieldVisibilities;

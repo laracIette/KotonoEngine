@@ -24,7 +24,7 @@ protected:
 	void Cleanup() override;
 
 public:
-	const EVisibility GetVisibility() const;
+	EVisibility GetVisibility() const;
 	KtViewport* GetViewport() const;
 	RInterfaceObject* GetParent() const;
 	KInterfaceComponent* GetRootComponent() const;

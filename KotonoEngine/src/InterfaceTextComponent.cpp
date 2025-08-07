@@ -30,12 +30,12 @@ const std::string& KInterfaceTextComponent::GetText() const
     return text_;
 }
 
-const float KInterfaceTextComponent::GetFontSize() const
+float KInterfaceTextComponent::GetFontSize() const
 {
     return fontSize_;
 }
 
-const float KInterfaceTextComponent::GetSpacing() const
+float KInterfaceTextComponent::GetSpacing() const
 {
     return spacing_;
 }
@@ -122,6 +122,6 @@ void KInterfaceTextComponent::UpdateCharacters()
     for (size_t i{ 0 }; i < characters_.Size(); i++)
     {
         const float offset{ spacing_ * i };
-        characters_[i]->Translate(glm::vec2(offset, 0.0f));
+        characters_[i]->Translate({ offset, 0.0f });
     }
 }

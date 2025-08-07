@@ -48,7 +48,7 @@ public:
 	}
 
 	template <Object T> 
-	const std::vector<T*> GetAll() const
+	std::vector<T*> GetAll() const
 	{
 		std::vector<T*> result{};
 
@@ -66,8 +66,8 @@ public:
 		return result;
 	}
 
-	const float GetAverageUpdateTime() const;
-	const float GetAverageDrawTime() const;
+	float GetAverageUpdateTime() const;
+	float GetAverageDrawTime() const;
 	
 private:
 	void Quit();

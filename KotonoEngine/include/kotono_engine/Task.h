@@ -9,7 +9,7 @@ protected:
 	void Update() override;
 
 public:
-	const float GetDuration() const;
+	float GetDuration() const;
 	KtEvent<>& GetEventUpdate();
 	KtEvent<>& GetEventCompleted();
 

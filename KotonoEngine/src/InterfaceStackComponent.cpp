@@ -5,12 +5,12 @@ void KInterfaceStackComponent::Init()
     Base::Init();
 }
 
-const EOrientation KInterfaceStackComponent::GetOrientation() const
+EOrientation KInterfaceStackComponent::GetOrientation() const
 {
     return orientation_;
 }
 
-const float KInterfaceStackComponent::GetItemSpacing() const
+float KInterfaceStackComponent::GetItemSpacing() const
 {
     return spacing_;
 }

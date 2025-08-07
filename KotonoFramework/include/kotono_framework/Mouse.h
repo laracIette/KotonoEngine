@@ -18,10 +18,10 @@ public:
 
 	const glm::vec2& GetPreviousCursorPosition() const;
 	const glm::vec2& GetCursorPosition() const;
-	const glm::vec2 GetCursorPositionNormalized() const;
-	const glm::vec2 GetCursorPositionDelta() const;
-	const float GetHorizontalScrollDelta() const;
-	const float GetVerticalScrollDelta() const;
+	glm::vec2 GetCursorPositionNormalized() const;
+	glm::vec2 GetCursorPositionDelta() const;
+	float GetHorizontalScrollDelta() const;
+	float GetVerticalScrollDelta() const;
 
 	KtEvent<>& GetEvent(const KtButton button, const KtInputState inputState);
 	KtEvent<glm::vec2>& GetEventMove();

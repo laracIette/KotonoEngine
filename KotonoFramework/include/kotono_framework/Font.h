@@ -10,13 +10,13 @@ public:
 	KtFont(const std::filesystem::path& path);
 
 	const std::filesystem::path& GetPath() const;
-	const float GetSize() const;
-	const float GetSpacing() const;
+	float GetSize() const;
+	float GetSpacing() const;
 
 	void SetSize(const float size);
 	void SetSpacing(const float spacing);
 
-	const std::vector<KtImageTexture*> GetTextTextures(const std::string_view text) const;
+	std::vector<KtImageTexture*> GetTextTextures(const std::string_view text) const;
 
 private:
 	const std::filesystem::path path_;

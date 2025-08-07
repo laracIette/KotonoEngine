@@ -9,9 +9,9 @@ protected:
 	void Update() override;
 
 public:
-	const bool GetIsPlaying() const;
-	const bool GetIsRepeat() const;
-	const float GetDuration() const;
+	bool GetIsPlaying() const;
+	bool GetIsRepeat() const;
+	float GetDuration() const;
 	KtEvent<>& GetEventCompleted();
 
 	void SetIsRepeat(const bool isRepeat);

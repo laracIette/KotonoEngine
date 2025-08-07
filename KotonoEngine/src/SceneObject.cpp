@@ -30,7 +30,7 @@ void TSceneObject::Cleanup()
 	}
 }
 
-const EVisibility TSceneObject::GetVisibility() const
+EVisibility TSceneObject::GetVisibility() const
 {
 	return visibility_;
 }

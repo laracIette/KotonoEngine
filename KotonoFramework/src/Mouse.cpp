@@ -93,23 +93,23 @@ const glm::vec2& KtMouse::GetCursorPosition() const
     return cursorPosition_;
 }
 
-const glm::vec2 KtMouse::GetCursorPositionNormalized() const
+glm::vec2 KtMouse::GetCursorPositionNormalized() const
 {
     const auto& windowSize = Framework.GetWindow().GetSize();
     return 2.0f * cursorPosition_ / glm::vec2(windowSize) - 1.0f;
 }
 
-const glm::vec2 KtMouse::GetCursorPositionDelta() const
+glm::vec2 KtMouse::GetCursorPositionDelta() const
 {
     return cursorPosition_ - previousCursorPosition_;
 }
 
-const float KtMouse::GetHorizontalScrollDelta() const
+float KtMouse::GetHorizontalScrollDelta() const
 {
     return horizontalScrollDelta_;
 }
 
-const float KtMouse::GetVerticalScrollDelta() const
+float KtMouse::GetVerticalScrollDelta() const
 {
     return verticalScrollDelta_;
 }

@@ -40,12 +40,12 @@ const std::filesystem::path& KtFont::GetPath() const
     return path_;
 }
 
-const float KtFont::GetSize() const
+float KtFont::GetSize() const
 {
     return size_;
 }
 
-const float KtFont::GetSpacing() const
+float KtFont::GetSpacing() const
 {
     return spacing_;
 }
@@ -60,7 +60,7 @@ void KtFont::SetSpacing(const float spacing)
     spacing_ = spacing;
 }
 
-const std::vector<KtImageTexture*> KtFont::GetTextTextures(const std::string_view text) const
+std::vector<KtImageTexture*> KtFont::GetTextTextures(const std::string_view text) const
 {
     std::vector<KtImageTexture*> result;
     result.reserve(text.size());

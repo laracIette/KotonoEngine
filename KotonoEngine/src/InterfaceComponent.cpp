@@ -74,12 +74,12 @@ const URect& KInterfaceComponent::GetRect() const
     return rect_;
 }
 
-const EVisibility KInterfaceComponent::GetVisibility() const
+EVisibility KInterfaceComponent::GetVisibility() const
 {
     return visibility_;
 }
 
-const int32_t KInterfaceComponent::GetLayer() const
+int32_t KInterfaceComponent::GetLayer() const
 {
     if (parent_)
     {
@@ -113,17 +113,17 @@ const glm::vec2& KInterfaceComponent::GetRelativeScale() const
     return rect_.scale;
 }
 
-const float KInterfaceComponent::GetRelativeRotation(const ERotationUnit unit) const
+float KInterfaceComponent::GetRelativeRotation(const ERotationUnit unit) const
 {
     return rect_.rotation;
 }
 
-const glm::vec2 KInterfaceComponent::GetWorldSize() const
+glm::vec2 KInterfaceComponent::GetWorldSize() const
 {
     return rect_.size * GetWorldScale();
 }
 
-const glm::vec2 KInterfaceComponent::GetWorldPosition() const
+glm::vec2 KInterfaceComponent::GetWorldPosition() const
 {
     if (parent_)
     {
@@ -132,7 +132,7 @@ const glm::vec2 KInterfaceComponent::GetWorldPosition() const
     return rect_.position;
 }
 
-const glm::vec2 KInterfaceComponent::GetWorldScale() const
+glm::vec2 KInterfaceComponent::GetWorldScale() const
 {
     if (parent_)
     {
@@ -141,7 +141,7 @@ const glm::vec2 KInterfaceComponent::GetWorldScale() const
     return rect_.scale;
 }
 
-const float KInterfaceComponent::GetWorldRotation(const ERotationUnit unit) const
+float KInterfaceComponent::GetWorldRotation(const ERotationUnit unit) const
 {
     if (parent_)
     {
@@ -150,21 +150,21 @@ const float KInterfaceComponent::GetWorldRotation(const ERotationUnit unit) cons
     return GetRelativeRotation(unit);
 }
 
-const glm::vec2 KInterfaceComponent::GetScreenPosition() const
+glm::vec2 KInterfaceComponent::GetScreenPosition() const
 {
     const auto viewportSize = glm::vec2(owner_->GetViewport()->GetExtent());
     const auto newPosition = (GetWorldPosition() + glm::vec2(1.0f)) * viewportSize / 2.0f;
     return newPosition;
 }
 
-const glm::vec2 KInterfaceComponent::GetScreenSize() const
+glm::vec2 KInterfaceComponent::GetScreenSize() const
 {
     const auto viewportSize = glm::vec2(owner_->GetViewport()->GetExtent());
     const auto newSize = GetWorldSize() * viewportSize / 2.0f;
     return newSize;
 }
 
-const EAnchor KInterfaceComponent::GetAnchor() const
+EAnchor KInterfaceComponent::GetAnchor() const
 {
     return rect_.anchor;
 }
@@ -350,37 +350,37 @@ void KInterfaceComponent::SetAnchor(const EAnchor anchor)
 
 }
 
-const float KInterfaceComponent::GetLeft() const
+float KInterfaceComponent::GetLeft() const
 {
     return GetWorldPosition().x - GetWorldSize().x / 2.0f;
 }
 
-const float KInterfaceComponent::GetRight() const
+float KInterfaceComponent::GetRight() const
 {
     return GetWorldPosition().x + GetWorldSize().x / 2.0f;
 }
 
-const float KInterfaceComponent::GetTop() const
+float KInterfaceComponent::GetTop() const
 {
     return GetWorldPosition().y - GetWorldSize().y / 2.0f;
 }
 
-const float KInterfaceComponent::GetBottom() const
+float KInterfaceComponent::GetBottom() const
 {
     return GetWorldPosition().y + GetWorldSize().y / 2.0f;
 }
 
-const glm::mat4 KInterfaceComponent::GetTranslationMatrix() const
+glm::mat4 KInterfaceComponent::GetTranslationMatrix() const
 {
     return glm::translate(glm::identity<glm::mat4>(), glm::vec3(GetWorldPositionWithAnchorOffset(), 0.0f));
 }
 
-const glm::mat4 KInterfaceComponent::GetRotationMatrix() const
+glm::mat4 KInterfaceComponent::GetRotationMatrix() const
 {
     return glm::rotate(glm::identity<glm::mat4>(), GetWorldRotation(), glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
-const glm::mat4 KInterfaceComponent::GetScaleMatrix() const
+glm::mat4 KInterfaceComponent::GetScaleMatrix() const
 {
     const auto viewportSize = glm::vec2(GetOwner()->GetViewport()->GetExtent());
     const float aspectRatio = GetOwner()->GetViewport()->GetAspectRatio();
@@ -399,22 +399,22 @@ const glm::mat4 KInterfaceComponent::GetScaleMatrix() const
     return glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.0f));
 }
 
-const glm::mat4 KInterfaceComponent::GetModelMatrix() const
+glm::mat4 KInterfaceComponent::GetModelMatrix() const
 {
     return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix();
 }
 
-const glm::vec2 KInterfaceComponent::GetDirection(const KInterfaceComponent* target) const
+glm::vec2 KInterfaceComponent::GetDirection(const KInterfaceComponent* target) const
 {
     return target->GetWorldPosition() - GetWorldPosition();
 }
 
-const float KInterfaceComponent::GetDistance(const KInterfaceComponent* other) const
+float KInterfaceComponent::GetDistance(const KInterfaceComponent* other) const
 {
     return glm::distance(GetWorldPosition(), other->GetWorldPosition());
 }
 
-const bool KInterfaceComponent::GetIsOverlapping(const glm::vec2& worldPosition, const glm::vec2& worldSize) const
+bool KInterfaceComponent::GetIsOverlapping(const glm::vec2& worldPosition, const glm::vec2& worldSize) const
 {
     const auto distance = glm::abs(GetWorldPosition() - worldPosition);
     const auto maxDistance = (GetWorldSize() + worldSize) / 2.0f;
@@ -422,12 +422,12 @@ const bool KInterfaceComponent::GetIsOverlapping(const glm::vec2& worldPosition,
         && distance.y < maxDistance.y;
 }
 
-const bool KInterfaceComponent::GetIsOverlapping(const glm::vec2& worldPosition) const
+bool KInterfaceComponent::GetIsOverlapping(const glm::vec2& worldPosition) const
 {
     return GetIsOverlapping(worldPosition, glm::vec2(0.0f));
 }
 
-const bool KInterfaceComponent::GetIsOverlapping(const KInterfaceComponent* other) const
+bool KInterfaceComponent::GetIsOverlapping(const KInterfaceComponent* other) const
 {
     return GetIsOverlapping(other->GetWorldPosition(), other->GetWorldSize());
 }
@@ -455,7 +455,7 @@ void KInterfaceComponent::MarkBoundsProxyRectDirty()
     boundsProxy_.objectData.modelMatrix = GetModelMatrix();
 }
 
-const glm::vec2 KInterfaceComponent::GetAnchorOffset() const
+glm::vec2 KInterfaceComponent::GetAnchorOffset() const
 {
     return glm::vec2(
         (GetAnchor() & EAnchor::Left) == EAnchor::Left ? GetRelativeScale().x / 2.0f
@@ -467,7 +467,7 @@ const glm::vec2 KInterfaceComponent::GetAnchorOffset() const
     );
 }
 
-const glm::vec2 KInterfaceComponent::GetWorldPositionWithAnchorOffset() const
+glm::vec2 KInterfaceComponent::GetWorldPositionWithAnchorOffset() const
 {
     if (parent_)
     {
@@ -476,7 +476,7 @@ const glm::vec2 KInterfaceComponent::GetWorldPositionWithAnchorOffset() const
     return GetRelativePosition() + GetAnchorOffset();
 }
 
-const glm::vec2 KInterfaceComponent::GetAnchorRelativePosition() const
+glm::vec2 KInterfaceComponent::GetAnchorRelativePosition() const
 {
     return GetRelativePosition() - GetAnchorOffset();
 }

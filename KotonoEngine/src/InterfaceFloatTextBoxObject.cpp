@@ -16,7 +16,7 @@ void RInterfaceFloatTextBoxObject::Init()
 	SetIsEditable(true);
 }
 
-const float RInterfaceFloatTextBoxObject::GetValue() const
+float RInterfaceFloatTextBoxObject::GetValue() const
 {
 	return value_;
 }

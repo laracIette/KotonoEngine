@@ -47,7 +47,7 @@ void KtWindow::Cleanup()
     glfwTerminate();
 }
 
-const bool KtWindow::GetShouldClose() const
+bool KtWindow::GetShouldClose() const
 {
     if (shouldClose_ || glfwWindowShouldClose(window_))
     {

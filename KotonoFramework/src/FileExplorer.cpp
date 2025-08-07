@@ -2,19 +2,24 @@
 #include "Framework.h"
 
 KtFileExplorer::KtFileExplorer() :
-    _directoryPath(Framework.GetPath().GetSolutionPath())
+    directoryPath_(Framework.GetPath().GetSolutionPath())
 {
+}
+
+const std::filesystem::path& KtFileExplorer::GetDirectoryPath() const
+{
+    return directoryPath_;
 }
 
 void KtFileExplorer::SetDirectoryPath(const std::filesystem::path& directoryPath)
 {
-    _directoryPath = directoryPath;
+    directoryPath_ = directoryPath;
 }
 
-const std::vector<std::filesystem::path> KtFileExplorer::GetDirectories() const
+std::vector<std::filesystem::path> KtFileExplorer::GetDirectories() const
 {
     std::vector<std::filesystem::path> directories;
-    for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(_directoryPath))
+    for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(directoryPath_))
     {
         if (entry.is_directory())
         {
@@ -24,10 +29,10 @@ const std::vector<std::filesystem::path> KtFileExplorer::GetDirectories() const
     return directories;
 }
 
-const std::vector<KtFile> KtFileExplorer::Find(const std::string& name) const
+std::vector<KtFile> KtFileExplorer::Find(const std::string& name) const
 {
     std::vector<KtFile> files;
-    for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(_directoryPath))
+    for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(directoryPath_))
     {
         if (entry.is_regular_file() && entry.path().filename().string().find(name) != std::string::npos)
         {
@@ -37,10 +42,10 @@ const std::vector<KtFile> KtFileExplorer::Find(const std::string& name) const
     return files;
 }
 
-const std::vector<KtFile> KtFileExplorer::GetFiles(const ConditionnalFunction& condition) const
+std::vector<KtFile> KtFileExplorer::GetFiles(const ConditionnalFunction& condition) const
 {
     std::vector<KtFile> files;
-    for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(_directoryPath))
+    for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(directoryPath_))
     {
         if (entry.is_regular_file() && condition(entry.path()))
         {

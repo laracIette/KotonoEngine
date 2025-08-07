@@ -27,7 +27,7 @@ void RInterfaceTextBoxObject::Cleanup()
 	Base::Cleanup();
 }
 
-const bool RInterfaceTextBoxObject::GetIsEditable() const
+bool RInterfaceTextBoxObject::GetIsEditable() const
 {
 	return isEditable_;
 }

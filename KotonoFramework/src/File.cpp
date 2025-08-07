@@ -11,7 +11,7 @@ KtFile::KtFile(const std::filesystem::path& path) :
 {
 }
 
-const bool KtFile::Exists() const
+bool KtFile::Exists() const
 {
     return std::filesystem::exists(path_);
 }
@@ -21,27 +21,27 @@ const std::filesystem::path& KtFile::GetPath() const
     return path_;
 }
 
-const std::filesystem::path KtFile::GetDirectory() const
+std::filesystem::path KtFile::GetDirectory() const
 {
     return path_.parent_path();
 }
 
-const std::string KtFile::GetName() const
+std::string KtFile::GetName() const
 {
     return path_.filename().string();
 }
 
-const std::string KtFile::GetExtension() const
+std::string KtFile::GetExtension() const
 {
     return path_.extension().string();
 }
 
-const std::string KtFile::GetStem() const
+std::string KtFile::GetStem() const
 {
     return path_.stem().string();
 }
 
-const std::string KtFile::ReadString() const
+std::string KtFile::ReadString() const
 {
     // Check if path exists.
     if (!Exists())
@@ -68,7 +68,7 @@ const std::string KtFile::ReadString() const
     return fileContents.str();
 }
 
-const std::vector<uint8_t> KtFile::ReadBinary() const
+std::vector<uint8_t> KtFile::ReadBinary() const
 {
     if (!std::filesystem::exists(path_))
     {

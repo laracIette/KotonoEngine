@@ -55,7 +55,7 @@ const KtPool<RInterfaceObject*>& RInterfaceObject::GetChildren() const
 	return children_;
 }
 
-const EVisibility RInterfaceObject::GetVisibility() const
+EVisibility RInterfaceObject::GetVisibility() const
 {
 	return visibility_;
 }

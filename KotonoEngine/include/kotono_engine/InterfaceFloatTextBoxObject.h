@@ -14,7 +14,7 @@ protected:
 	void Init() override;
 
 public:
-	const float GetValue() const;
+	float GetValue() const;
 	KtEvent<float>& GetEventValueChanged();
 
 	void SetValue(const float value);

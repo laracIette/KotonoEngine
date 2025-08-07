@@ -23,7 +23,7 @@ public:
 
 	KtEvent<KInterfaceColliderComponent*>& GetEventOverlap();
 
-	const bool GetIsMouseOverlapping() const;
+	bool GetIsMouseOverlapping() const;
 
 private:
 	KtPool<KInterfaceColliderComponent*> overlaps_;

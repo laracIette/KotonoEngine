@@ -19,7 +19,7 @@ void KTask::Update()
     }
 }
 
-const float KTask::GetDuration() const
+float KTask::GetDuration() const
 {
     return duration_;
 }

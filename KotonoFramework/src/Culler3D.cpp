@@ -4,7 +4,7 @@
 
 #define KT_LOG_IMPORTANCE_LEVEL_NULLPTR KT_LOG_IMPORTANCE_LEVEL_HIGH
 
-const KtCuller3D::ProxiesPool KtCuller3D::ComputeCulling(ProxiesPool proxies, const KtCuller3DField field) const
+KtCuller3D::ProxiesPool KtCuller3D::ComputeCulling(ProxiesPool proxies, const KtCuller3DField field) const
 {
 	if ((field & KT_CULLER_3D_FIELD_NULLPTR) == KT_CULLER_3D_FIELD_NULLPTR)
 	{
@@ -17,7 +17,7 @@ const KtCuller3D::ProxiesPool KtCuller3D::ComputeCulling(ProxiesPool proxies, co
 	return proxies;
 }
 
-const KtCuller3D::ProxiesPool KtCuller3D::ComputeNullCulling(const ProxiesPool& proxies) const
+KtCuller3D::ProxiesPool KtCuller3D::ComputeNullCulling(const ProxiesPool& proxies) const
 {
 	ProxiesPool culledData{};
 
@@ -53,7 +53,7 @@ const KtCuller3D::ProxiesPool KtCuller3D::ComputeNullCulling(const ProxiesPool& 
 	return culledData;
 }
 
-const KtCuller3D::ProxiesPool KtCuller3D::ComputeDistanceCulling(const ProxiesPool& proxies) const
+KtCuller3D::ProxiesPool KtCuller3D::ComputeDistanceCulling(const ProxiesPool& proxies) const
 {
 	ProxiesPool culledData{};
 

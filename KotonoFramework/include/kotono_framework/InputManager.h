@@ -11,7 +11,9 @@ private:
 
 public:
 	KtMouse& GetMouse();
+	const KtMouse& GetMouse() const;
 	KtKeyboard& GetKeyboard();
+	const KtKeyboard& GetKeyboard() const;
 
 private:
 	KtMouse mouse_;

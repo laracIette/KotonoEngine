@@ -17,7 +17,7 @@ protected:
 	void Cleanup() override;
 
 public:
-	const bool GetIsEditable() const;
+	bool GetIsEditable() const;
 
 	void SetIsEditable(const bool isEditable);
 

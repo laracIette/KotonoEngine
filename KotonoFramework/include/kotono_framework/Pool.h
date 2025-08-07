@@ -24,7 +24,7 @@ public:
 
 	// Removes the specified item, returns true if the item was swapped before removal
 	// This is way slower than RemoveAt(size_t) because it searches for the item's index first
-	constexpr const KtPoolRemoveResult Remove(const ValueType& value)
+	constexpr KtPoolRemoveResult Remove(const ValueType& value)
 	{
 		const auto it{ std::find(data_.begin(), data_.end(), value) };
 		if (it == data_.end())
@@ -37,14 +37,14 @@ public:
 	}
 
 	// Removes the item at the specified index, returns true if the item was swapped before removal
-	constexpr const KtPoolRemoveResult RemoveAt(const size_t index) noexcept
+	constexpr KtPoolRemoveResult RemoveAt(const size_t index) noexcept
 	{
 		if (index >= data_.size())
 		{
 			return KtPoolRemoveResult::IndexOutOfRange;
 		}
 
-		KtPoolRemoveResult result{ KtPoolRemoveResult::ItemRemoved };
+		auto result{ KtPoolRemoveResult::ItemRemoved };
 		if (index != data_.size() - 1)
 		{
 			// Only swap if not last
@@ -108,18 +108,18 @@ public:
 		return data_.end(); 
 	}
 
-	constexpr const size_t Size() const noexcept
+	constexpr size_t Size() const noexcept
 	{
 		return data_.size();
 	}
 
 	// Returns size_t max if size == 0
-	constexpr const size_t LastIndex() const noexcept
+	constexpr size_t LastIndex() const noexcept
 	{
 		return data_.size() - 1;
 	}
 
-	constexpr const bool Empty() const noexcept
+	constexpr bool Empty() const noexcept
 	{
 		return data_.empty();
 	}

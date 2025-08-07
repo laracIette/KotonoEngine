@@ -27,25 +27,25 @@ public:
 	RInterfaceObject* GetOwner() const;
 	KInterfaceComponent* GetParent() const;
 	const URect& GetRect() const;
-	const EVisibility GetVisibility() const;
-	const int32_t GetLayer() const; 
+	EVisibility GetVisibility() const;
+	int32_t GetLayer() const; 
 	KtEvent<>& GetEventRectUpdated();
 	KtEvent<>& GetEventLayerUpdated();
 
 	const glm::vec2& GetRelativeSize() const;
 	const glm::vec2& GetRelativePosition() const;
 	const glm::vec2& GetRelativeScale() const;
-	const float GetRelativeRotation(const ERotationUnit unit = ERotationUnit::Radians) const;
+	float GetRelativeRotation(const ERotationUnit unit = ERotationUnit::Radians) const;
 
-	const glm::vec2 GetWorldSize() const;
-	const glm::vec2 GetWorldPosition() const;
-	const glm::vec2 GetWorldScale() const;
-	const float GetWorldRotation(const ERotationUnit unit = ERotationUnit::Radians) const;
+	glm::vec2 GetWorldSize() const;
+	glm::vec2 GetWorldPosition() const;
+	glm::vec2 GetWorldScale() const;
+	float GetWorldRotation(const ERotationUnit unit = ERotationUnit::Radians) const;
 
-	const glm::vec2 GetScreenPosition() const;
-	const glm::vec2 GetScreenSize() const;
+	glm::vec2 GetScreenPosition() const;
+	glm::vec2 GetScreenSize() const;
 
-	const EAnchor GetAnchor() const;
+	EAnchor GetAnchor() const;
 
 	void SetVisibility(const EVisibility visibility);
 	void SetLayer(const int32_t layer);
@@ -71,21 +71,21 @@ public:
 
 	void SetAnchor(const EAnchor anchor);
 
-	const float GetLeft() const;
-	const float GetRight() const;
-	const float GetTop() const;
-	const float GetBottom() const;
+	float GetLeft() const;
+	float GetRight() const;
+	float GetTop() const;
+	float GetBottom() const;
 
-	const glm::mat4 GetTranslationMatrix() const;
-	const glm::mat4 GetRotationMatrix() const;
-	const glm::mat4 GetScaleMatrix() const;
-	const glm::mat4 GetModelMatrix() const;
+	glm::mat4 GetTranslationMatrix() const;
+	glm::mat4 GetRotationMatrix() const;
+	glm::mat4 GetScaleMatrix() const;
+	glm::mat4 GetModelMatrix() const;
 
-	const glm::vec2 GetDirection(const KInterfaceComponent* target) const;
-	const float GetDistance(const KInterfaceComponent* other) const;
-	const bool GetIsOverlapping(const glm::vec2& worldPosition, const glm::vec2& worldSize) const;
-	const bool GetIsOverlapping(const glm::vec2& worldPosition) const;
-	const bool GetIsOverlapping(const KInterfaceComponent* other) const;
+	glm::vec2 GetDirection(const KInterfaceComponent* target) const;
+	float GetDistance(const KInterfaceComponent* other) const;
+	bool GetIsOverlapping(const glm::vec2& worldPosition, const glm::vec2& worldSize) const;
+	bool GetIsOverlapping(const glm::vec2& worldPosition) const;
+	bool GetIsOverlapping(const KInterfaceComponent* other) const;
 
 private:
 	RInterfaceObject* const owner_;
@@ -103,8 +103,8 @@ private:
 
 	void MarkBoundsProxyRectDirty();
 
-	const glm::vec2 GetAnchorOffset() const;
-	const glm::vec2 GetWorldPositionWithAnchorOffset() const;
-	const glm::vec2 GetAnchorRelativePosition() const;
+	glm::vec2 GetAnchorOffset() const;
+	glm::vec2 GetWorldPositionWithAnchorOffset() const;
+	glm::vec2 GetAnchorRelativePosition() const;
 };
 

@@ -21,23 +21,23 @@ public:
     }
 
     template <std::floating_point T>
-    const T GetElapsedSeconds() const
+    T GetElapsedSeconds() const
     {
         return std::chrono::duration<T>(end_ - start_).count();
     }
 
-    const int64_t GetElapsedMicroseconds() const
+    int64_t GetElapsedMicroseconds() const
     {
         return std::chrono::duration_cast<std::chrono::microseconds>(end_ - start_).count();
     }
 
-    const int64_t GetElapsedNanoseconds() const
+    int64_t GetElapsedNanoseconds() const
     {
         return std::chrono::duration_cast<std::chrono::nanoseconds>(end_ - start_).count();
     }
 
     template <std::floating_point T>
-    static const T Time(const KtDelegate<>& delegate)
+    static T Time(const KtDelegate<>& delegate)
     {
         KtStopwatch stopwatch{};
         stopwatch.Start();

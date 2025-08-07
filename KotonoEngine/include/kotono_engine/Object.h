@@ -21,11 +21,11 @@ protected:
 
 public:
 	const UGuid& GetGuid() const;
-	const bool GetIsConstructed() const;
+	bool GetIsConstructed() const;
 	const std::filesystem::path& GetPath() const;
 	const std::string& GetName() const;
-	const bool GetIsDelete() const;
-	const std::string GetTypeName() const;
+	bool GetIsDelete() const;
+	std::string GetTypeName() const;
 	KtEvent<>& GetEventCleanup();
 
 	void SetPath(const std::filesystem::path& path);

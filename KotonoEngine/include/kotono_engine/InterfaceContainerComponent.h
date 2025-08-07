@@ -11,7 +11,7 @@ protected:
 
 public:
     const KtPool<KInterfaceComponent*>& GetItems() const;
-    const bool GetIsSizeToContent() const;
+    bool GetIsSizeToContent() const;
 
     void SetIsSizeToContent(const bool isSizeToContent);
     

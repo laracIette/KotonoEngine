@@ -35,17 +35,17 @@ const UTransform& KSceneComponent::GetTransform() const
     return transform_;
 }
 
-const EVisibility KSceneComponent::GetVisibility() const
+EVisibility KSceneComponent::GetVisibility() const
 {
     return visibility_;
 }
 
-const EMobility KSceneComponent::GetMobility() const
+EMobility KSceneComponent::GetMobility() const
 {
     return mobility_;
 }
 
-const bool KSceneComponent::GetCanSetTransform() const
+bool KSceneComponent::GetCanSetTransform() const
 {
     return mobility_ == EMobility::Dynamic || !GetIsConstructed();
 }
@@ -80,7 +80,7 @@ const glm::vec3& KSceneComponent::GetRelativeScale() const
     return transform_.scale;
 }
 
-const glm::vec3 KSceneComponent::GetWorldPosition() const
+glm::vec3 KSceneComponent::GetWorldPosition() const
 {
     if (parent_)
     {
@@ -89,7 +89,7 @@ const glm::vec3 KSceneComponent::GetWorldPosition() const
     return GetRelativePosition();
 }
 
-const glm::quat KSceneComponent::GetWorldRotation() const
+glm::quat KSceneComponent::GetWorldRotation() const
 {
     if (parent_)
     {
@@ -98,7 +98,7 @@ const glm::quat KSceneComponent::GetWorldRotation() const
     return GetRelativeRotation();
 }
 
-const glm::vec3 KSceneComponent::GetWorldScale() const
+glm::vec3 KSceneComponent::GetWorldScale() const
 {
     if (parent_)
     {
@@ -107,42 +107,42 @@ const glm::vec3 KSceneComponent::GetWorldScale() const
     return GetRelativeScale();
 }
 
-const glm::vec3 KSceneComponent::GetRightVector() const
+glm::vec3 KSceneComponent::GetRightVector() const
 {
     return GetWorldRotation() * glm::vec3(-1.0f, 0.0f, 0.0f);
 }
 
-const glm::vec3 KSceneComponent::GetForwardVector() const
+glm::vec3 KSceneComponent::GetForwardVector() const
 {
     return GetWorldRotation() * glm::vec3(0.0f, 0.0f, 1.0f);
 }
 
-const glm::vec3 KSceneComponent::GetUpVector() const
+glm::vec3 KSceneComponent::GetUpVector() const
 {
     return GetWorldRotation() * glm::vec3(0.0f, -1.0f, 0.0f);
 }
 
-const glm::mat4 KSceneComponent::GetTranslationMatrix() const
+glm::mat4 KSceneComponent::GetTranslationMatrix() const
 {
     return glm::translate(glm::identity<glm::mat4>(), GetWorldPosition());
 }
 
-const glm::mat4 KSceneComponent::GetRotationMatrix() const
+glm::mat4 KSceneComponent::GetRotationMatrix() const
 {
     return glm::mat4_cast(GetWorldRotation());
 }
 
-const glm::mat4 KSceneComponent::GetScaleMatrix() const
+glm::mat4 KSceneComponent::GetScaleMatrix() const
 {
     return glm::scale(glm::identity<glm::mat4>(), GetWorldScale());
 }
 
-const glm::mat4 KSceneComponent::GetModelMatrix() const
+glm::mat4 KSceneComponent::GetModelMatrix() const
 {
     return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix();
 }
 
-const glm::vec3 KSceneComponent::GetScreenPosition() const
+glm::vec3 KSceneComponent::GetScreenPosition() const
 {
     throw std::logic_error("not implemented");
 }
@@ -272,12 +272,12 @@ void KSceneComponent::Scale(const glm::vec3& scale)
     SetRelativeScale(GetRelativeScale() * scale);
 }
 
-const glm::vec3 KSceneComponent::GetDirection(const KSceneComponent* target) const
+glm::vec3 KSceneComponent::GetDirection(const KSceneComponent* target) const
 {
     return target->GetWorldPosition() - GetWorldPosition();
 }
 
-const float KSceneComponent::GetDistance(const KSceneComponent* other) const
+float KSceneComponent::GetDistance(const KSceneComponent* other) const
 {
     return glm::distance(GetWorldPosition(), other->GetWorldPosition());
 }

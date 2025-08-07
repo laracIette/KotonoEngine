@@ -9,10 +9,10 @@ private:
 	using ProxiesPool = KtPool<KtRenderable3DProxy*>;
 
 public:
-	const ProxiesPool ComputeCulling(ProxiesPool renderQueueData, const KtCuller3DField field) const;
+	ProxiesPool ComputeCulling(ProxiesPool renderQueueData, const KtCuller3DField field) const;
 
 private:
-	const ProxiesPool ComputeNullCulling(const ProxiesPool& renderQueueData) const;
-	const ProxiesPool ComputeDistanceCulling(const ProxiesPool& renderQueueData) const;
+	ProxiesPool ComputeNullCulling(const ProxiesPool& renderQueueData) const;
+	ProxiesPool ComputeDistanceCulling(const ProxiesPool& renderQueueData) const;
 };
 

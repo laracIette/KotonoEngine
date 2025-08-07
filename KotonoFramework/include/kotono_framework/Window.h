@@ -11,7 +11,7 @@ private:
 
 public:
 	// Executes vkDeviceWaitIdle(VkDevice) if true, else executes glfwPollEvents()
-	const bool GetShouldClose() const;
+	bool GetShouldClose() const;
 	// Sets whether the window should close at the end of the main loop
 	void SetShouldClose(const bool shouldClose);
 

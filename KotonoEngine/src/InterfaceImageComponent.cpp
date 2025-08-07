@@ -10,7 +10,7 @@
 #include "InterfaceObject.h"
 #include "log.h"
 
-static KtShader* WireframeShader{ nullptr };
+static constinit KtShader* WireframeShader{ nullptr };
 
 KInterfaceImageComponent::KInterfaceImageComponent(RInterfaceObject* owner) :
 	Base(owner)

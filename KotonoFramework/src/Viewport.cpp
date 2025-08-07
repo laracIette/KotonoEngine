@@ -12,12 +12,12 @@ const glm::ivec2& KtViewport::GetOffset() const
     return offset_;
 }
 
-const bool KtViewport::GetIsKeepAspectRatio() const
+bool KtViewport::GetIsKeepAspectRatio() const
 {
 	return isKeepAspectRatio_;
 }
 
-const float KtViewport::GetAspectRatio() const
+float KtViewport::GetAspectRatio() const
 {
 	return aspectRatio_;
 }

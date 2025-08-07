@@ -64,7 +64,7 @@ private:
 	void CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 
 	void SortProxies(ProxiesPool& proxies);
-	const bool GetIsDynamicProxiesDirty(const uint32_t frameIndex) const;
+	bool GetIsDynamicProxiesDirty(const uint32_t frameIndex) const;
 	void MarkDynamicProxiesNotDirty(const uint32_t frameIndex);
 };
 
