@@ -275,6 +275,9 @@
     <ClInclude Include="include\kotono_framework\PoolRemoveResult.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\kotono_framework\AverageTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

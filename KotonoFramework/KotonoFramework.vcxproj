@@ -169,6 +169,7 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\kotono_framework\AverageTime.h" />
     <ClInclude Include="include\kotono_framework\FileExplorer.h" />
     <ClInclude Include="include\kotono_framework\Culler3DField.h" />
     <ClInclude Include="include\kotono_framework\Font.h" />

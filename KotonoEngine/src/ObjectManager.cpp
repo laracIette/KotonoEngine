@@ -75,22 +75,13 @@ void SObjectManager::Update()
 	updateTime += KtStopwatch::Time<float>(KtDelegate(this, &SObjectManager::InitObjects)); // todo: maybe put after delete
 	updateTime += KtStopwatch::Time<float>(KtDelegate(this, &SObjectManager::UpdateObjects));
 	updateTime += KtStopwatch::Time<float>(KtDelegate(this, &SObjectManager::DeleteObjects));
-
-	updateTimeIndex_ = (updateTimeIndex_ + 1) % updateTimes_.size();
-	updateTimesSum_ -= updateTimes_[updateTimeIndex_];
-	updateTimes_[updateTimeIndex_] = updateTime;
-	updateTimesSum_ += updateTimes_[updateTimeIndex_];
+	updateAverageTime_.AddTime(updateTime);
 
 	if (canDraw_)
 	{
 		canDraw_ = false;
-
 		float drawTime{ KtStopwatch::Time<float>(KtDelegate(&Framework.GetRenderer(), &KtRenderer::DrawFrame)) };
-
-		drawTimeIndex_ = (drawTimeIndex_ + 1) % drawTimes_.size();
-		drawTimesSum_ -= drawTimes_[drawTimeIndex_];
-		drawTimes_[drawTimeIndex_] = drawTime;
-		drawTimesSum_ += drawTimes_[drawTimeIndex_];
+		drawAverageTime_.AddTime(drawTime);
 	}
 }
 
@@ -109,7 +100,6 @@ void SObjectManager::Cleanup()
 		delete object;
 	}
 	deletes_.Clear();
-	typeRegistry_.clear();
 }
 
 void SObjectManager::Register(KObject* object)
@@ -117,7 +107,6 @@ void SObjectManager::Register(KObject* object)
 	object->SetName(std::format("{}_{}", object->GetTypeName(), static_cast<std::string>(object->GetGuid())));
 	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "REG object %s", object->GetName().c_str());
 	inits_.Add(object);
-	typeRegistry_[typeid(*object)].insert(object);
 }
 
 void SObjectManager::Delete(KObject* object)
@@ -180,7 +169,6 @@ void SObjectManager::DeleteObjects()
 	for (auto* object : deletes_)
 	{
 		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "DEL object %s", object->GetName().c_str());
-		typeRegistry_[typeid(*object)].erase(object);
 		delete object;
 	}
 
@@ -194,12 +182,12 @@ void SObjectManager::SubmitDrawObjects()
 
 float SObjectManager::GetAverageUpdateTime() const
 {
-	return updateTimesSum_ / updateTimes_.size();
+	return updateAverageTime_.GetAverageTime();
 }
 
 float SObjectManager::GetAverageDrawTime() const
 {
-	return drawTimesSum_ / drawTimes_.size();
+	return drawAverageTime_.GetAverageTime();
 }
 
 void SObjectManager::LogUPS() const

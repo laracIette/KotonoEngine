@@ -34,4 +34,4 @@ private:
 	SInterfacePhysicsManager interfacePhysicsManager_;
 };
 
-extern SEngine Engine;
+inline SEngine Engine;

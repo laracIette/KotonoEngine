@@ -1,9 +1,7 @@
 #pragma once
 #include <type_traits>
-#include <unordered_set>
-#include <unordered_map>
-#include <typeindex>
 #include <kotono_framework/Pool.h>
+#include <kotono_framework/AverageTime.h>
 #include <array>
 
 class KObject;
@@ -32,40 +30,6 @@ public:
 		return object;
 	}
 
-	template <Object T> 
-	T* GetFirst() const
-	{
-		const auto it = typeRegistry_.find(typeid(T));
-		if (it != typeRegistry_.end())
-		{
-			const auto& objects = it->second;
-			if (!objects.empty())
-			{
-				return static_cast<T*>(objects[0]);
-			}
-		}
-		return nullptr;
-	}
-
-	template <Object T> 
-	std::vector<T*> GetAll() const
-	{
-		std::vector<T*> result{};
-
-		const auto it = typeRegistry_.find(typeid(T));
-		if (it != typeRegistry_.end())
-		{
-			const auto& objects = it->second;
-
-			result.reserve(objects.size());
-			for (auto* object : objects)
-			{
-				result.push_back(static_cast<T*>(object));
-			}
-		}
-		return result;
-	}
-
 	float GetAverageUpdateTime() const;
 	float GetAverageDrawTime() const;
 	
@@ -76,15 +40,8 @@ private:
 	KtPool<KObject*> objects_;
 	KtPool<KObject*> deletes_;
 
-	std::unordered_map<std::type_index, std::unordered_set<KObject*>> typeRegistry_;
-
-	std::array<float, 256> updateTimes_;
-	size_t updateTimeIndex_;
-	float updateTimesSum_;
-
-	std::array<float, 64> drawTimes_;
-	size_t drawTimeIndex_;
-	float drawTimesSum_;
+	KtAverageTime<256> updateAverageTime_;
+	KtAverageTime<64> drawAverageTime_;
 
 	bool canDraw_;
 

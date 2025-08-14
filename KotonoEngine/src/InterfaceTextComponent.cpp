@@ -6,6 +6,7 @@
 #include <kotono_framework/ShaderManager.h>
 #include "InterfaceObject.h"
 #include "InterfaceImageComponent.h"
+#include "Engine.h"
 
 KInterfaceTextComponent::KInterfaceTextComponent(RInterfaceObject* owner) :
     Base(owner)

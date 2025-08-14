@@ -2,9 +2,6 @@
 #include <kotono_framework/Framework.h>
 #include "Engine.h"
 
-KtFramework Framework;
-SEngine Engine;
-
 constinit static bool IsRunning{ false };
 
 void SApplication::Run()

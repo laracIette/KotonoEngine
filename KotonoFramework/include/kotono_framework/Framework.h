@@ -50,4 +50,4 @@ private:
 	KtImageTextureManager imageTextureManager_;
 };
 
-extern KtFramework Framework;
+inline KtFramework Framework;
