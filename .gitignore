@@ -404,4 +404,5 @@ FodyWeavers.xsd
 *.spv
 
 KotonoFramework/lib/KotonoFramework.lib
+KotonoEngine/lib/KotonoEngine.lib
 KotonoFramework/shaders/shaders.ktregistry
