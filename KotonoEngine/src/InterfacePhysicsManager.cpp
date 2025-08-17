@@ -27,8 +27,7 @@ void SInterfacePhysicsManager::Register(KInterfaceColliderComponent* colliderCom
 void SInterfacePhysicsManager::Unregister(KInterfaceColliderComponent* colliderComponent)
 {
 	const size_t index{ colliderComponent->physicsIndex_ };
-	const auto removeResult{ colliderComponents_.RemoveAt(index) };
-	if (removeResult == KtPoolRemoveResult::ItemSwappedAndRemoved)
+	if (colliderComponents_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 	{
 		colliderComponents_[index]->physicsIndex_ = index;
 	}

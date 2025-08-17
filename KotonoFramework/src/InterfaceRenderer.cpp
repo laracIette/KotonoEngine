@@ -75,7 +75,7 @@ void KtInterfaceRenderer::Update(const uint32_t frameIndex)
 		}
 	);
 
-	KT_LOG_KF(KT_LOG_COMPILE_TIME_LEVEL, "%llu staging proxies", stagingProxies_.size());
+	//KT_LOG_KF(KT_LOG_COMPILE_TIME_LEVEL, "%llu staging proxies", stagingProxies_.size());
 }
 
 void KtInterfaceRenderer::Cleanup() const

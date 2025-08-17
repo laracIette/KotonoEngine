@@ -12,8 +12,8 @@
 #include "Engine.h"
 #include "TimeManager.h"
 
-static KtShader* FlatColorShader = nullptr;
-static KtImageTexture* FlatColorTexture = nullptr;
+static constinit KtShader* FlatColorShader{ nullptr };
+static constinit KtImageTexture* FlatColorTexture{ nullptr };
 
 KInterfaceComponent::KInterfaceComponent(RInterfaceObject* owner) : 
     Base(),
@@ -26,13 +26,13 @@ KInterfaceComponent::KInterfaceComponent(RInterfaceObject* owner) :
 
     if (!FlatColorShader)
     {
-        const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
+        static const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
         FlatColorShader = Framework.GetShaderManager().Get(path);
         FlatColorShader->SetName("2D Flat Color Shader");
     }
     if (!FlatColorTexture)
     {
-        const auto path = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
+        static const auto path = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
         FlatColorTexture = Framework.GetImageTextureManager().Get(path);
     }
 }
@@ -41,14 +41,18 @@ void KInterfaceComponent::Init()
 {
     Base::Init();
 
-    InitBoundsProxy();
-
     visibility_ = EVisibility::EditorAndGame;
+
+    Framework.GetRenderer().GetInterfaceRenderer().Register(&boundsProxy_);
+    CreateBoundsProxy();
+
+    GetEventRectUpdated().AddListener(KtDelegate(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
 }
 
 void KInterfaceComponent::Cleanup()
 {
     Base::Cleanup();
+
     GetOwner()->RemoveComponent(this);
 
     Framework.GetRenderer().GetInterfaceRenderer().Unregister(&boundsProxy_);
@@ -432,14 +436,6 @@ bool KInterfaceComponent::GetIsOverlapping(const KInterfaceComponent* other) con
     return GetIsOverlapping(other->GetWorldPosition(), other->GetWorldSize());
 }
 
-void KInterfaceComponent::InitBoundsProxy()
-{
-    CreateBoundsProxy();
-    Framework.GetRenderer().GetInterfaceRenderer().Register(&boundsProxy_);
-
-    GetEventRectUpdated().AddListener(KtDelegate(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
-}
-
 void KInterfaceComponent::CreateBoundsProxy()
 {
     boundsProxy_.shader = FlatColorShader;
@@ -457,14 +453,18 @@ void KInterfaceComponent::MarkBoundsProxyRectDirty()
 
 glm::vec2 KInterfaceComponent::GetAnchorOffset() const
 {
-    return glm::vec2(
-        (GetAnchor() & EAnchor::Left) == EAnchor::Left ? GetRelativeScale().x / 2.0f
-        : (GetAnchor() & EAnchor::Right) == EAnchor::Right ? -GetRelativeScale().x / 2.0f
-        : 0.0f,
-        (GetAnchor() & EAnchor::Top) == EAnchor::Top ? GetRelativeScale().y / 2.0f
-        : (GetAnchor() & EAnchor::Bottom) == EAnchor::Bottom ? -GetRelativeScale().y / 2.0f
-        : 0.0f
-    );
+    return {
+        (GetAnchor() & EAnchor::Left) == EAnchor::Left
+            ? GetRelativeScale().x / 2.0f
+            : (GetAnchor() & EAnchor::Right) == EAnchor::Right
+                ? -GetRelativeScale().x / 2.0f
+                : 0.0f,
+        (GetAnchor() & EAnchor::Top) == EAnchor::Top
+            ? GetRelativeScale().y / 2.0f
+            : (GetAnchor() & EAnchor::Bottom) == EAnchor::Bottom
+                ? -GetRelativeScale().y / 2.0f
+                : 0.0f
+    };
 }
 
 glm::vec2 KInterfaceComponent::GetWorldPositionWithAnchorOffset() const

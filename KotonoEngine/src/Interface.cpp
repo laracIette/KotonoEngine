@@ -13,6 +13,7 @@
 #include "InterfaceWindowObject.h"
 #include "ObjectManager.h"
 #include "Timer.h"
+#include <log.h>
 
 void SInterface::Init()
 {
@@ -67,12 +68,18 @@ void SInterface::Init()
 	drawTextBox->GetTextComponent()->SetSpacing(0.04f);
 	drawTextBox->GetTextComponent()->SetTextBinding([]() { return std::format("D {:.8f}s", Engine.GetObjectManager().GetAverageDrawTime()); });
 
-	auto* updateTextTimer = Engine.GetObjectManager().Create<KTimer>();
-	updateTextTimer->SetDuration(1.0f / 60.0f);
-	updateTextTimer->SetIsRepeat(true);
-	updateTextTimer->GetEventCompleted().AddListener(KtDelegate(updateTextBox->GetTextComponent(), &KInterfaceTextComponent::UpdateTextWithBinding));
-	updateTextTimer->GetEventCompleted().AddListener(KtDelegate(drawTextBox->GetTextComponent(), &KInterfaceTextComponent::UpdateTextWithBinding));
-	updateTextTimer->Start();
+	//auto* updateTextTimer = Engine.GetObjectManager().Create<KTimer>();
+	//updateTextTimer->SetDuration(1.0f / 60.0f);
+	//updateTextTimer->SetIsRepeat(true);
+	//updateTextTimer->GetEventCompleted().AddListener(KtDelegate(updateTextBox->GetTextComponent(), &KInterfaceTextComponent::UpdateTextWithBinding));
+	//updateTextTimer->GetEventCompleted().AddListener(KtDelegate(drawTextBox->GetTextComponent(), &KInterfaceTextComponent::UpdateTextWithBinding));
+	//updateTextTimer->Start();
+
+	auto* testTimer = Engine.GetObjectManager().Create<KTimer>();
+	testTimer->GetEventCompleted().AddListener(KtDelegate(this, &SInterface::Test));
+	testTimer->SetDuration(1.0f / 60.0f);
+	testTimer->SetIsRepeat(true);
+	testTimer->Start();
 
 	//textBox2->GetRootComponent()->SetRelativePosition(glm::vec2(0.3f, 0.3f));
 	//textBox2->GetTextComponent()->SetFontSize(32.0f);
@@ -95,4 +102,12 @@ void SInterface::OnTextBox2ValueChanged(const float delta) const
 void SInterface::OnTextBox3ValueChanged(const float delta) const
 {
 	image1_->GetRootComponent()->Translate(glm::vec2(0.0f, delta / 450.0f));
+}
+
+void SInterface::Test() const
+{
+	auto* image = Engine.GetObjectManager().Create<RInterfaceImageObject>();
+	image->GetImageComponent()->SetScreenSize({ 512.0f, 512.0f });
+	image->GetImageComponent()->SetScreenPosition({ 512.0f, 512.0f });
+	image->DelayDelete(0.0f);
 }

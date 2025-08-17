@@ -32,9 +32,6 @@ public:
 	void SetViewport(KtViewport* viewport);
 	void SetParent(TSceneObject* parent, const ECoordinateSpace keepTransform);
 
-	void SerializeTo(nlohmann::json& json) const override;
-	void DeserializeFrom(const nlohmann::json& json) override;
-
 	template <SceneComponent T>
 	T* GetComponent() const
 	{
@@ -57,6 +54,9 @@ public:
 
 	void AddComponent(KSceneComponent* component);
 	void RemoveComponent(const KSceneComponent* component);
+
+	void SerializeTo(nlohmann::json& json) const override;
+	void DeserializeFrom(const nlohmann::json& json) override;
 
 private:
 	EVisibility visibility_;

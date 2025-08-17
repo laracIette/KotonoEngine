@@ -25,10 +25,10 @@ public:
 	void SetShader(KtShader* shader);
 	void SetModel(KtModel* model); 
 
+	void SetMobility(const EMobility mobility) override;
+
 	void SerializeTo(nlohmann::json& json) const override;
 	void DeserializeFrom(const nlohmann::json& json) override;
-
-	void SetMobility(const EMobility mobility) override;
 
 private:
 	KtShader* shader_;

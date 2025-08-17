@@ -105,8 +105,9 @@ void SObjectManager::Cleanup()
 void SObjectManager::Register(KObject* object)
 {
 	object->SetName(std::format("{}_{}", object->GetTypeName(), static_cast<std::string>(object->GetGuid())));
-	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "REG object %s", object->GetName().c_str());
 	inits_.Add(object);
+	object->initIndex_ = inits_.LastIndex();
+	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "REG object %s", object->GetName().c_str());
 }
 
 void SObjectManager::Delete(KObject* object)
@@ -130,6 +131,8 @@ void SObjectManager::InitObjects()
 	{
 		auto* object{ inits_[i] };
 		object->Init();
+		object->isInit_ = true;
+
 		objects_.Add(object);
 		object->objectIndex_ = objects_.LastIndex();
 	}
@@ -159,11 +162,21 @@ void SObjectManager::DeleteObjects()
 
 		object->Cleanup();
 
-		const size_t index{ object->objectIndex_ };
-		const auto removeResult{ objects_.RemoveAt(index) };
-		if (removeResult == KtPoolRemoveResult::ItemSwappedAndRemoved)
+		if (object->isInit_)
 		{
-			objects_[index]->objectIndex_ = index;
+			const size_t index{ object->objectIndex_ };
+			if (objects_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+			{
+				objects_[index]->objectIndex_ = index;
+			}
+		}
+		else
+		{
+			const size_t index{ object->initIndex_ };
+			if (inits_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+			{
+				inits_[index]->initIndex_ = index;
+			}
 		}
 	}
 	for (auto* object : deletes_)

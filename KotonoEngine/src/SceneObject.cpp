@@ -75,8 +75,7 @@ void TSceneObject::SetParent(TSceneObject* parent, const ECoordinateSpace keepTr
 	if (parent_)
 	{
 		const size_t index{ childrenIndex_ };
-		const auto removeResult{ parent_->children_.RemoveAt(index) };
-		if (removeResult == KtPoolRemoveResult::ItemSwappedAndRemoved)
+		if (parent_->children_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 		{
 			parent_->children_[index]->childrenIndex_ = index;
 		}
@@ -138,8 +137,7 @@ void TSceneObject::AddComponent(KSceneComponent* component)
 void TSceneObject::RemoveComponent(const KSceneComponent* component)
 {
 	const size_t index{ component->componentIndex_ };
-	const auto removeResult{ components_.RemoveAt(index) };
-	if (removeResult == KtPoolRemoveResult::ItemSwappedAndRemoved)
+	if (components_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 	{
 		components_[index]->componentIndex_ = index;
 	}

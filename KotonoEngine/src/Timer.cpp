@@ -11,7 +11,7 @@ void KTimer::Update()
         return;
     }
 
-    const float elapsedTime = Engine.GetTimeManager().GetNow() - startTime_;
+    const float elapsedTime{ Engine.GetTimeManager().GetNow() - startTime_ };
     
     if (elapsedTime < currentDuration_)
     {
@@ -21,7 +21,7 @@ void KTimer::Update()
     eventCompleted_.Broadcast();
     if (isRepeat_)
     {
-        const float overtime = elapsedTime - currentDuration_;
+        const float overtime{ elapsedTime - currentDuration_ };
         currentDuration_ = targetDuration_ - overtime;
         Start();
     }
@@ -59,12 +59,12 @@ void KTimer::SetIsRepeat(const bool isRepeat)
 void KTimer::SetDuration(const float duration)
 {
     targetDuration_ = duration;
-    currentDuration_ = targetDuration_;
+    currentDuration_ = duration;
 }
 
 void KTimer::Start(const bool isOverride)
 {
-    if (!isOverride && isPlaying_)
+    if (isPlaying_ && !isOverride)
     {
         return;
     }

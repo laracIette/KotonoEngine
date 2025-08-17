@@ -15,6 +15,7 @@ public:
 	KtEvent<>& GetEventCompleted();
 
 	void SetIsRepeat(const bool isRepeat);
+	// Set the duration of the delay, executes next update if duration is 0
 	void SetDuration(const float duration);
 
 	void Start(const bool isOverride = true);

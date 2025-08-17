@@ -32,6 +32,7 @@ public:
 	void SetName(const std::string& name);
 	// Stages the deletion at the end of the update
 	void Delete();
+	void DelayDelete(const float delay);
 
 	// Serialize and write to the object's path
 	void Serialize() const;
@@ -54,6 +55,12 @@ private:
 	std::string name_;
 	bool isDelete_;
 	KtEvent<> eventCleanup_;
-	size_t objectIndex_;
+
+	union
+	{
+		size_t initIndex_;
+		size_t objectIndex_;
+	};
+	bool isInit_;
 };
 

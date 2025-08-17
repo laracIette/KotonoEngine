@@ -17,7 +17,7 @@ KInterfaceImageComponent::KInterfaceImageComponent(RInterfaceObject* owner) :
 {
 	if (!WireframeShader)
 	{
-		const auto path{ Framework.GetPath().GetFrameworkPath() / R"(shaders\wireframe2D.ktshader)" };
+		static const auto path{ Framework.GetPath().GetFrameworkPath() / R"(shaders\wireframe2D.ktshader)" };
 		WireframeShader = Framework.GetShaderManager().Get(path);
 		WireframeShader->SetName("2D Wireframe Shader");
 	}
@@ -28,7 +28,6 @@ void KInterfaceImageComponent::Init()
 	Base::Init();
 
 	Framework.GetRenderer().GetInterfaceRenderer().Register(&imageTextureProxy_);
-	
 	CreateImageTextureProxy();
 
 	GetEventRectUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyRectDirty));
