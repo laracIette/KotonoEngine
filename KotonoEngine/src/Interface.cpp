@@ -77,7 +77,7 @@ void SInterface::Init()
 
 	auto* testTimer = Engine.GetObjectManager().Create<KTimer>();
 	testTimer->GetEventCompleted().AddListener(KtDelegate(this, &SInterface::Test));
-	testTimer->SetDuration(1.0f / 60.0f);
+	testTimer->SetDuration(UDuration::FromTime(1.0f / 6.0f));
 	testTimer->SetIsRepeat(true);
 	testTimer->Start();
 
@@ -96,12 +96,12 @@ void SInterface::Init()
 
 void SInterface::OnTextBox2ValueChanged(const float delta) const
 {
-	image1_->GetRootComponent()->Translate(glm::vec2(delta / 800.0f, 0.0f));
+	image1_->GetRootComponent()->Translate({ delta / 800.0f, 0.0f });
 }
 
 void SInterface::OnTextBox3ValueChanged(const float delta) const
 {
-	image1_->GetRootComponent()->Translate(glm::vec2(0.0f, delta / 450.0f));
+	image1_->GetRootComponent()->Translate({ 0.0f, delta / 450.0f });
 }
 
 void SInterface::Test() const
@@ -109,5 +109,5 @@ void SInterface::Test() const
 	auto* image = Engine.GetObjectManager().Create<RInterfaceImageObject>();
 	image->GetImageComponent()->SetScreenSize({ 512.0f, 512.0f });
 	image->GetImageComponent()->SetScreenPosition({ 512.0f, 512.0f });
-	image->DelayDelete(0.0f);
+	image->DelayDelete(UDuration::FromUpdates(1));
 }

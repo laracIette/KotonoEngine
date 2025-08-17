@@ -32,6 +32,8 @@ public:
 
 	float GetAverageUpdateTime() const;
 	float GetAverageDrawTime() const;
+
+	int64_t GetCurrentUpdate() const;
 	
 private:
 	void Quit();
@@ -42,6 +44,8 @@ private:
 
 	KtAverageTime<256> updateAverageTime_;
 	KtAverageTime<64> drawAverageTime_;
+
+	int64_t currentUpdate_;
 
 	bool canDraw_;
 

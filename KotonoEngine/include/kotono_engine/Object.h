@@ -5,6 +5,7 @@
 #include <nlohmann/json_fwd.hpp>
 #include "Guid.h"
 #include <kotono_framework/Event.h>
+#include "Duration.h"
 
 class KObject
 {
@@ -32,7 +33,7 @@ public:
 	void SetName(const std::string& name);
 	// Stages the deletion at the end of the update
 	void Delete();
-	void DelayDelete(const float delay);
+	void DelayDelete(const UDuration& delay);
 
 	// Serialize and write to the object's path
 	void Serialize() const;
@@ -45,8 +46,8 @@ public:
 	virtual void DeserializeFrom(const nlohmann::json& json);
 
 protected:
-	void Delay(const KtDelegate<>& delegate, const float delay) const;
-	void Delay(KtDelegate<>&& delegate, const float delay) const;
+	void Delay(const KtDelegate<>& delegate, const UDuration& delay) const;
+	void Delay(KtDelegate<>&& delegate, const UDuration& delay) const;
 
 private:
 	UGuid guid_;

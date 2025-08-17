@@ -57,13 +57,13 @@ void SObjectManager::Init()
 	camera->Use();
 
 	auto* drawTimer{ Create<KTimer>() };
-	drawTimer->SetDuration(1.0f / 120.0f);
+	drawTimer->SetDuration(UDuration::FromTime(1.0f / 120.0f));
 	drawTimer->SetIsRepeat(true);
 	drawTimer->GetEventCompleted().AddListener(KtDelegate(this, &SObjectManager::SubmitDrawObjects));
 	drawTimer->Start();
 
 	auto* logUPSTimer{ Create<KTimer>() };
-	logUPSTimer->SetDuration(1.0f);
+	logUPSTimer->SetDuration(UDuration::FromTime(1.0f));
 	logUPSTimer->SetIsRepeat(true);
 	logUPSTimer->GetEventCompleted().AddListener(KtDelegate(this, &SObjectManager::LogUPS));
 	logUPSTimer->Start();
@@ -76,6 +76,8 @@ void SObjectManager::Update()
 	updateTime += KtStopwatch::Time<float>(KtDelegate(this, &SObjectManager::UpdateObjects));
 	updateTime += KtStopwatch::Time<float>(KtDelegate(this, &SObjectManager::DeleteObjects));
 	updateAverageTime_.AddTime(updateTime);
+
+	++currentUpdate_;
 
 	if (canDraw_)
 	{
@@ -201,6 +203,11 @@ float SObjectManager::GetAverageUpdateTime() const
 float SObjectManager::GetAverageDrawTime() const
 {
 	return drawAverageTime_.GetAverageTime();
+}
+
+int64_t SObjectManager::GetCurrentUpdate() const
+{
+	return currentUpdate_;
 }
 
 void SObjectManager::LogUPS() const

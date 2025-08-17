@@ -81,7 +81,7 @@ void KObject::Delete()
     Engine.GetObjectManager().Delete(this);
 }
 
-void KObject::DelayDelete(const float delay)
+void KObject::DelayDelete(const UDuration& delay)
 {
     Delay(KtDelegate(this, &KObject::Delete), delay);
 }
@@ -115,7 +115,7 @@ void KObject::DeserializeFrom(const nlohmann::json& json)
     name_ = json["name"];
 }
 
-void KObject::Delay(const KtDelegate<>& delegate, const float delay) const
+void KObject::Delay(const KtDelegate<>& delegate, const UDuration& delay) const
 {
     auto* timer = Engine.GetObjectManager().Create<KTimer>();
     timer->GetEventCompleted().AddListener(KtDelegate(timer, &KTimer::Delete));
@@ -124,7 +124,7 @@ void KObject::Delay(const KtDelegate<>& delegate, const float delay) const
     timer->Start();
 }
 
-void KObject::Delay(KtDelegate<>&& delegate, const float delay) const
+void KObject::Delay(KtDelegate<>&& delegate, const UDuration& delay) const
 {
     auto* timer = Engine.GetObjectManager().Create<KTimer>();
     timer->GetEventCompleted().AddListener(KtDelegate(timer, &KTimer::Delete));

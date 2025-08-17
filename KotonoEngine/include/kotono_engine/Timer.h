@@ -11,12 +11,11 @@ protected:
 public:
 	bool GetIsPlaying() const;
 	bool GetIsRepeat() const;
-	float GetDuration() const;
+	const UDuration& GetDuration() const;
 	KtEvent<>& GetEventCompleted();
 
 	void SetIsRepeat(const bool isRepeat);
-	// Set the duration of the delay, executes next update if duration is 0
-	void SetDuration(const float duration);
+	void SetDuration(const UDuration& duration);
 
 	void Start(const bool isOverride = true);
 	void Stop();
@@ -24,9 +23,11 @@ public:
 private:
 	bool isPlaying_;
 	bool isRepeat_;
-	float startTime_;
-	float targetDuration_;
-	float currentDuration_;
+	UDuration start_;
+	UDuration targetDuration_;
+	UDuration currentDuration_;
 	KtEvent<> eventCompleted_;
+
+	UDuration GetNow() const;
 };
 

@@ -96,6 +96,7 @@
     <ClInclude Include="include\kotono_engine\Visibility.h" />
     <ClInclude Include="include\kotono_engine\VisualizationField.h" />
     <ClInclude Include="include\kotono_engine\Visualizer.h" />
+    <ClInclude Include="include\kotono_engine\Duration.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
