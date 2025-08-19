@@ -9,7 +9,9 @@
 #include "Engine.h"
 
 KInterfaceTextComponent::KInterfaceTextComponent(RInterfaceObject* owner) :
-    Base(owner)
+    Base(owner),
+    fontSize_(32.0f),
+    spacing_(0.04f)
 {
 }
 
@@ -19,6 +21,8 @@ void KInterfaceTextComponent::Init()
 
     static const auto path{ Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)" };
     SetShader(Framework.GetShaderManager().Get(path));
+
+    UpdateTextWithBinding();
 }
 
 void KInterfaceTextComponent::Cleanup()

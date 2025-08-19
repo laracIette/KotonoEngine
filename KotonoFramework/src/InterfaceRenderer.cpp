@@ -189,16 +189,11 @@ void KtInterfaceRenderer::CreateCommandBuffer(const uint32_t frameIndex)
 	);
 }
 
-void KtInterfaceRenderer::RecordCommandBuffer(const uint32_t frameIndex)
+void KtInterfaceRenderer::RecordCommandBuffer(const ProxiesPool& proxies, const uint32_t frameIndex)
 {
-	const KtCuller2D culler{};
-	ProxiesPool culledData{ culler.ComputeCulling(proxies_[frameIndex]) };
-	SortProxies(culledData);
-
 	VkCommandBuffer commandBuffer{ commandBuffers_[frameIndex] };
-
 	BeginCommandBuffer(commandBuffer, frameIndex);
-	CmdDrawProxies(commandBuffer, culledData, frameIndex);
+	CmdDrawProxies(commandBuffer, proxies, frameIndex);
 	EndCommandBuffer(commandBuffer);
 }
 
@@ -261,7 +256,7 @@ void KtInterfaceRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t 
 		instanceIndices_[frameIndex].clear();
 		UpdateDescriptorSets(culledData, frameIndex);
 
-		RecordCommandBuffer(frameIndex);
+		RecordCommandBuffer(culledData, frameIndex);
 		MarkProxiesNotDirty(frameIndex);
 	}
 

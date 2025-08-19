@@ -265,9 +265,9 @@ void KtSceneRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t fram
 		isDynamicCommandBufferDirty_[frameIndex] || 
 		GetIsDynamicProxiesDirty(frameIndex))
 	{
-		const KtCuller3D culler{};
-		auto culledStaticProxies = culler.ComputeCulling(staticProxies_[frameIndex], KT_CULLER_3D_FIELD_ALL);
-		auto culledDynamicProxies = culler.ComputeCulling(dynamicProxies_[frameIndex], KT_CULLER_3D_FIELD_ALL);
+		const KtCuller3D culler(KT_CULLER_3D_FIELD_ALL);
+		auto culledStaticProxies = culler.ComputeCulling(staticProxies_[frameIndex]);
+		auto culledDynamicProxies = culler.ComputeCulling(dynamicProxies_[frameIndex]);
 		SortProxies(culledStaticProxies);
 		SortProxies(culledDynamicProxies);
 

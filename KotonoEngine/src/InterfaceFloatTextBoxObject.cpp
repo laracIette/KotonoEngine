@@ -33,17 +33,11 @@ void RInterfaceFloatTextBoxObject::SetValue(const float value)
 		return;
 	}
 
-
 	const float delta{ value - value_ };
 	value_ = value;
 
-	static float lastUpdateTime{};
-	if (Engine.GetTimeManager().GetNow() - lastUpdateTime > 0.25f)
-	{
-		lastUpdateTime = Engine.GetTimeManager().GetNow();
-		GetTextComponent()->UpdateTextWithBinding();
-		eventValueChanged_.Broadcast(delta);
-	}
+	GetTextComponent()->UpdateTextWithBinding();
+	eventValueChanged_.Broadcast(delta);
 }
 
 void RInterfaceFloatTextBoxObject::OnMouseDown()

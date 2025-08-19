@@ -62,7 +62,7 @@ private:
 
 	void CreateCommandBuffers();
 	void CreateCommandBuffer(const uint32_t frameIndex);
-	void RecordCommandBuffer(const uint32_t frameIndex);
+	void RecordCommandBuffer(const ProxiesPool& proxies, const uint32_t frameIndex);
 	void BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 	void EndCommandBuffer(VkCommandBuffer commandBuffer);
 	

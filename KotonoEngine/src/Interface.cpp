@@ -23,8 +23,8 @@ void SInterface::Init()
 	auto* image2 = Engine.GetObjectManager().Create<RInterfaceImageObject>();
 	auto* updateTextBox = Engine.GetObjectManager().Create<RInterfaceTextBoxObject>();
 	auto* drawTextBox = Engine.GetObjectManager().Create<RInterfaceTextBoxObject>();
-	//auto* textBox2 = Engine.GetObjectManager().Create<RInterfaceFloatTextBoxObject>();
-	//auto* textBox3 = Engine.GetObjectManager().Create<RInterfaceFloatTextBoxObject>();
+	auto* textBox2 = Engine.GetObjectManager().Create<RInterfaceFloatTextBoxObject>();
+	auto* textBox3 = Engine.GetObjectManager().Create<RInterfaceFloatTextBoxObject>();
 	image1_->GetImageComponent()->SetScreenSize(glm::vec2(1024.0f, 1024.0f));
 	image2->GetImageComponent()->SetScreenSize(glm::vec2(1024.0f, 1024.0f));
 
@@ -59,13 +59,9 @@ void SInterface::Init()
 #endif
 
 	updateTextBox->GetRootComponent()->SetRelativePosition({ 0.4f, -0.85f });
-	updateTextBox->GetTextComponent()->SetFontSize(32.0f);
-	updateTextBox->GetTextComponent()->SetSpacing(0.04f);
 	updateTextBox->GetTextComponent()->SetTextBinding([]() { return std::format("U {:.8f}s", Engine.GetObjectManager().GetAverageUpdateTime()); });
 	
 	drawTextBox->GetRootComponent()->SetRelativePosition({ 0.4f, -0.7f });
-	drawTextBox->GetTextComponent()->SetFontSize(32.0f);
-	drawTextBox->GetTextComponent()->SetSpacing(0.04f);
 	drawTextBox->GetTextComponent()->SetTextBinding([]() { return std::format("D {:.8f}s", Engine.GetObjectManager().GetAverageDrawTime()); });
 
 	auto* updateTextTimer = Engine.GetObjectManager().Create<KTimer>();
@@ -75,17 +71,13 @@ void SInterface::Init()
 	updateTextTimer->GetEventCompleted().AddListener(KtDelegate(drawTextBox->GetTextComponent(), &KInterfaceTextComponent::UpdateTextWithBinding));
 	updateTextTimer->Start();
 
-	//textBox2->GetRootComponent()->SetRelativePosition(glm::vec2(0.3f, 0.3f));
-	//textBox2->GetTextComponent()->SetFontSize(32.0f);
-	//textBox2->GetTextComponent()->SetSpacing(0.04f);
-	//textBox2->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRootComponent()->GetScreenPosition().x); });
-	//textBox2->GetEventValueChanged().AddListener(KtDelegate(this, &SInterface::OnTextBox2ValueChanged));
+	textBox2->GetRootComponent()->SetRelativePosition(glm::vec2(0.3f, 0.3f));
+	textBox2->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRootComponent()->GetScreenPosition().x); });
+	textBox2->GetEventValueChanged().AddListener(KtDelegate(this, &SInterface::OnTextBox2ValueChanged));
 
-	//textBox3->GetRootComponent()->SetRelativePosition(glm::vec2(0.3f, 0.6f));
-	//textBox3->GetTextComponent()->SetFontSize(32.0f);
-	//textBox3->GetTextComponent()->SetSpacing(0.04f);
-	//textBox3->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRootComponent()->GetScreenPosition().y); });
-	//textBox3->GetEventValueChanged().AddListener(KtDelegate(this, &SInterface::OnTextBox3ValueChanged));
+	textBox3->GetRootComponent()->SetRelativePosition(glm::vec2(0.3f, 0.6f));
+	textBox3->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRootComponent()->GetScreenPosition().y); });
+	textBox3->GetEventValueChanged().AddListener(KtDelegate(this, &SInterface::OnTextBox3ValueChanged));
 }
 
 void SInterface::OnTextBox2ValueChanged(const float delta) const

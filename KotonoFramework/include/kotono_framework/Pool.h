@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <functional>
+#include <concepts>
 #include "PoolRemoveResult.h"
 /// <summary>
 /// std::vector wrapper with fast item removal
