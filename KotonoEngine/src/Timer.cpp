@@ -80,7 +80,7 @@ void KTimer::Stop()
 
 UDuration KTimer::GetNow() const
 {
-    return targetDuration_.type == UDuration::Type::Time
-        ? UDuration::FromTime(Engine.GetTimeManager().GetNow())
+    return std::holds_alternative<float>(targetDuration_.value)
+        ? UDuration::FromSeconds(Engine.GetTimeManager().GetNow())
         : UDuration::FromUpdates(Engine.GetObjectManager().GetCurrentUpdate());
 }

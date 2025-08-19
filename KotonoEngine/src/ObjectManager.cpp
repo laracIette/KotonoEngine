@@ -57,13 +57,13 @@ void SObjectManager::Init()
 	camera->Use();
 
 	auto* drawTimer{ Create<KTimer>() };
-	drawTimer->SetDuration(UDuration::FromTime(1.0f / 120.0f));
+	drawTimer->SetDuration(UDuration::FromSeconds(1.0f / 120.0f));
 	drawTimer->SetIsRepeat(true);
 	drawTimer->GetEventCompleted().AddListener(KtDelegate(this, &SObjectManager::SubmitDrawObjects));
 	drawTimer->Start();
 
 	auto* logUPSTimer{ Create<KTimer>() };
-	logUPSTimer->SetDuration(UDuration::FromTime(1.0f));
+	logUPSTimer->SetDuration(UDuration::FromSeconds(1.0f));
 	logUPSTimer->SetIsRepeat(true);
 	logUPSTimer->GetEventCompleted().AddListener(KtDelegate(this, &SObjectManager::LogUPS));
 	logUPSTimer->Start();

@@ -1,57 +1,40 @@
 #pragma once
 #include <cstdint>
-#include <cassert>
+#include <variant>
+
 struct UDuration final
 {
-    enum class Type : char
+    static constexpr UDuration FromSeconds(const float seconds)
     {
-        Time,
-        Updates
-    };
-
-    static constexpr UDuration FromTime(const float time)
-    {
-        return UDuration{ .time = time, .type = Type::Time };
+        return { seconds };
     }
 
     static constexpr UDuration FromUpdates(const int64_t updates)
     {
-        return UDuration{ .updates = updates, .type = Type::Updates };
+        return { updates };
     }
 
-    union
+    constexpr UDuration operator-(const UDuration& other) const
     {
-        float    time;
-        int64_t  updates;
-    };
-    Type type;
-
-    UDuration operator-(const UDuration& other) const
-    {
-        assert(type == other.type && "Type mismatch in UDuration comparison");
-
-        if (type == Type::Time)
-        {
-            return UDuration{ .time = time - other.time, .type = Type::Time };
-        }
-        else
-        {
-            return UDuration{ .updates = updates - other.updates, .type = Type::Updates };
-        }
+        return std::visit(
+            [](auto lhs, auto rhs)
+            {
+                return UDuration{ lhs - rhs };
+            }, 
+            value, other.value
+        );
     }
 
-    bool operator<(const UDuration& other) const
+    constexpr bool operator<(const UDuration& other) const
     {
-        assert(type == other.type && "Type mismatch in UDuration comparison");
-        
-        if (type == Type::Time)
-        {
-            return time < other.time;
-        }
-        else
-        {
-            return updates < other.updates;
-        }
+        return std::visit(
+            [](auto lhs, auto rhs)
+            {
+                return lhs < rhs;
+            }, 
+            value, other.value
+        );
     }
+
+    std::variant<float, int64_t> value;
 };
-

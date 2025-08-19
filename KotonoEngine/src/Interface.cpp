@@ -58,28 +58,22 @@ void SInterface::Init()
 #endif
 #endif
 
-	updateTextBox->GetRootComponent()->SetRelativePosition(glm::vec2(0.4f, -0.85f));
+	updateTextBox->GetRootComponent()->SetRelativePosition({ 0.4f, -0.85f });
 	updateTextBox->GetTextComponent()->SetFontSize(32.0f);
 	updateTextBox->GetTextComponent()->SetSpacing(0.04f);
 	updateTextBox->GetTextComponent()->SetTextBinding([]() { return std::format("U {:.8f}s", Engine.GetObjectManager().GetAverageUpdateTime()); });
 	
-	drawTextBox->GetRootComponent()->SetRelativePosition(glm::vec2(0.4f, -0.7f));
+	drawTextBox->GetRootComponent()->SetRelativePosition({ 0.4f, -0.7f });
 	drawTextBox->GetTextComponent()->SetFontSize(32.0f);
 	drawTextBox->GetTextComponent()->SetSpacing(0.04f);
 	drawTextBox->GetTextComponent()->SetTextBinding([]() { return std::format("D {:.8f}s", Engine.GetObjectManager().GetAverageDrawTime()); });
 
-	//auto* updateTextTimer = Engine.GetObjectManager().Create<KTimer>();
-	//updateTextTimer->SetDuration(1.0f / 60.0f);
-	//updateTextTimer->SetIsRepeat(true);
-	//updateTextTimer->GetEventCompleted().AddListener(KtDelegate(updateTextBox->GetTextComponent(), &KInterfaceTextComponent::UpdateTextWithBinding));
-	//updateTextTimer->GetEventCompleted().AddListener(KtDelegate(drawTextBox->GetTextComponent(), &KInterfaceTextComponent::UpdateTextWithBinding));
-	//updateTextTimer->Start();
-
-	auto* testTimer = Engine.GetObjectManager().Create<KTimer>();
-	testTimer->GetEventCompleted().AddListener(KtDelegate(this, &SInterface::Test));
-	testTimer->SetDuration(UDuration::FromTime(1.0f / 6.0f));
-	testTimer->SetIsRepeat(true);
-	testTimer->Start();
+	auto* updateTextTimer = Engine.GetObjectManager().Create<KTimer>();
+	updateTextTimer->SetDuration(UDuration::FromSeconds(1.0f / 60.0f));
+	updateTextTimer->SetIsRepeat(true);
+	updateTextTimer->GetEventCompleted().AddListener(KtDelegate(updateTextBox->GetTextComponent(), &KInterfaceTextComponent::UpdateTextWithBinding));
+	updateTextTimer->GetEventCompleted().AddListener(KtDelegate(drawTextBox->GetTextComponent(), &KInterfaceTextComponent::UpdateTextWithBinding));
+	updateTextTimer->Start();
 
 	//textBox2->GetRootComponent()->SetRelativePosition(glm::vec2(0.3f, 0.3f));
 	//textBox2->GetTextComponent()->SetFontSize(32.0f);
@@ -102,12 +96,4 @@ void SInterface::OnTextBox2ValueChanged(const float delta) const
 void SInterface::OnTextBox3ValueChanged(const float delta) const
 {
 	image1_->GetRootComponent()->Translate({ 0.0f, delta / 450.0f });
-}
-
-void SInterface::Test() const
-{
-	auto* image = Engine.GetObjectManager().Create<RInterfaceImageObject>();
-	image->GetImageComponent()->SetScreenSize({ 512.0f, 512.0f });
-	image->GetImageComponent()->SetScreenPosition({ 512.0f, 512.0f });
-	image->DelayDelete(UDuration::FromUpdates(1));
 }

@@ -5,10 +5,11 @@
 #include "Anchor.h"
 #include "RotationUnit.h"
 #include "Visibility.h"
-#include <kotono_framework/Renderable2DProxy.h>
+#include <kotono_framework/Cached.h>
 
 class KtViewport;
 class RInterfaceObject;
+struct KtRenderable2DProxy;
 
 class KInterfaceComponent : public KObject
 {
@@ -79,7 +80,7 @@ public:
 	glm::mat4 GetTranslationMatrix() const;
 	glm::mat4 GetRotationMatrix() const;
 	glm::mat4 GetScaleMatrix() const;
-	glm::mat4 GetModelMatrix() const;
+	glm::mat4 GetModelMatrix();
 
 	glm::vec2 GetDirection(const KInterfaceComponent* target) const;
 	float GetDistance(const KInterfaceComponent* other) const;
@@ -93,14 +94,13 @@ private:
 	URect rect_;
 	EVisibility visibility_;
 	int32_t layer_;
-	KtRenderable2DProxy boundsProxy_;
+	KtRenderable2DProxy* boundsProxy_;
 	KtEvent<> eventRectUpdated_;
 	KtEvent<> eventLayerUpdated_;
 	size_t componentIndex_;
+	KtCached<glm::mat4> modelMatrix_;
 
-	void InitBoundsProxy();
 	void CreateBoundsProxy();
-
 	void MarkBoundsProxyRectDirty();
 
 	glm::vec2 GetAnchorOffset() const;

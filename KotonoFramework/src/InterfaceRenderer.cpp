@@ -54,7 +54,7 @@ void KtInterfaceRenderer::Update(const uint32_t frameIndex)
 		}
 		else if (state == StagingProxyState::Remove)
 		{
-			proxies_[frameIndex].Remove(proxy); 
+			proxies_[frameIndex].Remove(proxy);
 		}
 
 		state = StagingProxyState::None;
@@ -63,19 +63,25 @@ void KtInterfaceRenderer::Update(const uint32_t frameIndex)
 	std::erase_if(stagingProxies_,
 		[](const std::pair<KtRenderable2DProxy*, KtFramesInFlightArray<StagingProxyState>>& pair)
 		{
-			const auto& states{ pair.second };
-			for (size_t i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
-			{
-				if (states[i] != StagingProxyState::None)
+			const auto states{ pair.second };
+			return std::all_of(states.begin(), states.end(),
+				[](const StagingProxyState state)
 				{
-					return false;
+					return state == StagingProxyState::None;
 				}
-			}
-			return true;
+			);
 		}
 	);
-
-	//KT_LOG_KF(KT_LOG_COMPILE_TIME_LEVEL, "%llu staging proxies", stagingProxies_.size());
+	
+	for (int64_t i{ deleteProxies_.LastIndex() }; i >= 0; --i)
+	{
+		auto* proxy = deleteProxies_[i];
+		if (!stagingProxies_.contains(proxy))
+		{
+			delete proxy;
+			deleteProxies_.RemoveAt(i);
+		}
+	}
 }
 
 void KtInterfaceRenderer::Cleanup() const
@@ -170,12 +176,13 @@ void KtInterfaceRenderer::CreateCommandBuffers()
 
 void KtInterfaceRenderer::CreateCommandBuffer(const uint32_t frameIndex)
 {
-	VkCommandBufferAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = Framework.GetRenderer().GetCommandPool(frameIndex);
-	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
-	allocInfo.commandBufferCount = 1;
-
+	const VkCommandBufferAllocateInfo allocInfo{
+		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+		.commandPool = Framework.GetRenderer().GetCommandPool(frameIndex),
+		.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY,
+		.commandBufferCount = 1,
+	};
+ 
 	VK_CHECK_THROW(
 		vkAllocateCommandBuffers(Framework.GetContext().GetDevice(), &allocInfo, &commandBuffers_[frameIndex]),
 		"failed to allocate command buffers!"
@@ -184,10 +191,14 @@ void KtInterfaceRenderer::CreateCommandBuffer(const uint32_t frameIndex)
 
 void KtInterfaceRenderer::RecordCommandBuffer(const uint32_t frameIndex)
 {
-	SortProxies(proxies_[frameIndex]);
+	const KtCuller2D culler{};
+	ProxiesPool culledData{ culler.ComputeCulling(proxies_[frameIndex]) };
+	SortProxies(culledData);
+
 	VkCommandBuffer commandBuffer{ commandBuffers_[frameIndex] };
+
 	BeginCommandBuffer(commandBuffer, frameIndex);
-	CmdDrawProxies(commandBuffer, proxies_[frameIndex], frameIndex);
+	CmdDrawProxies(commandBuffer, culledData, frameIndex);
 	EndCommandBuffer(commandBuffer);
 }
 
@@ -195,16 +206,18 @@ void KtInterfaceRenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer, cons
 {
 	vkResetCommandBuffer(commandBuffer, 0);
 
-	VkCommandBufferInheritanceInfo inheritanceInfo{};
-	inheritanceInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
-	inheritanceInfo.renderPass = Framework.GetRenderer().GetRenderPass();
-	inheritanceInfo.subpass = 0;
-	inheritanceInfo.framebuffer = Framework.GetRenderer().GetFramebuffer(frameIndex);
+	const VkCommandBufferInheritanceInfo inheritanceInfo{
+		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO,
+		.renderPass = Framework.GetRenderer().GetRenderPass(),
+		.subpass = 0,
+		.framebuffer = Framework.GetRenderer().GetFramebuffer(frameIndex),
+	};
 
-	VkCommandBufferBeginInfo beginInfo{};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT;
-	beginInfo.pInheritanceInfo = &inheritanceInfo;
+	const VkCommandBufferBeginInfo beginInfo{
+		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+		.flags = VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT,
+		.pInheritanceInfo = &inheritanceInfo,
+	};
 
 	VK_CHECK_THROW(
 		vkBeginCommandBuffer(commandBuffer, &beginInfo),
@@ -242,7 +255,7 @@ void KtInterfaceRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t 
 		isCommandBufferDirty_[frameIndex] = false;
 
 		const KtCuller2D culler{};
-		auto culledData{ culler.ComputeCulling(proxies_[frameIndex]) };
+		ProxiesPool culledData{ culler.ComputeCulling(proxies_[frameIndex]) };
 		SortProxies(culledData);
 
 		instanceIndices_[frameIndex].clear();
@@ -253,6 +266,16 @@ void KtInterfaceRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t 
 	}
 
 	vkCmdExecuteCommands(commandBuffer, 1, &commandBuffers_[frameIndex]);
+}
+
+KtRenderable2DProxy* KtInterfaceRenderer::CreateProxy()
+{
+	return new KtRenderable2DProxy{};
+}
+
+void KtInterfaceRenderer::DeleteProxy(KtRenderable2DProxy* proxy)
+{
+	deleteProxies_.Add(proxy);
 }
 
 void KtInterfaceRenderer::UpdateDescriptorSets(const ProxiesPool& proxies, const uint32_t frameIndex)

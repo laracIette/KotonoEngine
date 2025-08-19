@@ -4,6 +4,7 @@
 #include "Visibility.h"
 #include "CoordinateSpace.h"
 #include "Mobility.h"
+#include <kotono_framework/Cached.h>
 
 class TSceneObject;
 
@@ -26,7 +27,7 @@ public:
 	EVisibility GetVisibility() const;
 	EMobility GetMobility() const;
 	bool GetCanSetTransform() const;
-	KtEvent<>& GetEventUpdateTransform();
+	KtEvent<>& GetEventTransformUpdated();
 
 	const glm::vec3& GetRelativePosition() const;
 	const glm::quat& GetRelativeRotation() const;
@@ -43,7 +44,7 @@ public:
 	glm::mat4 GetTranslationMatrix() const;
 	glm::mat4 GetRotationMatrix() const;
 	glm::mat4 GetScaleMatrix() const;
-	glm::mat4 GetModelMatrix() const;
+	glm::mat4 GetModelMatrix();
 
 	glm::vec3 GetScreenPosition() const;
 
@@ -73,7 +74,8 @@ private:
 	UTransform transform_;
 	EVisibility visibility_;
 	EMobility mobility_;
-	KtEvent<> eventUpdateTransform_;
+	KtEvent<> eventTransformUpdated_;
 	size_t componentIndex_;
+	KtCached<glm::mat4> modelMatrix_;
 };
 

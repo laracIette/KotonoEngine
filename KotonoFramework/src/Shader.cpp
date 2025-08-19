@@ -14,12 +14,13 @@
 
 #define KT_LOG_IMPORTANCE_LEVEL_SHADER KT_LOG_IMPORTANCE_LEVEL_MEDIUM
 
-static constexpr uint32_t MAX_BINDLESS_TEXTURES = 8192;
+static constexpr uint32_t MAX_BINDLESS_TEXTURES{ 8192 }; // todo: editable in project settings
 
-static constexpr VkDescriptorBindingFlags BINDLESS_TEXTURE_FLAGS =
+static constexpr VkDescriptorBindingFlags BINDLESS_TEXTURE_FLAGS{
 	VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT |
 	VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT |
-	VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT;
+	VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT 
+};
 
 KtShader::KtShader(const std::filesystem::path& path) :
 	path_(path)
@@ -97,7 +98,7 @@ void KtShader::CmdBind(VkCommandBuffer commandBuffer) const
 
 void KtShader::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const
 {
-	std::vector<VkDescriptorSet> descriptorSets;
+	std::vector<VkDescriptorSet> descriptorSets{};
 	descriptorSets.reserve(_descriptorSetLayoutDatas.size());
 	for (const auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
 	{
@@ -116,9 +117,9 @@ void KtShader::CreateDescriptorSetLayouts()
 	{
 		const size_t bindingCount = setLayout.DescriptorSetLayoutBindings.size();
 
-		std::vector<VkDescriptorSetLayoutBinding> setBindings;
-		std::vector<VkDescriptorBindingFlags> setBindingFlags;
-		std::vector<DescriptorSetLayoutBindingData> setBindingDatas;
+		std::vector<VkDescriptorSetLayoutBinding> setBindings{};
+		std::vector<VkDescriptorBindingFlags> setBindingFlags{};
+		std::vector<DescriptorSetLayoutBindingData> setBindingDatas{};
 		setBindings.reserve(bindingCount);
 		setBindingFlags.reserve(bindingCount);
 		setBindingDatas.reserve(bindingCount);
@@ -142,30 +143,27 @@ void KtShader::CreateDescriptorSetLayouts()
 			vkBinding.pImmutableSamplers = nullptr; // Optional
 			setBindings.push_back(vkBinding);
 
-			DescriptorSetLayoutBindingData bindingData{};
-			bindingData.Name = ktBinding.Name;
-			bindingData.Binding = ktBinding.Binding;
-			bindingData.MemberSize = ktBinding.Size;
-			bindingData.DescriptorType = ktBinding.DescriptorType;
-			bindingData.DescriptorCount = ktBinding.DescriptorCount;
-			bindingData.ShaderStageFlags = ktBinding.ShaderStageFlags;
-			if (ktBinding.DescriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
-			{
-				bindingData.BindingFlags = BINDLESS_TEXTURE_FLAGS;
-			}
-			else
-			{
-				bindingData.BindingFlags = 0;
-			}
+			const DescriptorSetLayoutBindingData bindingData{
+				.Name = ktBinding.Name,
+				.MemberSize = ktBinding.Size,
+				.DescriptorType = ktBinding.DescriptorType,
+				.Binding = ktBinding.Binding,
+				.DescriptorCount = ktBinding.DescriptorCount,
+				.ShaderStageFlags = ktBinding.ShaderStageFlags,
+				.BindingFlags = ktBinding.DescriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER 
+					? BINDLESS_TEXTURE_FLAGS 
+				    : 0,
+			};
 			//bindingData.MemberCounts.fill(1);
 			setBindingDatas.push_back(bindingData);
 		}
-		VkDescriptorSetLayout newSetLayout = nullptr;
+		VkDescriptorSetLayout newSetLayout{ nullptr };
 		CreateDescriptorSetLayout(newSetLayout, setBindings, setBindingFlags);
 
-		DescriptorSetLayoutData descriptorSetLayoutData{};
-		descriptorSetLayoutData.DescriptorSetLayout = newSetLayout;
-		descriptorSetLayoutData.DescriptorSetLayoutBindingDatas = setBindingDatas;
+		const DescriptorSetLayoutData descriptorSetLayoutData{ 
+			.DescriptorSetLayout = newSetLayout,
+			.DescriptorSetLayoutBindingDatas = setBindingDatas,
+		};
 		_descriptorSetLayoutDatas.push_back(descriptorSetLayoutData);
 	}
 
@@ -453,11 +451,11 @@ void KtShader::CreateGraphicsPipeline()
 	pipelineInfo.layout = _pipelineLayout;
 	pipelineInfo.renderPass = Framework.GetRenderer().GetRenderPass();
 	pipelineInfo.subpass = 0;
-	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
+	pipelineInfo.basePipelineHandle = nullptr; // Optional
 	pipelineInfo.basePipelineIndex = -1; // Optional
 
 	VK_CHECK_THROW(
-		vkCreateGraphicsPipelines(Framework.GetContext().GetDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_graphicsPipeline),
+		vkCreateGraphicsPipelines(Framework.GetContext().GetDevice(), nullptr, 1, &pipelineInfo, nullptr, &_graphicsPipeline),
 		"failed to create graphics pipeline!"
 	);
 

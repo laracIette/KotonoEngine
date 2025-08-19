@@ -50,7 +50,7 @@ void KSceneMeshComponent::Cleanup()
     Base::Cleanup();
 
     RemoveProxies();
-    GetEventUpdateTransform().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
+    GetEventTransformUpdated().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
 
     Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(spinTask_, &KTask::Start));
     spinTask_->Delete();
@@ -111,7 +111,7 @@ void KSceneMeshComponent::InitModelProxy()
 {
     CreateModelProxy();
     RegisterProxies();
-    GetEventUpdateTransform().AddListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
+    GetEventTransformUpdated().AddListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
 }
 
 void KSceneMeshComponent::CreateModelProxy()

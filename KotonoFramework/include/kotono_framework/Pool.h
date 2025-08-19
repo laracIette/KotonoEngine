@@ -113,10 +113,10 @@ public:
 		return data_.size();
 	}
 
-	// Returns size_t max if size == 0
-	constexpr size_t LastIndex() const noexcept
+	// Returns -1 if size == 0
+	constexpr int64_t LastIndex() const noexcept
 	{
-		return data_.size() - 1;
+		return static_cast<int64_t>(data_.size()) - 1;
 	}
 
 	constexpr bool Empty() const noexcept

@@ -3,10 +3,13 @@
 #include "log.h"
 #include <stdexcept>
 
-KSceneComponent::KSceneComponent(TSceneObject* owner) : 
+KSceneComponent::KSceneComponent(TSceneObject* owner) :
     Base(),
-    owner_(owner)
+    owner_(owner),
+    modelMatrix_([this]() { return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix(); })
 {
+    eventTransformUpdated_.AddListener(KtDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
+    
     if (GetOwner()->GetRootComponent() != this)
     {
         SetParent(GetOwner()->GetRootComponent(), ECoordinateSpace::Relative);
@@ -50,9 +53,9 @@ bool KSceneComponent::GetCanSetTransform() const
     return mobility_ == EMobility::Dynamic || !GetIsConstructed();
 }
 
-KtEvent<>& KSceneComponent::GetEventUpdateTransform()
+KtEvent<>& KSceneComponent::GetEventTransformUpdated()
 {
-    return eventUpdateTransform_;
+    return eventTransformUpdated_;
 }
 
 void KSceneComponent::SetVisibility(const EVisibility visibility)
@@ -137,9 +140,9 @@ glm::mat4 KSceneComponent::GetScaleMatrix() const
     return glm::scale(glm::identity<glm::mat4>(), GetWorldScale());
 }
 
-glm::mat4 KSceneComponent::GetModelMatrix() const
+glm::mat4 KSceneComponent::GetModelMatrix()
 {
-    return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix();
+    return modelMatrix_;
 }
 
 glm::vec3 KSceneComponent::GetScreenPosition() const
@@ -190,7 +193,7 @@ void KSceneComponent::SetRelativePosition(const glm::vec3& relativePosition)
     }
 
     transform_.position = relativePosition;
-    eventUpdateTransform_.Broadcast();
+    eventTransformUpdated_.Broadcast();
 }
 
 void KSceneComponent::SetRelativeRotation(const glm::quat& relativeRotation)
@@ -207,7 +210,7 @@ void KSceneComponent::SetRelativeRotation(const glm::quat& relativeRotation)
     }
 
     transform_.rotation = glm::normalize(relativeRotation);
-    eventUpdateTransform_.Broadcast();
+    eventTransformUpdated_.Broadcast();
 }
 
 void KSceneComponent::SetRelativeScale(const glm::vec3& relativeScale)
@@ -224,7 +227,7 @@ void KSceneComponent::SetRelativeScale(const glm::vec3& relativeScale)
     }
 
     transform_.scale = relativeScale;
-    eventUpdateTransform_.Broadcast();
+    eventTransformUpdated_.Broadcast();
 }
 
 void KSceneComponent::SetWorldPosition(const glm::vec3& worldPosition)

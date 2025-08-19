@@ -1,9 +1,9 @@
 #pragma once
 #include "InterfaceComponent.h"
-#include <kotono_framework/Renderable2DProxy.h>
 
 class KtShader;
 class KtImageTexture;
+struct KtRenderable2DProxy;
 
 class KInterfaceImageComponent : public KInterfaceComponent
 {
@@ -30,7 +30,7 @@ public:
 private:
 	KtShader* shader_;
 	KtImageTexture* imageTexture_;
-	KtRenderable2DProxy imageTextureProxy_;
+	KtRenderable2DProxy* imageTextureProxy_;
 	KtEvent<> eventShaderUpdated_;
 	KtEvent<> eventImageTextureUpdated_;
 

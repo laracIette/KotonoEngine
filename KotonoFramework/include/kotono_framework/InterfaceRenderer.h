@@ -32,6 +32,9 @@ public:
 
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 
+	KtRenderable2DProxy* CreateProxy();
+	void DeleteProxy(KtRenderable2DProxy* proxy);
+
 private:
 	KtAllocatedBuffer vertexBuffer_;
 	KtAllocatedBuffer indexBuffer_;
@@ -45,6 +48,7 @@ private:
 
 	std::unordered_map<KtRenderable2DProxy*, KtFramesInFlightArray<StagingProxyState>> stagingProxies_;
 	KtFramesInFlightArray<ProxiesPool> proxies_;
+	ProxiesPool deleteProxies_;
 
 	KtFramesInFlightArray<std::unordered_map<const KtShader*, uint32_t>> instanceIndices_;
 

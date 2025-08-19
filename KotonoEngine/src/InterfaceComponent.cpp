@@ -8,6 +8,7 @@
 #include <kotono_framework/ImageTexture.h>
 #include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/Viewport.h>
+#include <kotono_framework/Renderable2DProxy.h>
 #include "log.h"
 #include "Engine.h"
 #include "TimeManager.h"
@@ -15,10 +16,13 @@
 static constinit KtShader* FlatColorShader{ nullptr };
 static constinit KtImageTexture* FlatColorTexture{ nullptr };
 
-KInterfaceComponent::KInterfaceComponent(RInterfaceObject* owner) : 
+KInterfaceComponent::KInterfaceComponent(RInterfaceObject* owner) :
     Base(),
-    owner_(owner)
+    owner_(owner),
+    modelMatrix_([this]() { return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix(); })
 {
+    eventRectUpdated_.AddListener(KtDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
+
     if (GetOwner()->GetRootComponent() != this)
     {
         SetParent(GetOwner()->GetRootComponent(), ECoordinateSpace::Relative);
@@ -35,6 +39,8 @@ KInterfaceComponent::KInterfaceComponent(RInterfaceObject* owner) :
         static const auto path = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
         FlatColorTexture = Framework.GetImageTextureManager().Get(path);
     }
+
+    boundsProxy_ = Framework.GetRenderer().GetInterfaceRenderer().CreateProxy();
 }
 
 void KInterfaceComponent::Init()
@@ -43,7 +49,7 @@ void KInterfaceComponent::Init()
 
     visibility_ = EVisibility::EditorAndGame;
 
-    Framework.GetRenderer().GetInterfaceRenderer().Register(&boundsProxy_);
+    Framework.GetRenderer().GetInterfaceRenderer().Register(boundsProxy_);
     CreateBoundsProxy();
 
     GetEventRectUpdated().AddListener(KtDelegate(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
@@ -55,7 +61,8 @@ void KInterfaceComponent::Cleanup()
 
     GetOwner()->RemoveComponent(this);
 
-    Framework.GetRenderer().GetInterfaceRenderer().Unregister(&boundsProxy_);
+    Framework.GetRenderer().GetInterfaceRenderer().Unregister(boundsProxy_);
+    Framework.GetRenderer().GetInterfaceRenderer().DeleteProxy(boundsProxy_);
 
     if (parent_)
     {
@@ -403,9 +410,9 @@ glm::mat4 KInterfaceComponent::GetScaleMatrix() const
     return glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.0f));
 }
 
-glm::mat4 KInterfaceComponent::GetModelMatrix() const
+glm::mat4 KInterfaceComponent::GetModelMatrix()
 {
-    return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix();
+    return modelMatrix_;
 }
 
 glm::vec2 KInterfaceComponent::GetDirection(const KInterfaceComponent* target) const
@@ -438,17 +445,17 @@ bool KInterfaceComponent::GetIsOverlapping(const KInterfaceComponent* other) con
 
 void KInterfaceComponent::CreateBoundsProxy()
 {
-    boundsProxy_.shader = FlatColorShader;
-    boundsProxy_.viewport = GetOwner()->GetViewport();
-    boundsProxy_.renderable = FlatColorTexture;
-    boundsProxy_.layer = GetLayer();
-    boundsProxy_.objectData.modelMatrix = GetModelMatrix();
+    boundsProxy_->shader = FlatColorShader;
+    boundsProxy_->viewport = GetOwner()->GetViewport();
+    boundsProxy_->renderable = FlatColorTexture;
+    boundsProxy_->layer = GetLayer();
+    boundsProxy_->objectData.modelMatrix = GetModelMatrix();
 }
 
 void KInterfaceComponent::MarkBoundsProxyRectDirty()
 {
-    boundsProxy_.isDirty = true;
-    boundsProxy_.objectData.modelMatrix = GetModelMatrix();
+    boundsProxy_->isDirty = true;
+    boundsProxy_->objectData.modelMatrix = GetModelMatrix();
 }
 
 glm::vec2 KInterfaceComponent::GetAnchorOffset() const

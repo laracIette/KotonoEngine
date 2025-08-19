@@ -20,7 +20,5 @@ private:
 	//temp
 	void OnTextBox2ValueChanged(const float delta) const;
 	void OnTextBox3ValueChanged(const float delta) const;
-
-	void Test() const;
 };
 
