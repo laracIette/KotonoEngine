@@ -1,22 +1,38 @@
 #include "Widget.h"
 #include "utils.h"
 
-glm::mat4 WWidget::GetTranslationMatrix(BuildSettings buildSettings) const
+void WWidget::Build(BuildSettings buildSettings)
 {
-	return glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(buildSettings.position), 0.0f });
+	position_ = buildSettings.position;
+	size_ = buildSettings.bounds;
 }
 
-glm::mat4 WWidget::GetRotationMatrix(BuildSettings buildSettings) const
+glm::vec2 WWidget::GetPosition() const
+{
+	return position_;
+}
+
+glm::vec2 WWidget::GetSize() const
+{
+	return size_;
+}
+
+glm::mat4 WWidget::GetTranslationMatrix() const
+{
+	return glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(position_), 0.0f });
+}
+
+glm::mat4 WWidget::GetRotationMatrix() const
 {
 	return glm::rotate(glm::identity<glm::mat4>(), 0.0f, { 0.0f, 0.0f, 1.0f });
 }
 
-glm::mat4 WWidget::GetScaleMatrix(BuildSettings buildSettings) const
+glm::mat4 WWidget::GetScaleMatrix() const
 {
-	return glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(buildSettings.bounds), 1.0f });
+	return glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(size_), 1.0f });
 }
 
-glm::mat4 WWidget::GetModelMatrix(BuildSettings buildSettings) const
+glm::mat4 WWidget::GetModelMatrix() const
 {
-	return GetTranslationMatrix(buildSettings) * GetRotationMatrix(buildSettings) * GetScaleMatrix(buildSettings);
+	return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix();
 }

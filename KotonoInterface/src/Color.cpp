@@ -11,6 +11,8 @@ WColor::WColor(const ColorSettings& colorSettings) :
 
 void WColor::Build(BuildSettings buildSettings)
 {
+	WWidget::Build(buildSettings);
+
 	const auto shaderPath = Framework.GetPath().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
 	const auto imagePath = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
 
@@ -19,7 +21,7 @@ void WColor::Build(BuildSettings buildSettings)
 	colorProxy_->renderable = Framework.GetImageTextureManager().Get(imagePath);
 	colorProxy_->viewport = &WindowViewport;
 	colorProxy_->layer = buildSettings.layer;
-	colorProxy_->objectData.modelMatrix = GetModelMatrix(buildSettings);
+	colorProxy_->objectData.modelMatrix = GetModelMatrix();
 	colorProxy_->objectData.color = colorSettings_.color;
 #if _DEBUG
 	colorProxy_->source = this;

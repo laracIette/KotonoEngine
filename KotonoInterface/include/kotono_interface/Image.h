@@ -7,7 +7,6 @@ class WImage : public WWidget
 public:
 	struct ImageSettings
 	{
-		glm::vec2 size{ 32.0f, 32.0f };
 		std::filesystem::path path{ "" };
 	};
 

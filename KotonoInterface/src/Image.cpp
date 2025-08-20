@@ -11,7 +11,7 @@ WImage::WImage(const ImageSettings& imageSettings) :
 
 void WImage::Build(BuildSettings buildSettings)
 {
-	buildSettings.bounds = imageSettings_.size;
+	WWidget::Build(buildSettings);
 
 	const auto shaderPath = Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)";
 
@@ -20,7 +20,7 @@ void WImage::Build(BuildSettings buildSettings)
 	imageProxy_->renderable = Framework.GetImageTextureManager().Get(imageSettings_.path);
 	imageProxy_->viewport = &WindowViewport;
 	imageProxy_->layer = buildSettings.layer;
-	imageProxy_->objectData.modelMatrix = GetModelMatrix(buildSettings);
+	imageProxy_->objectData.modelMatrix = GetModelMatrix();
 #if _DEBUG
 	imageProxy_->source = this;
 #endif

@@ -7,17 +7,25 @@ public:
 	{
 		glm::vec2 position;
 		glm::vec2 bounds;
-		int layer;
+		int32_t layer;
 	};
 
 	virtual ~WWidget() = default;
 
-	virtual void Build(BuildSettings buildSettings) = 0;
+	virtual void Build(BuildSettings buildSettings);
 	virtual void Destroy() = 0;
 
-	glm::mat4 GetTranslationMatrix(BuildSettings buildSettings) const;
-	glm::mat4 GetRotationMatrix(BuildSettings buildSettings) const;
-	glm::mat4 GetScaleMatrix(BuildSettings buildSettings) const;
-	glm::mat4 GetModelMatrix(BuildSettings buildSettings) const;
+	glm::vec2 GetPosition() const;
+	glm::vec2 GetSize() const;
+
+protected:
+	glm::mat4 GetTranslationMatrix() const;
+	glm::mat4 GetRotationMatrix() const;
+	glm::mat4 GetScaleMatrix() const;
+	glm::mat4 GetModelMatrix() const;
+
+private:
+	glm::vec2 position_;
+	glm::vec2 size_;
 };
 

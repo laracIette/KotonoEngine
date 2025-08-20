@@ -10,11 +10,11 @@ WButton::WButton(const ButtonSettings& buttonSettings) :
 
 void WButton::Build(BuildSettings buildSettings)
 {
-	size_ = buildSettings.bounds;
-	position_ = buildSettings.position;
+	WWidget::Build(buildSettings);
 
 	if (buttonSettings_.child)
 	{
+		++buildSettings.layer;
 		buttonSettings_.child->Build(buildSettings);
 	}
 }
@@ -30,8 +30,8 @@ void WButton::Destroy()
 void WButton::OnMouseLeftButtonPressed()
 {
 	const auto& cursorPos{ Framework.GetInputManager().GetMouse().GetCursorPosition() };
-	const auto distance{ glm::abs(position_ - cursorPos) };
-	const auto maxDistance{ size_ / 2.0f };
+	const auto distance{ glm::abs(GetPosition() - cursorPos) };
+	const auto maxDistance{ GetSize() / 2.0f };
 
 	if (distance.x > maxDistance.x || distance.y > maxDistance.y)
 	{

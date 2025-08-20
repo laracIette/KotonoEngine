@@ -7,6 +7,8 @@ WCenter::WCenter(const CenterSettings& centerSettings) :
 
 void WCenter::Build(BuildSettings buildSettings)
 {
+	WWidget::Build(buildSettings);
+
 	switch (centerSettings_.direction)
 	{
 	case Direction::Horizontal:
@@ -22,6 +24,7 @@ void WCenter::Build(BuildSettings buildSettings)
 	
 	if (centerSettings_.child)
 	{
+		++buildSettings.layer;
 		centerSettings_.child->Build(buildSettings);
 	}
 }

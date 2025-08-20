@@ -7,10 +7,13 @@ WPadding::WPadding(const PaddingSettings& paddingSettings) :
 
 void WPadding::Build(BuildSettings buildSettings)
 {
+	WWidget::Build(buildSettings);
+
 	buildSettings.bounds -= paddingSettings_.padding;
 
 	if (paddingSettings_.child)
 	{
+		++buildSettings.layer;
 		paddingSettings_.child->Build(buildSettings);
 	}
 }

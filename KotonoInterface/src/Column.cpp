@@ -7,13 +7,16 @@ WColumn::WColumn(const ColumnSettings& columnSettings) :
 
 void WColumn::Build(BuildSettings buildSettings)
 {
+	WWidget::Build(buildSettings);
+
 	for (auto* child : columnSettings_.children)
 	{
 		if (child)
 		{
+			++buildSettings.layer;
 			child->Build(buildSettings);
+			buildSettings.position.y += child->GetSize().y + columnSettings_.spacing;
 		}
-		buildSettings.position.y += columnSettings_.spacing;
 	}
 }
 

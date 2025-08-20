@@ -19,9 +19,6 @@ protected:
 	ButtonSettings buttonSettings_;
 
 private:
-	glm::vec2 size_;
-	glm::vec2 position_;
-
 	void OnMouseLeftButtonPressed();
 };
 

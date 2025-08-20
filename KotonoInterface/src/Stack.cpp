@@ -7,10 +7,13 @@ WStack::WStack(const StackSettings& stackSettings) :
 
 void WStack::Build(BuildSettings buildSettings)
 {
+	WWidget::Build(buildSettings);
+
 	for (auto* child : stackSettings_.children)
 	{
 		if (child)
 		{
+			++buildSettings.layer;
 			child->Build(buildSettings);
 		}
 	}
