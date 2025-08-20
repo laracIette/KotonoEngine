@@ -1,20 +1,5 @@
 #include "Widget.h"
-#include <kotono_framework/Viewport.h>
 #include "utils.h"
-
-
-WWidget::WWidget(const WidgetSettings& widgetSettings) :
-	widgetSettings_(widgetSettings)
-{
-}
-
-void WWidget::Build(BuildSettings buildSettings)
-{
-}
-
-void WWidget::Destroy()
-{
-}
 
 glm::mat4 WWidget::GetTranslationMatrix(BuildSettings buildSettings) const
 {

@@ -4,8 +4,6 @@
 struct KtRenderable2DProxy;
 class WImage : public WWidget
 {
-	using Base = WWidget;
-
 public:
 	struct ImageSettings
 	{
@@ -13,7 +11,7 @@ public:
 		std::filesystem::path path{ "" };
 	};
 
-	WImage(const WidgetSettings& widgetSettings, const ImageSettings& imageSettings);
+	WImage(const ImageSettings& imageSettings);
 
 	void Build(BuildSettings buildSettings) override;
 	void Destroy() override;

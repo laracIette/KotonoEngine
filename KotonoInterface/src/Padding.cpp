@@ -1,7 +1,6 @@
 #include "Padding.h"
 
-WPadding::WPadding(const WidgetSettings& widgetSettings, const PaddingSettings& paddingSettings) :
-	Base(widgetSettings),
+WPadding::WPadding(const PaddingSettings& paddingSettings) :
 	paddingSettings_(paddingSettings)
 {
 }

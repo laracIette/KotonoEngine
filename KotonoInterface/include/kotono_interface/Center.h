@@ -2,8 +2,6 @@
 #include "Widget.h"
 class WCenter : public WWidget
 {
-	using Base = WWidget;
-
 public:
 	enum class Direction
 	{
@@ -18,7 +16,7 @@ public:
 		WWidget* child{ nullptr };
 	};
 
-	WCenter(const WidgetSettings& widgetSettings, const CenterSettings& centerSettings);
+	WCenter(const CenterSettings& centerSettings);
 
 	void Build(BuildSettings buildSettings) override;
 	void Destroy() override;

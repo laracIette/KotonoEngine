@@ -2,8 +2,6 @@
 #include "Widget.h"
 class WPadding : public WWidget
 {
-	using Base = WWidget;
-
 public:
 	struct PaddingSettings
 	{
@@ -11,7 +9,7 @@ public:
 		WWidget* child;
 	};
 
-	WPadding(const WidgetSettings& widgetSettings, const PaddingSettings& paddingSettings);
+	WPadding(const PaddingSettings& paddingSettings);
 
 	void Build(BuildSettings buildSettings) override;
 	void Destroy() override;

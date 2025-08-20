@@ -4,8 +4,7 @@
 #include <kotono_framework/ImageTexture.h>
 #include <kotono_framework/Viewport.h>
 
-WImage::WImage(const WidgetSettings& widgetSettings, const ImageSettings& imageSettings) : 
-	Base(widgetSettings), 
+WImage::WImage(const ImageSettings& imageSettings) : 
 	imageSettings_(imageSettings)
 {
 }
@@ -14,7 +13,7 @@ void WImage::Build(BuildSettings buildSettings)
 {
 	buildSettings.bounds = imageSettings_.size;
 
-	const auto shaderPath = Framework.GetPath().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
+	const auto shaderPath = Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)";
 
 	imageProxy_ = Framework.GetRenderer().GetInterfaceRenderer().CreateProxy();
 	imageProxy_->shader = Framework.GetShaderManager().Get(shaderPath);

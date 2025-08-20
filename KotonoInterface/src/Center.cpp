@@ -1,7 +1,6 @@
 #include "Center.h"
 
-WCenter::WCenter(const WidgetSettings& widgetSettings, const CenterSettings& centerSettings) :
-	Base(widgetSettings),
+WCenter::WCenter(const CenterSettings& centerSettings) :
 	centerSettings_(centerSettings)
 {
 }

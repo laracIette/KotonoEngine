@@ -1,21 +1,20 @@
 #pragma once
 #include "Widget.h"
 #include <vector>
-class WColumn : public WWidget
+class WStack : public WWidget
 {
 public:
-	struct ColumnSettings
+	struct StackSettings
 	{
-		float spacing{ 0.0f };
 		std::vector<WWidget*> children{};
 	};
 
-	WColumn(const ColumnSettings& columnSettings);
+	WStack(const StackSettings& stackSettings);
 
 	void Build(BuildSettings buildSettings) override;
 	void Destroy() override;
 
 protected:
-	ColumnSettings columnSettings_;
+	StackSettings stackSettings_;
 };
 
