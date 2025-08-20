@@ -6,8 +6,8 @@ class WButton : public WWidget
 public:
 	struct ButtonSettings
 	{
-		std::function<void()> onPress;
-		WWidget* child;
+		std::function<void()> onPress{};
+		WWidget* child{ nullptr };
 	};
 
 	WButton(const ButtonSettings& buttonSettings);

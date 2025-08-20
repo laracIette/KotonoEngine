@@ -1,6 +1,7 @@
 #pragma once
 #include <GLFW/glfw3.h>
 #include "glm_includes.h"
+#include "Event.h"
 class KtWindow final
 {
 	friend class KtFramework;
@@ -16,16 +17,15 @@ public:
 	void SetShouldClose(const bool shouldClose);
 
 	GLFWwindow* GetGLFWWindow() const;
-
 	const glm::uvec2& GetSize() const;
+	KtEvent<>& GetEventWindowResized();
 
 	void SetSize(const glm::uvec2& size);
 
 private:
 	GLFWwindow* window_;
-
 	bool shouldClose_;
-
 	glm::uvec2 size_;
+	KtEvent<> eventWindowResized_;
 };
 

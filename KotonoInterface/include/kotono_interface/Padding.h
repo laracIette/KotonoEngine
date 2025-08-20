@@ -3,10 +3,15 @@
 class WPadding : public WWidget
 {
 public:
+	struct Padding
+	{
+		float l, t, r, b;
+	};
+
 	struct PaddingSettings
 	{
-		glm::vec2 padding;
-		WWidget* child;
+		Padding padding{ 0.0f, 0.0f, 0.0f, 0.0f };
+		WWidget* child{ nullptr };
 	};
 
 	WPadding(const PaddingSettings& paddingSettings);

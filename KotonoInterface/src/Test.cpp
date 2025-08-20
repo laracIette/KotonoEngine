@@ -12,15 +12,15 @@ WTest::WTest()
 			.child = new WStack({
 				.children = {
 					new WColor({
-						.color = { 0.5f, 0.5f, 0.5f, 0.5f },
+						.color = { 0.01f, 0.01f, 0.01f, 1.0f },
 					}),
 
 					new WPadding({
-						.padding = { 100.0f, 100.0f },
+						.padding = { 16.0f, 16.0f, 16.0f, 16.0f },
 						.child = new WStack({
 							.children = {
 								new WColor({
-									.color = { 0.3f, 0.3f, 0.3f, 0.3f },
+									.color = { 0.5f, 0.5f, 0.5f, 1.0f },
 								}),
 
 								new WBox({

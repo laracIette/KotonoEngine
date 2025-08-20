@@ -386,6 +386,10 @@ void KtInterfaceRenderer::SortProxies(ProxiesPool& proxies)
 	std::sort(proxies.begin(), proxies.end(),
 		[](const KtRenderable2DProxy* a, const KtRenderable2DProxy* b)
 		{
+			if (a->layer != b->layer)
+			{
+				return a->layer < b->layer;
+			}
 			if (a->shader != b->shader)
 			{
 				return a->shader < b->shader;
@@ -393,10 +397,6 @@ void KtInterfaceRenderer::SortProxies(ProxiesPool& proxies)
 			if (a->renderable != b->renderable)
 			{
 				return a->renderable < b->renderable;
-			}
-			if (a->layer != b->layer)
-			{
-				return a->layer < b->layer;
 			}
 			return a->viewport < b->viewport;
 		}

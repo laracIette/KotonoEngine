@@ -74,6 +74,11 @@ const glm::uvec2& KtWindow::GetSize() const
     return size_;
 }
 
+KtEvent<>& KtWindow::GetEventWindowResized()
+{
+    return eventWindowResized_;
+}
+
 void KtWindow::SetSize(const glm::uvec2& size)
 {
     size_ = size;
@@ -89,6 +94,8 @@ void framebuffersize_callback_(GLFWwindow* window, int width, int height)
     } 
 
     WindowViewport.SetExtent(glm::uvec2(width, height));
+
+    Framework.GetWindow().GetEventWindowResized().Broadcast();
 
     KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "window resized: %d x %d", width, height);
 }

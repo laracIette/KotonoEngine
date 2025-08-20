@@ -13,7 +13,7 @@ void WStack::Build(BuildSettings buildSettings)
 	{
 		if (child)
 		{
-			++buildSettings.layer;
+			//++buildSettings.layer;
 			child->Build(buildSettings);
 		}
 	}
