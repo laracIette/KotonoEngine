@@ -5,6 +5,7 @@
 struct ObjectData
 {
     mat4 model;
+    vec4 color;
 };
 
 layout(set = 0, binding = 0, std430) readonly buffer ObjectBuffer
@@ -24,6 +25,7 @@ layout(location = 2) in vec2 inTexCoord;
 layout(location = 0) out vec3 fragColor;
 layout(location = 1) out vec2 fragTexCoord;
 layout(location = 2) flat out uint textureIndex;
+layout(location = 3) out vec4 color;
 
 void main() 
 {
@@ -31,4 +33,5 @@ void main()
     fragColor = inColor;
     fragTexCoord = inTexCoord;
     textureIndex = textureIndexBuffer.texIndices[gl_InstanceIndex];
+    color = objectBuffer.objectDatas[gl_InstanceIndex].color;
 }

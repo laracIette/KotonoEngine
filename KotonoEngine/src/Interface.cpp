@@ -10,14 +10,16 @@
 #include "InterfaceTextBoxObject.h"
 #include "InterfaceFloatTextBoxObject.h"
 #include "InterfaceTextComponent.h"
-#include "InterfaceWindowObject.h"
+#include "InterfaceLayoutObject.h"
 #include "ObjectManager.h"
 #include "Timer.h"
 #include <log.h>
 
+#include <kotono_interface/Test.h>
+
 void SInterface::Init()
 {
-	viewport_ = Engine.GetObjectManager().Create<RInterfaceWindowObject>("Viewport");
+	//layout_ = Engine.GetObjectManager().Create<RInterfaceLayoutObject>();
 
 	image1_ = Engine.GetObjectManager().Create<RInterfaceImageObject>();
 	auto* image2 = Engine.GetObjectManager().Create<RInterfaceImageObject>();
@@ -50,7 +52,7 @@ void SInterface::Init()
 #else
 	image2->SetLayer(1);
 
-	auto* interfaceObjectStack = Engine.GetObjectManager().Create<KInterfaceStackComponent>();
+	auto* interfaceObjectStack = Engine.GetObjectManager().Create<KInterfaceRowComponent>();
 	interfaceObjectStack->SetOrientation(EOrientation::Horizontal);
 	interfaceObjectStack->SetItemSpacing(0.1f);
 	interfaceObjectStack->AddItem(image1);
@@ -78,6 +80,10 @@ void SInterface::Init()
 	textBox3->GetRootComponent()->SetRelativePosition(glm::vec2(0.3f, 0.6f));
 	textBox3->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRootComponent()->GetScreenPosition().y); });
 	textBox3->GetEventValueChanged().AddListener(KtDelegate(this, &SInterface::OnTextBox3ValueChanged));
+
+
+
+	new WTest();
 }
 
 void SInterface::OnTextBox2ValueChanged(const float delta) const

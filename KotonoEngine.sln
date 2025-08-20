@@ -8,12 +8,19 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KotonoEngine", "KotonoEngine\KotonoEngine.vcxproj", "{5D3F099A-E005-453C-BC01-38FF10ACB67C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2ACAFF16-409B-41CD-AD8A-451E9B7C1409} = {2ACAFF16-409B-41CD-AD8A-451E9B7C1409}
+		{851112CB-F641-4F2C-8653-B0ED3D0A7F51} = {851112CB-F641-4F2C-8653-B0ED3D0A7F51}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KotonoTestApplication", "KotonoTestApplication\KotonoTestApplication.vcxproj", "{6C858244-0CE3-4CFD-85BA-3D95C3A34FE4}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2ACAFF16-409B-41CD-AD8A-451E9B7C1409} = {2ACAFF16-409B-41CD-AD8A-451E9B7C1409}
 		{5D3F099A-E005-453C-BC01-38FF10ACB67C} = {5D3F099A-E005-453C-BC01-38FF10ACB67C}
+		{851112CB-F641-4F2C-8653-B0ED3D0A7F51} = {851112CB-F641-4F2C-8653-B0ED3D0A7F51}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KotonoInterface", "KotonoInterface\KotonoInterface.vcxproj", "{851112CB-F641-4F2C-8653-B0ED3D0A7F51}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2ACAFF16-409B-41CD-AD8A-451E9B7C1409} = {2ACAFF16-409B-41CD-AD8A-451E9B7C1409}
 	EndProjectSection
 EndProject
 Global
@@ -48,6 +55,14 @@ Global
 		{6C858244-0CE3-4CFD-85BA-3D95C3A34FE4}.Release|x64.Build.0 = Release|x64
 		{6C858244-0CE3-4CFD-85BA-3D95C3A34FE4}.Release|x86.ActiveCfg = Release|Win32
 		{6C858244-0CE3-4CFD-85BA-3D95C3A34FE4}.Release|x86.Build.0 = Release|Win32
+		{851112CB-F641-4F2C-8653-B0ED3D0A7F51}.Debug|x64.ActiveCfg = Debug|x64
+		{851112CB-F641-4F2C-8653-B0ED3D0A7F51}.Debug|x64.Build.0 = Debug|x64
+		{851112CB-F641-4F2C-8653-B0ED3D0A7F51}.Debug|x86.ActiveCfg = Debug|Win32
+		{851112CB-F641-4F2C-8653-B0ED3D0A7F51}.Debug|x86.Build.0 = Debug|Win32
+		{851112CB-F641-4F2C-8653-B0ED3D0A7F51}.Release|x64.ActiveCfg = Release|x64
+		{851112CB-F641-4F2C-8653-B0ED3D0A7F51}.Release|x64.Build.0 = Release|x64
+		{851112CB-F641-4F2C-8653-B0ED3D0A7F51}.Release|x86.ActiveCfg = Release|Win32
+		{851112CB-F641-4F2C-8653-B0ED3D0A7F51}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

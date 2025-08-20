@@ -51,9 +51,6 @@
     <ClCompile Include="src\InterfacePhysicsManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\InterfaceStackComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\InterfaceTextBoxObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,7 +60,7 @@
     <ClCompile Include="src\InterfaceTextComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\InterfaceWindowObject.cpp">
+    <ClCompile Include="src\InterfaceWindowComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\math_utils.cpp">
@@ -111,6 +108,15 @@
     <ClCompile Include="src\Visualizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\InterfaceBoxComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InterfaceRowComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InterfaceLayoutObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\kotono_engine\Anchor.h">
@@ -155,9 +161,6 @@
     <ClInclude Include="include\kotono_engine\InterfacePhysicsManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\kotono_engine\InterfaceStackComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\kotono_engine\InterfaceTextBoxObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -167,7 +170,7 @@
     <ClInclude Include="include\kotono_engine\InterfaceTextComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\kotono_engine\InterfaceWindowObject.h">
+    <ClInclude Include="include\kotono_engine\InterfaceWindowComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\kotono_engine\log.h">
@@ -243,6 +246,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\kotono_engine\Duration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kotono_engine\InterfaceBoxComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kotono_engine\Color.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kotono_engine\InterfaceRowComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kotono_engine\InterfaceLayoutObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

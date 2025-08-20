@@ -13,31 +13,17 @@
 #include "Engine.h"
 #include "TimeManager.h"
 
-static constinit KtShader* FlatColorShader{ nullptr };
-static constinit KtImageTexture* FlatColorTexture{ nullptr };
-
 KInterfaceComponent::KInterfaceComponent(RInterfaceObject* owner) :
     Base(),
     owner_(owner),
-    modelMatrix_([this]() { return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix(); })
+    modelMatrix_([this]() { return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix(); }),
+    color_({ 1.0f, 1.0f, 1.0f, 1.0f })
 {
     eventRectUpdated_.AddListener(KtDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
 
     if (GetOwner()->GetRootComponent() != this)
     {
         SetParent(GetOwner()->GetRootComponent(), ECoordinateSpace::Relative);
-    }
-
-    if (!FlatColorShader)
-    {
-        static const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
-        FlatColorShader = Framework.GetShaderManager().Get(path);
-        FlatColorShader->SetName("2D Flat Color Shader");
-    }
-    if (!FlatColorTexture)
-    {
-        static const auto path = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
-        FlatColorTexture = Framework.GetImageTextureManager().Get(path);
     }
 
     boundsProxy_ = Framework.GetRenderer().GetInterfaceRenderer().CreateProxy();
@@ -49,8 +35,8 @@ void KInterfaceComponent::Init()
 
     visibility_ = EVisibility::EditorAndGame;
 
-    Framework.GetRenderer().GetInterfaceRenderer().Register(boundsProxy_);
     CreateBoundsProxy();
+    Framework.GetRenderer().GetInterfaceRenderer().Register(boundsProxy_);
 
     GetEventRectUpdated().AddListener(KtDelegate(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
 }
@@ -107,6 +93,11 @@ KtEvent<>& KInterfaceComponent::GetEventRectUpdated()
 KtEvent<>& KInterfaceComponent::GetEventLayerUpdated()
 {
     return eventLayerUpdated_;
+}
+
+KtEvent<>& KInterfaceComponent::GetEventColorUpdated()
+{
+    return eventColorUpdated_;
 }
 
 const glm::vec2& KInterfaceComponent::GetRelativeSize() const
@@ -178,6 +169,11 @@ glm::vec2 KInterfaceComponent::GetScreenSize() const
 EAnchor KInterfaceComponent::GetAnchor() const
 {
     return rect_.anchor;
+}
+
+const UColor& KInterfaceComponent::GetColor() const
+{
+    return color_;
 }
 
 void KInterfaceComponent::SetVisibility(const EVisibility visibility)
@@ -361,6 +357,12 @@ void KInterfaceComponent::SetAnchor(const EAnchor anchor)
 
 }
 
+void KInterfaceComponent::SetColor(const UColor& color)
+{
+    color_ = color;
+    eventColorUpdated_.Broadcast();
+}
+
 float KInterfaceComponent::GetLeft() const
 {
     return GetWorldPosition().x - GetWorldSize().x / 2.0f;
@@ -445,11 +447,15 @@ bool KInterfaceComponent::GetIsOverlapping(const KInterfaceComponent* other) con
 
 void KInterfaceComponent::CreateBoundsProxy()
 {
-    boundsProxy_->shader = FlatColorShader;
+    const auto shaderPath = Framework.GetPath().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
+    const auto texturePath = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
+
+    boundsProxy_->shader = Framework.GetShaderManager().Get(shaderPath);
     boundsProxy_->viewport = GetOwner()->GetViewport();
-    boundsProxy_->renderable = FlatColorTexture;
+    boundsProxy_->renderable = Framework.GetImageTextureManager().Get(texturePath);
     boundsProxy_->layer = GetLayer();
     boundsProxy_->objectData.modelMatrix = GetModelMatrix();
+    boundsProxy_->objectData.color = { 1.0f, 1.0f, 1.0f, 0.01f };
 }
 
 void KInterfaceComponent::MarkBoundsProxyRectDirty()

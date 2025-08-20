@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\InterfaceLayoutObject.cpp" />
+    <ClCompile Include="src\InterfaceBoxComponent.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\Guid.cpp" />
@@ -31,11 +33,11 @@
     <ClCompile Include="src\InterfaceComponent.cpp" />
     <ClCompile Include="src\InterfaceContainerComponent.cpp" />
     <ClCompile Include="src\InterfacePhysicsManager.cpp" />
-    <ClCompile Include="src\InterfaceStackComponent.cpp" />
+    <ClCompile Include="src\InterfaceRowComponent.cpp" />
     <ClCompile Include="src\InterfaceTextBoxObject.cpp" />
     <ClCompile Include="src\InterfaceTextButtonObject.cpp" />
     <ClCompile Include="src\InterfaceTextComponent.cpp" />
-    <ClCompile Include="src\InterfaceWindowObject.cpp" />
+    <ClCompile Include="src\InterfaceWindowComponent.cpp" />
     <ClCompile Include="src\math_utils.cpp" />
     <ClCompile Include="src\SceneMeshComponent.cpp" />
     <ClCompile Include="src\Object.cpp" />
@@ -53,6 +55,7 @@
     <ClCompile Include="src\Visualizer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\kotono_engine\Color.h" />
     <ClInclude Include="include\kotono_engine\Anchor.h" />
     <ClInclude Include="include\kotono_engine\Application.h" />
     <ClInclude Include="include\kotono_engine\base_class.h" />
@@ -67,11 +70,11 @@
     <ClInclude Include="include\kotono_engine\InterfaceComponent.h" />
     <ClInclude Include="include\kotono_engine\InterfaceContainerComponent.h" />
     <ClInclude Include="include\kotono_engine\InterfacePhysicsManager.h" />
-    <ClInclude Include="include\kotono_engine\InterfaceStackComponent.h" />
+    <ClInclude Include="include\kotono_engine\InterfaceRowComponent.h" />
     <ClInclude Include="include\kotono_engine\InterfaceTextBoxObject.h" />
     <ClInclude Include="include\kotono_engine\InterfaceTextButtonObject.h" />
     <ClInclude Include="include\kotono_engine\InterfaceTextComponent.h" />
-    <ClInclude Include="include\kotono_engine\InterfaceWindowObject.h" />
+    <ClInclude Include="include\kotono_engine\InterfaceWindowComponent.h" />
     <ClInclude Include="include\kotono_engine\log.h" />
     <ClInclude Include="include\kotono_engine\math_utils.h" />
     <ClInclude Include="include\kotono_engine\Mobility.h" />
@@ -97,6 +100,8 @@
     <ClInclude Include="include\kotono_engine\VisualizationField.h" />
     <ClInclude Include="include\kotono_engine\Visualizer.h" />
     <ClInclude Include="include\kotono_engine\Duration.h" />
+    <ClInclude Include="include\kotono_engine\InterfaceBoxComponent.h" />
+    <ClInclude Include="include\kotono_engine\InterfaceLayoutObject.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
@@ -194,7 +199,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)KotonoEngine\include;$(SolutionDir)KotonoEngine\include\kotono_engine;$(SolutionDir)KotonoFramework\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)KotonoEngine\include;$(SolutionDir)KotonoEngine\include\kotono_engine;$(SolutionDir)KotonoInterface\include;$(SolutionDir)KotonoFramework\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -214,7 +219,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)KotonoEngine\include;$(SolutionDir)KotonoEngine\include\kotono_engine;$(SolutionDir)KotonoFramework\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)KotonoEngine\include;$(SolutionDir)KotonoEngine\include\kotono_engine;$(SolutionDir)KotonoInterface\include;$(SolutionDir)KotonoFramework\include;</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>

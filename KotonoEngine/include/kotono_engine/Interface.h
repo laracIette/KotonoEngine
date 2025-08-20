@@ -1,9 +1,6 @@
 #pragma once
+class RInterfaceLayoutObject;
 class RInterfaceImageObject;
-class RInterfaceTextBoxObject;
-class RInterfaceFloatTextBoxObject;
-class RInterfaceWindowObject;
-
 class SInterface final
 {
 	friend class SEngine;
@@ -11,10 +8,8 @@ class SInterface final
 private:
 	void Init();
 
-public:
-	RInterfaceWindowObject* viewport_;
-
 private:
+	RInterfaceLayoutObject* layout_;
 	RInterfaceImageObject* image1_;
 
 	//temp
