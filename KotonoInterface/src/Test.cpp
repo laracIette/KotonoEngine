@@ -1,5 +1,6 @@
 #include "Test.h"
 #include "widgets.h"
+#include "log.h"
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/Viewport.h>
 
@@ -20,11 +21,14 @@ WTest::WTest()
 							new WColumn({
 								.spacing = 150.0f,
 								.children = {
-									new WImage({
-										.size = { 100.0f, 50.0f },
-										.path = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)",
+									new WButton({
+										.onPress = []() { KT_LOG_KI(KT_LOG_COMPILE_TIME_LEVEL, "Test"); },
+										.child = new WImage({
+											.size = { 100.0f, 50.0f },
+											.path = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)",
+										}),
 									}),
-
+									
 									new WImage({
 										.size = { 50.0f, 50.0f },
 										.path = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)",

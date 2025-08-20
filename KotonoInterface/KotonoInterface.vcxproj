@@ -135,6 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\kotono_interface\Button.h" />
     <ClInclude Include="include\kotono_interface\Color.h" />
     <ClInclude Include="include\kotono_interface\Box.h" />
     <ClInclude Include="include\kotono_interface\Center.h" />
@@ -146,8 +147,10 @@
     <ClInclude Include="include\kotono_interface\Padding.h" />
     <ClInclude Include="include\kotono_interface\widgets.h" />
     <ClInclude Include="include\kotono_interface\Stack.h" />
+    <ClInclude Include="include\kotono_interface\log.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Button.cpp" />
     <ClCompile Include="src\Color.cpp" />
     <ClCompile Include="src\Box.cpp" />
     <ClCompile Include="src\Padding.cpp" />

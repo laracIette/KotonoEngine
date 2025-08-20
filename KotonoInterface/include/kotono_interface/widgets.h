@@ -1,6 +1,7 @@
 #pragma once
 #include "Widget.h"
 #include "Box.h"
+#include "Button.h"
 #include "Center.h"
 #include "Color.h"
 #include "Column.h"

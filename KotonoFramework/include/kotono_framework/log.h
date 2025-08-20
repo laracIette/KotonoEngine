@@ -12,10 +12,10 @@
 // Internal helper for log level filtering
 #define KT_SHOULD_LOG(level) ((level) >= KT_LOG_COMPILE_TIME_LEVEL)
 
-#define KT_LOG_KF(level, format, ...)               \
+#define KT_LOG_KF(level, format, ...)                \
     if constexpr (KT_SHOULD_LOG(level))              \
     {                                                \
-        printf("[KF] " format "\n", ##__VA_ARGS__); \
+        printf("[KF] " format "\n", ##__VA_ARGS__);  \
     }                                                  
 
 #else
