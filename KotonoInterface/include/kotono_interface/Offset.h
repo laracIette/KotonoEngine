@@ -1,20 +1,20 @@
 #pragma once
 #include "Widget.h"
-class WBox : public WWidget
+class WOffset : public WWidget
 {
 public:
-	struct BoxSettings
+	struct OffsetSettings
 	{
 		glm::vec2 size{ 0.0f, 0.0f };
 		WWidget* child{ nullptr };
 	};
 
-	WBox(BoxSettings boxSettings);
+	WOffset(OffsetSettings offsetSettings);
 
 	void Build(BuildSettings buildSettings) override;
 	void Destroy() override;
 
 protected:
-	BoxSettings boxSettings_;
+	OffsetSettings offsetSettings_;
 };
 

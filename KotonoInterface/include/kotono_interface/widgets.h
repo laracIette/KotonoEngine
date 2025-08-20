@@ -1,10 +1,12 @@
 #pragma once
 #include "Widget.h"
-#include "Box.h"
+#include "Bounds.h"
 #include "Button.h"
 #include "Center.h"
 #include "Color.h"
 #include "Column.h"
 #include "Image.h"
+#include "Offset.h"
 #include "Padding.h"
+#include "Row.h"
 #include "Stack.h"

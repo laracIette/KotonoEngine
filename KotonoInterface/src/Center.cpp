@@ -9,16 +9,16 @@ void WCenter::Build(BuildSettings buildSettings)
 {
 	WWidget::Build(buildSettings);
 
-	switch (centerSettings_.direction)
+	switch (centerSettings_.axis)
 	{
-	case Direction::Horizontal:
+	case Axis::All:
+		buildSettings.position = (buildSettings.position + buildSettings.bounds) / 2.0f;
+		break;
+	case Axis::Horizontal:
 		buildSettings.position.x = (buildSettings.position.x + buildSettings.bounds.x) / 2.0f;
 		break;
-	case Direction::Vertical:
+	case Axis::Vertical:
 		buildSettings.position.y = (buildSettings.position.y + buildSettings.bounds.y) / 2.0f;
-		break;
-	case Direction::All:
-		buildSettings.position = (buildSettings.position + buildSettings.bounds) / 2.0f;
 		break;
 	}
 	

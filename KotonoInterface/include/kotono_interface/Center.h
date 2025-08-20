@@ -3,16 +3,17 @@
 class WCenter : public WWidget
 {
 public:
-	enum class Direction
+	enum class Axis
 	{
+		All,
 		Horizontal,
 		Vertical,
-		All,
 	};
 
 	struct CenterSettings
 	{
-		Direction direction{ Direction::All };
+		// default  = Axis::All
+		Axis axis{ Axis::All };
 		WWidget* child{ nullptr };
 	};
 

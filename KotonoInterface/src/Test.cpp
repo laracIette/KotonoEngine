@@ -8,7 +8,7 @@ WTest::WTest()
 {
 	WWidget* widget{ 
 		new WCenter({
-			.direction = WCenter::Direction::All,
+			.axis = WCenter::Axis::All,
 			.child = new WStack({
 				.children = {
 					new WColor({
@@ -23,7 +23,96 @@ WTest::WTest()
 									.color = { 0.5f, 0.5f, 0.5f, 1.0f },
 								}),
 
-								new WBox({
+								new WRow({
+									.spacing = 5.0f,
+									.children = {
+										new WPadding({
+											.padding = { 4.0f, 4.0f, 4.0f, 4.0f },
+											.child = new WStack({
+												.children = {
+													new WColor({
+														.color = { 1.0f, 0.0f, 0.0f, 1.0f },
+													}),
+													new WPadding({
+														.padding = { 8.0f, 8.0f, 8.0f, 8.0f },
+														.child = new WColumn({
+															.spacing = 3.0f,
+															.children = {
+																new WColor({
+																	.color = { 0.0f, 0.0f, 1.0f, 1.0f },
+																}),
+																new WColor({
+																	.color = { 0.0f, 0.0f, 1.0f, 1.0f },
+																}),
+																new WColor({
+																	.color = { 0.0f, 0.0f, 1.0f, 1.0f },
+																}),
+															},
+														}),
+													}),
+												},
+											}),
+										}),
+																
+										new WPadding({
+											.padding = { 4.0f, 4.0f, 4.0f, 4.0f },
+											.child = new WStack({
+												.children = {
+													new WColor({
+														.color = { 1.0f, 1.0f, 0.0f, 1.0f },
+													}),
+													new WPadding({
+														.padding = { 8.0f, 8.0f, 8.0f, 8.0f },
+														.child = new WColumn({
+															.spacing = 30.0f,
+															.children = {
+																new WColor({
+																	.color = { 0.0f, 1.0f, 1.0f, 1.0f },
+																}),
+																new WColor({
+																	.color = { 0.0f, 1.0f, 1.0f, 1.0f },
+																}),
+																new WColor({
+																	.color = { 0.0f, 1.0f, 1.0f, 1.0f },
+																}),
+															},
+														}),
+													}),
+												},
+											}),
+										}),
+
+										new WPadding({
+											.padding = { 4.0f, 4.0f, 4.0f, 4.0f },
+											.child = new WStack({
+												.children = {
+													new WColor({
+														.color = { 1.0f, 1.0f, 1.0f, 1.0f },
+													}),
+													new WPadding({
+														.padding = { 8.0f, 8.0f, 8.0f, 8.0f },
+														.child = new WColumn({
+															.spacing = 100.0f,
+															.children = {
+																new WColor({
+																	.color = { 0.0f, 1.0f, 0.0f, 1.0f },
+																}),
+																new WColor({
+																	.color = { 0.0f, 1.0f, 0.0f, 1.0f },
+																}),
+																new WColor({
+																	.color = { 0.0f, 1.0f, 0.0f, 1.0f },
+																}),
+															},
+														}),
+													}),
+												},
+											}),
+										}),
+									},
+								}),
+
+								/*new WBounds({
 									.size = { 200.0f, 500.0f },
 									.child = new WStack({
 										.children = {
@@ -34,7 +123,7 @@ WTest::WTest()
 											new WColumn({
 												.spacing = 1.0f,
 												.children = {
-													new WBox({
+													new WBounds({
 														.size = { 100.0f, 50.0f },
 														.child = new WButton({
 															.onPress = []() { KT_LOG_KI(KT_LOG_COMPILE_TIME_LEVEL, "Test"); },
@@ -44,7 +133,7 @@ WTest::WTest()
 														}),
 													}),
 
-													new WBox({
+													new WBounds({
 														.size = { 50.0f, 50.0f },
 														.child = new WImage({
 															.path = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)",
@@ -54,7 +143,7 @@ WTest::WTest()
 											}),
 										},
 									}),
-								}),
+								}),*/
 							},
 						}),
 					}),
