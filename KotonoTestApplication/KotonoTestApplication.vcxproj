@@ -110,7 +110,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)KotonoInterface\lib;$(SolutionDir)KotonoEngine\lib;$(SolutionDir)KotonoFramework\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>KotonoFramework.lib;KotonoEngine.lib;KotonoInterface.lib;vulkan-1.lib;glfw3.lib;assimp-vc143-mt.lib;OpenAL32.lib;SPIRV-Reflect.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>KotonoFramework.lib;KotonoEngine.lib;KotonoInterface.lib;vulkan-1.lib;glfw3.lib;zlibstaticd.lib;assimp-vc143-mtd.lib;OpenAL32.lib;SPIRV-Reflect.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -129,7 +129,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)KotonoInterface\lib;$(SolutionDir)KotonoEngine\lib;$(SolutionDir)KotonoFramework\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>KotonoFramework.lib;KotonoEngine.lib;KotonoInterface.lib;vulkan-1.lib;glfw3.lib;assimp-vc143-mt.lib;OpenAL32.lib;SPIRV-Reflect.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>KotonoFramework.lib;KotonoEngine.lib;KotonoInterface.lib;vulkan-1.lib;glfw3.lib;zlibstatic.lib;assimp-vc143-mt.lib;OpenAL32.lib;SPIRV-Reflect.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -19,6 +19,11 @@ public:
 	void Build(BuildSettings buildSettings) override;
 	void Destroy() override;
 
+	static constexpr Padding All(float v) noexcept
+	{
+		return { v, v, v, v };
+	}
+
 protected:
 	PaddingSettings paddingSettings_;
 };

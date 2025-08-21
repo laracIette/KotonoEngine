@@ -82,8 +82,7 @@ void SInterface::Init()
 	textBox3->GetEventValueChanged().AddListener(KtDelegate(this, &SInterface::OnTextBox3ValueChanged));
 
 
-
-	new WTest();
+	WTest();
 }
 
 void SInterface::OnTextBox2ValueChanged(const float delta) const

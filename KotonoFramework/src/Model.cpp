@@ -2,6 +2,7 @@
 #include "Framework.h"
 #include "Context.h"
 #include <unordered_map>
+#define ASSIMP_BUILD_NO_EXPORT
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>

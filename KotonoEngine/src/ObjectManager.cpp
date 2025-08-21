@@ -72,7 +72,7 @@ void SObjectManager::Init()
 void SObjectManager::Update()
 {
 	float updateTime{ 0.0f };
-	updateTime += KtStopwatch::Time<float>(KtDelegate(this, &SObjectManager::InitObjects)); // todo: maybe put after delete
+	updateTime += KtStopwatch::Time<float>(KtDelegate(this, &SObjectManager::InitObjects));
 	updateTime += KtStopwatch::Time<float>(KtDelegate(this, &SObjectManager::UpdateObjects));
 	updateTime += KtStopwatch::Time<float>(KtDelegate(this, &SObjectManager::DeleteObjects));
 	updateAverageTime_.AddTime(updateTime);
@@ -82,7 +82,7 @@ void SObjectManager::Update()
 	if (canDraw_)
 	{
 		canDraw_ = false;
-		float drawTime{ KtStopwatch::Time<float>(KtDelegate(&Framework.GetRenderer(), &KtRenderer::DrawFrame)) };
+		const float drawTime{ KtStopwatch::Time<float>(KtDelegate(&Framework.GetRenderer(), &KtRenderer::DrawFrame)) };
 		drawAverageTime_.AddTime(drawTime);
 	}
 }
