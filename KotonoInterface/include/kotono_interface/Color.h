@@ -1,17 +1,23 @@
 #pragma once
 #include "Widget.h"
+#include <kotono_framework/Color.h>
 struct KtRenderable2DProxy;
 class WColor : public WWidget
 {
+	friend class VColorView;
+
 public:
 	struct ColorSettings
 	{
-		glm::vec4 color{ 1.0f, 1.0f, 1.0f, 1.0f };
+		/// default = KtColor::White()
+		KtColor color{ KtColor::White() };
 	};
 
+	/// Fill the widget's bounds with a color
 	WColor(const ColorSettings& colorSettings);
 
-	void Build(BuildSettings buildSettings) override;
+	VView* CreateView() override;
+
 	void Destroy() override;
 	
 protected:

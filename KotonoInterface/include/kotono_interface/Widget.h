@@ -1,31 +1,39 @@
 #pragma once
-#include <kotono_framework/glm_includes.h>
+#include <functional>
+#include "utils.h"
+#include <kotono_framework/Cached.h>
+/// Base class of all widgets
 class WWidget
 {
-public:
-	struct BuildSettings
-	{
-		glm::vec2 position;
-		glm::vec2 bounds;
-		int32_t layer;
-	};
+	friend class VView;
 
+	using StateFunction = std::function<void()>;
+
+public:
+	WWidget();
 	virtual ~WWidget() = default;
 
-	virtual void Build(BuildSettings buildSettings);
-	virtual void Destroy() = 0;
+	virtual WWidget* Build();
+	virtual VView* CreateView();
+
+	virtual void Destroy();
+
+	virtual WWidget* GetDirty();
 
 	glm::vec2 GetPosition() const;
 	glm::vec2 GetSize() const;
 
 protected:
-	glm::mat4 GetTranslationMatrix() const;
-	glm::mat4 GetRotationMatrix() const;
-	glm::mat4 GetScaleMatrix() const;
-	glm::mat4 GetModelMatrix() const;
+	bool isDirty_;
+
+	void SetState(const StateFunction& function);
 
 private:
 	glm::vec2 position_;
 	glm::vec2 size_;
+
+	KtCached<WWidget*> cachedBuild_;
+
+	WWidget* GetBuild();
 };
 

@@ -13,7 +13,7 @@
 #include "Collection.h"
 
 static constexpr std::array<KtVertex2D, 4> Vertices
-{//                   Position,              Color,      TexCoords
+{//                   Position,              KtColor,      TexCoords
 	KtVertex2D { {-0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f} }, // Bottom-left
 	KtVertex2D { { 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f} }, // Bottom-right
 	KtVertex2D { { 0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f} }, // Top-right

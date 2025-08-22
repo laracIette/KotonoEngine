@@ -5,7 +5,7 @@
 #include "Anchor.h"
 #include "RotationUnit.h"
 #include "Visibility.h"
-#include "Color.h"
+#include <kotono_framework/Color.h>
 #include <kotono_framework/Cached.h>
 
 class KtViewport;
@@ -50,7 +50,7 @@ public:
 
 	EAnchor GetAnchor() const;
 
-	const UColor& GetColor() const;
+	const KtColor& GetColor() const;
 
 	void SetVisibility(const EVisibility visibility);
 	void SetLayer(const int32_t layer);
@@ -76,7 +76,7 @@ public:
 
 	void SetAnchor(const EAnchor anchor);
 
-	void SetColor(const UColor& color);
+	void SetColor(const KtColor& color);
 
 	float GetLeft() const;
 	float GetRight() const;
@@ -106,7 +106,7 @@ private:
 	KtEvent<> eventColorUpdated_;
 	size_t componentIndex_;
 	KtCached<glm::mat4> modelMatrix_;
-	UColor color_;
+	KtColor color_;
 
 	void CreateBoundsProxy();
 	void MarkBoundsProxyRectDirty();

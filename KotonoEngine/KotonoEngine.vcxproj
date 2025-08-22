@@ -55,7 +55,6 @@
     <ClCompile Include="src\Visualizer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\kotono_engine\Color.h" />
     <ClInclude Include="include\kotono_engine\Anchor.h" />
     <ClInclude Include="include\kotono_engine\Application.h" />
     <ClInclude Include="include\kotono_engine\base_class.h" />

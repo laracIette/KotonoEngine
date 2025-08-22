@@ -1,10 +1,41 @@
 #include "Widget.h"
-#include "utils.h"
+#include "View.h"
+#include "log.h"
 
-void WWidget::Build(BuildSettings buildSettings)
+WWidget::WWidget() :
+	cachedBuild_([this]() { 
+		
+		return Build(); 
+	})
 {
-	position_ = buildSettings.position;
-	size_ = buildSettings.bounds;
+}
+
+WWidget* WWidget::Build()
+{
+	return this;
+}
+
+VView* WWidget::CreateView()
+{
+	return GetBuild()->CreateView();
+}
+
+void WWidget::Destroy()
+{
+}
+
+WWidget* WWidget::GetDirty()
+{
+	if (isDirty_)
+	{
+		KT_LOG_KI(KT_LOG_COMPILE_TIME_LEVEL, "%p dirty widget %s", this, typeid(*this).name());
+		return this;
+	}
+
+	KT_LOG_KI(KT_LOG_COMPILE_TIME_LEVEL, "%p not dirty widget %s", this, typeid(*this).name());
+
+	auto* build = GetBuild();
+	return build == this ? nullptr : build->GetDirty();
 }
 
 glm::vec2 WWidget::GetPosition() const
@@ -17,22 +48,14 @@ glm::vec2 WWidget::GetSize() const
 	return size_;
 }
 
-glm::mat4 WWidget::GetTranslationMatrix() const
+void WWidget::SetState(const StateFunction& function)
 {
-	return glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(position_), 0.0f });
+	function();
+	isDirty_ = true;
+	cachedBuild_.MarkDirty();
 }
 
-glm::mat4 WWidget::GetRotationMatrix() const
+WWidget* WWidget::GetBuild()
 {
-	return glm::rotate(glm::identity<glm::mat4>(), 0.0f, { 0.0f, 0.0f, 1.0f });
-}
-
-glm::mat4 WWidget::GetScaleMatrix() const
-{
-	return glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(size_), 1.0f });
-}
-
-glm::mat4 WWidget::GetModelMatrix() const
-{
-	return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix();
+	return cachedBuild_;
 }

@@ -1,20 +1,15 @@
 #include "Offset.h"
+#include "OffsetView.h"
 
-WOffset::WOffset(OffsetSettings offsetSettings) :
+WOffset::WOffset(const OffsetSettings& offsetSettings) :
+	WChildOwnerWidget(offsetSettings.child),
 	offsetSettings_(offsetSettings)
 {
 }
 
-void WOffset::Build(BuildSettings buildSettings)
+VView* WOffset::CreateView()
 {
-	buildSettings.position = offsetSettings_.size;
-	WWidget::Build(buildSettings);
-
-	if (offsetSettings_.child)
-	{
-		++buildSettings.layer;
-		offsetSettings_.child->Build(buildSettings);
-	}
+	return new VOffsetView(this);
 }
 
 void WOffset::Destroy()
@@ -23,4 +18,6 @@ void WOffset::Destroy()
 	{
 		offsetSettings_.child->Destroy();
 	}
+
+	WWidget::Destroy();
 }

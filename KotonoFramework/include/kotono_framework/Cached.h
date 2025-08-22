@@ -8,10 +8,15 @@ public:
 
 public:
 	explicit KtCached(ValueFunction&& valueFunction) : 
-		value_({}),
+		value_(T{}),
 		valueFunction_(std::move(valueFunction)),
 		isDirty_(true) 
 	{}
+
+	bool GetIsDirty() const
+	{
+		return isDirty_;
+	}
 
 	void MarkDirty()
 	{

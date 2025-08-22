@@ -1,17 +1,21 @@
 #pragma once
-#include "Widget.h"
+#include "ChildrenOwnerWidget.h"
 #include <vector>
-class WStack : public WWidget
+class WStack : public WChildrenOwnerWidget
 {
+	friend class VStackView;
+
 public:
 	struct StackSettings
 	{
 		std::vector<WWidget*> children{};
 	};
 
+	/// Display widgets on top of each other
 	WStack(const StackSettings& stackSettings);
 
-	void Build(BuildSettings buildSettings) override;
+	VView* CreateView() override;
+
 	void Destroy() override;
 
 protected:

@@ -1,7 +1,9 @@
 #pragma once
-#include "Widget.h"
-class WCenter : public WWidget
+#include "ChildOwnerWidget.h"
+class WCenter : public WChildOwnerWidget
 {
+	friend class VCenterView;
+
 public:
 	enum class Axis
 	{
@@ -12,14 +14,16 @@ public:
 
 	struct CenterSettings
 	{
-		// default  = Axis::All
+		/// default  = Axis::All
 		Axis axis{ Axis::All };
 		WWidget* child{ nullptr };
 	};
 
+	/// Center the child widget on an Axis
 	WCenter(const CenterSettings& centerSettings);
 
-	void Build(BuildSettings buildSettings) override;
+	VView* CreateView() override;
+
 	void Destroy() override;
 
 protected:

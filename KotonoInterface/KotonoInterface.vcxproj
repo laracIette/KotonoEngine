@@ -135,6 +135,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\kotono_interface\CenterView.h" />
+    <ClInclude Include="include\kotono_interface\BoundsView.h" />
+    <ClInclude Include="include\kotono_interface\ColumnView.h" />
+    <ClInclude Include="include\kotono_interface\ImageView.h" />
+    <ClInclude Include="include\kotono_interface\ColorView.h" />
+    <ClInclude Include="include\kotono_interface\ChildOwnerWidget.h" />
+    <ClInclude Include="include\kotono_interface\ChildrenOwnerWidget.h" />
     <ClInclude Include="include\kotono_interface\Button.h" />
     <ClInclude Include="include\kotono_interface\Color.h" />
     <ClInclude Include="include\kotono_interface\Bounds.h" />
@@ -150,8 +157,25 @@
     <ClInclude Include="include\kotono_interface\log.h" />
     <ClInclude Include="include\kotono_interface\Row.h" />
     <ClInclude Include="include\kotono_interface\Offset.h" />
+    <ClInclude Include="include\kotono_interface\MyColumn.h" />
+    <ClInclude Include="include\kotono_interface\View.h" />
+    <ClInclude Include="include\kotono_interface\OffsetView.h" />
+    <ClInclude Include="include\kotono_interface\PaddingView.h" />
+    <ClInclude Include="include\kotono_interface\RowView.h" />
+    <ClInclude Include="include\kotono_interface\StackView.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\RowView.cpp" />
+    <ClCompile Include="src\PaddingView.cpp" />
+    <ClCompile Include="src\OffsetView.cpp" />
+    <ClCompile Include="src\CenterView.cpp" />
+    <ClCompile Include="src\BoundsView.cpp" />
+    <ClCompile Include="src\ColumnView.cpp" />
+    <ClCompile Include="src\ImageView.cpp" />
+    <ClCompile Include="src\ColorView.cpp" />
+    <ClCompile Include="src\ChildOwnerWidget.cpp" />
+    <ClCompile Include="src\ChildrenOwnerWidget.cpp" />
+    <ClCompile Include="src\MyColumn.cpp" />
     <ClCompile Include="src\Offset.cpp" />
     <ClCompile Include="src\Row.cpp" />
     <ClCompile Include="src\Button.cpp" />
@@ -165,6 +189,8 @@
     <ClCompile Include="src\Test.cpp" />
     <ClCompile Include="src\utils.cpp" />
     <ClCompile Include="src\Stack.cpp" />
+    <ClCompile Include="src\View.cpp" />
+    <ClCompile Include="src\StackView.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

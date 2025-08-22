@@ -1,32 +1,15 @@
 #include "Center.h"
+#include "CenterView.h"
 
 WCenter::WCenter(const CenterSettings& centerSettings) :
+	WChildOwnerWidget(centerSettings.child),
 	centerSettings_(centerSettings)
 {
 }
 
-void WCenter::Build(BuildSettings buildSettings)
+VView* WCenter::CreateView()
 {
-	WWidget::Build(buildSettings);
-
-	switch (centerSettings_.axis)
-	{
-	case Axis::All:
-		buildSettings.position = (buildSettings.position + buildSettings.bounds) / 2.0f;
-		break;
-	case Axis::Horizontal:
-		buildSettings.position.x = (buildSettings.position.x + buildSettings.bounds.x) / 2.0f;
-		break;
-	case Axis::Vertical:
-		buildSettings.position.y = (buildSettings.position.y + buildSettings.bounds.y) / 2.0f;
-		break;
-	}
-	
-	if (centerSettings_.child)
-	{
-		++buildSettings.layer;
-		centerSettings_.child->Build(buildSettings);
-	}
+	return new VCenterView(this);
 }
 
 void WCenter::Destroy()
@@ -35,4 +18,6 @@ void WCenter::Destroy()
 	{
 		centerSettings_.child->Destroy();
 	}
+
+	WWidget::Destroy();
 }

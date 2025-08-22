@@ -4,15 +4,20 @@
 struct KtRenderable2DProxy;
 class WImage : public WWidget
 {
+	friend class VImageView;
+
 public:
 	struct ImageSettings
 	{
+		/// default = ""
 		std::filesystem::path path{ "" };
 	};
 
+	/// Display an image over the widget's bounds
 	WImage(const ImageSettings& imageSettings);
 
-	void Build(BuildSettings buildSettings) override;
+	VView* CreateView() override;
+
 	void Destroy() override;
 
 protected:

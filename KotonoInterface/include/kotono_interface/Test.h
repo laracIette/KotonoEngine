@@ -1,7 +1,8 @@
 #pragma once
-class WTest final
+#include "Widget.h"
+class WTest : public WWidget
 {
 public:
-	WTest();
+	WWidget* Build() override;
 };
 

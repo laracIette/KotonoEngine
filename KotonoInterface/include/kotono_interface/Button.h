@@ -6,19 +6,18 @@ class WButton : public WWidget
 public:
 	struct ButtonSettings
 	{
+		/// default = {}
 		std::function<void()> onPress{};
-		WWidget* child{ nullptr };
 	};
 
+	/// Set the widget's bounds as pressable
 	WButton(const ButtonSettings& buttonSettings);
 
-	void Build(BuildSettings buildSettings) override;
-	void Destroy() override;
-
-protected:
-	ButtonSettings buttonSettings_;
+	VView* CreateView() override;
 
 private:
+	ButtonSettings buttonSettings_;
+
 	void OnMouseLeftButtonPressed();
 };
 

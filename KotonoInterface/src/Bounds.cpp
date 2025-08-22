@@ -1,20 +1,15 @@
 #include "Bounds.h"
+#include "BoundsView.h"
 
-WBounds::WBounds(BoundsSettings boundsSettings) :
+WBounds::WBounds(const BoundsSettings& boundsSettings) :
+	WChildOwnerWidget(boundsSettings.child),
 	boundsSettings_(boundsSettings)
 {
 }
 
-void WBounds::Build(BuildSettings buildSettings)
+VView* WBounds::CreateView()
 {
-	buildSettings.bounds = boundsSettings_.size;
-	WWidget::Build(buildSettings);
-
-	if (boundsSettings_.child)
-	{
-		++buildSettings.layer;
-		boundsSettings_.child->Build(buildSettings);
-	}
+	return new VBoundsView(this);
 }
 
 void WBounds::Destroy()
@@ -23,4 +18,6 @@ void WBounds::Destroy()
 	{
 		boundsSettings_.child->Destroy();
 	}
+
+	WWidget::Destroy();
 }

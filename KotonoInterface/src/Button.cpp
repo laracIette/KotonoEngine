@@ -1,4 +1,5 @@
 #include "Button.h"
+#include "View.h"
 #include <kotono_framework/Framework.h>
 
 WButton::WButton(const ButtonSettings& buttonSettings) :
@@ -8,23 +9,9 @@ WButton::WButton(const ButtonSettings& buttonSettings) :
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonPressed));
 }
 
-void WButton::Build(BuildSettings buildSettings)
+VView* WButton::CreateView()
 {
-	WWidget::Build(buildSettings);
-
-	if (buttonSettings_.child)
-	{
-		++buildSettings.layer;
-		buttonSettings_.child->Build(buildSettings);
-	}
-}
-
-void WButton::Destroy()
-{
-	if (buttonSettings_.child)
-	{
-		buttonSettings_.child->Destroy();
-	}
+	return new VView(this);
 }
 
 void WButton::OnMouseLeftButtonPressed()

@@ -1,17 +1,22 @@
 #pragma once
-#include "Widget.h"
-class WBounds : public WWidget
+#include "ChildOwnerWidget.h"
+class WBounds : public WChildOwnerWidget
 {
+	friend class VBoundsView;
+
 public:
 	struct BoundsSettings
 	{
+		/// default = { 0.0f, 0.0f }
 		glm::vec2 size{ 0.0f, 0.0f };
 		WWidget* child{ nullptr };
 	};
 
-	WBounds(BoundsSettings boundsSettings);
+	/// Set bounds that the child should be contained within
+	WBounds(const BoundsSettings& boundsSettings);
 
-	void Build(BuildSettings buildSettings) override;
+	VView* CreateView() override;
+
 	void Destroy() override;
 
 protected:

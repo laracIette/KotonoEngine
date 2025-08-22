@@ -251,9 +251,6 @@
     <ClInclude Include="include\kotono_engine\InterfaceBoxComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\kotono_engine\Color.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\kotono_engine\InterfaceRowComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>

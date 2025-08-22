@@ -1,22 +1,15 @@
 #include "Stack.h"
+#include "StackView.h"
 
 WStack::WStack(const StackSettings& stackSettings) :
+	WChildrenOwnerWidget(stackSettings.children),
 	stackSettings_(stackSettings)
 {
 }
 
-void WStack::Build(BuildSettings buildSettings)
+VView* WStack::CreateView()
 {
-	WWidget::Build(buildSettings);
-
-	for (auto* child : stackSettings_.children)
-	{
-		if (child)
-		{
-			++buildSettings.layer;
-			child->Build(buildSettings);
-		}
-	}
+	return new VStackView(this);
 }
 
 void WStack::Destroy()
@@ -28,4 +21,6 @@ void WStack::Destroy()
 			child->Destroy();
 		}
 	}
+
+	WWidget::Destroy();
 }

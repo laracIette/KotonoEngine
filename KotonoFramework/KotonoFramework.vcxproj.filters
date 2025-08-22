@@ -281,6 +281,9 @@
     <ClInclude Include="include\kotono_framework\Cached.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\kotono_framework\Color.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

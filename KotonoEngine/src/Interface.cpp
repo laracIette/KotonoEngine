@@ -4,6 +4,7 @@
 #include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/Path.h>
 #include <kotono_framework/Shader.h>
+#include <kotono_framework/Viewport.h>
 #include "Engine.h"
 #include "InterfaceImageObject.h"
 #include "InterfaceImageComponent.h"
@@ -16,6 +17,7 @@
 #include <log.h>
 
 #include <kotono_interface/Test.h>
+#include <kotono_interface/View.h>
 
 void SInterface::Init()
 {
@@ -82,7 +84,37 @@ void SInterface::Init()
 	textBox3->GetEventValueChanged().AddListener(KtDelegate(this, &SInterface::OnTextBox3ValueChanged));
 
 
-	WTest();
+	widget_ = new WTest();
+	widget_->CreateView()->Build({
+		.position = { 0.0f, 0.0f },
+		.bounds = glm::vec2(WindowViewport.GetExtent()),
+		.layer = 0,
+	});
+
+	auto* widgetTimer = Engine.GetObjectManager().Create<KTimer>();
+	widgetTimer->GetEventCompleted().AddListener(KtDelegate(this, &SInterface::RebuildWidget));
+	widgetTimer->SetDuration(UDuration::FromSeconds(1.0f / 10.0f));
+	widgetTimer->SetIsRepeat(true);
+	widgetTimer->Start();
+}
+
+void SInterface::RebuildWidget() const
+{
+	if (auto* dirty = widget_->GetDirty())
+	{
+		//dirty->Destroy();
+		//dirty->CreateView()->Build({
+		//	.position = { 0.0f, 0.0f },
+		//	.bounds = glm::vec2(WindowViewport.GetExtent()),
+		//	.layer = 0,
+		//});
+	}
+
+	//widget_->Build({
+	//	.position = { 0.0f, 0.0f },
+	//	.bounds = glm::vec2(WindowViewport.GetExtent()),
+	//	.layer = 0,
+	//});
 }
 
 void SInterface::OnTextBox2ValueChanged(const float delta) const

@@ -171,7 +171,7 @@ EAnchor KInterfaceComponent::GetAnchor() const
     return rect_.anchor;
 }
 
-const UColor& KInterfaceComponent::GetColor() const
+const KtColor& KInterfaceComponent::GetColor() const
 {
     return color_;
 }
@@ -357,7 +357,7 @@ void KInterfaceComponent::SetAnchor(const EAnchor anchor)
 
 }
 
-void KInterfaceComponent::SetColor(const UColor& color)
+void KInterfaceComponent::SetColor(const KtColor& color)
 {
     color_ = color;
     eventColorUpdated_.Broadcast();
