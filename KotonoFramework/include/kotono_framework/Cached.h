@@ -13,6 +13,12 @@ public:
 		isDirty_(true) 
 	{}
 
+	// Get the current value without setting it if dirty
+	T GetValue() const
+	{
+		return value_;
+	}
+
 	bool GetIsDirty() const
 	{
 		return isDirty_;

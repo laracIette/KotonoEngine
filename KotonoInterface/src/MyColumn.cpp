@@ -16,14 +16,21 @@ WWidget* WMyColumn::Build()
 				.children = GetColumns(),
 			}),
 
-			new WButton({
-				.onPress = [this]() { 
-					KT_LOG_KI(KT_LOG_COMPILE_TIME_LEVEL, "%llu", count_);
-					SetState([this]() { 
-						++count_; 
-					}); 
+			new WRow({
+				.children = {
+					new WButton({
+						.onPress = [this]() {
+							SetState([this]() { if (count_ > 1) --count_; });
+						},
+					}),
+					new WButton({
+						.onPress = [this]() {
+							SetState([this]() { ++count_; });
+						},
+					}),
 				},
 			}),
+			
 		},
 	});
 }

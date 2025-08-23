@@ -100,21 +100,10 @@ void SInterface::Init()
 
 void SInterface::RebuildWidget() const
 {
-	if (auto* dirty = widget_->GetDirty())
+	while (auto* dirty = widget_->GetDirty())
 	{
-		//dirty->Destroy();
-		//dirty->CreateView()->Build({
-		//	.position = { 0.0f, 0.0f },
-		//	.bounds = glm::vec2(WindowViewport.GetExtent()),
-		//	.layer = 0,
-		//});
+		dirty->Rebuild();
 	}
-
-	//widget_->Build({
-	//	.position = { 0.0f, 0.0f },
-	//	.bounds = glm::vec2(WindowViewport.GetExtent()),
-	//	.layer = 0,
-	//});
 }
 
 void SInterface::OnTextBox2ValueChanged(const float delta) const

@@ -13,7 +13,7 @@ public:
 	/// Set the widget's bounds as pressable
 	WButton(const ButtonSettings& buttonSettings);
 
-	VView* CreateView() override;
+	void Destroy() override;
 
 private:
 	ButtonSettings buttonSettings_;

@@ -9,9 +9,12 @@ WButton::WButton(const ButtonSettings& buttonSettings) :
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonPressed));
 }
 
-VView* WButton::CreateView()
+void WButton::Destroy()
 {
-	return new VView(this);
+	Framework.GetInputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonPressed));
+
+	WWidget::Destroy();
 }
 
 void WButton::OnMouseLeftButtonPressed()

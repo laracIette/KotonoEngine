@@ -18,6 +18,9 @@ public:
 
 	virtual void Destroy();
 
+	void Rebuild();
+
+	// Get the first dirty widget encountered in the widget tree
 	virtual WWidget* GetDirty();
 
 	glm::vec2 GetPosition() const;
@@ -29,11 +32,7 @@ protected:
 	void SetState(const StateFunction& function);
 
 private:
-	glm::vec2 position_;
-	glm::vec2 size_;
-
+	UBuildSettings buildSettings_;
 	KtCached<WWidget*> cachedBuild_;
-
-	WWidget* GetBuild();
 };
 

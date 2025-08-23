@@ -10,7 +10,6 @@ void VView::Build(UBuildSettings buildSettings)
 {
 	if (widget_)
 	{
-		widget_->position_ = buildSettings.position;
-		widget_->size_ = buildSettings.bounds;
+		widget_->buildSettings_ = buildSettings;
 	}
 }
