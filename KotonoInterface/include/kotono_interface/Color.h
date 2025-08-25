@@ -18,7 +18,7 @@ public:
 
 	VView* CreateView() override;
 
-	void Destroy() override;
+	void Cleanup() override;
 	
 protected:
 	ColorSettings colorSettings_;

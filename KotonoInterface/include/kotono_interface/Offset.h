@@ -17,8 +17,6 @@ public:
 
 	VView* CreateView() override;
 
-	void Destroy() override;
-
 protected:
 	OffsetSettings offsetSettings_;
 };

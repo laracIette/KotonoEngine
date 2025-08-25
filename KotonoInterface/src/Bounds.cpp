@@ -11,13 +11,3 @@ VView* WBounds::CreateView()
 {
 	return new VBoundsView(this);
 }
-
-void WBounds::Destroy()
-{
-	if (boundsSettings_.child)
-	{
-		boundsSettings_.child->Destroy();
-	}
-
-	WWidget::Destroy();
-}

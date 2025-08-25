@@ -30,7 +30,6 @@ WWidget* WMyColumn::Build()
 					}),
 				},
 			}),
-			
 		},
 	});
 }

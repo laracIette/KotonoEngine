@@ -11,13 +11,3 @@ VView* WCenter::CreateView()
 {
 	return new VCenterView(this);
 }
-
-void WCenter::Destroy()
-{
-	if (centerSettings_.child)
-	{
-		centerSettings_.child->Destroy();
-	}
-
-	WWidget::Destroy();
-}

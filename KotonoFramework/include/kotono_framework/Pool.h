@@ -23,8 +23,7 @@ public:
 		data_.push_back(std::forward<T>(value));
 	}
 
-	// Removes the specified item, returns true if the item was swapped before removal
-	// This is way slower than RemoveAt(size_t) because it searches for the item's index first
+	// Remove the specified item with O(n) complexity
 	constexpr KtPoolRemoveResult Remove(const ValueType& value)
 	{
 		const auto it{ std::find(data_.begin(), data_.end(), value) };
@@ -37,7 +36,7 @@ public:
 		return RemoveAt(index);
 	}
 
-	// Removes the item at the specified index, returns true if the item was swapped before removal
+	// Remove the item at the specified index with O(1) complexity
 	constexpr KtPoolRemoveResult RemoveAt(const size_t index) noexcept
 	{
 		if (index >= data_.size())

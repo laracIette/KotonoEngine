@@ -24,8 +24,6 @@ public:
 
 	VView* CreateView() override;
 
-	void Destroy() override;
-
 protected:
 	CenterSettings centerSettings_;
 };

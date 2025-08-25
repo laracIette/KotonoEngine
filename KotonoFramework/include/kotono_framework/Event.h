@@ -27,9 +27,9 @@ public:
     void Broadcast(Args... args)
     {
         delegates_.RemoveIf([](const Delegate& delegate) { return !delegate.GetInstance(); });
-        for (const Delegate& delegate : delegates_)
+        for (size_t i{ 0 }; i < delegates_.Size(); ++i)
         {
-            delegate.Callback(args...);
+            delegates_[i].Callback(args...);
         }
     }
 

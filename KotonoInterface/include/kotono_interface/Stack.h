@@ -16,8 +16,6 @@ public:
 
 	VView* CreateView() override;
 
-	void Destroy() override;
-
 protected:
 	StackSettings stackSettings_;
 };

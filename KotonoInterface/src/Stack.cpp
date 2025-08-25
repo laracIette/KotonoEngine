@@ -11,16 +11,3 @@ VView* WStack::CreateView()
 {
 	return new VStackView(this);
 }
-
-void WStack::Destroy()
-{
-	for (auto* child : stackSettings_.children)
-	{
-		if (child)
-		{
-			child->Destroy();
-		}
-	}
-
-	WWidget::Destroy();
-}

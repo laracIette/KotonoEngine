@@ -90,20 +90,6 @@ void SInterface::Init()
 		.bounds = glm::vec2(WindowViewport.GetExtent()),
 		.layer = 0,
 	});
-
-	auto* widgetTimer = Engine.GetObjectManager().Create<KTimer>();
-	widgetTimer->GetEventCompleted().AddListener(KtDelegate(this, &SInterface::RebuildWidget));
-	widgetTimer->SetDuration(UDuration::FromSeconds(1.0f / 10.0f));
-	widgetTimer->SetIsRepeat(true);
-	widgetTimer->Start();
-}
-
-void SInterface::RebuildWidget() const
-{
-	while (auto* dirty = widget_->GetDirty())
-	{
-		dirty->Rebuild();
-	}
 }
 
 void SInterface::OnTextBox2ValueChanged(const float delta) const

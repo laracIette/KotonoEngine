@@ -12,11 +12,11 @@ VView* WImage::CreateView()
 	return new VImageView(this);
 }
 
-void WImage::Destroy()
+void WImage::Cleanup()
 {
 	Framework.GetRenderer().GetInterfaceRenderer().Unregister(imageProxy_);
 	Framework.GetRenderer().GetInterfaceRenderer().DeleteProxy(imageProxy_);
 
-	WWidget::Destroy();
+	WWidget::Cleanup();
 }
 

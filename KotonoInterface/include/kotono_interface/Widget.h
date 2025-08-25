@@ -2,6 +2,7 @@
 #include <functional>
 #include "utils.h"
 #include <kotono_framework/Cached.h>
+#include <kotono_framework/Event.h>
 /// Base class of all widgets
 class WWidget
 {
@@ -16,7 +17,7 @@ public:
 	virtual WWidget* Build();
 	virtual VView* CreateView();
 
-	virtual void Destroy();
+	virtual void Cleanup();
 
 	void Rebuild();
 

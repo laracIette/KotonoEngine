@@ -11,16 +11,3 @@ VView* WColumn::CreateView()
 {
 	return new VColumnView(this);
 }
-
-void WColumn::Destroy()
-{
-	for (auto* child : columnSettings_.children)
-	{
-		if (child)
-		{
-			child->Destroy();
-		}
-	}
-
-	WWidget::Destroy();
-}

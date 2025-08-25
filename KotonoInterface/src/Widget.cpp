@@ -25,25 +25,29 @@ VView* WWidget::CreateView()
 	return new VView(this);
 }
 
-void WWidget::Destroy()
+void WWidget::Cleanup()
 {
 	auto* build{ cachedBuild_.GetValue() };
-	if (build && build != this)
+	if (build != this)
 	{
-		build->Destroy();
+		if (build)
+		{
+			build->Cleanup();
+		}
+		delete build;
 	}
 	isDirty_ = false;
 }
 
 void WWidget::Rebuild()
 {
-	Destroy();
 	auto buildSettings{ buildSettings_ };
 	auto* build{ cachedBuild_.GetValue() };
 	if (build && build != this)
 	{
 		buildSettings = build->buildSettings_;
 	}
+	Cleanup();
 	CreateView()->Build(buildSettings);
 }
 
@@ -78,4 +82,5 @@ void WWidget::SetState(const StateFunction& function)
 	function();
 	isDirty_ = true;
 	cachedBuild_.MarkDirty();
+	Rebuild();
 }

@@ -11,13 +11,3 @@ VView* WPadding::CreateView()
 {
 	return new VPaddingView(this);
 }
-
-void WPadding::Destroy()
-{
-	if (paddingSettings_.child)
-	{
-		paddingSettings_.child->Destroy();
-	}
-
-	WWidget::Destroy();
-}

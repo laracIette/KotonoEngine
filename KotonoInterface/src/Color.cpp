@@ -12,10 +12,10 @@ VView* WColor::CreateView()
 	return new VColorView(this);
 }
 
-void WColor::Destroy()
+void WColor::Cleanup()
 {
 	Framework.GetRenderer().GetInterfaceRenderer().Unregister(colorProxy_);
 	Framework.GetRenderer().GetInterfaceRenderer().DeleteProxy(colorProxy_);
 
-	WWidget::Destroy();
+	WWidget::Cleanup();
 }

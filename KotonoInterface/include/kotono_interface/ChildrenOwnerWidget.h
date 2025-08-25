@@ -8,6 +8,8 @@ class WChildrenOwnerWidget : public WWidget
 public:
 	WChildrenOwnerWidget(const WidgetVector& children);
 
+	void Cleanup() override;
+
 	WWidget* GetDirty() override;
 
 private:
