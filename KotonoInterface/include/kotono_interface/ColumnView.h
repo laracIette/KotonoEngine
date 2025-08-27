@@ -7,8 +7,5 @@ public:
 	VColumnView(WColumn* widget);
 
 	void Build(UBuildSettings buildSettings) override;
-
-protected:
-	WColumn* column_;
 };
 

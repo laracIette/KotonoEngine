@@ -7,8 +7,5 @@ public:
 	VImageView(WImage* image);
 
 	void Build(UBuildSettings buildSettings) override;
-
-private:
-	WImage* image_;
 };
 

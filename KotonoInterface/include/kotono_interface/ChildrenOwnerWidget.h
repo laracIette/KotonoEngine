@@ -10,8 +10,6 @@ public:
 
 	void Cleanup() override;
 
-	WWidget* GetDirty() override;
-
 private:
 	WidgetVector children_;
 };

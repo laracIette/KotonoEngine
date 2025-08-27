@@ -165,6 +165,7 @@
     <ClInclude Include="include\kotono_interface\StackView.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\kotono_interface\View.cpp" />
     <ClCompile Include="src\RowView.cpp" />
     <ClCompile Include="src\PaddingView.cpp" />
     <ClCompile Include="src\OffsetView.cpp" />
@@ -189,7 +190,6 @@
     <ClCompile Include="src\Test.cpp" />
     <ClCompile Include="src\utils.cpp" />
     <ClCompile Include="src\Stack.cpp" />
-    <ClCompile Include="src\View.cpp" />
     <ClCompile Include="src\StackView.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -7,8 +7,5 @@ public:
 	VStackView(WStack* stack);
 
 	void Build(UBuildSettings buildSettings) override;
-
-private:
-	WStack* stack_;
 };
 

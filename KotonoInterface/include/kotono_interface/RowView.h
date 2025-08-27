@@ -7,8 +7,5 @@ public:
 	VRowView(WRow* row);
 
 	void Build(UBuildSettings buildSettings) override;
-
-private:
-	WRow* row_;
 };
 

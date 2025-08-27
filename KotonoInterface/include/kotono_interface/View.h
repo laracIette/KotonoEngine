@@ -1,12 +1,12 @@
 #pragma once
 #include "utils.h"
+#include <type_traits>
 class WWidget;
 /// Representation of a widget
 class VView
 {
 public:
 	VView(WWidget* widget);
-
 	virtual ~VView() = default;
 
 	virtual void Build(UBuildSettings buildSettings);
@@ -14,4 +14,3 @@ public:
 protected:
 	WWidget* widget_;
 };
-

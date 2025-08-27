@@ -1,8 +1,8 @@
 #include "View.h"
 #include "Widget.h"
 
-VView::VView(WWidget* widget) :
-	widget_(widget)
+VView::VView(WWidget* widget) 
+	: widget_(widget)
 {
 }
 

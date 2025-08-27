@@ -2,31 +2,32 @@
 #include "Padding.h"
 
 VPaddingView::VPaddingView(WPadding* padding) :
-	VView(padding),
-	padding_(padding)
+	VView(padding)
 {
 }
 
 void VPaddingView::Build(UBuildSettings buildSettings)
 {
-	if (!padding_)
+	if (!widget_)
 	{
 		return;
 	}
 
 	VView::Build(buildSettings);
 
-	buildSettings.bounds.x -= padding_->paddingSettings_.padding.l;
-	buildSettings.bounds.x -= padding_->paddingSettings_.padding.r;
-	buildSettings.bounds.y -= padding_->paddingSettings_.padding.t;
-	buildSettings.bounds.y -= padding_->paddingSettings_.padding.b;
+	auto* asPadding{ static_cast<WPadding*>(widget_) };
 
-	buildSettings.position.x += (padding_->paddingSettings_.padding.l - padding_->paddingSettings_.padding.r) / 2.0f;
-	buildSettings.position.y += (padding_->paddingSettings_.padding.t - padding_->paddingSettings_.padding.b) / 2.0f;
+	buildSettings.bounds.x -= asPadding->paddingSettings_.padding.l;
+	buildSettings.bounds.x -= asPadding->paddingSettings_.padding.r;
+	buildSettings.bounds.y -= asPadding->paddingSettings_.padding.t;
+	buildSettings.bounds.y -= asPadding->paddingSettings_.padding.b;
 
-	if (padding_->paddingSettings_.child)
+	buildSettings.position.x += (asPadding->paddingSettings_.padding.l - asPadding->paddingSettings_.padding.r) / 2.0f;
+	buildSettings.position.y += (asPadding->paddingSettings_.padding.t - asPadding->paddingSettings_.padding.b) / 2.0f;
+
+	if (asPadding->paddingSettings_.child)
 	{
 		++buildSettings.layer;
-		padding_->paddingSettings_.child->CreateView()->Build(buildSettings);
+		asPadding->paddingSettings_.child->CreateView()->Build(buildSettings);
 	}
 }

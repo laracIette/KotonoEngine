@@ -2,28 +2,29 @@
 #include "Bounds.h"
 
 VBoundsView::VBoundsView(WBounds* bounds) :
-	VView(bounds),
-	bounds_(bounds)
+	VView(bounds)
 {
 }
 
 void VBoundsView::Build(UBuildSettings buildSettings)
 {
-	if (!bounds_)
+	if (!widget_)
 	{
 		return;
 	}
 
-	buildSettings.bounds = bounds_->boundsSettings_.size; // todo: sure before ?
-
 	VView::Build(buildSettings);
 
-	if (bounds_->boundsSettings_.child)
+	auto* asBounds{ static_cast<WBounds*>(widget_) };
+
+	buildSettings.bounds = asBounds->boundsSettings_.size;
+
+	if (asBounds->boundsSettings_.child)
 	{
 		++buildSettings.layer;
-		if (bounds_->boundsSettings_.child)
+		if (asBounds->boundsSettings_.child)
 		{
-			bounds_->boundsSettings_.child->CreateView()->Build(buildSettings);
+			asBounds->boundsSettings_.child->CreateView()->Build(buildSettings);
 		}
 	}
 }

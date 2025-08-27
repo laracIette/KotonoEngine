@@ -2,21 +2,22 @@
 #include "Center.h"
 
 VCenterView::VCenterView(WCenter* center) :
-	VView(center),
-	center_(center)
+	VView(center)
 {
 }
 
 void VCenterView::Build(UBuildSettings buildSettings)
 {
-	if (!center_)
+	if (!widget_)
 	{
 		return;
 	}
 
 	VView::Build(buildSettings);
 
-	switch (center_->centerSettings_.axis)
+	auto* asCenter{ static_cast<WCenter*>(widget_) };
+
+	switch (asCenter->centerSettings_.axis)
 	{
 	case WCenter::Axis::All:
 		buildSettings.position = (buildSettings.position + buildSettings.bounds) / 2.0f;
@@ -29,9 +30,9 @@ void VCenterView::Build(UBuildSettings buildSettings)
 		break;
 	}
 
-	if (center_->centerSettings_.child)
+	if (asCenter->centerSettings_.child)
 	{
 		++buildSettings.layer;
-		center_->centerSettings_.child->CreateView()->Build(buildSettings);
+		asCenter->centerSettings_.child->CreateView()->Build(buildSettings);
 	}
 }

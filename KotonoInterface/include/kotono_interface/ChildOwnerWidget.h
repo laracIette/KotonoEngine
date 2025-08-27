@@ -7,8 +7,6 @@ public:
 
 	void Cleanup() override;
 
-	WWidget* GetDirty() override;
-
 private:
 	WWidget* child_;
 };

@@ -6,30 +6,31 @@
 #include <kotono_framework/Viewport.h>
 
 VImageView::VImageView(WImage* image) :
-	VView(image),
-	image_(image)
+	VView(image)
 {
 }
 
 void VImageView::Build(UBuildSettings buildSettings)
 {
-	if (!image_)
+	if (!widget_)
 	{
 		return;
 	}
 
 	VView::Build(buildSettings);
 
+	auto* asImage{ static_cast<WImage*>(widget_) };
+
 	static const auto shaderPath = Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)";
 
-	image_->imageProxy_ = Framework.GetRenderer().GetInterfaceRenderer().CreateProxy();
-	image_->imageProxy_->shader = Framework.GetShaderManager().Get(shaderPath);
-	image_->imageProxy_->renderable = Framework.GetImageTextureManager().Get(image_->imageSettings_.path);
-	image_->imageProxy_->viewport = &WindowViewport;
-	image_->imageProxy_->layer = buildSettings.layer;
-	image_->imageProxy_->objectData.modelMatrix = GetModelMatrix(buildSettings);
+	asImage->imageProxy_ = Framework.GetRenderer().GetInterfaceRenderer().CreateProxy();
+	asImage->imageProxy_->shader = Framework.GetShaderManager().Get(shaderPath);
+	asImage->imageProxy_->renderable = Framework.GetImageTextureManager().Get(asImage->imageSettings_.path);
+	asImage->imageProxy_->viewport = &WindowViewport;
+	asImage->imageProxy_->layer = buildSettings.layer;
+	asImage->imageProxy_->objectData.modelMatrix = GetModelMatrix(buildSettings);
 #	if _DEBUG
-		image_->imageProxy_->source = this;
+		asImage->imageProxy_->source = this;
 #	endif
-	Framework.GetRenderer().GetInterfaceRenderer().Register(image_->imageProxy_);
+	Framework.GetRenderer().GetInterfaceRenderer().Register(asImage->imageProxy_);
 }

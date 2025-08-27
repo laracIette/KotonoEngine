@@ -15,13 +15,3 @@ void WChildOwnerWidget::Cleanup()
 
 	WWidget::Cleanup();
 }
-
-WWidget* WChildOwnerWidget::GetDirty()
-{
-	if (isDirty_)
-	{
-		return this;
-	}
-
-	return child_->GetDirty();
-}

@@ -7,8 +7,5 @@ public:
 	VColorView(WColor* color);
 
 	void Build(UBuildSettings buildSettings) override;
-
-private:
-	WColor* color_;
 };
 

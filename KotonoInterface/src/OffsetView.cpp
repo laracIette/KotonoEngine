@@ -2,25 +2,26 @@
 #include "Offset.h"
 
 VOffsetView::VOffsetView(WOffset* offset) :
-	VView(offset),
-	offset_(offset)
+	VView(offset)
 {
 }
 
 void VOffsetView::Build(UBuildSettings buildSettings)
 {
-	if (!offset_)
+	if (!widget_)
 	{
 		return;
 	}
 
-	buildSettings.position = offset_->offsetSettings_.size; // todo: sure before ?
+	auto* asOffset{ static_cast<WOffset*>(widget_) };
 
 	VView::Build(buildSettings);
 
-	if (offset_->offsetSettings_.child)
+	buildSettings.position = asOffset->offsetSettings_.size;
+
+	if (asOffset->offsetSettings_.child)
 	{
 		++buildSettings.layer;
-		offset_->offsetSettings_.child->CreateView()->Build(buildSettings);
+		asOffset->offsetSettings_.child->CreateView()->Build(buildSettings);
 	}
 }

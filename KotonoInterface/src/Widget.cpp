@@ -3,10 +3,7 @@
 #include "log.h"
 
 WWidget::WWidget() :
-	cachedBuild_([this]() { 
-		
-		return Build(); 
-	})
+	cachedBuild_([this]() { return Build(); })
 {
 }
 
@@ -27,7 +24,7 @@ VView* WWidget::CreateView()
 
 void WWidget::Cleanup()
 {
-	auto* build{ cachedBuild_.GetValue() };
+	WWidget* build{ cachedBuild_.GetValue() };
 	if (build != this)
 	{
 		if (build)
@@ -36,35 +33,18 @@ void WWidget::Cleanup()
 		}
 		delete build;
 	}
-	isDirty_ = false;
 }
 
 void WWidget::Rebuild()
 {
 	auto buildSettings{ buildSettings_ };
-	auto* build{ cachedBuild_.GetValue() };
+	WWidget* build{ cachedBuild_.GetValue() };
 	if (build && build != this)
 	{
 		buildSettings = build->buildSettings_;
 	}
 	Cleanup();
 	CreateView()->Build(buildSettings);
-}
-
-WWidget* WWidget::GetDirty() 
-{
-	// todo: replace the whole hierarchy thing by a WWidget* getfirst(bool())
-	if (isDirty_)
-	{
-		return this;
-	}
-
-	auto* build{ cachedBuild_.GetValue() };
-	if (build && build != this)
-	{
-		return build->GetDirty();
-	}
-	return nullptr;
 }
 
 glm::vec2 WWidget::GetPosition() const
@@ -80,7 +60,7 @@ glm::vec2 WWidget::GetSize() const
 void WWidget::SetState(const StateFunction& function)
 {
 	function();
-	isDirty_ = true;
 	cachedBuild_.MarkDirty();
 	Rebuild();
+	KT_LOG_KI(KT_LOG_COMPILE_TIME_LEVEL, "%p state", this);
 }

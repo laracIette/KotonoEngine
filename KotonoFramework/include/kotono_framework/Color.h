@@ -9,11 +9,11 @@ struct KtColor final
 	RGB rgb{ 0.0f, 0.0f, 0.0f };
 	float a{ 1.0f };
 
-	KtColor WithRed(const float red)     const noexcept { return { red, rgb.g, rgb.b, a }; }
-	KtColor WithGreen(const float green) const noexcept { return { rgb.r, green, rgb.b, a }; }
-	KtColor WithBlue(const float blue)   const noexcept { return { rgb.r, rgb.g, blue, a }; }
-	KtColor WithAlpha(const float alpha) const noexcept { return { rgb.r, rgb.g, rgb.b, alpha }; }
-	KtColor WithValue(const float value) const noexcept { return { rgb.r * value, rgb.g * value, rgb.b * value, a }; }
+	constexpr KtColor WithRed(const float red)     const noexcept { return { red, rgb.g, rgb.b, a }; }
+	constexpr KtColor WithGreen(const float green) const noexcept { return { rgb.r, green, rgb.b, a }; }
+	constexpr KtColor WithBlue(const float blue)   const noexcept { return { rgb.r, rgb.g, blue, a }; }
+	constexpr KtColor WithAlpha(const float alpha) const noexcept { return { rgb.r, rgb.g, rgb.b, alpha }; }
+	constexpr KtColor WithValue(const float value) const noexcept { return { rgb.r * value, rgb.g * value, rgb.b * value, a }; }
 
 	static consteval KtColor Black()   noexcept { return { 0.0f, 0.0f, 0.0f, 1.0f }; }
 	static consteval KtColor Blue()    noexcept { return { 0.0f, 0.0f, 1.0f, 1.0f }; }

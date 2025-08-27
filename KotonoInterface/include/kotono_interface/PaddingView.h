@@ -7,8 +7,5 @@ public:
 	VPaddingView(WPadding* padding);
 
 	void Build(UBuildSettings buildSettings) override;
-
-private:
-	WPadding* padding_;
 };
 

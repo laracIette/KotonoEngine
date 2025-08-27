@@ -7,8 +7,5 @@ public:
 	VBoundsView(WBounds* bounds);
 
 	void Build(UBuildSettings buildSettings) override;
-
-private:
-	WBounds* bounds_;
 };
 

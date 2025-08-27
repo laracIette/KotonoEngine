@@ -7,8 +7,5 @@ public:
 	VCenterView(WCenter* center);
 
 	void Build(UBuildSettings buildSettings) override;
-
-private:
-	WCenter* center_;
 };
 

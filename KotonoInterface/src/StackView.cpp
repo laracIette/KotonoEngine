@@ -2,21 +2,22 @@
 #include "Stack.h"
 
 VStackView::VStackView(WStack* stack) :
-	VView(stack),
-	stack_(stack)
+	VView(stack)
 {
 }
 
 void VStackView::Build(UBuildSettings buildSettings)
 {
-	if (!stack_)
+	if (!widget_)
 	{
 		return;
 	}
 
 	VView::Build(buildSettings);
 
-	for (auto* child : stack_->stackSettings_.children)
+	auto* asStack{ static_cast<WStack*>(widget_) };
+
+	for (auto* child : asStack->stackSettings_.children)
 	{
 		if (child)
 		{
