@@ -14,7 +14,7 @@ public:
 	/// Display widgets on top of each other
 	WStack(const StackSettings& stackSettings);
 
-	VView* CreateView() override;
+	void Display(BuildSettings buildSettings) override;
 
 protected:
 	StackSettings stackSettings_;

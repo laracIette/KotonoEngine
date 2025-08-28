@@ -16,7 +16,7 @@ public:
 	/// Fill the widget's bounds with a color
 	WColor(const ColorSettings& colorSettings);
 
-	VView* CreateView() override;
+	void Display(BuildSettings buildSettings) override;
 
 	void Cleanup() override;
 	

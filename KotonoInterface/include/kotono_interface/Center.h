@@ -22,7 +22,7 @@ public:
 	/// Center the child widget on an Axis
 	WCenter(const CenterSettings& centerSettings);
 
-	VView* CreateView() override;
+	void Display(BuildSettings buildSettings) override;
 
 protected:
 	CenterSettings centerSettings_;

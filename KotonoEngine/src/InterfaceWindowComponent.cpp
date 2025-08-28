@@ -17,7 +17,7 @@ void KInterfaceWindowComponent::Init()
 	Base::Init();
 
 	displayNameTextComponent_->SetText(displayName_);
-	backgroundComponent_->SetColor(KtColor::FromHSV({ .v = 50.0f }, 0.5f));
+	backgroundComponent_->SetColor(KtColor::FromHSV({ .v = 50.0f }).WithAlpha(0.5f));
 	backgroundComponent_->SetScreenSize({ 256.0f, 256.0f });
 
 	displayNameTextComponent_->SetLayer(1);

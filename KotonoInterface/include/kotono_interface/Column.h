@@ -16,7 +16,7 @@ public:
 	/// Defines a vertical container for widgets
 	WColumn(const ColumnSettings& columnSettings);
 
-	VView* CreateView() override;
+	void Display(BuildSettings buildSettings) override;
 
 protected:
 	ColumnSettings columnSettings_;

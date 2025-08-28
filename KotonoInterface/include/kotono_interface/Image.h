@@ -16,7 +16,7 @@ public:
 	/// Display an image over the widget's bounds
 	WImage(const ImageSettings& imageSettings);
 
-	VView* CreateView() override;
+	void Display(BuildSettings buildSettings) override;
 
 	void Cleanup() override;
 

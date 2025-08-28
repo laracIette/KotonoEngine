@@ -11,11 +11,19 @@ class WWidget
 	using StateFunction = std::function<void()>;
 
 public:
+	struct BuildSettings
+	{
+		glm::vec2 position;
+		glm::vec2 bounds;
+		int32_t layer;
+	};
+
 	WWidget();
 	virtual ~WWidget() = default;
 
 	virtual WWidget* Build();
-	virtual VView* CreateView();
+
+	virtual void Display(BuildSettings buildSettings);
 
 	virtual void Cleanup();
 
@@ -24,9 +32,15 @@ public:
 
 protected:
 	void SetState(const StateFunction& function);
+	void SetBuildSettings(const BuildSettings& buildSettings);
+
+	glm::mat4 GetTranslationMatrix() const;
+	glm::mat4 GetRotationMatrix() const;
+	glm::mat4 GetScaleMatrix() const;
+	glm::mat4 GetModelMatrix() const;
 
 private:
-	UBuildSettings buildSettings_;
+	BuildSettings buildSettings_;
 	KtCached<WWidget*> cachedBuild_;
 
 	void Rebuild();

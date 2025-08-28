@@ -17,7 +17,6 @@
 #include <log.h>
 
 #include <kotono_interface/Test.h>
-#include <kotono_interface/View.h>
 
 void SInterface::Init()
 {
@@ -85,7 +84,7 @@ void SInterface::Init()
 
 
 	widget_ = new WTest();
-	widget_->CreateView()->Build({
+	widget_->Display({
 		.position = { 0.0f, 0.0f },
 		.bounds = glm::vec2(WindowViewport.GetExtent()),
 		.layer = 0,

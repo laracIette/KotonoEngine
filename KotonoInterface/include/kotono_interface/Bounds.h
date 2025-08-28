@@ -15,7 +15,7 @@ public:
 	/// Set bounds that the child should be contained within
 	WBounds(const BoundsSettings& boundsSettings);
 
-	VView* CreateView() override;
+	void Display(BuildSettings buildSettings) override;
 
 protected:
 	BoundsSettings boundsSettings_;

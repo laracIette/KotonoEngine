@@ -1,5 +1,4 @@
 #include "Bounds.h"
-#include "BoundsView.h"
 
 WBounds::WBounds(const BoundsSettings& boundsSettings) :
 	WChildOwnerWidget(boundsSettings.child),
@@ -7,7 +6,15 @@ WBounds::WBounds(const BoundsSettings& boundsSettings) :
 {
 }
 
-VView* WBounds::CreateView()
+void WBounds::Display(BuildSettings buildSettings)
 {
-	return new VBoundsView(this);
+	SetBuildSettings(buildSettings);
+
+	buildSettings.bounds = boundsSettings_.size;
+	++buildSettings.layer;
+
+	if (boundsSettings_.child)
+	{
+		boundsSettings_.child->Display(buildSettings);
+	}
 }

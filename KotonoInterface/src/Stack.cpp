@@ -1,5 +1,4 @@
 #include "Stack.h"
-#include "StackView.h"
 
 WStack::WStack(const StackSettings& stackSettings) :
 	WChildrenOwnerWidget(stackSettings.children),
@@ -7,7 +6,16 @@ WStack::WStack(const StackSettings& stackSettings) :
 {
 }
 
-VView* WStack::CreateView()
+void WStack::Display(BuildSettings buildSettings)
 {
-	return new VStackView(this);
+	SetBuildSettings(buildSettings);
+
+	for (auto* child : stackSettings_.children)
+	{
+		if (child)
+		{
+			++buildSettings.layer;
+			child->Display(buildSettings);
+		}
+	}
 }

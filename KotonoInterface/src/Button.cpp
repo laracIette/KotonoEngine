@@ -5,14 +5,12 @@
 WButton::WButton(const ButtonSettings& buttonSettings) :
 	buttonSettings_(buttonSettings)
 {
-	KT_LOG_KI(KT_LOG_COMPILE_TIME_LEVEL, "%p create", this);
 	Framework.GetInputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonPressed));
 }
 
 void WButton::Cleanup()
 {
-	KT_LOG_KI(KT_LOG_COMPILE_TIME_LEVEL, "%p delete", this);
 	Framework.GetInputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonPressed));
 
@@ -32,7 +30,6 @@ void WButton::OnMouseLeftButtonPressed()
 
 	if (buttonSettings_.onPress)
 	{
-		KT_LOG_KI(KT_LOG_COMPILE_TIME_LEVEL, "%p press", this);
 		buttonSettings_.onPress();
 	}
 }

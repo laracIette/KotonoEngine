@@ -15,7 +15,7 @@ public:
 	/// Offset the position of the child widget
 	WOffset(const OffsetSettings& offsetSettings);
 
-	VView* CreateView() override;
+	void Display(BuildSettings buildSettings) override;
 
 protected:
 	OffsetSettings offsetSettings_;

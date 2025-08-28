@@ -1,5 +1,4 @@
 #include "Widget.h"
-#include "View.h"
 #include "log.h"
 
 WWidget::WWidget() :
@@ -12,14 +11,15 @@ WWidget* WWidget::Build()
 	return this;
 }
 
-VView* WWidget::CreateView()
+void WWidget::Display(BuildSettings buildSettings)
 {
+	SetBuildSettings(buildSettings);
+
 	WWidget* build{ cachedBuild_ };
 	if (build && build != this)
 	{
-		return build->CreateView();
+		build->Display(buildSettings);
 	}
-	return new VView(this);
 }
 
 void WWidget::Cleanup()
@@ -44,7 +44,7 @@ void WWidget::Rebuild()
 		buildSettings = build->buildSettings_;
 	}
 	Cleanup();
-	CreateView()->Build(buildSettings);
+	Display(buildSettings);
 }
 
 glm::vec2 WWidget::GetPosition() const
@@ -62,5 +62,29 @@ void WWidget::SetState(const StateFunction& function)
 	function();
 	cachedBuild_.MarkDirty();
 	Rebuild();
-	KT_LOG_KI(KT_LOG_COMPILE_TIME_LEVEL, "%p state", this);
+}
+
+void WWidget::SetBuildSettings(const BuildSettings& buildSettings)
+{
+	buildSettings_ = buildSettings;
+}
+
+glm::mat4 WWidget::GetTranslationMatrix() const
+{
+	return glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(buildSettings_.position), 0.0f });
+}
+
+glm::mat4 WWidget::GetRotationMatrix() const
+{
+	return glm::rotate(glm::identity<glm::mat4>(), 0.0f, { 0.0f, 0.0f, 1.0f });
+}
+
+glm::mat4 WWidget::GetScaleMatrix() const
+{
+	return glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(buildSettings_.bounds), 1.0f });
+}
+
+glm::mat4 WWidget::GetModelMatrix() const
+{
+	return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix();
 }

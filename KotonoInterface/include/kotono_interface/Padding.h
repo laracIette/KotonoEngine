@@ -29,7 +29,7 @@ public:
 	/// Shrink the bounds of the child widget
 	WPadding(const PaddingSettings& paddingSettings);
 
-	VView* CreateView() override;
+	void Display(BuildSettings buildSettings) override;
 
 protected:
 	PaddingSettings paddingSettings_;

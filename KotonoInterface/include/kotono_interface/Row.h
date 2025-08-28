@@ -13,9 +13,9 @@ public:
 	};
 
 	/// Defines an horizontal container for widgets
-	WRow(const RowSettings& rowSettings);
-
-	VView* CreateView() override;
+	WRow(const RowSettings& rowSettings);	
+	
+	void Display(BuildSettings buildSettings) override;
 
 protected:
 	RowSettings rowSettings_;

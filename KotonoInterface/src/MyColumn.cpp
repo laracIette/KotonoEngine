@@ -15,18 +15,6 @@ WWidget* WMyColumn::Build()
 			new WRow({
 				.spacing = 10.0f,
 				.children = {
-					/*new WStack({
-						.children = {
-							new WColor({
-								.color = KtColor::Red().WithValue(0.5f).WithAlpha(0.8f),
-							}),
-							new WButton({
-								.onPress = [this]() {
-									if (count_ > 1) SetState([this]() { --count_; KT_LOG_KI(KT_LOG_COMPILE_TIME_LEVEL, "%p dec %llu", this, count_); });
-								},
-							}),
-						},
-					}),*/
 					new WStack({
 						.children = {
 							new WColor({
@@ -34,8 +22,19 @@ WWidget* WMyColumn::Build()
 							}),
 							new WButton({
 								.onPress = [this]() {
-									SetState([this]() { ++count_; KT_LOG_KI(KT_LOG_COMPILE_TIME_LEVEL, "%p inc %llu", this, count_); });
-									//KT_LOG_KI(KT_LOG_COMPILE_TIME_LEVEL, "%p inc llu", this);
+									if (count_ > 1) SetState([this]() { --count_; });
+								},
+							}),
+						},
+					}),
+					new WStack({
+						.children = {
+							new WColor({
+								.color = KtColor::Red().WithValue(0.5f).WithAlpha(0.8f),
+							}),
+							new WButton({
+								.onPress = [this]() { 
+									SetState([this]() { ++count_; }); 
 								},
 							}),
 						},
