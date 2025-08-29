@@ -6,16 +6,32 @@ WStack::WStack(const StackSettings& stackSettings) :
 {
 }
 
-void WStack::Display(BuildSettings buildSettings)
+void WStack::Display(DisplaySettings displaySettings)
 {
-	SetBuildSettings(buildSettings);
+	SetDisplaySettings(displaySettings);
 
 	for (auto* child : stackSettings_.children)
 	{
 		if (child)
 		{
-			++buildSettings.layer;
-			child->Display(buildSettings);
+			++displaySettings.layer;
+			child->Display(displaySettings);
 		}
 	}
+}
+
+WWidget::DisplaySettings WStack::GetDisplaySettings(DisplaySettings displaySettings)
+{
+	glm::vec2 bounds{ 0.0f, 0.0f };
+
+	for (auto* child : stackSettings_.children)
+	{
+		if (child)
+		{
+			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
+			bounds = glm::max(bounds, childSettings.bounds);
+		}
+	}
+	displaySettings.bounds = glm::min(bounds, displaySettings.bounds);
+	return displaySettings;
 }

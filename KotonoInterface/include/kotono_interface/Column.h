@@ -3,8 +3,6 @@
 #include <vector>
 class WColumn : public WChildrenOwnerWidget
 {
-	friend class VColumnView;
-
 public:
 	struct ColumnSettings
 	{
@@ -16,7 +14,9 @@ public:
 	/// Defines a vertical container for widgets
 	WColumn(const ColumnSettings& columnSettings);
 
-	void Display(BuildSettings buildSettings) override;
+	void Display(DisplaySettings displaySettings) override;
+
+	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) override;
 
 protected:
 	ColumnSettings columnSettings_;

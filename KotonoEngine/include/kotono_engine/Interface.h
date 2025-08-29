@@ -8,13 +8,13 @@ class SInterface final
 
 private:
 	void Init();
+	void Cleanup();
 
 private:
 	RInterfaceLayoutObject* layout_;
 	RInterfaceImageObject* image1_;
 
 	WWidget* widget_;
-	void RebuildWidget() const;
 
 	//temp
 	void OnTextBox2ValueChanged(const float delta) const;

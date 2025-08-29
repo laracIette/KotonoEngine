@@ -17,6 +17,7 @@ void SEngine::Update()
 
 void SEngine::Cleanup()
 {
+    interface_.Cleanup();
     timeManager_.Cleanup();
     objectManager_.Cleanup();
     visualizer_.Cleanup();

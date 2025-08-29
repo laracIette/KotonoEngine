@@ -2,8 +2,6 @@
 #include "ChildOwnerWidget.h"
 class WCenter : public WChildOwnerWidget
 {
-	friend class VCenterView;
-
 public:
 	enum class Axis
 	{
@@ -22,7 +20,9 @@ public:
 	/// Center the child widget on an Axis
 	WCenter(const CenterSettings& centerSettings);
 
-	void Display(BuildSettings buildSettings) override;
+	void Display(DisplaySettings displaySettings) override;
+
+	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) override;
 
 protected:
 	CenterSettings centerSettings_;

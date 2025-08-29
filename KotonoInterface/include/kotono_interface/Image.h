@@ -4,8 +4,6 @@
 struct KtRenderable2DProxy;
 class WImage : public WWidget
 {
-	friend class VImageView;
-
 public:
 	struct ImageSettings
 	{
@@ -16,7 +14,7 @@ public:
 	/// Display an image over the widget's bounds
 	WImage(const ImageSettings& imageSettings);
 
-	void Display(BuildSettings buildSettings) override;
+	void Display(DisplaySettings displaySettings) override;
 
 	void Cleanup() override;
 

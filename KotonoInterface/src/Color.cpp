@@ -9,9 +9,9 @@ WColor::WColor(const ColorSettings& colorSettings) :
 {
 }
 
-void WColor::Display(BuildSettings buildSettings)
+void WColor::Display(DisplaySettings displaySettings)
 {
-	SetBuildSettings(buildSettings);
+	SetDisplaySettings(displaySettings);
 
 	static const auto shaderPath = Framework.GetPath().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
 	static const auto imagePath = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
@@ -20,7 +20,7 @@ void WColor::Display(BuildSettings buildSettings)
 	colorProxy_->shader = Framework.GetShaderManager().Get(shaderPath);
 	colorProxy_->renderable = Framework.GetImageTextureManager().Get(imagePath);
 	colorProxy_->viewport = &WindowViewport;
-	colorProxy_->layer = buildSettings.layer;
+	colorProxy_->layer = displaySettings.layer;
 	colorProxy_->objectData.modelMatrix = GetModelMatrix();
 	colorProxy_->objectData.color = colorSettings_.color;
 #	if _DEBUG

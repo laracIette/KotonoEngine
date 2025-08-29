@@ -135,16 +135,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\kotono_interface\Constraint.h" />
     <ClInclude Include="include\kotono_interface\ChildOwnerWidget.h" />
     <ClInclude Include="include\kotono_interface\ChildrenOwnerWidget.h" />
     <ClInclude Include="include\kotono_interface\Button.h" />
     <ClInclude Include="include\kotono_interface\Color.h" />
-    <ClInclude Include="include\kotono_interface\Bounds.h" />
+    <ClInclude Include="include\kotono_interface\Box.h" />
     <ClInclude Include="include\kotono_interface\Center.h" />
     <ClInclude Include="include\kotono_interface\Image.h" />
     <ClInclude Include="include\kotono_interface\Widget.h" />
     <ClInclude Include="include\kotono_interface\Column.h" />
-    <ClInclude Include="include\kotono_interface\Test.h" />
     <ClInclude Include="include\kotono_interface\utils.h" />
     <ClInclude Include="include\kotono_interface\Padding.h" />
     <ClInclude Include="include\kotono_interface\widgets.h" />
@@ -152,23 +152,21 @@
     <ClInclude Include="include\kotono_interface\log.h" />
     <ClInclude Include="include\kotono_interface\Row.h" />
     <ClInclude Include="include\kotono_interface\Offset.h" />
-    <ClInclude Include="include\kotono_interface\MyColumn.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Constraint.cpp" />
     <ClCompile Include="src\ChildOwnerWidget.cpp" />
     <ClCompile Include="src\ChildrenOwnerWidget.cpp" />
-    <ClCompile Include="src\MyColumn.cpp" />
     <ClCompile Include="src\Offset.cpp" />
     <ClCompile Include="src\Row.cpp" />
     <ClCompile Include="src\Button.cpp" />
     <ClCompile Include="src\Color.cpp" />
-    <ClCompile Include="src\Bounds.cpp" />
+    <ClCompile Include="src\Box.cpp" />
     <ClCompile Include="src\Padding.cpp" />
     <ClCompile Include="src\Center.cpp" />
     <ClCompile Include="src\Image.cpp" />
     <ClCompile Include="src\Widget.cpp" />
     <ClCompile Include="src\Column.cpp" />
-    <ClCompile Include="src\Test.cpp" />
     <ClCompile Include="src\utils.cpp" />
     <ClCompile Include="src\Stack.cpp" />
   </ItemGroup>

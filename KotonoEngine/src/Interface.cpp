@@ -14,9 +14,8 @@
 #include "InterfaceLayoutObject.h"
 #include "ObjectManager.h"
 #include "Timer.h"
-#include <log.h>
-
-#include <kotono_interface/Test.h>
+#include "MainWindow.h"
+#include "log.h"
 
 void SInterface::Init()
 {
@@ -83,12 +82,18 @@ void SInterface::Init()
 	textBox3->GetEventValueChanged().AddListener(KtDelegate(this, &SInterface::OnTextBox3ValueChanged));
 
 
-	widget_ = new WTest();
+	widget_ = new WMainWindow();
 	widget_->Display({
 		.position = { 0.0f, 0.0f },
-		.bounds = glm::vec2(WindowViewport.GetExtent()),
+		.bounds = static_cast<glm::vec2>(WindowViewport.GetExtent()),
 		.layer = 0,
 	});
+}
+
+void SInterface::Cleanup()
+{
+	widget_->Cleanup();
+	delete widget_;
 }
 
 void SInterface::OnTextBox2ValueChanged(const float delta) const

@@ -2,8 +2,6 @@
 #include "ChildrenOwnerWidget.h"
 class WRow : public WChildrenOwnerWidget
 {
-	friend class VRowView;
-
 public:
 	struct RowSettings
 	{
@@ -15,7 +13,9 @@ public:
 	/// Defines an horizontal container for widgets
 	WRow(const RowSettings& rowSettings);	
 	
-	void Display(BuildSettings buildSettings) override;
+	void Display(DisplaySettings displaySettings) override;
+
+	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) override;
 
 protected:
 	RowSettings rowSettings_;

@@ -1,23 +1,23 @@
 #pragma once
 #include "ChildOwnerWidget.h"
-class WOffset : public WChildOwnerWidget
+class WBox : public WChildOwnerWidget
 {
 public:
-	struct OffsetSettings
+	struct BoxSettings
 	{
 		/// default = { 0.0f, 0.0f }
 		glm::vec2 size{ 0.0f, 0.0f };
 		WWidget* child{ nullptr };
 	};
 
-	/// Offset the position of the child widget
-	WOffset(const OffsetSettings& offsetSettings);
+	/// Set bounds for the child widget to be contained within
+	WBox(const BoxSettings& boxSettings);
 
 	void Display(DisplaySettings displaySettings) override;
 
 	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) override;
 
 protected:
-	OffsetSettings offsetSettings_;
+	BoxSettings boxSettings_;
 };
 

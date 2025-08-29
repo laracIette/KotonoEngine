@@ -6,22 +6,39 @@ WPadding::WPadding(const PaddingSettings& paddingSettings) :
 {
 }
 
-void WPadding::Display(BuildSettings buildSettings)
+void WPadding::Display(DisplaySettings displaySettings)
 {
-	SetBuildSettings(buildSettings);
+	SetDisplaySettings(displaySettings);
 
-	buildSettings.bounds.x -= paddingSettings_.padding.l;
-	buildSettings.bounds.x -= paddingSettings_.padding.r;
-	buildSettings.bounds.y -= paddingSettings_.padding.t;
-	buildSettings.bounds.y -= paddingSettings_.padding.b;
+	displaySettings.bounds.x -= paddingSettings_.padding.l;
+	displaySettings.bounds.x -= paddingSettings_.padding.r;
+	displaySettings.bounds.y -= paddingSettings_.padding.t;
+	displaySettings.bounds.y -= paddingSettings_.padding.b;
 
-	buildSettings.position.x += (paddingSettings_.padding.l - paddingSettings_.padding.r) / 2.0f;
-	buildSettings.position.y += (paddingSettings_.padding.t - paddingSettings_.padding.b) / 2.0f;
+	displaySettings.position.x += (paddingSettings_.padding.l - paddingSettings_.padding.r) / 2.0f;
+	displaySettings.position.y += (paddingSettings_.padding.t - paddingSettings_.padding.b) / 2.0f;
 
-	++buildSettings.layer;
+	++displaySettings.layer;
 
 	if (paddingSettings_.child)
 	{
-		paddingSettings_.child->Display(buildSettings);
+		paddingSettings_.child->Display(displaySettings);
 	}
+}
+
+WWidget::DisplaySettings WPadding::GetDisplaySettings(DisplaySettings displaySettings)
+{
+	displaySettings.bounds.x -= paddingSettings_.padding.l;
+	displaySettings.bounds.x -= paddingSettings_.padding.r;
+	displaySettings.bounds.y -= paddingSettings_.padding.t;
+	displaySettings.bounds.y -= paddingSettings_.padding.b;
+
+	displaySettings.position.x += (paddingSettings_.padding.l - paddingSettings_.padding.r) / 2.0f;
+	displaySettings.position.y += (paddingSettings_.padding.t - paddingSettings_.padding.b) / 2.0f;
+	
+	if (paddingSettings_.child)
+	{
+		return paddingSettings_.child->GetDisplaySettings(displaySettings);
+	}
+	return displaySettings;
 }

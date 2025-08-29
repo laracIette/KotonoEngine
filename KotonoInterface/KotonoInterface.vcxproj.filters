@@ -24,9 +24,6 @@
     <ClInclude Include="include\kotono_interface\Column.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\kotono_interface\Test.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\kotono_interface\utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -36,7 +33,7 @@
     <ClInclude Include="include\kotono_interface\Padding.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\kotono_interface\Bounds.h">
+    <ClInclude Include="include\kotono_interface\Box.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\kotono_interface\widgets.h">
@@ -60,13 +57,13 @@
     <ClInclude Include="include\kotono_interface\Offset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\kotono_interface\MyColumn.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\kotono_interface\ChildrenOwnerWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\kotono_interface\ChildOwnerWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kotono_interface\Constraint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -80,9 +77,6 @@
     <ClCompile Include="src\Column.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -92,7 +86,7 @@
     <ClCompile Include="src\Padding.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Bounds.cpp">
+    <ClCompile Include="src\Box.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Color.cpp">
@@ -110,13 +104,13 @@
     <ClCompile Include="src\Offset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\MyColumn.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\ChildrenOwnerWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ChildOwnerWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Constraint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

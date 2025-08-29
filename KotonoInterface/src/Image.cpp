@@ -9,9 +9,9 @@ WImage::WImage(const ImageSettings& imageSettings) :
 {
 }
 
-void WImage::Display(BuildSettings buildSettings)
+void WImage::Display(DisplaySettings displaySettings)
 {
-	SetBuildSettings(buildSettings);
+	SetDisplaySettings(displaySettings);
 
 	static const auto shaderPath = Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)";
 
@@ -19,7 +19,7 @@ void WImage::Display(BuildSettings buildSettings)
 	imageProxy_->shader = Framework.GetShaderManager().Get(shaderPath);
 	imageProxy_->renderable = Framework.GetImageTextureManager().Get(imageSettings_.path);
 	imageProxy_->viewport = &WindowViewport;
-	imageProxy_->layer = buildSettings.layer;
+	imageProxy_->layer = displaySettings.layer;
 	imageProxy_->objectData.modelMatrix = GetModelMatrix();
 #	if _DEBUG
 		imageProxy_->source = this;

@@ -117,6 +117,9 @@
     <ClCompile Include="src\InterfaceLayoutObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\MainWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\kotono_engine\Anchor.h">
@@ -255,6 +258,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\kotono_engine\InterfaceLayoutObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kotono_engine\MainWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

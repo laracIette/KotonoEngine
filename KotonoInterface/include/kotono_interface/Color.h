@@ -4,8 +4,6 @@
 struct KtRenderable2DProxy;
 class WColor : public WWidget
 {
-	friend class VColorView;
-
 public:
 	struct ColorSettings
 	{
@@ -16,7 +14,7 @@ public:
 	/// Fill the widget's bounds with a color
 	WColor(const ColorSettings& colorSettings);
 
-	void Display(BuildSettings buildSettings) override;
+	void Display(DisplaySettings displaySettings) override;
 
 	void Cleanup() override;
 	

@@ -6,9 +6,9 @@ WRow::WRow(const RowSettings& rowSettings) :
 {
 }
 
-void WRow::Display(BuildSettings buildSettings)
+void WRow::Display(DisplaySettings displaySettings)
 {
-	SetBuildSettings(buildSettings);
+	SetDisplaySettings(displaySettings);
 
 	if (rowSettings_.children.empty())
 	{
@@ -17,26 +17,41 @@ void WRow::Display(BuildSettings buildSettings)
 
 	const auto count{ rowSettings_.children.size() };
 
-	buildSettings.position.x -= buildSettings.bounds.x / 2.0f;
+	displaySettings.position.x -= displaySettings.bounds.x / 2.0f;
 
 	if (count > 1)
 	{
-		buildSettings.bounds.x -= rowSettings_.spacing * static_cast<float>(count - 1);
-		buildSettings.bounds.x /= static_cast<float>(count);
+		displaySettings.bounds.x -= rowSettings_.spacing * static_cast<float>(count - 1);
+		displaySettings.bounds.x /= static_cast<float>(count);
 	}
 
-	buildSettings.position.x += buildSettings.bounds.x / 2.0f;
+	displaySettings.position.x += displaySettings.bounds.x / 2.0f;
 
-	++buildSettings.layer;
+	++displaySettings.layer;
 
 	for (auto* child : rowSettings_.children)
 	{
 		if (child)
 		{
-			child->Display(buildSettings);
-			buildSettings.position.x += buildSettings.bounds.x + rowSettings_.spacing;
-			//buildSettings.position.x += child->GetSize().x + rowSettings_.spacing;
+			child->Display(displaySettings);
+			displaySettings.position.x += child->GetSize().x + rowSettings_.spacing;
 		}
 	}
+}
+
+WWidget::DisplaySettings WRow::GetDisplaySettings(DisplaySettings displaySettings)
+{
+	float width{ 0.0f };
+
+	for (auto* child : rowSettings_.children)
+	{
+		if (child)
+		{
+			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
+			width += childSettings.bounds.x;
+		}
+	}
+	displaySettings.bounds.x = std::min(width, displaySettings.bounds.x);
+	return displaySettings;
 }
  

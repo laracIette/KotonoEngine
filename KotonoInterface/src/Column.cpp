@@ -6,9 +6,9 @@ WColumn::WColumn(const ColumnSettings& columnSettings) :
 {
 }
 
-void WColumn::Display(BuildSettings buildSettings)
+void WColumn::Display(DisplaySettings displaySettings)
 {
-	SetBuildSettings(buildSettings);
+	SetDisplaySettings(displaySettings);
 
 	if (columnSettings_.children.empty())
 	{
@@ -17,25 +17,40 @@ void WColumn::Display(BuildSettings buildSettings)
 
 	const auto count{ columnSettings_.children.size() };
 
-	buildSettings.position.y -= buildSettings.bounds.y / 2.0f;
+	displaySettings.position.y -= displaySettings.bounds.y / 2.0f;
 
 	if (count > 1)
 	{
-		buildSettings.bounds.y -= columnSettings_.spacing * static_cast<float>(count - 1);
-		buildSettings.bounds.y /= static_cast<float>(count);
+		displaySettings.bounds.y -= columnSettings_.spacing * static_cast<float>(count - 1);
+		displaySettings.bounds.y /= static_cast<float>(count);
 	}
 
-	buildSettings.position.y += buildSettings.bounds.y / 2.0f;
+	displaySettings.position.y += displaySettings.bounds.y / 2.0f;
 
-	++buildSettings.layer;
+	++displaySettings.layer;
 
 	for (auto* child : columnSettings_.children)
 	{
 		if (child)
 		{
-			child->Display(buildSettings);
-			buildSettings.position.y += buildSettings.bounds.y + columnSettings_.spacing;
-			//buildSettings.position.y += child->GetSize().y + columnSettings_.spacing;
+			child->Display(displaySettings);
+			displaySettings.position.y += child->GetSize().y + columnSettings_.spacing;
 		}
 	}
+}
+
+WWidget::DisplaySettings WColumn::GetDisplaySettings(DisplaySettings displaySettings)
+{
+	float height{ 0.0f };
+
+	for (auto* child : columnSettings_.children)
+	{
+		if (child)
+		{
+			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
+			height += childSettings.bounds.y;
+		}
+	}
+	displaySettings.bounds.y = std::min(height, displaySettings.bounds.y);
+	return displaySettings;
 }

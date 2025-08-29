@@ -3,8 +3,6 @@
 #include <vector>
 class WStack : public WChildrenOwnerWidget
 {
-	friend class VStackView;
-
 public:
 	struct StackSettings
 	{
@@ -14,7 +12,9 @@ public:
 	/// Display widgets on top of each other
 	WStack(const StackSettings& stackSettings);
 
-	void Display(BuildSettings buildSettings) override;
+	void Display(DisplaySettings displaySettings) override;
+
+	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) override;
 
 protected:
 	StackSettings stackSettings_;

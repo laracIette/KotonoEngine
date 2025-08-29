@@ -11,15 +11,21 @@ WWidget* WWidget::Build()
 	return this;
 }
 
-void WWidget::Display(BuildSettings buildSettings)
+void WWidget::Display(DisplaySettings displaySettings)
 {
-	SetBuildSettings(buildSettings);
+	SetDisplaySettings(displaySettings);
 
 	WWidget* build{ cachedBuild_ };
 	if (build && build != this)
 	{
-		build->Display(buildSettings);
+		build->Display(displaySettings);
 	}
+}
+
+WWidget::DisplaySettings WWidget::GetDisplaySettings(DisplaySettings displaySettings)
+{
+	displaySettings.bounds = { 0.0f, 0.0f };
+	return displaySettings;
 }
 
 void WWidget::Cleanup()
@@ -37,24 +43,24 @@ void WWidget::Cleanup()
 
 void WWidget::Rebuild()
 {
-	auto buildSettings{ buildSettings_ };
+	auto displaySettings{ displaySettings_ };
 	WWidget* build{ cachedBuild_.GetValue() };
 	if (build && build != this)
 	{
-		buildSettings = build->buildSettings_;
+		displaySettings = build->displaySettings_;
 	}
 	Cleanup();
-	Display(buildSettings);
+	Display(displaySettings);
 }
 
 glm::vec2 WWidget::GetPosition() const
 {
-	return buildSettings_.position;
+	return displaySettings_.position;
 }
 
 glm::vec2 WWidget::GetSize() const
 {
-	return buildSettings_.bounds;
+	return displaySettings_.bounds;
 }
 
 void WWidget::SetState(const StateFunction& function)
@@ -64,14 +70,14 @@ void WWidget::SetState(const StateFunction& function)
 	Rebuild();
 }
 
-void WWidget::SetBuildSettings(const BuildSettings& buildSettings)
+void WWidget::SetDisplaySettings(const DisplaySettings& displaySettings)
 {
-	buildSettings_ = buildSettings;
+	displaySettings_ = displaySettings;
 }
 
 glm::mat4 WWidget::GetTranslationMatrix() const
 {
-	return glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(buildSettings_.position), 0.0f });
+	return glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(displaySettings_.position), 0.0f });
 }
 
 glm::mat4 WWidget::GetRotationMatrix() const
@@ -81,7 +87,7 @@ glm::mat4 WWidget::GetRotationMatrix() const
 
 glm::mat4 WWidget::GetScaleMatrix() const
 {
-	return glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(buildSettings_.bounds), 1.0f });
+	return glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(displaySettings_.bounds), 1.0f });
 }
 
 glm::mat4 WWidget::GetModelMatrix() const
