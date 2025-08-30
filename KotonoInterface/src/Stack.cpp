@@ -9,6 +9,7 @@ WStack::WStack(const StackSettings& stackSettings) :
 void WStack::Display(DisplaySettings displaySettings)
 {
 	SetDisplaySettings(displaySettings);
+	displaySettings = GetDisplaySettings(displaySettings);
 
 	for (auto* child : stackSettings_.children)
 	{
@@ -20,7 +21,7 @@ void WStack::Display(DisplaySettings displaySettings)
 	}
 }
 
-WWidget::DisplaySettings WStack::GetDisplaySettings(DisplaySettings displaySettings)
+WWidget::DisplaySettings WStack::GetDisplaySettings(DisplaySettings displaySettings) const
 {
 	glm::vec2 bounds{ 0.0f, 0.0f };
 

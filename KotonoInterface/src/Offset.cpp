@@ -9,8 +9,8 @@ WOffset::WOffset(const OffsetSettings& offsetSettings) :
 void WOffset::Display(DisplaySettings displaySettings)
 {
 	SetDisplaySettings(displaySettings);
+	displaySettings = GetDisplaySettings(displaySettings);
 
-	displaySettings.position += offsetSettings_.size;
 	++displaySettings.layer;
 
 	if (offsetSettings_.child)
@@ -19,7 +19,7 @@ void WOffset::Display(DisplaySettings displaySettings)
 	}
 }
 
-WWidget::DisplaySettings WOffset::GetDisplaySettings(DisplaySettings displaySettings)
+WWidget::DisplaySettings WOffset::GetDisplaySettings(DisplaySettings displaySettings) const
 {
 	displaySettings.position += offsetSettings_.size;
 	

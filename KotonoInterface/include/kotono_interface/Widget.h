@@ -23,7 +23,7 @@ public:
 
 	virtual void Display(DisplaySettings displaySettings);
 
-	virtual DisplaySettings GetDisplaySettings(DisplaySettings displaySettings);
+	virtual DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const;
 
 	virtual void Cleanup();
 

@@ -11,9 +11,9 @@ public:
 
 	struct ConstraintSettings
 	{
-		// default = Axis::Horizontal
+		/// default = Axis::Horizontal
 		Axis axis{ Axis::Horizontal };
-		// default = 0.0f
+		/// default = 0.0f
 		float size{ 0.0f };
 		WWidget* child{ nullptr };
 	};
@@ -23,7 +23,7 @@ public:
 
 	void Display(DisplaySettings displaySettings) override;
 
-	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) override;
+	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
 
 private:
 	ConstraintSettings constraintSettings_;

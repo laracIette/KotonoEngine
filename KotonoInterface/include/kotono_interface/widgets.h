@@ -6,6 +6,7 @@
 #include "Color.h"
 #include "Column.h"
 #include "Constraint.h"
+#include "Expanded.h"
 #include "Image.h"
 #include "Offset.h"
 #include "Padding.h"

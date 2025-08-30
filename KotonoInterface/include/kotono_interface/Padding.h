@@ -29,7 +29,7 @@ public:
 
 	void Display(DisplaySettings displaySettings) override;
 
-	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) override;
+	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
 
 protected:
 	PaddingSettings paddingSettings_;

@@ -1,4 +1,5 @@
 #include "Row.h"
+#include "Expanded.h"
 
 WRow::WRow(const RowSettings& rowSettings) :
 	WChildrenOwnerWidget(rowSettings.children),
@@ -9,23 +10,34 @@ WRow::WRow(const RowSettings& rowSettings) :
 void WRow::Display(DisplaySettings displaySettings)
 {
 	SetDisplaySettings(displaySettings);
+	displaySettings = GetDisplaySettings(displaySettings);
 
-	if (rowSettings_.children.empty())
+	size_t expandedCount{ 0 };
+	float nonExpandedwidth{ 0.0f };
+	for (const auto* child : rowSettings_.children)
 	{
-		return;
+		if (child)
+		{
+			if (dynamic_cast<const WExpanded*>(child))
+			{
+				++expandedCount;
+			}
+			else
+			{
+				nonExpandedwidth += child->GetDisplaySettings(displaySettings).bounds.x;
+			}
+		}
 	}
 
-	const auto count{ rowSettings_.children.size() };
-
-	displaySettings.position.x -= displaySettings.bounds.x / 2.0f;
-
-	if (count > 1)
+	float expandedwidth{ displaySettings.bounds.x - nonExpandedwidth };
+	if (!rowSettings_.children.empty())
 	{
-		displaySettings.bounds.x -= rowSettings_.spacing * static_cast<float>(count - 1);
-		displaySettings.bounds.x /= static_cast<float>(count);
+		expandedwidth -= rowSettings_.spacing * static_cast<float>(rowSettings_.children.size() - 1);
 	}
-
-	displaySettings.position.x += displaySettings.bounds.x / 2.0f;
+	if (expandedCount > 0)
+	{
+		expandedwidth /= static_cast<float>(expandedCount);
+	}
 
 	++displaySettings.layer;
 
@@ -33,25 +45,45 @@ void WRow::Display(DisplaySettings displaySettings)
 	{
 		if (child)
 		{
-			child->Display(displaySettings);
-			displaySettings.position.x += child->GetSize().x + rowSettings_.spacing;
+			auto settings{ displaySettings };
+
+			if (dynamic_cast<WExpanded*>(child))
+			{
+				settings.bounds.x = expandedwidth;
+				child->Display(settings);
+			}
+
+			child->Display(settings);
+
+			displaySettings.position.x += child->GetDisplaySettings(settings).bounds.x;
+			displaySettings.position.x += rowSettings_.spacing;
+
+			displaySettings.bounds.x -= child->GetDisplaySettings(settings).bounds.x;
+			displaySettings.bounds.x -= rowSettings_.spacing;
 		}
 	}
 }
 
-WWidget::DisplaySettings WRow::GetDisplaySettings(DisplaySettings displaySettings)
+WWidget::DisplaySettings WRow::GetDisplaySettings(DisplaySettings displaySettings) const
 {
-	float width{ 0.0f };
+	glm::vec2 size{ 0.0f, 0.0f };
 
 	for (auto* child : rowSettings_.children)
 	{
 		if (child)
 		{
 			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
-			width += childSettings.bounds.x;
+			size.x += childSettings.bounds.x;
+			size.y = std::max(size.y, childSettings.bounds.y);
 		}
 	}
-	displaySettings.bounds.x = std::min(width, displaySettings.bounds.x);
+
+	if (!rowSettings_.children.empty())
+	{
+		size.x += rowSettings_.spacing * static_cast<float>(rowSettings_.children.size() - 1);
+	}
+
+	displaySettings.bounds = glm::min(size, displaySettings.bounds);
 	return displaySettings;
 }
  

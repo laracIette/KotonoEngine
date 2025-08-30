@@ -9,19 +9,8 @@ WCenter::WCenter(const CenterSettings& centerSettings) :
 void WCenter::Display(DisplaySettings displaySettings)
 {
 	SetDisplaySettings(displaySettings);
+	displaySettings = GetDisplaySettings(displaySettings);
 
-	switch (centerSettings_.axis)
-	{
-	case WCenter::Axis::All:
-		displaySettings.position = (displaySettings.position + displaySettings.bounds) / 2.0f;
-		break;
-	case WCenter::Axis::Horizontal:
-		displaySettings.position.x = (displaySettings.position.x + displaySettings.bounds.x) / 2.0f;
-		break;
-	case WCenter::Axis::Vertical:
-		displaySettings.position.y = (displaySettings.position.y + displaySettings.bounds.y) / 2.0f;
-		break;
-	}
 	++displaySettings.layer;
 
 	if (centerSettings_.child)
@@ -30,24 +19,24 @@ void WCenter::Display(DisplaySettings displaySettings)
 	}
 }
 
-WWidget::DisplaySettings WCenter::GetDisplaySettings(DisplaySettings displaySettings)
+WWidget::DisplaySettings WCenter::GetDisplaySettings(DisplaySettings displaySettings) const
 {
 	switch (centerSettings_.axis)
 	{
-	case WCenter::Axis::All:
+	case Axis::All:
 		displaySettings.position = (displaySettings.position + displaySettings.bounds) / 2.0f;
 		break;
-	case WCenter::Axis::Horizontal:
+	case Axis::Horizontal:
 		displaySettings.position.x = (displaySettings.position.x + displaySettings.bounds.x) / 2.0f;
 		break;
-	case WCenter::Axis::Vertical:
+	case Axis::Vertical:
 		displaySettings.position.y = (displaySettings.position.y + displaySettings.bounds.y) / 2.0f;
 		break;
 	}
 
-	if (centerSettings_.child)
-	{
-		return centerSettings_.child->GetDisplaySettings(displaySettings);
-	}
+	//if (centerSettings_.child)
+	//{
+	//	return centerSettings_.child->GetDisplaySettings(displaySettings);
+	//}
 	return displaySettings;
 }

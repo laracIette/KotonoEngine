@@ -22,7 +22,7 @@ void WWidget::Display(DisplaySettings displaySettings)
 	}
 }
 
-WWidget::DisplaySettings WWidget::GetDisplaySettings(DisplaySettings displaySettings)
+WWidget::DisplaySettings WWidget::GetDisplaySettings(DisplaySettings displaySettings) const
 {
 	displaySettings.bounds = { 0.0f, 0.0f };
 	return displaySettings;
@@ -77,7 +77,7 @@ void WWidget::SetDisplaySettings(const DisplaySettings& displaySettings)
 
 glm::mat4 WWidget::GetTranslationMatrix() const
 {
-	return glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(displaySettings_.position), 0.0f });
+	return glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(displaySettings_.position + displaySettings_.bounds / 2.0f), 0.0f });
 }
 
 glm::mat4 WWidget::GetRotationMatrix() const

@@ -9,18 +9,8 @@ WConstraint::WConstraint(const ConstraintSettings& constraintSettings) :
 void WConstraint::Display(DisplaySettings displaySettings)
 {
 	SetDisplaySettings(displaySettings);
+	displaySettings = GetDisplaySettings(displaySettings);
 
-	switch (constraintSettings_.axis)
-	{
-	case Axis::Horizontal:
-		displaySettings.bounds.x = constraintSettings_.size;
-		break;
-	case Axis::Vertical:
-		displaySettings.bounds.y = constraintSettings_.size;
-		break;
-	default:
-		break;
-	}
 	++displaySettings.layer;
 
 	if (constraintSettings_.child)
@@ -29,7 +19,7 @@ void WConstraint::Display(DisplaySettings displaySettings)
 	}
 }
 
-WWidget::DisplaySettings WConstraint::GetDisplaySettings(DisplaySettings displaySettings)
+WWidget::DisplaySettings WConstraint::GetDisplaySettings(DisplaySettings displaySettings) const
 {
 	switch (constraintSettings_.axis)
 	{
