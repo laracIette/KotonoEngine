@@ -13,6 +13,7 @@ public:
 	void Display(DisplaySettings displaySettings) override;
 
 	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
+	DisplaySettings GetChildDisplaySettings(const DisplaySettings displaySettings) const override;
 
 private:
 	ExpandedSettings expandedSettings_;

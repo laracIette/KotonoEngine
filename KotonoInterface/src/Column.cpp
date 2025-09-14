@@ -13,29 +13,23 @@ void WColumn::Display(DisplaySettings displaySettings)
 	SetDisplaySettings(displaySettings);
 	displaySettings = GetDisplaySettings(displaySettings);
 
-	size_t expandedCount{ 0 };
+	// Get non-expanded height
 	float nonExpandedHeight{ 0.0f };
 	for (const auto* child : columnSettings_.children)
 	{
-		if (child)
+		if (child && !dynamic_cast<const WExpanded*>(child))
 		{
-			if (dynamic_cast<const WExpanded*>(child))
-			{
-				++expandedCount;
-			}
-			else
-			{
-				nonExpandedHeight += child->GetDisplaySettings(displaySettings).bounds.y;
-			}
+			nonExpandedHeight += child->GetDisplaySettings(displaySettings).bounds.y;
 		}
 	}
 
+	// Get expanded height
 	float expandedHeight{ displaySettings.bounds.y - nonExpandedHeight };
 	if (!columnSettings_.children.empty())
 	{
 		expandedHeight -= columnSettings_.spacing * static_cast<float>(columnSettings_.children.size() - 1);
 	}
-	if (expandedCount > 0)
+	if (size_t expandedCount = GetExpandedCount())
 	{
 		expandedHeight /= static_cast<float>(expandedCount);
 	}
@@ -48,10 +42,9 @@ void WColumn::Display(DisplaySettings displaySettings)
 		{
 			auto settings{ displaySettings };
 
-			if (dynamic_cast<WExpanded*>(child))
+			if (dynamic_cast<const WExpanded*>(child))
 			{
 				settings.bounds.y = expandedHeight;
-				child->Display(settings);
 			}
 
 			child->Display(settings);
@@ -67,7 +60,19 @@ void WColumn::Display(DisplaySettings displaySettings)
 
 WWidget::DisplaySettings WColumn::GetDisplaySettings(DisplaySettings displaySettings) const
 {
-	glm::vec2 size{ 0.0f,0.0f };
+	// Return the same display settings because an expanded would fill any free space
+	if (std::any_of(
+			columnSettings_.children.begin(), columnSettings_.children.end(),
+			[](const WWidget* child) 
+			{ 
+				return dynamic_cast<const WExpanded*>(child); 
+			}
+	))
+	{
+		return displaySettings;
+	}
+
+	glm::vec2 size{ 0.0f, 0.0f };
 
 	for (auto* child : columnSettings_.children)
 	{

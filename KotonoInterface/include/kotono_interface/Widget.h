@@ -21,16 +21,22 @@ public:
 
 	virtual WWidget* Build();
 
+	virtual void Cleanup();
+
 	virtual void Display(DisplaySettings displaySettings);
 
 	virtual DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const;
-
-	virtual void Cleanup();
+	virtual DisplaySettings GetChildDisplaySettings(const DisplaySettings displaySettings) const;
 
 	glm::vec2 GetPosition() const;
 	glm::vec2 GetSize() const;
 
+	void SetParent(WWidget* parent);
+
 protected:
+	WWidget* parent_;
+	DisplaySettings displaySettings_;
+
 	void SetState(const StateFunction& function);
 	void SetDisplaySettings(const DisplaySettings& displaySettings);
 
@@ -40,7 +46,6 @@ protected:
 	glm::mat4 GetModelMatrix() const;
 
 private:
-	DisplaySettings displaySettings_;
 	KtCached<WWidget*> cachedBuild_;
 
 	void Rebuild();

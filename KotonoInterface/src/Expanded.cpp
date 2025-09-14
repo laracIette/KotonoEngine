@@ -21,3 +21,8 @@ WWidget::DisplaySettings WExpanded::GetDisplaySettings(DisplaySettings displaySe
 {
 	return displaySettings;
 }
+
+WWidget::DisplaySettings WExpanded::GetChildDisplaySettings(const DisplaySettings displaySettings) const
+{
+	return displaySettings_;
+}

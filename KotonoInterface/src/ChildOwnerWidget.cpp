@@ -3,6 +3,10 @@
 WChildOwnerWidget::WChildOwnerWidget(WWidget* child) :
 	child_(child)
 {
+	if (child_)
+	{
+		child_->SetParent(this);
+	}
 }
 
 void WChildOwnerWidget::Cleanup()

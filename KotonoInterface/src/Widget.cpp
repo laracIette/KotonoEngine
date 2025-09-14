@@ -11,6 +11,19 @@ WWidget* WWidget::Build()
 	return this;
 }
 
+void WWidget::Cleanup()
+{
+	WWidget* build{ cachedBuild_.GetValue() };
+	if (build != this)
+	{
+		if (build)
+		{
+			build->Cleanup();
+		}
+		delete build;
+	}
+}
+
 void WWidget::Display(DisplaySettings displaySettings)
 {
 	SetDisplaySettings(displaySettings);
@@ -28,17 +41,9 @@ WWidget::DisplaySettings WWidget::GetDisplaySettings(DisplaySettings displaySett
 	return displaySettings;
 }
 
-void WWidget::Cleanup()
+WWidget::DisplaySettings WWidget::GetChildDisplaySettings(const DisplaySettings displaySettings) const
 {
-	WWidget* build{ cachedBuild_.GetValue() };
-	if (build != this)
-	{
-		if (build)
-		{
-			build->Cleanup();
-		}
-		delete build;
-	}
+	return displaySettings;
 }
 
 void WWidget::Rebuild()
@@ -61,6 +66,11 @@ glm::vec2 WWidget::GetPosition() const
 glm::vec2 WWidget::GetSize() const
 {
 	return displaySettings_.bounds;
+}
+
+void WWidget::SetParent(WWidget* parent)
+{
+	parent_ = parent;
 }
 
 void WWidget::SetState(const StateFunction& function)

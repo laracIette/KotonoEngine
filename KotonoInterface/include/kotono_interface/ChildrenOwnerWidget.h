@@ -10,6 +10,9 @@ public:
 
 	void Cleanup() override;
 
+protected:
+	size_t GetExpandedCount() const;
+
 private:
 	WidgetVector children_;
 };
