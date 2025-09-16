@@ -60,16 +60,16 @@ void KtFont::SetSpacing(const float spacing)
     spacing_ = spacing;
 }
 
-std::vector<KtImageTexture*> KtFont::GetTextTextures(const std::string_view text) const
+std::vector<std::filesystem::path> KtFont::GetTextPaths(const std::string_view text) const
 {
-    std::vector<KtImageTexture*> result;
+    std::vector<std::filesystem::path> result;
     result.reserve(text.size());
 
     for (const auto character : text)
     {
         // default texture
         auto characterPath = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
-        
+
         const auto it = CHARACTER_NAMES.find(character);
         if (it != CHARACTER_NAMES.end())
         {
@@ -81,7 +81,20 @@ std::vector<KtImageTexture*> KtFont::GetTextTextures(const std::string_view text
             }
         }
 
-        result.push_back(Framework.GetImageTextureManager().Get(characterPath));
+        result.push_back(characterPath);
+    }
+
+    return result;
+}
+
+std::vector<KtImageTexture*> KtFont::GetTextTextures(const std::string_view text) const
+{
+    std::vector<KtImageTexture*> result;
+    result.reserve(text.size());
+
+    for (const auto& path : GetTextPaths(text))
+    {
+        result.push_back(Framework.GetImageTextureManager().Get(path));
     }
 
     return result;

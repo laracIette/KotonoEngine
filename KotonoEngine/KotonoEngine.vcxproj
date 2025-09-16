@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\DrawTimeText.cpp" />
     <ClCompile Include="src\MainWindow.cpp" />
     <ClCompile Include="src\InterfaceLayoutObject.cpp" />
     <ClCompile Include="src\InterfaceBoxComponent.cpp" />
@@ -54,8 +55,10 @@
     <ClCompile Include="src\TimeManager.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\Visualizer.cpp" />
+    <ClCompile Include="src\UpdateTimeText.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\kotono_engine\DrawTimeText.h" />
     <ClInclude Include="include\kotono_engine\Anchor.h" />
     <ClInclude Include="include\kotono_engine\Application.h" />
     <ClInclude Include="include\kotono_engine\base_class.h" />
@@ -103,6 +106,7 @@
     <ClInclude Include="include\kotono_engine\InterfaceBoxComponent.h" />
     <ClInclude Include="include\kotono_engine\InterfaceLayoutObject.h" />
     <ClInclude Include="include\kotono_engine\MainWindow.h" />
+    <ClInclude Include="include\kotono_engine\UpdateTimeText.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

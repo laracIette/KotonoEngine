@@ -1,7 +1,7 @@
 #pragma once
 #include <kotono_interface/Widget.h>
 class KTimer;
-class WMainWindow : public WWidget
+class WDrawTimeText : public WWidget
 {
 public:
 	WWidget* Build() override;
@@ -10,5 +10,7 @@ public:
 
 private:
 	KTimer* updateTimer_;
+
+	void UpdateText();
 };
 

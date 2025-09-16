@@ -26,7 +26,6 @@ public:
 	virtual void Display(DisplaySettings displaySettings);
 
 	virtual DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const;
-	virtual DisplaySettings GetChildDisplaySettings(const DisplaySettings displaySettings) const;
 
 	glm::vec2 GetPosition() const;
 	glm::vec2 GetSize() const;

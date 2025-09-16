@@ -60,17 +60,17 @@ void WColumn::Display(DisplaySettings displaySettings)
 
 WWidget::DisplaySettings WColumn::GetDisplaySettings(DisplaySettings displaySettings) const
 {
-	// Return the same display settings because an expanded would fill any free space
-	if (std::any_of(
-			columnSettings_.children.begin(), columnSettings_.children.end(),
-			[](const WWidget* child) 
-			{ 
-				return dynamic_cast<const WExpanded*>(child); 
-			}
-	))
-	{
-		return displaySettings;
-	}
+	//// Return the same display settings because an expanded would fill any free space
+	//if (std::any_of(
+	//		columnSettings_.children.begin(), columnSettings_.children.end(),
+	//		[](const WWidget* child) 
+	//		{ 
+	//			return dynamic_cast<const WExpanded*>(child); 
+	//		}
+	//))
+	//{
+	//	return displaySettings;
+	//}
 
 	glm::vec2 size{ 0.0f, 0.0f };
 

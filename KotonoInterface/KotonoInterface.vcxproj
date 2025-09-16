@@ -153,6 +153,7 @@
     <ClInclude Include="include\kotono_interface\log.h" />
     <ClInclude Include="include\kotono_interface\Row.h" />
     <ClInclude Include="include\kotono_interface\Offset.h" />
+    <ClInclude Include="include\kotono_interface\Text.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Expanded.cpp" />
@@ -171,6 +172,7 @@
     <ClCompile Include="src\Column.cpp" />
     <ClCompile Include="src\utils.cpp" />
     <ClCompile Include="src\Stack.cpp" />
+    <ClCompile Include="src\Text.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

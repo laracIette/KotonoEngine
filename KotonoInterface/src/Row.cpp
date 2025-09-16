@@ -60,16 +60,16 @@ void WRow::Display(DisplaySettings displaySettings)
 
 WWidget::DisplaySettings WRow::GetDisplaySettings(DisplaySettings displaySettings) const
 {
-	// Return the same display settings because an expanded would fill any free space
-	if (std::any_of(
-		rowSettings_.children.begin(), rowSettings_.children.end(),
-		[](const WWidget* child) {
-			return dynamic_cast<const WExpanded*>(child);
-		}
-	))
-	{
-		return displaySettings;
-	}
+	//// Return the same display settings because an expanded would fill any free space
+	//if (std::any_of(
+	//	rowSettings_.children.begin(), rowSettings_.children.end(),
+	//	[](const WWidget* child) {
+	//		return dynamic_cast<const WExpanded*>(child);
+	//	}
+	//))
+	//{
+	//	return displaySettings;
+	//}
 
 	glm::vec2 size{ 0.0f, 0.0f };
 

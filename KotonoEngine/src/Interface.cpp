@@ -23,8 +23,6 @@ void SInterface::Init()
 
 	image1_ = Engine.GetObjectManager().Create<RInterfaceImageObject>();
 	auto* image2 = Engine.GetObjectManager().Create<RInterfaceImageObject>();
-	auto* updateTextBox = Engine.GetObjectManager().Create<RInterfaceTextBoxObject>();
-	auto* drawTextBox = Engine.GetObjectManager().Create<RInterfaceTextBoxObject>();
 	auto* textBox2 = Engine.GetObjectManager().Create<RInterfaceFloatTextBoxObject>();
 	auto* textBox3 = Engine.GetObjectManager().Create<RInterfaceFloatTextBoxObject>();
 	image1_->GetImageComponent()->SetScreenSize(glm::vec2(1024.0f, 1024.0f));
@@ -59,19 +57,6 @@ void SInterface::Init()
 	interfaceObjectStack->AddItem(image2);
 #endif
 #endif
-
-	updateTextBox->GetRootComponent()->SetRelativePosition({ 0.4f, -0.85f });
-	updateTextBox->GetTextComponent()->SetTextBinding([]() { return std::format("U {:.8f}s", Engine.GetObjectManager().GetAverageUpdateTime()); });
-	
-	drawTextBox->GetRootComponent()->SetRelativePosition({ 0.4f, -0.7f });
-	drawTextBox->GetTextComponent()->SetTextBinding([]() { return std::format("D {:.8f}s", Engine.GetObjectManager().GetAverageDrawTime()); });
-
-	auto* updateTextTimer = Engine.GetObjectManager().Create<KTimer>();
-	updateTextTimer->SetDuration(UDuration::FromSeconds(1.0f / 60.0f));
-	updateTextTimer->SetIsRepeat(true);
-	updateTextTimer->GetEventCompleted().AddListener(KtDelegate(updateTextBox->GetTextComponent(), &KInterfaceTextComponent::UpdateTextWithBinding));
-	updateTextTimer->GetEventCompleted().AddListener(KtDelegate(drawTextBox->GetTextComponent(), &KInterfaceTextComponent::UpdateTextWithBinding));
-	updateTextTimer->Start();
 
 	textBox2->GetRootComponent()->SetRelativePosition(glm::vec2(0.3f, 0.3f));
 	textBox2->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRootComponent()->GetScreenPosition().x); });

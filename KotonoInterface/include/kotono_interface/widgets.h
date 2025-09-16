@@ -12,3 +12,4 @@
 #include "Padding.h"
 #include "Row.h"
 #include "Stack.h"
+#include "Text.h"

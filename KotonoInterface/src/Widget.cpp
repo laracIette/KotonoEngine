@@ -37,12 +37,13 @@ void WWidget::Display(DisplaySettings displaySettings)
 
 WWidget::DisplaySettings WWidget::GetDisplaySettings(DisplaySettings displaySettings) const
 {
-	displaySettings.bounds = { 0.0f, 0.0f };
-	return displaySettings;
-}
+	WWidget* build{ cachedBuild_.GetValue() };
+	if (build && build != this)
+	{
+		return build->GetDisplaySettings(displaySettings);
+	}
 
-WWidget::DisplaySettings WWidget::GetChildDisplaySettings(const DisplaySettings displaySettings) const
-{
+	//displaySettings.bounds = { 0.0f, 0.0f };
 	return displaySettings;
 }
 
