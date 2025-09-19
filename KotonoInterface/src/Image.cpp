@@ -9,10 +9,8 @@ WImage::WImage(const ImageSettings& imageSettings) :
 {
 }
 
-void WImage::Display(DisplaySettings displaySettings)
+void WImage::DisplayInternal(DisplaySettings displaySettings)
 {
-	SetDisplaySettings(displaySettings);
-
 	static const auto shaderPath = Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)";
 
 	imageProxy_ = Framework.GetRenderer().GetInterfaceRenderer().CreateProxy();

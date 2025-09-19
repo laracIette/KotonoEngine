@@ -20,11 +20,11 @@ public:
 	/// Center the child widget on an Axis
 	WCenter(const CenterSettings& centerSettings);
 
-	void Display(DisplaySettings displaySettings) override;
-
 	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
 
 protected:
 	CenterSettings centerSettings_;
+
+	void DisplayInternal(DisplaySettings displaySettings) override;
 };
 

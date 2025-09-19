@@ -6,11 +6,8 @@ WCenter::WCenter(const CenterSettings& centerSettings) :
 {
 }
 
-void WCenter::Display(DisplaySettings displaySettings)
+void WCenter::DisplayInternal(DisplaySettings displaySettings)
 {
-	SetDisplaySettings(displaySettings);
-	displaySettings = GetDisplaySettings(displaySettings);
-
 	++displaySettings.layer;
 
 	if (centerSettings_.child)

@@ -27,11 +27,11 @@ public:
 	/// Shrink the bounds of the child widget
 	WPadding(const PaddingSettings& paddingSettings);
 
-	void Display(DisplaySettings displaySettings) override;
-
 	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
 
 protected:
 	PaddingSettings paddingSettings_;
+
+	void DisplayInternal(DisplaySettings displaySettings) override;
 };
 

@@ -6,11 +6,8 @@ WStack::WStack(const StackSettings& stackSettings) :
 {
 }
 
-void WStack::Display(DisplaySettings displaySettings)
+void WStack::DisplayInternal(DisplaySettings displaySettings)
 {
-	SetDisplaySettings(displaySettings);
-	displaySettings = GetDisplaySettings(displaySettings);
-
 	for (auto* child : stackSettings_.children)
 	{
 		if (child)

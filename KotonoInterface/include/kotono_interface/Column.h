@@ -8,17 +8,20 @@ public:
 	{
 		/// default = 0.0f
 		float spacing{ 0.0f };
-		std::vector<WWidget*> children{};
+		WidgetVector children{};
 	};
 
 	/// Defines a vertical container for widgets
 	WColumn(const ColumnSettings& columnSettings);
 
-	void Display(DisplaySettings displaySettings) override;
-
 	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
 
 protected:
 	ColumnSettings columnSettings_;
+
+	void DisplayInternal(DisplaySettings displaySettings) override;
+
+private:
+	size_t GetFlexCount() const;
 };
 

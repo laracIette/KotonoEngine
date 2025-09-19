@@ -14,29 +14,34 @@ public:
 	{}
 
 	// Get the current value without setting it if dirty
-	T GetValue() const
+	T GetValue() const noexcept
 	{
 		return value_;
 	}
 
-	bool GetIsDirty() const
-	{
-		return isDirty_;
-	}
-
-	void MarkDirty()
-	{
-		isDirty_ = true;
-	}
-
-	operator T()
+	// Compute the value if dirty
+	void TryUpdateValue()
 	{
 		if (isDirty_)
 		{
 			isDirty_ = false;
 			value_ = valueFunction_();
 		}
+	}
 
+	bool GetIsDirty() const noexcept
+	{
+		return isDirty_;
+	}
+
+	void MarkDirty() noexcept
+	{
+		isDirty_ = true;
+	}
+
+	operator T()
+	{
+		TryUpdateValue();
 		return value_;
 	}
 

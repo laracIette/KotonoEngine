@@ -6,11 +6,8 @@ WExpanded::WExpanded(const ExpandedSettings& expandedSettings) :
 {
 }
 
-void WExpanded::Display(DisplaySettings displaySettings)
+void WExpanded::DisplayInternal(DisplaySettings displaySettings)
 {
-	SetDisplaySettings(displaySettings);
-	displaySettings = GetDisplaySettings(displaySettings);
-
 	if (expandedSettings_.child)
 	{
 		expandedSettings_.child->Display(displaySettings);
@@ -20,4 +17,9 @@ void WExpanded::Display(DisplaySettings displaySettings)
 WWidget::DisplaySettings WExpanded::GetDisplaySettings(DisplaySettings displaySettings) const
 {
 	return displaySettings;
+}
+
+EFlex WExpanded::GetFlex() const
+{
+	return EFlex::All;
 }

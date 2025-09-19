@@ -14,12 +14,12 @@ public:
 	/// Display an image over the widget's bounds
 	WImage(const ImageSettings& imageSettings);
 
-	void Display(DisplaySettings displaySettings) override;
-
 	void Cleanup() override;
 
 protected:
 	ImageSettings imageSettings_;
 	KtRenderable2DProxy* imageProxy_;
+
+	void DisplayInternal(DisplaySettings displaySettings) override;
 };
 

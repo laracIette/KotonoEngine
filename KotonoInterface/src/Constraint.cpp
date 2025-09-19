@@ -6,11 +6,8 @@ WConstraint::WConstraint(const ConstraintSettings& constraintSettings) :
 {
 }
 
-void WConstraint::Display(DisplaySettings displaySettings)
+void WConstraint::DisplayInternal(DisplaySettings displaySettings)
 {
-	SetDisplaySettings(displaySettings);
-	displaySettings = GetDisplaySettings(displaySettings);
-
 	++displaySettings.layer;
 
 	if (constraintSettings_.child)

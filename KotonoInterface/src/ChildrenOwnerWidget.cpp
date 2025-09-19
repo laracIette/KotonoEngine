@@ -1,5 +1,4 @@
 #include "ChildrenOwnerWidget.h"
-#include "Expanded.h"
 
 WChildrenOwnerWidget::WChildrenOwnerWidget(const WidgetVector& children) :
 	children_(children)
@@ -9,6 +8,18 @@ WChildrenOwnerWidget::WChildrenOwnerWidget(const WidgetVector& children) :
 		if (child)
 		{
 			child->SetParent(this);
+		}
+	}
+}
+
+void WChildrenOwnerWidget::CacheBuild()
+{
+	WWidget::CacheBuild();
+	for (auto* child : children_)
+	{
+		if (child)
+		{
+			child->CacheBuild();
 		}
 	}
 }
@@ -27,15 +38,33 @@ void WChildrenOwnerWidget::Cleanup()
 	WWidget::Cleanup();
 }
 
-size_t WChildrenOwnerWidget::GetExpandedCount() const
+EFlex WChildrenOwnerWidget::GetFlex() const
 {
-	size_t expandedCount{ 0 };
-	for (const auto* child : children_)
+	EFlex result{ EFlex::None };
+
+	for (auto* child : children_)
 	{
-		if (dynamic_cast<const WExpanded*>(child))
+		if (child)
 		{
-			++expandedCount;
+			result = result | child->GetFlex();
 		}
 	}
-	return expandedCount;
+
+	return result;
+}
+
+WWidget::WidgetVector WChildrenOwnerWidget::GetWidgetTree()
+{
+	WidgetVector result{ this };
+
+	for (auto* child : children_)
+	{
+		if (child)
+		{
+			const auto sub = child->GetWidgetTree();
+			result.insert(result.end(), sub.begin(), sub.end());
+		}
+	}
+
+	return result;
 }

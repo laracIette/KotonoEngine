@@ -6,11 +6,8 @@ WOffset::WOffset(const OffsetSettings& offsetSettings) :
 {
 }
 
-void WOffset::Display(DisplaySettings displaySettings)
+void WOffset::DisplayInternal(DisplaySettings displaySettings)
 {
-	SetDisplaySettings(displaySettings);
-	displaySettings = GetDisplaySettings(displaySettings);
-
 	++displaySettings.layer;
 
 	if (offsetSettings_.child)

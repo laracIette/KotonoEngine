@@ -135,6 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\kotono_interface\Flex.h" />
     <ClInclude Include="include\kotono_interface\Expanded.h" />
     <ClInclude Include="include\kotono_interface\Constraint.h" />
     <ClInclude Include="include\kotono_interface\ChildOwnerWidget.h" />
@@ -154,8 +155,10 @@
     <ClInclude Include="include\kotono_interface\Row.h" />
     <ClInclude Include="include\kotono_interface\Offset.h" />
     <ClInclude Include="include\kotono_interface\Text.h" />
+    <ClInclude Include="include\kotono_interface\Spacer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Spacer.cpp" />
     <ClCompile Include="src\Expanded.cpp" />
     <ClCompile Include="src\Constraint.cpp" />
     <ClCompile Include="src\ChildOwnerWidget.cpp" />

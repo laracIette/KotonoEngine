@@ -2,6 +2,7 @@
 #include "widgets.h"
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/Font.h>
+#include "log.h"
 
 WText::WText(const TextSettings& textSettings) :
 	textSettings_(textSettings)
@@ -16,22 +17,28 @@ WWidget* WText::Build()
 	});
 }
 
-std::vector<WWidget*> WText::GetCharacters() const
+WWidget::DisplaySettings WText::GetDisplaySettings(DisplaySettings displaySettings) const
 {
-	std::vector<WWidget*> result{};
+	const auto ds = WWidget::GetDisplaySettings(displaySettings);
+	return ds;
+}
 
-	const auto path{ Framework.GetPath().GetSolutionPath() / R"(assets\fonts\default)" };
-	const KtFont font(path);
+WWidget::WidgetVector WText::GetCharacters() const
+{
+	WidgetVector result{};
+
+	const auto fontPath{ Framework.GetPath().GetSolutionPath() / R"(assets\fonts\default)" };
+	const KtFont font(fontPath);
 
 	const auto characterPaths{ font.GetTextPaths(textSettings_.text) };
 	result.reserve(characterPaths.size());
 
-	for (const auto& path : characterPaths)
+	for (const auto& characterPath : characterPaths)
 	{
 		result.push_back(new WBox({
 			.size = textSettings_.fontSize,
 			.child = new WImage({
-				.path = path,
+				.path = characterPath,
 			}),
 		}));
 	}

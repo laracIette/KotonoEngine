@@ -10,10 +10,10 @@ WWidget* WDrawTimeText::Build()
     updateTimer_->SetDuration(UDuration::FromSeconds(1.0f / 24.0f));
     updateTimer_->Start();
     return new WText({
-        .text = std::format("U {:.8f}s", Engine.GetObjectManager().GetAverageDrawTime()),
-        .fontSize = { 50.0f, 60.0f },
-        .spacing = 0.0f,
-        });
+        .text = std::format("D {:.8f}s", Engine.GetObjectManager().GetAverageDrawTime()),
+        .fontSize = { 20.0f, 24.0f },
+        .spacing = -6.0f,
+    });
 }
 
 void WDrawTimeText::Cleanup()

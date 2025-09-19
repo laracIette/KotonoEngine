@@ -18,10 +18,12 @@ public:
 
 	WWidget* Build() override;
 
+	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
+
 protected:
 	TextSettings textSettings_;
 
 private:
-	std::vector<WWidget*> GetCharacters() const;
+	WidgetVector GetCharacters() const;
 };
 

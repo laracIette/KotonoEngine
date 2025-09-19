@@ -1,6 +1,8 @@
 #include "Row.h"
 #include "Expanded.h"
+#include "Spacer.h"
 #include <algorithm>
+#include <kotono_framework/bitwise_utils.h>
 
 WRow::WRow(const RowSettings& rowSettings) :
 	WChildrenOwnerWidget(rowSettings.children),
@@ -8,30 +10,28 @@ WRow::WRow(const RowSettings& rowSettings) :
 {
 }
 
-void WRow::Display(DisplaySettings displaySettings)
+void WRow::DisplayInternal(DisplaySettings displaySettings)
 {
-	SetDisplaySettings(displaySettings);
-	displaySettings = GetDisplaySettings(displaySettings);
-
-	// Get non-expanded width
-	float nonExpandedWidth{ 0.0f };
+	// Get non-flex width
+	float nonFlexWidth{ 0.0f };
 	for (const auto* child : rowSettings_.children)
 	{
-		if (child && !dynamic_cast<const WExpanded*>(child))
+		// Check if not horizontal flex
+		if (child && !has_flag(child->GetFlex(), EFlex::Horizontal))
 		{
-			nonExpandedWidth += child->GetDisplaySettings(displaySettings).bounds.x;
+			nonFlexWidth += child->GetDisplaySettings(displaySettings).bounds.x;
 		}
 	}
 
-	// Get expanded width
-	float expandedWidth{ displaySettings.bounds.x - nonExpandedWidth };
+	// Get flex width
+	float flexWidth{ displaySettings.bounds.x - nonFlexWidth };
 	if (!rowSettings_.children.empty())
 	{
-		expandedWidth -= rowSettings_.spacing * static_cast<float>(rowSettings_.children.size() - 1);
+		flexWidth -= rowSettings_.spacing * static_cast<float>(rowSettings_.children.size() - 1);
 	}
-	if (size_t expandedCount = GetExpandedCount())
+	if (const size_t flexCount = GetFlexCount())
 	{
-		expandedWidth /= static_cast<float>(expandedCount);
+		flexWidth /= static_cast<float>(flexCount);
 	}
 
 	++displaySettings.layer;
@@ -42,9 +42,9 @@ void WRow::Display(DisplaySettings displaySettings)
 		{
 			auto settings{ displaySettings };
 
-			if (dynamic_cast<const WExpanded*>(child))
+			if (has_flag(child->GetFlex(), EFlex::Horizontal))
 			{
-				settings.bounds.x = expandedWidth;
+				settings.bounds.x = flexWidth;
 			}
 
 			child->Display(settings);
@@ -60,17 +60,6 @@ void WRow::Display(DisplaySettings displaySettings)
 
 WWidget::DisplaySettings WRow::GetDisplaySettings(DisplaySettings displaySettings) const
 {
-	//// Return the same display settings because an expanded would fill any free space
-	//if (std::any_of(
-	//	rowSettings_.children.begin(), rowSettings_.children.end(),
-	//	[](const WWidget* child) {
-	//		return dynamic_cast<const WExpanded*>(child);
-	//	}
-	//))
-	//{
-	//	return displaySettings;
-	//}
-
 	glm::vec2 size{ 0.0f, 0.0f };
 
 	for (auto* child : rowSettings_.children)
@@ -92,3 +81,9 @@ WWidget::DisplaySettings WRow::GetDisplaySettings(DisplaySettings displaySetting
 	return displaySettings;
 }
  
+size_t WRow::GetFlexCount() const
+{
+	return std::count_if(rowSettings_.children.begin(), rowSettings_.children.end(),
+		[](const WWidget* child) { return child && has_flag(child->GetFlex(), EFlex::Horizontal); }
+	);
+}

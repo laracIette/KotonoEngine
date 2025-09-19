@@ -6,6 +6,16 @@ WWidget::WWidget() :
 {
 }
 
+void WWidget::CacheBuild()
+{
+	cachedBuild_.TryUpdateValue();
+	WWidget* build{ cachedBuild_.GetValue() };
+	if (build && build != this)
+	{
+		build->CacheBuild();
+	}
+}
+
 WWidget* WWidget::Build()
 {
 	return this;
@@ -14,12 +24,9 @@ WWidget* WWidget::Build()
 void WWidget::Cleanup()
 {
 	WWidget* build{ cachedBuild_.GetValue() };
-	if (build != this)
+	if (build && build != this)
 	{
-		if (build)
-		{
-			build->Cleanup();
-		}
+		build->Cleanup();
 		delete build;
 	}
 }
@@ -28,34 +35,59 @@ void WWidget::Display(DisplaySettings displaySettings)
 {
 	SetDisplaySettings(displaySettings);
 
-	WWidget* build{ cachedBuild_ };
+	WWidget* build{ cachedBuild_.GetValue() };
 	if (build && build != this)
 	{
 		build->Display(displaySettings);
+	}
+	else
+	{
+		displaySettings = GetDisplaySettings(displaySettings);
+		DisplayInternal(displaySettings);
 	}
 }
 
 WWidget::DisplaySettings WWidget::GetDisplaySettings(DisplaySettings displaySettings) const
 {
-	WWidget* build{ cachedBuild_.GetValue() };
+	const WWidget* build{ cachedBuild_.GetValue() };
 	if (build && build != this)
 	{
 		return build->GetDisplaySettings(displaySettings);
 	}
 
-	//displaySettings.bounds = { 0.0f, 0.0f };
 	return displaySettings;
+}
+
+EFlex WWidget::GetFlex() const
+{
+	const WWidget* build{ cachedBuild_.GetValue() };
+	if (build && build != this)
+	{
+		return build->GetFlex();
+	}
+	return EFlex::None;
+}
+
+WWidget::WidgetVector WWidget::GetWidgetTree()
+{
+	WWidget* build{ cachedBuild_.GetValue() };
+	if (build && build != this)
+	{
+		return { build };
+	}
+	return { this };
 }
 
 void WWidget::Rebuild()
 {
 	auto displaySettings{ displaySettings_ };
-	WWidget* build{ cachedBuild_.GetValue() };
+	const WWidget* build{ cachedBuild_.GetValue() };
 	if (build && build != this)
 	{
 		displaySettings = build->displaySettings_;
 	}
 	Cleanup();
+	CacheBuild();
 	Display(displaySettings);
 }
 
@@ -104,4 +136,8 @@ glm::mat4 WWidget::GetScaleMatrix() const
 glm::mat4 WWidget::GetModelMatrix() const
 {
 	return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix();
+}
+
+void WWidget::DisplayInternal(DisplaySettings displaySettings)
+{
 }

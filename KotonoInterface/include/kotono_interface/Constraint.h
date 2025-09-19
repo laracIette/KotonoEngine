@@ -21,11 +21,11 @@ public:
 	/// Constraints the bounds of the child widget given an axis
 	WConstraint(const ConstraintSettings& constraintSettings);
 
-	void Display(DisplaySettings displaySettings) override;
-
 	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
 
-private:
+protected:
 	ConstraintSettings constraintSettings_;
+
+	void DisplayInternal(DisplaySettings displaySettings) override;
 };
 

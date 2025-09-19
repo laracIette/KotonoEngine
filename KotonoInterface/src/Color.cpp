@@ -9,10 +9,8 @@ WColor::WColor(const ColorSettings& colorSettings) :
 {
 }
 
-void WColor::Display(DisplaySettings displaySettings)
+void WColor::DisplayInternal(DisplaySettings displaySettings)
 {
-	SetDisplaySettings(displaySettings);
-
 	static const auto shaderPath = Framework.GetPath().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
 	static const auto imagePath = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
 

@@ -6,11 +6,8 @@ WBox::WBox(const BoxSettings& boxSettings) :
 {
 }
 
-void WBox::Display(DisplaySettings displaySettings)
+void WBox::DisplayInternal(DisplaySettings displaySettings)
 {
-	SetDisplaySettings(displaySettings);
-	displaySettings = GetDisplaySettings(displaySettings);
-
 	++displaySettings.layer;
 
 	if (boxSettings_.child)
@@ -22,10 +19,5 @@ void WBox::Display(DisplaySettings displaySettings)
 WWidget::DisplaySettings WBox::GetDisplaySettings(DisplaySettings displaySettings) const
 {
 	displaySettings.bounds = glm::min(boxSettings_.size, displaySettings.bounds);
-	
-	//if (boxSettings_.child)
-	//{
-	//	return boxSettings_.child->GetDisplaySettings(displaySettings);
-	//}
 	return displaySettings;
 }

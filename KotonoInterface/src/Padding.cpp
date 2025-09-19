@@ -1,4 +1,5 @@
 #include "Padding.h"
+#include "log.h"
 
 WPadding::WPadding(const PaddingSettings& paddingSettings) :
 	WChildOwnerWidget(paddingSettings.child),
@@ -6,11 +7,8 @@ WPadding::WPadding(const PaddingSettings& paddingSettings) :
 {
 }
 
-void WPadding::Display(DisplaySettings displaySettings)
+void WPadding::DisplayInternal(DisplaySettings displaySettings)
 {
-	SetDisplaySettings(displaySettings);
-	displaySettings = GetDisplaySettings(displaySettings);
-
 	++displaySettings.layer;
 
 	if (paddingSettings_.child)
@@ -29,9 +27,5 @@ WWidget::DisplaySettings WPadding::GetDisplaySettings(DisplaySettings displaySet
 	displaySettings.position.x += paddingSettings_.padding.l;
 	displaySettings.position.y += paddingSettings_.padding.t;
 	
-	//if (paddingSettings_.child)
-	//{
-	//	return paddingSettings_.child->GetDisplaySettings(displaySettings);
-	//}
 	return displaySettings;
 }

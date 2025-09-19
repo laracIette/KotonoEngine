@@ -7,26 +7,37 @@
 
 WWidget* WMainWindow::Build()
 {
-	updateTimer_ = Engine.GetObjectManager().Create<KTimer>();
-	updateTimer_->SetDuration(UDuration::FromSeconds(1.0f / 8.0f));
-	updateTimer_->SetIsRepeat(true);
-	updateTimer_->Start();
-
 	return new WPadding({
 		.padding = WPadding::Padding::All(16.0f),
 		.child = new WColumn({
 			.spacing = 5.0f,
 			.children = {
 				new WRow({
-					.spacing = 5.0f,
+					.spacing = 4.0f,
 					.children = {
-						new WBox({
-							.size = { 50.0f, 50.0f },
-							.child = new WColor({ KtColor::Green() }),
+						new WRow({
+							.spacing = 5.0f,
+							.children = {
+								new WBox({
+									.size = { 50.0f, 50.0f },
+									.child = new WColor({ KtColor::Green() }),
+								}),
+								new WBox({
+									.size = { 50.0f, 50.0f },
+									.child = new WColor({ KtColor::Green() }),
+								}),
+							},
 						}),
+						new WSpacer({}),
 						new WBox({
 							.size = { 50.0f, 50.0f },
-							.child = new WColor({ KtColor::Green() }),
+							.child = new WColor({ KtColor::Blue() }),
+						}),
+						new WColumn({
+							.children = {
+								new WUpdateTimeText(),
+								new WDrawTimeText(),
+							},
 						}),
 					},
 				}),
@@ -44,17 +55,7 @@ WWidget* WMainWindow::Build()
 										new WColor({ KtColor::Green() }),
 										new WPadding({
 											.padding = WPadding::Padding::All(16.0f),
-											.child = new WStack({
-												.children = {
-													new WColor({ KtColor::Red() }),
-													new WColumn({
-														.children = {
-															new WUpdateTimeText(),
-															new WDrawTimeText(),
-														},
-													}),
-												},
-											}),
+											.child = new WColor({ KtColor::Red() }),
 										}),
 									},
 								}),
@@ -86,11 +87,4 @@ WWidget* WMainWindow::Build()
 			},
 		}),
 	});
-}
-
-void WMainWindow::Cleanup()
-{
-	updateTimer_->Delete();
-
-	WWidget::Cleanup();
 }

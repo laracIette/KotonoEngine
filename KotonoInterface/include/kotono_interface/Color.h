@@ -14,12 +14,12 @@ public:
 	/// Fill the widget's bounds with a color
 	WColor(const ColorSettings& colorSettings);
 
-	void Display(DisplaySettings displaySettings) override;
-
 	void Cleanup() override;
 	
 protected:
 	ColorSettings colorSettings_;
 	KtRenderable2DProxy* colorProxy_;
+
+	void DisplayInternal(DisplaySettings displaySettings) override;
 };
 

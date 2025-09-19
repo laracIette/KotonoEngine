@@ -6,17 +6,17 @@ class WStack : public WChildrenOwnerWidget
 public:
 	struct StackSettings
 	{
-		std::vector<WWidget*> children{};
+		WidgetVector children{};
 	};
 
 	/// Display widgets on top of each other
 	WStack(const StackSettings& stackSettings);
 
-	void Display(DisplaySettings displaySettings) override;
-
 	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
 
 protected:
 	StackSettings stackSettings_;
+
+	void DisplayInternal(DisplaySettings displaySettings) override;
 };
 

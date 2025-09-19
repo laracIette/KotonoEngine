@@ -11,11 +11,13 @@ public:
 	/// Fills the entirety of the available parent space
 	WExpanded(const ExpandedSettings& expandedSettings);
 
-	void Display(DisplaySettings displaySettings) override;
-
 	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
+	
+	EFlex GetFlex() const override;
 
-private:
+protected:
 	ExpandedSettings expandedSettings_;
+
+	void DisplayInternal(DisplaySettings displaySettings) override;
 };
 

@@ -7,17 +7,20 @@ public:
 	{
 		/// default = 0.0f
 		float spacing{ 0.0f };
-		std::vector<WWidget*> children{};
+		WidgetVector children{};
 	};
 
 	/// Defines an horizontal container for widgets
 	WRow(const RowSettings& rowSettings);	
-	
-	void Display(DisplaySettings displaySettings) override;
 
 	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
 
 protected:
 	RowSettings rowSettings_;
+	
+	void DisplayInternal(DisplaySettings displaySettings) override;
+
+private:
+	size_t GetFlexCount() const;
 };
 
