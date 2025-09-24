@@ -14,7 +14,6 @@
 #include "InterfaceLayoutObject.h"
 #include "ObjectManager.h"
 #include "Timer.h"
-#include "MainWindow.h"
 #include "log.h"
 
 void SInterface::Init()
@@ -66,21 +65,10 @@ void SInterface::Init()
 	textBox3->GetRootComponent()->SetRelativePosition(glm::vec2(0.3f, 0.6f));
 	textBox3->GetTextComponent()->SetTextBinding([this]() { return std::to_string(image1_->GetRootComponent()->GetScreenPosition().y); });
 	textBox3->GetEventValueChanged().AddListener(KtDelegate(this, &SInterface::OnTextBox3ValueChanged));
-
-
-	widget_ = new WMainWindow();
-	widget_->CacheBuild();
-	widget_->Display({
-		.position = { 0.0f, 0.0f },
-		.bounds = static_cast<glm::vec2>(WindowViewport.GetExtent()),
-		.layer = 0,
-	});
 }
 
 void SInterface::Cleanup()
 {
-	widget_->Cleanup();
-	delete widget_;
 }
 
 void SInterface::OnTextBox2ValueChanged(const float delta) const

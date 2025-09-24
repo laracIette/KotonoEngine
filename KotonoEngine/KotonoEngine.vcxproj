@@ -19,12 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\TestBox.cpp" />
-    <ClCompile Include="src\DrawTimeText.cpp" />
-    <ClCompile Include="src\MainWindow.cpp" />
     <ClCompile Include="src\InterfaceLayoutObject.cpp" />
     <ClCompile Include="src\InterfaceBoxComponent.cpp" />
-    <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\Guid.cpp" />
     <ClCompile Include="src\InterfaceButtonComponent.cpp" />
@@ -56,12 +52,9 @@
     <ClCompile Include="src\TimeManager.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\Visualizer.cpp" />
-    <ClCompile Include="src\UpdateTimeText.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\kotono_engine\DrawTimeText.h" />
     <ClInclude Include="include\kotono_engine\Anchor.h" />
-    <ClInclude Include="include\kotono_engine\Application.h" />
     <ClInclude Include="include\kotono_engine\base_class.h" />
     <ClInclude Include="include\kotono_engine\Engine.h" />
     <ClInclude Include="include\kotono_engine\Guid.h" />
@@ -106,9 +99,6 @@
     <ClInclude Include="include\kotono_engine\Duration.h" />
     <ClInclude Include="include\kotono_engine\InterfaceBoxComponent.h" />
     <ClInclude Include="include\kotono_engine\InterfaceLayoutObject.h" />
-    <ClInclude Include="include\kotono_engine\MainWindow.h" />
-    <ClInclude Include="include\kotono_engine\UpdateTimeText.h" />
-    <ClInclude Include="include\kotono_engine\TestBox.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
@@ -206,7 +196,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)KotonoEngine\include;$(SolutionDir)KotonoEngine\include\kotono_engine;$(SolutionDir)KotonoInterface\include;$(SolutionDir)KotonoFramework\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)KotonoEngine\include;$(SolutionDir)KotonoEngine\include\kotono_engine;$(SolutionDir)KotonoFramework\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -226,7 +216,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)KotonoEngine\include;$(SolutionDir)KotonoEngine\include\kotono_engine;$(SolutionDir)KotonoInterface\include;$(SolutionDir)KotonoFramework\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)KotonoEngine\include;$(SolutionDir)KotonoEngine\include\kotono_engine;$(SolutionDir)KotonoFramework\include;</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>

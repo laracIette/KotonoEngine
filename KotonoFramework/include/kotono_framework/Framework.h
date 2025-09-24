@@ -11,9 +11,7 @@
 
 class KtFramework final
 {
-	friend class SApplication; // todo: eh ?
-
-private:
+public:
 	void Init();
 	void Update();
 	void Cleanup();

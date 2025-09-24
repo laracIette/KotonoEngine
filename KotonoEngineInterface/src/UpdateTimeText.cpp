@@ -1,6 +1,6 @@
 #include "UpdateTimeText.h"
-#include "Engine.h"
-#include "Timer.h"
+#include <kotono_engine/Engine.h>
+#include <kotono_engine/Timer.h>
 #include <kotono_interface/widgets.h>
 
 WWidget* WUpdateTimeText::Build()

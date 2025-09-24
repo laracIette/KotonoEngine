@@ -1,8 +1,22 @@
-#include <kotono_engine/Application.h>
+#include <kotono_framework/Framework.h>
+#include <kotono_engine/Engine.h>
+#include <kotono_engine_interface/EngineInterface.h>
 
 int main()
 {
-	SApplication::Run();
+    Framework.Init();
+    Engine.Init();
+    EngineInterface.Init();
+
+    while (!Framework.GetWindow().GetShouldClose())
+    {
+        Framework.Update();
+        Engine.Update();
+    }
+
+    EngineInterface.Cleanup();
+    Engine.Cleanup();
+    Framework.Cleanup();
 
 	return 0;
 }

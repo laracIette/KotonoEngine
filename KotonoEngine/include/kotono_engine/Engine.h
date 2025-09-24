@@ -7,9 +7,7 @@
 
 class SEngine final
 {
-	friend class SApplication;
-
-private:
+public:
 	void Init();
 	void Update();
 	void Cleanup();

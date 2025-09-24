@@ -18,11 +18,26 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\kotono_engine_interface\EngineInterface.h" />
+    <ClInclude Include="include\kotono_engine_interface\DrawTimeText.h" />
+    <ClInclude Include="include\kotono_engine_interface\MainWindow.h" />
+    <ClInclude Include="include\kotono_engine_interface\TestBox.h" />
+    <ClInclude Include="include\kotono_engine_interface\UpdateTimeText.h" />
+    <ClInclude Include="include\kotono_engine_interface\log.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\EngineInterface.cpp" />
+    <ClCompile Include="src\DrawTimeText.cpp" />
+    <ClCompile Include="src\MainWindow.cpp" />
+    <ClCompile Include="src\TestBox.cpp" />
+    <ClCompile Include="src\UpdateTimeText.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{6c858244-0ce3-4cfd-85ba-3d95c3a34fe4}</ProjectGuid>
-    <RootNamespace>KotonoTestApplication</RootNamespace>
+    <ProjectGuid>{d9b19d63-2467-41ce-bce9-87e32bf4b9b8}</ProjectGuid>
+    <RootNamespace>KotonoEngineInterface</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -40,13 +55,13 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -70,6 +85,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)KotonoEngineInterface\lib\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)KotonoEngineInterface\lib\</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -103,14 +124,12 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)KotonoEngineInterface\include;$(SolutionDir)KotonoEngine\include;$(SolutionDir)KotonoInterface\include;$(SolutionDir)KotonoFramework\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)KotonoEngineInterface\include;$(SolutionDir)KotonoEngineInterface\include\kotono_engine_interface;$(SolutionDir)KotonoEngine\include;$(SolutionDir)KotonoInterface\include;$(SolutionDir)KotonoFramework\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)KotonoEngineInterface\lib;$(SolutionDir)KotonoEngine\lib;$(SolutionDir)KotonoInterface\lib;$(SolutionDir)KotonoFramework\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>KotonoFramework.lib;KotonoInterface.lib;KotonoEngine.lib;KotonoEngineInterface.lib;vulkan-1.lib;glfw3.lib;zlibstaticd.lib;assimp-vc143-mtd.lib;OpenAL32.lib;SPIRV-Reflect.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -122,19 +141,14 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)KotonoEngineInterface\include;$(SolutionDir)KotonoEngine\include;$(SolutionDir)KotonoInterface\include;$(SolutionDir)KotonoFramework\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)KotonoEngineInterface\include;$(SolutionDir)KotonoEngineInterface\include\kotono_engine_interface;$(SolutionDir)KotonoEngine\include;$(SolutionDir)KotonoInterface\include;$(SolutionDir)KotonoFramework\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)KotonoEngineInterface\lib;$(SolutionDir)KotonoEngine\lib;$(SolutionDir)KotonoInterface\lib;$(SolutionDir)KotonoFramework\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>KotonoFramework.lib;KotonoInterface.lib;KotonoEngine.lib;KotonoEngineInterface.lib;vulkan-1.lib;glfw3.lib;zlibstatic.lib;assimp-vc143-mt.lib;OpenAL32.lib;SPIRV-Reflect.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
