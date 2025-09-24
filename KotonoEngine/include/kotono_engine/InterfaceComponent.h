@@ -94,9 +94,14 @@ public:
 	bool GetIsOverlapping(const glm::vec2& worldPosition) const;
 	bool GetIsOverlapping(const KInterfaceComponent* other) const;
 
+	void AddChildren(KInterfaceComponent* interfaceComponent);
+	void RemoveChildren(KInterfaceComponent* interfaceComponent);
+
 private:
 	RInterfaceObject* const owner_;
 	KInterfaceComponent* parent_;
+	KtPool<KInterfaceComponent*> children_;
+	size_t childrenIndex_;
 	URect rect_;
 	EVisibility visibility_;
 	int32_t layer_;

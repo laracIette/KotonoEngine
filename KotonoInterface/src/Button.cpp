@@ -20,10 +20,11 @@ void WButton::Cleanup()
 void WButton::OnMouseLeftButtonPressed()
 {
 	const auto& cursorPos{ Framework.GetInputManager().GetMouse().GetCursorPosition() };
-	const auto distance{ glm::abs(GetPosition() - cursorPos) };
-	const auto maxDistance{ GetSize() / 2.0f };
+	const auto position{ GetPosition() };
+	const auto size{ GetSize() };
 
-	if (distance.x > maxDistance.x || distance.y > maxDistance.y)
+	if (cursorPos.x < position.x || cursorPos.x > position.x + size.x ||
+		cursorPos.y < position.y || cursorPos.y > position.y + size.y)
 	{
 		return;
 	}

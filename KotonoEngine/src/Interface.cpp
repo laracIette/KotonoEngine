@@ -40,6 +40,7 @@ void SInterface::Init()
 	image1_->GetImageComponent()->SetShader(shader2D);
 	image1_->GetImageComponent()->SetImageTexture(imageTexture1);
 	//image1->GetRootComponent()->SetAnchor(EAnchor::TopLeft);
+	Engine.GetObjectManager().selectedObject = image1_;
 
 	image2->GetRootComponent()->SetScreenSize(glm::vec2(1024.0f, 1024.0f));
 	image2->GetRootComponent()->SetRelativeScale(glm::vec2(0.10f));

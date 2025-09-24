@@ -23,6 +23,8 @@
 
 void SObjectManager::Init()
 {
+	selectedObject = nullptr;
+
 	Framework.GetInputManager().GetKeyboard()
 		.GetEvent(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &SObjectManager::Quit));

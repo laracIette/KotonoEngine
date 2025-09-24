@@ -12,6 +12,7 @@
 #include "log.h"
 #include "Engine.h"
 #include "TimeManager.h"
+#include <ranges>
 
 KInterfaceComponent::KInterfaceComponent(RInterfaceObject* owner) :
     Base(),
@@ -45,15 +46,18 @@ void KInterfaceComponent::Cleanup()
 {
     Base::Cleanup();
 
+    for (int64_t i{ children_.LastIndex() }; i >= 0; --i)
+    {
+        children_[i]->SetParent(nullptr, ECoordinateSpace::Relative);
+    }
+    children_.Clear();
+
+    SetParent(nullptr, ECoordinateSpace::Relative);
+
     GetOwner()->RemoveComponent(this);
 
     Framework.GetRenderer().GetInterfaceRenderer().Unregister(boundsProxy_);
     Framework.GetRenderer().GetInterfaceRenderer().DeleteProxy(boundsProxy_);
-
-    if (parent_)
-    {
-        parent_->GetEventRectUpdated().RemoveListener(KtDelegate(&eventRectUpdated_, &KtEvent<>::Broadcast));
-    }
 }
 
 RInterfaceObject* KInterfaceComponent::GetOwner() const
@@ -192,6 +196,7 @@ void KInterfaceComponent::SetParent(KInterfaceComponent* parent, const ECoordina
     if (parent_)
     {
         parent_->GetEventRectUpdated().RemoveListener(KtDelegate(&eventRectUpdated_, &KtEvent<>::Broadcast));
+        parent_->RemoveChildren(this);
     }
 
     switch (keepRect)
@@ -218,6 +223,7 @@ void KInterfaceComponent::SetParent(KInterfaceComponent* parent, const ECoordina
     if (parent_)
     {
         parent_->GetEventRectUpdated().AddListener(KtDelegate(&eventRectUpdated_, &KtEvent<>::Broadcast));
+        parent_->AddChildren(this);
     }
 }
 
@@ -443,6 +449,31 @@ bool KInterfaceComponent::GetIsOverlapping(const glm::vec2& worldPosition) const
 bool KInterfaceComponent::GetIsOverlapping(const KInterfaceComponent* other) const
 {
     return GetIsOverlapping(other->GetWorldPosition(), other->GetWorldSize());
+}
+
+void KInterfaceComponent::AddChildren(KInterfaceComponent* interfaceComponent)
+{
+    if (!interfaceComponent)
+    {
+        return;
+    }
+
+    children_.Add(interfaceComponent);
+    interfaceComponent->childrenIndex_ = static_cast<size_t>(children_.LastIndex());
+}
+
+void KInterfaceComponent::RemoveChildren(KInterfaceComponent* interfaceComponent)
+{
+    if (!interfaceComponent)
+    {
+        return;
+    }
+
+    const size_t index{ interfaceComponent->childrenIndex_ };
+    if (children_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+    {
+        children_[index]->childrenIndex_ = index;
+    }
 }
 
 void KInterfaceComponent::CreateBoundsProxy()

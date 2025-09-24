@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\TestBox.cpp" />
     <ClCompile Include="src\DrawTimeText.cpp" />
     <ClCompile Include="src\MainWindow.cpp" />
     <ClCompile Include="src\InterfaceLayoutObject.cpp" />
@@ -107,6 +108,7 @@
     <ClInclude Include="include\kotono_engine\InterfaceLayoutObject.h" />
     <ClInclude Include="include\kotono_engine\MainWindow.h" />
     <ClInclude Include="include\kotono_engine\UpdateTimeText.h" />
+    <ClInclude Include="include\kotono_engine\TestBox.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

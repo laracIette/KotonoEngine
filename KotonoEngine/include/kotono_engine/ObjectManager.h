@@ -35,6 +35,8 @@ public:
 
 	int64_t GetCurrentUpdate() const;
 	
+	KObject* selectedObject;
+
 private:
 	void Quit();
 
@@ -46,6 +48,7 @@ private:
 	KtAverageTime<64> drawAverageTime_;
 
 	int64_t currentUpdate_;
+
 
 	bool canDraw_;
 

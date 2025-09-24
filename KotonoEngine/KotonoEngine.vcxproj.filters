@@ -126,6 +126,9 @@
     <ClCompile Include="src\DrawTimeText.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\TestBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\kotono_engine\Anchor.h">
@@ -273,6 +276,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\kotono_engine\DrawTimeText.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kotono_engine\TestBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

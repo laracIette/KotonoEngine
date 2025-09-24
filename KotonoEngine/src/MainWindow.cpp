@@ -4,6 +4,7 @@
 #include "Timer.h"
 #include "UpdateTimeText.h"
 #include "DrawTimeText.h"
+#include "TestBox.h"
 
 WWidget* WMainWindow::Build()
 {
@@ -29,11 +30,8 @@ WWidget* WMainWindow::Build()
 							},
 						}),
 						new WSpacer({}),
-						new WBox({
-							.size = { 50.0f, 50.0f },
-							.child = new WColor({ KtColor::Blue() }),
-						}),
 						new WColumn({
+							.spacing = 2.0f,
 							.children = {
 								new WUpdateTimeText(),
 								new WDrawTimeText(),
@@ -52,10 +50,18 @@ WWidget* WMainWindow::Build()
 							new WExpanded({
 								.child = new WStack({
 									.children = {
-										new WColor({ KtColor::Green() }),
+										new WColor({ KtColor::Green().WithAlpha(0.5f) }),
 										new WPadding({
 											.padding = WPadding::Padding::All(16.0f),
-											.child = new WColor({ KtColor::Red() }),
+											.child = new WStack({
+												.children = {
+													new WColor({ KtColor::Magenta().WithAlpha(0.5f) }),
+													new WPadding({
+														.padding = WPadding::Padding::All(8.0f),
+														.child = new WTestBox(),
+													}),
+												},
+											}), 
 										}),
 									},
 								}),
