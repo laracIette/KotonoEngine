@@ -3,6 +3,10 @@
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/Renderable2DProxy.h>
 #include <kotono_framework/ImageTexture.h>
+#include <kotono_framework/Path.h>
+#include <kotono_framework/Renderer.h>
+#include <kotono_framework/ShaderManager.h>
+#include <kotono_framework/ImageTextureManager.h>
 
 KInterfaceBoxComponent::KInterfaceBoxComponent(RInterfaceObject* owner) :
 	Base(owner)

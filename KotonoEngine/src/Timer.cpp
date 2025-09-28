@@ -1,6 +1,7 @@
 #include "Timer.h"
 #include "Engine.h"
 #include "TimeManager.h"
+#include "ObjectManager.h"
 
 void KTimer::Update()
 {

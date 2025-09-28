@@ -1,5 +1,6 @@
 #include "FileExplorer.h"
 #include "Framework.h"
+#include "Path.h"
 
 KtFileExplorer::KtFileExplorer() :
     directoryPath_(Framework.GetPath().GetSolutionPath())

@@ -1,10 +1,9 @@
 #pragma once
-#include "TimeManager.h"
-#include "ObjectManager.h"
-#include "Visualizer.h"
-#include "Interface.h"
-#include "InterfacePhysicsManager.h"
-
+class STimeManager;
+class SObjectManager;
+class SVisualizer;
+class SInterface;
+class SInterfacePhysicsManager;
 class SEngine final
 {
 public:
@@ -23,13 +22,6 @@ public:
 	const SInterface& GetInterface() const;
 	SInterfacePhysicsManager& GetInterfacePhysicsManager();
 	const SInterfacePhysicsManager& GetInterfacePhysicsManager() const;
-
-private:
-	STimeManager timeManager_;
-	SObjectManager objectManager_;
-	SVisualizer visualizer_;
-	SInterface interface_;
-	SInterfacePhysicsManager interfacePhysicsManager_;
 };
 
 inline SEngine Engine;

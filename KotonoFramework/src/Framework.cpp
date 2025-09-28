@@ -1,118 +1,137 @@
 #include "Framework.h"
+#include "Path.h"
+#include "Window.h"
+#include "Context.h"
+#include "Renderer.h"
+#include "AudioManager.h"
+#include "InputManager.h"
+#include "ModelManager.h"
+#include "ShaderManager.h"
+#include "ImageTextureManager.h"
+
+static KtPath Path;
+static KtWindow Window;
+static KtContext Context;
+static KtRenderer Renderer;
+static KtAudioManager AudioManager;
+static KtInputManager InputManager;
+static KtModelManager ModelManager;
+static KtShaderManager ShaderManager;
+static KtImageTextureManager ImageTextureManager;
 
 void KtFramework::Init()
 {
-    path_.Init();
-    window_.Init();
-    context_.Init();
-    renderer_.Init();
-    audioManager_.Init();
-    inputManager_.Init();
-    shaderManager_.Init();
+    Path.Init();
+    Window.Init();
+    Context.Init();
+    Renderer.Init();
+    AudioManager.Init();
+    InputManager.Init();
+    ShaderManager.Init();
 }
 
 void KtFramework::Update()
 {
-    inputManager_.Update();
+    InputManager.Update();
 }
 
 void KtFramework::Cleanup()
 {
-    imageTextureManager_.Cleanup();
-    shaderManager_.Cleanup();
-    modelManager_.Cleanup();
-    audioManager_.Cleanup();
-    renderer_.Cleanup();
-    context_.Cleanup();
-    window_.Cleanup();
+    ImageTextureManager.Cleanup();
+    ShaderManager.Cleanup();
+    ModelManager.Cleanup();
+    AudioManager.Cleanup();
+    Renderer.Cleanup();
+    Context.Cleanup();
+    Window.Cleanup();
 }
 
 KtPath& KtFramework::GetPath()
 {
-    return path_;
+    return Path;
 }
 
 const KtPath& KtFramework::GetPath() const
 {
-    return path_;
+    return Path;
 }
 
 KtWindow& KtFramework::GetWindow()
 {
-    return window_;
+    return Window;
 }
 
 const KtWindow& KtFramework::GetWindow() const
 {
-    return window_;
+    return Window;
 }
 
 KtContext& KtFramework::GetContext()
 {
-    return context_;
+    return Context;
 }
 
 const KtContext& KtFramework::GetContext() const
 {
-    return context_;
+    return Context;
 }
 
 KtRenderer& KtFramework::GetRenderer()
 {
-    return renderer_;
+    return Renderer;
 }
 
 const KtRenderer& KtFramework::GetRenderer() const
 {
-    return renderer_;
+    return Renderer;
 }
 
 KtAudioManager& KtFramework::GetAudioManager()
 {
-    return audioManager_;
+    return AudioManager;
 }
 
 const KtAudioManager& KtFramework::GetAudioManager() const
 {
-    return audioManager_;
+    return AudioManager;
 }
 
 KtInputManager& KtFramework::GetInputManager()
 {
-    return inputManager_;
+    return InputManager;
 }
 
 const KtInputManager& KtFramework::GetInputManager() const
 {
-    return inputManager_;
+    return InputManager;
 }
 
 KtModelManager& KtFramework::GetModelManager()
 {
-    return modelManager_;
+    return ModelManager;
 }
 
 const KtModelManager& KtFramework::GetModelManager() const
 {
-    return modelManager_;
+    return ModelManager;
 }
 
 KtShaderManager& KtFramework::GetShaderManager()
 {
-    return shaderManager_;
+    return ShaderManager;
 }
 
 const KtShaderManager& KtFramework::GetShaderManager() const
 {
-    return shaderManager_;
+    return ShaderManager;
 }
 
 KtImageTextureManager& KtFramework::GetImageTextureManager()
 {
-    return imageTextureManager_;
+    return ImageTextureManager;
 }
 
 const KtImageTextureManager& KtFramework::GetImageTextureManager() const
 {
-    return imageTextureManager_;
+    return ImageTextureManager;
 }

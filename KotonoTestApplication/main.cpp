@@ -1,4 +1,5 @@
 #include <kotono_framework/Framework.h>
+#include <kotono_framework/Window.h>
 #include <kotono_engine/Engine.h>
 #include <kotono_engine_interface/EngineInterface.h>
 
