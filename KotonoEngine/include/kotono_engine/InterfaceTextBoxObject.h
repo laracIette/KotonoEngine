@@ -13,8 +13,6 @@ public:
 
 protected:
 	void Init() override;
-	void Update() override;
-	void Cleanup() override;
 
 public:
 	bool GetIsEditable() const;

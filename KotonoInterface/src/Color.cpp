@@ -15,12 +15,12 @@ WColor::WColor(const ColorSettings& colorSettings) :
 
 void WColor::DisplayInternal(DisplaySettings displaySettings)
 {
-	static const auto shaderPath = Framework.GetPath().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
-	static const auto imagePath = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
+	static const auto shaderPath = Framework.Path().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
+	static const auto imagePath = Framework.Path().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
 
-	colorProxy_ = Framework.GetRenderer().GetInterfaceRenderer().CreateProxy();
-	colorProxy_->shader = Framework.GetShaderManager().Get(shaderPath);
-	colorProxy_->renderable = Framework.GetImageTextureManager().Get(imagePath);
+	colorProxy_ = Framework.Renderer().GetInterfaceRenderer().CreateProxy();
+	colorProxy_->shader = Framework.ShaderManager().Get(shaderPath);
+	colorProxy_->renderable = Framework.ImageTextureManager().Get(imagePath);
 	colorProxy_->viewport = &WindowViewport;
 	colorProxy_->layer = displaySettings.layer;
 	colorProxy_->objectData.modelMatrix = GetModelMatrix();
@@ -28,13 +28,13 @@ void WColor::DisplayInternal(DisplaySettings displaySettings)
 #	if _DEBUG
 		colorProxy_->source = this;
 #	endif
-	Framework.GetRenderer().GetInterfaceRenderer().Register(colorProxy_);
+	Framework.Renderer().GetInterfaceRenderer().Register(colorProxy_);
 }
 
 void WColor::Cleanup()
 {
-	Framework.GetRenderer().GetInterfaceRenderer().Unregister(colorProxy_);
-	Framework.GetRenderer().GetInterfaceRenderer().DeleteProxy(colorProxy_);
+	Framework.Renderer().GetInterfaceRenderer().Unregister(colorProxy_);
+	Framework.Renderer().GetInterfaceRenderer().DeleteProxy(colorProxy_);
 
 	WWidget::Cleanup();
 }

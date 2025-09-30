@@ -6,12 +6,12 @@
 
 WWidget* WDrawTimeText::Build()
 {
-    updateTimer_ = Engine.GetObjectManager().Create<KTimer>();
+    updateTimer_ = Engine.ObjectManager().Create<KTimer>();
     updateTimer_->GetEventCompleted().AddListener(KtDelegate(this, &WDrawTimeText::UpdateText));
     updateTimer_->SetDuration(UDuration::FromSeconds(1.0f / 24.0f));
     updateTimer_->Start();
     return new WText({
-        .text = std::format("D {:.8f}s", Engine.GetObjectManager().GetAverageDrawTime()),
+        .text = std::format("D {:.8f}s", Engine.ObjectManager().GetAverageDrawTime()),
         .fontSize = { 20.0f, 24.0f },
         .spacing = -6.0f,
     });

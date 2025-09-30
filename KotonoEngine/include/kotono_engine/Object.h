@@ -23,14 +23,16 @@ protected:
 public:
 	const UGuid& GetGuid() const;
 	bool GetIsConstructed() const;
-	const std::filesystem::path& GetPath() const;
-	const std::string& GetName() const;
 	bool GetIsDelete() const;
+	bool GetCanUpdate() const;
+	const std::filesystem::path& Path() const;
+	const std::string& GetName() const;
 	std::string GetTypeName() const;
 	KtEvent<>& GetEventCleanup();
 
 	void SetPath(const std::filesystem::path& path);
 	void SetName(const std::string& name);
+	void SetCanUpdate(const bool canUpdate);
 	// Stages the deletion at the end of the update
 	void Delete();
 	void DelayDelete(const UDuration& delay);
@@ -52,9 +54,10 @@ protected:
 private:
 	UGuid guid_;
 	bool isConstructed_;
+	bool isDelete_;
+	bool canUpdate_;
 	std::filesystem::path path_;
 	std::string name_;
-	bool isDelete_;
 	KtEvent<> eventCleanup_;
 
 	union

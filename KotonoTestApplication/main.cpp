@@ -9,7 +9,7 @@ int main()
     Engine.Init();
     EngineInterface.Init();
 
-    while (!Framework.GetWindow().GetShouldClose())
+    while (!Framework.Window().GetShouldClose())
     {
         Framework.Update();
         Engine.Update();

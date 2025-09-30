@@ -13,73 +13,73 @@ static SInterfacePhysicsManager InterfacePhysicsManager;
 
 void SEngine::Init()
 {
-    TimerManager.Init();
-    ObjectManager.Init();
-    Visualizer.Init();
-    Interface.Init();
+    ::TimerManager.Init();
+    ::ObjectManager.Init();
+    ::Visualizer.Init();
+    ::Interface.Init();
 }
 
 void SEngine::Update()
 {
-    TimerManager.Update();
-    ObjectManager.Update();
-    InterfacePhysicsManager.Update();
+    ::TimerManager.Update();
+    ::ObjectManager.Update();
+    ::InterfacePhysicsManager.Update();
 }
 
 void SEngine::Cleanup()
 {
-    Interface.Cleanup();
-    TimerManager.Cleanup();
-    ObjectManager.Cleanup();
-    Visualizer.Cleanup();
+    ::Interface.Cleanup();
+    ::TimerManager.Cleanup();
+    ::ObjectManager.Cleanup();
+    ::Visualizer.Cleanup();
 }
 
-STimeManager& SEngine::GetTimeManager()
+STimeManager& SEngine::TimeManager()
 {
-    return TimerManager;
+    return ::TimerManager;
 }
 
-const STimeManager& SEngine::GetTimeManager() const
+const STimeManager& SEngine::TimeManager() const
 {
-    return TimerManager;
+    return ::TimerManager;
 }
 
-SObjectManager& SEngine::GetObjectManager()
+SObjectManager& SEngine::ObjectManager()
 {
-    return ObjectManager;
+    return ::ObjectManager;
 }
 
-const SObjectManager& SEngine::GetObjectManager() const
+const SObjectManager& SEngine::ObjectManager() const
 {
-    return ObjectManager;
+    return ::ObjectManager;
 }
 
-SVisualizer& SEngine::GetVisualizer()
+SVisualizer& SEngine::Visualizer()
 {
-    return Visualizer;
+    return ::Visualizer;
 }
 
-const SVisualizer& SEngine::GetVisualizer() const
+const SVisualizer& SEngine::Visualizer() const
 {
-    return Visualizer;
+    return ::Visualizer;
 }
 
-SInterface& SEngine::GetInterface()
+SInterface& SEngine::Interface()
 {
-    return Interface;
+    return ::Interface;
 }
 
-const SInterface& SEngine::GetInterface() const
+const SInterface& SEngine::Interface() const
 {
-    return Interface;
+    return ::Interface;
 }
 
-SInterfacePhysicsManager& SEngine::GetInterfacePhysicsManager()
+SInterfacePhysicsManager& SEngine::InterfacePhysicsManager()
 {
-    return InterfacePhysicsManager;
+    return ::InterfacePhysicsManager;
 }
 
-const SInterfacePhysicsManager& SEngine::GetInterfacePhysicsManager() const
+const SInterfacePhysicsManager& SEngine::InterfacePhysicsManager() const
 {
-    return InterfacePhysicsManager;
+    return ::InterfacePhysicsManager;
 }

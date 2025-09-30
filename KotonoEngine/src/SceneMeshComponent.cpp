@@ -20,12 +20,12 @@ static KtShader* WireframeShader = nullptr;
 KSceneMeshComponent::KSceneMeshComponent(TSceneObject* owner) :
     Base(owner)
 {
-    spinTask_ = Engine.GetObjectManager().Create<KTask>();
+    spinTask_ = Engine.ObjectManager().Create<KTask>();
 
     if (!WireframeShader)
     {
-        const auto path = Framework.GetPath().GetFrameworkPath() / R"(shaders\wireframe3D.ktshader)";
-        WireframeShader = Framework.GetShaderManager().Get(path);
+        const auto path = Framework.Path().GetFrameworkPath() / R"(shaders\wireframe3D.ktshader)";
+        WireframeShader = Framework.ShaderManager().Get(path);
     }
 }
 
@@ -36,13 +36,8 @@ void KSceneMeshComponent::Init()
     InitSpin();
     InitModelProxy();
 
-    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_N, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
-    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_M, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
-}
-
-void KSceneMeshComponent::Update()
-{
-    Base::Update();
+    Framework.InputManager().GetKeyboard().GetEvent(KT_KEY_N, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
+    Framework.InputManager().GetKeyboard().GetEvent(KT_KEY_M, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
 }
 
 void KSceneMeshComponent::Cleanup()
@@ -52,11 +47,11 @@ void KSceneMeshComponent::Cleanup()
     RemoveProxies();
     GetEventTransformUpdated().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
 
-    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(spinTask_, &KTask::Start));
+    Framework.InputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(spinTask_, &KTask::Start));
     spinTask_->Delete();
     
-    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_N, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
-    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_M, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
+    Framework.InputManager().GetKeyboard().GetEvent(KT_KEY_N, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
+    Framework.InputManager().GetKeyboard().GetEvent(KT_KEY_M, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
 }
 
 KtShader* KSceneMeshComponent::GetShader() const
@@ -82,15 +77,15 @@ void KSceneMeshComponent::SetModel(KtModel* model)
 void KSceneMeshComponent::SerializeTo(nlohmann::json& json) const
 {
     Base::SerializeTo(json);
-    json["shader"] = shader_ ? shader_->GetPath() : "";
-    json["model"] = model_ ? model_->GetPath() : "";
+    json["shader"] = shader_ ? shader_->Path() : "";
+    json["model"] = model_ ? model_->Path() : "";
 }
 
 void KSceneMeshComponent::DeserializeFrom(const nlohmann::json& json)
 {
     Base::DeserializeFrom(json);
-    shader_ = Framework.GetShaderManager().Get(json["shader"]);
-    model_ = Framework.GetModelManager().Get(json["model"]);
+    shader_ = Framework.ShaderManager().Get(json["shader"]);
+    model_ = Framework.ModelManager().Get(json["model"]);
 }
 
 void KSceneMeshComponent::SetMobility(const EMobility mobility)
@@ -103,7 +98,7 @@ void KSceneMeshComponent::SetMobility(const EMobility mobility)
 void KSceneMeshComponent::InitSpin()
 {
     spinTask_->SetDuration(5.0f);
-    Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(spinTask_, &KTask::Start));
+    Framework.InputManager().GetKeyboard().GetEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(spinTask_, &KTask::Start));
     spinTask_->GetEventUpdate().AddListener(KtDelegate(this, &KSceneMeshComponent::Spin));
 }
 
@@ -134,12 +129,12 @@ void KSceneMeshComponent::RegisterProxies()
     {
     case EMobility::Dynamic:
     {
-        Framework.GetRenderer().GetSceneRenderer().RegisterDynamic(&proxy_);
+        Framework.Renderer().GetSceneRenderer().RegisterDynamic(&proxy_);
         break;
     }
     case EMobility::Static:
     {
-        Framework.GetRenderer().GetSceneRenderer().RegisterStatic(&proxy_);
+        Framework.Renderer().GetSceneRenderer().RegisterStatic(&proxy_);
         break;
     }
     }
@@ -151,12 +146,12 @@ void KSceneMeshComponent::RemoveProxies()
     {
     case EMobility::Dynamic:
     {
-        Framework.GetRenderer().GetSceneRenderer().UnregisterDynamic(&proxy_);
+        Framework.Renderer().GetSceneRenderer().UnregisterDynamic(&proxy_);
         break;
     }
     case EMobility::Static:
     {
-        Framework.GetRenderer().GetSceneRenderer().UnregisterStatic(&proxy_);
+        Framework.Renderer().GetSceneRenderer().UnregisterStatic(&proxy_);
         break;
     }
     }
@@ -164,7 +159,7 @@ void KSceneMeshComponent::RemoveProxies()
 
 void KSceneMeshComponent::Spin()
 {
-    const float speed = 10.0f * Engine.GetTimeManager().GetDelta();
+    const float speed = 10.0f * Engine.TimeManager().GetDelta();
     const glm::quat rotation = glm::quat(glm::radians(glm::vec3(0.0f, speed, 0.0f)));
     Rotate(rotation);
 }

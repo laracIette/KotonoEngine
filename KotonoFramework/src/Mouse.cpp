@@ -10,9 +10,9 @@ void scroll_callback_(GLFWwindow* window, double xoffset, double yoffset);
 
 void KtMouse::Init()
 {
-    glfwSetMouseButtonCallback(Framework.GetWindow().GetGLFWWindow(), mousebutton_callback_);
-    glfwSetCursorPosCallback(Framework.GetWindow().GetGLFWWindow(), cursorpos_callback_);
-    glfwSetScrollCallback(Framework.GetWindow().GetGLFWWindow(), scroll_callback_);
+    glfwSetMouseButtonCallback(Framework.Window().GetGLFWWindow(), mousebutton_callback_);
+    glfwSetCursorPosCallback(Framework.Window().GetGLFWWindow(), cursorpos_callback_);
+    glfwSetScrollCallback(Framework.Window().GetGLFWWindow(), scroll_callback_);
 }
 
 void KtMouse::Update()
@@ -95,7 +95,7 @@ const glm::vec2& KtMouse::GetCursorPosition() const
 
 glm::vec2 KtMouse::GetCursorPositionNormalized() const
 {
-    const auto& windowSize = Framework.GetWindow().GetSize();
+    const auto& windowSize = Framework.Window().GetSize();
     return 2.0f * cursorPosition_ / glm::vec2(windowSize) - 1.0f;
 }
 
@@ -136,16 +136,16 @@ KtEvent<float>& KtMouse::GetEventVerticalScroll()
 
 void mousebutton_callback_(GLFWwindow* window, int button, int action, int mods)
 {
-    Framework.GetInputManager().GetMouse().UpdateButton(static_cast<KtButton>(button), action);
+    Framework.InputManager().GetMouse().UpdateButton(static_cast<KtButton>(button), action);
 }
 
 void cursorpos_callback_(GLFWwindow* window, double xpos, double ypos)
 {
-    Framework.GetInputManager().GetMouse().cursorPosition_ = { xpos, ypos };
+    Framework.InputManager().GetMouse().cursorPosition_ = { xpos, ypos };
 }
 
 void scroll_callback_(GLFWwindow* window, double xoffset, double yoffset)
 {
-    Framework.GetInputManager().GetMouse().horizontalScrollDelta_ = static_cast<float>(xoffset);
-    Framework.GetInputManager().GetMouse().verticalScrollDelta_ = static_cast<float>(yoffset);
+    Framework.InputManager().GetMouse().horizontalScrollDelta_ = static_cast<float>(xoffset);
+    Framework.InputManager().GetMouse().verticalScrollDelta_ = static_cast<float>(yoffset);
 }

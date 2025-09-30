@@ -1,20 +1,5 @@
 #include "InterfaceContainerComponent.h"
 
-void KInterfaceContainerComponent::Init()
-{
-    Base::Init();
-}
-
-void KInterfaceContainerComponent::Update()
-{
-	Base::Update();
-}
-
-void KInterfaceContainerComponent::Cleanup()
-{
-    Base::Cleanup();
-}
-
 const KtPool<KInterfaceComponent*>& KInterfaceContainerComponent::GetItems() const
 {
     return items_;

@@ -25,13 +25,17 @@
     <ClInclude Include="include\kotono_engine_interface\TestBox.h" />
     <ClInclude Include="include\kotono_engine_interface\UpdateTimeText.h" />
     <ClInclude Include="include\kotono_engine_interface\log.h" />
+    <ClInclude Include="include\kotono_engine_interface\VisualizerWindow.h" />
+    <ClInclude Include="include\kotono_engine_interface\PropertiesWindow.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\PropertiesWindow.cpp" />
     <ClCompile Include="src\EngineInterface.cpp" />
     <ClCompile Include="src\DrawTimeText.cpp" />
     <ClCompile Include="src\MainWindow.cpp" />
     <ClCompile Include="src\TestBox.cpp" />
     <ClCompile Include="src\UpdateTimeText.cpp" />
+    <ClCompile Include="src\VisualizerWindow.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

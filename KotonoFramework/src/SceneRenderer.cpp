@@ -71,12 +71,12 @@ void KtSceneRenderer::CreateStaticCommandBuffer(const uint32_t frameIndex)
 {
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = Framework.GetRenderer().GetCommandPool(frameIndex);
+	allocInfo.commandPool = Framework.Renderer().GetCommandPool(frameIndex);
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
 	allocInfo.commandBufferCount = 1;
 
 	VK_CHECK_THROW(
-		vkAllocateCommandBuffers(Framework.GetContext().GetDevice(), &allocInfo, &staticCommandBuffers_[frameIndex]),
+		vkAllocateCommandBuffers(Framework.Context().GetDevice(), &allocInfo, &staticCommandBuffers_[frameIndex]),
 		"failed to allocate command buffers!"
 	);
 }
@@ -93,12 +93,12 @@ void KtSceneRenderer::CreateDynamicCommandBuffer(const uint32_t frameIndex)
 {
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = Framework.GetRenderer().GetCommandPool(frameIndex);
+	allocInfo.commandPool = Framework.Renderer().GetCommandPool(frameIndex);
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
 	allocInfo.commandBufferCount = 1;
 
 	VK_CHECK_THROW(
-		vkAllocateCommandBuffers(Framework.GetContext().GetDevice(), &allocInfo, &dynamicCommandBuffers_[frameIndex]),
+		vkAllocateCommandBuffers(Framework.Context().GetDevice(), &allocInfo, &dynamicCommandBuffers_[frameIndex]),
 		"failed to allocate command buffers!"
 	);
 }
@@ -127,9 +127,9 @@ void KtSceneRenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer, const ui
 
 	VkCommandBufferInheritanceInfo inheritanceInfo{};
 	inheritanceInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
-	inheritanceInfo.renderPass = Framework.GetRenderer().GetRenderPass();
+	inheritanceInfo.renderPass = Framework.Renderer().GetRenderPass();
 	inheritanceInfo.subpass = 0;
-	inheritanceInfo.framebuffer = Framework.GetRenderer().GetFramebuffer(frameIndex);
+	inheritanceInfo.framebuffer = Framework.Renderer().GetFramebuffer(frameIndex);
 
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;

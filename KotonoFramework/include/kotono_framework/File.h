@@ -9,7 +9,7 @@ public:
 	// Get whether the file exists
 	bool Exists() const;
 	// Get the path to the file
-	const std::filesystem::path& GetPath() const;
+	const std::filesystem::path& Path() const;
 	// Get the path to the directory of the file
 	std::filesystem::path GetDirectory() const;
 	// Get the name of the file with extension

@@ -16,7 +16,7 @@ bool KtFile::Exists() const
     return std::filesystem::exists(path_);
 }
 
-const std::filesystem::path& KtFile::GetPath() const
+const std::filesystem::path& KtFile::Path() const
 {
     return path_;
 }

@@ -20,11 +20,6 @@ void RInterfaceObject::Init()
 	visibility_ = EVisibility::EditorAndGame;
 }
 
-void RInterfaceObject::Update()
-{
-	Base::Update();
-}
-
 void RInterfaceObject::Cleanup()
 {
 	Base::Cleanup();
@@ -101,7 +96,7 @@ void RInterfaceObject::SetParent(RInterfaceObject* parent, const ECoordinateSpac
 
 void RInterfaceObject::AddComponent(KInterfaceComponent* component)
 {
-	Engine.GetObjectManager().Register(component);
+	Engine.ObjectManager().Register(component);
 	components_.Add(component);
 	component->componentIndex_ = components_.LastIndex();
 }

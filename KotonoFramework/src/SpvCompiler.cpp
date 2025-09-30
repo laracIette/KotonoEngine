@@ -9,7 +9,7 @@
 
 void KtSpvCompiler::CompileUpdated() const
 {
-    const auto path = Framework.GetPath().GetFrameworkPath() / "shaders";
+    const auto path = Framework.Path().GetFrameworkPath() / "shaders";
     nlohmann::json json{};
     KtSerializer serializer{};
     serializer.ReadData(path / "shaders.ktregistry", json);
@@ -65,7 +65,7 @@ void KtSpvCompiler::CompileAll() const
 {
     KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "compiling all spirv shaders");
 
-    const auto path = Framework.GetPath().GetFrameworkPath() / "shaders";
+    const auto path = Framework.Path().GetFrameworkPath() / "shaders";
     for (const auto& directory : { "vert", "frag" })
     {
         for (const auto& entry : std::filesystem::directory_iterator(path / directory))

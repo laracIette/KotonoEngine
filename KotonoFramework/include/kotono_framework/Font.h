@@ -9,7 +9,7 @@ class KtFont final
 public:
 	KtFont(const std::filesystem::path& path);
 
-	const std::filesystem::path& GetPath() const;
+	const std::filesystem::path& Path() const;
 	float GetSize() const;
 	float GetSpacing() const;
 

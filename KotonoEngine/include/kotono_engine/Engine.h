@@ -12,16 +12,16 @@ public:
 	void Cleanup();
 
 public:
-	STimeManager& GetTimeManager();
-	const STimeManager& GetTimeManager() const;
-	SObjectManager& GetObjectManager();
-	const SObjectManager& GetObjectManager() const;
-	SVisualizer& GetVisualizer();
-	const SVisualizer& GetVisualizer() const;
-	SInterface& GetInterface();
-	const SInterface& GetInterface() const;
-	SInterfacePhysicsManager& GetInterfacePhysicsManager();
-	const SInterfacePhysicsManager& GetInterfacePhysicsManager() const;
+	STimeManager& TimeManager();
+	const STimeManager& TimeManager() const;
+	SObjectManager& ObjectManager();
+	const SObjectManager& ObjectManager() const;
+	SVisualizer& Visualizer();
+	const SVisualizer& Visualizer() const;
+	SInterface& Interface();
+	const SInterface& Interface() const;
+	SInterfacePhysicsManager& InterfacePhysicsManager();
+	const SInterfacePhysicsManager& InterfacePhysicsManager() const;
 };
 
 inline SEngine Engine;

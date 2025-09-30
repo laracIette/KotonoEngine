@@ -129,7 +129,7 @@ void TSceneObject::DeserializeFrom(const nlohmann::json& json)
 
 void TSceneObject::AddComponent(KSceneComponent* component)
 {
-	Engine.GetObjectManager().Register(component);
+	Engine.ObjectManager().Register(component);
 	components_.Add(component);
 	component->componentIndex_ = components_.LastIndex();
 }

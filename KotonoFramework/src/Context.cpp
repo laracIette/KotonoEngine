@@ -416,7 +416,7 @@ void KtContext::CreateLogicalDevice()
 void KtContext::CreateSurface()
 {
 	VK_CHECK_THROW(
-		glfwCreateWindowSurface(instance_, Framework.GetWindow().GetGLFWWindow(), nullptr, &surface_),
+		glfwCreateWindowSurface(instance_, Framework.Window().GetGLFWWindow(), nullptr, &surface_),
 		"failed to create window surface!"
 	);
 }
@@ -505,7 +505,7 @@ VkExtent2D KtContext::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilit
 	else
 	{
 		int width, height;
-		glfwGetFramebufferSize(Framework.GetWindow().GetGLFWWindow(), &width, &height);
+		glfwGetFramebufferSize(Framework.Window().GetGLFWWindow(), &width, &height);
 
 		VkExtent2D actualExtent =
 		{

@@ -35,7 +35,7 @@ KtFont::KtFont(const std::filesystem::path& path) :
 {
 }
 
-const std::filesystem::path& KtFont::GetPath() const
+const std::filesystem::path& KtFont::Path() const
 {
     return path_;
 }
@@ -68,7 +68,7 @@ std::vector<std::filesystem::path> KtFont::GetTextPaths(const std::string_view t
     for (const auto character : text)
     {
         // default texture
-        auto characterPath = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
+        auto characterPath = Framework.Path().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
 
         const auto it = CHARACTER_NAMES.find(character);
         if (it != CHARACTER_NAMES.end())
@@ -94,7 +94,7 @@ std::vector<KtImageTexture*> KtFont::GetTextTextures(const std::string_view text
 
     for (const auto& path : GetTextPaths(text))
     {
-        result.push_back(Framework.GetImageTextureManager().Get(path));
+        result.push_back(Framework.ImageTextureManager().Get(path));
     }
 
     return result;

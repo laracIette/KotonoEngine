@@ -11,7 +11,7 @@
 KInterfaceBoxComponent::KInterfaceBoxComponent(RInterfaceObject* owner) :
 	Base(owner)
 {
-    boxProxy_ = Framework.GetRenderer().GetInterfaceRenderer().CreateProxy();
+    boxProxy_ = Framework.Renderer().GetInterfaceRenderer().CreateProxy();
 }
 
 void KInterfaceBoxComponent::Init()
@@ -19,7 +19,7 @@ void KInterfaceBoxComponent::Init()
     Base::Init();
 
     CreateBoxProxy();
-    Framework.GetRenderer().GetInterfaceRenderer().Register(boxProxy_);
+    Framework.Renderer().GetInterfaceRenderer().Register(boxProxy_);
 
     GetEventColorUpdated().AddListener(KtDelegate(this, &KInterfaceBoxComponent::MarkBoxProxyColorDirty));
     GetEventRectUpdated().AddListener(KtDelegate(this, &KInterfaceBoxComponent::MarkBoxProxyRectDirty));
@@ -29,18 +29,18 @@ void KInterfaceBoxComponent::Cleanup()
 {
     Base::Cleanup();
 
-    Framework.GetRenderer().GetInterfaceRenderer().Unregister(boxProxy_);
-    Framework.GetRenderer().GetInterfaceRenderer().DeleteProxy(boxProxy_);
+    Framework.Renderer().GetInterfaceRenderer().Unregister(boxProxy_);
+    Framework.Renderer().GetInterfaceRenderer().DeleteProxy(boxProxy_);
 }
 
 void KInterfaceBoxComponent::CreateBoxProxy()
 {
-    const auto shaderPath = Framework.GetPath().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
-    const auto texturePath = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
+    const auto shaderPath = Framework.Path().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
+    const auto texturePath = Framework.Path().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
     
-    boxProxy_->shader = Framework.GetShaderManager().Get(shaderPath);
+    boxProxy_->shader = Framework.ShaderManager().Get(shaderPath);
     boxProxy_->viewport = GetOwner()->GetViewport();
-    boxProxy_->renderable = Framework.GetImageTextureManager().Get(texturePath);
+    boxProxy_->renderable = Framework.ImageTextureManager().Get(texturePath);
     boxProxy_->layer = GetLayer();
     boxProxy_->objectData.modelMatrix = GetModelMatrix();
     boxProxy_->objectData.color = GetColor();

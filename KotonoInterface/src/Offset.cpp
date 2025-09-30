@@ -18,7 +18,7 @@ void WOffset::DisplayInternal(DisplaySettings displaySettings)
 
 WWidget::DisplaySettings WOffset::GetDisplaySettings(DisplaySettings displaySettings) const
 {
-	displaySettings.position += offsetSettings_.size;
+	displaySettings.position += offsetSettings_.offset;
 	
 	if (offsetSettings_.child)
 	{

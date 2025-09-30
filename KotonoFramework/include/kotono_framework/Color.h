@@ -36,7 +36,7 @@ struct KtColor final
 	static consteval KtColor Red()     noexcept { return { 1.0f, 0.0f, 0.0f, 1.0f }; }
 	static consteval KtColor White()   noexcept { return { 1.0f, 1.0f, 1.0f, 1.0f }; }
 	static consteval KtColor Yellow()  noexcept { return { 1.0f, 1.0f, 0.0f, 1.0f }; }
-
+	
 	static constexpr KtColor Mix(const KtColor& left, const KtColor& right) noexcept
 	{
 		return (left + right) / 2.0f;

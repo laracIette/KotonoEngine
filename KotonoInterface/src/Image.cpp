@@ -15,24 +15,24 @@ WImage::WImage(const ImageSettings& imageSettings) :
 
 void WImage::DisplayInternal(DisplaySettings displaySettings)
 {
-	static const auto shaderPath = Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)";
+	static const auto shaderPath = Framework.Path().GetFrameworkPath() / R"(shaders\shader2D.ktshader)";
 
-	imageProxy_ = Framework.GetRenderer().GetInterfaceRenderer().CreateProxy();
-	imageProxy_->shader = Framework.GetShaderManager().Get(shaderPath);
-	imageProxy_->renderable = Framework.GetImageTextureManager().Get(imageSettings_.path);
+	imageProxy_ = Framework.Renderer().GetInterfaceRenderer().CreateProxy();
+	imageProxy_->shader = Framework.ShaderManager().Get(shaderPath);
+	imageProxy_->renderable = Framework.ImageTextureManager().Get(imageSettings_.path);
 	imageProxy_->viewport = &WindowViewport;
 	imageProxy_->layer = displaySettings.layer;
 	imageProxy_->objectData.modelMatrix = GetModelMatrix();
 #	if _DEBUG
 		imageProxy_->source = this;
 #	endif
-	Framework.GetRenderer().GetInterfaceRenderer().Register(imageProxy_);
+	Framework.Renderer().GetInterfaceRenderer().Register(imageProxy_);
 }
 
 void WImage::Cleanup()
 {
-	Framework.GetRenderer().GetInterfaceRenderer().Unregister(imageProxy_);
-	Framework.GetRenderer().GetInterfaceRenderer().DeleteProxy(imageProxy_);
+	Framework.Renderer().GetInterfaceRenderer().Unregister(imageProxy_);
+	Framework.Renderer().GetInterfaceRenderer().DeleteProxy(imageProxy_);
 
 	WWidget::Cleanup();
 }

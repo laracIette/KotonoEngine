@@ -16,24 +16,24 @@ public:
 	void Cleanup();
 
 public:
-	KtPath& GetPath();
-	const KtPath& GetPath() const;
-	KtWindow& GetWindow();
-	const KtWindow& GetWindow() const;
-	KtContext& GetContext();
-	const KtContext& GetContext() const;
-	KtRenderer& GetRenderer();
-	const KtRenderer& GetRenderer() const;
-	KtAudioManager& GetAudioManager();
-	const KtAudioManager& GetAudioManager() const;
-	KtInputManager& GetInputManager();
-	const KtInputManager& GetInputManager() const;
-	KtModelManager& GetModelManager();
-	const KtModelManager& GetModelManager() const;
-	KtShaderManager& GetShaderManager();
-	const KtShaderManager& GetShaderManager() const;
-	KtImageTextureManager& GetImageTextureManager();
-	const KtImageTextureManager& GetImageTextureManager() const;
+	KtPath& Path();
+	const KtPath& Path() const;
+	KtWindow& Window();
+	const KtWindow& Window() const;
+	KtContext& Context();
+	const KtContext& Context() const;
+	KtRenderer& Renderer();
+	const KtRenderer& Renderer() const;
+	KtAudioManager& AudioManager();
+	const KtAudioManager& AudioManager() const;
+	KtInputManager& InputManager();
+	const KtInputManager& InputManager() const;
+	KtModelManager& ModelManager();
+	const KtModelManager& ModelManager() const;
+	KtShaderManager& ShaderManager();
+	const KtShaderManager& ShaderManager() const;
+	KtImageTextureManager& ImageTextureManager();
+	const KtImageTextureManager& ImageTextureManager() const;
 };
 
 inline KtFramework Framework;

@@ -25,20 +25,20 @@ void SObjectManager::Init()
 {
 	selectedObject = nullptr;
 
-	Framework.GetInputManager().GetKeyboard()
+	Framework.InputManager().GetKeyboard()
 		.GetEvent(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &SObjectManager::Quit));
 	
-	auto* shader3D{ Framework.GetShaderManager().Get(Framework.GetPath().GetFrameworkPath() / R"(shaders\shader3D.ktshader)") };
+	auto* shader3D{ Framework.ShaderManager().Get(Framework.Path().GetFrameworkPath() / R"(shaders\shader3D.ktshader)") };
 	shader3D->SetName("3D Shader");
 
-	auto* model1{ Framework.GetModelManager().Get(Framework.GetPath().GetSolutionPath() / R"(assets\models\viking_room.obj)") };
-	auto* model2{ Framework.GetModelManager().Get(Framework.GetPath().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)") };
+	auto* model1{ Framework.ModelManager().Get(Framework.Path().GetSolutionPath() / R"(assets\models\viking_room.obj)") };
+	auto* model2{ Framework.ModelManager().Get(Framework.Path().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)") };
 
 	/*{
 		auto* scene{ Create<KScene>() };
-		scene->SetPath(Framework.GetPath().GetSolutionPath() / R"(assets\objects\scene.KScene)");
-		scene->ListenEvent(Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), 
+		scene->SetPath(Framework.Path().GetSolutionPath() / R"(assets\objects\scene.KScene)");
+		scene->ListenEvent(Framework.InputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), 
 			KtDelegate(scene, &KScene::Reload));
 	}*/
 	{
@@ -84,7 +84,7 @@ void SObjectManager::Update()
 	if (canDraw_)
 	{
 		canDraw_ = false;
-		const float drawTime{ KtStopwatch::Time<float>(KtDelegate(&Framework.GetRenderer(), &KtRenderer::DrawFrame)) };
+		const float drawTime{ KtStopwatch::Time<float>(KtDelegate(&Framework.Renderer(), &KtRenderer::DrawFrame)) };
 		drawAverageTime_.AddTime(drawTime);
 	}
 }
@@ -121,7 +121,7 @@ void SObjectManager::Delete(KObject* object)
 
 void SObjectManager::Quit()
 {
-	Framework.GetWindow().SetShouldClose(true);
+	Framework.Window().SetShouldClose(true);
 }
 
 void SObjectManager::InitObjects()
@@ -149,7 +149,10 @@ void SObjectManager::UpdateObjects()
 {
 	for (auto* object : objects_)
 	{
-		object->Update();
+		if (object->GetCanUpdate())
+		{
+			object->Update();
+		}
 	}
 }
 

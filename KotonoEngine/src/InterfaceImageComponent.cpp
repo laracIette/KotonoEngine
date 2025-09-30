@@ -18,19 +18,19 @@ KInterfaceImageComponent::KInterfaceImageComponent(RInterfaceObject* owner) :
 {
 	if (!WireframeShader)
 	{
-		static const auto path{ Framework.GetPath().GetFrameworkPath() / R"(shaders\wireframe2D.ktshader)" };
-		WireframeShader = Framework.GetShaderManager().Get(path);
+		static const auto path{ Framework.Path().GetFrameworkPath() / R"(shaders\wireframe2D.ktshader)" };
+		WireframeShader = Framework.ShaderManager().Get(path);
 		WireframeShader->SetName("2D Wireframe Shader");
 	}
 
-	imageTextureProxy_ = Framework.GetRenderer().GetInterfaceRenderer().CreateProxy();
+	imageTextureProxy_ = Framework.Renderer().GetInterfaceRenderer().CreateProxy();
 }
 
 void KInterfaceImageComponent::Init()
 {
 	Base::Init();
 
-	Framework.GetRenderer().GetInterfaceRenderer().Register(imageTextureProxy_);
+	Framework.Renderer().GetInterfaceRenderer().Register(imageTextureProxy_);
 	CreateImageTextureProxy();
 
 	GetEventRectUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyRectDirty));
@@ -39,17 +39,12 @@ void KInterfaceImageComponent::Init()
 	GetEventLayerUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyLayerDirty));
 }
 
-void KInterfaceImageComponent::Update()
-{
-	Base::Update();
-}
-
 void KInterfaceImageComponent::Cleanup()
 {
 	Base::Cleanup();
 
-	Framework.GetRenderer().GetInterfaceRenderer().Unregister(imageTextureProxy_);
-	Framework.GetRenderer().GetInterfaceRenderer().DeleteProxy(imageTextureProxy_);
+	Framework.Renderer().GetInterfaceRenderer().Unregister(imageTextureProxy_);
+	Framework.Renderer().GetInterfaceRenderer().DeleteProxy(imageTextureProxy_);
 }
 
 KtShader* KInterfaceImageComponent::GetShader() const

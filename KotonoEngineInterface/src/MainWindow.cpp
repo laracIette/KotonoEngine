@@ -5,6 +5,8 @@
 #include "UpdateTimeText.h"
 #include "DrawTimeText.h"
 #include "TestBox.h"
+#include "VisualizerWindow.h"
+#include "PropertiesWindow.h"
 
 WWidget* WMainWindow::Build()
 {
@@ -47,28 +49,25 @@ WWidget* WMainWindow::Build()
 								.size = { 200.0f, 500.0f },
 								.child = new WColor({ KtColor::Red() }),
 							}),
-							new WExpanded({
+							new WExpanded({}),
+							new WBox({
+								.size = { 400.0f, 800.0f },
 								.child = new WStack({
 									.children = {
-										new WColor({ KtColor::Green().WithAlpha(0.5f) }),
+										new WColor({ KtColor::Magenta().WithAlpha(0.2f) }),
 										new WPadding({
-											.padding = WPadding::Padding::All(16.0f),
-											.child = new WStack({
+											.padding = WPadding::Padding::All(8.0f),
+											.child = new WColumn({
+												.spacing = 4.0f,
 												.children = {
-													new WColor({ KtColor::Magenta().WithAlpha(0.5f) }),
-													new WPadding({
-														.padding = WPadding::Padding::All(8.0f),
-														.child = new WTestBox(),
-													}),
+													new WTestBox(),
+													new WVisualizerWindow(),
+													new WPropertiesWindow(),
 												},
-											}), 
+											}),
 										}),
 									},
 								}),
-							}),
-							new WBox({
-								.size = { 200.0f, 500.0f },
-								.child = new WColor({ KtColor::Red() }),
 							}),
 						},
 					}),

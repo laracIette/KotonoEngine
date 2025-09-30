@@ -13,7 +13,7 @@ public:
     void Init();
     void Cleanup() const;
 
-    const std::filesystem::path& GetPath() const;
+    const std::filesystem::path& Path() const;
     const glm::uvec2& GetSize() const;
 
     const VkDescriptorImageInfo& GetDescriptorImageInfo() const;

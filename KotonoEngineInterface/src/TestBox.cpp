@@ -7,7 +7,7 @@
 
 WWidget* WTestBox::Build()
 {
-    if (Engine.GetObjectManager().selectedObject)
+    if (Engine.ObjectManager().selectedObject)
     {
         return new WBox({
             .size = { 100.0f, 100.0f },
@@ -17,8 +17,8 @@ WWidget* WTestBox::Build()
                     new WButton({
                         .onPress = [this]() { 
                             SetState([]() { 
-                                Engine.GetObjectManager().selectedObject->Delete();
-                                Engine.GetObjectManager().selectedObject = nullptr;
+                                Engine.ObjectManager().selectedObject->Delete();
+                                Engine.ObjectManager().selectedObject = nullptr;
                             });
                         },
                     }),

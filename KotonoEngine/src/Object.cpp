@@ -35,7 +35,17 @@ bool KObject::GetIsConstructed() const
     return isConstructed_;
 }
 
-const std::filesystem::path& KObject::GetPath() const
+bool KObject::GetIsDelete() const
+{
+    return isDelete_;
+}
+
+bool KObject::GetCanUpdate() const
+{
+    return canUpdate_;
+}
+
+const std::filesystem::path& KObject::Path() const
 {
     return path_;
 }
@@ -43,11 +53,6 @@ const std::filesystem::path& KObject::GetPath() const
 const std::string& KObject::GetName() const
 {
     return name_;
-}
-
-bool KObject::GetIsDelete() const
-{
-    return isDelete_;
 }
 
 std::string KObject::GetTypeName() const
@@ -66,6 +71,11 @@ void KObject::SetName(const std::string& name)
     name_ = name;
 }
 
+void KObject::SetCanUpdate(const bool canUpdate)
+{
+    canUpdate_ = canUpdate;
+}
+
 void KObject::SetPath(const std::filesystem::path& path)
 {
     path_ = path;
@@ -78,7 +88,7 @@ void KObject::Delete()
         return;
     }
     isDelete_ = true;
-    Engine.GetObjectManager().Delete(this);
+    Engine.ObjectManager().Delete(this);
 }
 
 void KObject::DelayDelete(const UDuration& delay)
@@ -117,7 +127,7 @@ void KObject::DeserializeFrom(const nlohmann::json& json)
 
 void KObject::Delay(const KtDelegate<>& delegate, const UDuration& delay) const
 {
-    auto* timer = Engine.GetObjectManager().Create<KTimer>();
+    auto* timer = Engine.ObjectManager().Create<KTimer>();
     timer->GetEventCompleted().AddListener(KtDelegate(timer, &KTimer::Delete));
     timer->GetEventCompleted().AddListener(delegate);
     timer->SetDuration(delay);
@@ -126,7 +136,7 @@ void KObject::Delay(const KtDelegate<>& delegate, const UDuration& delay) const
 
 void KObject::Delay(KtDelegate<>&& delegate, const UDuration& delay) const
 {
-    auto* timer = Engine.GetObjectManager().Create<KTimer>();
+    auto* timer = Engine.ObjectManager().Create<KTimer>();
     timer->GetEventCompleted().AddListener(KtDelegate(timer, &KTimer::Delete));
     timer->GetEventCompleted().AddListener(std::move(delegate));
     timer->SetDuration(delay);

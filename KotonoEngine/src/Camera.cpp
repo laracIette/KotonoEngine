@@ -21,28 +21,28 @@ void TCamera::Init()
 	GetRootComponent()->GetEventTransformUpdated().AddListener(KtDelegate<>(this, &TCamera::OnEventUpdateTransform));
 	GetRootComponent()->SetWorldPosition(glm::vec3(0.0f, 0.0f, -3.0f));
 
-	Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_W, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &TCamera::OnKeyboardWKeyDown));
-	Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_A, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &TCamera::OnKeyboardAKeyDown));
-	Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &TCamera::OnKeyboardSKeyDown));
-	Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_D, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &TCamera::OnKeyboardDKeyDown));
-	Framework.GetInputManager().GetMouse().GetEvent(KT_BUTTON_RIGHT, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &TCamera::OnMouseRightButtonPressed));
-	Framework.GetInputManager().GetMouse().GetEvent(KT_BUTTON_RIGHT, KT_INPUT_STATE_RELEASED).AddListener(KtDelegate(this, &TCamera::OnMouseRightButtonReleased));
-	Framework.GetInputManager().GetMouse().GetEventMove().AddListener(KtDelegate(this, &TCamera::OnMouseMove));
-	Framework.GetInputManager().GetMouse().GetEventVerticalScroll().AddListener(KtDelegate(this, &TCamera::OnMouseVerticalScroll));
+	Framework.InputManager().GetKeyboard().GetEvent(KT_KEY_W, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &TCamera::OnKeyboardWKeyDown));
+	Framework.InputManager().GetKeyboard().GetEvent(KT_KEY_A, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &TCamera::OnKeyboardAKeyDown));
+	Framework.InputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &TCamera::OnKeyboardSKeyDown));
+	Framework.InputManager().GetKeyboard().GetEvent(KT_KEY_D, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &TCamera::OnKeyboardDKeyDown));
+	Framework.InputManager().GetMouse().GetEvent(KT_BUTTON_RIGHT, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &TCamera::OnMouseRightButtonPressed));
+	Framework.InputManager().GetMouse().GetEvent(KT_BUTTON_RIGHT, KT_INPUT_STATE_RELEASED).AddListener(KtDelegate(this, &TCamera::OnMouseRightButtonReleased));
+	Framework.InputManager().GetMouse().GetEventMove().AddListener(KtDelegate(this, &TCamera::OnMouseMove));
+	Framework.InputManager().GetMouse().GetEventVerticalScroll().AddListener(KtDelegate(this, &TCamera::OnMouseVerticalScroll));
 }
 
 void TCamera::Cleanup()
 {
 	Base::Cleanup();
 
-	Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_W, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &TCamera::OnKeyboardWKeyDown));
-	Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_A, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &TCamera::OnKeyboardAKeyDown));
-	Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &TCamera::OnKeyboardSKeyDown));
-	Framework.GetInputManager().GetKeyboard().GetEvent(KT_KEY_D, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &TCamera::OnKeyboardDKeyDown));
-	Framework.GetInputManager().GetMouse().GetEvent(KT_BUTTON_RIGHT, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &TCamera::OnMouseRightButtonPressed));
-	Framework.GetInputManager().GetMouse().GetEvent(KT_BUTTON_RIGHT, KT_INPUT_STATE_RELEASED).RemoveListener(KtDelegate(this, &TCamera::OnMouseRightButtonReleased));
-	Framework.GetInputManager().GetMouse().GetEventMove().RemoveListener(KtDelegate(this, &TCamera::OnMouseMove));
-	Framework.GetInputManager().GetMouse().GetEventVerticalScroll().RemoveListener(KtDelegate(this, &TCamera::OnMouseVerticalScroll));
+	Framework.InputManager().GetKeyboard().GetEvent(KT_KEY_W, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &TCamera::OnKeyboardWKeyDown));
+	Framework.InputManager().GetKeyboard().GetEvent(KT_KEY_A, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &TCamera::OnKeyboardAKeyDown));
+	Framework.InputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &TCamera::OnKeyboardSKeyDown));
+	Framework.InputManager().GetKeyboard().GetEvent(KT_KEY_D, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &TCamera::OnKeyboardDKeyDown));
+	Framework.InputManager().GetMouse().GetEvent(KT_BUTTON_RIGHT, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &TCamera::OnMouseRightButtonPressed));
+	Framework.InputManager().GetMouse().GetEvent(KT_BUTTON_RIGHT, KT_INPUT_STATE_RELEASED).RemoveListener(KtDelegate(this, &TCamera::OnMouseRightButtonReleased));
+	Framework.InputManager().GetMouse().GetEventMove().RemoveListener(KtDelegate(this, &TCamera::OnMouseMove));
+	Framework.InputManager().GetMouse().GetEventVerticalScroll().RemoveListener(KtDelegate(this, &TCamera::OnMouseVerticalScroll));
 }
 
 void TCamera::Use()
@@ -53,28 +53,28 @@ void TCamera::Use()
 void TCamera::OnKeyboardWKeyDown() const
 {
 	const auto direction = GetRootComponent()->GetForwardVector();
-	const auto delta = direction * Engine.GetTimeManager().GetDelta();
+	const auto delta = direction * Engine.TimeManager().GetDelta();
 	GetRootComponent()->Translate(delta * speed_);
 }
 
 void TCamera::OnKeyboardAKeyDown() const
 {
 	const auto direction = -GetRootComponent()->GetRightVector();
-	const auto delta = direction * Engine.GetTimeManager().GetDelta();
+	const auto delta = direction * Engine.TimeManager().GetDelta();
 	GetRootComponent()->Translate(delta * speed_);
 }
 
 void TCamera::OnKeyboardSKeyDown() const
 {
 	const auto direction = -GetRootComponent()->GetForwardVector();
-	const auto delta = direction * Engine.GetTimeManager().GetDelta();
+	const auto delta = direction * Engine.TimeManager().GetDelta();
 	GetRootComponent()->Translate(delta * speed_);
 }
 
 void TCamera::OnKeyboardDKeyDown() const
 {
 	const auto direction = GetRootComponent()->GetRightVector();
-	const auto delta = direction * Engine.GetTimeManager().GetDelta();
+	const auto delta = direction * Engine.TimeManager().GetDelta();
 	GetRootComponent()->Translate(delta * speed_);
 }
 
@@ -132,5 +132,5 @@ void TCamera::OnEventUpdateTransform() const
 	ubo.Projection = glm::perspective(glm::radians(fov_), GetViewport()->GetAspectRatio(), depthNear_, depthFar_);
 	//ubo.Projection[1][1] *= -1.0f;
 
-	Framework.GetRenderer().GetSceneRenderer().SetUniformData(ubo);
+	Framework.Renderer().GetSceneRenderer().SetUniformData(ubo);
 }

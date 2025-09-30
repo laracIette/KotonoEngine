@@ -8,32 +8,27 @@
 KInterfaceColliderComponent::KInterfaceColliderComponent(RInterfaceObject* owner) :
 	Base(owner)
 {
-	Engine.GetInterfacePhysicsManager().Register(this);
+	Engine.InterfacePhysicsManager().Register(this);
 }
 
 void KInterfaceColliderComponent::Init()
 {
 	Base::Init();	
 
-	Framework.GetInputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
-	Framework.GetInputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED).AddListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
-	Framework.GetInputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
-}
-
-void KInterfaceColliderComponent::Update()
-{
-	Base::Update();
+	Framework.InputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
+	Framework.InputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED).AddListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
+	Framework.InputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
 }
 
 void KInterfaceColliderComponent::Cleanup()
 {
 	Base::Cleanup();
 
-	Engine.GetInterfacePhysicsManager().Unregister(this);
+	Engine.InterfacePhysicsManager().Unregister(this);
 
-	Framework.GetInputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
-	Framework.GetInputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED).RemoveListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
-	Framework.GetInputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
+	Framework.InputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
+	Framework.InputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED).RemoveListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
+	Framework.InputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
 }
 
 KtEvent<>& KInterfaceColliderComponent::GetEventPressed()
@@ -58,7 +53,7 @@ KtEvent<KInterfaceColliderComponent*>& KInterfaceColliderComponent::GetEventOver
 
 bool KInterfaceColliderComponent::GetIsMouseOverlapping() const
 {
-	const auto& cursorPosition = Framework.GetInputManager().GetMouse().GetCursorPosition();
+	const auto& cursorPosition = Framework.InputManager().GetMouse().GetCursorPosition();
 	const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
 	const auto worldPosition = cursorPosition / viewportSize * 2.0f - glm::vec2(1.0f);
 	return GetIsOverlapping(worldPosition);

@@ -11,7 +11,7 @@ public:
 	void Init();
 	void Cleanup() const;
 
-	const std::filesystem::path& GetPath() const;
+	const std::filesystem::path& Path() const;
 
 	void CmdBind(VkCommandBuffer commandBuffer) const override;
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t instanceCount, const uint32_t firstInstance) const override;

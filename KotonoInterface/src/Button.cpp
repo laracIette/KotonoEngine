@@ -6,21 +6,30 @@
 WButton::WButton(const ButtonSettings& buttonSettings) :
 	buttonSettings_(buttonSettings)
 {
-	Framework.GetInputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+
+	Framework.InputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonPressed));
+	Framework.InputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
+		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonDown));
+	Framework.InputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
+		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonReleased));
 }
 
 void WButton::Cleanup()
 {
-	Framework.GetInputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+	Framework.InputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonPressed));
+	Framework.InputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
+		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonDown));
+	Framework.InputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
+		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonReleased));
 
 	WWidget::Cleanup();
 }
 
 void WButton::OnMouseLeftButtonPressed()
 {
-	const auto& cursorPos{ Framework.GetInputManager().GetMouse().GetCursorPosition() };
+	const auto& cursorPos{ Framework.InputManager().GetMouse().GetCursorPosition() };
 	const auto position{ GetPosition() };
 	const auto size{ GetSize() };
 
@@ -30,8 +39,38 @@ void WButton::OnMouseLeftButtonPressed()
 		return;
 	}
 
+	isPressed_ = true;
+
 	if (buttonSettings_.onPress)
 	{
 		buttonSettings_.onPress();
+	}
+}
+
+void WButton::OnMouseLeftButtonDown()
+{
+	if (!isPressed_)
+	{
+		return;
+	}
+
+	if (buttonSettings_.onDown)
+	{
+		buttonSettings_.onDown();
+	}
+}
+
+void WButton::OnMouseLeftButtonReleased()
+{
+	if (!isPressed_)
+	{
+		return;
+	}
+
+	isPressed_ = false;
+
+	if (buttonSettings_.onReleased)
+	{
+		buttonSettings_.onReleased();
 	}
 }

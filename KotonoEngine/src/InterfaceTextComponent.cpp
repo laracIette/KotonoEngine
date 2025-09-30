@@ -19,8 +19,8 @@ void KInterfaceTextComponent::Init()
 {
     Base::Init(); 
 
-    static const auto path{ Framework.GetPath().GetFrameworkPath() / R"(shaders\shader2D.ktshader)" };
-    SetShader(Framework.GetShaderManager().Get(path));
+    static const auto path{ Framework.Path().GetFrameworkPath() / R"(shaders\shader2D.ktshader)" };
+    SetShader(Framework.ShaderManager().Get(path));
 
     UpdateTextWithBinding();
 }
@@ -107,7 +107,7 @@ void KInterfaceTextComponent::UpdateCharacters()
     }
     characters_.Clear();
 
-    const auto path{ Framework.GetPath().GetSolutionPath() / R"(assets\fonts\default)" };
+    const auto path{ Framework.Path().GetSolutionPath() / R"(assets\fonts\default)" };
     const KtFont font(path);
 
     const auto fontCharacters{ font.GetTextTextures(text_) };

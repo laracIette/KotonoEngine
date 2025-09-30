@@ -8,6 +8,10 @@ public:
 	{
 		/// default = {}
 		std::function<void()> onPress{};
+		/// default = {}
+		std::function<void()> onDown{};
+		/// default = {}
+		std::function<void()> onReleased{};
 	};
 
 	/// Set the widget's bounds as pressable
@@ -17,7 +21,10 @@ public:
 
 private:
 	ButtonSettings buttonSettings_;
+	bool isPressed_;
 
 	void OnMouseLeftButtonPressed();
+	void OnMouseLeftButtonDown();
+	void OnMouseLeftButtonReleased();
 };
 

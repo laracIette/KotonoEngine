@@ -10,7 +10,7 @@ const KtKey GLFWKeyToKey(const int key);
 
 void KtKeyboard::Init()
 {
-    glfwSetKeyCallback(Framework.GetWindow().GetGLFWWindow(), key_callback_);
+    glfwSetKeyCallback(Framework.Window().GetGLFWWindow(), key_callback_);
 }
 
 void KtKeyboard::Update()
@@ -75,7 +75,7 @@ void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mo
         return;
     }
 
-    Framework.GetInputManager().GetKeyboard().UpdateKey(GLFWKeyToKey(key), action);
+    Framework.InputManager().GetKeyboard().UpdateKey(GLFWKeyToKey(key), action);
 }
 
 const int keyToGLFWKey(const KtKey key)

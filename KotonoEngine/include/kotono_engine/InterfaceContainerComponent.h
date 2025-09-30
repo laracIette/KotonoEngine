@@ -4,11 +4,6 @@ class KInterfaceContainerComponent : public KInterfaceComponent
 {
 	BASECLASS(KInterfaceComponent)
 
-protected:
-    void Init() override;
-    void Update() override;
-    void Cleanup() override;
-
 public:
     const KtPool<KInterfaceComponent*>& GetItems() const;
     bool GetIsSizeToContent() const;

@@ -27,7 +27,7 @@ KInterfaceComponent::KInterfaceComponent(RInterfaceObject* owner) :
         SetParent(GetOwner()->GetRootComponent(), ECoordinateSpace::Relative);
     }
 
-    boundsProxy_ = Framework.GetRenderer().GetInterfaceRenderer().CreateProxy();
+    boundsProxy_ = Framework.Renderer().GetInterfaceRenderer().CreateProxy();
 }
 
 void KInterfaceComponent::Init()
@@ -37,7 +37,7 @@ void KInterfaceComponent::Init()
     visibility_ = EVisibility::EditorAndGame;
 
     CreateBoundsProxy();
-    Framework.GetRenderer().GetInterfaceRenderer().Register(boundsProxy_);
+    Framework.Renderer().GetInterfaceRenderer().Register(boundsProxy_);
 
     GetEventRectUpdated().AddListener(KtDelegate(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
 }
@@ -56,8 +56,8 @@ void KInterfaceComponent::Cleanup()
 
     GetOwner()->RemoveComponent(this);
 
-    Framework.GetRenderer().GetInterfaceRenderer().Unregister(boundsProxy_);
-    Framework.GetRenderer().GetInterfaceRenderer().DeleteProxy(boundsProxy_);
+    Framework.Renderer().GetInterfaceRenderer().Unregister(boundsProxy_);
+    Framework.Renderer().GetInterfaceRenderer().DeleteProxy(boundsProxy_);
 }
 
 RInterfaceObject* KInterfaceComponent::GetOwner() const
@@ -478,12 +478,12 @@ void KInterfaceComponent::RemoveChildren(KInterfaceComponent* interfaceComponent
 
 void KInterfaceComponent::CreateBoundsProxy()
 {
-    const auto shaderPath = Framework.GetPath().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
-    const auto texturePath = Framework.GetPath().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
+    const auto shaderPath = Framework.Path().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
+    const auto texturePath = Framework.Path().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
 
-    boundsProxy_->shader = Framework.GetShaderManager().Get(shaderPath);
+    boundsProxy_->shader = Framework.ShaderManager().Get(shaderPath);
     boundsProxy_->viewport = GetOwner()->GetViewport();
-    boundsProxy_->renderable = Framework.GetImageTextureManager().Get(texturePath);
+    boundsProxy_->renderable = Framework.ImageTextureManager().Get(texturePath);
     boundsProxy_->layer = GetLayer();
     boundsProxy_->objectData.modelMatrix = GetModelMatrix();
     boundsProxy_->objectData.color = { 1.0f, 1.0f, 1.0f, 0.01f };

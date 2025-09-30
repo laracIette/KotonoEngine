@@ -3,6 +3,11 @@
 #include "TimeManager.h"
 #include "ObjectManager.h"
 
+void KTimer::Init()
+{
+    SetCanUpdate(true);
+}
+
 void KTimer::Update()
 {
 	Base::Update();
@@ -82,6 +87,6 @@ void KTimer::Stop()
 UDuration KTimer::GetNow() const
 {
     return std::holds_alternative<float>(targetDuration_.value)
-        ? UDuration::FromSeconds(Engine.GetTimeManager().GetNow())
-        : UDuration::FromUpdates(Engine.GetObjectManager().GetCurrentUpdate());
+        ? UDuration::FromSeconds(Engine.TimeManager().GetNow())
+        : UDuration::FromUpdates(Engine.ObjectManager().GetCurrentUpdate());
 }

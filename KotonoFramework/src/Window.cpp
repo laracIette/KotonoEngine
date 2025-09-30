@@ -51,7 +51,7 @@ bool KtWindow::GetShouldClose() const
 {
     if (shouldClose_ || glfwWindowShouldClose(window_))
     {
-        vkDeviceWaitIdle(Framework.GetContext().GetDevice());
+        vkDeviceWaitIdle(Framework.Context().GetDevice());
         return true;
     }
 
@@ -89,13 +89,13 @@ void framebuffersize_callback_(GLFWwindow* window, int width, int height)
     // Replace to only freeze render
     while (width == 0 || height == 0)                                                   
     {                                                                                   
-        glfwGetFramebufferSize(Framework.GetWindow().GetGLFWWindow(), &width, &height); 
+        glfwGetFramebufferSize(Framework.Window().GetGLFWWindow(), &width, &height); 
         glfwWaitEvents();                                                               
     } 
 
     WindowViewport.SetExtent(glm::uvec2(width, height));
 
-    Framework.GetWindow().GetEventWindowResized().Broadcast();
+    Framework.Window().GetEventWindowResized().Broadcast();
 
     KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "window resized: %d x %d", width, height);
 }

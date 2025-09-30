@@ -38,7 +38,7 @@ public:
 	void Init();
 	void Cleanup();
 
-	const std::filesystem::path& GetPath() const;
+	const std::filesystem::path& Path() const;
 
 	const std::string& GetName() const;
 	void SetName(const std::string& name);

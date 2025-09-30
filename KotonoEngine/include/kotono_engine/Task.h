@@ -6,6 +6,7 @@ class KTask : public KObject
 	BASECLASS(KObject)
 
 protected:
+	void Init() override;
 	void Update() override;
 
 public:

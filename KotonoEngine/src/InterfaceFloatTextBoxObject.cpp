@@ -44,7 +44,7 @@ void RInterfaceFloatTextBoxObject::OnMouseDown()
 {
 	Base::OnMouseDown();
 
-	const float delta{ Framework.GetInputManager().GetMouse().GetCursorPositionDelta().x };
+	const float delta{ Framework.InputManager().GetMouse().GetCursorPositionDelta().x };
 	const float speedMultiplier{ std::sqrt(std::abs(value_)) / 10.0f + 0.1f };
 	SetValue(value_ + delta * speedMultiplier);
 }

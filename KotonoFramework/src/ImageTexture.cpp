@@ -9,7 +9,7 @@ KtImageTexture::KtImageTexture(const std::filesystem::path& path) :
 {
 }
 
-const std::filesystem::path& KtImageTexture::GetPath() const
+const std::filesystem::path& KtImageTexture::Path() const
 {
 	return path_;
 }
@@ -38,9 +38,9 @@ void KtImageTexture::Init()
 void KtImageTexture::Cleanup() const
 {
 	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_LOW, "cleaning up image texture");
-	vkDestroySampler(Framework.GetContext().GetDevice(), sampler_, nullptr);
-	vkDestroyImageView(Framework.GetContext().GetDevice(), imageView_, nullptr);
-	vmaDestroyImage(Framework.GetContext().GetAllocator(), image_, allocation_);
+	vkDestroySampler(Framework.Context().GetDevice(), sampler_, nullptr);
+	vkDestroyImageView(Framework.Context().GetDevice(), imageView_, nullptr);
+	vmaDestroyImage(Framework.Context().GetAllocator(), image_, allocation_);
 	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_LOW, "cleaned up image texture");
 }
 
@@ -61,7 +61,7 @@ void KtImageTexture::CreateTextureImage()
 		throw std::runtime_error("failed to load texture image!");
 	}
 
-	Framework.GetContext().CreateBuffer(
+	Framework.Context().CreateBuffer(
 		imageSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
@@ -73,7 +73,7 @@ void KtImageTexture::CreateTextureImage()
 
 	stbi_image_free(pixels);
 
-	Framework.GetContext().CreateImage(
+	Framework.Context().CreateImage(
 		texWidth,
 		texHeight,
 		mipLevels_,
@@ -86,7 +86,7 @@ void KtImageTexture::CreateTextureImage()
 		allocation_
 	);
 
-	Framework.GetContext().TransitionImageLayout(
+	Framework.Context().TransitionImageLayout(
 		image_,
 		VK_FORMAT_R8G8B8A8_SRGB,
 		VK_IMAGE_LAYOUT_UNDEFINED,
@@ -94,23 +94,23 @@ void KtImageTexture::CreateTextureImage()
 		mipLevels_
 	);
 
-	Framework.GetContext().CopyBufferToImage(
+	Framework.Context().CopyBufferToImage(
 		stagingBuffer_.Buffer,
 		image_,
 		static_cast<uint32_t>(texWidth),
 		static_cast<uint32_t>(texHeight)
 	);
 
-	Framework.GetContext().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtImageTexture::DestroyStagingBuffer));
+	Framework.Context().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtImageTexture::DestroyStagingBuffer));
 
-	Framework.GetContext().GenerateMipmaps(image_, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels_);
+	Framework.Context().GenerateMipmaps(image_, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels_);
 
 	size_ = glm::uvec2(static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
 }
 
 void KtImageTexture::CreateTextureImageView()
 {
-	imageView_ = Framework.GetContext().CreateImageView(image_, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels_);
+	imageView_ = Framework.Context().CreateImageView(image_, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels_);
 }
 
 void KtImageTexture::CreateTextureSampler()
@@ -124,7 +124,7 @@ void KtImageTexture::CreateTextureSampler()
 	samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
 	VkPhysicalDeviceProperties properties{};
-	vkGetPhysicalDeviceProperties(Framework.GetContext().GetPhysicalDevice(), &properties);
+	vkGetPhysicalDeviceProperties(Framework.Context().GetPhysicalDevice(), &properties);
 	samplerInfo.anisotropyEnable = VK_TRUE;
 	samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
 	samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
@@ -136,7 +136,7 @@ void KtImageTexture::CreateTextureSampler()
 	samplerInfo.maxLod = static_cast<float>(mipLevels_);
 	samplerInfo.mipLodBias = 0.0f; // Optional
 
-	if (vkCreateSampler(Framework.GetContext().GetDevice(), &samplerInfo, nullptr, &sampler_) != VK_SUCCESS)
+	if (vkCreateSampler(Framework.Context().GetDevice(), &samplerInfo, nullptr, &sampler_) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create texture sampler!");
 	}
@@ -144,5 +144,5 @@ void KtImageTexture::CreateTextureSampler()
 
 void KtImageTexture::DestroyStagingBuffer()
 {
-	vmaDestroyBuffer(Framework.GetContext().GetAllocator(), stagingBuffer_.Buffer, stagingBuffer_.Allocation);
+	vmaDestroyBuffer(Framework.Context().GetAllocator(), stagingBuffer_.Buffer, stagingBuffer_.Allocation);
 }

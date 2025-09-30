@@ -17,16 +17,6 @@ void RInterfaceTextBoxObject::Init()
 	colliderComponent_->SetRelativeSize(glm::vec2(0.5f, 0.2f));
 }
 
-void RInterfaceTextBoxObject::Update()
-{
-	Base::Update();
-}
-
-void RInterfaceTextBoxObject::Cleanup()
-{
-	Base::Cleanup();
-}
-
 bool RInterfaceTextBoxObject::GetIsEditable() const
 {
 	return isEditable_;
