@@ -23,7 +23,7 @@ public:
 	float GetHorizontalScrollDelta() const;
 	float GetVerticalScrollDelta() const;
 
-	KtEvent<>& GetEvent(const KtButton button, const KtInputState inputState);
+	KtEvent<>& ButtonEvent(const KtButton button, const KtInputState inputState);
 	KtEvent<glm::vec2>& GetEventMove();
 	KtEvent<float>& GetEventHorizontalScroll();
 	KtEvent<float>& GetEventVerticalScroll();

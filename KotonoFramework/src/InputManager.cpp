@@ -12,22 +12,22 @@ void KtInputManager::Update()
     mouse_.Update();
 }
 
-KtMouse& KtInputManager::GetMouse()
+KtMouse& KtInputManager::Mouse()
 {
     return mouse_;
 }
 
-const KtMouse& KtInputManager::GetMouse() const
+const KtMouse& KtInputManager::Mouse() const
 {
     return mouse_;
 }
 
-KtKeyboard& KtInputManager::GetKeyboard()
+KtKeyboard& KtInputManager::Keyboard()
 {
     return keyboard_;
 }
 
-const KtKeyboard& KtInputManager::GetKeyboard() const
+const KtKeyboard& KtInputManager::Keyboard() const
 {
     return keyboard_;
 }

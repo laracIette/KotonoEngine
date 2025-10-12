@@ -12,7 +12,7 @@ public:
 	void Update();
 	void UpdateKey(const KtKey key, const int action);
 
-	KtEvent<>& GetEvent(const KtKey key, const KtInputState inputState);
+	KtEvent<>& KeyEvent(const KtKey key, const KtInputState inputState);
 
 private:
 	std::array<std::array<KtEvent<>, KT_INPUT_STATE_COUNT>, KT_KEY_COUNT> keyEvents_;

@@ -2,7 +2,6 @@
 #include <type_traits>
 #include <kotono_framework/Pool.h>
 #include <kotono_framework/AverageTime.h>
-#include <array>
 
 class KObject;
 
@@ -34,8 +33,8 @@ public:
 	float GetAverageDrawTime() const;
 
 	int64_t GetCurrentUpdate() const;
-	
-	KObject* selectedObject;
+
+	KObject* SelectedObject() const;
 
 private:
 	void Quit();
@@ -44,11 +43,12 @@ private:
 	KtPool<KObject*> objects_;
 	KtPool<KObject*> deletes_;
 
+	KObject* selectedObject_;
+
 	KtAverageTime<256> updateAverageTime_;
 	KtAverageTime<64> drawAverageTime_;
 
 	int64_t currentUpdate_;
-
 
 	bool canDraw_;
 
@@ -58,4 +58,6 @@ private:
 	void SubmitDrawObjects();
 
 	void LogUPS() const;
+
+	void OnMouseButtonLeftPressed();
 };

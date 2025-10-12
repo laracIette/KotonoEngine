@@ -5,7 +5,7 @@
 KInterfaceButtonComponent::KInterfaceButtonComponent(RInterfaceObject* owner) :
 	Base(owner)
 {
-	collider_ = GetOwner()->AddComponent<KInterfaceColliderComponent>();
+	collider_ = Owner()->AddComponent<KInterfaceColliderComponent>();
 }
 
 void KInterfaceButtonComponent::Init()

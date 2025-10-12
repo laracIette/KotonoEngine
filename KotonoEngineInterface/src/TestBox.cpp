@@ -7,27 +7,22 @@
 
 WWidget* WTestBox::Build()
 {
-    if (Engine.ObjectManager().selectedObject)
-    {
-        return new WBox({
-            .size = { 100.0f, 100.0f },
-            .child = new WStack({
-                .children = {
-                    new WColor({ KtColor::Red() }),
-                    new WButton({
-                        .onPress = [this]() { 
-                            SetState([]() { 
-                                Engine.ObjectManager().selectedObject->Delete();
-                                Engine.ObjectManager().selectedObject = nullptr;
-                            });
-                        },
-                    }),
-                },
-            }),
-        });
-    }
     return new WBox({
         .size = { 100.0f, 100.0f },
-        .child = new WColor({ KtColor::Green() }),
+        .child = new WStack({
+            .children = {
+                new WColor({ KtColor::Red() }),
+                new WButton({
+                    .onDown = [this]() { 
+                        if (Engine.ObjectManager().SelectedObject())
+                        {
+                            SetState([]() {
+                                Engine.ObjectManager().SelectedObject()->Delete();
+                            });
+                        }
+                    },
+                }),
+            },
+        }),
     });
 }

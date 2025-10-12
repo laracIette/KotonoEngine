@@ -94,6 +94,13 @@ void RInterfaceObject::SetParent(RInterfaceObject* parent, const ECoordinateSpac
 	GetRootComponent()->SetParent(parent_ ? parent_->GetRootComponent() : nullptr, keepRect);
 }
 
+bool RInterfaceObject::IsHovered() const
+{
+	return std::any_of(components_.begin(), components_.end(),
+		[](const KInterfaceComponent* component) { return component->IsHovered(); }
+	);
+}
+
 void RInterfaceObject::AddComponent(KInterfaceComponent* component)
 {
 	Engine.ObjectManager().Register(component);

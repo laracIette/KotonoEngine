@@ -9,10 +9,8 @@
 #include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/WindowViewport.h>
 #include <kotono_framework/Renderable2DProxy.h>
+#include <kotono_framework/InputManager.h>
 #include "log.h"
-#include "Engine.h"
-#include "TimeManager.h"
-#include <ranges>
 
 KInterfaceComponent::KInterfaceComponent(RInterfaceObject* owner) :
     Base(),
@@ -22,9 +20,9 @@ KInterfaceComponent::KInterfaceComponent(RInterfaceObject* owner) :
 {
     eventRectUpdated_.AddListener(KtDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
 
-    if (GetOwner()->GetRootComponent() != this)
+    if (Owner()->GetRootComponent() != this)
     {
-        SetParent(GetOwner()->GetRootComponent(), ECoordinateSpace::Relative);
+        SetParent(Owner()->GetRootComponent(), ECoordinateSpace::Relative);
     }
 
     boundsProxy_ = Framework.Renderer().GetInterfaceRenderer().CreateProxy();
@@ -54,13 +52,13 @@ void KInterfaceComponent::Cleanup()
 
     SetParent(nullptr, ECoordinateSpace::Relative);
 
-    GetOwner()->RemoveComponent(this);
+    Owner()->RemoveComponent(this);
 
     Framework.Renderer().GetInterfaceRenderer().Unregister(boundsProxy_);
     Framework.Renderer().GetInterfaceRenderer().DeleteProxy(boundsProxy_);
 }
 
-RInterfaceObject* KInterfaceComponent::GetOwner() const
+RInterfaceObject* KInterfaceComponent::Owner() const
 {
     return owner_;
 }
@@ -343,14 +341,14 @@ void KInterfaceComponent::Rotate(const float rotation, const ERotationUnit unit)
 
 void KInterfaceComponent::SetScreenPosition(const glm::vec2& screenPosition)
 {
-    const auto viewportSize = glm::vec2(GetOwner()->GetViewport()->GetExtent());
+    const auto viewportSize = glm::vec2(Owner()->GetViewport()->GetExtent());
     const auto newPosition = screenPosition / viewportSize * 2.0f - glm::vec2(1.0f);
     SetWorldPosition(newPosition);
 }
 
 void KInterfaceComponent::SetScreenSize(const glm::vec2& screenSize)
 {
-    const auto viewportSize = glm::vec2(GetOwner()->GetViewport()->GetExtent());
+    const auto viewportSize = glm::vec2(Owner()->GetViewport()->GetExtent());
     const auto newSize = screenSize / viewportSize * 2.0f;
     SetWorldSize(newSize);
 }
@@ -401,8 +399,8 @@ glm::mat4 KInterfaceComponent::GetRotationMatrix() const
 
 glm::mat4 KInterfaceComponent::GetScaleMatrix() const
 {
-    const auto viewportSize = glm::vec2(GetOwner()->GetViewport()->GetExtent());
-    const float aspectRatio = GetOwner()->GetViewport()->GetAspectRatio();
+    const auto viewportSize = glm::vec2(Owner()->GetViewport()->GetExtent());
+    const float aspectRatio = Owner()->GetViewport()->GetAspectRatio();
     const float rotation = GetWorldRotation(ERotationUnit::Radians);
 
     // x *= 1 at rot 0
@@ -451,6 +449,14 @@ bool KInterfaceComponent::GetIsOverlapping(const KInterfaceComponent* other) con
     return GetIsOverlapping(other->GetWorldPosition(), other->GetWorldSize());
 }
 
+bool KInterfaceComponent::IsHovered() const
+{
+    const auto& cursorPosition = Framework.InputManager().Mouse().GetCursorPosition();
+    const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
+    const auto worldPosition = cursorPosition / viewportSize * 2.0f - glm::vec2(1.0f);
+    return GetIsOverlapping(worldPosition);
+}
+
 void KInterfaceComponent::AddChildren(KInterfaceComponent* interfaceComponent)
 {
     if (!interfaceComponent)
@@ -478,8 +484,8 @@ void KInterfaceComponent::RemoveChildren(KInterfaceComponent* interfaceComponent
 
 void KInterfaceComponent::CreateBoundsProxy()
 {
-    const auto shaderPath = Framework.Path().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
-    const auto texturePath = Framework.Path().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
+    const auto shaderPath = Framework.Path().FrameworkPath() / R"(shaders\flatColor2D.ktshader)";
+    const auto texturePath = Framework.Path().SolutionPath() / R"(assets\textures\white_texture.jpg)";
 
     boundsProxy_->shader = Framework.ShaderManager().Get(shaderPath);
     boundsProxy_->renderable = Framework.ImageTextureManager().Get(texturePath);

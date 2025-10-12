@@ -11,17 +11,17 @@ void KtPath::Init()
     enginePath_ = solutionPath_ / R"(KotonoEngine)";
 }
 
-const std::filesystem::path& KtPath::GetSolutionPath() const
+const std::filesystem::path& KtPath::SolutionPath() const
 {
     return solutionPath_;
 }
 
-const std::filesystem::path& KtPath::GetFrameworkPath() const
+const std::filesystem::path& KtPath::FrameworkPath() const
 {
     return frameworkPath_;
 }
 
-const std::filesystem::path& KtPath::GetEnginePath() const
+const std::filesystem::path& KtPath::EnginePath() const
 {
     return enginePath_;
 }

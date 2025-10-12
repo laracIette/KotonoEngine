@@ -41,12 +41,12 @@ WWidget* WPropertiesWindow::Build()
                                     }),
                                     new WButton({
                                         .onDown = []() {
-                                            const auto delta = Framework.InputManager().GetMouse().GetCursorPositionDelta().x;
+                                            const auto delta = Framework.InputManager().Mouse().GetCursorPositionDelta().x;
                                             if (!delta)
                                             {
                                                 return;
                                             }
-                                            if (auto* asInterfaceObject = dynamic_cast<RInterfaceObject*>(Engine.ObjectManager().selectedObject))
+                                            if (auto* asInterfaceObject = dynamic_cast<RInterfaceObject*>(Engine.ObjectManager().SelectedObject()))
                                             {
                                                 asInterfaceObject->GetRootComponent()->Translate({ delta / 800.0f, 0.0f });
                                             }
@@ -67,12 +67,12 @@ WWidget* WPropertiesWindow::Build()
                                     }),
                                     new WButton({
                                         .onDown = []() {
-                                            const auto delta = Framework.InputManager().GetMouse().GetCursorPositionDelta().x;
+                                            const auto delta = Framework.InputManager().Mouse().GetCursorPositionDelta().x;
                                             if (!delta)
                                             {
                                                 return;
                                             }
-                                            if (auto* asInterfaceObject = dynamic_cast<RInterfaceObject*>(Engine.ObjectManager().selectedObject))
+                                            if (auto* asInterfaceObject = dynamic_cast<RInterfaceObject*>(Engine.ObjectManager().SelectedObject()))
                                             {
                                                 asInterfaceObject->GetRootComponent()->Translate({ 0.0f, delta / 800.0f });
                                             }

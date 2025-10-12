@@ -22,7 +22,7 @@ protected:
 	void Cleanup() override;
 
 public:
-	TSceneObject* GetOwner() const;
+	TSceneObject* Owner() const;
 	const UTransform& GetTransform() const;
 	EVisibility GetVisibility() const;
 	EMobility GetMobility() const;

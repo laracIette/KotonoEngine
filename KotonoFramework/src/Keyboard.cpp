@@ -63,7 +63,7 @@ void KtKeyboard::UpdateKey(const KtKey key, const int action)
     keyStates_[key] = keyStates;
 }
 
-KtEvent<>& KtKeyboard::GetEvent(const KtKey key, const KtInputState inputState)
+KtEvent<>& KtKeyboard::KeyEvent(const KtKey key, const KtInputState inputState)
 {
     return keyEvents_[key][inputState];
 }
@@ -75,7 +75,7 @@ void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mo
         return;
     }
 
-    Framework.InputManager().GetKeyboard().UpdateKey(GLFWKeyToKey(key), action);
+    Framework.InputManager().Keyboard().UpdateKey(GLFWKeyToKey(key), action);
 }
 
 const int keyToGLFWKey(const KtKey key)

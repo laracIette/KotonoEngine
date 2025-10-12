@@ -18,27 +18,30 @@
 #include "Engine.h"
 #include "Timer.h"
 #include "TimeManager.h"
+#include "InterfaceObject.h"
+#include "InterfaceComponent.h"
 
 #define KT_LOG_IMPORTANCE_LEVEL_OBJECT KT_LOG_IMPORTANCE_LEVEL_NONE
 
 void SObjectManager::Init()
 {
-	selectedObject = nullptr;
+	selectedObject_ = nullptr;
 
-	Framework.InputManager().GetKeyboard()
-		.GetEvent(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
+	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &SObjectManager::Quit));
+	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+		.AddListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
 	
-	auto* shader3D{ Framework.ShaderManager().Get(Framework.Path().GetFrameworkPath() / R"(shaders\shader3D.ktshader)") };
+	auto* shader3D{ Framework.ShaderManager().Get(Framework.Path().FrameworkPath() / R"(shaders\shader3D.ktshader)") };
 	shader3D->SetName("3D Shader");
 
-	auto* model1{ Framework.ModelManager().Get(Framework.Path().GetSolutionPath() / R"(assets\models\viking_room.obj)") };
-	auto* model2{ Framework.ModelManager().Get(Framework.Path().GetSolutionPath() / R"(assets\models\SM_Column_low.fbx)") };
+	auto* model1{ Framework.ModelManager().Get(Framework.Path().SolutionPath() / R"(assets\models\viking_room.obj)") };
+	auto* model2{ Framework.ModelManager().Get(Framework.Path().SolutionPath() / R"(assets\models\SM_Column_low.fbx)") };
 
 	/*{
 		auto* scene{ Create<KScene>() };
-		scene->SetPath(Framework.Path().GetSolutionPath() / R"(assets\objects\scene.KScene)");
-		scene->ListenEvent(Framework.InputManager().GetKeyboard().GetEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), 
+		scene->SetPath(Framework.Path().SolutionPath() / R"(assets\objects\scene.KScene)");
+		scene->ListenEvent(Framework.InputManager().Keyboard().KeyEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), 
 			KtDelegate(scene, &KScene::Reload));
 	}*/
 	{
@@ -104,6 +107,11 @@ void SObjectManager::Cleanup()
 		delete object;
 	}
 	deletes_.Clear();
+
+	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
+		.RemoveListener(KtDelegate(this, &SObjectManager::Quit));
+	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+		.RemoveListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
 }
 
 void SObjectManager::Register(KObject* object)
@@ -215,7 +223,35 @@ int64_t SObjectManager::GetCurrentUpdate() const
 	return currentUpdate_;
 }
 
+KObject* SObjectManager::SelectedObject() const
+{
+	return selectedObject_;
+}
+
 void SObjectManager::LogUPS() const
 {
 	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "%.2f ups", 1.0f / GetAverageUpdateTime());
+}
+
+void SObjectManager::OnMouseButtonLeftPressed()
+{
+	KtCollection interfaceComponents(objects_.begin(), objects_.end());
+	interfaceComponents.AddFilter([](KObject* object) { return dynamic_cast<KInterfaceComponent*>(object); });
+
+	KInterfaceComponent* selectedComponent{ nullptr };
+	for (auto* object : interfaceComponents)
+	{
+		auto* asInterfaceComponent = static_cast<KInterfaceComponent*>(object);
+		if (!asInterfaceComponent->IsHovered())
+		{
+			continue;
+		}
+		if (!selectedComponent || asInterfaceComponent->GetLayer() > selectedComponent->GetLayer())
+		{
+			selectedComponent = asInterfaceComponent;
+		}
+	}
+
+	selectedObject_ = selectedComponent ? selectedComponent->Owner() : selectedObject_;
+	KT_LOG_KE(KT_LOG_COMPILE_TIME_LEVEL, "%p selected", selectedObject_);
 }

@@ -36,8 +36,8 @@ void KInterfaceBoxComponent::Cleanup()
 
 void KInterfaceBoxComponent::CreateBoxProxy()
 {
-    const auto shaderPath = Framework.Path().GetFrameworkPath() / R"(shaders\flatColor2D.ktshader)";
-    const auto texturePath = Framework.Path().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
+    const auto shaderPath = Framework.Path().FrameworkPath() / R"(shaders\flatColor2D.ktshader)";
+    const auto texturePath = Framework.Path().SolutionPath() / R"(assets\textures\white_texture.jpg)";
     
     boxProxy_->shader = Framework.ShaderManager().Get(shaderPath);
     boxProxy_->renderable = Framework.ImageTextureManager().Get(texturePath);

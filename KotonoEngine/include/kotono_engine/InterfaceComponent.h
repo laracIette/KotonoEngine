@@ -26,7 +26,7 @@ protected:
 	void Cleanup() override;
 
 public:
-	RInterfaceObject* GetOwner() const;
+	RInterfaceObject* Owner() const;
 	KInterfaceComponent* GetParent() const;
 	const URect& GetRect() const;
 	EVisibility GetVisibility() const;
@@ -93,6 +93,8 @@ public:
 	bool GetIsOverlapping(const glm::vec2& worldPosition, const glm::vec2& worldSize) const;
 	bool GetIsOverlapping(const glm::vec2& worldPosition) const;
 	bool GetIsOverlapping(const KInterfaceComponent* other) const;
+
+	bool IsHovered() const;
 
 	void AddChildren(KInterfaceComponent* interfaceComponent);
 	void RemoveChildren(KInterfaceComponent* interfaceComponent);

@@ -10,10 +10,10 @@ private:
 	void Update();
 
 public:
-	KtMouse& GetMouse();
-	const KtMouse& GetMouse() const;
-	KtKeyboard& GetKeyboard();
-	const KtKeyboard& GetKeyboard() const;
+	KtMouse& Mouse();
+	const KtMouse& Mouse() const;
+	KtKeyboard& Keyboard();
+	const KtKeyboard& Keyboard() const;
 
 private:
 	KtMouse mouse_;

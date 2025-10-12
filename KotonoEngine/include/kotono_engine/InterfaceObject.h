@@ -33,6 +33,9 @@ public:
 	void SetViewport(KtWindowViewport* viewport);
 	void SetParent(RInterfaceObject* parent, const ECoordinateSpace keepRect);
 
+	/// Returns true if any component is hovered
+	bool IsHovered() const;
+
 	template <InterfaceComponent T>
 	T* GetComponent() const
 	{

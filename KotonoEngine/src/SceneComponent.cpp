@@ -10,9 +10,9 @@ KSceneComponent::KSceneComponent(TSceneObject* owner) :
 {
     eventTransformUpdated_.AddListener(KtDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
     
-    if (GetOwner()->GetRootComponent() != this)
+    if (Owner()->GetRootComponent() != this)
     {
-        SetParent(GetOwner()->GetRootComponent(), ECoordinateSpace::Relative);
+        SetParent(Owner()->GetRootComponent(), ECoordinateSpace::Relative);
     }
 }
 
@@ -25,10 +25,10 @@ void KSceneComponent::Cleanup()
 {
     Base::Cleanup();
     
-    GetOwner()->RemoveComponent(this);
+    Owner()->RemoveComponent(this);
 }
 
-TSceneObject* KSceneComponent::GetOwner() const
+TSceneObject* KSceneComponent::Owner() const
 {
     return owner_;
 }

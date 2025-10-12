@@ -114,7 +114,7 @@ float KtMouse::GetVerticalScrollDelta() const
     return verticalScrollDelta_;
 }
 
-KtEvent<>& KtMouse::GetEvent(const KtButton button, const KtInputState inputState)
+KtEvent<>& KtMouse::ButtonEvent(const KtButton button, const KtInputState inputState)
 {
     return buttonEvents_[button][inputState];
 }
@@ -136,16 +136,16 @@ KtEvent<float>& KtMouse::GetEventVerticalScroll()
 
 void mousebutton_callback_(GLFWwindow* window, int button, int action, int mods)
 {
-    Framework.InputManager().GetMouse().UpdateButton(static_cast<KtButton>(button), action);
+    Framework.InputManager().Mouse().UpdateButton(static_cast<KtButton>(button), action);
 }
 
 void cursorpos_callback_(GLFWwindow* window, double xpos, double ypos)
 {
-    Framework.InputManager().GetMouse().cursorPosition_ = { xpos, ypos };
+    Framework.InputManager().Mouse().cursorPosition_ = { xpos, ypos };
 }
 
 void scroll_callback_(GLFWwindow* window, double xoffset, double yoffset)
 {
-    Framework.InputManager().GetMouse().horizontalScrollDelta_ = static_cast<float>(xoffset);
-    Framework.InputManager().GetMouse().verticalScrollDelta_ = static_cast<float>(yoffset);
+    Framework.InputManager().Mouse().horizontalScrollDelta_ = static_cast<float>(xoffset);
+    Framework.InputManager().Mouse().verticalScrollDelta_ = static_cast<float>(yoffset);
 }

@@ -8,9 +8,9 @@ private:
 	void Init();
 
 public:
-	const std::filesystem::path& GetSolutionPath() const;
-	const std::filesystem::path& GetFrameworkPath() const;
-	const std::filesystem::path& GetEnginePath() const;
+	const std::filesystem::path& SolutionPath() const;
+	const std::filesystem::path& FrameworkPath() const;
+	const std::filesystem::path& EnginePath() const;
 
 private:
 	std::filesystem::path solutionPath_;
