@@ -13,6 +13,8 @@ WButton::WButton(const ButtonSettings& buttonSettings) :
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonDown));
 	Framework.InputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonReleased));
+	Framework.InputManager().GetMouse().GetEventVerticalScroll()
+		.AddListener(KtDelegate(this, &WButton::OnMouseVerticalScroll));
 }
 
 void WButton::Cleanup()
@@ -23,18 +25,27 @@ void WButton::Cleanup()
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonDown));
 	Framework.InputManager().GetMouse().GetEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonReleased));
+	Framework.InputManager().GetMouse().GetEventVerticalScroll()
+		.RemoveListener(KtDelegate(this, &WButton::OnMouseVerticalScroll));
 
 	WWidget::Cleanup();
 }
 
-void WButton::OnMouseLeftButtonPressed()
+bool WButton::IsMouseHovering() const
 {
 	const auto& cursorPos{ Framework.InputManager().GetMouse().GetCursorPosition() };
 	const auto position{ GetPosition() };
 	const auto size{ GetSize() };
 
-	if (cursorPos.x < position.x || cursorPos.x > position.x + size.x ||
-		cursorPos.y < position.y || cursorPos.y > position.y + size.y)
+	return cursorPos.x >= position.x 
+		&& cursorPos.x <= position.x + size.x 
+		&& cursorPos.y >= position.y 
+		&& cursorPos.y <= position.y + size.y;
+}
+
+void WButton::OnMouseLeftButtonPressed()
+{
+	if (!IsMouseHovering())
 	{
 		return;
 	}
@@ -72,5 +83,18 @@ void WButton::OnMouseLeftButtonReleased()
 	if (buttonSettings_.onReleased)
 	{
 		buttonSettings_.onReleased();
+	}
+}
+
+void WButton::OnMouseVerticalScroll(const float delta)
+{
+	if (!IsMouseHovering())
+	{
+		return;
+	}
+
+	if (buttonSettings_.onVerticalScroll)
+	{
+		buttonSettings_.onVerticalScroll(delta);
 	}
 }

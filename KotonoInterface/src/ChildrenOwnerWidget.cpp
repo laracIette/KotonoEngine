@@ -34,6 +34,7 @@ void WChildrenOwnerWidget::Cleanup()
 		}
 		delete child;
 	}
+	children_.clear();
 
 	WWidget::Cleanup();
 }

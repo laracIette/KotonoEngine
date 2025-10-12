@@ -3,12 +3,15 @@
 #include "utils.h"
 #include "Flex.h"
 #include <kotono_framework/Cached.h>
+#include <kotono_framework/Scissor.h>
 /// Base class of all widgets
 class WWidget
 {
 public:
 	using StateFunction = std::function<void()>;
 	using WidgetVector = std::vector<WWidget*>;
+	using WidgetBuilder = std::function<WWidget*()>;
+	using WidgetVectorBuilder = std::function<WidgetVector()>;
 
 public:
 	struct DisplaySettings
@@ -16,6 +19,7 @@ public:
 		glm::vec2 position;
 		glm::vec2 bounds;
 		int32_t layer;
+		KtScissor scissor;
 	};
 
 	WWidget();

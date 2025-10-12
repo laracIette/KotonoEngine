@@ -1,6 +1,6 @@
 #include "InterfaceObject.h"
 #include "log.h"
-#include <kotono_framework/Viewport.h>
+#include <kotono_framework/WindowViewport.h>
 #include "Engine.h"
 #include "InterfaceComponent.h"
 #include "ObjectManager.h"
@@ -30,7 +30,7 @@ void RInterfaceObject::Cleanup()
 	}
 }
 
-KtViewport* RInterfaceObject::GetViewport() const
+KtWindowViewport* RInterfaceObject::GetViewport() const
 {
 	return viewport_;
 }
@@ -60,7 +60,7 @@ void RInterfaceObject::SetVisibility(const EVisibility visibility)
 	visibility_ = visibility;
 }
 
-void RInterfaceObject::SetViewport(KtViewport* viewport)
+void RInterfaceObject::SetViewport(KtWindowViewport* viewport)
 {
 	viewport_ = viewport;
 }

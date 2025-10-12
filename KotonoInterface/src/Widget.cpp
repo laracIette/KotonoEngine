@@ -28,6 +28,7 @@ void WWidget::Cleanup()
 	{
 		build->Cleanup();
 		delete build;
+		cachedBuild_ = nullptr;
 	}
 }
 

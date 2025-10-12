@@ -12,6 +12,8 @@ public:
 		std::function<void()> onDown{};
 		/// default = {}
 		std::function<void()> onReleased{};
+		// default = {}
+		std::function<void(float)> onVerticalScroll{};
 	};
 
 	/// Set the widget's bounds as pressable
@@ -23,8 +25,11 @@ private:
 	ButtonSettings buttonSettings_;
 	bool isPressed_;
 
+	bool IsMouseHovering() const;
+
 	void OnMouseLeftButtonPressed();
 	void OnMouseLeftButtonDown();
 	void OnMouseLeftButtonReleased();
+	void OnMouseVerticalScroll(const float delta);
 };
 

@@ -8,6 +8,7 @@
 #include "Constraint.h"
 #include "Expanded.h"
 #include "Image.h"
+#include "List.h"
 #include "Offset.h"
 #include "Padding.h"
 #include "Row.h"

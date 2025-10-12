@@ -4,7 +4,7 @@
 #include "Renderer.h"
 #include "Culler3D.h"
 #include "Renderable3D.h"
-#include "Viewport.h"
+#include "WindowViewport.h"
 #include "Shader.h"
 #include "Renderable3DProxy.h"
 #include "Collection.h"
@@ -347,14 +347,14 @@ void KtSceneRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const Proxie
 
 	const KtShader* currentShader = nullptr;
 	const KtRenderable3D* currentRenderable = nullptr;
-	const KtViewport* currentViewport = nullptr;
+	const KtWindowViewport* currentViewport = nullptr;
 
 	for (size_t i = 0; i < proxies.Size();)
 	{
 		const auto* proxy = proxies[i];
 		const KtShader* shader = proxy->shader;
 		const KtRenderable3D* renderable = proxy->renderable;
-		const KtViewport* viewport = proxy->viewport;
+		const KtWindowViewport* viewport = proxy->viewport;
 
 		// Find the extent of the current batch
 		size_t instanceCount = 1;

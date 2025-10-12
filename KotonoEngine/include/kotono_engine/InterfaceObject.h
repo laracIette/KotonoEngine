@@ -5,7 +5,7 @@
 #include <kotono_framework/Collection.h>
 #include <kotono_framework/Pool.h>
 
-class KtViewport;
+class KtWindowViewport;
 class KInterfaceComponent;
 
 template <class T>
@@ -24,13 +24,13 @@ protected:
 
 public:
 	EVisibility GetVisibility() const;
-	KtViewport* GetViewport() const;
+	KtWindowViewport* GetViewport() const;
 	RInterfaceObject* GetParent() const;
 	KInterfaceComponent* GetRootComponent() const;
 	const KtPool<RInterfaceObject*>& GetChildren() const;
 
 	void SetVisibility(const EVisibility visibility);
-	void SetViewport(KtViewport* viewport);
+	void SetViewport(KtWindowViewport* viewport);
 	void SetParent(RInterfaceObject* parent, const ECoordinateSpace keepRect);
 
 	template <InterfaceComponent T>
@@ -58,7 +58,7 @@ public:
 
 private:
 	EVisibility visibility_;
-	KtViewport* viewport_;
+	KtWindowViewport* viewport_;
 	RInterfaceObject* parent_;
 	KInterfaceComponent* rootComponent_;
 	KtPool<RInterfaceObject*> children_;

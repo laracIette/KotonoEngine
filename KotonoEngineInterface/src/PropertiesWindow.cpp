@@ -55,6 +55,32 @@ WWidget* WPropertiesWindow::Build()
                                 },
                             }),
                         }),
+                        new WBox({
+                            .size = { 250.0f, 25.0f },
+                            .child = new WStack({
+                                .children = {
+                                    new WColor({ KtColor::White().WithValue(0.5f) }),
+                                    new WText({
+                                        .text = "Position.y",
+                                        .fontSize = { 20.0f, 25.0f },
+                                        .spacing = -8.0f,
+                                    }),
+                                    new WButton({
+                                        .onDown = []() {
+                                            const auto delta = Framework.InputManager().GetMouse().GetCursorPositionDelta().x;
+                                            if (!delta)
+                                            {
+                                                return;
+                                            }
+                                            if (auto* asInterfaceObject = dynamic_cast<RInterfaceObject*>(Engine.ObjectManager().selectedObject))
+                                            {
+                                                asInterfaceObject->GetRootComponent()->Translate({ 0.0f, delta / 800.0f });
+                                            }
+                                        },
+                                    }),
+                                },
+                            }),
+                        }),
                     },
                 }),
             }),

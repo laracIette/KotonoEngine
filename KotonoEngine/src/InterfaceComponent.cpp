@@ -7,7 +7,7 @@
 #include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/ImageTexture.h>
 #include <kotono_framework/ImageTextureManager.h>
-#include <kotono_framework/Viewport.h>
+#include <kotono_framework/WindowViewport.h>
 #include <kotono_framework/Renderable2DProxy.h>
 #include "log.h"
 #include "Engine.h"
@@ -482,10 +482,11 @@ void KInterfaceComponent::CreateBoundsProxy()
     const auto texturePath = Framework.Path().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
 
     boundsProxy_->shader = Framework.ShaderManager().Get(shaderPath);
-    boundsProxy_->viewport = GetOwner()->GetViewport();
     boundsProxy_->renderable = Framework.ImageTextureManager().Get(texturePath);
     boundsProxy_->layer = GetLayer();
     boundsProxy_->objectData.modelMatrix = GetModelMatrix();
+    boundsProxy_->scissor.offset = WindowViewport.GetOffset();
+    boundsProxy_->scissor.extent = WindowViewport.GetExtent();
     boundsProxy_->objectData.color = { 1.0f, 1.0f, 1.0f, 0.01f };
 }
 

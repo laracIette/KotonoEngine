@@ -1,7 +1,7 @@
 #include "SceneObject.h"
 #include <nlohmann/json.hpp>
 #include "log.h"
-#include <kotono_framework/Viewport.h>
+#include <kotono_framework/WindowViewport.h>
 #include "SceneComponent.h"
 #include "Engine.h"
 #include "ObjectManager.h"
@@ -35,7 +35,7 @@ EVisibility TSceneObject::GetVisibility() const
 	return visibility_;
 }
 
-KtViewport* TSceneObject::GetViewport() const
+KtWindowViewport* TSceneObject::GetViewport() const
 {
 	return viewport_;
 }
@@ -55,7 +55,7 @@ void TSceneObject::SetVisibility(const EVisibility visibility)
 	visibility_ = visibility;
 }
 
-void TSceneObject::SetViewport(KtViewport* viewport)
+void TSceneObject::SetViewport(KtWindowViewport* viewport)
 {
 	viewport_ = viewport;
 }

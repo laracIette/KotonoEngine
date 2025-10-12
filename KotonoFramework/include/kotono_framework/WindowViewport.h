@@ -1,7 +1,7 @@
 #pragma once
 #include <vulkan/vulkan_core.h>
 #include "glm_includes.h"
-class KtViewport final
+class KtWindowViewport final
 {
 public:
 	const glm::uvec2& GetExtent() const;
@@ -26,4 +26,4 @@ private:
 	float aspectRatio_;
 };
 
-extern KtViewport WindowViewport;
+extern KtWindowViewport WindowViewport;

@@ -1,6 +1,6 @@
 #include "Image.h"
 #include <kotono_framework/Framework.h>
-#include <kotono_framework/Viewport.h>
+#include <kotono_framework/WindowViewport.h>
 #include <kotono_framework/Renderable2DProxy.h>
 #include <kotono_framework/ImageTexture.h>
 #include <kotono_framework/Path.h>
@@ -20,9 +20,9 @@ void WImage::DisplayInternal(DisplaySettings displaySettings)
 	imageProxy_ = Framework.Renderer().GetInterfaceRenderer().CreateProxy();
 	imageProxy_->shader = Framework.ShaderManager().Get(shaderPath);
 	imageProxy_->renderable = Framework.ImageTextureManager().Get(imageSettings_.path);
-	imageProxy_->viewport = &WindowViewport;
 	imageProxy_->layer = displaySettings.layer;
 	imageProxy_->objectData.modelMatrix = GetModelMatrix();
+	imageProxy_->scissor = displaySettings.scissor;
 #	if _DEBUG
 		imageProxy_->source = this;
 #	endif

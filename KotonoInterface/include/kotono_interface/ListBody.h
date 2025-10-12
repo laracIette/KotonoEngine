@@ -1,9 +1,9 @@
 #pragma once
 #include "ChildrenOwnerWidget.h"
-class WColumn : public WChildrenOwnerWidget
+class WListBody : public WChildrenOwnerWidget
 {
 public:
-	struct ColumnSettings
+	struct ListBodySettings
 	{
 		/// default = 0.0f
 		float spacing{ 0.0f };
@@ -11,16 +11,12 @@ public:
 	};
 
 	/// Defines a vertical container for widgets
-	WColumn(const ColumnSettings& columnSettings);
+	WListBody(const ListBodySettings& listBodySettings);
 
 	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
 
 protected:
-	ColumnSettings columnSettings_;
+	ListBodySettings listBodySettings_;
 
 	void DisplayInternal(DisplaySettings displaySettings) override;
-
-private:
-	size_t GetFlexCount() const;
 };
-

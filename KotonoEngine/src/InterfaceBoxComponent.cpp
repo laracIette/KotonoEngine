@@ -7,6 +7,7 @@
 #include <kotono_framework/Renderer.h>
 #include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/ImageTextureManager.h>
+#include <kotono_framework/WindowViewport.h>
 
 KInterfaceBoxComponent::KInterfaceBoxComponent(RInterfaceObject* owner) :
 	Base(owner)
@@ -39,11 +40,12 @@ void KInterfaceBoxComponent::CreateBoxProxy()
     const auto texturePath = Framework.Path().GetSolutionPath() / R"(assets\textures\white_texture.jpg)";
     
     boxProxy_->shader = Framework.ShaderManager().Get(shaderPath);
-    boxProxy_->viewport = GetOwner()->GetViewport();
     boxProxy_->renderable = Framework.ImageTextureManager().Get(texturePath);
     boxProxy_->layer = GetLayer();
     boxProxy_->objectData.modelMatrix = GetModelMatrix();
-    boxProxy_->objectData.color = GetColor();
+    boxProxy_->objectData.color = GetColor(); 
+    boxProxy_->scissor.offset = WindowViewport.GetOffset();
+    boxProxy_->scissor.extent = WindowViewport.GetExtent();
 #if _DEBUG
     boxProxy_->source = this;
 #endif

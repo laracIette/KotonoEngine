@@ -1,6 +1,6 @@
 #include "EngineInterface.h"
 #include "MainWindow.h"
-#include <kotono_framework/Viewport.h>
+#include <kotono_framework/WindowViewport.h>
 
 void SEngineInterface::Init()
 {
@@ -10,6 +10,7 @@ void SEngineInterface::Init()
 		.position = { 0.0f, 0.0f },
 		.bounds = static_cast<glm::vec2>(WindowViewport.GetExtent()),
 		.layer = 0,
+		.scissor = { glm::zero<glm::ivec2>(), WindowViewport.GetExtent() },
 	});
 }
 

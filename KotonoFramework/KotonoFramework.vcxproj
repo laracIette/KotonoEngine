@@ -151,7 +151,7 @@
     <ClCompile Include="src\ShaderManager.cpp" />
     <ClCompile Include="src\ModelManager.cpp" />
     <ClCompile Include="src\ImageTextureManager.cpp" />
-    <ClCompile Include="src\Viewport.cpp" />
+    <ClCompile Include="src\WindowViewport.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\InterfaceRenderer.cpp" />
     <ClCompile Include="src\AudioManager.cpp" />
@@ -169,6 +169,7 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\kotono_framework\Buildable.h" />
     <ClInclude Include="include\kotono_framework\bitwise_utils.h" />
     <ClInclude Include="include\kotono_framework\Color.h" />
     <ClInclude Include="include\kotono_framework\Cached.h" />
@@ -210,7 +211,7 @@
     <ClInclude Include="include\kotono_framework\UniformData2D.h" />
     <ClInclude Include="include\kotono_framework\Vertex2D.h" />
     <ClInclude Include="include\kotono_framework\InterfaceRenderer.h" />
-    <ClInclude Include="include\kotono_framework\Viewport.h" />
+    <ClInclude Include="include\kotono_framework\WindowViewport.h" />
     <ClInclude Include="include\kotono_framework\Shader.h" />
     <ClInclude Include="include\kotono_framework\ModelManager.h" />
     <ClInclude Include="include\kotono_framework\ShaderManager.h" />
@@ -229,6 +230,7 @@
     <ClInclude Include="include\kotono_framework\Pool.h" />
     <ClInclude Include="include\kotono_framework\Stopwatch.h" />
     <ClInclude Include="include\kotono_framework\PoolRemoveResult.h" />
+    <ClInclude Include="include\kotono_framework\Scissor.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

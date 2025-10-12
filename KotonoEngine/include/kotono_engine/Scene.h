@@ -2,7 +2,7 @@
 #include "Object.h"
 #include <kotono_framework/Pool.h>
 
-class KtViewport;
+class KtWindowViewport;
 class TSceneObject;
 
 class KScene : public KObject
@@ -24,7 +24,7 @@ public:
 	void DeserializeFrom(const nlohmann::json& json) override;
 
 private:
-	KtViewport* viewport_;
+	KtWindowViewport* viewport_;
 	KtPool<TSceneObject*> _sceneObjects;
 
 	TSceneObject* GetSceneObject(const std::string_view type);

@@ -3,7 +3,7 @@
 #include "InterfacePhysicsManager.h"
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/InputManager.h>
-#include <kotono_framework/Viewport.h>
+#include <kotono_framework/WindowViewport.h>
 
 KInterfaceColliderComponent::KInterfaceColliderComponent(RInterfaceObject* owner) :
 	Base(owner)

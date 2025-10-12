@@ -4,7 +4,7 @@
 #include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/Path.h>
 #include <kotono_framework/Shader.h>
-#include <kotono_framework/Viewport.h>
+#include <kotono_framework/WindowViewport.h>
 #include "Engine.h"
 #include "InterfaceImageObject.h"
 #include "InterfaceImageComponent.h"

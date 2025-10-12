@@ -8,7 +8,7 @@
 #include <kotono_framework/Color.h>
 #include <kotono_framework/Cached.h>
 
-class KtViewport;
+class KtWindowViewport;
 class RInterfaceObject;
 struct KtRenderable2DProxy;
 

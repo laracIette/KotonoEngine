@@ -6,8 +6,7 @@
 #include <kotono_framework/Shader.h>
 #include <kotono_framework/ImageTexture.h>
 #include <kotono_framework/Renderable2DProxy.h>
-#include "Engine.h"
-#include "ObjectManager.h"
+#include <kotono_framework/WindowViewport.h>
 #include "InterfaceObject.h"
 #include "log.h"
 
@@ -83,9 +82,10 @@ void KInterfaceImageComponent::CreateImageTextureProxy()
 {
 	imageTextureProxy_->shader = GetShader();
 	imageTextureProxy_->renderable = GetImageTexture();
-	imageTextureProxy_->viewport = GetOwner()->GetViewport();
 	imageTextureProxy_->layer = GetLayer();
 	imageTextureProxy_->objectData.modelMatrix = GetModelMatrix();
+	imageTextureProxy_->scissor.offset = WindowViewport.GetOffset();
+	imageTextureProxy_->scissor.extent = WindowViewport.GetExtent();
 #ifdef _DEBUG
 	imageTextureProxy_->source = this;
 #endif

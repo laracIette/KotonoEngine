@@ -7,7 +7,7 @@
 #include "Renderer.h"
 #include "ImageTexture.h"
 #include "Shader.h"
-#include "Viewport.h"
+#include "WindowViewport.h"
 #include "vk_utils.h"
 #include "Renderable2DProxy.h"
 #include "Collection.h"
@@ -338,7 +338,10 @@ void KtInterfaceRenderer::UpdateDescriptorSets(const ProxiesPool& proxies, const
 void KtInterfaceRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex)
 {
 	const KtShader* currentShader{ nullptr };
-	const KtViewport* currentViewport{ nullptr };
+	const KtWindowViewport* currentViewport{ nullptr };
+
+	// todo: use in renderer 3d
+	WindowViewport.CmdUse(commandBuffer);
 
 	CmdBindVertexBuffer(commandBuffer);
 	CmdBindIndexBuffer(commandBuffer);
@@ -347,14 +350,14 @@ void KtInterfaceRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const Pr
 	{
 		const auto* proxy{ proxies[i] };
 		const KtShader* shader{ proxy->shader };
-		const KtViewport* viewport{ proxy->viewport };
 		const int32_t layer{ proxy->layer };
+		const auto scissor{ proxy->scissor };
 
 		size_t instanceCount{ 1 };
 		while (i + instanceCount < proxies.Size())
 		{
 			const auto* next{ proxies[i + instanceCount] };
-			if (next->shader != shader || next->viewport != viewport)
+			if (next->shader != shader || next->scissor.extent != scissor.extent || next->scissor.offset != scissor.offset)
 			{
 				break;
 			}
@@ -368,11 +371,13 @@ void KtInterfaceRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const Pr
 			currentShader->CmdBindDescriptorSets(commandBuffer, frameIndex);
 		}
 
-		if (currentViewport != viewport)
-		{
-			currentViewport = viewport;
-			currentViewport->CmdUse(commandBuffer);
-		}
+		const auto offset{ scissor.offset };
+		const auto extent{ scissor.extent };
+		const VkRect2D vkScissor{
+			.offset = { offset.x, offset.y },
+			.extent = { extent.x, extent.y },
+		};
+		vkCmdSetScissor(commandBuffer, 0, 1, &vkScissor);
 		
 		vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(Indices.size()), static_cast<uint32_t>(instanceCount), 0, 0, instanceIndices_[frameIndex][shader]);
 		instanceIndices_[frameIndex][shader] += static_cast<uint32_t>(instanceCount);
@@ -394,11 +399,7 @@ void KtInterfaceRenderer::SortProxies(ProxiesPool& proxies)
 			{
 				return a->shader < b->shader;
 			}
-			if (a->renderable != b->renderable)
-			{
-				return a->renderable < b->renderable;
-			}
-			return a->viewport < b->viewport;
+			return a->renderable < b->renderable;
 		}
 	);
 }

@@ -1,7 +1,7 @@
 #include "Camera.h"
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/Renderer.h>
-#include <kotono_framework/Viewport.h>
+#include <kotono_framework/WindowViewport.h>
 #include <kotono_framework/InputManager.h>
 #include "SceneComponent.h"
 #include "Engine.h"

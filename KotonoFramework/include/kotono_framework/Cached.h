@@ -45,6 +45,11 @@ public:
 		return value_;
 	}
 
+	void operator=(const T& value)
+	{
+		value_ = value;
+	}
+
 private:
 	T value_;
 	bool isDirty_;

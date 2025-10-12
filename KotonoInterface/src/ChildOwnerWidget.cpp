@@ -25,6 +25,7 @@ void WChildOwnerWidget::Cleanup()
 		child_->Cleanup();
 	}
 	delete child_;
+	child_ = nullptr;
 
 	WWidget::Cleanup();
 }

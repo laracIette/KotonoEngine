@@ -46,8 +46,43 @@ WWidget* WMainWindow::Build()
 						.spacing = 10.0f,
 						.children = {
 							new WBox({
-								.size = { 200.0f, 500.0f },
-								.child = new WColor({ KtColor::Red() }),
+								.size = { 300.0f, 300.0f },
+								.child = new WStack({
+									.children = {
+										new WColor({ KtColor::Red() }),
+										new WList({
+											.spacing = 75.0f,
+											.children = []() { 
+												return WidgetVector{
+													new WText({
+														.text = "Tesstt",
+														.spacing = -20.0f,
+													}),
+													new WText({
+														.text = "Testett",
+														.spacing = -20.0f,
+													}),
+													new WText({
+														.text = "Tstestt",
+														.spacing = -20.0f,
+													}),
+													new WText({
+														.text = "Tstetestsestt",
+														.spacing = -20.0f,
+													}),
+													new WText({
+														.text = "Tststsestt",
+														.spacing = -20.0f,
+													}),
+													new WText({
+														.text = "Tstststt",
+														.spacing = -20.0f,
+													}),
+												}; 
+											}
+										}),
+									},
+								}),
 							}),
 							new WExpanded({}),
 							new WBox({
