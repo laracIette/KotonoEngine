@@ -24,9 +24,6 @@
     <ClCompile Include="src\InterfaceButtonComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\InterfaceFloatTextBoxObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\InterfaceImageComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -42,22 +39,7 @@
     <ClCompile Include="src\InterfaceComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\InterfaceContainerComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\InterfacePhysicsManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\InterfaceTextBoxObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\InterfaceTextButtonObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\InterfaceTextComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\InterfaceWindowComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\math_utils.cpp">
@@ -93,9 +75,6 @@
     <ClCompile Include="src\SceneMeshObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\InterfaceTextObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\TimeManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -106,12 +85,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\InterfaceBoxComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\InterfaceRowComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\InterfaceLayoutObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -131,9 +104,6 @@
     <ClInclude Include="include\kotono_engine\InterfaceButtonComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\kotono_engine\InterfaceFloatTextBoxObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\kotono_engine\InterfaceImageComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -149,22 +119,7 @@
     <ClInclude Include="include\kotono_engine\InterfaceComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\kotono_engine\InterfaceContainerComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\kotono_engine\InterfacePhysicsManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\kotono_engine\InterfaceTextBoxObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\kotono_engine\InterfaceTextButtonObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\kotono_engine\InterfaceTextComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\kotono_engine\InterfaceWindowComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\kotono_engine\log.h">
@@ -215,9 +170,6 @@
     <ClInclude Include="include\kotono_engine\SceneMeshObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\kotono_engine\InterfaceTextObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\kotono_engine\TimeManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -243,12 +195,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\kotono_engine\InterfaceBoxComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\kotono_engine\InterfaceRowComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\kotono_engine\InterfaceLayoutObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

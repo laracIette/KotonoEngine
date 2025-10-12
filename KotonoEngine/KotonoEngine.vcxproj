@@ -19,24 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\InterfaceLayoutObject.cpp" />
     <ClCompile Include="src\InterfaceBoxComponent.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\Guid.cpp" />
     <ClCompile Include="src\InterfaceButtonComponent.cpp" />
-    <ClCompile Include="src\InterfaceFloatTextBoxObject.cpp" />
     <ClCompile Include="src\InterfaceImageComponent.cpp" />
     <ClCompile Include="src\InterfaceImageObject.cpp" />
     <ClCompile Include="src\Interface.cpp" />
     <ClCompile Include="src\InterfaceObject.cpp" />
     <ClCompile Include="src\InterfaceComponent.cpp" />
-    <ClCompile Include="src\InterfaceContainerComponent.cpp" />
     <ClCompile Include="src\InterfacePhysicsManager.cpp" />
-    <ClCompile Include="src\InterfaceRowComponent.cpp" />
-    <ClCompile Include="src\InterfaceTextBoxObject.cpp" />
-    <ClCompile Include="src\InterfaceTextButtonObject.cpp" />
-    <ClCompile Include="src\InterfaceTextComponent.cpp" />
-    <ClCompile Include="src\InterfaceWindowComponent.cpp" />
     <ClCompile Include="src\math_utils.cpp" />
     <ClCompile Include="src\SceneMeshComponent.cpp" />
     <ClCompile Include="src\Object.cpp" />
@@ -48,7 +40,6 @@
     <ClCompile Include="src\SceneComponent.cpp" />
     <ClCompile Include="src\Task.cpp" />
     <ClCompile Include="src\SceneMeshObject.cpp" />
-    <ClCompile Include="src\InterfaceTextObject.cpp" />
     <ClCompile Include="src\TimeManager.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\Visualizer.cpp" />
@@ -59,19 +50,12 @@
     <ClInclude Include="include\kotono_engine\Engine.h" />
     <ClInclude Include="include\kotono_engine\Guid.h" />
     <ClInclude Include="include\kotono_engine\InterfaceButtonComponent.h" />
-    <ClInclude Include="include\kotono_engine\InterfaceFloatTextBoxObject.h" />
     <ClInclude Include="include\kotono_engine\InterfaceImageComponent.h" />
     <ClInclude Include="include\kotono_engine\InterfaceImageObject.h" />
     <ClInclude Include="include\kotono_engine\Interface.h" />
     <ClInclude Include="include\kotono_engine\InterfaceObject.h" />
     <ClInclude Include="include\kotono_engine\InterfaceComponent.h" />
-    <ClInclude Include="include\kotono_engine\InterfaceContainerComponent.h" />
     <ClInclude Include="include\kotono_engine\InterfacePhysicsManager.h" />
-    <ClInclude Include="include\kotono_engine\InterfaceRowComponent.h" />
-    <ClInclude Include="include\kotono_engine\InterfaceTextBoxObject.h" />
-    <ClInclude Include="include\kotono_engine\InterfaceTextButtonObject.h" />
-    <ClInclude Include="include\kotono_engine\InterfaceTextComponent.h" />
-    <ClInclude Include="include\kotono_engine\InterfaceWindowComponent.h" />
     <ClInclude Include="include\kotono_engine\log.h" />
     <ClInclude Include="include\kotono_engine\math_utils.h" />
     <ClInclude Include="include\kotono_engine\Mobility.h" />
@@ -88,7 +72,6 @@
     <ClInclude Include="include\kotono_engine\SceneComponent.h" />
     <ClInclude Include="include\kotono_engine\Task.h" />
     <ClInclude Include="include\kotono_engine\SceneMeshObject.h" />
-    <ClInclude Include="include\kotono_engine\InterfaceTextObject.h" />
     <ClInclude Include="include\kotono_engine\TimeManager.h" />
     <ClInclude Include="include\kotono_engine\Timer.h" />
     <ClInclude Include="include\kotono_engine\Transform.h" />
@@ -98,7 +81,6 @@
     <ClInclude Include="include\kotono_engine\Visualizer.h" />
     <ClInclude Include="include\kotono_engine\Duration.h" />
     <ClInclude Include="include\kotono_engine\InterfaceBoxComponent.h" />
-    <ClInclude Include="include\kotono_engine\InterfaceLayoutObject.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
