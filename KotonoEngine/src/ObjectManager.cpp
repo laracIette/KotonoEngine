@@ -72,6 +72,10 @@ void SObjectManager::Init()
 	logUPSTimer->SetIsRepeat(true);
 	logUPSTimer->GetEventCompleted().AddListener(KtDelegate(this, &SObjectManager::LogUPS));
 	logUPSTimer->Start();
+
+
+	UPtr a{ Ptr<KTimer>() };
+	KT_LOG_KE(KT_LOG_COMPILE_TIME_LEVEL, "%s", static_cast<std::string>(a->Guid()).c_str());
 }
 
 void SObjectManager::Update()
@@ -116,7 +120,7 @@ void SObjectManager::Cleanup()
 
 void SObjectManager::Register(KObject* object)
 {
-	object->SetName(std::format("{}_{}", object->GetTypeName(), static_cast<std::string>(object->GetGuid())));
+	object->SetName(std::format("{}_{}", object->GetTypeName(), static_cast<std::string>(object->Guid())));
 	inits_.Add(object);
 	object->initIndex_ = inits_.LastIndex();
 	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "REG object %s", object->GetName().c_str());

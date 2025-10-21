@@ -6,6 +6,7 @@
 #include <kotono_engine/InterfaceComponent.h>
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/InputManager.h>
+#include <kotono_framework/cast_utils.h>
 
 WWidget* WPropertiesWindow::Build()
 {
@@ -46,7 +47,7 @@ WWidget* WPropertiesWindow::Build()
                                             {
                                                 return;
                                             }
-                                            if (auto* asInterfaceObject = dynamic_cast<RInterfaceObject*>(Engine.ObjectManager().SelectedObject()))
+                                            if (auto* asInterfaceObject = try_cast<RInterfaceObject>(Engine.ObjectManager().SelectedObject()))
                                             {
                                                 asInterfaceObject->GetRootComponent()->Translate({ delta / 800.0f, 0.0f });
                                             }
@@ -72,7 +73,7 @@ WWidget* WPropertiesWindow::Build()
                                             {
                                                 return;
                                             }
-                                            if (auto* asInterfaceObject = dynamic_cast<RInterfaceObject*>(Engine.ObjectManager().SelectedObject()))
+                                            if (auto* asInterfaceObject = try_cast<RInterfaceObject>(Engine.ObjectManager().SelectedObject()))
                                             {
                                                 asInterfaceObject->GetRootComponent()->Translate({ 0.0f, delta / 800.0f });
                                             }

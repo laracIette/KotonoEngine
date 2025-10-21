@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Ptr.cpp" />
     <ClCompile Include="src\InterfaceBoxComponent.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\Guid.cpp" />
@@ -81,6 +82,7 @@
     <ClInclude Include="include\kotono_engine\Visualizer.h" />
     <ClInclude Include="include\kotono_engine\Duration.h" />
     <ClInclude Include="include\kotono_engine\InterfaceBoxComponent.h" />
+    <ClInclude Include="include\kotono_engine\Ptr.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

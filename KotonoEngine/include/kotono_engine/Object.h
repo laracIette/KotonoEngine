@@ -21,7 +21,7 @@ protected:
 	virtual void Cleanup();
 
 public:
-	const UGuid& GetGuid() const;
+	const UGuid& Guid() const;
 	bool GetIsConstructed() const;
 	bool GetIsDelete() const;
 	bool GetCanUpdate() const;

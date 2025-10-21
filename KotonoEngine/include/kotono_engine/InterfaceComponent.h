@@ -8,6 +8,8 @@
 #include <kotono_framework/Color.h>
 #include <kotono_framework/Cached.h>
 
+#include "Ptr.h"
+
 class KtWindowViewport;
 class RInterfaceObject;
 struct KtRenderable2DProxy;
@@ -121,5 +123,7 @@ private:
 	glm::vec2 GetAnchorOffset() const;
 	glm::vec2 GetWorldPositionWithAnchorOffset() const;
 	glm::vec2 GetAnchorRelativePosition() const;
+
+	UPtr<KInterfaceComponent> ref_;
 };
 

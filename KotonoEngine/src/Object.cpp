@@ -25,7 +25,7 @@ void KObject::Cleanup()
     eventCleanup_.Broadcast();
 }
 
-const UGuid& KObject::GetGuid() const
+const UGuid& KObject::Guid() const
 {
     return guid_;
 }

@@ -92,7 +92,7 @@ void TSceneObject::SetParent(TSceneObject* parent, const ECoordinateSpace keepTr
 void TSceneObject::SerializeTo(nlohmann::json& json) const
 {
 	Base::SerializeTo(json);
-	json["parent"] = parent_ ? static_cast<std::string>(parent_->GetGuid()) : ""; // ??
+	json["parent"] = parent_ ? static_cast<std::string>(parent_->Guid()) : ""; // ??
 	/*json["transform"]["position"]["x"] = transform_.position.x;
 	json["transform"]["position"]["y"] = transform_.position.y;
 	json["transform"]["position"]["z"] = transform_.position.z;

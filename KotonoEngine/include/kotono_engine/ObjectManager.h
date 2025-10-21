@@ -2,6 +2,7 @@
 #include <type_traits>
 #include <kotono_framework/Pool.h>
 #include <kotono_framework/AverageTime.h>
+#include "Ptr.h"
 
 class KObject;
 
@@ -24,9 +25,19 @@ public:
 	template <Object T, typename... Args> 
 	T* Create(Args... args)
 	{
-		T* object = new T(args...);
+		T* object{ new T(args...) };
 		Register(object);
 		return object;
+	}
+
+	template <Object T, typename... Args> 
+	UPtr<T> Ptr(Args... args)
+	{
+		auto* object{ new T(args...) };
+		auto* ptrOwner{ new UPtrOwner(object) };
+		initsPtr_.Add(ptrOwner);
+		ptrOwner->index_ = initsPtr_.LastIndex();
+		return ptrOwner;
 	}
 
 	float GetAverageUpdateTime() const;
@@ -42,6 +53,8 @@ private:
 	KtPool<KObject*> inits_;
 	KtPool<KObject*> objects_;
 	KtPool<KObject*> deletes_;
+
+	KtPool<UPtrOwnerBase*> initsPtr_;
 
 	KObject* selectedObject_;
 

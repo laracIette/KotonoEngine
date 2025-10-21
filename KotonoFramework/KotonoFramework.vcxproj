@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\vk_utils.cpp" />
     <ClCompile Include="src\FileExplorer.cpp" />
     <ClCompile Include="src\SpvCompiler.cpp" />
     <ClCompile Include="src\Font.cpp" />
@@ -169,6 +170,7 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\kotono_framework\cast_utils.h" />
     <ClInclude Include="include\kotono_framework\Buildable.h" />
     <ClInclude Include="include\kotono_framework\bitwise_utils.h" />
     <ClInclude Include="include\kotono_framework\Color.h" />
