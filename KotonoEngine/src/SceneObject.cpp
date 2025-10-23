@@ -6,11 +6,12 @@
 #include "Engine.h"
 #include "ObjectManager.h"
 
-TSceneObject::TSceneObject() :
-	Base()
+TSceneObject::TSceneObject(UPtrOwnerBase* ptrOwner) :
+	Base(ptrOwner)
 {
 	viewport_ = &WindowViewport;
-	rootComponent_ = AddComponent<KSceneComponent>();
+	rootComponent_ = Engine.ObjectManager().Create<KSceneComponent>(Ptr<TSceneObject>());
+	AddComponent(rootComponent_);
 }
 
 void TSceneObject::Init()
@@ -24,7 +25,7 @@ void TSceneObject::Cleanup()
 {
 	Base::Cleanup();
 
-	for (auto* component : components_)
+	for (const auto& component : components_)
 	{
 		component->Delete();
 	}
@@ -40,12 +41,12 @@ KtWindowViewport* TSceneObject::GetViewport() const
 	return viewport_;
 }
 
-TSceneObject* TSceneObject::GetParent() const
+const UPtr<TSceneObject>& TSceneObject::GetParent() const
 {
 	return parent_;
 }
 
-KSceneComponent* TSceneObject::GetRootComponent() const
+const UPtr<KSceneComponent>& TSceneObject::GetRootComponent() const
 {
 	return rootComponent_;
 }
@@ -60,7 +61,7 @@ void TSceneObject::SetViewport(KtWindowViewport* viewport)
 	viewport_ = viewport;
 }
 
-void TSceneObject::SetParent(TSceneObject* parent, const ECoordinateSpace keepTransform)
+void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinateSpace keepTransform)
 {
 	if (parent == this)
 	{
@@ -82,11 +83,26 @@ void TSceneObject::SetParent(TSceneObject* parent, const ECoordinateSpace keepTr
 	}
 	if (parent)
 	{
-		parent->children_.Add(this);
+		parent->children_.Add(Ptr<TSceneObject>());
 		childrenIndex_ = parent->children_.LastIndex();
 	}
 	parent_ = parent;
 	GetRootComponent()->SetParent(parent_ ? parent_->GetRootComponent() : nullptr, keepTransform);
+}
+
+void TSceneObject::AddComponent(const UPtr<KSceneComponent>& component)
+{
+	components_.Add(component);
+	component->componentIndex_ = components_.LastIndex();
+}
+
+void TSceneObject::RemoveComponent(const UPtr<KSceneComponent>& component)
+{
+	const size_t index{ component->componentIndex_ };
+	if (components_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+	{
+		components_[index]->componentIndex_ = index;
+	}
 }
 
 void TSceneObject::SerializeTo(nlohmann::json& json) const
@@ -125,20 +141,4 @@ void TSceneObject::DeserializeFrom(const nlohmann::json& json)
 		json["transform"]["scale"]["y"],
 		json["transform"]["scale"]["z"] 
 	});*/
-}
-
-void TSceneObject::AddComponent(KSceneComponent* component)
-{
-	Engine.ObjectManager().Register(component);
-	components_.Add(component);
-	component->componentIndex_ = components_.LastIndex();
-}
-
-void TSceneObject::RemoveComponent(const KSceneComponent* component)
-{
-	const size_t index{ component->componentIndex_ };
-	if (components_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
-	{
-		components_[index]->componentIndex_ = index;
-	}
 }

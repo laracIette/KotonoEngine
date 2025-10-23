@@ -6,7 +6,7 @@ class KInterfaceButtonComponent final : public KInterfaceComponent
 	BASECLASS(KInterfaceComponent)
 
 public:
-	KInterfaceButtonComponent(RInterfaceObject* owner);
+	KInterfaceButtonComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner);
 
 protected:
 	void Init() override;
@@ -16,7 +16,7 @@ public:
 	KtEvent<>& GetEventClicked();
 
 private:
-	KInterfaceColliderComponent* collider_;
+	UPtr<KInterfaceColliderComponent> collider_;
 	KtEvent<> eventClicked_;
 
 	void OnColliderReleased();

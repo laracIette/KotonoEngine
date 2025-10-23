@@ -14,6 +14,10 @@ struct KtColor final
 	};
 	float a;
 
+	constexpr KtColor() :
+		r(0.0f), g(0.0f), b(0.0f), a(1.0f)
+	{}
+
 	constexpr KtColor(float red, float green, float blue, float alpha) :
 		r(red), g(green), b(blue), a(alpha)
 	{}

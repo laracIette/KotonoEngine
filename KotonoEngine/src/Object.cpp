@@ -6,9 +6,11 @@
 #include "Timer.h"
 #include "log.h"
 
-KObject::KObject() :
-    name_(static_cast<std::string>(guid_))
+KObject::KObject(UPtrOwnerBase* ptrOwner) :
+    ptrOwner_(ptrOwner),
+    name_(guid_)
 {
+    ptrOwner_->Set(this);
 }
 
 void KObject::Init()
@@ -30,12 +32,12 @@ const UGuid& KObject::Guid() const
     return guid_;
 }
 
-bool KObject::GetIsConstructed() const
+bool KObject::IsConstructed() const
 {
     return isConstructed_;
 }
 
-bool KObject::GetIsDelete() const
+bool KObject::IsDelete() const
 {
     return isDelete_;
 }
@@ -88,7 +90,7 @@ void KObject::Delete()
         return;
     }
     isDelete_ = true;
-    Engine.ObjectManager().Delete(this);
+    Engine.ObjectManager().Delete(ptrOwner_);
 }
 
 void KObject::DelayDelete(const UDuration& delay)
@@ -127,8 +129,8 @@ void KObject::DeserializeFrom(const nlohmann::json& json)
 
 void KObject::Delay(const KtDelegate<>& delegate, const UDuration& delay) const
 {
-    auto* timer = Engine.ObjectManager().Create<KTimer>();
-    timer->GetEventCompleted().AddListener(KtDelegate(timer, &KTimer::Delete));
+    UPtr timer = Engine.ObjectManager().Create<KTimer>();
+    timer->GetEventCompleted().AddListener(KtDelegate(timer.Get(), &KTimer::Delete));
     timer->GetEventCompleted().AddListener(delegate);
     timer->SetDuration(delay);
     timer->Start();
@@ -136,8 +138,8 @@ void KObject::Delay(const KtDelegate<>& delegate, const UDuration& delay) const
 
 void KObject::Delay(KtDelegate<>&& delegate, const UDuration& delay) const
 {
-    auto* timer = Engine.ObjectManager().Create<KTimer>();
-    timer->GetEventCompleted().AddListener(KtDelegate(timer, &KTimer::Delete));
+    UPtr timer = Engine.ObjectManager().Create<KTimer>();
+    timer->GetEventCompleted().AddListener(KtDelegate(timer.Get(), &KTimer::Delete));
     timer->GetEventCompleted().AddListener(std::move(delegate));
     timer->SetDuration(delay);
     timer->Start();

@@ -1,13 +1,16 @@
 #include "SceneMeshObject.h"
 #include "SceneMeshComponent.h"
+#include "Engine.h"
+#include "ObjectManager.h"
 
-TSceneMeshObject::TSceneMeshObject() :
-	Base()
+TSceneMeshObject::TSceneMeshObject(UPtrOwnerBase* ptrOwner) :
+	Base(ptrOwner)
 {
-	meshComponent_ = AddComponent<KSceneMeshComponent>();
+	meshComponent_ = Engine.ObjectManager().Create<KSceneMeshComponent>(Ptr<TSceneMeshObject>());
+	AddComponent(meshComponent_);
 }
 
-KSceneMeshComponent* TSceneMeshObject::GetMeshComponent() const
+const UPtr<KSceneMeshComponent>& TSceneMeshObject::GetMeshComponent() const
 {
 	return meshComponent_;
 }

@@ -25,8 +25,6 @@
 
 void SObjectManager::Init()
 {
-	selectedObject_ = nullptr;
-
 	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &SObjectManager::Quit));
 	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
@@ -45,12 +43,12 @@ void SObjectManager::Init()
 			KtDelegate(scene, &KScene::Reload));
 	}*/
 	{
-		auto* mesh1{ Create<TSceneMeshObject>() };
+		UPtr mesh1{ Create<TSceneMeshObject>() };
 		mesh1->GetMeshComponent()->SetShader(shader3D);
 		mesh1->GetMeshComponent()->SetModel(model1);
 		mesh1->GetRootComponent()->SetRelativePosition(glm::vec3(-1.0f, 0.0f, 0.0f));
 
-		auto* mesh2{ Create<TSceneMeshObject>() };
+		UPtr mesh2{ Create<TSceneMeshObject>() };
 		mesh2->GetMeshComponent()->SetShader(shader3D);
 		mesh2->GetMeshComponent()->SetModel(model2);
 		mesh2->GetRootComponent()->SetRelativePosition(glm::vec3(1.0f, 0.0f, 0.0f));
@@ -58,24 +56,20 @@ void SObjectManager::Init()
 		mesh2->SetParent(mesh1, ECoordinateSpace::World);
 	}
 
-	auto* camera{ Create<TCamera>() };
+	UPtr camera{ Create<TCamera>() };
 	camera->Use();
 
-	auto* drawTimer{ Create<KTimer>() };
+	UPtr drawTimer{ Create<KTimer>() };
 	drawTimer->SetDuration(UDuration::FromSeconds(1.0f / 120.0f));
 	drawTimer->SetIsRepeat(true);
 	drawTimer->GetEventCompleted().AddListener(KtDelegate(this, &SObjectManager::SubmitDrawObjects));
 	drawTimer->Start();
 
-	auto* logUPSTimer{ Create<KTimer>() };
+	UPtr logUPSTimer{ Create<KTimer>() };
 	logUPSTimer->SetDuration(UDuration::FromSeconds(1.0f));
 	logUPSTimer->SetIsRepeat(true);
 	logUPSTimer->GetEventCompleted().AddListener(KtDelegate(this, &SObjectManager::LogUPS));
 	logUPSTimer->Start();
-
-
-	UPtr a{ Ptr<KTimer>() };
-	KT_LOG_KE(KT_LOG_COMPILE_TIME_LEVEL, "%s", static_cast<std::string>(a->Guid()).c_str());
 }
 
 void SObjectManager::Update()
@@ -98,17 +92,20 @@ void SObjectManager::Update()
 
 void SObjectManager::Cleanup()
 {
-	KtPool<KObject*> objects{};
+	KtPool<UPtrOwnerBase*> objects{};
 	objects.Merge(inits_);
 	objects.Merge(objects_);
-	for (auto* object : objects)
+	for (auto* ptr : objects)
 	{
+		auto* object{ static_cast<KObject*>(ptr->Get()) };
 		object->Cleanup();
 	}
-	for (auto* object : objects)
+	for (auto* ptr : objects)
 	{
+		auto* object{ static_cast<KObject*>(ptr->Get()) };
 		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "DEL object %s", object->GetName().c_str());
 		delete object;
+		delete ptr;
 	}
 	deletes_.Clear();
 
@@ -118,17 +115,17 @@ void SObjectManager::Cleanup()
 		.RemoveListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
 }
 
-void SObjectManager::Register(KObject* object)
+void SObjectManager::Register(KObject* object, UPtrOwnerBase* ptrOwner)
 {
+	inits_.Add(ptrOwner);
+	ptrOwner->SetIndex(inits_.LastIndex());
 	object->SetName(std::format("{}_{}", object->GetTypeName(), static_cast<std::string>(object->Guid())));
-	inits_.Add(object);
-	object->initIndex_ = inits_.LastIndex();
 	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "REG object %s", object->GetName().c_str());
 }
 
-void SObjectManager::Delete(KObject* object)
+void SObjectManager::Delete(UPtrOwnerBase* ptrOwner)
 {
-	deletes_.Add(object);
+	deletes_.Add(ptrOwner);
 }
 
 void SObjectManager::Quit()
@@ -145,12 +142,13 @@ void SObjectManager::InitObjects()
 
 	for (size_t i{ 0 }; i < inits_.Size(); ++i)
 	{
-		auto* object{ inits_[i] };
+		auto* ptr{ inits_[i] };
+		auto* object{ static_cast<KObject*>(ptr->Get()) };
 		object->Init();
 		object->isInit_ = true;
 
-		objects_.Add(object);
-		object->objectIndex_ = objects_.LastIndex();
+		objects_.Add(ptr);
+		ptr->SetIndex(objects_.LastIndex());
 	}
 	inits_.Clear();
 
@@ -159,8 +157,9 @@ void SObjectManager::InitObjects()
 
 void SObjectManager::UpdateObjects()
 {
-	for (auto* object : objects_)
+	for (auto* ptr : objects_)
 	{
+		auto* object{ static_cast<KObject*>(ptr->Get()) };
 		if (object->GetCanUpdate())
 		{
 			object->Update();
@@ -177,31 +176,34 @@ void SObjectManager::DeleteObjects()
 
 	for (size_t i{ 0 }; i < deletes_.Size(); ++i)
 	{
-		auto* object{ deletes_[i] };
+		auto* ptr{ deletes_[i] };
+		auto* object{ static_cast<KObject*>(ptr->Get()) };
 
 		object->Cleanup();
 
 		if (object->isInit_)
 		{
-			const size_t index{ object->objectIndex_ };
+			const size_t index{ ptr->GetIndex() };
 			if (objects_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 			{
-				objects_[index]->objectIndex_ = index;
+				objects_[index]->SetIndex(index);
 			}
 		}
 		else
 		{
-			const size_t index{ object->initIndex_ };
+			const size_t index{ ptr->GetIndex() };
 			if (inits_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 			{
-				inits_[index]->initIndex_ = index;
+				inits_[index]->SetIndex(index);
 			}
 		}
 	}
-	for (auto* object : deletes_)
+	for (auto* ptr : deletes_)
 	{
+		auto* object{ static_cast<KObject*>(ptr->Get()) };
 		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "DEL object %s", object->GetName().c_str());
 		delete object;
+		delete ptr;
 	}
 
 	deletes_.Clear();
@@ -227,7 +229,7 @@ int64_t SObjectManager::GetCurrentUpdate() const
 	return currentUpdate_;
 }
 
-KObject* SObjectManager::SelectedObject() const
+const UPtr<KObject>& SObjectManager::SelectedObject() const
 {
 	return selectedObject_;
 }
@@ -239,8 +241,8 @@ void SObjectManager::LogUPS() const
 
 void SObjectManager::OnMouseButtonLeftPressed()
 {
-	KtCollection interfaceComponents(objects_.begin(), objects_.end());
-	interfaceComponents.AddFilter([](KObject* object) { return dynamic_cast<KInterfaceComponent*>(object); });
+	/*KtCollection interfaceComponents(objects_.begin(), objects_.end());
+	interfaceComponents.AddFilter([](UPtrOwnerBase* ptr) { return dynamic_cast<KInterfaceComponent*>(ptr->Get()); });
 
 	KInterfaceComponent* selectedComponent{ nullptr };
 	for (auto* object : interfaceComponents)
@@ -257,5 +259,5 @@ void SObjectManager::OnMouseButtonLeftPressed()
 	}
 
 	selectedObject_ = selectedComponent ? selectedComponent->Owner() : selectedObject_;
-	KT_LOG_KE(KT_LOG_COMPILE_TIME_LEVEL, "%p selected", selectedObject_);
+	KT_LOG_KE(KT_LOG_COMPILE_TIME_LEVEL, "%p selected", selectedObject_);*/
 }

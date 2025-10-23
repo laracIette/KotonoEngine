@@ -19,44 +19,32 @@ private:
 	void Cleanup();
 
 public:
-	void Register(KObject* object);
-	void Delete(KObject* object);
-
 	template <Object T, typename... Args> 
-	T* Create(Args... args)
+	UPtr<T> Create(Args... args)
 	{
-		T* object{ new T(args...) };
-		Register(object);
-		return object;
-	}
-
-	template <Object T, typename... Args> 
-	UPtr<T> Ptr(Args... args)
-	{
-		auto* object{ new T(args...) };
-		auto* ptrOwner{ new UPtrOwner(object) };
-		initsPtr_.Add(ptrOwner);
-		ptrOwner->index_ = initsPtr_.LastIndex();
+		auto* ptrOwner{ new UPtrOwner<T>() };
+		auto* object{ new T(ptrOwner, args...) };
+		Register(object, ptrOwner);
 		return ptrOwner;
 	}
+
+	void Delete(UPtrOwnerBase* ptrOwner);
 
 	float GetAverageUpdateTime() const;
 	float GetAverageDrawTime() const;
 
 	int64_t GetCurrentUpdate() const;
 
-	KObject* SelectedObject() const;
+	const UPtr<KObject>& SelectedObject() const;
 
 private:
 	void Quit();
 
-	KtPool<KObject*> inits_;
-	KtPool<KObject*> objects_;
-	KtPool<KObject*> deletes_;
+	KtPool<UPtrOwnerBase*> inits_;
+	KtPool<UPtrOwnerBase*> objects_;
+	KtPool<UPtrOwnerBase*> deletes_;
 
-	KtPool<UPtrOwnerBase*> initsPtr_;
-
-	KObject* selectedObject_;
+	UPtr<KObject> selectedObject_;
 
 	KtAverageTime<256> updateAverageTime_;
 	KtAverageTime<64> drawAverageTime_;
@@ -64,6 +52,8 @@ private:
 	int64_t currentUpdate_;
 
 	bool canDraw_;
+
+	void Register(KObject* object, UPtrOwnerBase* ptrOwner);
 
 	void InitObjects();
 	void UpdateObjects();

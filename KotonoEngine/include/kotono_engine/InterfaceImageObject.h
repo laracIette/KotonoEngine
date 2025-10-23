@@ -8,11 +8,11 @@ class RInterfaceImageObject : public RInterfaceObject
 	BASECLASS(RInterfaceObject)
 
 public:
-	RInterfaceImageObject();
+	RInterfaceImageObject(UPtrOwnerBase* ptrOwner);
 
-	KInterfaceImageComponent* GetImageComponent() const;
+	const UPtr<KInterfaceImageComponent>& GetImageComponent() const;
 
 private:
-	KInterfaceImageComponent* imageComponent_;
+	UPtr<KInterfaceImageComponent> imageComponent_;
 };
 

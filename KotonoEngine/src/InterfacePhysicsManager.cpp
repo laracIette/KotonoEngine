@@ -3,19 +3,19 @@
 
 void SInterfacePhysicsManager::Update()
 {
-	for (size_t i{ 0 }; i < colliderComponents_.Size(); ++i)
-	{
-		auto* current{ colliderComponents_[i] };
-		for (size_t j{ i + 1 }; j < colliderComponents_.Size(); ++j)
-		{
-			auto* other{ colliderComponents_[j] };
-			if (current->GetIsOverlapping(other))
-			{
-				current->eventOverlap_.Broadcast(other);
-				other->eventOverlap_.Broadcast(current);
-			}
-		}
-	}
+	//for (size_t i{ 0 }; i < colliderComponents_.Size(); ++i)
+	//{
+	//	auto* current{ colliderComponents_[i] };
+	//	for (size_t j{ i + 1 }; j < colliderComponents_.Size(); ++j)
+	//	{
+	//		auto* other{ colliderComponents_[j] };
+	//		if (current->GetIsOverlapping(other))
+	//		{
+	//			current->eventOverlap_.Broadcast(other);
+	//			other->eventOverlap_.Broadcast(current);
+	//		}
+	//	}
+	//}
 }
 
 void SInterfacePhysicsManager::Register(KInterfaceColliderComponent* colliderComponent)

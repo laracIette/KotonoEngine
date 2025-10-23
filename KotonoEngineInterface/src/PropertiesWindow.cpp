@@ -6,7 +6,6 @@
 #include <kotono_engine/InterfaceComponent.h>
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/InputManager.h>
-#include <kotono_framework/cast_utils.h>
 
 WWidget* WPropertiesWindow::Build()
 {
@@ -42,12 +41,19 @@ WWidget* WPropertiesWindow::Build()
                                     }),
                                     new WButton({
                                         .onDown = []() {
+                                            const auto& selectedObject{ Engine.ObjectManager().SelectedObject() };
+                                            if (!selectedObject)
+                                            {
+                                                return;
+                                            }
+
                                             const auto delta = Framework.InputManager().Mouse().GetCursorPositionDelta().x;
                                             if (!delta)
                                             {
                                                 return;
                                             }
-                                            if (auto* asInterfaceObject = try_cast<RInterfaceObject>(Engine.ObjectManager().SelectedObject()))
+
+                                            if (const auto& asInterfaceObject = dynamic_cast<RInterfaceObject*>(selectedObject.Get()))
                                             {
                                                 asInterfaceObject->GetRootComponent()->Translate({ delta / 800.0f, 0.0f });
                                             }
@@ -68,12 +74,19 @@ WWidget* WPropertiesWindow::Build()
                                     }),
                                     new WButton({
                                         .onDown = []() {
+                                            const auto& selectedObject{ Engine.ObjectManager().SelectedObject() };
+                                            if (!selectedObject)
+                                            {
+                                                return;
+                                            }
+
                                             const auto delta = Framework.InputManager().Mouse().GetCursorPositionDelta().x;
                                             if (!delta)
                                             {
                                                 return;
                                             }
-                                            if (auto* asInterfaceObject = try_cast<RInterfaceObject>(Engine.ObjectManager().SelectedObject()))
+
+                                            if (const auto& asInterfaceObject = dynamic_cast<RInterfaceObject*>(selectedObject.Get()))
                                             {
                                                 asInterfaceObject->GetRootComponent()->Translate({ 0.0f, delta / 800.0f });
                                             }

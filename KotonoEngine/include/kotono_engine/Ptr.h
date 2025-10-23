@@ -1,12 +1,20 @@
 #pragma once
 #include <kotono_framework/Pool.h>
+#include <type_traits>
 template <class T>
 class UPtr;
 
 class UPtrOwnerBase
 {
+
 public:
 	virtual ~UPtrOwnerBase() = default;
+
+	virtual size_t GetIndex() const = 0;
+	virtual void SetIndex(const size_t index) = 0;
+
+	virtual void Set(void* pointer) = 0;
+	virtual void* Get() const = 0;
 };
 
 template <class T>
@@ -17,12 +25,40 @@ class UPtrOwner : public UPtrOwnerBase
 	friend class SObjectManager;
 
 public:
-	UPtrOwner(T* ptr) : ptr_(ptr) {}
+	UPtrOwner() : pointer_(nullptr) {}
+	
+	~UPtrOwner()
+	{
+		for (Child* child : children_)
+		{
+			child->owner_ = nullptr;
+		}
+	}
+
+	void Set(void* pointer) override
+	{
+		pointer_ = static_cast<T*>(pointer);
+	}
+
+	size_t GetIndex() const override
+	{
+		return index_;
+	}
+
+	void SetIndex(const size_t index) override
+	{
+		index_ = index;
+	}
+
+	void* Get() const override
+	{
+		return pointer_;
+	}
 
 private:
-	T* ptr_;
-	size_t index_;
-	KtPool<Child*> children_;
+	T* pointer_{ nullptr };
+	size_t index_{ 0 };
+	KtPool<Child*> children_{};
 };
 
 template <class T>
@@ -32,9 +68,18 @@ class UPtr
 	friend Owner;
 
 public:
-	UPtr(Owner* owner = nullptr)
+	UPtr() {}
+
+	UPtr(Owner* owner)
 	{
 		SetOwner(owner);
+	}
+
+	template <class U>
+		requires std::is_base_of_v<T, U>
+	UPtr(const UPtr<U>& other)
+	{
+		SetOwner(reinterpret_cast<Owner*>(other.GetOwner()));
 	}
 
 	~UPtr()
@@ -42,19 +87,44 @@ public:
 		SetOwner(nullptr);
 	}
 
-	UPtr& operator=(UPtr& other)
+	constexpr Owner* GetOwner() const noexcept
 	{
-		SetOwner(other.owner_);
+		return owner_;
 	}
 
-	T* operator->() const noexcept
+	UPtr& operator=(const UPtr& other)
 	{
-		return owner_->ptr_;
+		if (this == &other)
+		{
+			return *this;
+		}
+		SetOwner(other.owner_);
+		return *this;
+	}
+
+	constexpr T* Get() const noexcept
+	{
+		return owner_->pointer_;
+	}
+
+	constexpr T* operator->() const noexcept
+	{
+		return owner_->pointer_;
+	}
+
+	constexpr operator bool() const noexcept
+	{
+		return owner_ && owner_->pointer_;
+	}
+
+	constexpr bool operator==(T* other) const noexcept
+	{
+		return owner_ && owner_->pointer_ == other;
 	}
 
 private:
-	Owner* owner_;
-	size_t index_;
+	Owner* owner_{ nullptr };
+	size_t index_{ 0 };
 
 	void SetOwner(Owner* owner)
 	{

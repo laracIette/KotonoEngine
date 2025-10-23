@@ -8,11 +8,11 @@ class TSceneMeshObject : public TSceneObject
 	BASECLASS(TSceneObject)
 
 public:
-	TSceneMeshObject();
+	TSceneMeshObject(UPtrOwnerBase* ptrOwner);
 
-	KSceneMeshComponent* GetMeshComponent() const;
+	const UPtr<KSceneMeshComponent>& GetMeshComponent() const;
 
 private:
-	KSceneMeshComponent* meshComponent_;
+	UPtr<KSceneMeshComponent> meshComponent_;
 };
 

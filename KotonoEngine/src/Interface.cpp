@@ -11,8 +11,8 @@
 
 void SInterface::Init()
 {
-	auto* image1 = Engine.ObjectManager().Create<RInterfaceImageObject>();
-	auto* image2 = Engine.ObjectManager().Create<RInterfaceImageObject>();
+	UPtr image1 = Engine.ObjectManager().Create<RInterfaceImageObject>();
+	UPtr image2 = Engine.ObjectManager().Create<RInterfaceImageObject>();
 	image1->GetImageComponent()->SetScreenSize({ 1024.0f, 1024.0f });
 	image2->GetImageComponent()->SetScreenSize({ 1024.0f, 1024.0f });
 

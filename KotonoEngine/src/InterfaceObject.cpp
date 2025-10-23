@@ -6,11 +6,12 @@
 #include "ObjectManager.h"
 #include <kotono_framework/Stopwatch.h>
 
-RInterfaceObject::RInterfaceObject() :
-	Base()
+RInterfaceObject::RInterfaceObject(UPtrOwnerBase* ptrOwner) :
+	Base(ptrOwner)
 {
 	viewport_ = &WindowViewport;
-	rootComponent_ = AddComponent<KInterfaceComponent>();
+	rootComponent_ = Engine.ObjectManager().Create<KInterfaceComponent>(Ptr<RInterfaceObject>());
+	AddComponent(rootComponent_);
 }
 
 void RInterfaceObject::Init()
@@ -24,7 +25,7 @@ void RInterfaceObject::Cleanup()
 {
 	Base::Cleanup();
 
-	for (auto* component : components_)
+	for (const auto& component : components_)
 	{
 		component->Delete();
 	}
@@ -35,17 +36,17 @@ KtWindowViewport* RInterfaceObject::GetViewport() const
 	return viewport_;
 }
 
-RInterfaceObject* RInterfaceObject::GetParent() const
+const UPtr<RInterfaceObject>& RInterfaceObject::GetParent() const
 {
 	return parent_;
 }
 
-KInterfaceComponent* RInterfaceObject::GetRootComponent() const
+const UPtr<KInterfaceComponent>& RInterfaceObject::GetRootComponent() const
 {
 	return rootComponent_;
 }
 
-const KtPool<RInterfaceObject*>& RInterfaceObject::GetChildren() const
+const KtPool<UPtr<RInterfaceObject>>& RInterfaceObject::GetChildren() const
 {
 	return children_;
 }
@@ -65,7 +66,7 @@ void RInterfaceObject::SetViewport(KtWindowViewport* viewport)
 	viewport_ = viewport;
 }
 
-void RInterfaceObject::SetParent(RInterfaceObject* parent, const ECoordinateSpace keepRect)
+void RInterfaceObject::SetParent(const UPtr<RInterfaceObject>& parent, const ECoordinateSpace keepRect)
 {
 	if (parent == this)
 	{
@@ -87,7 +88,7 @@ void RInterfaceObject::SetParent(RInterfaceObject* parent, const ECoordinateSpac
 	}
 	if (parent)
 	{
-		parent->children_.Add(this);
+		parent->children_.Add(Ptr<RInterfaceObject>());
 		childrenIndex_ = parent->children_.LastIndex();
 	}
 	parent_ = parent;
@@ -97,18 +98,17 @@ void RInterfaceObject::SetParent(RInterfaceObject* parent, const ECoordinateSpac
 bool RInterfaceObject::IsHovered() const
 {
 	return std::any_of(components_.begin(), components_.end(),
-		[](const KInterfaceComponent* component) { return component->IsHovered(); }
+		[](const UPtr<KInterfaceComponent>& component) { return component->IsHovered(); }
 	);
 }
 
-void RInterfaceObject::AddComponent(KInterfaceComponent* component)
+void RInterfaceObject::AddComponent(const UPtr<KInterfaceComponent>& component)
 {
-	Engine.ObjectManager().Register(component);
 	components_.Add(component);
 	component->componentIndex_ = components_.LastIndex();
 }
 
-void RInterfaceObject::RemoveComponent(const KInterfaceComponent* component)
+void RInterfaceObject::RemoveComponent(const UPtr<KInterfaceComponent>& component)
 {
 	const size_t index{ component->componentIndex_ };
 	if (components_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)

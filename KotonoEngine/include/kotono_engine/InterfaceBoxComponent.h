@@ -5,7 +5,7 @@ class KInterfaceBoxComponent : public KInterfaceComponent
 	BASECLASS(KInterfaceComponent)
 
 public:
-	KInterfaceBoxComponent(RInterfaceObject* owner);
+	KInterfaceBoxComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner);
 	
 protected:
 	void Init() override;

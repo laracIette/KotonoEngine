@@ -12,11 +12,11 @@
 #include <kotono_framework/InputManager.h>
 #include "log.h"
 
-KInterfaceComponent::KInterfaceComponent(RInterfaceObject* owner) :
-    Base(),
+KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner) :
+    Base(ptrOwner),
     owner_(owner),
     modelMatrix_([this]() { return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix(); }),
-    color_({ 1.0f, 1.0f, 1.0f, 1.0f })
+    color_(KtColor::White())
 {
     eventRectUpdated_.AddListener(KtDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
 
@@ -52,18 +52,18 @@ void KInterfaceComponent::Cleanup()
 
     SetParent(nullptr, ECoordinateSpace::Relative);
 
-    Owner()->RemoveComponent(this);
+    Owner()->RemoveComponent(Ptr<KInterfaceComponent>());
 
     Framework.Renderer().GetInterfaceRenderer().Unregister(boundsProxy_);
     Framework.Renderer().GetInterfaceRenderer().DeleteProxy(boundsProxy_);
 }
 
-RInterfaceObject* KInterfaceComponent::Owner() const
+const UPtr<RInterfaceObject>& KInterfaceComponent::Owner() const
 {
     return owner_;
 }
 
-KInterfaceComponent* KInterfaceComponent::GetParent() const
+const UPtr<KInterfaceComponent>& KInterfaceComponent::GetParent() const
 {
     return parent_;
 }
@@ -189,12 +189,12 @@ void KInterfaceComponent::SetLayer(const int32_t layer)
     eventLayerUpdated_.Broadcast();
 }
 
-void KInterfaceComponent::SetParent(KInterfaceComponent* parent, const ECoordinateSpace keepRect)
+void KInterfaceComponent::SetParent(const UPtr<KInterfaceComponent>& parent, const ECoordinateSpace keepRect)
 {
     if (parent_)
     {
         parent_->GetEventRectUpdated().RemoveListener(KtDelegate(&eventRectUpdated_, &KtEvent<>::Broadcast));
-        parent_->RemoveChildren(this);
+        parent_->RemoveChildren(Ptr<KInterfaceComponent>());
     }
 
     switch (keepRect)
@@ -221,7 +221,7 @@ void KInterfaceComponent::SetParent(KInterfaceComponent* parent, const ECoordina
     if (parent_)
     {
         parent_->GetEventRectUpdated().AddListener(KtDelegate(&eventRectUpdated_, &KtEvent<>::Broadcast));
-        parent_->AddChildren(this);
+        parent_->AddChildren(Ptr<KInterfaceComponent>());
     }
 }
 
@@ -421,12 +421,12 @@ glm::mat4 KInterfaceComponent::GetModelMatrix()
     return modelMatrix_;
 }
 
-glm::vec2 KInterfaceComponent::GetDirection(const KInterfaceComponent* target) const
+glm::vec2 KInterfaceComponent::GetDirection(const UPtr<KInterfaceComponent>& target) const
 {
     return target->GetWorldPosition() - GetWorldPosition();
 }
 
-float KInterfaceComponent::GetDistance(const KInterfaceComponent* other) const
+float KInterfaceComponent::GetDistance(const UPtr<KInterfaceComponent>& other) const
 {
     return glm::distance(GetWorldPosition(), other->GetWorldPosition());
 }
@@ -444,7 +444,7 @@ bool KInterfaceComponent::GetIsOverlapping(const glm::vec2& worldPosition) const
     return GetIsOverlapping(worldPosition, glm::vec2(0.0f));
 }
 
-bool KInterfaceComponent::GetIsOverlapping(const KInterfaceComponent* other) const
+bool KInterfaceComponent::GetIsOverlapping(const UPtr<KInterfaceComponent>& other) const
 {
     return GetIsOverlapping(other->GetWorldPosition(), other->GetWorldSize());
 }
@@ -457,7 +457,7 @@ bool KInterfaceComponent::IsHovered() const
     return GetIsOverlapping(worldPosition);
 }
 
-void KInterfaceComponent::AddChildren(KInterfaceComponent* interfaceComponent)
+void KInterfaceComponent::AddChildren(const UPtr<KInterfaceComponent>& interfaceComponent)
 {
     if (!interfaceComponent)
     {
@@ -468,7 +468,7 @@ void KInterfaceComponent::AddChildren(KInterfaceComponent* interfaceComponent)
     interfaceComponent->childrenIndex_ = static_cast<size_t>(children_.LastIndex());
 }
 
-void KInterfaceComponent::RemoveChildren(KInterfaceComponent* interfaceComponent)
+void KInterfaceComponent::RemoveChildren(const UPtr<KInterfaceComponent>& interfaceComponent)
 {
     if (!interfaceComponent)
     {

@@ -1,13 +1,16 @@
 #include "InterfaceImageObject.h"
 #include "InterfaceImageComponent.h"
+#include "Engine.h"
+#include "ObjectManager.h"
 
-RInterfaceImageObject::RInterfaceImageObject() :
-	Base()
+RInterfaceImageObject::RInterfaceImageObject(UPtrOwnerBase* ptrOwner) :
+	Base(ptrOwner)
 {
-	imageComponent_ = AddComponent<KInterfaceImageComponent>();
+	imageComponent_ = Engine.ObjectManager().Create<KInterfaceImageComponent>(Ptr<RInterfaceImageObject>());
+	AddComponent(imageComponent_);
 }
 
-KInterfaceImageComponent* RInterfaceImageObject::GetImageComponent() const
+const UPtr<KInterfaceImageComponent>& RInterfaceImageObject::GetImageComponent() const
 {
 	return imageComponent_;
 }

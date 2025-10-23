@@ -8,8 +8,6 @@
 #include <kotono_framework/Color.h>
 #include <kotono_framework/Cached.h>
 
-#include "Ptr.h"
-
 class KtWindowViewport;
 class RInterfaceObject;
 struct KtRenderable2DProxy;
@@ -21,18 +19,18 @@ class KInterfaceComponent : public KObject
 	friend class RInterfaceObject;
 
 public:
-	KInterfaceComponent(RInterfaceObject* owner);
+	KInterfaceComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner);
 
 protected:
 	void Init() override;
 	void Cleanup() override;
 
 public:
-	RInterfaceObject* Owner() const;
-	KInterfaceComponent* GetParent() const;
+	const UPtr<RInterfaceObject>& Owner() const;
+	const UPtr<KInterfaceComponent>& GetParent() const;
 	const URect& GetRect() const;
 	EVisibility GetVisibility() const;
-	int32_t GetLayer() const; 
+	int32_t GetLayer() const;
 	KtEvent<>& GetEventRectUpdated();
 	KtEvent<>& GetEventLayerUpdated();
 	KtEvent<>& GetEventColorUpdated();
@@ -57,7 +55,7 @@ public:
 	void SetVisibility(const EVisibility visibility);
 	void SetLayer(const int32_t layer);
 
-	void SetParent(KInterfaceComponent* parent, const ECoordinateSpace keepRect);
+	void SetParent(const UPtr<KInterfaceComponent>& parent, const ECoordinateSpace keepRect);
 
 	void SetRelativeSize(const glm::vec2& relativeSize);
 	void SetRelativePosition(const glm::vec2& relativePosition);
@@ -68,7 +66,7 @@ public:
 	void SetWorldPosition(const glm::vec2& worldPosition);
 	void SetWorldScale(const glm::vec2& worldScale);
 	void SetWorldRotation(const float worldRotation, const ERotationUnit unit = ERotationUnit::Radians);
-	
+
 	void Translate(const glm::vec2& offset);
 	void Scale(const glm::vec2& scale);
 	void Rotate(const float rotation, const ERotationUnit unit = ERotationUnit::Radians);
@@ -90,21 +88,21 @@ public:
 	glm::mat4 GetScaleMatrix() const;
 	glm::mat4 GetModelMatrix();
 
-	glm::vec2 GetDirection(const KInterfaceComponent* target) const;
-	float GetDistance(const KInterfaceComponent* other) const;
+	glm::vec2 GetDirection(const UPtr<KInterfaceComponent>& target) const;
+	float GetDistance(const UPtr<KInterfaceComponent>& other) const;
 	bool GetIsOverlapping(const glm::vec2& worldPosition, const glm::vec2& worldSize) const;
 	bool GetIsOverlapping(const glm::vec2& worldPosition) const;
-	bool GetIsOverlapping(const KInterfaceComponent* other) const;
+	bool GetIsOverlapping(const UPtr<KInterfaceComponent>& other) const;
 
 	bool IsHovered() const;
 
-	void AddChildren(KInterfaceComponent* interfaceComponent);
-	void RemoveChildren(KInterfaceComponent* interfaceComponent);
+	void AddChildren(const UPtr<KInterfaceComponent>& interfaceComponent);
+	void RemoveChildren(const UPtr<KInterfaceComponent>& interfaceComponent);
 
 private:
-	RInterfaceObject* const owner_;
-	KInterfaceComponent* parent_;
-	KtPool<KInterfaceComponent*> children_;
+	const UPtr<RInterfaceObject> owner_;
+	UPtr<KInterfaceComponent> parent_;
+	KtPool<UPtr<KInterfaceComponent>> children_;
 	size_t childrenIndex_;
 	URect rect_;
 	EVisibility visibility_;
@@ -123,7 +121,5 @@ private:
 	glm::vec2 GetAnchorOffset() const;
 	glm::vec2 GetWorldPositionWithAnchorOffset() const;
 	glm::vec2 GetAnchorRelativePosition() const;
-
-	UPtr<KInterfaceComponent> ref_;
 };
 

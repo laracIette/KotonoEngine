@@ -15,14 +15,14 @@ class KSceneComponent : public KObject
 	friend class TSceneObject;
 
 public:
-	KSceneComponent(TSceneObject* owner);
+	KSceneComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSceneObject>& owner);
 
 protected:
 	void Init() override;
 	void Cleanup() override;
 
 public:
-	TSceneObject* Owner() const;
+	const UPtr<TSceneObject>& Owner() const;
 	const UTransform& GetTransform() const;
 	EVisibility GetVisibility() const;
 	EMobility GetMobility() const;
@@ -51,7 +51,7 @@ public:
 	void SetVisibility(const EVisibility visibility);
 	virtual void SetMobility(const EMobility mobility);
 
-	void SetParent(KSceneComponent* parent, const ECoordinateSpace keepTransform);
+	void SetParent(const UPtr<KSceneComponent>& parent, const ECoordinateSpace keepTransform);
 
 	void SetRelativePosition(const glm::vec3& relativePosition);
 	void SetRelativeRotation(const glm::quat& relativeRotation);
@@ -65,12 +65,12 @@ public:
 	void Rotate(const glm::quat& rotation);
 	void Scale(const glm::vec3& scale);
 
-	glm::vec3 GetDirection(const KSceneComponent* target) const;
-	float GetDistance(const KSceneComponent* other) const;
+	glm::vec3 GetDirection(const UPtr<KSceneComponent>& target) const;
+	float GetDistance(const UPtr<KSceneComponent>& other) const;
 
 private:
-	TSceneObject* const owner_;
-	KSceneComponent* parent_;
+	const UPtr<TSceneObject> owner_;
+	UPtr<KSceneComponent> parent_;
 	UTransform transform_;
 	EVisibility visibility_;
 	EMobility mobility_;

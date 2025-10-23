@@ -17,8 +17,8 @@
 
 static KtShader* WireframeShader = nullptr;
 
-KSceneMeshComponent::KSceneMeshComponent(TSceneObject* owner) :
-    Base(owner)
+KSceneMeshComponent::KSceneMeshComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSceneObject>& owner) :
+    Base(ptrOwner, owner)
 {
     spinTask_ = Engine.ObjectManager().Create<KTask>();
 
@@ -47,7 +47,7 @@ void KSceneMeshComponent::Cleanup()
     RemoveProxies();
     GetEventTransformUpdated().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
 
-    Framework.InputManager().Keyboard().KeyEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(spinTask_, &KTask::Start));
+    Framework.InputManager().Keyboard().KeyEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(spinTask_.Get(), &KTask::Start));
     spinTask_->Delete();
     
     Framework.InputManager().Keyboard().KeyEvent(KT_KEY_N, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
@@ -98,7 +98,7 @@ void KSceneMeshComponent::SetMobility(const EMobility mobility)
 void KSceneMeshComponent::InitSpin()
 {
     spinTask_->SetDuration(5.0f);
-    Framework.InputManager().Keyboard().KeyEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(spinTask_, &KTask::Start));
+    Framework.InputManager().Keyboard().KeyEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(spinTask_.Get(), &KTask::Start));
     spinTask_->GetEventUpdate().AddListener(KtDelegate(this, &KSceneMeshComponent::Spin));
 }
 

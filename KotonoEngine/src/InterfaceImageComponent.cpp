@@ -12,8 +12,8 @@
 
 static constinit KtShader* WireframeShader{ nullptr };
 
-KInterfaceImageComponent::KInterfaceImageComponent(RInterfaceObject* owner) :
-	Base(owner)
+KInterfaceImageComponent::KInterfaceImageComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner) :
+	Base(ptrOwner, owner)
 {
 	if (!WireframeShader)
 	{

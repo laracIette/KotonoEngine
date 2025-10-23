@@ -10,7 +10,7 @@ class KInterfaceImageComponent : public KInterfaceComponent
 	BASECLASS(KInterfaceComponent)
 
 public:
-	KInterfaceImageComponent(RInterfaceObject* owner);
+	KInterfaceImageComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner);
 
 protected:
 	void Init() override;

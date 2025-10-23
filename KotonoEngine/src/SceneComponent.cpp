@@ -3,8 +3,8 @@
 #include "log.h"
 #include <stdexcept>
 
-KSceneComponent::KSceneComponent(TSceneObject* owner) :
-    Base(),
+KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSceneObject>& owner) :
+    Base(ptrOwner),
     owner_(owner),
     modelMatrix_([this]() { return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix(); })
 {
@@ -25,10 +25,10 @@ void KSceneComponent::Cleanup()
 {
     Base::Cleanup();
     
-    Owner()->RemoveComponent(this);
+    Owner()->RemoveComponent(Ptr<KSceneComponent>());
 }
 
-TSceneObject* KSceneComponent::Owner() const
+const UPtr<TSceneObject>& KSceneComponent::Owner() const
 {
     return owner_;
 }
@@ -50,7 +50,7 @@ EMobility KSceneComponent::GetMobility() const
 
 bool KSceneComponent::GetCanSetTransform() const
 {
-    return mobility_ == EMobility::Dynamic || !GetIsConstructed();
+    return mobility_ == EMobility::Dynamic || !IsConstructed();
 }
 
 KtEvent<>& KSceneComponent::GetEventTransformUpdated()
@@ -150,7 +150,7 @@ glm::vec3 KSceneComponent::GetScreenPosition() const
     throw std::logic_error("not implemented");
 }
 
-void KSceneComponent::SetParent(KSceneComponent* parent, const ECoordinateSpace keepTransform)
+void KSceneComponent::SetParent(const UPtr<KSceneComponent>& parent, const ECoordinateSpace keepTransform)
 {
     if (!GetCanSetTransform())
     {
@@ -275,12 +275,12 @@ void KSceneComponent::Scale(const glm::vec3& scale)
     SetRelativeScale(GetRelativeScale() * scale);
 }
 
-glm::vec3 KSceneComponent::GetDirection(const KSceneComponent* target) const
+glm::vec3 KSceneComponent::GetDirection(const UPtr<KSceneComponent>& target) const
 {
     return target->GetWorldPosition() - GetWorldPosition();
 }
 
-float KSceneComponent::GetDistance(const KSceneComponent* other) const
+float KSceneComponent::GetDistance(const UPtr<KSceneComponent>& other) const
 {
     return glm::distance(GetWorldPosition(), other->GetWorldPosition());
 }

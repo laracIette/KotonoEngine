@@ -16,7 +16,7 @@ class TSceneObject : public KObject
 	BASECLASS(KObject)
 
 public:
-	TSceneObject();
+	TSceneObject(UPtrOwnerBase* ptrOwner);
 
 protected:
 	void Init() override;
@@ -25,35 +25,27 @@ protected:
 public:
 	EVisibility GetVisibility() const;
 	KtWindowViewport* GetViewport() const;
-	TSceneObject* GetParent() const;
-	KSceneComponent* GetRootComponent() const;
+	const UPtr<TSceneObject>& GetParent() const;
+	const UPtr<KSceneComponent>& GetRootComponent() const;
 
 	void SetVisibility(const EVisibility visibility);
 	void SetViewport(KtWindowViewport* viewport);
-	void SetParent(TSceneObject* parent, const ECoordinateSpace keepTransform);
+	void SetParent(const UPtr<TSceneObject>& parent, const ECoordinateSpace keepTransform);
 
 	template <SceneComponent T>
-	T* GetComponent() const
+	UPtr<T> GetComponent() const
 	{
 		auto components = KtCollection(components_.begin(), components_.end());
-		components.AddFilter([](auto* component) { return dynamic_cast<T*>(component); });
-		if (auto* component = components.GetFirst())
+		components.AddFilter([](const UPtr<KSceneComponent>& component) { return dynamic_cast<T*>(component.Get()); });
+		if (components.Empty())
 		{
-			return static_cast<T*>(component);
+			return nullptr;
 		}
-		return nullptr;
+		return components.GetFirst();
 	}
 
-	template <SceneComponent T>
-	T* AddComponent()
-	{
-		T* component = new T(this);
-		AddComponent(static_cast<KSceneComponent*>(component));
-		return component;
-	}
-
-	void AddComponent(KSceneComponent* component);
-	void RemoveComponent(const KSceneComponent* component);
+	void AddComponent(const UPtr<KSceneComponent>& component);
+	void RemoveComponent(const UPtr<KSceneComponent>& component);
 
 	void SerializeTo(nlohmann::json& json) const override;
 	void DeserializeFrom(const nlohmann::json& json) override;
@@ -61,9 +53,9 @@ public:
 private:
 	EVisibility visibility_;
 	KtWindowViewport* viewport_;
-	TSceneObject* parent_;
-	KSceneComponent* rootComponent_;
-	KtPool<TSceneObject*> children_;
-	KtPool<KSceneComponent*> components_;
+	UPtr<TSceneObject> parent_;
+	UPtr<KSceneComponent> rootComponent_;
+	KtPool<UPtr<TSceneObject>> children_;
+	KtPool<UPtr<KSceneComponent>> components_;
 	size_t childrenIndex_;
 };

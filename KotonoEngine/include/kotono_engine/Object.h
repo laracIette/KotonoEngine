@@ -6,13 +6,16 @@
 #include "Guid.h"
 #include <kotono_framework/Event.h>
 #include "Duration.h"
+#include "Ptr.h"
+
+class UPtrOwnerBase;
 
 class KObject
 {
 	friend class SObjectManager;
 
 public:
-	KObject();
+	KObject(UPtrOwnerBase* ptrOwner);
 	virtual ~KObject() = default;
 
 protected:
@@ -22,8 +25,8 @@ protected:
 
 public:
 	const UGuid& Guid() const;
-	bool GetIsConstructed() const;
-	bool GetIsDelete() const;
+	bool IsConstructed() const;
+	bool IsDelete() const;
 	bool GetCanUpdate() const;
 	const std::filesystem::path& Path() const;
 	const std::string& GetName() const;
@@ -48,23 +51,27 @@ public:
 	virtual void DeserializeFrom(const nlohmann::json& json);
 
 protected:
+	UPtrOwnerBase* const ptrOwner_;
+
 	void Delay(const KtDelegate<>& delegate, const UDuration& delay) const;
 	void Delay(KtDelegate<>&& delegate, const UDuration& delay) const;
+
+	template <class T>
+		requires std::is_base_of_v<KObject, T>
+	UPtr<T> Ptr() const
+	{
+		return static_cast<UPtrOwner<T>*>(ptrOwner_);
+	}
 
 private:
 	UGuid guid_;
 	bool isConstructed_;
+	bool isInit_;
 	bool isDelete_;
 	bool canUpdate_;
 	std::filesystem::path path_;
 	std::string name_;
 	KtEvent<> eventCleanup_;
 
-	union
-	{
-		size_t initIndex_;
-		size_t objectIndex_;
-	};
-	bool isInit_;
 };
 

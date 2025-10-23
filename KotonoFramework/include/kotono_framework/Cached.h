@@ -7,6 +7,12 @@ public:
 	using ValueFunction = std::function<T()>;
 
 public:
+	KtCached() : 
+		value_(T{}),
+		valueFunction_(nullptr),
+		isDirty_(true)
+	{}
+
 	explicit KtCached(ValueFunction&& valueFunction) : 
 		value_(T{}),
 		valueFunction_(std::move(valueFunction)),

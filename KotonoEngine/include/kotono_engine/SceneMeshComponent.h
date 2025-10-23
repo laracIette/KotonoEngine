@@ -11,7 +11,7 @@ class KSceneMeshComponent : public KSceneComponent
 	BASECLASS(KSceneComponent)
 
 public:
-	KSceneMeshComponent(TSceneObject* owner);
+	KSceneMeshComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSceneObject>& owner);
 
 protected:
 	void Init() override;
@@ -32,7 +32,7 @@ public:
 private:
 	KtShader* shader_;
 	KtModel* model_;
-	KTask* spinTask_;
+	UPtr<KTask> spinTask_;
 	KtRenderable3DProxy proxy_;
 
 	void InitSpin();

@@ -5,8 +5,8 @@
 #include <kotono_framework/InputManager.h>
 #include <kotono_framework/WindowViewport.h>
 
-KInterfaceColliderComponent::KInterfaceColliderComponent(RInterfaceObject* owner) :
-	Base(owner)
+KInterfaceColliderComponent::KInterfaceColliderComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner) :
+	Base(ptrOwner, owner)
 {
 	Engine.InterfacePhysicsManager().Register(this);
 }
@@ -46,7 +46,7 @@ KtEvent<>& KInterfaceColliderComponent::GetEventDown()
 	return eventDown_;
 }
 
-KtEvent<KInterfaceColliderComponent*>& KInterfaceColliderComponent::GetEventOverlap()
+KtEvent<UPtr<KInterfaceColliderComponent>>& KInterfaceColliderComponent::GetEventOverlap()
 {
 	return eventOverlap_;
 }
@@ -58,7 +58,7 @@ void KInterfaceColliderComponent::OnEventMouseLeftButtonPressed()
 		return;
 	}
 
-	for (const auto* interfaceCollider : overlaps_)
+	for (const auto& interfaceCollider : overlaps_)
 	{
 		if (interfaceCollider->GetVisibility() != EVisibility::None &&
 			interfaceCollider->GetLayer() > GetLayer() && 

@@ -102,7 +102,7 @@ public:
 		return result;
 	}
 
-	ValueType GetFirst()
+	ValueType GetFirst() const
 	{
 		for (const ValueType& item : *this)
 		{
@@ -110,6 +110,15 @@ public:
 		}
 
 		return ValueType();
+	}
+
+	bool Empty() const
+	{
+		for (const ValueType& item : *this)
+		{
+			return true;
+		}
+		return false;
 	}
 
 	Iterator begin() const 

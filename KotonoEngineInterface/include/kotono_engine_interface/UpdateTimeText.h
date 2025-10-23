@@ -1,5 +1,6 @@
 #pragma once
 #include <kotono_interface/Widget.h>
+#include <kotono_engine/Ptr.h>
 class KTimer;
 class WUpdateTimeText : public WWidget
 {
@@ -9,7 +10,7 @@ public:
 	void Cleanup() override;
 
 private:
-	KTimer* updateTimer_;
+	UPtr<KTimer> updateTimer_;
 
 	void UpdateText();
 };

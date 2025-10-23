@@ -16,7 +16,7 @@ class RInterfaceObject : public KObject
 	BASECLASS(KObject)
 
 public:
-	RInterfaceObject();
+	RInterfaceObject(UPtrOwnerBase* ptrOwner);
 
 protected:
 	void Init() override;
@@ -25,47 +25,39 @@ protected:
 public:
 	EVisibility GetVisibility() const;
 	KtWindowViewport* GetViewport() const;
-	RInterfaceObject* GetParent() const;
-	KInterfaceComponent* GetRootComponent() const;
-	const KtPool<RInterfaceObject*>& GetChildren() const;
+	const UPtr<RInterfaceObject>& GetParent() const;
+	const UPtr<KInterfaceComponent>& GetRootComponent() const;
+	const KtPool<UPtr<RInterfaceObject>>& GetChildren() const;
 
 	void SetVisibility(const EVisibility visibility);
 	void SetViewport(KtWindowViewport* viewport);
-	void SetParent(RInterfaceObject* parent, const ECoordinateSpace keepRect);
+	void SetParent(const UPtr<RInterfaceObject>& parent, const ECoordinateSpace keepRect);
 
 	/// Returns true if any component is hovered
 	bool IsHovered() const;
 
 	template <InterfaceComponent T>
-	T* GetComponent() const
+	UPtr<T> GetComponent() const
 	{
 		auto components = KtCollection(components_.begin(), components_.end());
-		components.AddFilter([](const KInterfaceComponent* component) { return dynamic_cast<const T*>(component); });
-		if (auto* component = components.GetFirst())
+		components.AddFilter([](const UPtr<KInterfaceComponent>& component) { return dynamic_cast<T*>(component.Get()); });
+		if (components.Empty())
 		{
-			return static_cast<T*>(component);
+			return nullptr;
 		}
-		return nullptr;
+		return components.GetFirst();
 	}
 
-	template <InterfaceComponent T>
-	T* AddComponent()
-	{
-		T* component = new T(this);
-		AddComponent(static_cast<KInterfaceComponent*>(component));
-		return component;
-	}
-
-	void AddComponent(KInterfaceComponent* component);
-	void RemoveComponent(const KInterfaceComponent* component);
+	void AddComponent(const UPtr<KInterfaceComponent>& component);
+	void RemoveComponent(const UPtr<KInterfaceComponent>& component);
 
 private:
 	EVisibility visibility_;
 	KtWindowViewport* viewport_;
-	RInterfaceObject* parent_;
-	KInterfaceComponent* rootComponent_;
-	KtPool<RInterfaceObject*> children_;
-	KtPool<KInterfaceComponent*> components_;
+	UPtr<RInterfaceObject> parent_;
+	UPtr<KInterfaceComponent> rootComponent_;
+	KtPool<UPtr<RInterfaceObject>> children_;
+	KtPool<UPtr<KInterfaceComponent>> components_;
 	size_t childrenIndex_;
 };
 

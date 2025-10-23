@@ -79,7 +79,7 @@ void KScene::DeserializeFrom(const nlohmann::json& json)
 
 TSceneObject* KScene::GetSceneObject(const std::string_view type)
 {
-	if (type == "TSceneObject")             return Engine.ObjectManager().Create<TSceneObject>();
-	else if (type == "TSceneMeshObject")    return Engine.ObjectManager().Create<TSceneMeshObject>();
+	//if (type == "TSceneObject")             return Engine.ObjectManager().Create<TSceneObject>();
+	//else if (type == "TSceneMeshObject")    return Engine.ObjectManager().Create<TSceneMeshObject>();
 	return nullptr;
 }

@@ -9,8 +9,8 @@
 #include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/WindowViewport.h>
 
-KInterfaceBoxComponent::KInterfaceBoxComponent(RInterfaceObject* owner) :
-	Base(owner)
+KInterfaceBoxComponent::KInterfaceBoxComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner) :
+	Base(ptrOwner, owner)
 {
     boxProxy_ = Framework.Renderer().GetInterfaceRenderer().CreateProxy();
 }

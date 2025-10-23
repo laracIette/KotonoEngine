@@ -9,7 +9,7 @@ class KInterfaceColliderComponent final : public KInterfaceComponent
 	friend class SInterfacePhysicsManager;
 
 public:
-	KInterfaceColliderComponent(RInterfaceObject* owner);
+	KInterfaceColliderComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner);
 
 protected:
 	void Init() override;
@@ -20,11 +20,11 @@ public:
 	KtEvent<>& GetEventReleased();
 	KtEvent<>& GetEventDown();
 
-	KtEvent<KInterfaceColliderComponent*>& GetEventOverlap();
+	KtEvent<UPtr<KInterfaceColliderComponent>>& GetEventOverlap();
 
 private:
-	KtPool<KInterfaceColliderComponent*> overlaps_;
-	KtEvent<KInterfaceColliderComponent*> eventOverlap_;
+	KtPool<UPtr<KInterfaceColliderComponent>> overlaps_;
+	KtEvent<UPtr<KInterfaceColliderComponent>> eventOverlap_;
 
 	KtEvent<> eventPressed_;
 	KtEvent<> eventReleased_;
