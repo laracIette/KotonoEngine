@@ -118,7 +118,7 @@ void SObjectManager::Cleanup()
 void SObjectManager::Register(KObject* object, UPtrOwnerBase* ptrOwner)
 {
 	inits_.Add(ptrOwner);
-	ptrOwner->SetIndex(inits_.LastIndex());
+	object->initIndex_ = inits_.LastIndex();
 	object->SetName(std::format("{}_{}", object->GetTypeName(), static_cast<std::string>(object->Guid())));
 	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "REG object %s", object->GetName().c_str());
 }
@@ -148,7 +148,7 @@ void SObjectManager::InitObjects()
 		object->isInit_ = true;
 
 		objects_.Add(ptr);
-		ptr->SetIndex(objects_.LastIndex());
+		object->objectIndex_ = objects_.LastIndex();
 	}
 	inits_.Clear();
 
@@ -183,18 +183,20 @@ void SObjectManager::DeleteObjects()
 
 		if (object->isInit_)
 		{
-			const size_t index{ ptr->GetIndex() };
+			const size_t index{ object->objectIndex_ };
 			if (objects_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 			{
-				objects_[index]->SetIndex(index);
+				auto* object{ static_cast<KObject*>(objects_[index]->Get()) };
+				object->objectIndex_ = index;
 			}
 		}
 		else
 		{
-			const size_t index{ ptr->GetIndex() };
+			const size_t index{ object->initIndex_ };
 			if (inits_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 			{
-				inits_[index]->SetIndex(index);
+				auto* object{ static_cast<KObject*>(inits_[index]->Get()) };
+				object->initIndex_ = index;
 			}
 		}
 	}
@@ -241,23 +243,26 @@ void SObjectManager::LogUPS() const
 
 void SObjectManager::OnMouseButtonLeftPressed()
 {
-	/*KtCollection interfaceComponents(objects_.begin(), objects_.end());
-	interfaceComponents.AddFilter([](UPtrOwnerBase* ptr) { return dynamic_cast<KInterfaceComponent*>(ptr->Get()); });
-
 	KInterfaceComponent* selectedComponent{ nullptr };
-	for (auto* object : interfaceComponents)
+	for (const auto& ptr : objects_)
 	{
-		auto* asInterfaceComponent = static_cast<KInterfaceComponent*>(object);
-		if (!asInterfaceComponent->IsHovered())
+		auto* object{ static_cast<KObject*>(ptr->Get()) };
+		if (auto* asInterfaceComponent = dynamic_cast<KInterfaceComponent*>(object))
 		{
-			continue;
-		}
-		if (!selectedComponent || asInterfaceComponent->GetLayer() > selectedComponent->GetLayer())
-		{
-			selectedComponent = asInterfaceComponent;
+			if (!asInterfaceComponent->IsHovered())
+			{
+				continue;
+			}
+			if (!selectedComponent || asInterfaceComponent->GetLayer() > selectedComponent->GetLayer())
+			{
+				selectedComponent = asInterfaceComponent;
+			}
 		}
 	}
 
 	selectedObject_ = selectedComponent ? selectedComponent->Owner() : selectedObject_;
-	KT_LOG_KE(KT_LOG_COMPILE_TIME_LEVEL, "%p selected", selectedObject_);*/
+	if (selectedObject_)
+	{
+		KT_LOG_KE(KT_LOG_COMPILE_TIME_LEVEL, "selected %s", selectedObject_->GetName().c_str());
+	}
 }

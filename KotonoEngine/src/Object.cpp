@@ -32,6 +32,11 @@ const UGuid& KObject::Guid() const
     return guid_;
 }
 
+const std::type_info& KObject::Type() const
+{
+    return typeid(*this);
+}
+
 bool KObject::IsConstructed() const
 {
     return isConstructed_;
@@ -59,7 +64,7 @@ const std::string& KObject::GetName() const
 
 std::string KObject::GetTypeName() const
 {
-    std::string_view name = typeid(*this).name();
+    std::string_view name = Type().name();
     return std::string(name.substr(6));
 }
 
@@ -125,6 +130,11 @@ void KObject::DeserializeFrom(const nlohmann::json& json)
 {
     guid_ = json["guid"];
     name_ = json["name"];
+}
+
+std::string KObject::ToString() const
+{
+    return name_;
 }
 
 void KObject::Delay(const KtDelegate<>& delegate, const UDuration& delay) const

@@ -25,6 +25,7 @@ protected:
 
 public:
 	const UGuid& Guid() const;
+	const std::type_info& Type() const;
 	bool IsConstructed() const;
 	bool IsDelete() const;
 	bool GetCanUpdate() const;
@@ -50,6 +51,8 @@ public:
 	// Deserialize from json
 	virtual void DeserializeFrom(const nlohmann::json& json);
 
+	virtual std::string ToString() const;
+
 protected:
 	UPtrOwnerBase* const ptrOwner_;
 
@@ -66,12 +69,18 @@ protected:
 private:
 	UGuid guid_;
 	bool isConstructed_;
-	bool isInit_;
 	bool isDelete_;
 	bool canUpdate_;
 	std::filesystem::path path_;
 	std::string name_;
 	KtEvent<> eventCleanup_;
+
+	union
+	{
+		size_t initIndex_;
+		size_t objectIndex_;
+	};
+	bool isInit_;
 
 };
 

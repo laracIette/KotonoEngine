@@ -53,7 +53,7 @@ WWidget* WPropertiesWindow::Build()
                                                 return;
                                             }
 
-                                            if (const auto& asInterfaceObject = dynamic_cast<RInterfaceObject*>(selectedObject.Get()))
+                                            if (auto* asInterfaceObject = dynamic_cast<RInterfaceObject*>(selectedObject.Get()))
                                             {
                                                 asInterfaceObject->GetRootComponent()->Translate({ delta / 800.0f, 0.0f });
                                             }
@@ -86,7 +86,7 @@ WWidget* WPropertiesWindow::Build()
                                                 return;
                                             }
 
-                                            if (const auto& asInterfaceObject = dynamic_cast<RInterfaceObject*>(selectedObject.Get()))
+                                            if (auto* asInterfaceObject = dynamic_cast<RInterfaceObject*>(selectedObject.Get()))
                                             {
                                                 asInterfaceObject->GetRootComponent()->Translate({ 0.0f, delta / 800.0f });
                                             }

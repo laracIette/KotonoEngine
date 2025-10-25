@@ -6,26 +6,22 @@ class UPtr;
 
 class UPtrOwnerBase
 {
-
 public:
 	virtual ~UPtrOwnerBase() = default;
-
-	virtual size_t GetIndex() const = 0;
-	virtual void SetIndex(const size_t index) = 0;
 
 	virtual void Set(void* pointer) = 0;
 	virtual void* Get() const = 0;
 };
 
 template <class T>
-class UPtrOwner : public UPtrOwnerBase
+class UPtrOwner final : public UPtrOwnerBase
 {
 	using Child = UPtr<T>;
 	friend Child;
 	friend class SObjectManager;
 
 public:
-	UPtrOwner() : pointer_(nullptr) {}
+	UPtrOwner() {}
 	
 	~UPtrOwner()
 	{
@@ -40,16 +36,6 @@ public:
 		pointer_ = static_cast<T*>(pointer);
 	}
 
-	size_t GetIndex() const override
-	{
-		return index_;
-	}
-
-	void SetIndex(const size_t index) override
-	{
-		index_ = index;
-	}
-
 	void* Get() const override
 	{
 		return pointer_;
@@ -57,12 +43,11 @@ public:
 
 private:
 	T* pointer_{ nullptr };
-	size_t index_{ 0 };
 	KtPool<Child*> children_{};
 };
 
 template <class T>
-class UPtr
+class UPtr final
 {
 	using Owner = UPtrOwner<T>;
 	friend Owner;
@@ -74,12 +59,17 @@ public:
 	{
 		SetOwner(owner);
 	}
+	
+	UPtr(const UPtr& other)
+	{
+		SetOwner(other.owner_);
+	}
 
 	template <class U>
 		requires std::is_base_of_v<T, U>
 	UPtr(const UPtr<U>& other)
 	{
-		SetOwner(reinterpret_cast<Owner*>(other.GetOwner()));
+		SetOwner(reinterpret_cast<Owner*>(other.GetOwner())); // get owner because different type
 	}
 
 	~UPtr()
@@ -87,9 +77,12 @@ public:
 		SetOwner(nullptr);
 	}
 
-	constexpr Owner* GetOwner() const noexcept
+	template <class U>
+		requires std::is_base_of_v<T, U>
+	UPtr& operator=(const UPtr<U>& other)
 	{
-		return owner_;
+		SetOwner(reinterpret_cast<Owner*>(other.GetOwner())); // get owner because different type
+		return *this;
 	}
 
 	UPtr& operator=(const UPtr& other)
@@ -100,6 +93,21 @@ public:
 		}
 		SetOwner(other.owner_);
 		return *this;
+	}
+
+	constexpr Owner* GetOwner() const noexcept
+	{
+		return owner_;
+	}
+
+	constexpr bool operator==(const UPtr& other) const noexcept
+	{
+		return owner_ == other.owner_;
+	}
+
+	constexpr bool operator==(T* ptr) const noexcept
+	{
+		return owner_ && owner_->pointer_ == ptr;
 	}
 
 	constexpr T* Get() const noexcept
@@ -115,11 +123,6 @@ public:
 	constexpr operator bool() const noexcept
 	{
 		return owner_ && owner_->pointer_;
-	}
-
-	constexpr bool operator==(T* other) const noexcept
-	{
-		return owner_ && owner_->pointer_ == other;
 	}
 
 private:

@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Ptr.cpp" />
     <ClCompile Include="src\InterfaceBoxComponent.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\Guid.cpp" />
