@@ -3,12 +3,14 @@
 #include "ObjectManager.h"
 #include "Visualizer.h"
 #include "Interface.h"
+#include "Game.h"
 #include "InterfacePhysicsManager.h"
 
 static STimeManager TimerManager;
 static SObjectManager ObjectManager;
 static SVisualizer Visualizer;
 static SInterface Interface;
+static SGame Game;
 static SInterfacePhysicsManager InterfacePhysicsManager;
 
 void SEngine::Init()
@@ -44,7 +46,7 @@ const STimeManager& SEngine::TimeManager() const
     return ::TimerManager;
 }
 
-SObjectManager& SEngine::ObjectManager()
+SObjectManager& SEngine::ObjectManager() 
 {
     return ::ObjectManager;
 }
@@ -54,7 +56,7 @@ const SObjectManager& SEngine::ObjectManager() const
     return ::ObjectManager;
 }
 
-SVisualizer& SEngine::Visualizer()
+SVisualizer& SEngine::Visualizer() 
 {
     return ::Visualizer;
 }
@@ -64,7 +66,7 @@ const SVisualizer& SEngine::Visualizer() const
     return ::Visualizer;
 }
 
-SInterface& SEngine::Interface()
+SInterface& SEngine::Interface() 
 {
     return ::Interface;
 }
@@ -72,6 +74,16 @@ SInterface& SEngine::Interface()
 const SInterface& SEngine::Interface() const
 {
     return ::Interface;
+}
+
+SGame& SEngine::Game() 
+{
+    return ::Game;
+}
+
+const SGame& SEngine::Game() const
+{
+    return ::Game;
 }
 
 SInterfacePhysicsManager& SEngine::InterfacePhysicsManager()

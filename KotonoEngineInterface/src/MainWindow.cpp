@@ -7,6 +7,7 @@
 #include "TestBox.h"
 #include "VisualizerWindow.h"
 #include "PropertiesWindow.h"
+#include "StartGameButton.h"
 
 WWidget* WMainWindow::Build()
 {
@@ -39,6 +40,13 @@ WWidget* WMainWindow::Build()
 								new WDrawTimeText(),
 							},
 						}),
+					},
+				}),
+				new WRow({
+					.children = {
+						new WSpacer({}),
+						new WStartGameButton({}),
+						new WSpacer({}),
 					},
 				}),
 				new WExpanded({

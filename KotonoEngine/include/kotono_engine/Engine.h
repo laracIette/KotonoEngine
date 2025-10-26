@@ -3,6 +3,7 @@ class STimeManager;
 class SObjectManager;
 class SVisualizer;
 class SInterface;
+class SGame;
 class SInterfacePhysicsManager;
 class SEngine final
 {
@@ -20,6 +21,8 @@ public:
 	const SVisualizer& Visualizer() const;
 	SInterface& Interface();
 	const SInterface& Interface() const;
+	SGame& Game();
+	const SGame& Game() const;
 	SInterfacePhysicsManager& InterfacePhysicsManager();
 	const SInterfacePhysicsManager& InterfacePhysicsManager() const;
 };

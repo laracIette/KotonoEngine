@@ -27,6 +27,7 @@
     <ClInclude Include="include\kotono_engine_interface\log.h" />
     <ClInclude Include="include\kotono_engine_interface\VisualizerWindow.h" />
     <ClInclude Include="include\kotono_engine_interface\PropertiesWindow.h" />
+    <ClInclude Include="include\kotono_engine_interface\StartGameButton.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PropertiesWindow.cpp" />
@@ -36,6 +37,7 @@
     <ClCompile Include="src\TestBox.cpp" />
     <ClCompile Include="src\UpdateTimeText.cpp" />
     <ClCompile Include="src\VisualizerWindow.cpp" />
+    <ClCompile Include="src\StartGameButton.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

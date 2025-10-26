@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\InterfaceBoxComponent.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\Guid.cpp" />
@@ -45,6 +46,8 @@
     <ClCompile Include="src\Visualizer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\kotono_engine\GameState.h" />
+    <ClInclude Include="include\kotono_engine\Game.h" />
     <ClInclude Include="include\kotono_engine\Anchor.h" />
     <ClInclude Include="include\kotono_engine\base_class.h" />
     <ClInclude Include="include\kotono_engine\Engine.h" />
