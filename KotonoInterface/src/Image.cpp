@@ -23,7 +23,7 @@ void WImage::DisplayInternal(DisplaySettings displaySettings)
 	imageProxy_->layer = displaySettings.layer;
 	imageProxy_->objectData.modelMatrix = GetModelMatrix();
 	imageProxy_->scissor = displaySettings.scissor;
-#	if _DEBUG
+#	ifdef _DEBUG
 		imageProxy_->source = this;
 #	endif
 	Framework.Renderer().GetInterfaceRenderer().Register(imageProxy_);

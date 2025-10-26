@@ -86,9 +86,9 @@ void KInterfaceImageComponent::CreateImageTextureProxy()
 	imageTextureProxy_->objectData.modelMatrix = GetModelMatrix();
 	imageTextureProxy_->scissor.offset = WindowViewport.GetOffset();
 	imageTextureProxy_->scissor.extent = WindowViewport.GetExtent();
-#ifdef _DEBUG
-	imageTextureProxy_->source = this;
-#endif
+#	ifdef _DEBUG
+		imageTextureProxy_->source = this;
+#	endif
 }
 
 void KInterfaceImageComponent::MarkImageTextureProxyRectDirty()

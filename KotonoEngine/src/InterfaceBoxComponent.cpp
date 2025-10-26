@@ -46,9 +46,9 @@ void KInterfaceBoxComponent::CreateBoxProxy()
     boxProxy_->objectData.color = GetColor(); 
     boxProxy_->scissor.offset = WindowViewport.GetOffset();
     boxProxy_->scissor.extent = WindowViewport.GetExtent();
-#if _DEBUG
-    boxProxy_->source = this;
-#endif
+#   ifdef _DEBUG
+        boxProxy_->source = this;
+#   endif
 }
 
 void KInterfaceBoxComponent::MarkBoxProxyColorDirty()

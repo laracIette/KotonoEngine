@@ -42,8 +42,6 @@ void KInterfaceComponent::Init()
 
 void KInterfaceComponent::Cleanup()
 {
-    Base::Cleanup();
-
     for (int64_t i{ children_.LastIndex() }; i >= 0; --i)
     {
         children_[i]->SetParent(nullptr, ECoordinateSpace::Relative);
@@ -56,6 +54,8 @@ void KInterfaceComponent::Cleanup()
 
     Framework.Renderer().GetInterfaceRenderer().Unregister(boundsProxy_);
     Framework.Renderer().GetInterfaceRenderer().DeleteProxy(boundsProxy_);
+
+    Base::Cleanup();
 }
 
 const UPtr<RInterfaceObject>& KInterfaceComponent::Owner() const

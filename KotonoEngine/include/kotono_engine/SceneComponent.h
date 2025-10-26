@@ -48,7 +48,7 @@ public:
 
 	glm::vec3 GetScreenPosition() const;
 
-	void SetVisibility(const EVisibility visibility);
+	virtual void SetVisibility(const EVisibility visibility);
 	virtual void SetMobility(const EMobility mobility);
 
 	void SetParent(const UPtr<KSceneComponent>& parent, const ECoordinateSpace keepTransform);
@@ -77,5 +77,11 @@ private:
 	KtEvent<> eventTransformUpdated_;
 	size_t componentIndex_;
 	KtCached<glm::mat4> modelMatrix_;
+
+
+#   ifdef EDITOR
+		bool isViewportVisible_;
+		void SetIsViewportVisible(const bool isViewportVisible);
+#   endif
 };
 

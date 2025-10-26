@@ -24,6 +24,7 @@ public:
 	void SetShader(KtShader* shader);
 	void SetModel(KtModel* model); 
 
+	void SetVisibility(const EVisibility visibility) override;
 	void SetMobility(const EMobility mobility) override;
 
 	void SerializeTo(nlohmann::json& json) const override;
@@ -43,7 +44,7 @@ private:
 	void MarkModelProxyTransformDirty();
 
 	void RegisterProxies();
-	void RemoveProxies();
+	void UnregisterProxies();
 
 	// temp
 	void Spin();

@@ -2,10 +2,13 @@
 #include "SceneObject.h"
 #include "log.h"
 #include <stdexcept>
+#include "Engine.h"
+#include "Visualizer.h"
 
 KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSceneObject>& owner) :
     Base(ptrOwner),
     owner_(owner),
+    visibility_(EVisibility::EditorAndGame),
     modelMatrix_([this]() { return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix(); })
 {
     eventTransformUpdated_.AddListener(KtDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
@@ -14,6 +17,11 @@ KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSceneObjec
     {
         SetParent(Owner()->GetRootComponent(), ECoordinateSpace::Relative);
     }
+
+#   ifdef EDITOR
+        Engine.Visualizer().EventVisibilityChanged(EVisualizationField::SceneObject)
+            .AddListener(KtDelegate(this, &KSceneComponent::SetIsViewportVisible));
+#   endif
 }
 
 void KSceneComponent::Init()
@@ -23,9 +31,9 @@ void KSceneComponent::Init()
 
 void KSceneComponent::Cleanup()
 {
-    Base::Cleanup();
-    
     Owner()->RemoveComponent(Ptr<KSceneComponent>());
+
+    Base::Cleanup();
 }
 
 const UPtr<TSceneObject>& KSceneComponent::Owner() const
@@ -284,3 +292,10 @@ float KSceneComponent::GetDistance(const UPtr<KSceneComponent>& other) const
 {
     return glm::distance(GetWorldPosition(), other->GetWorldPosition());
 }
+
+#ifdef EDITOR
+void KSceneComponent::SetIsViewportVisible(const bool isViewportVisible)
+{
+    isViewportVisible_ = isViewportVisible;
+}
+#endif

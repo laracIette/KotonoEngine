@@ -29,4 +29,10 @@ bool SVisualizer::GetIsFieldVisible(const EVisualizationField field) const
 void SVisualizer::SetIsFieldVisible(const EVisualizationField field, const bool isVisible)
 {
 	_fieldVisibilities[field] = isVisible;
+	eventsVisibilityChanged_[field].Broadcast(isVisible);
+}
+
+KtEvent<bool>& SVisualizer::EventVisibilityChanged(const EVisualizationField field)
+{
+	return eventsVisibilityChanged_[field];
 }

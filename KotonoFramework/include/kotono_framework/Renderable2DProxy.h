@@ -14,7 +14,7 @@ struct KtRenderable2DProxy final
 
 	bool isDirty;
 
-#ifdef _DEBUG
-	void* source;
-#endif
+#	ifdef _DEBUG
+		void* source;
+#	endif
 };

@@ -6,7 +6,7 @@
 #define KT_LOG_COMPILE_TIME_LEVEL KT_LOG_IMPORTANCE_LEVEL_HIGH
 #endif
 
-#ifdef _DEBUG
+#ifdef EDITOR
 #include <cstdio>
 
 // Internal helper for log level filtering

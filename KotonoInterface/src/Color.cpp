@@ -25,7 +25,7 @@ void WColor::DisplayInternal(DisplaySettings displaySettings)
 	colorProxy_->objectData.modelMatrix = GetModelMatrix();
 	colorProxy_->objectData.color = colorSettings_.color;
 	colorProxy_->scissor = displaySettings.scissor;
-#	if _DEBUG
+#	ifdef _DEBUG
 		colorProxy_->source = this;
 #	endif
 	Framework.Renderer().GetInterfaceRenderer().Register(colorProxy_);

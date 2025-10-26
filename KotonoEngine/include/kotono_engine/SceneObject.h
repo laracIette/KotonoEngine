@@ -51,7 +51,6 @@ public:
 	void DeserializeFrom(const nlohmann::json& json) override;
 
 private:
-	EVisibility visibility_;
 	KtWindowViewport* viewport_;
 	UPtr<TSceneObject> parent_;
 	UPtr<KSceneComponent> rootComponent_;

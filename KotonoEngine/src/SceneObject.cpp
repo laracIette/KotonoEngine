@@ -17,8 +17,6 @@ TSceneObject::TSceneObject(UPtrOwnerBase* ptrOwner) :
 void TSceneObject::Init()
 {
 	Base::Init();
-
-	visibility_ = EVisibility::EditorAndGame;
 }
 
 void TSceneObject::Cleanup()
@@ -33,7 +31,7 @@ void TSceneObject::Cleanup()
 
 EVisibility TSceneObject::GetVisibility() const
 {
-	return visibility_;
+	return rootComponent_->GetVisibility();
 }
 
 KtWindowViewport* TSceneObject::GetViewport() const
@@ -53,7 +51,7 @@ const UPtr<KSceneComponent>& TSceneObject::GetRootComponent() const
 
 void TSceneObject::SetVisibility(const EVisibility visibility)
 {
-	visibility_ = visibility;
+	rootComponent_->SetVisibility(visibility);
 }
 
 void TSceneObject::SetViewport(KtWindowViewport* viewport)

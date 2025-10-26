@@ -44,7 +44,7 @@ void KSceneMeshComponent::Cleanup()
 {
     Base::Cleanup();
 
-    RemoveProxies();
+    UnregisterProxies();
     GetEventTransformUpdated().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
 
     Framework.InputManager().Keyboard().KeyEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(spinTask_.Get(), &KTask::Start));
@@ -88,9 +88,16 @@ void KSceneMeshComponent::DeserializeFrom(const nlohmann::json& json)
     model_ = Framework.ModelManager().Get(json["model"]);
 }
 
+void KSceneMeshComponent::SetVisibility(const EVisibility visibility)
+{
+    UnregisterProxies();
+    Base::SetVisibility(visibility);
+    RegisterProxies();
+}
+
 void KSceneMeshComponent::SetMobility(const EMobility mobility)
 {
-    RemoveProxies();
+    UnregisterProxies();
     Base::SetMobility(mobility);
     RegisterProxies();
 }
@@ -140,7 +147,7 @@ void KSceneMeshComponent::RegisterProxies()
     }
 }
 
-void KSceneMeshComponent::RemoveProxies()
+void KSceneMeshComponent::UnregisterProxies()
 {
     switch (GetMobility())
     {
