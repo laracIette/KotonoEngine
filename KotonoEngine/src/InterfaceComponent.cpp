@@ -485,7 +485,7 @@ void KInterfaceComponent::RemoveChildren(const UPtr<KInterfaceComponent>& interf
 void KInterfaceComponent::CreateBoundsProxy()
 {
     const auto shaderPath = Framework.Path().FrameworkPath() / R"(shaders\flatColor2D.ktshader)";
-    const auto texturePath = Framework.Path().SolutionPath() / R"(assets\textures\white_texture.jpg)";
+    const auto texturePath = Framework.Path().FrameworkPath() / R"(assets\textures\white_texture.jpg)";
 
     boundsProxy_->shader = Framework.ShaderManager().Get(shaderPath);
     boundsProxy_->renderable = Framework.ImageTextureManager().Get(texturePath);

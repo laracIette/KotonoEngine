@@ -68,7 +68,7 @@ std::vector<std::filesystem::path> KtFont::GetTextPaths(const std::string_view t
     for (const auto character : text)
     {
         // default texture
-        auto characterPath = Framework.Path().SolutionPath() / R"(assets\textures\white_texture.jpg)";
+        auto characterPath = Framework.Path().FrameworkPath() / R"(assets\textures\white_texture.jpg)";
 
         const auto it = CHARACTER_NAMES.find(character);
         if (it != CHARACTER_NAMES.end())

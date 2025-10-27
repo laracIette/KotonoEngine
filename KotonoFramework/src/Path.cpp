@@ -6,14 +6,14 @@ void KtPath::Init()
     char path[MAX_PATH];
     GetModuleFileNameA(nullptr, path, MAX_PATH);
 
-    solutionPath_ = std::filesystem::path(path).parent_path().parent_path().parent_path();
-    frameworkPath_ = solutionPath_ / R"(KotonoFramework)";
-    enginePath_ = solutionPath_ / R"(KotonoEngine)";
+    rootPath_ = std::filesystem::path(path).parent_path().parent_path().parent_path().parent_path();
+    frameworkPath_ = rootPath_ / R"(KotonoFramework)";
+    enginePath_ = rootPath_ / R"(KotonoEngine)";
 }
 
-const std::filesystem::path& KtPath::SolutionPath() const
+const std::filesystem::path& KtPath::RootPath() const
 {
-    return solutionPath_;
+    return rootPath_;
 }
 
 const std::filesystem::path& KtPath::FrameworkPath() const

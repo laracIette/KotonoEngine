@@ -526,7 +526,7 @@ void KtShader::CreateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutB
 		return;
 	}
 
-	static const auto path = Framework.Path().SolutionPath() / R"(assets\textures\default_texture.jpg)";
+	static const auto path = Framework.Path().FrameworkPath() / R"(assets\textures\default_texture.jpg)";
 	static const auto* imageTexture = Framework.ImageTextureManager().Get(path);
 
 	UpdateDescriptorSetLayoutBindingImageSampler(descriptorSetLayoutBindingData, { imageTexture->GetDescriptorImageInfo() }, imageIndex);

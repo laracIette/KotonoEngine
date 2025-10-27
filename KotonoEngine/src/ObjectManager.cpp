@@ -33,12 +33,12 @@ void SObjectManager::Init()
 	auto* shader3D{ Framework.ShaderManager().Get(Framework.Path().FrameworkPath() / R"(shaders\shader3D.ktshader)") };
 	shader3D->SetName("3D Shader");
 
-	auto* model1{ Framework.ModelManager().Get(Framework.Path().SolutionPath() / R"(assets\models\viking_room.obj)") };
-	auto* model2{ Framework.ModelManager().Get(Framework.Path().SolutionPath() / R"(assets\models\SM_Column_low.fbx)") };
+	auto* model1{ Framework.ModelManager().Get(Framework.Path().FrameworkPath() / R"(assets\models\viking_room.obj)") };
+	auto* model2{ Framework.ModelManager().Get(Framework.Path().FrameworkPath() / R"(assets\models\SM_Column_low.fbx)") };
 
 	/*{
 		auto* scene{ Create<KScene>() };
-		scene->SetPath(Framework.Path().SolutionPath() / R"(assets\objects\scene.KScene)");
+		scene->SetPath(Framework.Path().FrameworkPath() / R"(assets\objects\scene.KScene)");
 		scene->ListenEvent(Framework.InputManager().Keyboard().KeyEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), 
 			KtDelegate(scene, &KScene::Reload));
 	}*/

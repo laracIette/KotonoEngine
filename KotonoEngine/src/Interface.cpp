@@ -19,8 +19,8 @@ void SInterface::Init()
 	auto* shader2D = Framework.ShaderManager().Get(Framework.Path().FrameworkPath() / R"(shaders\shader2D.ktshader)");
 	shader2D->SetName("2D Shader");
 
-	auto* imageTexture1 = Framework.ImageTextureManager().Get(Framework.Path().SolutionPath() / R"(assets\models\viking_room.png)");
-	auto* imageTexture2 = Framework.ImageTextureManager().Get(Framework.Path().SolutionPath() / R"(assets\textures\default_texture.jpg)");
+	auto* imageTexture1 = Framework.ImageTextureManager().Get(Framework.Path().FrameworkPath() / R"(assets\models\viking_room.png)");
+	auto* imageTexture2 = Framework.ImageTextureManager().Get(Framework.Path().FrameworkPath() / R"(assets\textures\default_texture.jpg)");
 
 	image1->GetRootComponent()->SetScreenSize({ 1024.0f, 1024.0f });
 	image1->GetRootComponent()->SetRelativeScale({ 0.25f, 0.25f });
