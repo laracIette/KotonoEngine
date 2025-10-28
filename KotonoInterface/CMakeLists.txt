@@ -24,12 +24,9 @@ target_sources(KotonoInterface
 )
 
 # Include directories
-target_include_directories(KotonoInterface PUBLIC
-    "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_interface"
-
-    # Include KotonoFramework
-    "${CMAKE_CURRENT_SOURCE_DIR}/../KotonoFramework/include"
+target_include_directories(KotonoInterface
+    PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_interface"
 )
 
 # Output .lib to KotonoInterface/lib/

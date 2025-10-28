@@ -25,18 +25,9 @@ target_sources(KotonoTestApplication
 )
 
 # Include directories (if you have headers in the app)
-target_include_directories(KotonoTestApplication PUBLIC
-    "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_testapplication"
-
-    # Include KotonoFramework
-    "${CMAKE_CURRENT_SOURCE_DIR}/../KotonoFramework/include"
-    # Include KotonoEngine
-    "${CMAKE_CURRENT_SOURCE_DIR}/../KotonoEngine/include"
-    # Include KotonoInterface
-    "${CMAKE_CURRENT_SOURCE_DIR}/../KotonoInterface/include"
-    # Include KotonoEngineInterface
-    "${CMAKE_CURRENT_SOURCE_DIR}/../KotonoEngineInterface/include"
+target_include_directories(KotonoTestApplication
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_testapplication"
 )
 
 # --- Add dependencies as subdirectories ---
