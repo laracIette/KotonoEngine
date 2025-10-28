@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 project(KotonoInterface LANGUAGES CXX)
 
-# Enable multi-core compilation on MSVC
 if(MSVC)
+    # Enable SDL security checks
+    add_compile_options(/sdl)
+
+    # Enable multi-core compilation
     add_compile_options(/MP)
 endif()
 
@@ -12,11 +15,13 @@ add_library(KotonoInterface STATIC)
 # Require C++20
 target_compile_features(KotonoInterface PUBLIC cxx_std_20)
 
-# Source files
-file(GLOB_RECURSE KINTERFACE_SOURCES
-    "src/*.cpp"
+file(GLOB_RECURSE KINTERFACE_SOURCES "src/*.cpp")
+file(GLOB_RECURSE KINTERFACE_HEADERS "include/kotono_interface/*.h")
+
+target_sources(KotonoInterface
+    PRIVATE ${KINTERFACE_SOURCES}
+    PRIVATE ${KINTERFACE_HEADERS} 
 )
-target_sources(KotonoInterface PRIVATE ${KINTERFACE_SOURCES})
 
 # Include directories
 target_include_directories(KotonoInterface PUBLIC

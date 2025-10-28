@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 project(KotonoTestApplication LANGUAGES CXX)
 
-# Enable multi-core compilation on MSVC
 if(MSVC)
+    # Enable SDL security checks
+    add_compile_options(/sdl)
+
+    # Enable multi-core compilation
     add_compile_options(/MP)
 endif()
 
@@ -10,13 +13,16 @@ endif()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Find sources
-file(GLOB_RECURSE APP_SOURCES
-    "src/*.cpp"
-)
+file(GLOB_RECURSE KTESTAPPLICATION_SOURCES "src/*.cpp")
+file(GLOB_RECURSE KTESTAPPLICATION_HEADERS "include/kotono_testapplication/*.h")
 
 # Create executable
-add_executable(KotonoTestApplication ${APP_SOURCES})
+add_executable(KotonoTestApplication ${KTESTAPPLICATION_SOURCES})
+
+target_sources(KotonoTestApplication 
+    PRIVATE ${KTESTAPPLICATION_SOURCES}
+    PRIVATE ${KTESTAPPLICATION_HEADERS} 
+)
 
 # Include directories (if you have headers in the app)
 target_include_directories(KotonoTestApplication PUBLIC

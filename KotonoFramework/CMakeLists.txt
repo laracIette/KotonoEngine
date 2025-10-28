@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 project(KotonoFramework LANGUAGES CXX)
 
-# Enable multi-core compilation on MSVC
 if(MSVC)
+    # Enable SDL security checks
+    add_compile_options(/sdl)
+
+    # Enable multi-core compilation
     add_compile_options(/MP)
 endif()
 
@@ -12,11 +15,13 @@ add_library(KotonoFramework STATIC)
 # Require C++20
 target_compile_features(KotonoFramework PUBLIC cxx_std_20)
 
-# Source files
-file(GLOB_RECURSE KFRAMEWORK_SOURCES
-    "src/*.cpp"
+file(GLOB_RECURSE KFRAMEWORK_SOURCES "src/*.cpp")
+file(GLOB_RECURSE KFRAMEWORK_HEADERS "include/kotono_framework/*.h")
+
+target_sources(KotonoFramework
+    PRIVATE ${KFRAMEWORK_SOURCES}
+    PRIVATE ${KFRAMEWORK_HEADERS} 
 )
-target_sources(KotonoFramework PRIVATE ${KFRAMEWORK_SOURCES})
 
 # Include directories
 target_include_directories(KotonoFramework PUBLIC
