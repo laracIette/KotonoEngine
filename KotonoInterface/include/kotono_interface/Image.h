@@ -1,7 +1,7 @@
 #pragma once
 #include "Widget.h"
 #include <filesystem>
-struct KtRenderable2DProxy;
+struct KtInterfaceRenderableProxy;
 class WImage : public WWidget
 {
 public:
@@ -18,7 +18,7 @@ public:
 
 protected:
 	ImageSettings imageSettings_;
-	KtRenderable2DProxy* imageProxy_;
+	KtInterfaceRenderableProxy* imageProxy_;
 
 	void DisplayInternal(DisplaySettings displaySettings) override;
 };

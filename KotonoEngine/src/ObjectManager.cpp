@@ -30,34 +30,12 @@ void SObjectManager::Init()
 	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
 	
-	auto* shader3D{ Framework.ShaderManager().Get(Framework.Path().FrameworkPath() / R"(shaders\shader3D.ktshader)") };
-	shader3D->SetName("3D Shader");
 
-	auto* model1{ Framework.ModelManager().Get(Framework.Path().FrameworkPath() / R"(assets\models\viking_room.obj)") };
-	auto* model2{ Framework.ModelManager().Get(Framework.Path().FrameworkPath() / R"(assets\models\SM_Column_low.fbx)") };
 
-	/*{
-		auto* scene{ Create<KScene>() };
-		scene->SetPath(Framework.Path().FrameworkPath() / R"(assets\objects\scene.KScene)");
-		scene->ListenEvent(Framework.InputManager().Keyboard().KeyEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED), 
-			KtDelegate(scene, &KScene::Reload));
-	}*/
-	{
-		UPtr mesh1{ Create<TSceneMeshObject>() };
-		mesh1->GetMeshComponent()->SetShader(shader3D);
-		mesh1->GetMeshComponent()->SetModel(model1);
-		mesh1->GetRootComponent()->SetRelativePosition(glm::vec3(-1.0f, 0.0f, 0.0f));
-
-		UPtr mesh2{ Create<TSceneMeshObject>() };
-		mesh2->GetMeshComponent()->SetShader(shader3D);
-		mesh2->GetMeshComponent()->SetModel(model2);
-		mesh2->GetRootComponent()->SetRelativePosition(glm::vec3(1.0f, 0.0f, 0.0f));
-		mesh2->GetRootComponent()->SetRelativeScale(glm::vec3(0.2f));
-		mesh2->SetParent(mesh1, ECoordinateSpace::World);
-	}
-
-	UPtr camera{ Create<TCamera>() };
-	camera->Use();
+	UPtr scene{ Create<KScene>() };
+	scene->SetPath(Framework.Path().FrameworkPath() / R"(assets\objects\scene.KScene)");
+	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED)
+		.AddListener(KtDelegate(scene.Get(), &KScene::Reload));
 
 	UPtr drawTimer{ Create<KTimer>() };
 	drawTimer->SetDuration(UDuration::FromSeconds(1.0f / 120.0f));

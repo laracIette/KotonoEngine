@@ -7,11 +7,11 @@
 #include <vector>
 #include <unordered_map>
 class KtShader;
-struct KtRenderable2DProxy;
+struct KtInterfaceRenderableProxy;
 class KtInterfaceRenderer final
 {
 private:
-	using ProxiesPool = KtPool<KtRenderable2DProxy*>;
+	using ProxiesPool = KtPool<KtInterfaceRenderableProxy*>;
 
 	enum class StagingProxyState : char
 	{
@@ -27,13 +27,13 @@ public:
 
 	void SetUniformData(const KtUniformData2D& uniformData);
 
-	void Register(KtRenderable2DProxy* proxy);
-	void Unregister(KtRenderable2DProxy* proxy);
+	void Register(KtInterfaceRenderableProxy* proxy);
+	void Unregister(KtInterfaceRenderableProxy* proxy);
 
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 
-	KtRenderable2DProxy* CreateProxy();
-	void DeleteProxy(KtRenderable2DProxy* proxy);
+	KtInterfaceRenderableProxy* CreateProxy();
+	void DeleteProxy(KtInterfaceRenderableProxy* proxy);
 
 private:
 	KtAllocatedBuffer vertexBuffer_;
@@ -46,7 +46,7 @@ private:
 	KtFramesInFlightArray<VkCommandBuffer> commandBuffers_;
 	KtFramesInFlightArray<bool> isCommandBufferDirty_;
 
-	std::unordered_map<KtRenderable2DProxy*, KtFramesInFlightArray<StagingProxyState>> stagingProxies_;
+	std::unordered_map<KtInterfaceRenderableProxy*, KtFramesInFlightArray<StagingProxyState>> stagingProxies_;
 	KtFramesInFlightArray<ProxiesPool> proxies_;
 	ProxiesPool deleteProxies_;
 

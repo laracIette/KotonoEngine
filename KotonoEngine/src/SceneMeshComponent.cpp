@@ -7,6 +7,7 @@
 #include <kotono_framework/Path.h>
 #include <kotono_framework/Shader.h>
 #include <kotono_framework/Model.h>
+#include <kotono_framework/WindowViewport.h>
 #include "log.h"
 #include <nlohmann/json.hpp>
 #include "Engine.h"
@@ -24,7 +25,7 @@ KSceneMeshComponent::KSceneMeshComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSc
 
     if (!WireframeShader)
     {
-        const auto path = Framework.Path().FrameworkPath() / R"(shaders\wireframe3D.ktshader)";
+        const auto path{ Framework.Path().FrameworkPath() / R"(shaders\wireframe3D.ktshader)" };
         WireframeShader = Framework.ShaderManager().Get(path);
     }
 }
@@ -33,7 +34,9 @@ void KSceneMeshComponent::Init()
 {
     Base::Init();
 
-    InitSpin();
+    spinTask_->SetDuration(5.0f);
+    spinTask_->GetEventUpdate().AddListener(KtDelegate(this, &KSceneMeshComponent::Spin));
+
     InitModelProxy();
 
     Framework.InputManager().Keyboard().KeyEvent(KT_KEY_N, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
@@ -45,13 +48,19 @@ void KSceneMeshComponent::Cleanup()
     Base::Cleanup();
 
     UnregisterProxies();
-    GetEventTransformUpdated().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
+    EventTransformUpdated().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
 
-    Framework.InputManager().Keyboard().KeyEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(spinTask_.Get(), &KTask::Start));
     spinTask_->Delete();
     
     Framework.InputManager().Keyboard().KeyEvent(KT_KEY_N, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
     Framework.InputManager().Keyboard().KeyEvent(KT_KEY_M, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
+}
+
+void KSceneMeshComponent::GameStart()
+{
+    Base::GameStart();
+
+    spinTask_->Start();
 }
 
 KtShader* KSceneMeshComponent::GetShader() const
@@ -102,26 +111,20 @@ void KSceneMeshComponent::SetMobility(const EMobility mobility)
     RegisterProxies();
 }
 
-void KSceneMeshComponent::InitSpin()
-{
-    spinTask_->SetDuration(5.0f);
-    Framework.InputManager().Keyboard().KeyEvent(KT_KEY_SPACE, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(spinTask_.Get(), &KTask::Start));
-    spinTask_->GetEventUpdate().AddListener(KtDelegate(this, &KSceneMeshComponent::Spin));
-}
-
 void KSceneMeshComponent::InitModelProxy()
 {
     CreateModelProxy();
     RegisterProxies();
-    GetEventTransformUpdated().AddListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
+    EventTransformUpdated().AddListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
 }
 
 void KSceneMeshComponent::CreateModelProxy()
 {
     proxy_.shader = shader_;
     proxy_.renderable = model_;
-    proxy_.viewport = Owner()->GetViewport();
     proxy_.objectData.modelMatrix = GetModelMatrix();
+    proxy_.scissor.offset = Owner()->GetViewport()->GetOffset();
+    proxy_.scissor.extent = Owner()->GetViewport()->GetExtent();
 }
 
 void KSceneMeshComponent::MarkModelProxyTransformDirty()

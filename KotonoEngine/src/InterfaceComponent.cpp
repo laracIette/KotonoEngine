@@ -8,7 +8,7 @@
 #include <kotono_framework/ImageTexture.h>
 #include <kotono_framework/ImageTextureManager.h>
 #include <kotono_framework/WindowViewport.h>
-#include <kotono_framework/Renderable2DProxy.h>
+#include <kotono_framework/InterfaceRenderableProxy.h>
 #include <kotono_framework/InputManager.h>
 #include "log.h"
 
@@ -37,7 +37,7 @@ void KInterfaceComponent::Init()
     CreateBoundsProxy();
     Framework.Renderer().GetInterfaceRenderer().Register(boundsProxy_);
 
-    GetEventRectUpdated().AddListener(KtDelegate(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
+    EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
 }
 
 void KInterfaceComponent::Cleanup()
@@ -87,17 +87,17 @@ int32_t KInterfaceComponent::GetLayer() const
     return layer_;
 }
 
-KtEvent<>& KInterfaceComponent::GetEventRectUpdated()
+KtEvent<>& KInterfaceComponent::EventRectUpdated()
 {
     return eventRectUpdated_;
 }
 
-KtEvent<>& KInterfaceComponent::GetEventLayerUpdated()
+KtEvent<>& KInterfaceComponent::EventLayerUpdated()
 {
     return eventLayerUpdated_;
 }
 
-KtEvent<>& KInterfaceComponent::GetEventColorUpdated()
+KtEvent<>& KInterfaceComponent::EventColorUpdated()
 {
     return eventColorUpdated_;
 }
@@ -193,7 +193,7 @@ void KInterfaceComponent::SetParent(const UPtr<KInterfaceComponent>& parent, con
 {
     if (parent_)
     {
-        parent_->GetEventRectUpdated().RemoveListener(KtDelegate(&eventRectUpdated_, &KtEvent<>::Broadcast));
+        parent_->EventRectUpdated().RemoveListener(KtDelegate(&eventRectUpdated_, &KtEvent<>::Broadcast));
         parent_->RemoveChildren(Ptr<KInterfaceComponent>());
     }
 
@@ -220,7 +220,7 @@ void KInterfaceComponent::SetParent(const UPtr<KInterfaceComponent>& parent, con
 
     if (parent_)
     {
-        parent_->GetEventRectUpdated().AddListener(KtDelegate(&eventRectUpdated_, &KtEvent<>::Broadcast));
+        parent_->EventRectUpdated().AddListener(KtDelegate(&eventRectUpdated_, &KtEvent<>::Broadcast));
         parent_->AddChildren(Ptr<KInterfaceComponent>());
     }
 }

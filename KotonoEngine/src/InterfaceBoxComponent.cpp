@@ -1,7 +1,7 @@
 #include "InterfaceBoxComponent.h"
 #include "InterfaceObject.h"
 #include <kotono_framework/Framework.h>
-#include <kotono_framework/Renderable2DProxy.h>
+#include <kotono_framework/InterfaceRenderableProxy.h>
 #include <kotono_framework/ImageTexture.h>
 #include <kotono_framework/Path.h>
 #include <kotono_framework/Renderer.h>
@@ -22,8 +22,8 @@ void KInterfaceBoxComponent::Init()
     CreateBoxProxy();
     Framework.Renderer().GetInterfaceRenderer().Register(boxProxy_);
 
-    GetEventColorUpdated().AddListener(KtDelegate(this, &KInterfaceBoxComponent::MarkBoxProxyColorDirty));
-    GetEventRectUpdated().AddListener(KtDelegate(this, &KInterfaceBoxComponent::MarkBoxProxyRectDirty));
+    EventColorUpdated().AddListener(KtDelegate(this, &KInterfaceBoxComponent::MarkBoxProxyColorDirty));
+    EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceBoxComponent::MarkBoxProxyRectDirty));
 }
 
 void KInterfaceBoxComponent::Cleanup()

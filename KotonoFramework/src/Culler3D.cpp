@@ -41,12 +41,6 @@ KtCuller3D::ProxiesPool KtCuller3D::ComputeNullCulling(const ProxiesPool& proxie
 			continue;
 		}
 
-		if (!proxy->viewport)
-		{
-			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "KtCuller3D::ComputeNullCulling(): viewport is nullptr");
-			continue;
-		}
-
 		culledData.Add(proxy);
 	}
 

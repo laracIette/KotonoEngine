@@ -18,7 +18,7 @@ void TCamera::Init()
 	speed_ = 1.0f;
 	sensitivity_ = 0.005f;
 
-	GetRootComponent()->GetEventTransformUpdated().AddListener(KtDelegate<>(this, &TCamera::OnEventUpdateTransform));
+	GetRootComponent()->EventTransformUpdated().AddListener(KtDelegate<>(this, &TCamera::OnEventUpdateTransform));
 	GetRootComponent()->SetWorldPosition(glm::vec3(0.0f, 0.0f, -3.0f));
 
 	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_W, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &TCamera::OnKeyboardWKeyDown));

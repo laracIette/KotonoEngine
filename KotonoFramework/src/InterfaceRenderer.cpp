@@ -3,13 +3,13 @@
 #include "log.h"
 #include "Context.h"
 #include "Vertex2D.h"
-#include "Culler2D.h"
+#include "InterfaceCuller.h"
 #include "Renderer.h"
 #include "ImageTexture.h"
 #include "Shader.h"
 #include "WindowViewport.h"
 #include "vk_utils.h"
-#include "Renderable2DProxy.h"
+#include "InterfaceRenderableProxy.h"
 #include "Collection.h"
 
 static constexpr std::array<KtVertex2D, 4> Vertices
@@ -61,7 +61,7 @@ void KtInterfaceRenderer::Update(const uint32_t frameIndex)
 	}
 
 	std::erase_if(stagingProxies_,
-		[](const std::pair<KtRenderable2DProxy*, KtFramesInFlightArray<StagingProxyState>>& pair)
+		[](const std::pair<KtInterfaceRenderableProxy*, KtFramesInFlightArray<StagingProxyState>>& pair)
 		{
 			const auto states{ pair.second };
 			return std::all_of(states.begin(), states.end(),
@@ -233,12 +233,12 @@ void KtInterfaceRenderer::SetUniformData(const KtUniformData2D& uniformData)
 	uniformDatas_[Framework.Renderer().GetGameThreadFrame()] = uniformData;
 }
 
-void KtInterfaceRenderer::Register(KtRenderable2DProxy* proxy)
+void KtInterfaceRenderer::Register(KtInterfaceRenderableProxy* proxy)
 {
 	stagingProxies_[proxy].fill(StagingProxyState::Add);
 }
 
-void KtInterfaceRenderer::Unregister(KtRenderable2DProxy* proxy)
+void KtInterfaceRenderer::Unregister(KtInterfaceRenderableProxy* proxy)
 {
 	stagingProxies_[proxy].fill(StagingProxyState::Remove);
 }
@@ -249,7 +249,7 @@ void KtInterfaceRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t 
 	{
 		isCommandBufferDirty_[frameIndex] = false;
 
-		const KtCuller2D culler{};
+		const KtInterfaceCuller culler{};
 		ProxiesPool culledData{ culler.ComputeCulling(proxies_[frameIndex]) };
 		SortProxies(culledData);
 
@@ -263,12 +263,12 @@ void KtInterfaceRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t 
 	vkCmdExecuteCommands(commandBuffer, 1, &commandBuffers_[frameIndex]);
 }
 
-KtRenderable2DProxy* KtInterfaceRenderer::CreateProxy()
+KtInterfaceRenderableProxy* KtInterfaceRenderer::CreateProxy()
 {
-	return new KtRenderable2DProxy{};
+	return new KtInterfaceRenderableProxy{};
 }
 
-void KtInterfaceRenderer::DeleteProxy(KtRenderable2DProxy* proxy)
+void KtInterfaceRenderer::DeleteProxy(KtInterfaceRenderableProxy* proxy)
 {
 	deleteProxies_.Add(proxy);
 }
@@ -278,7 +278,7 @@ void KtInterfaceRenderer::UpdateDescriptorSets(const ProxiesPool& proxies, const
 	struct ShaderData final
 	{
 		std::vector<KtObjectData2D> objectBufferDatas;
-		std::vector<KtRenderable2D*> renderables;
+		std::vector<KtInterfaceRenderable*> renderables;
 		std::vector<uint32_t> renderableIndices;
 	};
 
@@ -338,9 +338,7 @@ void KtInterfaceRenderer::UpdateDescriptorSets(const ProxiesPool& proxies, const
 void KtInterfaceRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex)
 {
 	const KtShader* currentShader{ nullptr };
-	const KtWindowViewport* currentViewport{ nullptr };
 
-	// todo: use in renderer 3d
 	WindowViewport.CmdUse(commandBuffer);
 
 	CmdBindVertexBuffer(commandBuffer);
@@ -348,10 +346,10 @@ void KtInterfaceRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const Pr
 
 	for (size_t i{ 0 }; i < proxies.Size();)
 	{
-		const auto* proxy{ proxies[i] };
+		const KtInterfaceRenderableProxy* proxy{ proxies[i] };
 		const KtShader* shader{ proxy->shader };
 		const int32_t layer{ proxy->layer };
-		const auto scissor{ proxy->scissor };
+		const KtScissor scissor{ proxy->scissor };
 
 		size_t instanceCount{ 1 };
 		while (i + instanceCount < proxies.Size())
@@ -389,7 +387,7 @@ void KtInterfaceRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const Pr
 void KtInterfaceRenderer::SortProxies(ProxiesPool& proxies)
 {
 	std::sort(proxies.begin(), proxies.end(),
-		[](const KtRenderable2DProxy* a, const KtRenderable2DProxy* b)
+		[](const KtInterfaceRenderableProxy* a, const KtInterfaceRenderableProxy* b)
 		{
 			if (a->layer != b->layer)
 			{
@@ -407,7 +405,7 @@ void KtInterfaceRenderer::SortProxies(ProxiesPool& proxies)
 bool KtInterfaceRenderer::GetIsAnyProxyDirty(const uint32_t frameIndex) const
 {
 	auto proxies{ KtCollection(proxies_[frameIndex].begin(), proxies_[frameIndex].end()) };
-	proxies.AddFilter([](const KtRenderable2DProxy* proxy) { return proxy->isDirty; });
+	proxies.AddFilter([](const KtInterfaceRenderableProxy* proxy) { return proxy->isDirty; });
 	return proxies.GetFirst() != nullptr;
 }
 

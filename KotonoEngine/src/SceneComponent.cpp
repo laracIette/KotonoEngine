@@ -36,6 +36,14 @@ void KSceneComponent::Cleanup()
     Base::Cleanup();
 }
 
+void KSceneComponent::GameStart()
+{
+}
+
+void KSceneComponent::GameUpdate()
+{
+}
+
 const UPtr<TSceneObject>& KSceneComponent::Owner() const
 {
     return owner_;
@@ -61,9 +69,14 @@ bool KSceneComponent::GetCanSetTransform() const
     return mobility_ == EMobility::Dynamic || !IsConstructed();
 }
 
-KtEvent<>& KSceneComponent::GetEventTransformUpdated()
+KtEvent<>& KSceneComponent::EventTransformUpdated()
 {
     return eventTransformUpdated_;
+}
+
+bool KSceneComponent::GetCanGameUpdate() const
+{
+    return canGameUpdate_;
 }
 
 void KSceneComponent::SetVisibility(const EVisibility visibility)
@@ -74,6 +87,11 @@ void KSceneComponent::SetVisibility(const EVisibility visibility)
 void KSceneComponent::SetMobility(const EMobility mobility)
 {
     mobility_ = mobility;
+}
+
+void KSceneComponent::SetCanGameUpdate(const bool canGameUpdate)
+{
+    canGameUpdate_ = canGameUpdate;
 }
 
 const glm::vec3& KSceneComponent::GetRelativePosition() const

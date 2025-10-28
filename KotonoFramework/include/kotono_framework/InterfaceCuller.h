@@ -1,10 +1,10 @@
 #pragma once
 #include "Pool.h"
-struct KtRenderable2DProxy;
-class KtCuller2D final
+struct KtInterfaceRenderableProxy;
+class KtInterfaceCuller final
 {
 private:
-	using ProxiesPool = KtPool<KtRenderable2DProxy*>;
+	using ProxiesPool = KtPool<KtInterfaceRenderableProxy*>;
 
 public:
 	ProxiesPool ComputeCulling(ProxiesPool renderQueueData) const;

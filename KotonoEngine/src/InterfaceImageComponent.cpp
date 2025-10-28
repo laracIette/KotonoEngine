@@ -5,7 +5,7 @@
 #include <kotono_framework/Renderer.h>
 #include <kotono_framework/Shader.h>
 #include <kotono_framework/ImageTexture.h>
-#include <kotono_framework/Renderable2DProxy.h>
+#include <kotono_framework/InterfaceRenderableProxy.h>
 #include <kotono_framework/WindowViewport.h>
 #include "InterfaceObject.h"
 #include "log.h"
@@ -32,10 +32,10 @@ void KInterfaceImageComponent::Init()
 	Framework.Renderer().GetInterfaceRenderer().Register(imageTextureProxy_);
 	CreateImageTextureProxy();
 
-	GetEventRectUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyRectDirty));
+	EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyRectDirty));
 	GetEventShaderUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyShaderDirty));
 	GetEventImageTextureUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyImageTextureDirty));
-	GetEventLayerUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyLayerDirty));
+	EventLayerUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyLayerDirty));
 }
 
 void KInterfaceImageComponent::Cleanup()
@@ -84,8 +84,8 @@ void KInterfaceImageComponent::CreateImageTextureProxy()
 	imageTextureProxy_->renderable = GetImageTexture();
 	imageTextureProxy_->layer = GetLayer();
 	imageTextureProxy_->objectData.modelMatrix = GetModelMatrix();
-	imageTextureProxy_->scissor.offset = WindowViewport.GetOffset();
-	imageTextureProxy_->scissor.extent = WindowViewport.GetExtent();
+	imageTextureProxy_->scissor.offset = Owner()->GetViewport()->GetOffset();
+	imageTextureProxy_->scissor.extent = Owner()->GetViewport()->GetExtent();
 #	ifdef _DEBUG
 		imageTextureProxy_->source = this;
 #	endif

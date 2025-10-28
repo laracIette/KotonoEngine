@@ -15,6 +15,9 @@ class TSceneObject : public KObject
 {
 	BASECLASS(KObject)
 
+private:
+	friend class KScene;
+
 public:
 	TSceneObject(UPtrOwnerBase* ptrOwner);
 
@@ -22,15 +25,20 @@ protected:
 	void Init() override;
 	void Cleanup() override;
 
+	virtual void GameStart();
+	virtual void GameUpdate();
+
 public:
 	EVisibility GetVisibility() const;
 	KtWindowViewport* GetViewport() const;
 	const UPtr<TSceneObject>& GetParent() const;
 	const UPtr<KSceneComponent>& GetRootComponent() const;
+	bool GetCanGameUpdate() const;
 
 	void SetVisibility(const EVisibility visibility);
 	void SetViewport(KtWindowViewport* viewport);
 	void SetParent(const UPtr<TSceneObject>& parent, const ECoordinateSpace keepTransform);
+	void SetCanGameUpdate(const bool canGameUpdate);
 
 	template <SceneComponent T>
 	UPtr<T> GetComponent() const
@@ -39,7 +47,7 @@ public:
 		components.AddFilter([](const UPtr<KSceneComponent>& component) { return dynamic_cast<T*>(component.Get()); });
 		if (components.Empty())
 		{
-			return nullptr;
+			return UPtr<T>();
 		}
 		return components.GetFirst();
 	}
@@ -57,4 +65,5 @@ private:
 	KtPool<UPtr<TSceneObject>> children_;
 	KtPool<UPtr<KSceneComponent>> components_;
 	size_t childrenIndex_;
+	bool canGameUpdate_;
 };

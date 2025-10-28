@@ -1,8 +1,8 @@
 #pragma once
 #include "Object.h"
 #include <kotono_framework/Pool.h>
+#include "GameState.h"
 
-class KtWindowViewport;
 class TSceneObject;
 
 class KScene : public KObject
@@ -11,22 +11,24 @@ class KScene : public KObject
 
 protected:
 	void Init() override;
+	void Update() override;
 
 public:
 	void Load();
 	void Unload();
 	void Reload();
 
-	void Add(TSceneObject* sceneObject);
-	void Remove(TSceneObject* sceneObject);
+	void Add(const UPtr<TSceneObject>& sceneObject);
+	void Remove(const UPtr<TSceneObject>& sceneObject);
 
 	void SerializeTo(nlohmann::json& json) const override;
 	void DeserializeFrom(const nlohmann::json& json) override;
 
 private:
-	KtWindowViewport* viewport_;
-	KtPool<TSceneObject*> _sceneObjects;
+	KtPool<UPtr<TSceneObject>> sceneObjects_;
 
-	TSceneObject* GetSceneObject(const std::string_view type);
+	UPtr<TSceneObject> GetSceneObject(const std::string_view type);
+
+	void OnEventGameStateChanged(const EGameState gameState);
 };
 

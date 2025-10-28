@@ -10,7 +10,7 @@
 
 class KtWindowViewport;
 class RInterfaceObject;
-struct KtRenderable2DProxy;
+struct KtInterfaceRenderableProxy;
 
 class KInterfaceComponent : public KObject
 {
@@ -31,9 +31,9 @@ public:
 	const URect& GetRect() const;
 	EVisibility GetVisibility() const;
 	int32_t GetLayer() const;
-	KtEvent<>& GetEventRectUpdated();
-	KtEvent<>& GetEventLayerUpdated();
-	KtEvent<>& GetEventColorUpdated();
+	KtEvent<>& EventRectUpdated();
+	KtEvent<>& EventLayerUpdated();
+	KtEvent<>& EventColorUpdated();
 
 	const glm::vec2& GetRelativeSize() const;
 	const glm::vec2& GetRelativePosition() const;
@@ -107,7 +107,7 @@ private:
 	URect rect_;
 	EVisibility visibility_;
 	int32_t layer_;
-	KtRenderable2DProxy* boundsProxy_;
+	KtInterfaceRenderableProxy* boundsProxy_;
 	KtEvent<> eventRectUpdated_;
 	KtEvent<> eventLayerUpdated_;
 	KtEvent<> eventColorUpdated_;

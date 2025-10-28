@@ -4,8 +4,8 @@
 #include <vma/vk_mem_alloc.h>
 #include "AllocatedBuffer.h"
 #include "glm_includes.h"
-#include "Renderable2D.h"
-class KtImageTexture final : public KtRenderable2D
+#include "InterfaceRenderable.h"
+class KtImageTexture final : public KtInterfaceRenderable
 {
 public:
     KtImageTexture(const std::filesystem::path& path);

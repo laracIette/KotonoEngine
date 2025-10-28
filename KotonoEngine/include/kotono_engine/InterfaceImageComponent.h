@@ -3,7 +3,7 @@
 
 class KtShader;
 class KtImageTexture;
-struct KtRenderable2DProxy;
+struct KtInterfaceRenderableProxy;
 
 class KInterfaceImageComponent : public KInterfaceComponent
 {
@@ -29,7 +29,7 @@ public:
 private:
 	KtShader* shader_;
 	KtImageTexture* imageTexture_;
-	KtRenderable2DProxy* imageTextureProxy_;
+	KtInterfaceRenderableProxy* imageTextureProxy_;
 	KtEvent<> eventShaderUpdated_;
 	KtEvent<> eventImageTextureUpdated_;
 

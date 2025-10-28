@@ -3,11 +3,11 @@
 #include "Scissor.h"
 class KtShader;
 class KtWindowViewport;
-class KtRenderable2D;
-struct KtRenderable2DProxy final
+class KtInterfaceRenderable;
+struct KtInterfaceRenderableProxy final
 {
 	KtShader* shader;
-	KtRenderable2D* renderable;
+	KtInterfaceRenderable* renderable;
 	int32_t layer;
 	KtObjectData2D objectData;
 	KtScissor scissor;	

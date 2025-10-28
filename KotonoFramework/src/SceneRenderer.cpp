@@ -245,11 +245,7 @@ void KtSceneRenderer::SortProxies(ProxiesPool& proxies)
 			{
 				return a->shader < b->shader;
 			}
-			if (a->renderable != b->renderable)
-			{
-				return a->renderable < b->renderable;
-			}
-			return a->viewport < b->viewport;
+			return a->renderable < b->renderable;
 		}
 	);
 }
@@ -345,23 +341,24 @@ void KtSceneRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const Proxie
 		return;
 	}
 
-	const KtShader* currentShader = nullptr;
-	const KtRenderable3D* currentRenderable = nullptr;
-	const KtWindowViewport* currentViewport = nullptr;
+	WindowViewport.CmdUse(commandBuffer);
+
+	const KtShader* currentShader{ nullptr };
+	const KtRenderable3D* currentRenderable{ nullptr };
 
 	for (size_t i = 0; i < proxies.Size();)
 	{
-		const auto* proxy = proxies[i];
-		const KtShader* shader = proxy->shader;
-		const KtRenderable3D* renderable = proxy->renderable;
-		const KtWindowViewport* viewport = proxy->viewport;
+		const KtRenderable3DProxy* proxy{ proxies[i] };
+		const KtShader* shader{ proxy->shader };
+		const KtRenderable3D* renderable{ proxy->renderable };
+		const KtScissor scissor{ proxy->scissor };
 
 		// Find the extent of the current batch
-		size_t instanceCount = 1;
+		size_t instanceCount{ 1 };
 		while (i + instanceCount < proxies.Size())
 		{
 			const auto* next = proxies[i + instanceCount];
-			if (next->shader != shader || next->renderable != renderable || next->viewport != viewport)
+			if (next->shader != shader || next->renderable != renderable || next->scissor.extent != scissor.extent || next->scissor.offset != scissor.offset)
 			{
 				break;
 			}
@@ -382,11 +379,13 @@ void KtSceneRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const Proxie
 			currentRenderable->CmdBind(commandBuffer);
 		}
 
-		if (currentViewport != viewport)
-		{
-			currentViewport = viewport;
-			currentViewport->CmdUse(commandBuffer);
-		}
+		const auto offset{ scissor.offset };
+		const auto extent{ scissor.extent };
+		const VkRect2D vkScissor{
+			.offset = { offset.x, offset.y },
+			.extent = { extent.x, extent.y },
+		};
+		vkCmdSetScissor(commandBuffer, 0, 1, &vkScissor);
 
 		// Submit draw
 		currentRenderable->CmdDraw(commandBuffer, static_cast<uint32_t>(instanceCount), instanceIndices_[frameIndex][shader]);

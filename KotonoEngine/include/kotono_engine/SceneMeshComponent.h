@@ -17,6 +17,8 @@ protected:
 	void Init() override;
 	void Cleanup() override;
 
+	void GameStart() override;
+
 public:
 	KtShader* GetShader() const;
 	KtModel* GetModel() const;
@@ -35,8 +37,6 @@ private:
 	KtModel* model_;
 	UPtr<KTask> spinTask_;
 	KtRenderable3DProxy proxy_;
-
-	void InitSpin();
 
 	void InitModelProxy();
 	void CreateModelProxy();

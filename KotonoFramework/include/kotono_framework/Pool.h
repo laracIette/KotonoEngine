@@ -82,6 +82,11 @@ public:
 		data_.insert(end(), pool.begin(), pool.end());
 	}
 
+	constexpr void Append(const std::initializer_list<ValueType>& values)
+	{
+		data_.insert(end(), values.begin(), values.end());
+	}
+
 	constexpr void Merge(KtPool& pool)
 	{
 		data_.insert(end(), std::make_move_iterator(pool.begin()), std::make_move_iterator(pool.end()));

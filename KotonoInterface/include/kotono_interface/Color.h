@@ -1,7 +1,7 @@
 #pragma once
 #include "Widget.h"
 #include <kotono_framework/Color.h>
-struct KtRenderable2DProxy;
+struct KtInterfaceRenderableProxy;
 class WColor : public WWidget
 {
 public:
@@ -18,7 +18,7 @@ public:
 	
 protected:
 	ColorSettings colorSettings_;
-	KtRenderable2DProxy* colorProxy_;
+	KtInterfaceRenderableProxy* colorProxy_;
 
 	void DisplayInternal(DisplaySettings displaySettings) override;
 };

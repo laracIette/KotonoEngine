@@ -21,13 +21,17 @@ protected:
 	void Init() override;
 	void Cleanup() override;
 
+	virtual void GameStart();
+	virtual void GameUpdate();
+
 public:
 	const UPtr<TSceneObject>& Owner() const;
 	const UTransform& GetTransform() const;
 	EVisibility GetVisibility() const;
 	EMobility GetMobility() const;
 	bool GetCanSetTransform() const;
-	KtEvent<>& GetEventTransformUpdated();
+	KtEvent<>& EventTransformUpdated();
+	bool GetCanGameUpdate() const;
 
 	const glm::vec3& GetRelativePosition() const;
 	const glm::quat& GetRelativeRotation() const;
@@ -50,6 +54,7 @@ public:
 
 	virtual void SetVisibility(const EVisibility visibility);
 	virtual void SetMobility(const EMobility mobility);
+	void SetCanGameUpdate(const bool canGameUpdate);
 
 	void SetParent(const UPtr<KSceneComponent>& parent, const ECoordinateSpace keepTransform);
 
@@ -77,7 +82,7 @@ private:
 	KtEvent<> eventTransformUpdated_;
 	size_t componentIndex_;
 	KtCached<glm::mat4> modelMatrix_;
-
+	bool canGameUpdate_;
 
 #   ifdef EDITOR
 		bool isViewportVisible_;

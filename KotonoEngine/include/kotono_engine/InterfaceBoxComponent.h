@@ -12,7 +12,7 @@ protected:
 	void Cleanup() override;
 
 private:
-	KtRenderable2DProxy* boxProxy_;
+	KtInterfaceRenderableProxy* boxProxy_;
 
 	void CreateBoxProxy();
 	void MarkBoxProxyColorDirty();

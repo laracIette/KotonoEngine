@@ -1,36 +1,79 @@
 #include "Scene.h"
 #include <nlohmann/json.hpp>
 #include <iostream>
-#include <kotono_framework/WindowViewport.h>
 #include "Engine.h"
+#include "Game.h"
 #include "ObjectManager.h"
 #include "SceneObject.h"
 #include "SceneMeshComponent.h"
 #include "SceneMeshObject.h"
+#include <kotono_framework/Framework.h>
+#include <kotono_framework/ShaderManager.h>
+#include <kotono_framework/ModelManager.h>
+#include <kotono_framework/Path.h>
+#include <kotono_framework/Shader.h>
+#include <kotono_framework/Model.h>
+#include "Camera.h"
 
 void KScene::Init()
 {
 	Base::Init();
 
-	viewport_ = &WindowViewport;
+	auto* shader3D{ Framework.ShaderManager().Get(Framework.Path().FrameworkPath() / R"(shaders\shader3D.ktshader)") };
+	shader3D->SetName("3D Shader");
+
+	auto* model1{ Framework.ModelManager().Get(Framework.Path().FrameworkPath() / R"(assets\models\viking_room.obj)") };
+	auto* model2{ Framework.ModelManager().Get(Framework.Path().FrameworkPath() / R"(assets\models\SM_Column_low.fbx)") };
+
+	UPtr camera{ Engine.ObjectManager().Create<TCamera>() };
+	camera->Use();
+
+	UPtr mesh1{ Engine.ObjectManager().Create<TSceneMeshObject>() };
+	mesh1->GetMeshComponent()->SetShader(shader3D);
+	mesh1->GetMeshComponent()->SetModel(model1);
+	mesh1->GetRootComponent()->SetRelativePosition({ -1.0f, 0.0f, 0.0f });
+
+	UPtr mesh2{ Engine.ObjectManager().Create<TSceneMeshObject>() };
+	mesh2->GetMeshComponent()->SetShader(shader3D);
+	mesh2->GetMeshComponent()->SetModel(model2);
+	mesh2->GetRootComponent()->SetRelativePosition({ 1.0f, 0.0f, 0.0f });
+	mesh2->GetRootComponent()->SetRelativeScale({ 0.2f, 0.2f, 0.2f });
+	mesh2->SetParent(mesh1, ECoordinateSpace::World);
+
+	sceneObjects_.Append({ camera, mesh1, mesh2 });
+
+	Engine.Game().EventStateChanged()
+		.AddListener(KtDelegate(this, &KScene::OnEventGameStateChanged));
+}
+
+void KScene::Update()
+{
+	if (!Engine.Game().IsPlaying())
+	{
+		return;
+	}
+
+	for (const auto& sceneObject : sceneObjects_)
+	{
+		if (sceneObject->GetCanGameUpdate())
+		{
+			sceneObject->GameUpdate();
+		}
+	}
 }
 
 void KScene::Load()
 {
 	Deserialize();
-	for (auto* sceneObject : _sceneObjects)
-	{
-		sceneObject->SetViewport(viewport_);
-	}
 }
 
 void KScene::Unload()
 {
-	for (auto* sceneObject : _sceneObjects)
+	for (const auto& sceneObject : sceneObjects_)
 	{
 		sceneObject->Delete();
 	}
-	_sceneObjects.Clear();
+	sceneObjects_.Clear();
 }
 
 void KScene::Reload()
@@ -39,20 +82,20 @@ void KScene::Reload()
 	Load();
 }
 
-void KScene::Add(TSceneObject* sceneObject)
+void KScene::Add(const UPtr<TSceneObject>& sceneObject)
 {
-	_sceneObjects.Add(sceneObject);
+	sceneObjects_.Add(sceneObject);
 }
 
-void KScene::Remove(TSceneObject* sceneObject)
+void KScene::Remove(const UPtr<TSceneObject>& sceneObject)
 {
-	_sceneObjects.Remove(sceneObject);
+	sceneObjects_.Remove(sceneObject);
 }
 
 void KScene::SerializeTo(nlohmann::json& json) const
 {
 	Base::SerializeTo(json);
-	for (const auto* sceneObject : _sceneObjects)
+	for (const auto& sceneObject : sceneObjects_)
 	{
 		nlohmann::json jsonSceneObject;
 		sceneObject->SerializeTo(jsonSceneObject);
@@ -65,7 +108,7 @@ void KScene::DeserializeFrom(const nlohmann::json& json)
 	Base::DeserializeFrom(json);
 	for (const auto& jsonSceneObject : json["sceneObjects"])
 	{
-		if (TSceneObject* sceneObject = GetSceneObject(jsonSceneObject["type"]))
+		if (const auto& sceneObject = GetSceneObject(jsonSceneObject["type"]))
 		{
 			sceneObject->DeserializeFrom(jsonSceneObject);
 			Add(sceneObject);
@@ -77,9 +120,28 @@ void KScene::DeserializeFrom(const nlohmann::json& json)
 	}
 }
 
-TSceneObject* KScene::GetSceneObject(const std::string_view type)
+UPtr<TSceneObject> KScene::GetSceneObject(const std::string_view type)
 {
 	//if (type == "TSceneObject")             return Engine.ObjectManager().Create<TSceneObject>();
 	//else if (type == "TSceneMeshObject")    return Engine.ObjectManager().Create<TSceneMeshObject>();
-	return nullptr;
+	return UPtr<TSceneObject>();
+}
+
+void KScene::OnEventGameStateChanged(const EGameState gameState)
+{
+	switch (gameState)
+	{
+	case EGameState::Stopped:
+		break;
+	case EGameState::Playing:
+	{
+		for (const auto& sceneObject : sceneObjects_)
+		{
+			sceneObject->GameStart();
+		}
+		break;
+	}
+	case EGameState::Paused:
+		break;
+	}
 }
