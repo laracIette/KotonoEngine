@@ -1,52 +1,17 @@
 #pragma once
-#include <chrono>
-#include <concepts>
 #include "Delegate.h"
 
 class KtStopwatch final
 {
-private:
-    using Clock = std::chrono::high_resolution_clock;
-    using TimePoint = Clock::time_point;
-
 public:
-    void Start()
-    {
-        start_ = Clock::now();
-    }
+    void Start();
+    void Stop();
 
-    void Stop()
-    {
-        end_ = Clock::now();
-    }
+    float ElapsedSeconds() const;
 
-    template <std::floating_point T>
-    T GetElapsedSeconds() const
-    {
-        return std::chrono::duration<T>(end_ - start_).count();
-    }
-
-    int64_t GetElapsedMicroseconds() const
-    {
-        return std::chrono::duration_cast<std::chrono::microseconds>(end_ - start_).count();
-    }
-
-    int64_t GetElapsedNanoseconds() const
-    {
-        return std::chrono::duration_cast<std::chrono::nanoseconds>(end_ - start_).count();
-    }
-
-    template <std::floating_point T>
-    static T Time(const KtDelegate<>& delegate)
-    {
-        KtStopwatch stopwatch{};
-        stopwatch.Start();
-        delegate.Callback();
-        stopwatch.Stop();
-        return stopwatch.GetElapsedSeconds<T>();
-    }
+    static float Time(const KtDelegate<>& delegate);
 
 private:
-    TimePoint start_;
-    TimePoint end_;
+    float start_;
+    float end_;
 };

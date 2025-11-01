@@ -1,7 +1,7 @@
 #pragma once
 #include <type_traits>
 #include <kotono_framework/Pool.h>
-#include <kotono_framework/AverageTime.h>
+#include <kotono_framework/Average.h>
 #include "Ptr.h"
 
 class KObject;
@@ -12,6 +12,7 @@ concept Object = std::is_base_of_v<KObject, T>;
 class SObjectManager final
 {
 	friend class SEngine;
+	friend class STimeManager;
 
 private:
 	void Init();
@@ -30,9 +31,6 @@ public:
 
 	void Delete(UPtrOwnerBase* ptrOwner);
 
-	float GetAverageUpdateTime() const;
-	float GetAverageDrawTime() const;
-
 	int64_t GetCurrentUpdate() const;
 
 	const UPtr<KObject>& SelectedObject() const;
@@ -46,19 +44,13 @@ private:
 
 	UPtr<KObject> selectedObject_;
 
-	KtAverageTime<256> updateAverageTime_;
-	KtAverageTime<64> drawAverageTime_;
-
 	int64_t currentUpdate_;
-
-	bool canDraw_;
 
 	void Register(KObject* object, UPtrOwnerBase* ptrOwner);
 
 	void InitObjects();
 	void UpdateObjects();
 	void DeleteObjects();
-	void SubmitDrawObjects();
 
 	void LogUPS() const;
 

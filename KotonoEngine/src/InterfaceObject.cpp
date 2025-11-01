@@ -41,7 +41,7 @@ const UPtr<RInterfaceObject>& RInterfaceObject::GetParent() const
 	return parent_;
 }
 
-const UPtr<KInterfaceComponent>& RInterfaceObject::GetRootComponent() const
+const UPtr<KInterfaceComponent>& RInterfaceObject::RootComponent() const
 {
 	return rootComponent_;
 }
@@ -92,7 +92,7 @@ void RInterfaceObject::SetParent(const UPtr<RInterfaceObject>& parent, const ECo
 		childrenIndex_ = parent->children_.LastIndex();
 	}
 	parent_ = parent;
-	GetRootComponent()->SetParent(parent_ ? parent_->GetRootComponent() : nullptr, keepRect);
+	RootComponent()->SetParent(parent_ ? parent_->RootComponent() : nullptr, keepRect);
 }
 
 bool RInterfaceObject::IsHovered() const

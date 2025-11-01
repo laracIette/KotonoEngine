@@ -24,11 +24,8 @@ public:
 private:
 	bool isPlaying_;
 	bool isRepeat_;
-	UDuration start_;
-	UDuration targetDuration_;
-	UDuration currentDuration_;
+	UDuration duration_;
+	UDuration current_;
 	KtEvent<> eventCompleted_;
-
-	UDuration GetNow() const;
 };
 

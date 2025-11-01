@@ -3,6 +3,7 @@
 #include <kotono_framework/Renderer.h>
 #include <kotono_framework/WindowViewport.h>
 #include <kotono_framework/InputManager.h>
+#include <kotono_framework/Clock.h>
 #include "SceneComponent.h"
 #include "Engine.h"
 #include "TimeManager.h"
@@ -18,8 +19,10 @@ void TCamera::Init()
 	speed_ = 1.0f;
 	sensitivity_ = 0.005f;
 
-	GetRootComponent()->EventTransformUpdated().AddListener(KtDelegate<>(this, &TCamera::OnEventUpdateTransform));
-	GetRootComponent()->SetWorldPosition(glm::vec3(0.0f, 0.0f, -3.0f));
+	RootComponent()->EventTransformUpdated().AddListener(KtDelegate<>(this, &TCamera::OnEventUpdateTransform));
+	RootComponent()->SetWorldPosition(glm::vec3(0.0f, 0.0f, -3.0f));
+
+	// ISSUE: input manager is engine time, not game time
 
 	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_W, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &TCamera::OnKeyboardWKeyDown));
 	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_A, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &TCamera::OnKeyboardAKeyDown));
@@ -27,8 +30,8 @@ void TCamera::Init()
 	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_D, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &TCamera::OnKeyboardDKeyDown));
 	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_RIGHT, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &TCamera::OnMouseRightButtonPressed));
 	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_RIGHT, KT_INPUT_STATE_RELEASED).AddListener(KtDelegate(this, &TCamera::OnMouseRightButtonReleased));
-	Framework.InputManager().Mouse().GetEventMove().AddListener(KtDelegate(this, &TCamera::OnMouseMove));
-	Framework.InputManager().Mouse().GetEventVerticalScroll().AddListener(KtDelegate(this, &TCamera::OnMouseVerticalScroll));
+	Framework.InputManager().Mouse().EventMove().AddListener(KtDelegate(this, &TCamera::OnMouseMove));
+	Framework.InputManager().Mouse().EventVerticalScroll().AddListener(KtDelegate(this, &TCamera::OnMouseVerticalScroll));
 }
 
 void TCamera::Cleanup()
@@ -41,8 +44,8 @@ void TCamera::Cleanup()
 	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_D, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &TCamera::OnKeyboardDKeyDown));
 	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_RIGHT, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &TCamera::OnMouseRightButtonPressed));
 	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_RIGHT, KT_INPUT_STATE_RELEASED).RemoveListener(KtDelegate(this, &TCamera::OnMouseRightButtonReleased));
-	Framework.InputManager().Mouse().GetEventMove().RemoveListener(KtDelegate(this, &TCamera::OnMouseMove));
-	Framework.InputManager().Mouse().GetEventVerticalScroll().RemoveListener(KtDelegate(this, &TCamera::OnMouseVerticalScroll));
+	Framework.InputManager().Mouse().EventMove().RemoveListener(KtDelegate(this, &TCamera::OnMouseMove));
+	Framework.InputManager().Mouse().EventVerticalScroll().RemoveListener(KtDelegate(this, &TCamera::OnMouseVerticalScroll));
 }
 
 void TCamera::Use()
@@ -52,30 +55,30 @@ void TCamera::Use()
 
 void TCamera::OnKeyboardWKeyDown() const
 {
-	const auto direction = GetRootComponent()->GetForwardVector();
-	const auto delta = direction * Engine.TimeManager().GetDelta();
-	GetRootComponent()->Translate(delta * speed_);
+	const auto direction = RootComponent()->ForwardVector();
+	const auto delta = direction * Engine.TimeManager().EditorDelta();
+	RootComponent()->Translate(delta * speed_);
 }
 
 void TCamera::OnKeyboardAKeyDown() const
 {
-	const auto direction = -GetRootComponent()->GetRightVector();
-	const auto delta = direction * Engine.TimeManager().GetDelta();
-	GetRootComponent()->Translate(delta * speed_);
+	const auto direction = -RootComponent()->RightVector();
+	const auto delta = direction * Engine.TimeManager().EditorDelta();
+	RootComponent()->Translate(delta * speed_);
 }
 
 void TCamera::OnKeyboardSKeyDown() const
 {
-	const auto direction = -GetRootComponent()->GetForwardVector();
-	const auto delta = direction * Engine.TimeManager().GetDelta();
-	GetRootComponent()->Translate(delta * speed_);
+	const auto direction = -RootComponent()->ForwardVector();
+	const auto delta = direction * Engine.TimeManager().EditorDelta();
+	RootComponent()->Translate(delta * speed_);
 }
 
 void TCamera::OnKeyboardDKeyDown() const
 {
-	const auto direction = GetRootComponent()->GetRightVector();
-	const auto delta = direction * Engine.TimeManager().GetDelta();
-	GetRootComponent()->Translate(delta * speed_);
+	const auto direction = RootComponent()->RightVector();
+	const auto delta = direction * Engine.TimeManager().EditorDelta();
+	RootComponent()->Translate(delta * speed_);
 }
 
 void TCamera::OnMouseRightButtonPressed()
@@ -106,7 +109,7 @@ void TCamera::OnMouseMove(const glm::vec2 delta)
 
 	const glm::quat rotation = qYaw * qPitch;
 
-	GetRootComponent()->SetWorldRotation(rotation);
+	RootComponent()->SetWorldRotation(rotation);
 }
 
 void TCamera::OnMouseVerticalScroll(const float delta)
@@ -128,7 +131,7 @@ void TCamera::OnEventUpdateTransform() const
 	}
 
 	KtUniformData3D ubo{};
-	ubo.View = glm::lookAt(GetRootComponent()->GetWorldPosition(), GetRootComponent()->GetWorldPosition() + GetRootComponent()->GetForwardVector(), GetRootComponent()->GetUpVector());
+	ubo.View = glm::lookAt(RootComponent()->GetWorldPosition(), RootComponent()->GetWorldPosition() + RootComponent()->ForwardVector(), RootComponent()->UpVector());
 	ubo.Projection = glm::perspective(glm::radians(fov_), GetViewport()->GetAspectRatio(), depthNear_, depthFar_);
 	//ubo.Projection[1][1] *= -1.0f;
 

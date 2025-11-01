@@ -1,25 +1,17 @@
 #include "ObjectManager.h"
 #include <kotono_framework/Framework.h>
-#include <kotono_framework/Context.h>
-#include <kotono_framework/Renderer.h>
 #include <kotono_framework/Window.h>
 #include <kotono_framework/InputManager.h>
-#include <kotono_framework/ShaderManager.h>
-#include <kotono_framework/Shader.h>
-#include <kotono_framework/ModelManager.h>
 #include <kotono_framework/Path.h>
-#include <kotono_framework/Stopwatch.h>
 #include "log.h"
 #include "Object.h"
-#include "SceneMeshObject.h"
-#include "SceneMeshComponent.h"
 #include "Scene.h"
-#include "Camera.h"
 #include "Engine.h"
-#include "Timer.h"
 #include "TimeManager.h"
+#include "Timer.h"
 #include "InterfaceObject.h"
 #include "InterfaceComponent.h"
+#include "Interface.h"
 
 #define KT_LOG_IMPORTANCE_LEVEL_OBJECT KT_LOG_IMPORTANCE_LEVEL_NONE
 
@@ -29,19 +21,12 @@ void SObjectManager::Init()
 		.AddListener(KtDelegate(this, &SObjectManager::Quit));
 	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
-	
-
 
 	UPtr scene{ Create<KScene>() };
-	scene->SetPath(Framework.Path().FrameworkPath() / R"(assets\objects\scene.KScene)");
-	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_S, KT_INPUT_STATE_PRESSED)
-		.AddListener(KtDelegate(scene.Get(), &KScene::Reload));
-
-	UPtr drawTimer{ Create<KTimer>() };
-	drawTimer->SetDuration(UDuration::FromSeconds(1.0f / 120.0f));
-	drawTimer->SetIsRepeat(true);
-	drawTimer->GetEventCompleted().AddListener(KtDelegate(this, &SObjectManager::SubmitDrawObjects));
-	drawTimer->Start();
+	UPtr interface{ Create<KInterface>() };
+	//scene->SetPath(Framework.Path().FrameworkPath() / R"(assets\objects\scene.KScene)");
+	//Framework.InputManager().Keyboard().KeyEvent(KT_KEY_R, KT_INPUT_STATE_PRESSED)
+	//	.AddListener(KtDelegate(scene.Get(), &KScene::Reload));
 
 	UPtr logUPSTimer{ Create<KTimer>() };
 	logUPSTimer->SetDuration(UDuration::FromSeconds(1.0f));
@@ -52,20 +37,11 @@ void SObjectManager::Init()
 
 void SObjectManager::Update()
 {
-	float updateTime{ 0.0f };
-	updateTime += KtStopwatch::Time<float>(KtDelegate(this, &SObjectManager::InitObjects));
-	updateTime += KtStopwatch::Time<float>(KtDelegate(this, &SObjectManager::UpdateObjects));
-	updateTime += KtStopwatch::Time<float>(KtDelegate(this, &SObjectManager::DeleteObjects));
-	updateAverageTime_.AddTime(updateTime);
+	InitObjects();
+	UpdateObjects();
+	DeleteObjects();
 
 	++currentUpdate_;
-
-	if (canDraw_)
-	{
-		canDraw_ = false;
-		const float drawTime{ KtStopwatch::Time<float>(KtDelegate(&Framework.Renderer(), &KtRenderer::DrawFrame)) };
-		drawAverageTime_.AddTime(drawTime);
-	}
 }
 
 void SObjectManager::Cleanup()
@@ -189,21 +165,6 @@ void SObjectManager::DeleteObjects()
 	deletes_.Clear();
 }
 
-void SObjectManager::SubmitDrawObjects()
-{
-	canDraw_ = true;
-}
-
-float SObjectManager::GetAverageUpdateTime() const
-{
-	return updateAverageTime_.GetAverageTime();
-}
-
-float SObjectManager::GetAverageDrawTime() const
-{
-	return drawAverageTime_.GetAverageTime();
-}
-
 int64_t SObjectManager::GetCurrentUpdate() const
 {
 	return currentUpdate_;
@@ -216,7 +177,7 @@ const UPtr<KObject>& SObjectManager::SelectedObject() const
 
 void SObjectManager::LogUPS() const
 {
-	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "%.2f ups", 1.0f / GetAverageUpdateTime());
+	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "%.2f ups", 1.0f / Engine.TimeManager().AverageEngineTime());
 }
 
 void SObjectManager::OnMouseButtonLeftPressed()

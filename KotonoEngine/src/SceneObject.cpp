@@ -63,7 +63,7 @@ const UPtr<TSceneObject>& TSceneObject::GetParent() const
 	return parent_;
 }
 
-const UPtr<KSceneComponent>& TSceneObject::GetRootComponent() const
+const UPtr<KSceneComponent>& TSceneObject::RootComponent() const
 {
 	return rootComponent_;
 }
@@ -109,7 +109,7 @@ void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinate
 		childrenIndex_ = parent->children_.LastIndex();
 	}
 	parent_ = parent;
-	GetRootComponent()->SetParent(parent_ ? parent_->GetRootComponent() : nullptr, keepTransform);
+	RootComponent()->SetParent(parent_ ? parent_->RootComponent() : nullptr, keepTransform);
 }
 
 void TSceneObject::SetCanGameUpdate(const bool canGameUpdate)

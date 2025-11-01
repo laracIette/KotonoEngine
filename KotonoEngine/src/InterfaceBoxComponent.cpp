@@ -42,7 +42,7 @@ void KInterfaceBoxComponent::CreateBoxProxy()
     boxProxy_->shader = Framework.ShaderManager().Get(shaderPath);
     boxProxy_->renderable = Framework.ImageTextureManager().Get(texturePath);
     boxProxy_->layer = GetLayer();
-    boxProxy_->objectData.modelMatrix = GetModelMatrix();
+    boxProxy_->objectData.modelMatrix = ModelMatrix();
     boxProxy_->objectData.color = GetColor(); 
     boxProxy_->scissor.offset = WindowViewport.GetOffset();
     boxProxy_->scissor.extent = WindowViewport.GetExtent();
@@ -60,5 +60,5 @@ void KInterfaceBoxComponent::MarkBoxProxyColorDirty()
 void KInterfaceBoxComponent::MarkBoxProxyRectDirty()
 {
     boxProxy_->isDirty = true;
-    boxProxy_->objectData.modelMatrix = GetModelMatrix();
+    boxProxy_->objectData.modelMatrix = ModelMatrix();
 }

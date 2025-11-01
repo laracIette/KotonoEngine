@@ -119,24 +119,24 @@ void WWidget::SetDisplaySettings(const DisplaySettings& displaySettings)
 	displaySettings_ = displaySettings;
 }
 
-glm::mat4 WWidget::GetTranslationMatrix() const
+glm::mat4 WWidget::TranslationMatrix() const
 {
 	return glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(displaySettings_.position + displaySettings_.bounds / 2.0f), 0.0f });
 }
 
-glm::mat4 WWidget::GetRotationMatrix() const
+glm::mat4 WWidget::RotationMatrix() const
 {
 	return glm::rotate(glm::identity<glm::mat4>(), 0.0f, { 0.0f, 0.0f, 1.0f });
 }
 
-glm::mat4 WWidget::GetScaleMatrix() const
+glm::mat4 WWidget::ScaleMatrix() const
 {
 	return glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(displaySettings_.bounds), 1.0f });
 }
 
-glm::mat4 WWidget::GetModelMatrix() const
+glm::mat4 WWidget::ModelMatrix() const
 {
-	return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix();
+	return TranslationMatrix() * RotationMatrix() * ScaleMatrix();
 }
 
 void WWidget::DisplayInternal(DisplaySettings displaySettings)

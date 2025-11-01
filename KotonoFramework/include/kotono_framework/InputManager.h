@@ -7,7 +7,6 @@ class KtInputManager final
 
 private:
 	void Init();
-	void Update();
 
 public:
 	KtMouse& Mouse();

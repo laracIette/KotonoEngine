@@ -83,10 +83,10 @@ public:
 	float GetTop() const;
 	float GetBottom() const;
 
-	glm::mat4 GetTranslationMatrix() const;
-	glm::mat4 GetRotationMatrix() const;
-	glm::mat4 GetScaleMatrix() const;
-	glm::mat4 GetModelMatrix();
+	glm::mat4 TranslationMatrix() const;
+	glm::mat4 RotationMatrix() const;
+	glm::mat4 ScaleMatrix() const;
+	glm::mat4 ModelMatrix();
 
 	glm::vec2 GetDirection(const UPtr<KInterfaceComponent>& target) const;
 	float GetDistance(const UPtr<KInterfaceComponent>& other) const;

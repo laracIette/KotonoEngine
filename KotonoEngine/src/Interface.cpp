@@ -9,27 +9,27 @@
 #include "InterfaceImageComponent.h"
 #include "ObjectManager.h"
 
-void SInterface::Init()
+void KInterface::Init()
 {
-	UPtr image1 = Engine.ObjectManager().Create<RInterfaceImageObject>();
-	UPtr image2 = Engine.ObjectManager().Create<RInterfaceImageObject>();
+	UPtr image1{ Engine.ObjectManager().Create<RInterfaceImageObject>() };
+	UPtr image2{ Engine.ObjectManager().Create<RInterfaceImageObject>() };
 	image1->GetImageComponent()->SetScreenSize({ 1024.0f, 1024.0f });
 	image2->GetImageComponent()->SetScreenSize({ 1024.0f, 1024.0f });
 
-	auto* shader2D = Framework.ShaderManager().Get(Framework.Path().FrameworkPath() / R"(shaders\shader2D.ktshader)");
+	auto* shader2D{ Framework.ShaderManager().Get(Framework.Path().FrameworkPath() / R"(shaders\shader2D.ktshader)") };
 	shader2D->SetName("2D Shader");
 
-	auto* imageTexture1 = Framework.ImageTextureManager().Get(Framework.Path().FrameworkPath() / R"(assets\models\viking_room.png)");
-	auto* imageTexture2 = Framework.ImageTextureManager().Get(Framework.Path().FrameworkPath() / R"(assets\textures\default_texture.jpg)");
+	auto* imageTexture1{ Framework.ImageTextureManager().Get(Framework.Path().FrameworkPath() / R"(assets\models\viking_room.png)") };
+	auto* imageTexture2{ Framework.ImageTextureManager().Get(Framework.Path().FrameworkPath() / R"(assets\textures\default_texture.jpg)") };
 
-	image1->GetRootComponent()->SetScreenSize({ 1024.0f, 1024.0f });
-	image1->GetRootComponent()->SetRelativeScale({ 0.25f, 0.25f });
+	image1->RootComponent()->SetScreenSize({ 1024.0f, 1024.0f });
+	image1->RootComponent()->SetRelativeScale({ 0.25f, 0.25f });
 	image1->GetImageComponent()->SetShader(shader2D);
 	image1->GetImageComponent()->SetImageTexture(imageTexture1);
-	//image1->GetRootComponent()->SetAnchor(EAnchor::TopLeft);
+	//image1->RootComponent()->SetAnchor(EAnchor::TopLeft);
 
-	image2->GetRootComponent()->SetScreenSize({ 1024.0f, 1024.0f });
-	image2->GetRootComponent()->SetRelativeScale({ 0.1f, 0.1f });
+	image2->RootComponent()->SetScreenSize({ 1024.0f, 1024.0f });
+	image2->RootComponent()->SetRelativeScale({ 0.1f, 0.1f });
 	image2->GetImageComponent()->SetShader(shader2D);
 	image2->GetImageComponent()->SetImageTexture(imageTexture2);
 #if true
@@ -37,8 +37,4 @@ void SInterface::Init()
 #else
 	image2->SetLayer(1);
 #endif
-}
-
-void SInterface::Cleanup()
-{
 }

@@ -11,7 +11,6 @@ int main()
 
     while (!Framework.Window().GetShouldClose())
     {
-        Framework.Update();
         Engine.Update();
     }
 

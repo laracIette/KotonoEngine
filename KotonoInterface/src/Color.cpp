@@ -22,7 +22,7 @@ void WColor::DisplayInternal(DisplaySettings displaySettings)
 	colorProxy_->shader = Framework.ShaderManager().Get(shaderPath);
 	colorProxy_->renderable = Framework.ImageTextureManager().Get(imagePath);
 	colorProxy_->layer = displaySettings.layer;
-	colorProxy_->objectData.modelMatrix = GetModelMatrix();
+	colorProxy_->objectData.modelMatrix = ModelMatrix();
 	colorProxy_->objectData.color = colorSettings_.color;
 	colorProxy_->scissor = displaySettings.scissor;
 #	ifdef _DEBUG

@@ -13,7 +13,7 @@ void KTask::Update()
 
     if (isPlaying_)
     {
-        if (Engine.TimeManager().GetNow() - startTime_ < duration_)
+        if (Engine.TimeManager().EditorNow() - startTime_ < duration_)
         {
             eventUpdate_.Broadcast();
         }
@@ -47,7 +47,7 @@ void KTask::SetDuration(const float duration)
 void KTask::Start()
 {
     isPlaying_ = true;
-    startTime_ = Engine.TimeManager().GetNow();
+    startTime_ = Engine.TimeManager().EditorNow();
 }
 
 void KTask::Stop()

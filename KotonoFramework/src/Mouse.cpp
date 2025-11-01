@@ -119,17 +119,17 @@ KtEvent<>& KtMouse::ButtonEvent(const KtButton button, const KtInputState inputS
     return buttonEvents_[button][inputState];
 }
 
-KtEvent<glm::vec2>& KtMouse::GetEventMove()
+KtEvent<glm::vec2>& KtMouse::EventMove()
 {
     return eventMove_;
 }
 
-KtEvent<float>& KtMouse::GetEventHorizontalScroll()
+KtEvent<float>& KtMouse::EventHorizontalScroll()
 {
     return eventHorizontalScroll_;
 }
 
-KtEvent<float>& KtMouse::GetEventVerticalScroll()
+KtEvent<float>& KtMouse::EventVerticalScroll()
 {
     return eventVerticalScroll_;
 }

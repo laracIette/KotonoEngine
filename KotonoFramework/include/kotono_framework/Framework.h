@@ -1,4 +1,5 @@
 #pragma once
+class KtClock;
 class KtPath;
 class KtWindow;
 class KtContext;
@@ -12,10 +13,11 @@ class KtFramework final
 {
 public:
 	void Init();
-	void Update();
 	void Cleanup();
 
 public:
+	KtClock& Clock();
+	const KtClock& Clock() const;
 	KtPath& Path();
 	const KtPath& Path() const;
 	KtWindow& Window();

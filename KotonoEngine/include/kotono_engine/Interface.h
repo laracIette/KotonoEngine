@@ -1,13 +1,13 @@
 #pragma once
+#include "Object.h"
 class RInterfaceLayoutObject;
 class RInterfaceImageObject;
-class SInterface final
+class KInterface final : public KObject
 {
-	friend class SEngine;
+	BASECLASS(KObject)
 
-private:
-	void Init();
-	void Cleanup();
+protected:
+	void Init() override;
 
 private:
 	RInterfaceLayoutObject* layout_;

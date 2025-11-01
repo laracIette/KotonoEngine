@@ -32,7 +32,7 @@ public:
 	EVisibility GetVisibility() const;
 	KtWindowViewport* GetViewport() const;
 	const UPtr<TSceneObject>& GetParent() const;
-	const UPtr<KSceneComponent>& GetRootComponent() const;
+	const UPtr<KSceneComponent>& RootComponent() const;
 	bool GetCanGameUpdate() const;
 
 	void SetVisibility(const EVisibility visibility);

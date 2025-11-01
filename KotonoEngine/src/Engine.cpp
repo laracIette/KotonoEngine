@@ -2,51 +2,45 @@
 #include "TimeManager.h"
 #include "ObjectManager.h"
 #include "Visualizer.h"
-#include "Interface.h"
 #include "Game.h"
 #include "InterfacePhysicsManager.h"
 
-static STimeManager TimerManager;
+static STimeManager TimeManager;
 static SObjectManager ObjectManager;
 static SVisualizer Visualizer;
-static SInterface Interface;
 static SGame Game;
 static SInterfacePhysicsManager InterfacePhysicsManager;
 
 void SEngine::Init()
 {
-    ::TimerManager.Init();
+    ::TimeManager.Init();
     ::ObjectManager.Init();
     ::Visualizer.Init();
-    ::Interface.Init();
 }
 
 void SEngine::Update()
 {
-    ::TimerManager.Update();
-    ::ObjectManager.Update();
+    ::TimeManager.Update();
     ::InterfacePhysicsManager.Update();
 }
 
 void SEngine::Cleanup()
 {
-    ::Interface.Cleanup();
-    ::TimerManager.Cleanup();
     ::ObjectManager.Cleanup();
     ::Visualizer.Cleanup();
 }
 
 STimeManager& SEngine::TimeManager()
 {
-    return ::TimerManager;
+    return ::TimeManager;
 }
 
 const STimeManager& SEngine::TimeManager() const
 {
-    return ::TimerManager;
+    return ::TimeManager;
 }
 
-SObjectManager& SEngine::ObjectManager() 
+SObjectManager& SEngine::ObjectManager()
 {
     return ::ObjectManager;
 }
@@ -64,16 +58,6 @@ SVisualizer& SEngine::Visualizer()
 const SVisualizer& SEngine::Visualizer() const
 {
     return ::Visualizer;
-}
-
-SInterface& SEngine::Interface() 
-{
-    return ::Interface;
-}
-
-const SInterface& SEngine::Interface() const
-{
-    return ::Interface;
 }
 
 SGame& SEngine::Game() 

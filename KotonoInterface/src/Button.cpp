@@ -13,7 +13,7 @@ WButton::WButton(const ButtonSettings& buttonSettings) :
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonDown));
 	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonReleased));
-	Framework.InputManager().Mouse().GetEventVerticalScroll()
+	Framework.InputManager().Mouse().EventVerticalScroll()
 		.AddListener(KtDelegate(this, &WButton::OnMouseVerticalScroll));
 }
 
@@ -25,7 +25,7 @@ void WButton::Cleanup()
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonDown));
 	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonReleased));
-	Framework.InputManager().Mouse().GetEventVerticalScroll()
+	Framework.InputManager().Mouse().EventVerticalScroll()
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseVerticalScroll));
 
 	WWidget::Cleanup();

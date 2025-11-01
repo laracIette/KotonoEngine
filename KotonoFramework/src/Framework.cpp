@@ -1,4 +1,5 @@
 #include "Framework.h"
+#include "Clock.h"
 #include "Path.h"
 #include "Window.h"
 #include "Context.h"
@@ -9,6 +10,7 @@
 #include "ShaderManager.h"
 #include "ImageTextureManager.h"
 
+static KtClock Clock;
 static KtPath Path;
 static KtWindow Window;
 static KtContext Context;
@@ -21,6 +23,7 @@ static KtImageTextureManager ImageTextureManager;
 
 void KtFramework::Init()
 {
+    ::Clock.Init();
     ::Path.Init();
     ::Window.Init();
     ::Context.Init();
@@ -28,11 +31,6 @@ void KtFramework::Init()
     ::AudioManager.Init();
     ::InputManager.Init();
     ::ShaderManager.Init();
-}
-
-void KtFramework::Update()
-{
-    ::InputManager.Update();
 }
 
 void KtFramework::Cleanup()
@@ -44,6 +42,16 @@ void KtFramework::Cleanup()
     ::Renderer.Cleanup();
     ::Context.Cleanup();
     ::Window.Cleanup();
+}
+
+KtClock& KtFramework::Clock()
+{
+    return ::Clock;
+}
+
+const KtClock& KtFramework::Clock() const
+{
+    return ::Clock;
 }
 
 KtPath& KtFramework::Path()

@@ -24,9 +24,9 @@ public:
 	float GetVerticalScrollDelta() const;
 
 	KtEvent<>& ButtonEvent(const KtButton button, const KtInputState inputState);
-	KtEvent<glm::vec2>& GetEventMove();
-	KtEvent<float>& GetEventHorizontalScroll();
-	KtEvent<float>& GetEventVerticalScroll();
+	KtEvent<glm::vec2>& EventMove();
+	KtEvent<float>& EventHorizontalScroll();
+	KtEvent<float>& EventVerticalScroll();
 
 private:
 	glm::vec2 previousCursorPosition_;

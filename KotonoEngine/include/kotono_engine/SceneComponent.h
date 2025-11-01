@@ -41,14 +41,14 @@ public:
 	glm::quat GetWorldRotation() const;
 	glm::vec3 GetWorldScale() const;
 
-	glm::vec3 GetRightVector() const;
-	glm::vec3 GetForwardVector() const;
-	glm::vec3 GetUpVector() const;
+	glm::vec3 RightVector() const;
+	glm::vec3 ForwardVector() const;
+	glm::vec3 UpVector() const;
 
-	glm::mat4 GetTranslationMatrix() const;
-	glm::mat4 GetRotationMatrix() const;
-	glm::mat4 GetScaleMatrix() const;
-	glm::mat4 GetModelMatrix();
+	glm::mat4 TranslationMatrix() const;
+	glm::mat4 RotationMatrix() const;
+	glm::mat4 ScaleMatrix() const;
+	glm::mat4 ModelMatrix();
 
 	glm::vec3 GetScreenPosition() const;
 

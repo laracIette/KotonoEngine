@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include "TimeManager.h"
 #include "ObjectManager.h"
+#include "log.h"
 
 void KTimer::Init()
 {
@@ -17,8 +18,11 @@ void KTimer::Update()
         return;
     }
 
-    const UDuration elapsed{ GetNow() - start_ };
-    if (elapsed < currentDuration_)
+    current_ += current_.IsSeconds()
+        ? UDuration::FromSeconds(Engine.TimeManager().EditorDelta())
+        : UDuration::FromUpdates(1);
+
+    if (current_ < duration_)
     {
         return;
     }
@@ -26,8 +30,7 @@ void KTimer::Update()
     eventCompleted_.Broadcast();
     if (isRepeat_)
     {
-        const UDuration overtime{ elapsed - currentDuration_ };
-        currentDuration_ = targetDuration_ - overtime;
+        current_ -= duration_;
         Start();
     }
     else
@@ -48,7 +51,7 @@ bool KTimer::GetIsRepeat() const
 
 const UDuration& KTimer::GetDuration() const
 {
-    return targetDuration_;
+    return duration_;
 }
 
 KtEvent<>& KTimer::GetEventCompleted()
@@ -63,8 +66,7 @@ void KTimer::SetIsRepeat(const bool isRepeat)
 
 void KTimer::SetDuration(const UDuration& duration)
 {
-    targetDuration_ = duration;
-    currentDuration_ = duration;
+    duration_ = duration;
 }
 
 void KTimer::Start(const bool isOverride)
@@ -76,17 +78,12 @@ void KTimer::Start(const bool isOverride)
 
     isPlaying_ = true;
 
-    start_ = GetNow();
+    current_ = current_.IsSeconds()
+        ? UDuration::FromSeconds(0.0f)
+        : UDuration::FromUpdates(0);
 }
 
 void KTimer::Stop()
 {
     isPlaying_ = false;
-}
-
-UDuration KTimer::GetNow() const
-{
-    return std::holds_alternative<float>(targetDuration_.value)
-        ? UDuration::FromSeconds(Engine.TimeManager().GetNow())
-        : UDuration::FromUpdates(Engine.ObjectManager().GetCurrentUpdate());
 }

@@ -15,14 +15,14 @@
 KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner) :
     Base(ptrOwner),
     owner_(owner),
-    modelMatrix_([this]() { return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix(); }),
+    modelMatrix_([this]() { return TranslationMatrix() * RotationMatrix() * ScaleMatrix(); }),
     color_(KtColor::White())
 {
     eventRectUpdated_.AddListener(KtDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
 
-    if (Owner()->GetRootComponent() != this)
+    if (Owner()->RootComponent() != this)
     {
-        SetParent(Owner()->GetRootComponent(), ECoordinateSpace::Relative);
+        SetParent(Owner()->RootComponent(), ECoordinateSpace::Relative);
     }
 
     boundsProxy_ = Framework.Renderer().GetInterfaceRenderer().CreateProxy();
@@ -387,17 +387,17 @@ float KInterfaceComponent::GetBottom() const
     return GetWorldPosition().y + GetWorldSize().y / 2.0f;
 }
 
-glm::mat4 KInterfaceComponent::GetTranslationMatrix() const
+glm::mat4 KInterfaceComponent::TranslationMatrix() const
 {
     return glm::translate(glm::identity<glm::mat4>(), glm::vec3(GetWorldPositionWithAnchorOffset(), 0.0f));
 }
 
-glm::mat4 KInterfaceComponent::GetRotationMatrix() const
+glm::mat4 KInterfaceComponent::RotationMatrix() const
 {
     return glm::rotate(glm::identity<glm::mat4>(), GetWorldRotation(), glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
-glm::mat4 KInterfaceComponent::GetScaleMatrix() const
+glm::mat4 KInterfaceComponent::ScaleMatrix() const
 {
     const auto viewportSize = glm::vec2(Owner()->GetViewport()->GetExtent());
     const float aspectRatio = Owner()->GetViewport()->GetAspectRatio();
@@ -416,7 +416,7 @@ glm::mat4 KInterfaceComponent::GetScaleMatrix() const
     return glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.0f));
 }
 
-glm::mat4 KInterfaceComponent::GetModelMatrix()
+glm::mat4 KInterfaceComponent::ModelMatrix()
 {
     return modelMatrix_;
 }
@@ -490,7 +490,7 @@ void KInterfaceComponent::CreateBoundsProxy()
     boundsProxy_->shader = Framework.ShaderManager().Get(shaderPath);
     boundsProxy_->renderable = Framework.ImageTextureManager().Get(texturePath);
     boundsProxy_->layer = GetLayer();
-    boundsProxy_->objectData.modelMatrix = GetModelMatrix();
+    boundsProxy_->objectData.modelMatrix = ModelMatrix();
     boundsProxy_->scissor.offset = WindowViewport.GetOffset();
     boundsProxy_->scissor.extent = WindowViewport.GetExtent();
     boundsProxy_->objectData.color = { 1.0f, 1.0f, 1.0f, 0.01f };
@@ -499,7 +499,7 @@ void KInterfaceComponent::CreateBoundsProxy()
 void KInterfaceComponent::MarkBoundsProxyRectDirty()
 {
     boundsProxy_->isDirty = true;
-    boundsProxy_->objectData.modelMatrix = GetModelMatrix();
+    boundsProxy_->objectData.modelMatrix = ModelMatrix();
 }
 
 glm::vec2 KInterfaceComponent::GetAnchorOffset() const

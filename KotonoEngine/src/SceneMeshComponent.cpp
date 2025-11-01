@@ -8,13 +8,14 @@
 #include <kotono_framework/Shader.h>
 #include <kotono_framework/Model.h>
 #include <kotono_framework/WindowViewport.h>
+#include <kotono_framework/Clock.h>
 #include "log.h"
 #include <nlohmann/json.hpp>
 #include "Engine.h"
+#include "TimeManager.h"
 #include "ObjectManager.h"
 #include "SceneObject.h"
 #include "Task.h"
-#include "TimeManager.h"
 
 static KtShader* WireframeShader = nullptr;
 
@@ -122,7 +123,7 @@ void KSceneMeshComponent::CreateModelProxy()
 {
     proxy_.shader = shader_;
     proxy_.renderable = model_;
-    proxy_.objectData.modelMatrix = GetModelMatrix();
+    proxy_.objectData.modelMatrix = ModelMatrix();
     proxy_.scissor.offset = Owner()->GetViewport()->GetOffset();
     proxy_.scissor.extent = Owner()->GetViewport()->GetExtent();
 }
@@ -130,7 +131,7 @@ void KSceneMeshComponent::CreateModelProxy()
 void KSceneMeshComponent::MarkModelProxyTransformDirty()
 {
     proxy_.isDirty = true;
-    proxy_.objectData.modelMatrix = GetModelMatrix();
+    proxy_.objectData.modelMatrix = ModelMatrix();
 }
 
 void KSceneMeshComponent::RegisterProxies()
@@ -169,8 +170,8 @@ void KSceneMeshComponent::UnregisterProxies()
 
 void KSceneMeshComponent::Spin()
 {
-    const float speed = 10.0f * Engine.TimeManager().GetDelta();
-    const glm::quat rotation = glm::quat(glm::radians(glm::vec3(0.0f, speed, 0.0f)));
+    const float speed{ 10.0f * Engine.TimeManager().GameDelta() };
+    const glm::quat rotation{ glm::quat(glm::radians(glm::vec3(0.0f, speed, 0.0f))) };
     Rotate(rotation);
 }
 

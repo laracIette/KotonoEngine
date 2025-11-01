@@ -9,13 +9,13 @@ KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSceneObjec
     Base(ptrOwner),
     owner_(owner),
     visibility_(EVisibility::EditorAndGame),
-    modelMatrix_([this]() { return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix(); })
+    modelMatrix_([this]() { return TranslationMatrix() * RotationMatrix() * ScaleMatrix(); })
 {
     eventTransformUpdated_.AddListener(KtDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
     
-    if (Owner()->GetRootComponent() != this)
+    if (Owner()->RootComponent() != this)
     {
-        SetParent(Owner()->GetRootComponent(), ECoordinateSpace::Relative);
+        SetParent(Owner()->RootComponent(), ECoordinateSpace::Relative);
     }
 
 #   ifdef EDITOR
@@ -136,37 +136,37 @@ glm::vec3 KSceneComponent::GetWorldScale() const
     return GetRelativeScale();
 }
 
-glm::vec3 KSceneComponent::GetRightVector() const
+glm::vec3 KSceneComponent::RightVector() const
 {
     return GetWorldRotation() * glm::vec3(-1.0f, 0.0f, 0.0f);
 }
 
-glm::vec3 KSceneComponent::GetForwardVector() const
+glm::vec3 KSceneComponent::ForwardVector() const
 {
     return GetWorldRotation() * glm::vec3(0.0f, 0.0f, 1.0f);
 }
 
-glm::vec3 KSceneComponent::GetUpVector() const
+glm::vec3 KSceneComponent::UpVector() const
 {
     return GetWorldRotation() * glm::vec3(0.0f, -1.0f, 0.0f);
 }
 
-glm::mat4 KSceneComponent::GetTranslationMatrix() const
+glm::mat4 KSceneComponent::TranslationMatrix() const
 {
     return glm::translate(glm::identity<glm::mat4>(), GetWorldPosition());
 }
 
-glm::mat4 KSceneComponent::GetRotationMatrix() const
+glm::mat4 KSceneComponent::RotationMatrix() const
 {
     return glm::mat4_cast(GetWorldRotation());
 }
 
-glm::mat4 KSceneComponent::GetScaleMatrix() const
+glm::mat4 KSceneComponent::ScaleMatrix() const
 {
     return glm::scale(glm::identity<glm::mat4>(), GetWorldScale());
 }
 
-glm::mat4 KSceneComponent::GetModelMatrix()
+glm::mat4 KSceneComponent::ModelMatrix()
 {
     return modelMatrix_;
 }

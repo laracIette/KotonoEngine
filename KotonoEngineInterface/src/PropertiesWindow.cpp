@@ -55,7 +55,7 @@ WWidget* WPropertiesWindow::Build()
 
                                             if (auto* asInterfaceObject = dynamic_cast<RInterfaceObject*>(selectedObject.Get()))
                                             {
-                                                asInterfaceObject->GetRootComponent()->Translate({ delta / 800.0f, 0.0f });
+                                                asInterfaceObject->RootComponent()->Translate({ delta / 800.0f, 0.0f });
                                             }
                                         },
                                     }),
@@ -88,7 +88,7 @@ WWidget* WPropertiesWindow::Build()
 
                                             if (auto* asInterfaceObject = dynamic_cast<RInterfaceObject*>(selectedObject.Get()))
                                             {
-                                                asInterfaceObject->GetRootComponent()->Translate({ 0.0f, delta / 800.0f });
+                                                asInterfaceObject->RootComponent()->Translate({ 0.0f, delta / 800.0f });
                                             }
                                         },
                                     }),

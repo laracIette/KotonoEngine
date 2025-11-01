@@ -51,10 +51,10 @@ protected:
 	void SetState(const StateFunction& function);
 	void SetDisplaySettings(const DisplaySettings& displaySettings);
 
-	glm::mat4 GetTranslationMatrix() const;
-	glm::mat4 GetRotationMatrix() const;
-	glm::mat4 GetScaleMatrix() const;
-	glm::mat4 GetModelMatrix() const;
+	glm::mat4 TranslationMatrix() const;
+	glm::mat4 RotationMatrix() const;
+	glm::mat4 ScaleMatrix() const;
+	glm::mat4 ModelMatrix() const;
 
 	virtual void DisplayInternal(DisplaySettings displaySettings);
 

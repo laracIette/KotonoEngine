@@ -21,7 +21,7 @@ void WImage::DisplayInternal(DisplaySettings displaySettings)
 	imageProxy_->shader = Framework.ShaderManager().Get(shaderPath);
 	imageProxy_->renderable = Framework.ImageTextureManager().Get(imageSettings_.path);
 	imageProxy_->layer = displaySettings.layer;
-	imageProxy_->objectData.modelMatrix = GetModelMatrix();
+	imageProxy_->objectData.modelMatrix = ModelMatrix();
 	imageProxy_->scissor = displaySettings.scissor;
 #	ifdef _DEBUG
 		imageProxy_->source = this;

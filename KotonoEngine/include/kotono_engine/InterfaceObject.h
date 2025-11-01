@@ -26,7 +26,7 @@ public:
 	EVisibility GetVisibility() const;
 	KtWindowViewport* GetViewport() const;
 	const UPtr<RInterfaceObject>& GetParent() const;
-	const UPtr<KInterfaceComponent>& GetRootComponent() const;
+	const UPtr<KInterfaceComponent>& RootComponent() const;
 	const KtPool<UPtr<RInterfaceObject>>& GetChildren() const;
 
 	void SetVisibility(const EVisibility visibility);

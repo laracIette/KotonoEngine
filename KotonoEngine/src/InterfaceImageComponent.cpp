@@ -83,7 +83,7 @@ void KInterfaceImageComponent::CreateImageTextureProxy()
 	imageTextureProxy_->shader = GetShader();
 	imageTextureProxy_->renderable = GetImageTexture();
 	imageTextureProxy_->layer = GetLayer();
-	imageTextureProxy_->objectData.modelMatrix = GetModelMatrix();
+	imageTextureProxy_->objectData.modelMatrix = ModelMatrix();
 	imageTextureProxy_->scissor.offset = Owner()->GetViewport()->GetOffset();
 	imageTextureProxy_->scissor.extent = Owner()->GetViewport()->GetExtent();
 #	ifdef _DEBUG
@@ -94,7 +94,7 @@ void KInterfaceImageComponent::CreateImageTextureProxy()
 void KInterfaceImageComponent::MarkImageTextureProxyRectDirty()
 {
 	imageTextureProxy_->isDirty = true;
-	imageTextureProxy_->objectData.modelMatrix = GetModelMatrix();
+	imageTextureProxy_->objectData.modelMatrix = ModelMatrix();
 }
 
 void KInterfaceImageComponent::MarkImageTextureProxyShaderDirty()

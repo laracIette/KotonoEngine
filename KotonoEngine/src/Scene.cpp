@@ -31,13 +31,13 @@ void KScene::Init()
 	UPtr mesh1{ Engine.ObjectManager().Create<TSceneMeshObject>() };
 	mesh1->GetMeshComponent()->SetShader(shader3D);
 	mesh1->GetMeshComponent()->SetModel(model1);
-	mesh1->GetRootComponent()->SetRelativePosition({ -1.0f, 0.0f, 0.0f });
+	mesh1->RootComponent()->SetRelativePosition({ -1.0f, 0.0f, 0.0f });
 
 	UPtr mesh2{ Engine.ObjectManager().Create<TSceneMeshObject>() };
 	mesh2->GetMeshComponent()->SetShader(shader3D);
 	mesh2->GetMeshComponent()->SetModel(model2);
-	mesh2->GetRootComponent()->SetRelativePosition({ 1.0f, 0.0f, 0.0f });
-	mesh2->GetRootComponent()->SetRelativeScale({ 0.2f, 0.2f, 0.2f });
+	mesh2->RootComponent()->SetRelativePosition({ 1.0f, 0.0f, 0.0f });
+	mesh2->RootComponent()->SetRelativeScale({ 0.2f, 0.2f, 0.2f });
 	mesh2->SetParent(mesh1, ECoordinateSpace::World);
 
 	sceneObjects_.Append({ camera, mesh1, mesh2 });

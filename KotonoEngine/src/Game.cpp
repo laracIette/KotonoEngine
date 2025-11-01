@@ -1,5 +1,13 @@
 #include "Game.h"
 
+void SGame::Update()
+{
+    if (!IsPlaying())
+    {
+        return;
+    }
+}
+
 bool SGame::IsPlaying() const
 {
     return state_ == EGameState::Playing;
@@ -28,6 +36,11 @@ void SGame::Pause()
 void SGame::Stop()
 {
     SetState(EGameState::Stopped);
+}
+
+void SGame::OpenScene(const UPtr<KScene>& scene)
+{
+    scene_ = scene;
 }
 
 EGameState SGame::GetState() const
