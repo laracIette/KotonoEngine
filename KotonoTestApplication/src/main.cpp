@@ -1,20 +1,20 @@
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/Window.h>
 #include <kotono_engine/Engine.h>
-#include <kotono_engine_interface/EngineInterface.h>
+#include <kotono_editor/Editor.h>
 
 int main()
 {
     Framework.Init();
     Engine.Init();
-    EngineInterface.Init();
+    Editor.Init();
 
     while (!Framework.Window().GetShouldClose())
     {
         Engine.Update();
     }
 
-    EngineInterface.Cleanup();
+    Editor.Cleanup();
     Engine.Cleanup();
     Framework.Cleanup();
 

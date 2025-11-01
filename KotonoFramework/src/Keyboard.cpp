@@ -5,8 +5,8 @@
 #include <GLFW/glfw3.h>
 
 void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mods);
-const int keyToGLFWKey(const KtKey key);
-const KtKey GLFWKeyToKey(const int key);
+constexpr int keyToGLFWKey(const KtKey key);
+constexpr KtKey GLFWKeyToKey(const int key);
 
 void KtKeyboard::Init()
 {
@@ -15,7 +15,7 @@ void KtKeyboard::Init()
 
 void KtKeyboard::Update()
 {
-    for (size_t key = 0; key < keyStates_.size(); key++)
+    for (size_t key{ 0 }; key < keyStates_.size(); ++key)
     {
         if (keyStates_[key].empty())
         {
@@ -78,7 +78,7 @@ void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mo
     Framework.InputManager().Keyboard().UpdateKey(GLFWKeyToKey(key), action);
 }
 
-const int keyToGLFWKey(const KtKey key)
+constexpr int keyToGLFWKey(const KtKey key)
 {
     switch (key)
     {
@@ -207,7 +207,7 @@ const int keyToGLFWKey(const KtKey key)
     }
 }
 
-const KtKey GLFWKeyToKey(const int key)
+constexpr KtKey GLFWKeyToKey(const int key)
 {
     switch (key)
     {
@@ -331,6 +331,6 @@ const KtKey GLFWKeyToKey(const int key)
     case GLFW_KEY_RIGHT_ALT: return KT_KEY_RIGHT_ALT;
     case GLFW_KEY_RIGHT_SUPER: return KT_KEY_RIGHT_SUPER;
     case GLFW_KEY_MENU: return KT_KEY_MENU;
-    default: return static_cast<KtKey>(-1);
+    default: return KT_KEY_UNKNOWN;
     }
 }

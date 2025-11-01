@@ -35,12 +35,12 @@ target_include_directories(KotonoTestApplication
 add_subdirectory("../KotonoFramework" "${CMAKE_CURRENT_BINARY_DIR}/KotonoFramework_build")
 add_subdirectory("../KotonoInterface" "${CMAKE_CURRENT_BINARY_DIR}/KotonoInterface_build")
 add_subdirectory("../KotonoEngine" "${CMAKE_CURRENT_BINARY_DIR}/KotonoEngine_build")
-add_subdirectory("../KotonoEngineInterface" "${CMAKE_CURRENT_BINARY_DIR}/KotonoEngineInterface_build")
+add_subdirectory("../KotonoEditor" "${CMAKE_CURRENT_BINARY_DIR}/KotonoEditor_build")
 
 # Link the final dependencies
 # CMake will automatically propagate include directories and libraries
 target_link_libraries(KotonoTestApplication PRIVATE 
-    KotonoEngineInterface 
+    KotonoEditor
 )
 
 # Set the startup project

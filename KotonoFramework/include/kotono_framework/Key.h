@@ -1,6 +1,7 @@
 #pragma once
 enum KtKey : char
 {
+	KT_KEY_UNKNOWN = -1,
 	KT_KEY_SPACE,
 	KT_KEY_APOSTROPHE,
 	KT_KEY_COMMA,

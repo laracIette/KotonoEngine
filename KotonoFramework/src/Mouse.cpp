@@ -17,7 +17,7 @@ void KtMouse::Init()
 
 void KtMouse::Update()
 {
-    for (size_t button = 0; button < buttonStates_.size(); button++)
+    for (size_t button{ 0 }; button < buttonStates_.size(); ++button)
     {
         if (buttonStates_[button].empty())
         {

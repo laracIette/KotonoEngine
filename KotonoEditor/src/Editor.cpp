@@ -1,8 +1,8 @@
-#include "EngineInterface.h"
+#include "Editor.h"
 #include "MainWindow.h"
 #include <kotono_framework/WindowViewport.h>
 
-void SEngineInterface::Init()
+void SEditor::Init()
 {
 	widget_ = new WMainWindow();
 	widget_->CacheBuild();
@@ -14,7 +14,7 @@ void SEngineInterface::Init()
 	});
 }
 
-void SEngineInterface::Cleanup()
+void SEditor::Cleanup()
 {
 	widget_->Cleanup();
 	delete widget_;

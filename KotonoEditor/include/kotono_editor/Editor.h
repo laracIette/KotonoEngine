@@ -1,6 +1,6 @@
 #pragma once
 class WWidget;
-class SEngineInterface final
+class SEditor final
 {
 public:
 	void Init();
@@ -10,4 +10,4 @@ private:
 	WWidget* widget_;
 };
 
-inline SEngineInterface EngineInterface;
+inline SEditor Editor;

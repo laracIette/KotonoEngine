@@ -26,7 +26,6 @@ public:
 
     void Broadcast(Args... args)
     {
-        delegates_.RemoveIf([](const Delegate& delegate) { return !delegate.GetInstance(); });
         // Don't process delegates that are added while the event is broadcasting
         for (int64_t i{ delegates_.LastIndex()}; i >= 0; --i)
         {
