@@ -42,3 +42,6 @@ add_subdirectory("../KotonoEngineInterface" "${CMAKE_CURRENT_BINARY_DIR}/KotonoE
 target_link_libraries(KotonoTestApplication PRIVATE 
     KotonoEngineInterface 
 )
+
+# Set the startup project
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT KotonoTestApplication)
