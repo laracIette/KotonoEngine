@@ -19,6 +19,6 @@ cd "$BUILD_DIR"
 
 # Run CMake configuration
 echo "⚙️  Running CMake..."
-cmake .. -G "Visual Studio 17 2022" -A x64
+cmake .. -G "Visual Studio 17 2022" -A x64 -DWITH_EDITOR=ON
 
 echo "✅ CMake generation complete!"

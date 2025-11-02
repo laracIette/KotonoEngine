@@ -18,10 +18,8 @@ KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSceneObjec
         SetParent(Owner()->RootComponent(), ECoordinateSpace::Relative);
     }
 
-#   ifdef EDITOR
-        Engine.Visualizer().EventVisibilityChanged(EVisualizationField::SceneObject)
-            .AddListener(KtDelegate(this, &KSceneComponent::SetIsViewportVisible));
-#   endif
+    Engine.Visualizer().EventVisibilityChanged(EVisualizationField::SceneObject)
+        .AddListener(KtDelegate(this, &KSceneComponent::SetIsViewportVisible));
 }
 
 void KSceneComponent::Init()
@@ -311,9 +309,7 @@ float KSceneComponent::GetDistance(const UPtr<KSceneComponent>& other) const
     return glm::distance(GetWorldPosition(), other->GetWorldPosition());
 }
 
-#ifdef EDITOR
 void KSceneComponent::SetIsViewportVisible(const bool isViewportVisible)
 {
     isViewportVisible_ = isViewportVisible;
 }
-#endif

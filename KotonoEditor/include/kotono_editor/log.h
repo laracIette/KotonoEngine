@@ -1,7 +1,7 @@
 #pragma once
 #include <kotono_framework/log.h>
 
-#ifdef EDITOR
+#ifdef _DEBUG
 #include <cstdio>
 
 #define KT_LOG_KEI(level, format, ...)                \

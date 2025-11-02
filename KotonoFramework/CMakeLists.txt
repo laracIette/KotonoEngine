@@ -37,7 +37,6 @@ set_target_properties(KotonoFramework PROPERTIES
 # Preprocessor defines for all builds
 target_compile_definitions(KotonoFramework PUBLIC
     NOMINMAX
-    EDITOR
 )
 
 # Library search folder

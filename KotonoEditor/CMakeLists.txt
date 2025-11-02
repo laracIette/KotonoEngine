@@ -34,12 +34,6 @@ set_target_properties(KotonoEditor PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
 )
 
-# Preprocessor defines
-target_compile_definitions(KotonoEditor PUBLIC
-    NOMINMAX
-    EDITOR
-)
-
 # Link libs
 target_link_libraries(KotonoEditor PUBLIC 
     KotonoEngine

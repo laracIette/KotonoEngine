@@ -84,9 +84,9 @@ private:
 	KtCached<glm::mat4> modelMatrix_;
 	bool canGameUpdate_;
 
-#   ifdef EDITOR
-		bool isViewportVisible_;
-		void SetIsViewportVisible(const bool isViewportVisible);
-#   endif
+	// todo: move that to editor
+	bool isViewportVisible_;
+	void SetIsViewportVisible(const bool isViewportVisible);
+
 };
 

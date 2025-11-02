@@ -1,20 +1,26 @@
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/Window.h>
 #include <kotono_engine/Engine.h>
-#include <kotono_editor/Editor.h>
+#ifdef EDITOR
+    #include <kotono_editor/Editor.h>
+#endif
 
 int main()
 {
     Framework.Init();
     Engine.Init();
-    Editor.Init();
+#   ifdef EDITOR
+        Editor.Init();
+#   endif
 
     while (!Framework.Window().GetShouldClose())
     {
         Engine.Update();
     }
 
-    Editor.Cleanup();
+#   ifdef EDITOR
+        Editor.Cleanup();
+#   endif
     Engine.Cleanup();
     Framework.Cleanup();
 
