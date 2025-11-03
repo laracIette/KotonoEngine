@@ -39,8 +39,6 @@ void KSceneMeshComponent::Init()
     spinTask_->EventUpdate().AddListener(KtDelegate(this, &KSceneMeshComponent::Spin));
     spinTask_->Start();
 
-    InitModelProxy();
-
     Framework.InputManager().Keyboard().KeyEvent(KT_KEY_N, KT_INPUT_STATE_PRESSED)
         .AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
     Framework.InputManager().Keyboard().KeyEvent(KT_KEY_M, KT_INPUT_STATE_PRESSED)
@@ -51,11 +49,11 @@ void KSceneMeshComponent::Cleanup()
 {
     Base::Cleanup();
 
-    UnregisterProxies();
+    UnregisterModelProxy();
     EventTransformUpdated().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
 
     spinTask_->Delete();
-    
+
     Framework.InputManager().Keyboard().KeyEvent(KT_KEY_N, KT_INPUT_STATE_PRESSED)
         .RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
     Framework.InputManager().Keyboard().KeyEvent(KT_KEY_M, KT_INPUT_STATE_PRESSED)
@@ -96,71 +94,76 @@ void KSceneMeshComponent::DeserializeFrom(const nlohmann::json& json)
     model_ = Framework.ModelManager().Get(json["model"]);
 }
 
+void KSceneMeshComponent::Spawn()
+{
+    Base::Spawn();
+
+    CreateModelProxy();
+    RegisterModelProxy();
+    EventTransformUpdated().AddListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
+}
+
 void KSceneMeshComponent::SetVisibility(const EVisibility visibility)
 {
-    UnregisterProxies();
+    UnregisterModelProxy();
     Base::SetVisibility(visibility);
-    RegisterProxies();
+    RegisterModelProxy();
 }
 
 void KSceneMeshComponent::SetMobility(const EMobility mobility)
 {
-    UnregisterProxies();
+    UnregisterModelProxy();
     Base::SetMobility(mobility);
-    RegisterProxies();
-}
-
-void KSceneMeshComponent::InitModelProxy()
-{
-    CreateModelProxy();
-    RegisterProxies();
-    EventTransformUpdated().AddListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
+    RegisterModelProxy();
 }
 
 void KSceneMeshComponent::CreateModelProxy()
 {
-    proxy_.shader = shader_;
-    proxy_.renderable = model_;
-    proxy_.objectData.modelMatrix = ModelMatrix();
-    proxy_.scissor.offset = Owner()->GetViewport()->GetOffset();
-    proxy_.scissor.extent = Owner()->GetViewport()->GetExtent();
+    modelProxy_.shader = shader_;
+    modelProxy_.renderable = model_;
+    modelProxy_.objectData.modelMatrix = ModelMatrix();
+    modelProxy_.scissor.offset = Owner()->GetViewport()->GetOffset();
+    modelProxy_.scissor.extent = Owner()->GetViewport()->GetExtent();
+#   ifdef _DEBUG
+        modelProxy_.source = this;
+#   endif
 }
 
 void KSceneMeshComponent::MarkModelProxyTransformDirty()
 {
-    proxy_.isDirty = true;
-    proxy_.objectData.modelMatrix = ModelMatrix();
+    modelProxy_.isDirty = true;
+    modelProxy_.objectData.modelMatrix = ModelMatrix();
 }
 
-void KSceneMeshComponent::RegisterProxies()
+void KSceneMeshComponent::RegisterModelProxy()
 {
     switch (GetMobility())
     {
     case EMobility::Dynamic:
     {
-        Framework.Renderer().GetSceneRenderer().RegisterDynamic(&proxy_);
+        Framework.Renderer().GetSceneRenderer().RegisterDynamic(&modelProxy_);
         break;
     }
     case EMobility::Static:
     {
-        Framework.Renderer().GetSceneRenderer().RegisterStatic(&proxy_);
+        Framework.Renderer().GetSceneRenderer().RegisterStatic(&modelProxy_);
         break;
     }
     }
 }
 
-void KSceneMeshComponent::UnregisterProxies()
+void KSceneMeshComponent::UnregisterModelProxy()
 {
     switch (GetMobility())
     {
     case EMobility::Dynamic:
     {
-        Framework.Renderer().GetSceneRenderer().UnregisterDynamic(&proxy_);
+        Framework.Renderer().GetSceneRenderer().UnregisterDynamic(&modelProxy_);
         break;
     }
     case EMobility::Static:
     {
-        Framework.Renderer().GetSceneRenderer().UnregisterStatic(&proxy_);
+        Framework.Renderer().GetSceneRenderer().UnregisterStatic(&modelProxy_);
         break;
     }
     }

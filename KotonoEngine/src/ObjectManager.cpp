@@ -31,6 +31,8 @@ void SObjectManager::Init()
 	//Framework.InputManager().Keyboard().KeyEvent(KT_KEY_R, KT_INPUT_STATE_PRESSED)
 	//	.AddListener(KtDelegate(scene.Get(), &KScene::Reload));
 
+	scene->SpawnSceneObjects();
+
 	auto& logUPSTimer{ Framework.TimeManager().GetTimer("log ups timer") };
 	logUPSTimer.SetDuration(1.0f);
 	logUPSTimer.SetIsRepeat(true);

@@ -5,6 +5,7 @@
 #include "CoordinateSpace.h"
 #include "Mobility.h"
 #include <kotono_framework/Cached.h>
+#include <kotono_framework/Pool.h>
 
 class TSceneObject;
 
@@ -28,6 +29,10 @@ public:
 	EMobility GetMobility() const;
 	bool GetCanSetTransform() const;
 	KtEvent<>& EventTransformUpdated();
+
+	const glm::vec3& GetSpawnPosition() const;
+	const glm::quat& GetSpawnRotation() const;
+	const glm::vec3& GetSpawnScale() const;
 
 	const glm::vec3& GetRelativePosition() const;
 	const glm::quat& GetRelativeRotation() const;
@@ -53,6 +58,10 @@ public:
 
 	void SetParent(const UPtr<KSceneComponent>& parent, const ECoordinateSpace keepTransform);
 
+	void SetSpawnPosition(const glm::vec3& spawnPosition);
+	void SetSpawnRotation(const glm::quat& spawnRotation);
+	void SetSpawnScale(const glm::vec3& spawnScale);
+
 	void SetRelativePosition(const glm::vec3& relativePosition);
 	void SetRelativeRotation(const glm::quat& relativeRotation);
 	void SetRelativeScale(const glm::vec3& relativeScale);
@@ -68,14 +77,19 @@ public:
 	glm::vec3 GetDirection(const UPtr<KSceneComponent>& target) const;
 	float GetDistance(const UPtr<KSceneComponent>& other) const;
 
+	virtual void Spawn();
+
 private:
 	const UPtr<TSceneObject> owner_;
 	UPtr<KSceneComponent> parent_;
+	KtPool<UPtr<KSceneComponent>> children_;
+	UTransform spawnTransform_; // todo: prob parse later
 	UTransform transform_;
 	EVisibility visibility_;
 	EMobility mobility_;
 	KtEvent<> eventTransformUpdated_;
 	size_t componentIndex_;
+	size_t childrenIndex_;
 	KtCached<glm::mat4> modelMatrix_;
 };
 

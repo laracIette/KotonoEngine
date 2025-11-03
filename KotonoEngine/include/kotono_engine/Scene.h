@@ -8,8 +8,8 @@ class KScene : public KObject
 {
 	BASECLASS(KObject)
 
-protected:
-	void Init() override;
+public:
+	KScene(UPtrOwnerBase* ptrOwner);
 
 public:
 	void Load();
@@ -22,9 +22,12 @@ public:
 	void SerializeTo(nlohmann::json& json) const override;
 	void DeserializeFrom(const nlohmann::json& json) override;
 
+	void SpawnSceneObjects() const;
+
 private:
 	KtPool<UPtr<TSceneObject>> sceneObjects_;
 
 	UPtr<TSceneObject> GetSceneObject(const std::string_view type);
+
 };
 

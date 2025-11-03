@@ -14,10 +14,9 @@
 #include <kotono_framework/Shader.h>
 #include <kotono_framework/Model.h>
 
-void KScene::Init()
+KScene::KScene(UPtrOwnerBase* ptrOwner) :
+	Base(ptrOwner)
 {
-	Base::Init();
-
 	auto* shader3D{ Framework.ShaderManager().Get(Framework.Path().FrameworkPath() / R"(shaders\shader3D.ktshader)") };
 	shader3D->SetName("3D Shader");
 
@@ -27,13 +26,13 @@ void KScene::Init()
 	UPtr mesh1{ Engine.ObjectManager().Create<TSceneMeshObject>() };
 	mesh1->GetMeshComponent()->SetShader(shader3D);
 	mesh1->GetMeshComponent()->SetModel(model1);
-	mesh1->RootComponent()->SetRelativePosition({ -1.0f, 0.0f, 0.0f });
+	mesh1->RootComponent()->SetSpawnPosition({ -1.0f, 0.0f, 0.0f });
 
 	UPtr mesh2{ Engine.ObjectManager().Create<TSceneMeshObject>() };
 	mesh2->GetMeshComponent()->SetShader(shader3D);
 	mesh2->GetMeshComponent()->SetModel(model2);
-	mesh2->RootComponent()->SetRelativePosition({ 1.0f, 0.0f, 0.0f });
-	mesh2->RootComponent()->SetRelativeScale({ 0.2f, 0.2f, 0.2f });
+	mesh2->RootComponent()->SetSpawnPosition({ 1.0f, 0.0f, 0.0f });
+	mesh2->RootComponent()->SetSpawnScale({ 0.2f, 0.2f, 0.2f });
 	mesh2->SetParent(mesh1, ECoordinateSpace::World);
 
 	sceneObjects_.Append({ mesh1, mesh2 });
@@ -102,4 +101,12 @@ UPtr<TSceneObject> KScene::GetSceneObject(const std::string_view type)
 	//if (type == "TSceneObject")             return Engine.ObjectManager().Create<TSceneObject>();
 	//else if (type == "TSceneMeshObject")    return Engine.ObjectManager().Create<TSceneMeshObject>();
 	return UPtr<TSceneObject>();
+}
+
+void KScene::SpawnSceneObjects() const
+{
+	for (const auto& sceneObject : sceneObjects_)
+	{
+		sceneObject->RootComponent()->Spawn();
+	}
 }

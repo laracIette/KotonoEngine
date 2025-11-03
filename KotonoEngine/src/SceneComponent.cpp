@@ -60,6 +60,21 @@ KtEvent<>& KSceneComponent::EventTransformUpdated()
     return eventTransformUpdated_;
 }
 
+const glm::vec3& KSceneComponent::GetSpawnPosition() const
+{
+    return spawnTransform_.position;
+}
+
+const glm::quat& KSceneComponent::GetSpawnRotation() const
+{
+    return spawnTransform_.rotation;
+}
+
+const glm::vec3& KSceneComponent::GetSpawnScale() const
+{
+    return spawnTransform_.scale;
+}
+
 void KSceneComponent::SetVisibility(const EVisibility visibility)
 {
     visibility_ = visibility;
@@ -165,6 +180,20 @@ void KSceneComponent::SetParent(const UPtr<KSceneComponent>& parent, const ECoor
         return;
     }
 
+    if (parent_)
+    {
+        const size_t index{ childrenIndex_ };
+        if (parent_->children_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+        {
+            parent_->children_[index]->childrenIndex_ = index;
+        }
+    }
+    if (parent)
+    {
+        parent->children_.Add(Ptr<KSceneComponent>());
+        childrenIndex_ = parent->children_.LastIndex();
+    }
+
     switch (keepTransform)
     {
     case ECoordinateSpace::Relative:
@@ -184,6 +213,21 @@ void KSceneComponent::SetParent(const UPtr<KSceneComponent>& parent, const ECoor
         break;
     }
     }
+}
+
+void KSceneComponent::SetSpawnPosition(const glm::vec3& spawnPosition)
+{
+    spawnTransform_.position = spawnPosition;
+}
+
+void KSceneComponent::SetSpawnRotation(const glm::quat& spawnRotation)
+{
+    spawnTransform_.rotation = spawnRotation;
+}
+
+void KSceneComponent::SetSpawnScale(const glm::vec3& spawnScale)
+{
+    spawnTransform_.scale = spawnScale;
 }
 
 void KSceneComponent::SetRelativePosition(const glm::vec3& relativePosition)
@@ -290,4 +334,16 @@ glm::vec3 KSceneComponent::GetDirection(const UPtr<KSceneComponent>& target) con
 float KSceneComponent::GetDistance(const UPtr<KSceneComponent>& other) const
 {
     return glm::distance(GetWorldPosition(), other->GetWorldPosition());
+}
+
+void KSceneComponent::Spawn()
+{
+    SetRelativePosition(GetSpawnPosition());
+    SetRelativeRotation(GetSpawnRotation());
+    SetRelativeScale(GetSpawnScale());
+
+    for (const auto& sceneComponent : children_)
+    {
+        sceneComponent->Spawn();
+    }
 }
