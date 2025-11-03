@@ -191,6 +191,11 @@ void KInterfaceComponent::SetLayer(const int32_t layer)
 
 void KInterfaceComponent::SetParent(const UPtr<KInterfaceComponent>& parent, const ECoordinateSpace keepRect)
 {
+    if (parent_ == parent)
+    {
+        return;
+    }
+
     if (parent_)
     {
         parent_->EventRectUpdated().RemoveListener(KtDelegate(&eventRectUpdated_, &KtEvent<>::Broadcast));
@@ -207,9 +212,9 @@ void KInterfaceComponent::SetParent(const UPtr<KInterfaceComponent>& parent, con
     }
     case ECoordinateSpace::World:
     {
-        const auto size = GetWorldSize();
-        const auto position = GetWorldPosition();
-        const auto rotation = GetWorldRotation();
+        const auto size{ GetWorldSize() };
+        const auto position{ GetWorldPosition() };
+        const auto rotation{ GetWorldRotation() };
         parent_ = parent;
         SetWorldSize(size);
         SetWorldPosition(position);

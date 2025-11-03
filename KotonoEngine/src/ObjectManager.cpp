@@ -16,6 +16,7 @@
 #include "Interface.h"
 
 #define KT_LOG_IMPORTANCE_LEVEL_OBJECT KT_LOG_IMPORTANCE_LEVEL_NONE
+#undef interface
 
 void SObjectManager::Init()
 {

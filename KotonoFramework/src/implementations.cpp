@@ -4,7 +4,7 @@
 
 #ifndef VMA_LOG_IMPORTANCE_LEVEL
 #define VMA_LOG_IMPORTANCE_LEVEL KT_LOG_IMPORTANCE_LEVEL_LOW
-#endif
+#endif // VMA_LOG_IMPORTANCE_LEVEL
 
 #define VMA_DEBUG_LOG(format, ...)                            \
 	if constexpr (KT_SHOULD_LOG(VMA_LOG_IMPORTANCE_LEVEL))    \
@@ -14,7 +14,7 @@
 
 #define VMA_DEBUG_INITIALIZE_ALLOCATIONS 1 
 
-#endif
+#endif // _DEBUG
 
 #define VMA_IMPLEMENTATION
 #include <vma/vk_mem_alloc.h> 

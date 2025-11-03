@@ -154,6 +154,11 @@ glm::vec3 KSceneComponent::GetScreenPosition() const
 
 void KSceneComponent::SetParent(const UPtr<KSceneComponent>& parent, const ECoordinateSpace keepTransform)
 {
+    if (parent_ == parent)
+    {
+        return;
+    }
+
     if (!GetCanSetTransform())
     {
         KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "can't set parent for %s, its mobility is static", GetName().c_str());
