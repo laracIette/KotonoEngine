@@ -4,11 +4,10 @@
 #include <kotono_framework/Event.h>
 class SVisualizer final
 {
-	friend class SEngine;
+	friend class SEditor;
 
 private:
 	void Init();
-	void Cleanup();
 
 public:
 	bool GetIsFieldVisible(const EVisualizationField field) const; 

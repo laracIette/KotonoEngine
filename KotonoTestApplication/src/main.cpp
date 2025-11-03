@@ -15,7 +15,11 @@ int main()
 
     while (!Framework.Window().GetShouldClose())
     {
+        Framework.Update();
         Engine.Update();
+#       ifdef EDITOR
+            Editor.Update();
+#       endif
     }
 
 #   ifdef EDITOR

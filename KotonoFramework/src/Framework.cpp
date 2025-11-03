@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "Context.h"
 #include "Renderer.h"
+#include "TimeManager.h"
 #include "AudioManager.h"
 #include "InputManager.h"
 #include "ModelManager.h"
@@ -15,6 +16,7 @@ static KtPath Path;
 static KtWindow Window;
 static KtContext Context;
 static KtRenderer Renderer;
+static KtTimeManager TimeManager;
 static KtAudioManager AudioManager;
 static KtInputManager InputManager;
 static KtModelManager ModelManager;
@@ -28,9 +30,16 @@ void KtFramework::Init()
     ::Window.Init();
     ::Context.Init();
     ::Renderer.Init();
+    ::TimeManager.Init();
     ::AudioManager.Init();
     ::InputManager.Init();
     ::ShaderManager.Init();
+}
+
+void KtFramework::Update()
+{
+    ::TimeManager.Update();
+    ::InputManager.Update();
 }
 
 void KtFramework::Cleanup()
@@ -92,6 +101,16 @@ KtRenderer& KtFramework::Renderer()
 const KtRenderer& KtFramework::Renderer() const
 {
     return ::Renderer;
+}
+
+KtTimeManager& KtFramework::TimeManager()
+{
+    return ::TimeManager;
+}
+
+const KtTimeManager& KtFramework::TimeManager() const
+{
+    return ::TimeManager;
 }
 
 KtAudioManager& KtFramework::AudioManager()

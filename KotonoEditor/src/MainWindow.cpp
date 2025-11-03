@@ -7,7 +7,7 @@
 #include "TestBox.h"
 #include "VisualizerWindow.h"
 #include "PropertiesWindow.h"
-#include "StartGameButton.h"
+#include "GameStateButton.h"
 
 WWidget* WMainWindow::Build()
 {
@@ -45,7 +45,7 @@ WWidget* WMainWindow::Build()
 				new WRow({
 					.children = {
 						new WSpacer({}),
-						new WStartGameButton({}),
+						new WGameStateButton({}),
 						new WSpacer({}),
 					},
 				}),

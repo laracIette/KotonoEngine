@@ -13,7 +13,6 @@
 #include <kotono_framework/Path.h>
 #include <kotono_framework/Shader.h>
 #include <kotono_framework/Model.h>
-#include "Camera.h"
 
 void KScene::Init()
 {
@@ -24,9 +23,6 @@ void KScene::Init()
 
 	auto* model1{ Framework.ModelManager().Get(Framework.Path().FrameworkPath() / R"(assets\models\viking_room.obj)") };
 	auto* model2{ Framework.ModelManager().Get(Framework.Path().FrameworkPath() / R"(assets\models\SM_Column_low.fbx)") };
-
-	UPtr camera{ Engine.ObjectManager().Create<TCamera>() };
-	camera->Use();
 
 	UPtr mesh1{ Engine.ObjectManager().Create<TSceneMeshObject>() };
 	mesh1->GetMeshComponent()->SetShader(shader3D);
@@ -40,26 +36,7 @@ void KScene::Init()
 	mesh2->RootComponent()->SetRelativeScale({ 0.2f, 0.2f, 0.2f });
 	mesh2->SetParent(mesh1, ECoordinateSpace::World);
 
-	sceneObjects_.Append({ camera, mesh1, mesh2 });
-
-	Engine.Game().EventStateChanged()
-		.AddListener(KtDelegate(this, &KScene::OnEventGameStateChanged));
-}
-
-void KScene::Update()
-{
-	if (!Engine.Game().IsPlaying())
-	{
-		return;
-	}
-
-	for (const auto& sceneObject : sceneObjects_)
-	{
-		if (sceneObject->GetCanGameUpdate())
-		{
-			sceneObject->GameUpdate();
-		}
-	}
+	sceneObjects_.Append({ mesh1, mesh2 });
 }
 
 void KScene::Load()
@@ -125,23 +102,4 @@ UPtr<TSceneObject> KScene::GetSceneObject(const std::string_view type)
 	//if (type == "TSceneObject")             return Engine.ObjectManager().Create<TSceneObject>();
 	//else if (type == "TSceneMeshObject")    return Engine.ObjectManager().Create<TSceneMeshObject>();
 	return UPtr<TSceneObject>();
-}
-
-void KScene::OnEventGameStateChanged(const EGameState gameState)
-{
-	switch (gameState)
-	{
-	case EGameState::Stopped:
-		break;
-	case EGameState::Playing:
-	{
-		for (const auto& sceneObject : sceneObjects_)
-		{
-			sceneObject->GameStart();
-		}
-		break;
-	}
-	case EGameState::Paused:
-		break;
-	}
 }

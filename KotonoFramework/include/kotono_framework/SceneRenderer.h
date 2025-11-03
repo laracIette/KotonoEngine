@@ -1,5 +1,5 @@
 #pragma once
-#include "UniformData3D.h"
+#include "SceneUniformData.h"
 #include "frames_in_flight.h"
 #include "Pool.h"
 #include "RendererFrameStats.h"
@@ -16,7 +16,7 @@ public:
 	void Update(const uint32_t frameIndex);
 	void Cleanup();
 
-	void SetUniformData(const KtUniformData3D& uniformData);
+	void SetUniformData(const KtSceneUniformData& uniformData);
 
 	void RegisterStatic(KtRenderable3DProxy* proxy);
 	void RegisterDynamic(KtRenderable3DProxy* proxy);
@@ -28,8 +28,8 @@ public:
 private:
 	KtFramesInFlightArray<KtRendererFrameStats> stats_;
 
-	std::pair<KtUniformData3D, uint32_t> stagingUniformData_;
-	KtFramesInFlightArray<KtUniformData3D> uniformDatas_;
+	std::pair<KtSceneUniformData, uint32_t> stagingUniformData_;
+	KtFramesInFlightArray<KtSceneUniformData> uniformDatas_;
 	KtFramesInFlightArray<bool> isUniformBufferDirty_;
 
 	KtFramesInFlightArray<VkCommandBuffer> staticCommandBuffers_;

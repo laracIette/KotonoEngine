@@ -32,14 +32,15 @@ struct KtColor final
 	constexpr KtColor WithAlpha(float alpha) const noexcept { return { r, g, b, alpha }; }
 	constexpr KtColor WithValue(float value) const noexcept { return { r * value, g * value, b * value, a }; }
 
-	static consteval KtColor Black()   noexcept { return { 0.0f, 0.0f, 0.0f, 1.0f }; }
-	static consteval KtColor Blue()    noexcept { return { 0.0f, 0.0f, 1.0f, 1.0f }; }
-	static consteval KtColor Cyan()    noexcept { return { 0.0f, 1.0f, 1.0f, 1.0f }; }
-	static consteval KtColor Green()   noexcept { return { 0.0f, 1.0f, 0.0f, 1.0f }; }
-	static consteval KtColor Magenta() noexcept { return { 1.0f, 0.0f, 1.0f, 1.0f }; }
-	static consteval KtColor Red()     noexcept { return { 1.0f, 0.0f, 0.0f, 1.0f }; }
-	static consteval KtColor White()   noexcept { return { 1.0f, 1.0f, 1.0f, 1.0f }; }
-	static consteval KtColor Yellow()  noexcept { return { 1.0f, 1.0f, 0.0f, 1.0f }; }
+	static consteval KtColor Black()       noexcept { return { 0.0f, 0.0f, 0.0f, 1.0f }; }
+	static consteval KtColor Blue()        noexcept { return { 0.0f, 0.0f, 1.0f, 1.0f }; }
+	static consteval KtColor Cyan()        noexcept { return { 0.0f, 1.0f, 1.0f, 1.0f }; }
+	static consteval KtColor Green()       noexcept { return { 0.0f, 1.0f, 0.0f, 1.0f }; }
+	static consteval KtColor Magenta()     noexcept { return { 1.0f, 0.0f, 1.0f, 1.0f }; }
+	static consteval KtColor Red()         noexcept { return { 1.0f, 0.0f, 0.0f, 1.0f }; }
+	static consteval KtColor Transparent() noexcept { return { 0.0f, 0.0f, 0.0f, 0.0f }; }
+	static consteval KtColor White()       noexcept { return { 1.0f, 1.0f, 1.0f, 1.0f }; }
+	static consteval KtColor Yellow()      noexcept { return { 1.0f, 1.0f, 0.0f, 1.0f }; }
 	
 	static constexpr KtColor Mix(const KtColor& left, const KtColor& right) noexcept
 	{
@@ -48,7 +49,7 @@ struct KtColor final
 
 	constexpr bool IsVisible()     const noexcept { return a > 0.0f; }
 	constexpr bool IsOpaque()      const noexcept { return a >= 1.0f; }
-	constexpr bool IsTransparent() const noexcept { return a < 1.0f; }
+	constexpr bool IsTranslucent() const noexcept { return a < 1.0f; }
 
 	constexpr HSV GetHSV() const noexcept
 	{

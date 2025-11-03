@@ -11,35 +11,42 @@ void KTask::Update()
 {
     Base::Update();
 
-    if (isPlaying_)
+    if (!isPlaying_)
     {
-        if (Engine.TimeManager().EditorNow() - startTime_ < duration_)
-        {
-            eventUpdate_.Broadcast();
-        }
-        else
-        {
-            Stop();
-        }
+        return;
     }
+
+    current_ += current_.IsSeconds()
+        ? UDuration::FromSeconds(Engine.TimeManager().GameTime().lastDelta)
+        : UDuration::FromUpdates(1);
+
+    if (current_ < duration_)
+    {
+        eventUpdate_.Broadcast();
+    }
+    else
+    {
+        Stop();
+    }
+    
 }
 
-float KTask::GetDuration() const
+const UDuration& KTask::GetDuration() const
 {
     return duration_;
 }
 
-KtEvent<>& KTask::GetEventUpdate()
+KtEvent<>& KTask::EventUpdate()
 {
     return eventUpdate_;
 }
 
-KtEvent<>& KTask::GetEventCompleted()
+KtEvent<>& KTask::EventCompleted()
 {
     return eventCompleted_;
 }
 
-void KTask::SetDuration(const float duration)
+void KTask::SetDuration(const UDuration& duration)
 {
     duration_ = duration;
 }
@@ -47,7 +54,9 @@ void KTask::SetDuration(const float duration)
 void KTask::Start()
 {
     isPlaying_ = true;
-    startTime_ = Engine.TimeManager().EditorNow();
+    current_ = current_.IsSeconds()
+        ? UDuration::FromSeconds(0.0f)
+        : UDuration::FromUpdates(0);
 }
 
 void KTask::Stop()

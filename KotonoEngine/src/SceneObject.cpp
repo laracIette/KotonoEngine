@@ -29,25 +29,6 @@ void TSceneObject::Cleanup()
 	}
 }
 
-void TSceneObject::GameStart()
-{
-	for (const auto& component : components_)
-	{
-		component->GameStart();
-	}
-}
-
-void TSceneObject::GameUpdate()
-{
-	for (const auto& component : components_)
-	{
-		if (component->GetCanGameUpdate())
-		{
-			component->GameUpdate();
-		}
-	}
-}
-
 EVisibility TSceneObject::GetVisibility() const
 {
 	return rootComponent_->GetVisibility();
@@ -66,11 +47,6 @@ const UPtr<TSceneObject>& TSceneObject::GetParent() const
 const UPtr<KSceneComponent>& TSceneObject::RootComponent() const
 {
 	return rootComponent_;
-}
-
-bool TSceneObject::GetCanGameUpdate() const
-{
-	return canGameUpdate_;
 }
 
 void TSceneObject::SetVisibility(const EVisibility visibility)
@@ -110,11 +86,6 @@ void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinate
 	}
 	parent_ = parent;
 	RootComponent()->SetParent(parent_ ? parent_->RootComponent() : nullptr, keepTransform);
-}
-
-void TSceneObject::SetCanGameUpdate(const bool canGameUpdate)
-{
-	canGameUpdate_ = canGameUpdate;
 }
 
 void TSceneObject::AddComponent(const UPtr<KSceneComponent>& component)

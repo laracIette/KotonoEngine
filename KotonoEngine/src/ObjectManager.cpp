@@ -1,5 +1,7 @@
 #include "ObjectManager.h"
 #include <kotono_framework/Framework.h>
+#include <kotono_framework/TimeManager.h>
+#include <kotono_framework/Timer.h>
 #include <kotono_framework/Window.h>
 #include <kotono_framework/InputManager.h>
 #include <kotono_framework/Path.h>
@@ -28,11 +30,11 @@ void SObjectManager::Init()
 	//Framework.InputManager().Keyboard().KeyEvent(KT_KEY_R, KT_INPUT_STATE_PRESSED)
 	//	.AddListener(KtDelegate(scene.Get(), &KScene::Reload));
 
-	UPtr logUPSTimer{ Create<KTimer>() };
-	logUPSTimer->SetDuration(UDuration::FromSeconds(1.0f));
-	logUPSTimer->SetIsRepeat(true);
-	logUPSTimer->GetEventCompleted().AddListener(KtDelegate(this, &SObjectManager::LogUPS));
-	logUPSTimer->Start();
+	auto& logUPSTimer{ Framework.TimeManager().GetTimer("log ups timer") };
+	logUPSTimer.SetDuration(1.0f);
+	logUPSTimer.SetIsRepeat(true);
+	logUPSTimer.EventCompleted().AddListener(KtDelegate(this, &SObjectManager::LogUPS));
+	logUPSTimer.Start();
 }
 
 void SObjectManager::Update()
@@ -40,7 +42,6 @@ void SObjectManager::Update()
 	InitObjects();
 	UpdateObjects();
 	DeleteObjects();
-
 	++currentUpdate_;
 }
 
@@ -177,7 +178,7 @@ const UPtr<KObject>& SObjectManager::SelectedObject() const
 
 void SObjectManager::LogUPS() const
 {
-	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "%.2f ups", 1.0f / Engine.TimeManager().AverageEngineTime());
+	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "%.2f ups", 1.0f / Framework.TimeManager().AverageUpdateTime());
 }
 
 void SObjectManager::OnMouseButtonLeftPressed()

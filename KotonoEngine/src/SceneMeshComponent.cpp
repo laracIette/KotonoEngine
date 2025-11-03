@@ -35,13 +35,16 @@ void KSceneMeshComponent::Init()
 {
     Base::Init();
 
-    spinTask_->SetDuration(5.0f);
-    spinTask_->GetEventUpdate().AddListener(KtDelegate(this, &KSceneMeshComponent::Spin));
+    spinTask_->SetDuration(UDuration::FromSeconds(5.0f));
+    spinTask_->EventUpdate().AddListener(KtDelegate(this, &KSceneMeshComponent::Spin));
+    spinTask_->Start();
 
     InitModelProxy();
 
-    Framework.InputManager().Keyboard().KeyEvent(KT_KEY_N, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
-    Framework.InputManager().Keyboard().KeyEvent(KT_KEY_M, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
+    Framework.InputManager().Keyboard().KeyEvent(KT_KEY_N, KT_INPUT_STATE_PRESSED)
+        .AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
+    Framework.InputManager().Keyboard().KeyEvent(KT_KEY_M, KT_INPUT_STATE_PRESSED)
+        .AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
 }
 
 void KSceneMeshComponent::Cleanup()
@@ -53,15 +56,10 @@ void KSceneMeshComponent::Cleanup()
 
     spinTask_->Delete();
     
-    Framework.InputManager().Keyboard().KeyEvent(KT_KEY_N, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
-    Framework.InputManager().Keyboard().KeyEvent(KT_KEY_M, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
-}
-
-void KSceneMeshComponent::GameStart()
-{
-    Base::GameStart();
-
-    spinTask_->Start();
+    Framework.InputManager().Keyboard().KeyEvent(KT_KEY_N, KT_INPUT_STATE_PRESSED)
+        .RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
+    Framework.InputManager().Keyboard().KeyEvent(KT_KEY_M, KT_INPUT_STATE_PRESSED)
+        .RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
 }
 
 KtShader* KSceneMeshComponent::GetShader() const
@@ -170,7 +168,7 @@ void KSceneMeshComponent::UnregisterProxies()
 
 void KSceneMeshComponent::Spin()
 {
-    const float speed{ 10.0f * Engine.TimeManager().GameDelta() };
+    const float speed{ 10.0f * Engine.TimeManager().GameTime().lastDelta };
     const glm::quat rotation{ glm::quat(glm::radians(glm::vec3(0.0f, speed, 0.0f))) };
     Rotate(rotation);
 }

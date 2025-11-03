@@ -4,6 +4,7 @@ class KtPath;
 class KtWindow;
 class KtContext;
 class KtRenderer;
+class KtTimeManager;
 class KtAudioManager;
 class KtInputManager;
 class KtModelManager;
@@ -13,6 +14,7 @@ class KtFramework final
 {
 public:
 	void Init();
+	void Update();
 	void Cleanup();
 
 public:
@@ -26,6 +28,8 @@ public:
 	const KtContext& Context() const;
 	KtRenderer& Renderer();
 	const KtRenderer& Renderer() const;
+	KtTimeManager& TimeManager();
+	const KtTimeManager& TimeManager() const;
 	KtAudioManager& AudioManager();
 	const KtAudioManager& AudioManager() const;
 	KtInputManager& InputManager();

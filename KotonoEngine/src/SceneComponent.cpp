@@ -3,7 +3,6 @@
 #include "log.h"
 #include <stdexcept>
 #include "Engine.h"
-#include "Visualizer.h"
 
 KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSceneObject>& owner) :
     Base(ptrOwner),
@@ -17,9 +16,6 @@ KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSceneObjec
     {
         SetParent(Owner()->RootComponent(), ECoordinateSpace::Relative);
     }
-
-    Engine.Visualizer().EventVisibilityChanged(EVisualizationField::SceneObject)
-        .AddListener(KtDelegate(this, &KSceneComponent::SetIsViewportVisible));
 }
 
 void KSceneComponent::Init()
@@ -32,14 +28,6 @@ void KSceneComponent::Cleanup()
     Owner()->RemoveComponent(Ptr<KSceneComponent>());
 
     Base::Cleanup();
-}
-
-void KSceneComponent::GameStart()
-{
-}
-
-void KSceneComponent::GameUpdate()
-{
 }
 
 const UPtr<TSceneObject>& KSceneComponent::Owner() const
@@ -72,11 +60,6 @@ KtEvent<>& KSceneComponent::EventTransformUpdated()
     return eventTransformUpdated_;
 }
 
-bool KSceneComponent::GetCanGameUpdate() const
-{
-    return canGameUpdate_;
-}
-
 void KSceneComponent::SetVisibility(const EVisibility visibility)
 {
     visibility_ = visibility;
@@ -85,11 +68,6 @@ void KSceneComponent::SetVisibility(const EVisibility visibility)
 void KSceneComponent::SetMobility(const EMobility mobility)
 {
     mobility_ = mobility;
-}
-
-void KSceneComponent::SetCanGameUpdate(const bool canGameUpdate)
-{
-    canGameUpdate_ = canGameUpdate;
 }
 
 const glm::vec3& KSceneComponent::GetRelativePosition() const
@@ -307,9 +285,4 @@ glm::vec3 KSceneComponent::GetDirection(const UPtr<KSceneComponent>& target) con
 float KSceneComponent::GetDistance(const UPtr<KSceneComponent>& other) const
 {
     return glm::distance(GetWorldPosition(), other->GetWorldPosition());
-}
-
-void KSceneComponent::SetIsViewportVisible(const bool isViewportVisible)
-{
-    isViewportVisible_ = isViewportVisible;
 }

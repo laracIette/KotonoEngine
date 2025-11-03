@@ -6,6 +6,12 @@ void KtInputManager::Init()
     mouse_.Init();
 }
 
+void KtInputManager::Update()
+{
+    keyboard_.Update();
+    mouse_.Update();
+}
+
 KtMouse& KtInputManager::Mouse()
 {
     return mouse_;

@@ -12,13 +12,9 @@ void SVisualizer::Init()
 	SetIsFieldVisible(EVisualizationField::InterfaceObjectWireframe, true);
 }
 
-void SVisualizer::Cleanup()
-{
-}
-
 bool SVisualizer::GetIsFieldVisible(const EVisualizationField field) const
 {
-	const auto it = _fieldVisibilities.find(field);
+	const auto it{ _fieldVisibilities.find(field) };
 	if (it != _fieldVisibilities.end())
 	{
 		return it->second;

@@ -1,7 +1,6 @@
 #pragma once
 #include "Object.h"
 #include <kotono_framework/Pool.h>
-#include "GameState.h"
 
 class TSceneObject;
 
@@ -11,7 +10,6 @@ class KScene : public KObject
 
 protected:
 	void Init() override;
-	void Update() override;
 
 public:
 	void Load();
@@ -28,7 +26,5 @@ private:
 	KtPool<UPtr<TSceneObject>> sceneObjects_;
 
 	UPtr<TSceneObject> GetSceneObject(const std::string_view type);
-
-	void OnEventGameStateChanged(const EGameState gameState);
 };
 

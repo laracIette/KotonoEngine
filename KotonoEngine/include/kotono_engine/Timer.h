@@ -13,7 +13,7 @@ public:
 	bool GetIsPlaying() const;
 	bool GetIsRepeat() const;
 	const UDuration& GetDuration() const;
-	KtEvent<>& GetEventCompleted();
+	KtEvent<>& EventCompleted();
 
 	void SetIsRepeat(const bool isRepeat);
 	void SetDuration(const UDuration& duration);

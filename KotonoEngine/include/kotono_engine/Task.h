@@ -1,6 +1,7 @@
 #pragma once
 #include "Object.h"
 #include <kotono_framework/Event.h>
+#include "Duration.h"
 class KTask : public KObject
 {
 	BASECLASS(KObject)
@@ -10,19 +11,19 @@ protected:
 	void Update() override;
 
 public:
-	float GetDuration() const;
-	KtEvent<>& GetEventUpdate();
-	KtEvent<>& GetEventCompleted();
+	const UDuration& GetDuration() const;
+	KtEvent<>& EventUpdate();
+	KtEvent<>& EventCompleted();
 
-	void SetDuration(const float duration);
+	void SetDuration(const UDuration& duration);
 
 	void Start();
 	void Stop();
 
 private:
 	bool isPlaying_;
-	float startTime_;
-	float duration_;
+	UDuration current_;
+	UDuration duration_;
 	KtEvent<> eventUpdate_;
 	KtEvent<> eventCompleted_;
 };

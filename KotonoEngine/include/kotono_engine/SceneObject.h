@@ -25,20 +25,15 @@ protected:
 	void Init() override;
 	void Cleanup() override;
 
-	virtual void GameStart();
-	virtual void GameUpdate();
-
 public:
 	EVisibility GetVisibility() const;
 	KtWindowViewport* GetViewport() const;
 	const UPtr<TSceneObject>& GetParent() const;
 	const UPtr<KSceneComponent>& RootComponent() const;
-	bool GetCanGameUpdate() const;
 
 	void SetVisibility(const EVisibility visibility);
 	void SetViewport(KtWindowViewport* viewport);
 	void SetParent(const UPtr<TSceneObject>& parent, const ECoordinateSpace keepTransform);
-	void SetCanGameUpdate(const bool canGameUpdate);
 
 	template <SceneComponent T>
 	UPtr<T> GetComponent() const
@@ -65,5 +60,4 @@ private:
 	KtPool<UPtr<TSceneObject>> children_;
 	KtPool<UPtr<KSceneComponent>> components_;
 	size_t childrenIndex_;
-	bool canGameUpdate_;
 };

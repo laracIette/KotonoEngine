@@ -17,8 +17,6 @@ protected:
 	void Init() override;
 	void Cleanup() override;
 
-	void GameStart() override;
-
 public:
 	KtShader* GetShader() const;
 	KtModel* GetModel() const;

@@ -1,5 +1,5 @@
 #pragma once
-#include "UniformData2D.h"
+#include "InterfaceUniformData.h"
 #include "frames_in_flight.h"
 #include "AllocatedBuffer.h"
 #include "Pool.h"
@@ -25,7 +25,7 @@ public:
 	void Update(const uint32_t frameIndex);
 	void Cleanup() const;
 
-	void SetUniformData(const KtUniformData2D& uniformData);
+	void SetUniformData(const KtInterfaceUniformData& uniformData);
 
 	void Register(KtInterfaceRenderableProxy* proxy);
 	void Unregister(KtInterfaceRenderableProxy* proxy);
@@ -41,7 +41,7 @@ private:
 	KtAllocatedBuffer stagingVertexBuffer_;
 	KtAllocatedBuffer stagingIndexBuffer_;
 
-	KtFramesInFlightArray<KtUniformData2D> uniformDatas_;
+	KtFramesInFlightArray<KtInterfaceUniformData> uniformDatas_;
 
 	KtFramesInFlightArray<VkCommandBuffer> commandBuffers_;
 	KtFramesInFlightArray<bool> isCommandBufferDirty_;

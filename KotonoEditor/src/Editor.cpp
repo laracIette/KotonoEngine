@@ -1,9 +1,26 @@
 #include "Editor.h"
 #include "MainWindow.h"
 #include <kotono_framework/WindowViewport.h>
+#include "GameManager.h"
+#include "Visualizer.h"
+#include "Camera.h"
+#include <kotono_framework/Framework.h>
+#include <kotono_framework/TimeManager.h>
+
+static SGameManager GameManager;
+static SVisualizer Visualizer;
+static SCamera Camera;
 
 void SEditor::Init()
 {
+	::Visualizer.Init();
+	::Camera.Init();
+
+	auto& updateTimer{ Framework.TimeManager().GetTimer("update time text") };
+	updateTimer.SetDuration(1.0f / 24.0f);
+	updateTimer.SetIsRepeat(true);
+	updateTimer.Start();
+
 	widget_ = new WMainWindow();
 	widget_->CacheBuild();
 	widget_->Display({
@@ -14,8 +31,45 @@ void SEditor::Init()
 	});
 }
 
+void SEditor::Update()
+{
+
+}
+
 void SEditor::Cleanup()
 {
 	widget_->Cleanup();
 	delete widget_;
+
+	::Camera.Cleanup();
+}
+
+SGameManager& SEditor::GameManager()
+{
+	return ::GameManager;
+}
+
+const SGameManager& SEditor::GameManager() const
+{
+	return ::GameManager;
+}
+
+SVisualizer& SEditor::Visualizer()
+{
+	return ::Visualizer;
+}
+
+const SVisualizer& SEditor::Visualizer() const
+{
+	return ::Visualizer;
+}
+
+SCamera& SEditor::Camera()
+{
+	return ::Camera;
+}
+
+const SCamera& SEditor::Camera() const
+{
+	return ::Camera;
 }

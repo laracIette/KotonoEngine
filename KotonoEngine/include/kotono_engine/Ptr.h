@@ -21,6 +21,9 @@ class UPtrOwner final : public UPtrOwnerBase
 	friend class SObjectManager;
 
 public:
+	using PointerType = T;
+
+public:
 	UPtrOwner() {}
 	
 	~UPtrOwner()
@@ -51,6 +54,9 @@ class UPtr final
 {
 	using Owner = UPtrOwner<T>;
 	friend Owner;
+
+public:
+	using PointerType = T;
 
 public:
 	UPtr() {}

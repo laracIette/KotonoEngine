@@ -140,8 +140,8 @@ std::string KObject::ToString() const
 void KObject::Delay(const KtDelegate<>& delegate, const UDuration& delay) const
 {
     UPtr timer = Engine.ObjectManager().Create<KTimer>();
-    timer->GetEventCompleted().AddListener(KtDelegate(timer.Get(), &KTimer::Delete));
-    timer->GetEventCompleted().AddListener(delegate);
+    timer->EventCompleted().AddListener(KtDelegate(timer.Get(), &KTimer::Delete));
+    timer->EventCompleted().AddListener(delegate);
     timer->SetDuration(delay);
     timer->Start();
 }
@@ -149,8 +149,8 @@ void KObject::Delay(const KtDelegate<>& delegate, const UDuration& delay) const
 void KObject::Delay(KtDelegate<>&& delegate, const UDuration& delay) const
 {
     UPtr timer = Engine.ObjectManager().Create<KTimer>();
-    timer->GetEventCompleted().AddListener(KtDelegate(timer.Get(), &KTimer::Delete));
-    timer->GetEventCompleted().AddListener(std::move(delegate));
+    timer->EventCompleted().AddListener(KtDelegate(timer.Get(), &KTimer::Delete));
+    timer->EventCompleted().AddListener(std::move(delegate));
     timer->SetDuration(delay);
     timer->Start();
 }

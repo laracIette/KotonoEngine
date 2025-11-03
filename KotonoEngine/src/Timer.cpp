@@ -19,7 +19,7 @@ void KTimer::Update()
     }
 
     current_ += current_.IsSeconds()
-        ? UDuration::FromSeconds(Engine.TimeManager().EditorDelta())
+        ? UDuration::FromSeconds(Engine.TimeManager().GameTime().lastDelta)
         : UDuration::FromUpdates(1);
 
     if (current_ < duration_)
@@ -54,7 +54,7 @@ const UDuration& KTimer::GetDuration() const
     return duration_;
 }
 
-KtEvent<>& KTimer::GetEventCompleted()
+KtEvent<>& KTimer::EventCompleted()
 {
     return eventCompleted_;
 }

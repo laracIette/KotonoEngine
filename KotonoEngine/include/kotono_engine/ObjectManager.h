@@ -12,7 +12,7 @@ concept Object = std::is_base_of_v<KObject, T>;
 class SObjectManager final
 {
 	friend class SEngine;
-	friend class STimeManager;
+	friend class SGame;
 
 private:
 	void Init();

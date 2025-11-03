@@ -34,7 +34,7 @@ void KtSceneRenderer::Cleanup()
 {
 }
 
-void KtSceneRenderer::SetUniformData(const KtUniformData3D& uniformData)
+void KtSceneRenderer::SetUniformData(const KtSceneUniformData& uniformData)
 {
 	stagingUniformData_ = { uniformData, static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT) };
 }

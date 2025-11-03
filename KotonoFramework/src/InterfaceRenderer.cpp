@@ -228,7 +228,7 @@ void KtInterfaceRenderer::EndCommandBuffer(VkCommandBuffer commandBuffer)
 	);
 }
 
-void KtInterfaceRenderer::SetUniformData(const KtUniformData2D& uniformData)
+void KtInterfaceRenderer::SetUniformData(const KtInterfaceUniformData& uniformData)
 {
 	uniformDatas_[Framework.Renderer().GetGameThreadFrame()] = uniformData;
 }

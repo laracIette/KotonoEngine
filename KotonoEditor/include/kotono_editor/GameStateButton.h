@@ -1,6 +1,6 @@
 #pragma once
 #include <kotono_interface\Widget.h>
-class WStartGameButton : public WWidget
+class WGameStateButton : public WWidget
 {
 public:
 	WWidget* Build() override;

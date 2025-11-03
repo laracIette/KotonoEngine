@@ -1,8 +1,7 @@
 #pragma once
-#include "GameState.h"
-#include <kotono_framework/Event.h>
-#include "Ptr.h"
+#include <kotono_engine/Ptr.h>
 class KScene;
+class KInterface;
 class SGame final
 {
 	friend class STimeManager;
@@ -11,24 +10,11 @@ private:
 	void Update();
 
 public:
-	bool IsPlaying() const;
-	bool IsPaused() const;
-	bool IsStopped() const;
-
-	void Play();
-	void Pause();
-	void Stop();
-
 	void OpenScene(const UPtr<KScene>& scene);
-
-	EGameState GetState() const;
-	void SetState(const EGameState state);
-
-	KtEvent<EGameState>& EventStateChanged();
+	void OpenInterface(const UPtr<KInterface>& interface);
 
 private:
-	EGameState state_;
-	KtEvent<EGameState> eventStateChanged_;
 	UPtr<KScene> scene_;
+	UPtr<KInterface> interface_;
 };
 
