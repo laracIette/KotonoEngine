@@ -35,6 +35,8 @@ void SObjectManager::Init()
 	logUPSTimer.SetIsRepeat(true);
 	logUPSTimer.EventCompleted().AddListener(KtDelegate(this, &SObjectManager::LogUPS));
 	logUPSTimer.Start();
+
+	currentUpdate_ = 0;
 }
 
 void SObjectManager::Update()
@@ -166,7 +168,7 @@ void SObjectManager::DeleteObjects()
 	deletes_.Clear();
 }
 
-int64_t SObjectManager::GetCurrentUpdate() const
+uint64_t SObjectManager::GetCurrentUpdate() const
 {
 	return currentUpdate_;
 }

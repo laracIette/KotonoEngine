@@ -1,5 +1,6 @@
 #include "ListBody.h"
 #include "List.h"
+#include <glm/common.hpp>
 
 WListBody::WListBody(const ListBodySettings& listBodySettings) :
 	WChildrenOwnerWidget(listBodySettings.children),

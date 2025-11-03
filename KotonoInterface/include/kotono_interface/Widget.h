@@ -1,9 +1,11 @@
 #pragma once
 #include <functional>
-#include "utils.h"
 #include "Flex.h"
 #include <kotono_framework/Cached.h>
 #include <kotono_framework/Scissor.h>
+#include <glm/fwd.hpp>
+#include <glm/vec2.hpp>
+#include <string>
 /// Base class of all widgets
 class WWidget
 {

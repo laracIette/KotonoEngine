@@ -31,7 +31,7 @@ public:
 
 	void Delete(UPtrOwnerBase* ptrOwner);
 
-	int64_t GetCurrentUpdate() const;
+	uint64_t GetCurrentUpdate() const;
 
 	const UPtr<KObject>& SelectedObject() const;
 
@@ -44,7 +44,7 @@ private:
 
 	UPtr<KObject> selectedObject_;
 
-	int64_t currentUpdate_;
+	uint64_t currentUpdate_;
 
 	void Register(KObject* object, UPtrOwnerBase* ptrOwner);
 

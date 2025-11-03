@@ -1,7 +1,6 @@
 #pragma once
-#include <kotono_framework/glm_includes.h>
+#include <glm/vec2.hpp>
 #include "Anchor.h"
-
 struct URect final
 {
 	glm::vec2 size{ 0.0f, 0.0f };

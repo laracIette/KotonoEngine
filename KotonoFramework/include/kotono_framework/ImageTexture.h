@@ -3,8 +3,8 @@
 #include <filesystem>
 #include <vma/vk_mem_alloc.h>
 #include "AllocatedBuffer.h"
-#include "glm_includes.h"
 #include "InterfaceRenderable.h"
+#include <glm/vec2.hpp>
 class KtImageTexture final : public KtInterfaceRenderable
 {
 public:

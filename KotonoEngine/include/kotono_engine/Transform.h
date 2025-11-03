@@ -1,5 +1,6 @@
 #pragma once
-#include <kotono_framework/glm_includes.h>
+#include <glm/vec3.hpp>
+#include <glm/gtc/quaternion.hpp>
 struct UTransform final
 {
     glm::vec3 position{ 0.0f, 0.0f, 0.0f };

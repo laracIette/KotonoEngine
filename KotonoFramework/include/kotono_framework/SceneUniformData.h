@@ -1,5 +1,5 @@
 #pragma once
-#include "glm_includes.h"
+#include <glm/mat4x4.hpp>
 struct KtSceneUniformData final
 {
 	glm::mat4 view;

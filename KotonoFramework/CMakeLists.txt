@@ -37,6 +37,11 @@ set_target_properties(KotonoFramework PROPERTIES
 # Preprocessor defines for all builds
 target_compile_definitions(KotonoFramework PUBLIC
     NOMINMAX
+    GLM_FORCE_RADIANS
+    GLM_FORCE_LEFT_HANDED
+    GLM_FORCE_DEPTH_ZERO_TO_ONE
+    GLM_ENABLE_EXPERIMENTAL
+    GLM_FORCE_CXX20
 )
 
 # Library search folder

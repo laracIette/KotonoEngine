@@ -50,7 +50,7 @@ void KtModel::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t instanceCoun
 
 void KtModel::Load()
 {
-	Assimp::Importer importer;
+	Assimp::Importer importer{};
 	const aiScene* scene = importer.ReadFile(path_.string().c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
 
 	if (!scene || !scene->HasMeshes())
@@ -60,18 +60,21 @@ void KtModel::Load()
 
 	std::unordered_map<KtVertex3D, uint32_t> uniqueVertices{};
 
-	for (unsigned int m = 0; m < scene->mNumMeshes; ++m)
+	for (uint32_t m{ 0 }; m < scene->mNumMeshes; ++m)
 	{
 		const aiMesh* mesh = scene->mMeshes[m];
 
-		for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
+		for (uint32_t i{ 0 }; i < mesh->mNumFaces; ++i)
 		{
 			const aiFace& face = mesh->mFaces[i];
 
-			for (unsigned int j = 0; j < face.mNumIndices; ++j)
+			for (uint32_t j{ 0 }; j < face.mNumIndices; ++j)
 			{
-				const aiVector3D pos = mesh->mVertices[face.mIndices[j]];
-				const aiVector3D texCoord = mesh->mTextureCoords[0] ? mesh->mTextureCoords[0][face.mIndices[j]] : aiVector3D(0.0f, 0.0f, 0.0f);
+				const aiVector3D pos{ mesh->mVertices[face.mIndices[j]] };
+				const aiVector3D texCoord{ mesh->mTextureCoords[0] 
+					? mesh->mTextureCoords[0][face.mIndices[j]] 
+					: aiVector3D(0.0f, 0.0f, 0.0f) 
+				};
 
 				KtVertex3D vertex{};
 				vertex.Position = { pos.x, pos.y, pos.z };

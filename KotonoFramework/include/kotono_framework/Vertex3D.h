@@ -1,5 +1,7 @@
 #pragma once
-#include "glm_includes.h"
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/gtx/hash.hpp>
 struct KtVertex3D final
 {
     glm::vec3 Position;

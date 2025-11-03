@@ -2,6 +2,7 @@
 #include "Expanded.h"
 #include <algorithm>
 #include <kotono_framework/bitwise_utils.h>
+#include <glm/common.hpp>
 
 WColumn::WColumn(const ColumnSettings& columnSettings) : 
 	WChildrenOwnerWidget(columnSettings.children),

@@ -9,7 +9,7 @@ struct UDuration final
         return { seconds };
     }
 
-    static constexpr UDuration FromUpdates(const int64_t updates) noexcept
+    static constexpr UDuration FromUpdates(const uint64_t updates) noexcept
     {
         return { updates };
     }
@@ -66,8 +66,8 @@ struct UDuration final
 
     constexpr bool IsUpdates() const noexcept
     {
-        return std::holds_alternative<int64_t>(value);
+        return std::holds_alternative<uint64_t>(value);
     }
 
-    std::variant<float, int64_t> value;
+    std::variant<float, uint64_t> value;
 };

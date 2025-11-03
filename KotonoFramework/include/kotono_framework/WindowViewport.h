@@ -1,6 +1,6 @@
 #pragma once
 #include <vulkan/vulkan_core.h>
-#include "glm_includes.h"
+#include <glm/vec2.hpp>
 class KtWindowViewport final
 {
 public:

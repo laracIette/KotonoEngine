@@ -1,5 +1,7 @@
 #include "Widget.h"
 #include "log.h"
+#include "utils.h"
+#include <glm/ext/matrix_transform.hpp>
 
 WWidget::WWidget() :
 	cachedBuild_([this]() { return Build(); })

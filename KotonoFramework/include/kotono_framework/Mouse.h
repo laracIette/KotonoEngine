@@ -1,10 +1,10 @@
 #pragma once
-#include "glm_includes.h"
 #include "Button.h"
 #include "Event.h"
 #include "InputState.h"
 #include <array>
 #include <unordered_set>
+#include <glm/vec2.hpp>
 struct GLFWwindow;
 class KtMouse final
 {

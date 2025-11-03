@@ -18,7 +18,7 @@ void KTimer::Update()
         return;
     }
 
-    current_ += current_.IsSeconds()
+    current_ += duration_.IsSeconds()
         ? UDuration::FromSeconds(Engine.TimeManager().GameTime().lastDelta)
         : UDuration::FromUpdates(1);
 
@@ -78,7 +78,7 @@ void KTimer::Start(const bool isOverride)
 
     isPlaying_ = true;
 
-    current_ = current_.IsSeconds()
+    current_ = duration_.IsSeconds()
         ? UDuration::FromSeconds(0.0f)
         : UDuration::FromUpdates(0);
 }

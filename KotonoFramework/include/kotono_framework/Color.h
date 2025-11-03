@@ -1,5 +1,6 @@
 #pragma once
-#include <kotono_framework/glm_includes.h>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 struct KtColor final
 {
 	struct RGB { float r, g, b; };
@@ -142,7 +143,7 @@ struct KtColor final
 		const float q = v * (1.0f - f * s);
 		const float t = v * (1.0f - (1.0f - f) * s);
 
-		RGB rgb{};
+		RGB rgb;
 		switch (i)
 		{
 		case 0: rgb = { v, t, p }; break;
@@ -169,13 +170,13 @@ struct KtColor final
 		const float x = c * (1.0f - absf(modf(h * 6.0f, 2.0f) - 1.0f));
 		const float m = l - c / 2.0f;
 
-		RGB rgb{};
+		RGB rgb;
 		if (0.0f <= h && h < 1.0f / 6.0f) rgb = { c, x, 0.0f };
-		else if (h < 2.0f / 6.0f) rgb = { x, c, 0.0f };
-		else if (h < 3.0f / 6.0f) rgb = { 0.0f, c, x };
-		else if (h < 4.0f / 6.0f) rgb = { 0.0f, x, c };
-		else if (h < 5.0f / 6.0f) rgb = { x, 0.0f, c };
-		else                      rgb = { c, 0.0f, x };
+		else if (h < 2.0f / 6.0f)         rgb = { x, c, 0.0f };
+		else if (h < 3.0f / 6.0f)         rgb = { 0.0f, c, x };
+		else if (h < 4.0f / 6.0f)         rgb = { 0.0f, x, c };
+		else if (h < 5.0f / 6.0f)         rgb = { x, 0.0f, c };
+		else                              rgb = { c, 0.0f, x };
 
 		rgb.r += m;
 		rgb.g += m;

@@ -26,9 +26,9 @@ WWidget* WGameStateButton::Build()
                                 });
                             },
                         }),
-                        Editor.GameManager().IsPlaying() ?
-                            new WColor({ KtColor::White().WithValue(0.5f) }) :
-                            new WColor({ KtColor::Green() })
+                        Editor.GameManager().IsPlaying() 
+                            ? new WColor({ KtColor::White().WithValue(0.5f) })
+                            : new WColor({ KtColor::Green() })
                     },
                 }),
             }),
@@ -47,9 +47,9 @@ WWidget* WGameStateButton::Build()
                                 });
                             },
                         }),
-                        Editor.GameManager().IsStopped() ?
-                            new WColor({ KtColor::Red().WithAlpha(0.1f) }) :
-                            new WColor({ KtColor::Red() })
+                        Editor.GameManager().IsStopped()
+                            ? new WColor({ KtColor::Red().WithAlpha(0.1f) })
+                            : new WColor({ KtColor::Red() })
                     },
                 }),
             }),

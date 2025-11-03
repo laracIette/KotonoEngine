@@ -1,5 +1,5 @@
 #pragma once
-#include "glm_includes.h"
+#include <glm/vec2.hpp>
 struct KtScissor final
 {
 	glm::ivec2 offset;

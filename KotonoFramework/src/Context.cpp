@@ -5,6 +5,7 @@
 #include <array>
 #include "log.h"
 #include "vk_utils.h"
+#include <glm/common.hpp>
 
 constexpr std::array<const char*, 1> ValidationLayers =
 {

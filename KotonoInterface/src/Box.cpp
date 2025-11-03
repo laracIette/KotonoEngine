@@ -1,4 +1,5 @@
 #include "Box.h"
+#include <glm/common.hpp>
 
 WBox::WBox(const BoxSettings& boxSettings) :
 	WChildOwnerWidget(boxSettings.child),

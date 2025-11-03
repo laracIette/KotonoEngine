@@ -1,6 +1,6 @@
 #pragma once
 #include <GLFW/glfw3.h>
-#include "glm_includes.h"
+#include <glm/vec2.hpp>
 #include "Event.h"
 class KtWindow final
 {

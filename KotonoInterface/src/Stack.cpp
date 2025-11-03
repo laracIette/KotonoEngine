@@ -1,4 +1,5 @@
 #include "Stack.h"
+#include <glm/common.hpp>
 
 WStack::WStack(const StackSettings& stackSettings) :
 	WChildrenOwnerWidget(stackSettings.children),
