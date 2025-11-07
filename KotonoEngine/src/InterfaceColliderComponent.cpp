@@ -60,7 +60,7 @@ void KInterfaceColliderComponent::OnEventMouseLeftButtonPressed()
 
 	for (const auto& interfaceCollider : overlaps_)
 	{
-		if (interfaceCollider->GetVisibility() != EVisibility::None &&
+		if (interfaceCollider->GetVisibility() == EVisibility::Visible &&
 			interfaceCollider->GetLayer() > GetLayer() && 
 			interfaceCollider->IsHovered())
 		{

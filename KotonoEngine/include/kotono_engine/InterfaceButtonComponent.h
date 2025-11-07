@@ -1,9 +1,10 @@
 #pragma once
+#include "generated/InterfaceButtonComponent.generated.h"
 #include "InterfaceComponent.h"
 class KInterfaceColliderComponent;
-class KInterfaceButtonComponent final : public KInterfaceComponent
+class KInterfaceButtonComponent : public KInterfaceComponent
 {
-	BASECLASS(KInterfaceComponent)
+	GENERATED_KINTERFACEBUTTONCOMPONENT()
 
 public:
 	KInterfaceButtonComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner);

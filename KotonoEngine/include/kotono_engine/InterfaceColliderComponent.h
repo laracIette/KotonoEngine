@@ -1,10 +1,11 @@
 #pragma once
+#include "generated/InterfaceColliderComponent.generated.h"
 #include "InterfaceComponent.h"
 #include <kotono_framework/Event.h>
 #include <kotono_framework/Pool.h>
-class KInterfaceColliderComponent final : public KInterfaceComponent
+class KInterfaceColliderComponent : public KInterfaceComponent
 {
-	BASECLASS(KInterfaceComponent)
+	GENERATED_KINTERFACECOLLIDERCOMPONENT()
 
 	friend class SInterfacePhysicsManager;
 

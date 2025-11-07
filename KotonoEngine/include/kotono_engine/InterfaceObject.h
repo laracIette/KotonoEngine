@@ -1,7 +1,7 @@
 #pragma once
+#include "generated/InterfaceObject.generated.h"
 #include "Object.h"
 #include "CoordinateSpace.h"
-#include "Visibility.h"
 #include <kotono_framework/Collection.h>
 #include <kotono_framework/Pool.h>
 
@@ -13,7 +13,7 @@ concept InterfaceComponent = std::is_base_of_v<KInterfaceComponent, T>;
 
 class RInterfaceObject : public KObject
 {
-	BASECLASS(KObject)
+	GENERATED_RINTERFACEOBJECT()
 
 public:
 	RInterfaceObject(UPtrOwnerBase* ptrOwner);
@@ -23,13 +23,11 @@ protected:
 	void Cleanup() override;
 
 public:
-	EVisibility GetVisibility() const;
 	KtWindowViewport* GetViewport() const;
 	const UPtr<RInterfaceObject>& GetParent() const;
 	const UPtr<KInterfaceComponent>& RootComponent() const;
 	const KtPool<UPtr<RInterfaceObject>>& GetChildren() const;
 
-	void SetVisibility(const EVisibility visibility);
 	void SetViewport(KtWindowViewport* viewport);
 	void SetParent(const UPtr<RInterfaceObject>& parent, const ECoordinateSpace keepRect);
 
@@ -52,7 +50,6 @@ public:
 	void RemoveComponent(const UPtr<KInterfaceComponent>& component);
 
 private:
-	EVisibility visibility_;
 	KtWindowViewport* viewport_;
 	UPtr<RInterfaceObject> parent_;
 	UPtr<KInterfaceComponent> rootComponent_;

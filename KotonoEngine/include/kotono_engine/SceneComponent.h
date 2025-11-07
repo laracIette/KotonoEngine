@@ -1,4 +1,5 @@
 #pragma once
+#include "generated/SceneComponent.generated.h"
 #include "Object.h"
 #include "Transform.h"
 #include "Visibility.h"
@@ -11,7 +12,7 @@ class TSceneObject;
 
 class KSceneComponent : public KObject
 {
-	BASECLASS(KObject)
+	GENERATED_KSCENECOMPONENT()
 
 	friend class TSceneObject;
 
@@ -53,7 +54,7 @@ public:
 
 	glm::vec3 GetScreenPosition() const;
 
-	virtual void SetVisibility(const EVisibility visibility);
+	virtual void SetVisibility(const EVisibility visibility, const bool propagateToChildren = false);
 	virtual void SetMobility(const EMobility mobility);
 
 	void SetParent(const UPtr<KSceneComponent>& parent, const ECoordinateSpace keepTransform);
@@ -79,6 +80,9 @@ public:
 
 	virtual void Spawn();
 
+	//void SerializeTo(nlohmann::json& json) const override;
+	//void DeserializeFrom(const nlohmann::json& json) override;
+
 private:
 	const UPtr<TSceneObject> owner_;
 	UPtr<KSceneComponent> parent_;
@@ -87,7 +91,8 @@ private:
 	UTransform transform_;
 	EVisibility visibility_;
 	EMobility mobility_;
-	KtEvent<> eventTransformUpdated_;
+	KtEvent<> eventTransformUpdated_; // todo: maybe replace by eventPositionChanged...
+									  // dirty children matrix in setposition...
 	size_t componentIndex_;
 	size_t childrenIndex_;
 	KtCached<glm::mat4> modelMatrix_;

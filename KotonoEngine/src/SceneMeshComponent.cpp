@@ -80,19 +80,19 @@ void KSceneMeshComponent::SetModel(KtModel* model)
     model_ = model;
 }
 
-void KSceneMeshComponent::SerializeTo(nlohmann::json& json) const
-{
-    Base::SerializeTo(json);
-    json["shader"] = shader_ ? shader_->Path() : "";
-    json["model"] = model_ ? model_->Path() : "";
-}
+//void KSceneMeshComponent::SerializeTo(nlohmann::json& json) const
+//{
+//    Base::SerializeTo(json);
+//    json["shader"] = shader_ ? shader_->Path() : "";
+//    json["model"] = model_ ? model_->Path() : "";
+//}
 
-void KSceneMeshComponent::DeserializeFrom(const nlohmann::json& json)
-{
-    Base::DeserializeFrom(json);
-    shader_ = Framework.ShaderManager().Get(json["shader"]);
-    model_ = Framework.ModelManager().Get(json["model"]);
-}
+//void KSceneMeshComponent::DeserializeFrom(const nlohmann::json& json)
+//{
+//    Base::DeserializeFrom(json);
+//    shader_ = Framework.ShaderManager().Get(json["shader"]);
+//    model_ = Framework.ModelManager().Get(json["model"]);
+//}
 
 void KSceneMeshComponent::Spawn()
 {
@@ -103,10 +103,10 @@ void KSceneMeshComponent::Spawn()
     EventTransformUpdated().AddListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
 }
 
-void KSceneMeshComponent::SetVisibility(const EVisibility visibility)
+void KSceneMeshComponent::SetVisibility(const EVisibility visibility, const bool propagateToChildren)
 {
     UnregisterModelProxy();
-    Base::SetVisibility(visibility);
+    Base::SetVisibility(visibility, propagateToChildren);
     RegisterModelProxy();
 }
 

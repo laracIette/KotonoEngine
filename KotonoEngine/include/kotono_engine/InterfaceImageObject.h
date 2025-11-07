@@ -1,11 +1,12 @@
 #pragma once
+#include "generated/InterfaceImageObject.generated.h"
 #include "InterfaceObject.h"
 
 class KInterfaceImageComponent;
 
 class RInterfaceImageObject : public RInterfaceObject
 {
-	BASECLASS(RInterfaceObject)
+	GENERATED_RINTERFACEIMAGEOBJECT()
 
 public:
 	RInterfaceImageObject(UPtrOwnerBase* ptrOwner);

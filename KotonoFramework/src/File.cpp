@@ -70,7 +70,7 @@ std::string KtFile::ReadString() const
 
 std::vector<uint8_t> KtFile::ReadBinary() const
 {
-    if (!std::filesystem::exists(path_))
+    if (!Exists())
     {
         std::cerr << "Failed to find a file at '" << path_ << '\'' << std::endl;
         return {};

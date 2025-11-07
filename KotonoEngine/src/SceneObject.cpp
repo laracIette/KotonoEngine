@@ -29,11 +29,6 @@ void TSceneObject::Cleanup()
 	}
 }
 
-EVisibility TSceneObject::GetVisibility() const
-{
-	return rootComponent_->GetVisibility();
-}
-
 KtWindowViewport* TSceneObject::GetViewport() const
 {
 	return viewport_;
@@ -47,11 +42,6 @@ const UPtr<TSceneObject>& TSceneObject::GetParent() const
 const UPtr<KSceneComponent>& TSceneObject::RootComponent() const
 {
 	return rootComponent_;
-}
-
-void TSceneObject::SetVisibility(const EVisibility visibility)
-{
-	rootComponent_->SetVisibility(visibility);
 }
 
 void TSceneObject::SetViewport(KtWindowViewport* viewport)
@@ -103,40 +93,15 @@ void TSceneObject::RemoveComponent(const UPtr<KSceneComponent>& component)
 	}
 }
 
-void TSceneObject::SerializeTo(nlohmann::json& json) const
-{
-	Base::SerializeTo(json);
-	json["parent"] = parent_ ? static_cast<std::string>(parent_->Guid()) : ""; // ??
-	/*json["transform"]["position"]["x"] = transform_.position.x;
-	json["transform"]["position"]["y"] = transform_.position.y;
-	json["transform"]["position"]["z"] = transform_.position.z;
-	json["transform"]["rotation"]["w"] = transform_.rotation.w;
-	json["transform"]["rotation"]["x"] = transform_.rotation.x;
-	json["transform"]["rotation"]["y"] = transform_.rotation.y;
-	json["transform"]["rotation"]["z"] = transform_.rotation.z;
-	json["transform"]["scale"]["x"] = transform_.scale.x;
-	json["transform"]["scale"]["y"] = transform_.scale.y;
-	json["transform"]["scale"]["z"] = transform_.scale.z;*/
-}
+//void TSceneObject::SerializeTo(nlohmann::json& json) const
+//{
+//	Base::SerializeTo(json);
+//	json["parent"] = parent_ ? static_cast<std::string>(parent_->Guid()) : ""; // ??
+//}
 
-void TSceneObject::DeserializeFrom(const nlohmann::json& json)
-{
-	Base::DeserializeFrom(json);
-	// parent
-	/*transform_.SetRelativePosition({
-		json["transform"]["position"]["x"],
-		json["transform"]["position"]["y"],
-		json["transform"]["position"]["z"]
-	});
-	transform_.SetRelativeRotation({
-		json["transform"]["rotation"]["w"],
-		json["transform"]["rotation"]["x"],
-		json["transform"]["rotation"]["y"],
-		json["transform"]["rotation"]["z"]
-	});
-	transform_.SetRelativeScale({ 
-		json["transform"]["scale"]["x"],
-		json["transform"]["scale"]["y"],
-		json["transform"]["scale"]["z"] 
-	});*/
-}
+//void TSceneObject::DeserializeFrom(const nlohmann::json& json)
+//{
+//	Base::DeserializeFrom(json);
+//	// parent
+//	rootComponent_->DeserializeFrom(json["rootComponent_"]);
+//}

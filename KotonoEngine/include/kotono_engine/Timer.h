@@ -1,9 +1,10 @@
 #pragma once
+#include "generated/Timer.generated.h"
 #include "Object.h"
 #include <kotono_framework/Event.h>
 class KTimer : public KObject
 {
-	BASECLASS(KObject)
+	GENERATED_KTIMER()
 
 protected:
 	void Init() override;

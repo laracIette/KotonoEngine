@@ -3,11 +3,12 @@
 #include "log.h"
 #include <stdexcept>
 #include "Engine.h"
+#include <nlohmann/json.hpp>
 
 KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSceneObject>& owner) :
     Base(ptrOwner),
     owner_(owner),
-    visibility_(EVisibility::EditorAndGame),
+    visibility_(EVisibility::Visible),
     modelMatrix_([this]() { return TranslationMatrix() * RotationMatrix() * ScaleMatrix(); })
 {
     eventTransformUpdated_.AddListener(KtDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
@@ -75,9 +76,16 @@ const glm::vec3& KSceneComponent::GetSpawnScale() const
     return spawnTransform_.scale;
 }
 
-void KSceneComponent::SetVisibility(const EVisibility visibility)
+void KSceneComponent::SetVisibility(const EVisibility visibility, const bool propagateToChildren)
 {
     visibility_ = visibility;
+    if (propagateToChildren)
+    {
+        for (const auto& sceneComponent : children_)
+        {
+            sceneComponent->SetVisibility(visibility, propagateToChildren);
+        }
+    }
 }
 
 void KSceneComponent::SetMobility(const EMobility mobility)
@@ -347,3 +355,41 @@ void KSceneComponent::Spawn()
         sceneComponent->Spawn();
     }
 }
+
+//void KSceneComponent::SerializeTo(nlohmann::json& json) const
+//{
+//    Base::SerializeTo(json);
+//
+//    json["transform_"]["position"]["x"] = transform_.position.x;
+//    json["transform_"]["position"]["y"] = transform_.position.y;
+//    json["transform_"]["position"]["z"] = transform_.position.z;
+//    json["transform_"]["rotation"]["w"] = transform_.rotation.w;
+//    json["transform_"]["rotation"]["x"] = transform_.rotation.x;
+//    json["transform_"]["rotation"]["y"] = transform_.rotation.y;
+//    json["transform_"]["rotation"]["z"] = transform_.rotation.z;
+//    json["transform_"]["scale"]["x"] = transform_.scale.x;
+//    json["transform_"]["scale"]["y"] = transform_.scale.y;
+//    json["transform_"]["scale"]["z"] = transform_.scale.z;
+//}
+
+//void KSceneComponent::DeserializeFrom(const nlohmann::json& json)
+//{
+//    Base::DeserializeFrom(json);
+//
+//    SetRelativePosition({
+//        json["transform_"]["position"]["x"],
+//        json["transform_"]["position"]["y"],
+//        json["transform_"]["position"]["z"]
+//    });
+//    SetRelativeRotation({
+//        json["transform_"]["rotation"]["w"],
+//        json["transform_"]["rotation"]["x"],
+//        json["transform_"]["rotation"]["y"],
+//        json["transform_"]["rotation"]["z"]
+//    });
+//    SetRelativeScale({
+//        json["transform_"]["scale"]["x"],
+//        json["transform_"]["scale"]["y"],
+//        json["transform_"]["scale"]["z"]
+//    });
+//}

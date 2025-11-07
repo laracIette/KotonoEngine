@@ -15,6 +15,7 @@
 KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner) :
     Base(ptrOwner),
     owner_(owner),
+    visibility_(EVisibility::Visible),
     modelMatrix_([this]() { return TranslationMatrix() * RotationMatrix() * ScaleMatrix(); }),
     color_(KtColor::White())
 {
@@ -31,8 +32,6 @@ KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner, const UPtr<RIn
 void KInterfaceComponent::Init()
 {
     Base::Init();
-
-    visibility_ = EVisibility::EditorAndGame;
 
     CreateBoundsProxy();
     Framework.Renderer().GetInterfaceRenderer().Register(boundsProxy_);
@@ -178,9 +177,16 @@ const KtColor& KInterfaceComponent::GetColor() const
     return color_;
 }
 
-void KInterfaceComponent::SetVisibility(const EVisibility visibility)
+void KInterfaceComponent::SetVisibility(const EVisibility visibility, const bool propagateToChildren)
 {
     visibility_ = visibility;
+    if (propagateToChildren)
+    {
+        for (const auto& interfaceComponent : children_)
+        {
+            interfaceComponent->SetVisibility(visibility, propagateToChildren);
+        }
+    }
 }
 
 void KInterfaceComponent::SetLayer(const int32_t layer)

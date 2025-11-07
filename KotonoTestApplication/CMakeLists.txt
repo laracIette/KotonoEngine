@@ -11,10 +11,6 @@ if(MSVC)
     add_compile_options(/MP)
 endif()
 
-# Require C++20
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 file(GLOB_RECURSE KTESTAPPLICATION_SOURCES "src/*.cpp")
 file(GLOB_RECURSE KTESTAPPLICATION_HEADERS "include/kotono_testapplication/*.h")
 
@@ -37,6 +33,16 @@ target_include_directories(KotonoTestApplication
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_testapplication"
 )
 
+# Add the generator
+add_subdirectory("../KotonoGenerator" "${CMAKE_CURRENT_BINARY_DIR}/KotonoGenerator_build")
+
+# --- Create a custom target to run the generator ---
+add_custom_target(RunKotonoGenerator
+    COMMAND $<TARGET_FILE:KotonoGenerator>
+    DEPENDS KotonoGenerator
+    COMMENT "Running KotonoGenerator..."
+)
+
 # --- Add dependencies as subdirectories ---
 # Adjust paths to your folder structure
 add_subdirectory("../KotonoFramework" "${CMAKE_CURRENT_BINARY_DIR}/KotonoFramework_build")
@@ -45,6 +51,9 @@ add_subdirectory("../KotonoEngine" "${CMAKE_CURRENT_BINARY_DIR}/KotonoEngine_bui
 if (WITH_EDITOR)
 	add_subdirectory("../KotonoEditor" "${CMAKE_CURRENT_BINARY_DIR}/KotonoEditor_build")
 endif()
+
+# --- Make everything that uses generated files depend on the generator ---
+add_dependencies(KotonoEngine RunKotonoGenerator)
 
 # Link the final dependencies
 # CMake will automatically propagate include directories and libraries

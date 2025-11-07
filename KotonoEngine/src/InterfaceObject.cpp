@@ -17,8 +17,6 @@ RInterfaceObject::RInterfaceObject(UPtrOwnerBase* ptrOwner) :
 void RInterfaceObject::Init()
 {
 	Base::Init();
-
-	visibility_ = EVisibility::EditorAndGame;
 }
 
 void RInterfaceObject::Cleanup()
@@ -49,16 +47,6 @@ const UPtr<KInterfaceComponent>& RInterfaceObject::RootComponent() const
 const KtPool<UPtr<RInterfaceObject>>& RInterfaceObject::GetChildren() const
 {
 	return children_;
-}
-
-EVisibility RInterfaceObject::GetVisibility() const
-{
-	return visibility_;
-}
-
-void RInterfaceObject::SetVisibility(const EVisibility visibility)
-{
-	visibility_ = visibility;
 }
 
 void RInterfaceObject::SetViewport(KtWindowViewport* viewport)

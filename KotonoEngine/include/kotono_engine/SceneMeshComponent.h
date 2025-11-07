@@ -1,4 +1,5 @@
 #pragma once
+#include "generated/SceneMeshComponent.generated.h"
 #include <kotono_framework/Renderable3DProxy.h>
 #include "SceneComponent.h"
 
@@ -8,7 +9,7 @@ class KTask;
 
 class KSceneMeshComponent : public KSceneComponent
 {
-	BASECLASS(KSceneComponent)
+	GENERATED_KSCENEMESHCOMPONENT()
 
 public:
 	KSceneMeshComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSceneObject>& owner);
@@ -24,11 +25,11 @@ public:
 	void SetShader(KtShader* shader);
 	void SetModel(KtModel* model); 
 
-	void SetVisibility(const EVisibility visibility) override;
+	void SetVisibility(const EVisibility visibility, const bool propagateToChildren = false) override;
 	void SetMobility(const EMobility mobility) override;
 
-	void SerializeTo(nlohmann::json& json) const override;
-	void DeserializeFrom(const nlohmann::json& json) override;
+	//void SerializeTo(nlohmann::json& json) const override;
+	//void DeserializeFrom(const nlohmann::json& json) override;
 
 	void Spawn() override;
 

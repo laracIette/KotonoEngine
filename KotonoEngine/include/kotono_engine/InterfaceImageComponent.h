@@ -1,4 +1,5 @@
 #pragma once
+#include "generated/InterfaceImageComponent.generated.h"
 #include "InterfaceComponent.h"
 
 class KtShader;
@@ -7,7 +8,7 @@ struct KtInterfaceRenderableProxy;
 
 class KInterfaceImageComponent : public KInterfaceComponent
 {
-	BASECLASS(KInterfaceComponent)
+	GENERATED_KINTERFACEIMAGECOMPONENT()
 
 public:
 	KInterfaceImageComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner);

@@ -1,10 +1,11 @@
 #pragma once
+#include "generated/Task.generated.h"
 #include "Object.h"
 #include <kotono_framework/Event.h>
 #include "Duration.h"
 class KTask : public KObject
 {
-	BASECLASS(KObject)
+	GENERATED_KTASK()
 
 protected:
 	void Init() override;

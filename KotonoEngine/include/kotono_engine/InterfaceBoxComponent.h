@@ -1,8 +1,9 @@
 #pragma once
+#include "generated/InterfaceBoxComponent.generated.h"
 #include "InterfaceComponent.h"
 class KInterfaceBoxComponent : public KInterfaceComponent
 {
-	BASECLASS(KInterfaceComponent)
+	GENERATED_KINTERFACEBOXCOMPONENT()
 
 public:
 	KInterfaceBoxComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner);

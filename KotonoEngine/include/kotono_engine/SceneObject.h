@@ -1,6 +1,6 @@
 #pragma once
+#include "generated/SceneObject.generated.h"
 #include "Object.h"
-#include "Visibility.h"
 #include "CoordinateSpace.h"
 #include <kotono_framework/Collection.h>
 #include <kotono_framework/Pool.h>
@@ -13,7 +13,7 @@ concept SceneComponent = std::is_base_of_v<KSceneComponent, T>;
 
 class TSceneObject : public KObject
 {
-	BASECLASS(KObject)
+	GENERATED_TSCENEOBJECT()
 
 private:
 	friend class KScene;
@@ -26,12 +26,10 @@ protected:
 	void Cleanup() override;
 
 public:
-	EVisibility GetVisibility() const;
 	KtWindowViewport* GetViewport() const;
 	const UPtr<TSceneObject>& GetParent() const;
 	const UPtr<KSceneComponent>& RootComponent() const;
 
-	void SetVisibility(const EVisibility visibility);
 	void SetViewport(KtWindowViewport* viewport);
 	void SetParent(const UPtr<TSceneObject>& parent, const ECoordinateSpace keepTransform);
 
@@ -50,8 +48,8 @@ public:
 	void AddComponent(const UPtr<KSceneComponent>& component);
 	void RemoveComponent(const UPtr<KSceneComponent>& component);
 
-	void SerializeTo(nlohmann::json& json) const override;
-	void DeserializeFrom(const nlohmann::json& json) override;
+	//void SerializeTo(nlohmann::json& json) const override;
+	//void DeserializeFrom(const nlohmann::json& json) override;
 
 private:
 	KtWindowViewport* viewport_;

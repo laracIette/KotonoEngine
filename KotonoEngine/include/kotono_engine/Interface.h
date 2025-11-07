@@ -1,10 +1,11 @@
 #pragma once
+#include "generated/Interface.generated.h"
 #include "Object.h"
 class RInterfaceLayoutObject;
 class RInterfaceImageObject;
-class KInterface final : public KObject
+class KInterface : public KObject
 {
-	BASECLASS(KObject)
+	GENERATED_KINTERFACE()
 
 protected:
 	void Init() override;

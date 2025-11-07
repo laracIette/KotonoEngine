@@ -26,10 +26,12 @@ void SObjectManager::Init()
 		.AddListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
 
 	UPtr scene{ Create<KScene>() };
-	UPtr interface{ Create<KInterface>() };
-	//scene->SetPath(Framework.Path().FrameworkPath() / R"(assets\objects\scene.KScene)");
+	scene->SetPath(Framework.Path().FrameworkPath() / R"(assets\objects\scene.kscene)");
+	scene->Serialize();
+
 	//Framework.InputManager().Keyboard().KeyEvent(KT_KEY_R, KT_INPUT_STATE_PRESSED)
 	//	.AddListener(KtDelegate(scene.Get(), &KScene::Reload));
+	//UPtr interface{ Create<KInterface>() };
 
 	scene->SpawnSceneObjects();
 

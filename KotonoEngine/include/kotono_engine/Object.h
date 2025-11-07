@@ -1,4 +1,5 @@
 #pragma once
+#include "generated/Object.generated.h"
 #include "base_class.h"
 #include <string>
 #include <filesystem>
@@ -7,11 +8,14 @@
 #include <kotono_framework/Event.h>
 #include "Duration.h"
 #include "Ptr.h"
+#include "serialize.h"
 
 class UPtrOwnerBase;
 
 class KObject
 {
+	GENERATED_KOBJECT()
+
 	friend class SObjectManager;
 
 public:
@@ -47,7 +51,7 @@ public:
 	void Deserialize();
 
 	// Serialize to json
-	virtual void SerializeTo(nlohmann::json& json) const;
+	//virtual void SerializeTo(nlohmann::json& json) const;
 	// Deserialize from json
 	virtual void DeserializeFrom(const nlohmann::json& json);
 

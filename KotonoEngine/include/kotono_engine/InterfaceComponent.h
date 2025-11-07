@@ -1,4 +1,5 @@
 #pragma once
+#include "generated/InterfaceComponent.generated.h"
 #include "Object.h"
 #include "Rect.h"
 #include "CoordinateSpace.h"
@@ -16,7 +17,7 @@ struct KtInterfaceRenderableProxy;
 
 class KInterfaceComponent : public KObject
 {
-	BASECLASS(KObject)
+	GENERATED_KINTERFACECOMPONENT()
 
 	friend class RInterfaceObject;
 
@@ -54,7 +55,7 @@ public:
 
 	const KtColor& GetColor() const;
 
-	void SetVisibility(const EVisibility visibility);
+	void SetVisibility(const EVisibility visibility, const bool propagateToChildren = false);
 	void SetLayer(const int32_t layer);
 
 	void SetParent(const UPtr<KInterfaceComponent>& parent, const ECoordinateSpace keepRect);

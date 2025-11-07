@@ -1,11 +1,12 @@
 #pragma once
+#include "generated/SceneMeshObject.generated.h"
 #include "SceneObject.h"
 
 class KSceneMeshComponent;
 
 class TSceneMeshObject : public TSceneObject
 {
-	BASECLASS(TSceneObject)
+	GENERATED_TSCENEMESHOBJECT()
 
 public:
 	TSceneMeshObject(UPtrOwnerBase* ptrOwner);

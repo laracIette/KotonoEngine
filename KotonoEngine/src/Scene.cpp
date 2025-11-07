@@ -14,6 +14,13 @@
 #include <kotono_framework/Shader.h>
 #include <kotono_framework/Model.h>
 
+using FactoryFunc = std::function<UPtr<TSceneObject>()>;
+#define SCENE_OBJECT_FACTORY(Type) { #Type, [] { return Engine.ObjectManager().Create<Type>(); } }
+static std::unordered_map<std::string_view, FactoryFunc> sceneObjectFactories = {
+	SCENE_OBJECT_FACTORY(TSceneObject),
+	SCENE_OBJECT_FACTORY(TSceneMeshObject),
+};
+
 KScene::KScene(UPtrOwnerBase* ptrOwner) :
 	Base(ptrOwner)
 {
@@ -68,38 +75,42 @@ void KScene::Remove(const UPtr<TSceneObject>& sceneObject)
 	sceneObjects_.Remove(sceneObject);
 }
 
-void KScene::SerializeTo(nlohmann::json& json) const
-{
-	Base::SerializeTo(json);
-	for (const auto& sceneObject : sceneObjects_)
-	{
-		nlohmann::json jsonSceneObject;
-		sceneObject->SerializeTo(jsonSceneObject);
-		json["sceneObjects"].push_back(jsonSceneObject);
-	}
-}
+//void KScene::SerializeTo(nlohmann::json& json) const
+//{
+//	Base::SerializeTo(json);
+//	for (const auto& sceneObject : sceneObjects_)
+//	{
+//		nlohmann::json jsonSceneObject;
+//		sceneObject->SerializeTo(jsonSceneObject);
+//		json["sceneObjects"].push_back(jsonSceneObject);
+//	}
+//}
 
-void KScene::DeserializeFrom(const nlohmann::json& json)
-{
-	Base::DeserializeFrom(json);
-	for (const auto& jsonSceneObject : json["sceneObjects"])
-	{
-		if (const auto& sceneObject = GetSceneObject(jsonSceneObject["type"]))
-		{
-			sceneObject->DeserializeFrom(jsonSceneObject);
-			Add(sceneObject);
-		}
-		else
-		{
-			std::cerr << "Type of not supported by scene deserialization" << std::endl;
-		}
-	}
-}
+//void KScene::DeserializeFrom(const nlohmann::json& json)
+//{
+//	Base::DeserializeFrom(json);
+//	for (const auto& jsonSceneObject : json["sceneObjects"])
+//	{
+//		if (const auto& sceneObject = GetSceneObject(jsonSceneObject["type"]))
+//		{
+//			sceneObject->DeserializeFrom(jsonSceneObject);
+//			Add(sceneObject);
+//		}
+//		else
+//		{
+//			std::cerr << "Type of not supported by scene deserialization" << std::endl;
+//		}
+//	}
+//}
 
 UPtr<TSceneObject> KScene::GetSceneObject(const std::string_view type)
 {
-	//if (type == "TSceneObject")             return Engine.ObjectManager().Create<TSceneObject>();
-	//else if (type == "TSceneMeshObject")    return Engine.ObjectManager().Create<TSceneMeshObject>();
+	const auto it{ sceneObjectFactories.find(type) };
+	if (it != sceneObjectFactories.end())
+	{
+		return it->second();
+	}
+	
 	return UPtr<TSceneObject>();
 }
 
