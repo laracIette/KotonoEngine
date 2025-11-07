@@ -119,19 +119,6 @@ void KObject::Deserialize()
     DeserializeFrom(json);
 }
 
-//void KObject::SerializeTo(nlohmann::json& json) const
-//{
-//    json["guid"] = guid_;
-//    json["type"] = GetTypeName();
-//    json["name"] = name_;
-//}
-
-void KObject::DeserializeFrom(const nlohmann::json& json)
-{
-    guid_ = json["guid"];
-    name_ = json["name"];
-}
-
 std::string KObject::ToString() const
 {
     return name_;

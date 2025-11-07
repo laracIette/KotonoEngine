@@ -5,6 +5,14 @@
 
 #define SERIALIZE
 
+namespace std
+{
+	namespace filesystem
+	{
+		class path;
+	}
+}
+
 struct KtColor;
 class UGuid;
 struct UTransform;
@@ -19,6 +27,9 @@ void serialize(nlohmann::json& json, const uint8_t v);
 void serialize(nlohmann::json& json, const uint16_t v);
 void serialize(nlohmann::json& json, const uint32_t v);
 void serialize(nlohmann::json& json, const uint64_t v);
+
+void serialize(nlohmann::json& json, const std::string& string);
+void serialize(nlohmann::json& json, const std::filesystem::path& path);
 
 void serialize(nlohmann::json& json, const glm::vec2& vec);
 void serialize(nlohmann::json& json, const glm::vec3& vec);
@@ -40,6 +51,18 @@ void serialize(nlohmann::json& json, const UPtr<T>& object)
 }
 void serialize(nlohmann::json& json, const UPtr<KObject>& object);
 
+void deserialize(const nlohmann::json& json, int8_t& v);
+void deserialize(const nlohmann::json& json, int16_t& v);
+void deserialize(const nlohmann::json& json, int32_t& v);
+void deserialize(const nlohmann::json& json, int64_t& v);
+void deserialize(const nlohmann::json& json, uint8_t& v);
+void deserialize(const nlohmann::json& json, uint16_t& v);
+void deserialize(const nlohmann::json& json, uint32_t& v);
+void deserialize(const nlohmann::json& json, uint64_t& v);
+
+void deserialize(const nlohmann::json& json, std::string& string);
+void deserialize(const nlohmann::json& json, std::filesystem::path& path);
+
 void deserialize(const nlohmann::json& json, glm::vec2& vec);
 void deserialize(const nlohmann::json& json, glm::vec3& vec);
 void deserialize(const nlohmann::json& json, glm::uvec2& vec);
@@ -52,5 +75,11 @@ void deserialize(const nlohmann::json& json, UGuid& guid);
 void deserialize(const nlohmann::json& json, UTransform& transform);
 void deserialize(const nlohmann::json& json, URect& rect);
 
+template <class T>
+	requires std::is_base_of_v<KObject, T>
+void deserialize(const nlohmann::json& json, UPtr<T>& object)
+{
+	deserialize(json, UPtr<KObject>(object));
+}
 void deserialize(const nlohmann::json& json, UPtr<KObject>& object);
 

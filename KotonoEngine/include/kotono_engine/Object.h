@@ -48,12 +48,7 @@ public:
 	// Serialize and write to the object's path
 	void Serialize() const;
 	// Read from the object's path and deserialize
-	void Deserialize();
-
-	// Serialize to json
-	//virtual void SerializeTo(nlohmann::json& json) const;
-	// Deserialize from json
-	virtual void DeserializeFrom(const nlohmann::json& json);
+	void Deserialize();	
 
 	virtual std::string ToString() const;
 
@@ -71,12 +66,12 @@ protected:
 	}
 
 private:
-	UGuid guid_;
+	SERIALIZE UGuid guid_;
 	bool isConstructed_;
 	bool isDelete_;
 	bool canUpdate_;
-	std::filesystem::path path_;
-	std::string name_;
+	SERIALIZE std::filesystem::path path_;
+	SERIALIZE std::string name_;
 	KtEvent<> eventCleanup_;
 
 	union

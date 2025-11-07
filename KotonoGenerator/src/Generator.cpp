@@ -5,9 +5,7 @@
 static std::string to_upper(std::string s)
 {
 	std::ranges::transform(s, s.begin(), 
-		[](unsigned char c) {
-			return std::toupper(c);
-		}
+		[](unsigned char c) { return std::toupper(c); }
 	);
 	return s;
 }
@@ -67,7 +65,9 @@ void Generator::Generate() const
 			? std::format(
 				"#define GENERATED_{}() \\\n"
 				"\tpublic: \\\n"
-				"\t\tvirtual void SerializeTo(nlohmann::json& json) const; \\\n",
+				"\t\tvirtual void SerializeTo(nlohmann::json& json) const; \\\n"
+				"\t\tvirtual void DeserializeFrom(const nlohmann::json& json); \\\n"
+				"\tprivate:\n",
 				to_upper(classInfo.name)
 			)
 			: std::format(
@@ -76,7 +76,9 @@ void Generator::Generate() const
 				"\t\tusing Base = {}; \\\n"
 				"\t\tusing Base::Base; \\\n"
 				"\tpublic: \\\n"
-				"\t\tvoid SerializeTo(nlohmann::json& json) const override; \\\n",
+				"\t\tvoid SerializeTo(nlohmann::json& json) const override; \\\n"
+				"\t\tvoid DeserializeFrom(const nlohmann::json& json) override; \\\n"
+				"\tprivate:\n",
 				to_upper(classInfo.name),
 				classInfo.baseName
 			)	
@@ -86,38 +88,59 @@ void Generator::Generate() const
 		write_file(generatedPathHeader, generatedCodeHeader);
 
 
-		std::ostringstream code;
-
+		std::ostringstream serializeCode;
 		for (const auto& variable : classInfo.variables)
 		{
-			code << "\tserialize(json, " << variable << ");\n";
+			serializeCode << "\tserialize(json[\"" << variable << "\"], " << variable << ");\n";
+		}
+		std::ostringstream deserializeCode;
+		for (const auto& variable : classInfo.variables)
+		{
+			deserializeCode << "\tdeserialize(json[\"" << variable << "\"], " << variable << ");\n";
 		}
 
 		const std::string generatedCodeCPP{ isKObject
 			? std::format(
 				"#include \"{}\"\n"
 				"#include \"serialize.h\"\n"
+				"#include <nlohmann/json.hpp>\n"
 				"\n"
 				"void {}::SerializeTo(nlohmann::json& json) const\n"
+				"{{\n"
+				"{}"
+				"}}\n"
+				"\n"
+				"void {}::DeserializeFrom(const nlohmann::json& json)\n"
 				"{{\n"
 				"{}"
 				"}}\n",
 				header.filename().string(),
 				classInfo.name,
-				code.str()
+				serializeCode.str(),
+				classInfo.name,
+				deserializeCode.str()
 			)
 			: std::format(
 				"#include \"{}\"\n"
 				"#include \"serialize.h\"\n"
+				"#include <nlohmann/json.hpp>\n"
 				"\n"
 				"void {}::SerializeTo(nlohmann::json& json) const\n"
 				"{{\n"
 				"\tBase::SerializeTo(json);\n"
 				"{}"
+				"}}\n"
+				"\n"
+				"void {}::DeserializeFrom(const nlohmann::json& json)\n"
+				"{{\n"
+				"\tBase::DeserializeFrom(json);\n"
+				"{}"
 				"}}\n",
 				header.filename().string(),
 				classInfo.name,
-				code.str()
+				serializeCode.str(),
+				classInfo.name,
+				deserializeCode.str()
 			) 
 		};
 
