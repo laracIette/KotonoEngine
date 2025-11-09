@@ -3,7 +3,7 @@
 #include "Path.h"
 
 KtFileExplorer::KtFileExplorer() :
-    directoryPath_(Framework.Path().RootPath())
+    directoryPath_(Framework.Path().Root())
 {
 }
 

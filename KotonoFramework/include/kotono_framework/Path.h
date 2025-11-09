@@ -8,13 +8,15 @@ private:
 	void Init();
 
 public:
-	const std::filesystem::path& RootPath() const;
-	const std::filesystem::path& FrameworkPath() const;
-	const std::filesystem::path& EnginePath() const;
+	const std::filesystem::path& Root() const;
+	const std::filesystem::path& Framework() const;
+	const std::filesystem::path& Engine() const;
+	const std::filesystem::path& Project() const;
 
 private:
 	std::filesystem::path rootPath_;
 	std::filesystem::path frameworkPath_;
 	std::filesystem::path enginePath_;
+	std::filesystem::path projectPath_;
 };
 

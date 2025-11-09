@@ -91,12 +91,48 @@ void Generator::Generate() const
 		std::ostringstream serializeCode;
 		for (const auto& variable : classInfo.variables)
 		{
-			serializeCode << "\tserialize(json[\"" << variable << "\"], " << variable << ");\n";
+			if (variable.isContainer)
+			{
+				if (variable.isContainer)
+				{
+					serializeCode
+						<< "\tsize_t i{ 0 };\n"
+						<< "\tfor (const auto& v : " << variable.name << ")\n"
+						<< "\t{\n"
+						<< "\t\tserialize(json[\"" << variable.name << "\"][i], v);\n"
+						<< "\t}\n";
+				}
+			}
+			else
+			{
+				serializeCode << "\tserialize(json[\"" << variable.name << "\"], " << variable.name << ");\n";
+			}
 		}
 		std::ostringstream deserializeCode;
 		for (const auto& variable : classInfo.variables)
 		{
-			deserializeCode << "\tdeserialize(json[\"" << variable << "\"], " << variable << ");\n";
+			if (variable.isContainer)
+			{
+				deserializeCode 
+					<< "\tsize_t i{ 0 };\n"
+					<< "\tfor (auto& v : " << variable.name << ")\n"
+					<< "\t{\n"
+					<< "\t\tdeserialize(json[\"" << variable.name << "\"][i], v);\n"
+					<< "\t}\n";
+			}
+			else
+			{
+				deserializeCode << "\tdeserialize(json[\"" << variable.name << "\"], " << variable.name << ");\n";
+			}
+		}
+
+		std::ostringstream objectClassHeaders;
+		for (const auto& className : classInfo.fwdClasses)
+		{
+			if (IsObjectClass(className))
+			{
+				objectClassHeaders << "#include \"" << GetObjectClassHeader(className) << "\"\n";
+			}
 		}
 
 		const std::string generatedCodeCPP{ isKObject
@@ -104,6 +140,7 @@ void Generator::Generate() const
 				"#include \"{}\"\n"
 				"#include \"serialize.h\"\n"
 				"#include <nlohmann/json.hpp>\n"
+				"{}"
 				"\n"
 				"void {}::SerializeTo(nlohmann::json& json) const\n"
 				"{{\n"
@@ -115,6 +152,7 @@ void Generator::Generate() const
 				"{}"
 				"}}\n",
 				header.filename().string(),
+				objectClassHeaders.str(),
 				classInfo.name,
 				serializeCode.str(),
 				classInfo.name,
@@ -124,6 +162,7 @@ void Generator::Generate() const
 				"#include \"{}\"\n"
 				"#include \"serialize.h\"\n"
 				"#include <nlohmann/json.hpp>\n"
+				"{}"
 				"\n"
 				"void {}::SerializeTo(nlohmann::json& json) const\n"
 				"{{\n"
@@ -137,6 +176,7 @@ void Generator::Generate() const
 				"{}"
 				"}}\n",
 				header.filename().string(),
+				objectClassHeaders.str(),
 				classInfo.name,
 				serializeCode.str(),
 				classInfo.name,
@@ -172,6 +212,7 @@ Generator::ClassInfo Generator::GetClassInfo(const std::string& content) const
 		.name = GetClassName(content),
 		.baseName = GetBaseClassName(content),
 		.variables = GetClassVariables(content),
+		.fwdClasses = GetForwardDeclaredClasses(content),
 	};
 }
 
@@ -201,23 +242,51 @@ std::string Generator::GetBaseClassName(const std::string& content) const
 	return "";
 }
 
-std::vector<std::string> Generator::GetClassVariables(const std::string& content) const
+std::vector<Generator::VariableInfo> Generator::GetClassVariables(const std::string& content) const
 {
-	std::vector<std::string> result{};
+	std::vector<VariableInfo> result;
 
-	const std::regex varRegex(R"(SERIALIZE\s*\(?\s*\)?[^\n]*\b([A-Za-z_]\w*)\b)");
+	const std::regex varRegex(R"(SERIALIZE\s*\(?\s*\)?\s*(.+?)\s+([A-Za-z_]\w*)\s*;)");
 
-	for (std::sregex_iterator i(content.begin(), content.end(), varRegex), end; i != end; ++i)
+	for (std::sregex_iterator it(content.begin(), content.end(), varRegex), end; it != end; ++it)
 	{
-		result.push_back((*i)[1]);
+		const auto typeName{ (*it)[1].str() };
+		const auto varName{ (*it)[2].str() };
+
+		const bool isArray{
+			typeName.find("KtPool") != std::string::npos ||
+			typeName.find("std::vector") != std::string::npos 
+		};
+
+		result.push_back({ varName, isArray });
 	}
 
 	return result;
 }
 
+std::vector<std::string> Generator::GetForwardDeclaredClasses(const std::string& content) const
+{
+	std::vector<std::string> result;
+	
+	const std::regex fwdRegex(R"(\bclass\s+(?:\w+\s+)*([A-Za-z_]\w*)\s*;)");
+
+	for (std::sregex_iterator it(content.begin(), content.end(), fwdRegex), end; it != end; ++it)
+	{
+		result.push_back((*it)[1]);
+	}
+
+	return result;
+}
+
+std::string Generator::GetObjectClassHeader(const std::string& className) const
+{
+	return std::format("{}.h", className.substr(1));
+}
+
 bool Generator::IsObjectClass(const std::string& className) const
 {
-	if (className.empty())
+	if (className.empty()
+	 || className.starts_with("Kt"))
 	{
 		return false;
 	}

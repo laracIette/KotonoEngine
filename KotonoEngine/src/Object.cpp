@@ -5,6 +5,8 @@
 #include "ObjectManager.h"
 #include "Timer.h"
 #include "log.h"
+#include <kotono_framework/Framework.h>
+#include <kotono_framework/Path.h>
 
 KObject::KObject(UPtrOwnerBase* ptrOwner) :
     ptrOwner_(ptrOwner),
@@ -52,9 +54,9 @@ bool KObject::GetCanUpdate() const
     return canUpdate_;
 }
 
-const std::filesystem::path& KObject::Path() const
+const std::filesystem::path KObject::Path() const
 {
-    return path_;
+    return Framework.Path().Project() / "assets" / "objects" / std::format("{}.kobject", static_cast<std::string>(guid_));
 }
 
 const std::string& KObject::GetName() const
@@ -83,11 +85,6 @@ void KObject::SetCanUpdate(const bool canUpdate)
     canUpdate_ = canUpdate;
 }
 
-void KObject::SetPath(const std::filesystem::path& path)
-{
-    path_ = path;
-}
-
 void KObject::Delete()
 {
     if (isDelete_)
@@ -108,14 +105,15 @@ void KObject::Serialize() const
     nlohmann::json json{};
     KtSerializer serializer{};
     SerializeTo(json);
-    serializer.WriteData(path_, json);
+    auto a = Path();
+    serializer.WriteData(Path(), json);
 }
 
 void KObject::Deserialize()
 {
     nlohmann::json json{};
     KtSerializer serializer{};
-    serializer.ReadData(path_, json);
+    serializer.ReadData(Path(), json);
     DeserializeFrom(json);
 }
 

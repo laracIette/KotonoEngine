@@ -24,11 +24,11 @@ static std::unordered_map<std::string_view, FactoryFunc> sceneObjectFactories = 
 KScene::KScene(UPtrOwnerBase* ptrOwner) :
 	Base(ptrOwner)
 {
-	auto* shader3D{ Framework.ShaderManager().Get(Framework.Path().FrameworkPath() / R"(shaders\shader3D.ktshader)") };
+	auto* shader3D{ Framework.ShaderManager().Get(Framework.Path().Framework() / R"(shaders\shader3D.ktshader)") };
 	shader3D->SetName("3D Shader");
 
-	auto* model1{ Framework.ModelManager().Get(Framework.Path().FrameworkPath() / R"(assets\models\viking_room.obj)") };
-	auto* model2{ Framework.ModelManager().Get(Framework.Path().FrameworkPath() / R"(assets\models\SM_Column_low.fbx)") };
+	auto* model1{ Framework.ModelManager().Get(Framework.Path().Framework() / R"(assets\models\viking_room.obj)") };
+	auto* model2{ Framework.ModelManager().Get(Framework.Path().Framework() / R"(assets\models\SM_Column_low.fbx)") };
 
 	UPtr mesh1{ Engine.ObjectManager().Create<TSceneMeshObject>() };
 	mesh1->GetMeshComponent()->SetShader(shader3D);

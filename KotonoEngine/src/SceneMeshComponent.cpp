@@ -26,7 +26,7 @@ KSceneMeshComponent::KSceneMeshComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSc
 
     if (!WireframeShader)
     {
-        const auto path{ Framework.Path().FrameworkPath() / R"(shaders\wireframe3D.ktshader)" };
+        const auto path{ Framework.Path().Framework() / R"(shaders\wireframe3D.ktshader)" };
         WireframeShader = Framework.ShaderManager().Get(path);
     }
 }

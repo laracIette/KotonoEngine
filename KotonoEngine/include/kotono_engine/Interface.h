@@ -1,7 +1,6 @@
 #pragma once
 #include "generated/Interface.generated.h"
 #include "Object.h"
-class RInterfaceLayoutObject;
 class RInterfaceImageObject;
 class KInterface : public KObject
 {
@@ -9,8 +8,5 @@ class KInterface : public KObject
 
 protected:
 	void Init() override;
-
-private:
-	RInterfaceLayoutObject* layout_;
 };
 

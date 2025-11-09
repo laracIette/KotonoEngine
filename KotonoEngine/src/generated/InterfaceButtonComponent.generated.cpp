@@ -1,6 +1,7 @@
 #include "InterfaceButtonComponent.h"
 #include "serialize.h"
 #include <nlohmann/json.hpp>
+#include "InterfaceColliderComponent.h"
 
 void KInterfaceButtonComponent::SerializeTo(nlohmann::json& json) const
 {

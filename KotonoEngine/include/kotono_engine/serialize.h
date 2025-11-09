@@ -27,29 +27,32 @@ void serialize(nlohmann::json& json, const uint8_t v);
 void serialize(nlohmann::json& json, const uint16_t v);
 void serialize(nlohmann::json& json, const uint32_t v);
 void serialize(nlohmann::json& json, const uint64_t v);
+void serialize(nlohmann::json& json, const float v);
+void serialize(nlohmann::json& json, const double v);
 
-void serialize(nlohmann::json& json, const std::string& string);
-void serialize(nlohmann::json& json, const std::filesystem::path& path);
+void serialize(nlohmann::json& json, const std::string& v);
+void serialize(nlohmann::json& json, const std::filesystem::path& v);
 
-void serialize(nlohmann::json& json, const glm::vec2& vec);
-void serialize(nlohmann::json& json, const glm::vec3& vec);
-void serialize(nlohmann::json& json, const glm::uvec2& vec);
-void serialize(nlohmann::json& json, const glm::ivec2& vec);
-void serialize(nlohmann::json& json, const glm::quat& quat);
+void serialize(nlohmann::json& json, const glm::vec2& v);
+void serialize(nlohmann::json& json, const glm::vec3& v);
+void serialize(nlohmann::json& json, const glm::uvec2& v);
+void serialize(nlohmann::json& json, const glm::ivec2& v);
+void serialize(nlohmann::json& json, const glm::quat& v);
 
-void serialize(nlohmann::json& json, const KtColor& color);
+void serialize(nlohmann::json& json, const KtColor& v);
 
-void serialize(nlohmann::json& json, const UGuid& guid);
-void serialize(nlohmann::json& json, const UTransform& transform);
-void serialize(nlohmann::json& json, const URect& rect);
+void serialize(nlohmann::json& json, const UGuid& v);
+void serialize(nlohmann::json& json, const UTransform& v);
+void serialize(nlohmann::json& json, const URect& v);
 
 template <class T>
 	requires std::is_base_of_v<KObject, T>
-void serialize(nlohmann::json& json, const UPtr<T>& object)
+void serialize(nlohmann::json& json, const UPtr<T>& v)
 {
-	serialize(json, UPtr<KObject>(object));
+	serialize_kobject(json, static_cast<KObject*>(v.Get()));
 }
-void serialize(nlohmann::json& json, const UPtr<KObject>& object);
+void serialize_kobject(nlohmann::json& json, const KObject* object);
+
 
 void deserialize(const nlohmann::json& json, int8_t& v);
 void deserialize(const nlohmann::json& json, int16_t& v);
@@ -59,27 +62,29 @@ void deserialize(const nlohmann::json& json, uint8_t& v);
 void deserialize(const nlohmann::json& json, uint16_t& v);
 void deserialize(const nlohmann::json& json, uint32_t& v);
 void deserialize(const nlohmann::json& json, uint64_t& v);
+void deserialize(const nlohmann::json& json, float& v);
+void deserialize(const nlohmann::json& json, double& v);
 
-void deserialize(const nlohmann::json& json, std::string& string);
-void deserialize(const nlohmann::json& json, std::filesystem::path& path);
+void deserialize(const nlohmann::json& json, std::string& v);
+void deserialize(const nlohmann::json& json, std::filesystem::path& v);
 
-void deserialize(const nlohmann::json& json, glm::vec2& vec);
-void deserialize(const nlohmann::json& json, glm::vec3& vec);
-void deserialize(const nlohmann::json& json, glm::uvec2& vec);
-void deserialize(const nlohmann::json& json, glm::ivec2& vec);
-void deserialize(const nlohmann::json& json, glm::quat& quat);
+void deserialize(const nlohmann::json& json, glm::vec2& v);
+void deserialize(const nlohmann::json& json, glm::vec3& v);
+void deserialize(const nlohmann::json& json, glm::uvec2& v);
+void deserialize(const nlohmann::json& json, glm::ivec2& v);
+void deserialize(const nlohmann::json& json, glm::quat& v);
 
-void deserialize(const nlohmann::json& json, KtColor& color);
+void deserialize(const nlohmann::json& json, KtColor& v);
 
-void deserialize(const nlohmann::json& json, UGuid& guid);
-void deserialize(const nlohmann::json& json, UTransform& transform);
-void deserialize(const nlohmann::json& json, URect& rect);
+void deserialize(const nlohmann::json& json, UGuid& v);
+void deserialize(const nlohmann::json& json, UTransform& v);
+void deserialize(const nlohmann::json& json, URect& v);
 
 template <class T>
 	requires std::is_base_of_v<KObject, T>
-void deserialize(const nlohmann::json& json, UPtr<T>& object)
+void deserialize(const nlohmann::json& json, UPtr<T>& v)
 {
-	deserialize(json, UPtr<KObject>(object));
+	deserialize_kobject(json, static_cast<KObject*>(v.Get()));
 }
-void deserialize(const nlohmann::json& json, UPtr<KObject>& object);
+void deserialize_kobject(const nlohmann::json& json, KObject* v);
 

@@ -1,6 +1,7 @@
 #include "InterfaceObject.h"
 #include "serialize.h"
 #include <nlohmann/json.hpp>
+#include "InterfaceComponent.h"
 
 void RInterfaceObject::SerializeTo(nlohmann::json& json) const
 {

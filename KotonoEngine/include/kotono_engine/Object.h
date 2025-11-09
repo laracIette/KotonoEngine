@@ -30,17 +30,17 @@ protected:
 public:
 	const UGuid& Guid() const;
 	const std::type_info& Type() const;
+	const std::filesystem::path Path() const;
 	bool IsConstructed() const;
 	bool IsDelete() const;
 	bool GetCanUpdate() const;
-	const std::filesystem::path& Path() const;
 	const std::string& GetName() const;
 	std::string GetTypeName() const;
 	KtEvent<>& GetEventCleanup();
 
-	void SetPath(const std::filesystem::path& path);
 	void SetName(const std::string& name);
 	void SetCanUpdate(const bool canUpdate);
+
 	// Stages the deletion at the end of the update
 	void Delete();
 	void DelayDelete(const UDuration& delay);
@@ -53,8 +53,6 @@ public:
 	virtual std::string ToString() const;
 
 protected:
-	UPtrOwnerBase* const ptrOwner_;
-
 	void Delay(const KtDelegate<>& delegate, const UDuration& delay) const;
 	void Delay(KtDelegate<>&& delegate, const UDuration& delay) const;
 
@@ -66,12 +64,12 @@ protected:
 	}
 
 private:
+	UPtrOwnerBase* const ptrOwner_;
 	SERIALIZE UGuid guid_;
+	SERIALIZE std::string name_;
 	bool isConstructed_;
 	bool isDelete_;
 	bool canUpdate_;
-	SERIALIZE std::filesystem::path path_;
-	SERIALIZE std::string name_;
 	KtEvent<> eventCleanup_;
 
 	union

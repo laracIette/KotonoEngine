@@ -8,71 +8,132 @@
 #include "Transform.h"
 #include "Rect.h"
 
-void serialize(nlohmann::json& json, const glm::vec2& vec)
+
+void serialize(nlohmann::json& json, const int8_t v)
 {
-    json["x"] = vec.x;
-    json["y"] = vec.y;
+    json = v;
 }
 
-void serialize(nlohmann::json& json, const glm::vec3& vec)
+void serialize(nlohmann::json& json, const int16_t v)
 {
-    json["x"] = vec.x;
-    json["y"] = vec.y;
-    json["z"] = vec.z;
+    json = v;
 }
 
-void serialize(nlohmann::json& json, const glm::uvec2& vec)
+void serialize(nlohmann::json& json, const int32_t v)
 {
-    json["x"] = vec.x;
-    json["y"] = vec.y;
+    json = v;
 }
 
-void serialize(nlohmann::json& json, const glm::ivec2& vec)
+void serialize(nlohmann::json& json, const int64_t v)
 {
-    json["x"] = vec.x;
-    json["y"] = vec.y;
+    json = v;
 }
 
-void serialize(nlohmann::json& json, const glm::quat& quat)
+void serialize(nlohmann::json& json, const uint8_t v)
 {
-    json["w"] = quat.w;
-    json["x"] = quat.x;
-    json["y"] = quat.y;
-    json["z"] = quat.z;
+    json = v;
 }
 
-void serialize(nlohmann::json& json, const KtColor& color)
+void serialize(nlohmann::json& json, const uint16_t v)
 {
-    json["r"] = color.r;
-    json["g"] = color.g;
-    json["b"] = color.b;
-    json["a"] = color.a;
+    json = v;
 }
 
-void serialize(nlohmann::json& json, const UGuid& guid)
+void serialize(nlohmann::json& json, const uint32_t v)
 {
-    json = static_cast<std::string>(guid);
+    json = v;
 }
 
-void serialize(nlohmann::json& json, const UTransform& transform)
+void serialize(nlohmann::json& json, const uint64_t v)
 {
-    serialize(json["position"], transform.position);
-    serialize(json["rotation"], transform.rotation);
-    serialize(json["scale"], transform.scale);
+    json = v;
 }
 
-void serialize(nlohmann::json& json, const URect& rect)
+void serialize(nlohmann::json& json, const float v)
 {
-    serialize(json["size"], rect.size);
-    serialize(json["position"], rect.position);
-    serialize(json["scale"], rect.scale);
-    json["rotation"] = rect.rotation;
+    json = v;
+}
+
+void serialize(nlohmann::json& json, const double v)
+{
+    json = v;
+}
+
+void serialize(nlohmann::json& json, const std::string& v)
+{
+    json = v;
+}
+
+void serialize(nlohmann::json& json, const std::filesystem::path& v)
+{
+    json = v.string();
+}
+
+void serialize(nlohmann::json& json, const glm::vec2& v)
+{
+    json["x"] = v.x;
+    json["y"] = v.y;
+}
+
+void serialize(nlohmann::json& json, const glm::vec3& v)
+{
+    json["x"] = v.x;
+    json["y"] = v.y;
+    json["z"] = v.z;
+}
+
+void serialize(nlohmann::json& json, const glm::uvec2& v)
+{
+    json["x"] = v.x;
+    json["y"] = v.y;
+}
+
+void serialize(nlohmann::json& json, const glm::ivec2& v)
+{
+    json["x"] = v.x;
+    json["y"] = v.y;
+}
+
+void serialize(nlohmann::json& json, const glm::quat& v)
+{
+    json["w"] = v.w;
+    json["x"] = v.x;
+    json["y"] = v.y;
+    json["z"] = v.z;
+}
+
+void serialize(nlohmann::json& json, const KtColor& v)
+{
+    json["r"] = v.r;
+    json["g"] = v.g;
+    json["b"] = v.b;
+    json["a"] = v.a;
+}
+
+void serialize(nlohmann::json& json, const UGuid& v)
+{
+    json = static_cast<std::string>(v);
+}
+
+void serialize(nlohmann::json& json, const UTransform& v)
+{
+    serialize(json["position"], v.position);
+    serialize(json["rotation"], v.rotation);
+    serialize(json["scale"], v.scale);
+}
+
+void serialize(nlohmann::json& json, const URect& v)
+{
+    serialize(json["size"], v.size);
+    serialize(json["position"], v.position);
+    serialize(json["scale"], v.scale);
+    json["rotation"] = v.rotation;
     //json["anchor"] = rect.anchor;
 }
 
-void serialize(nlohmann::json& json, const UPtr<KObject>& object)
+void serialize_kobject(nlohmann::json& json, const KObject* v)
 {
-    object->SerializeTo(json);
+    v->SerializeTo(json);
 }
 
 void deserialize(const nlohmann::json& json, int8_t& v)
@@ -115,129 +176,90 @@ void deserialize(const nlohmann::json& json, uint64_t& v)
     v = json;
 }
 
-void deserialize(const nlohmann::json& json, std::string& string)
+void deserialize(const nlohmann::json& json, float& v)
 {
-    string = json;
+    v = json;
 }
 
-void deserialize(const nlohmann::json& json, std::filesystem::path& path)
+void deserialize(const nlohmann::json& json, double& v)
 {
-    path = json.get<std::string>();
+    v = json;
 }
 
-void deserialize(const nlohmann::json& json, glm::vec2& vec)
+
+void deserialize(const nlohmann::json& json, std::string& v)
 {
-    vec.x = json["x"];
-    vec.y = json["y"];
+    v = json;
 }
 
-void deserialize(const nlohmann::json& json, glm::vec3& vec)
+void deserialize(const nlohmann::json& json, std::filesystem::path& v)
 {
-    vec.x = json["x"];
-    vec.y = json["y"];
-    vec.z = json["z"];
+    v = json.get<std::string>();
 }
 
-void deserialize(const nlohmann::json& json, glm::uvec2& vec)
+void deserialize(const nlohmann::json& json, glm::vec2& v)
 {
-    vec.x = json["x"];
-    vec.y = json["y"];
+    v.x = json["x"];
+    v.y = json["y"];
 }
 
-void deserialize(const nlohmann::json& json, glm::ivec2& vec)
+void deserialize(const nlohmann::json& json, glm::vec3& v)
 {
-    vec.x = json["x"];
-    vec.y = json["y"];
+    v.x = json["x"];
+    v.y = json["y"];
+    v.z = json["z"];
 }
 
-void deserialize(const nlohmann::json& json, glm::quat& quat)
+void deserialize(const nlohmann::json& json, glm::uvec2& v)
 {
-    quat.w = json["w"];
-    quat.x = json["x"];
-    quat.y = json["y"];
-    quat.z = json["z"];
+    v.x = json["x"];
+    v.y = json["y"];
 }
 
-void deserialize(const nlohmann::json& json, KtColor& color)
+void deserialize(const nlohmann::json& json, glm::ivec2& v)
 {
-    color.r = json["r"];
-    color.g = json["g"];
-    color.b = json["b"];
-    color.a = json["a"];
+    v.x = json["x"];
+    v.y = json["y"];
 }
 
-void deserialize(const nlohmann::json& json, UGuid& guid)
+void deserialize(const nlohmann::json& json, glm::quat& v)
 {
-    guid = json;
+    v.w = json["w"];
+    v.x = json["x"];
+    v.y = json["y"];
+    v.z = json["z"];
 }
 
-void deserialize(const nlohmann::json& json, UTransform& transform)
+void deserialize(const nlohmann::json& json, KtColor& v)
 {
-    deserialize(json["position"], transform.position);
-    deserialize(json["rotation"], transform.rotation);
-    deserialize(json["scale"], transform.scale);
+    v.r = json["r"];
+    v.g = json["g"];
+    v.b = json["b"];
+    v.a = json["a"];
 }
 
-void deserialize(const nlohmann::json& json, URect& rect)
+void deserialize(const nlohmann::json& json, UGuid& v)
 {
-    deserialize(json["size"], rect.size);
-    deserialize(json["position"], rect.position);
-    deserialize(json["scale"], rect.scale);
-    rect.rotation = json["rotation"];
+    v = json;
+}
+
+void deserialize(const nlohmann::json& json, UTransform& v)
+{
+    deserialize(json["position"], v.position);
+    deserialize(json["rotation"], v.rotation);
+    deserialize(json["scale"], v.scale);
+}
+
+void deserialize(const nlohmann::json& json, URect& v)
+{
+    deserialize(json["size"], v.size);
+    deserialize(json["position"], v.position);
+    deserialize(json["scale"], v.scale);
+    v.rotation = json["rotation"];
     //rect.anchor = json["anchor"];
 }
 
-void deserialize(const nlohmann::json& json, UPtr<KObject>& object)
+void deserialize_kobject(const nlohmann::json& json, KObject* v)
 {
-    object->DeserializeFrom(json);
-}
-
-void serialize(nlohmann::json& json, const int8_t v)
-{
-    json = v;
-}
-
-void serialize(nlohmann::json& json, const int16_t v)
-{
-    json = v;
-}
-
-void serialize(nlohmann::json& json, const int32_t v)
-{
-    json = v;
-}
-
-void serialize(nlohmann::json& json, const int64_t v)
-{
-    json = v;
-}
-
-void serialize(nlohmann::json& json, const uint8_t v)
-{
-    json = v;
-}
-
-void serialize(nlohmann::json& json, const uint16_t v)
-{
-    json = v;
-}
-
-void serialize(nlohmann::json& json, const uint32_t v)
-{
-    json = v;
-}
-
-void serialize(nlohmann::json& json, const uint64_t v)
-{
-    json = v;
-}
-
-void serialize(nlohmann::json& json, const std::string& string)
-{
-    json = string;
-}
-
-void serialize(nlohmann::json& json, const std::filesystem::path& path)
-{
-    json = path;
+    v->DeserializeFrom(json);
 }

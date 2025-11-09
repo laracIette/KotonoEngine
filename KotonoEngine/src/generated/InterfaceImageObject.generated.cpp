@@ -1,6 +1,7 @@
 #include "InterfaceImageObject.h"
 #include "serialize.h"
 #include <nlohmann/json.hpp>
+#include "InterfaceImageComponent.h"
 
 void RInterfaceImageObject::SerializeTo(nlohmann::json& json) const
 {

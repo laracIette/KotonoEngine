@@ -41,7 +41,7 @@ void KtSerializer::WriteData(const std::filesystem::path& path, const nlohmann::
 	}
 
 	const KtFile file(path);
-	const std::string jsonString = json.dump(4);
+	const std::string jsonString{ json.dump(4) };
 
 	file.WriteString(jsonString); 
 }

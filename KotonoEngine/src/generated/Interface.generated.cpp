@@ -1,6 +1,7 @@
 #include "Interface.h"
 #include "serialize.h"
 #include <nlohmann/json.hpp>
+#include "InterfaceImageObject.h"
 
 void KInterface::SerializeTo(nlohmann::json& json) const
 {

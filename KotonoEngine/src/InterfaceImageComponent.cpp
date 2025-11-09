@@ -17,7 +17,7 @@ KInterfaceImageComponent::KInterfaceImageComponent(UPtrOwnerBase* ptrOwner, cons
 {
 	if (!WireframeShader)
 	{
-		static const auto path{ Framework.Path().FrameworkPath() / R"(shaders\wireframe2D.ktshader)" };
+		static const auto path{ Framework.Path().Framework() / R"(shaders\wireframe2D.ktshader)" };
 		WireframeShader = Framework.ShaderManager().Get(path);
 		WireframeShader->SetName("2D Wireframe Shader");
 	}

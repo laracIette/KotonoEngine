@@ -1,6 +1,7 @@
 #include "SceneMeshComponent.h"
 #include "serialize.h"
 #include <nlohmann/json.hpp>
+#include "Task.h"
 
 void KSceneMeshComponent::SerializeTo(nlohmann::json& json) const
 {

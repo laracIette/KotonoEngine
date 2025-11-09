@@ -20,13 +20,10 @@ public:
 	void Add(const UPtr<TSceneObject>& sceneObject);
 	void Remove(const UPtr<TSceneObject>& sceneObject);
 
-	//void SerializeTo(nlohmann::json& json) const override;
-	//void DeserializeFrom(const nlohmann::json& json) override;
-
 	void SpawnSceneObjects() const;
 
 private:
-	KtPool<UPtr<TSceneObject>> sceneObjects_;
+	SERIALIZE KtPool<UPtr<TSceneObject>> sceneObjects_;
 
 	UPtr<TSceneObject> GetSceneObject(const std::string_view type);
 };
