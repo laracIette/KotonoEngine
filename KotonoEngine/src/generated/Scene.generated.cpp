@@ -10,6 +10,7 @@ void KScene::SerializeTo(nlohmann::json& json) const
 	for (const auto& v : sceneObjects_)
 	{
 		serialize(json["sceneObjects_"][i], v);
+		++i;
 	}
 }
 
@@ -19,6 +20,7 @@ void KScene::DeserializeFrom(const nlohmann::json& json)
 	size_t i{ 0 };
 	for (auto& v : sceneObjects_)
 	{
-		deserialize(json["sceneObjects_"][i], v);
+		deserialize(json.at("sceneObjects_")[i], v);
+		++i;
 	}
 }

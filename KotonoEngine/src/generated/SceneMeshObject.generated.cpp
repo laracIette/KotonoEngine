@@ -12,5 +12,5 @@ void TSceneMeshObject::SerializeTo(nlohmann::json& json) const
 void TSceneMeshObject::DeserializeFrom(const nlohmann::json& json)
 {
 	Base::DeserializeFrom(json);
-	deserialize(json["meshComponent_"], meshComponent_);
+	deserialize(json.at("meshComponent_"), meshComponent_);
 }

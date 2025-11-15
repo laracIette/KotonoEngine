@@ -1,4 +1,4 @@
-#include <nlohmann/json.hpp> // because fwd in Serializer.h
+#include <nlohmann/json.hpp> 
 #include "Serializer.h"
 #include "File.h"
 #include <fstream>
@@ -36,7 +36,7 @@ void KtSerializer::WriteData(const std::filesystem::path& path, const nlohmann::
 
 	if (json.is_null())
 	{
-		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "can't write null json to %s", path.string().c_str());
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "can't write null json to '%s'", path.string().c_str());
 		return;
 	}
 

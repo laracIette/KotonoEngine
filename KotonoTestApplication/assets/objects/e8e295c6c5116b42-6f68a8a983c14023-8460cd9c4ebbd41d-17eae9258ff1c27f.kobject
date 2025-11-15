@@ -1,0 +1,22 @@
+{
+    "guid_": "e8e295c6c5116b42-6f68a8a983c14023-8460cd9c4ebbd41d-17eae9258ff1c27f",
+    "name_": "KScene_e8e295c6c5116b42-6f68a8a983c14023-8460cd9c4ebbd41d-17eae9258ff1c27f",
+    "sceneObjects_": [
+        {
+            "guid_": "ebd562c897a8fc40-e6300318f2ca9f76-3b9a34090ee6acdd-a66ac98f7db62d79",
+            "meshComponent_": {
+                "guid_": "91dc41e8d5f01940-854fa759378715df-95f3b4ac6a91524b-8c69e3e2d518e351",
+                "name_": "KSceneMeshComponent_91dc41e8d5f01940-854fa759378715df-95f3b4ac6a91524b-8c69e3e2d518e351"
+            },
+            "name_": "TSceneMeshObject_ebd562c897a8fc40-e6300318f2ca9f76-3b9a34090ee6acdd-a66ac98f7db62d79"
+        },
+        {
+            "guid_": "1f37765047aa2f42-8f737a2aedbf791a-5818be36c37c5732-deb3069d89d59ab3",
+            "meshComponent_": {
+                "guid_": "1cd1ccb50dbe3343-4b248a827bee3080-8a6c7fddf88997a5-91f19c05b92b10fe",
+                "name_": "KSceneMeshComponent_1cd1ccb50dbe3343-4b248a827bee3080-8a6c7fddf88997a5-91f19c05b92b10fe"
+            },
+            "name_": "TSceneMeshObject_1f37765047aa2f42-8f737a2aedbf791a-5818be36c37c5732-deb3069d89d59ab3"
+        }
+    ]
+}

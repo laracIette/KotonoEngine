@@ -72,7 +72,7 @@ std::vector<uint8_t> KtFile::ReadBinary() const
 {
     if (!Exists())
     {
-        std::cerr << "Failed to find a file at '" << path_ << '\'' << std::endl;
+        KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_FILE, "Failed to find a file at '%s'", path_.string().c_str());
         return {};
     }
 
@@ -80,7 +80,7 @@ std::vector<uint8_t> KtFile::ReadBinary() const
 
     if (!file.is_open())
     {
-        std::cerr << "Failed to open the file at '" << path_ << '\'' << std::endl;
+        KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_FILE, "Failed to open the file at '%s'", path_.string().c_str());
         return {};
     }
 
@@ -102,7 +102,7 @@ void KtFile::WriteString(const std::string_view data) const
 
     if (!file.is_open())
     {
-        std::cerr << "Failed to open the file at '" << path_ << "' for writing." << std::endl;
+        KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_FILE, "Failed to open the file at '%s'", path_.string().c_str());
         return;
     }
 
@@ -120,7 +120,7 @@ void KtFile::WriteBinary(const std::span<uint32_t> data) const
 
     if (!file.is_open())
     {
-        std::cerr << "Failed to open the file at '" << path_ << "' for writing." << std::endl;
+        KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_FILE, "Failed to open the file at '%s'", path_.string().c_str());
         return;
     }
 

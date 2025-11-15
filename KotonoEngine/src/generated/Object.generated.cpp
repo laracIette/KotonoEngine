@@ -10,6 +10,6 @@ void KObject::SerializeTo(nlohmann::json& json) const
 
 void KObject::DeserializeFrom(const nlohmann::json& json)
 {
-	deserialize(json["guid_"], guid_);
-	deserialize(json["name_"], name_);
+	deserialize(json.at("guid_"), guid_);
+	deserialize(json.at("name_"), name_);
 }

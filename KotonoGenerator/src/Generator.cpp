@@ -1,17 +1,19 @@
 ﻿#include "Generator.h"
 #include <fstream>
 #include <regex>
+#include <nlohmann/json.hpp>
 
-static std::string to_upper(std::string s)
-{
-	std::ranges::transform(s, s.begin(), 
-		[](unsigned char c) { return std::toupper(c); }
-	);
-	return s;
-}
+const std::filesystem::path EnginePath{ "W:/Visual Studio/Projects/KotonoEngine/KotonoEngine" };
 
-static std::string read_file(const std::filesystem::path& path)
+static std::string read_string(const std::filesystem::path& path)
 {
+	// Check if path exists.
+	if (!exists(path))
+	{
+		printf("Failed to find a file at '%s'\n", path.string().c_str());
+		return "";
+	}
+
 	// Open file
 	std::ifstream file(path);
 
@@ -30,14 +32,14 @@ static std::string read_file(const std::filesystem::path& path)
 	return fileContents.str();
 }
 
-static void write_file(const std::filesystem::path& path, const std::string_view data)
+static void write_string(const std::filesystem::path& path, const std::string_view data)
 {
 	// Open file for writing
 	std::ofstream file(path, std::ios::out | std::ios::trunc);
 
 	if (!file.is_open())
 	{
-		printf("Failed to open the file at '%s' for writing. \n", path.string().c_str());
+		printf("Failed to open the file at '%s' for writing.\n", path.string().c_str());
 		return;
 	}
 
@@ -48,162 +50,112 @@ static void write_file(const std::filesystem::path& path, const std::string_view
 	file.close();
 }
 
-void Generator::Generate() const
+static void read_data(const std::filesystem::path& path, nlohmann::json& json)
 {
-	for (const auto& header : GetHeaders())
+	if (path.empty())
 	{
-		const auto content{ read_file(header) };
-		const auto classInfo{ GetClassInfo(content) };
-		if (!IsObjectClass(classInfo.name))
+		printf("can't read data from empty path\n");
+		return;
+	}
+
+	if (!exists(path))
+	{
+		printf("file at path '%s' doesn't exist\n", path.string().c_str());
+		return;
+	}
+
+	std::istringstream stream(read_string(path));
+	stream >> json;
+}
+
+static void write_data(const std::filesystem::path& path, const nlohmann::json& json) 
+{
+	if (path.empty())
+	{
+		printf("can't write data to empty path\n");
+		return;
+	}
+
+	if (json.is_null())
+	{
+		printf("can't write null json to '%s'\n", path.string().c_str());
+		return;
+	}
+
+	const std::string jsonString{ json.dump(4) };
+	write_string(path, jsonString);
+}
+
+static std::string to_upper(std::string s)
+{
+	std::ranges::transform(s, s.begin(), 
+		[](unsigned char c) { return std::toupper(c); }
+	);
+	return s;
+}
+
+void Generator::GenerateAll() const
+{
+	const auto headerDirectoryPath{ EnginePath / "include" / "kotono_engine" };
+	for (const auto& entry : std::filesystem::directory_iterator(headerDirectoryPath))
+	{
+		if (!entry.is_regular_file() || entry.path().extension() != ".h")
 		{
 			continue;
 		}
 
-		const bool isKObject{ classInfo.name == "KObject" };
-
-		const std::string generatedCodeHeader{ isKObject
-			? std::format(
-				"#define GENERATED_{}() \\\n"
-				"\tpublic: \\\n"
-				"\t\tvirtual void SerializeTo(nlohmann::json& json) const; \\\n"
-				"\t\tvirtual void DeserializeFrom(const nlohmann::json& json); \\\n"
-				"\tprivate:\n",
-				to_upper(classInfo.name)
-			)
-			: std::format(
-				"#define GENERATED_{}() \\\n"
-				"\tprivate: \\\n"
-				"\t\tusing Base = {}; \\\n"
-				"\t\tusing Base::Base; \\\n"
-				"\tpublic: \\\n"
-				"\t\tvoid SerializeTo(nlohmann::json& json) const override; \\\n"
-				"\t\tvoid DeserializeFrom(const nlohmann::json& json) override; \\\n"
-				"\tprivate:\n",
-				to_upper(classInfo.name),
-				classInfo.baseName
-			)	
-		};
-
-		const auto generatedPathHeader{ header.parent_path() / "generated" / header.filename().replace_extension(".generated.h") };
-		write_file(generatedPathHeader, generatedCodeHeader);
-
-
-		std::ostringstream serializeCode;
-		for (const auto& variable : classInfo.variables)
-		{
-			if (variable.isContainer)
-			{
-				if (variable.isContainer)
-				{
-					serializeCode
-						<< "\tsize_t i{ 0 };\n"
-						<< "\tfor (const auto& v : " << variable.name << ")\n"
-						<< "\t{\n"
-						<< "\t\tserialize(json[\"" << variable.name << "\"][i], v);\n"
-						<< "\t}\n";
-				}
-			}
-			else
-			{
-				serializeCode << "\tserialize(json[\"" << variable.name << "\"], " << variable.name << ");\n";
-			}
-		}
-		std::ostringstream deserializeCode;
-		for (const auto& variable : classInfo.variables)
-		{
-			if (variable.isContainer)
-			{
-				deserializeCode 
-					<< "\tsize_t i{ 0 };\n"
-					<< "\tfor (auto& v : " << variable.name << ")\n"
-					<< "\t{\n"
-					<< "\t\tdeserialize(json[\"" << variable.name << "\"][i], v);\n"
-					<< "\t}\n";
-			}
-			else
-			{
-				deserializeCode << "\tdeserialize(json[\"" << variable.name << "\"], " << variable.name << ");\n";
-			}
-		}
-
-		std::ostringstream objectClassHeaders;
-		for (const auto& className : classInfo.fwdClasses)
-		{
-			if (IsObjectClass(className))
-			{
-				objectClassHeaders << "#include \"" << GetObjectClassHeader(className) << "\"\n";
-			}
-		}
-
-		const std::string generatedCodeCPP{ isKObject
-			? std::format(
-				"#include \"{}\"\n"
-				"#include \"serialize.h\"\n"
-				"#include <nlohmann/json.hpp>\n"
-				"{}"
-				"\n"
-				"void {}::SerializeTo(nlohmann::json& json) const\n"
-				"{{\n"
-				"{}"
-				"}}\n"
-				"\n"
-				"void {}::DeserializeFrom(const nlohmann::json& json)\n"
-				"{{\n"
-				"{}"
-				"}}\n",
-				header.filename().string(),
-				objectClassHeaders.str(),
-				classInfo.name,
-				serializeCode.str(),
-				classInfo.name,
-				deserializeCode.str()
-			)
-			: std::format(
-				"#include \"{}\"\n"
-				"#include \"serialize.h\"\n"
-				"#include <nlohmann/json.hpp>\n"
-				"{}"
-				"\n"
-				"void {}::SerializeTo(nlohmann::json& json) const\n"
-				"{{\n"
-				"\tBase::SerializeTo(json);\n"
-				"{}"
-				"}}\n"
-				"\n"
-				"void {}::DeserializeFrom(const nlohmann::json& json)\n"
-				"{{\n"
-				"\tBase::DeserializeFrom(json);\n"
-				"{}"
-				"}}\n",
-				header.filename().string(),
-				objectClassHeaders.str(),
-				classInfo.name,
-				serializeCode.str(),
-				classInfo.name,
-				deserializeCode.str()
-			) 
-		};
-
-		const auto generatedPathCPP{ header.parent_path().parent_path().parent_path() / "src/generated" / header.filename().replace_extension(".generated.cpp") };
-		write_file(generatedPathCPP, generatedCodeCPP);
+		Generate(entry.path());
 	}
 }
 
-std::vector<std::filesystem::path> Generator::GetHeaders() const
+void Generator::GenerateUpdated() const
 {
-	std::vector<std::filesystem::path> result{};
+	nlohmann::json json{};
+	const auto registryPath{ EnginePath / "include" / "kotono_engine" / "objects.ktregistry" };
+	read_data(registryPath, json);
 
-	const auto headerDirectoryPath{ "W:/Visual Studio/Projects/KotonoEngine/KotonoEngine/include/kotono_engine" };
-
+	const auto headerDirectoryPath{ EnginePath / "include" / "kotono_engine" };
 	for (const auto& entry : std::filesystem::directory_iterator(headerDirectoryPath))
 	{
-		if (entry.is_regular_file() && entry.path().extension() == ".h")
+		if (!entry.is_regular_file() || entry.path().extension() != ".h")
 		{
-			result.push_back(entry.path());
+			continue;
+		}
+
+		const auto entryPath{ entry.path().filename().string() };
+
+		const auto ftime{ entry.last_write_time() };
+		const auto formattedTime{ std::format("{0:%F}-{0:%T}", ftime) };
+
+		bool isInList{ false };
+		for (auto& header : json["headers"])
+		{
+			if (header["path"] != entryPath)
+			{
+				continue;
+			}
+
+			if (header["modified"] != formattedTime)
+			{
+				header["modified"] = formattedTime;
+				Generate(entry.path());
+			}
+
+			isInList = true;
+			break;
+		}
+
+		if (!isInList)
+		{
+			nlohmann::json header{};
+			header["path"] = entryPath;
+			header["modified"] = formattedTime;
+			json["headers"].push_back(header);
+			Generate(entry.path());
 		}
 	}
 
-	return result;
+	write_data(registryPath, json);
 }
 
 Generator::ClassInfo Generator::GetClassInfo(const std::string& content) const
@@ -253,12 +205,13 @@ std::vector<Generator::VariableInfo> Generator::GetClassVariables(const std::str
 		const auto typeName{ (*it)[1].str() };
 		const auto varName{ (*it)[2].str() };
 
-		const bool isArray{
+		const bool isIterable{
 			typeName.find("KtPool") != std::string::npos ||
-			typeName.find("std::vector") != std::string::npos 
+			typeName.find("std::vector") != std::string::npos ||
+			typeName.find("std::array") != std::string::npos 
 		};
 
-		result.push_back({ varName, isArray });
+		result.push_back({ varName, isIterable });
 	}
 
 	return result;
@@ -293,4 +246,142 @@ bool Generator::IsObjectClass(const std::string& className) const
 	return className[0] == 'K' 
 		|| className[0] == 'T'
 		|| className[0] == 'R';
+}
+
+void Generator::Generate(const std::filesystem::path& header) const
+{
+	const auto content{ read_string(header) };
+	const auto classInfo{ GetClassInfo(content) };
+
+	if (!IsObjectClass(classInfo.name))
+	{
+		return;
+	}
+
+	const bool isKObject{ classInfo.name == "KObject" };
+
+	const std::string generatedCodeHeader{ isKObject
+		? std::format(
+			"#define GENERATED_{}() \\\n"
+			"\tpublic: \\\n"
+			"\t\tvirtual void SerializeTo(nlohmann::json& json) const; \\\n"
+			"\t\tvirtual void DeserializeFrom(const nlohmann::json& json); \\\n"
+			"\tprivate:\n",
+			to_upper(classInfo.name)
+		)
+		: std::format(
+			"#define GENERATED_{}() \\\n"
+			"\tprivate: \\\n"
+			"\t\tusing Base = {}; \\\n"
+			"\t\tusing Base::Base; \\\n"
+			"\tpublic: \\\n"
+			"\t\tvoid SerializeTo(nlohmann::json& json) const override; \\\n"
+			"\t\tvoid DeserializeFrom(const nlohmann::json& json) override; \\\n"
+			"\tprivate:\n",
+			to_upper(classInfo.name),
+			classInfo.baseName
+		)
+	};
+
+	const auto fileHeader{ EnginePath / "include" / "kotono_engine" / "generated" / header.filename().replace_extension(".generated.h") };
+	write_string(fileHeader, generatedCodeHeader);
+
+
+	std::ostringstream serializeCode;
+	for (const auto& variable : classInfo.variables)
+	{
+		if (variable.isIterable)
+		{
+			serializeCode
+				<< "\tsize_t i{ 0 };\n"
+				<< "\tfor (const auto& v : " << variable.name << ")\n"
+				<< "\t{\n"
+				<< "\t\tserialize(json[\"" << variable.name << "\"][i], v);\n"
+				<< "\t\t++i;\n"
+				<< "\t}\n";
+		}
+		else
+		{
+			serializeCode << "\tserialize(json[\"" << variable.name << "\"], " << variable.name << ");\n";
+		}
+	}
+	std::ostringstream deserializeCode;
+	for (const auto& variable : classInfo.variables)
+	{
+		if (variable.isIterable)
+		{
+			deserializeCode
+				<< "\tsize_t i{ 0 };\n"
+				<< "\tfor (auto& v : " << variable.name << ")\n"
+				<< "\t{\n"
+				<< "\t\tdeserialize(json.at(\"" << variable.name << "\")[i], v);\n"
+				<< "\t\t++i;\n"
+				<< "\t}\n";
+		}
+		else
+		{
+			deserializeCode << "\tdeserialize(json.at(\"" << variable.name << "\"), " << variable.name << ");\n";
+		}
+	}
+
+	std::ostringstream objectClassHeaders;
+	for (const auto& className : classInfo.fwdClasses)
+	{
+		if (IsObjectClass(className))
+		{
+			objectClassHeaders << "#include \"" << GetObjectClassHeader(className) << "\"\n";
+		}
+	}
+
+	const std::string generatedCodeCPP{ isKObject
+		? std::format(
+			"#include \"{}\"\n"
+			"#include \"serialize.h\"\n"
+			"#include <nlohmann/json.hpp>\n"
+			"{}"
+			"\n"
+			"void {}::SerializeTo(nlohmann::json& json) const\n"
+			"{{\n"
+			"{}"
+			"}}\n"
+			"\n"
+			"void {}::DeserializeFrom(const nlohmann::json& json)\n"
+			"{{\n"
+			"{}"
+			"}}\n",
+			header.filename().string(),
+			objectClassHeaders.str(),
+			classInfo.name,
+			serializeCode.str(),
+			classInfo.name,
+			deserializeCode.str()
+		)
+		: std::format(
+			"#include \"{}\"\n"
+			"#include \"serialize.h\"\n"
+			"#include <nlohmann/json.hpp>\n"
+			"{}"
+			"\n"
+			"void {}::SerializeTo(nlohmann::json& json) const\n"
+			"{{\n"
+			"\tBase::SerializeTo(json);\n"
+			"{}"
+			"}}\n"
+			"\n"
+			"void {}::DeserializeFrom(const nlohmann::json& json)\n"
+			"{{\n"
+			"\tBase::DeserializeFrom(json);\n"
+			"{}"
+			"}}\n",
+			header.filename().string(),
+			objectClassHeaders.str(),
+			classInfo.name,
+			serializeCode.str(),
+			classInfo.name,
+			deserializeCode.str()
+		)
+	};
+
+	const auto fileCPP{ EnginePath / "src" / "generated" / header.filename().replace_extension(".generated.cpp") };
+	write_string(fileCPP, generatedCodeCPP);
 }

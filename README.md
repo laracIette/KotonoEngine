@@ -3,16 +3,12 @@
 ## Build
 
 ### Visual Studio 17
-- To build the solution for Visual Studio 17, execute :
+- To build the solution for Visual Studio 17, execute *[build_vs17.sh](build_vs17.sh)*.
 
-    - *[KotonoTestApplication/build_vs17_editor.sh](KotonoTestApplication/build_vs17_editor.sh)* for the solution with the editor.
-
-    - *[KotonoTestApplication/build_vs17_game.sh](KotonoTestApplication/build_vs17_game.sh)* for the solution without the editor.
-
-- All generated build files will be located in *KotonoTestApplication/build/*.
+- All generated build files will be located in *build/*.
 
 ### Other IDE
-- To build the solution for other IDEs, navigate to *[KotonoTestApplication/](KotonoTestApplication/)*, create a build folder and run CMake for your IDE with the option :
+- To build the solution for other IDEs, create a build folder and run CMake for your IDE with the option :
 
     - -DWITH_EDITOR=ON for the solution with the editor.
 

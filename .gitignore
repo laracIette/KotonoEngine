@@ -408,6 +408,6 @@ KotonoInterface/lib/KotonoInterface.lib
 KotonoEngine/lib/KotonoEngine.lib
 KotonoEngineInterface/lib/KotonoEngineInterface.lib
 
-KotonoTestApplication/build/
+build/
 
 KotonoFramework/shaders/shaders.ktregistry

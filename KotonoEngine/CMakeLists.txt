@@ -38,3 +38,12 @@ set_target_properties(KotonoEngine PROPERTIES
 target_link_libraries(KotonoEngine PUBLIC 
     KotonoFramework
 )
+
+add_custom_target(RunKotonoGenerator
+    COMMAND $<TARGET_FILE:KotonoGenerator>
+    WORKING_DIRECTORY $<TARGET_FILE_DIR:KotonoGenerator>
+    DEPENDS KotonoGenerator
+    COMMENT "Running KotonoGenerator..."
+)
+
+add_dependencies(KotonoEngine RunKotonoGenerator)

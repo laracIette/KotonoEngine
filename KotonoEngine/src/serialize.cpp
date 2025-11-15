@@ -199,43 +199,43 @@ void deserialize(const nlohmann::json& json, std::filesystem::path& v)
 
 void deserialize(const nlohmann::json& json, glm::vec2& v)
 {
-    v.x = json["x"];
-    v.y = json["y"];
+    v.x = json.at("x");
+    v.y = json.at("y");
 }
 
 void deserialize(const nlohmann::json& json, glm::vec3& v)
 {
-    v.x = json["x"];
-    v.y = json["y"];
-    v.z = json["z"];
+    v.x = json.at("x");
+    v.y = json.at("y");
+    v.z = json.at("z");
 }
 
 void deserialize(const nlohmann::json& json, glm::uvec2& v)
 {
-    v.x = json["x"];
-    v.y = json["y"];
+    v.x = json.at("x");
+    v.y = json.at("y");
 }
 
 void deserialize(const nlohmann::json& json, glm::ivec2& v)
 {
-    v.x = json["x"];
-    v.y = json["y"];
+    v.x = json.at("x");
+    v.y = json.at("y");
 }
 
 void deserialize(const nlohmann::json& json, glm::quat& v)
 {
-    v.w = json["w"];
-    v.x = json["x"];
-    v.y = json["y"];
-    v.z = json["z"];
+    v.w = json.at("w");
+    v.x = json.at("x");
+    v.y = json.at("y");
+    v.z = json.at("z");
 }
 
 void deserialize(const nlohmann::json& json, KtColor& v)
 {
-    v.r = json["r"];
-    v.g = json["g"];
-    v.b = json["b"];
-    v.a = json["a"];
+    v.r = json.at("r");
+    v.g = json.at("g");
+    v.b = json.at("b");
+    v.a = json.at("a");
 }
 
 void deserialize(const nlohmann::json& json, UGuid& v)
@@ -245,18 +245,18 @@ void deserialize(const nlohmann::json& json, UGuid& v)
 
 void deserialize(const nlohmann::json& json, UTransform& v)
 {
-    deserialize(json["position"], v.position);
-    deserialize(json["rotation"], v.rotation);
-    deserialize(json["scale"], v.scale);
+    deserialize(json.at("position"), v.position);
+    deserialize(json.at("rotation"), v.rotation);
+    deserialize(json.at("scale"), v.scale);
 }
 
 void deserialize(const nlohmann::json& json, URect& v)
 {
-    deserialize(json["size"], v.size);
-    deserialize(json["position"], v.position);
-    deserialize(json["scale"], v.scale);
-    v.rotation = json["rotation"];
-    //rect.anchor = json["anchor"];
+    deserialize(json.at("size"), v.size);
+    deserialize(json.at("position"), v.position);
+    deserialize(json.at("scale"), v.scale);
+    v.rotation = json.at("rotation");
+    //rect.anchor = json.at("anchor");
 }
 
 void deserialize_kobject(const nlohmann::json& json, KObject* v)

@@ -6,7 +6,7 @@ class Generator final
 	struct VariableInfo
 	{
 		std::string name;
-		bool isContainer;
+		bool isIterable;
 	};
 
 	struct ClassInfo
@@ -18,11 +18,10 @@ class Generator final
 	};
 
 public:
-	void Generate() const;
+	void GenerateAll() const;
+	void GenerateUpdated() const;
 
 private:
-	std::vector<std::filesystem::path> GetHeaders() const;
-
 	ClassInfo GetClassInfo(const std::string& content) const;
 	std::string GetClassName(const std::string& content) const;
 	std::string GetBaseClassName(const std::string& content) const;
@@ -31,4 +30,6 @@ private:
 	std::string GetObjectClassHeader(const std::string& className) const;
 
 	bool IsObjectClass(const std::string& className) const;
+
+	void Generate(const std::filesystem::path& header) const;
 };

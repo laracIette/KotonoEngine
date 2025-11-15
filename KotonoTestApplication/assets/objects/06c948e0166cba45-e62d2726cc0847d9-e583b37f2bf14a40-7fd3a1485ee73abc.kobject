@@ -1,0 +1,14 @@
+{
+    "guid_": "06c948e0166cba45-e62d2726cc0847d9-e583b37f2bf14a40-7fd3a1485ee73abc",
+    "name_": "KScene_06c948e0166cba45-e62d2726cc0847d9-e583b37f2bf14a40-7fd3a1485ee73abc",
+    "sceneObjects_": [
+        {
+            "guid_": "beec7cf6af94ac46-845a335f2eeca029-4fca1973a3d38cb2-3707c76ed8b4030f",
+            "meshComponent_": {
+                "guid_": "9941805dab45c948-ac78eff6bac1beed-ba88b227e8a9520a-737fb960ba257ec5",
+                "name_": "KSceneMeshComponent_9941805dab45c948-ac78eff6bac1beed-ba88b227e8a9520a-737fb960ba257ec5"
+            },
+            "name_": "TSceneMeshObject_beec7cf6af94ac46-845a335f2eeca029-4fca1973a3d38cb2-3707c76ed8b4030f"
+        }
+    ]
+}

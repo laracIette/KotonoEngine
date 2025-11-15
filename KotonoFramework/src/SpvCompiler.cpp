@@ -9,9 +9,9 @@
 
 void KtSpvCompiler::CompileUpdated() const
 {
-    const auto path = Framework.Path().Framework() / "shaders";
     nlohmann::json json{};
     KtSerializer serializer{};
+    const auto path = Framework.Path().Framework() / "shaders";
     serializer.ReadData(path / "shaders.ktregistry", json);
 
     for (const auto& directory : { "vert", "frag" })

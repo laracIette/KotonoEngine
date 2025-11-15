@@ -2,6 +2,6 @@
 
 int main()
 {
-	Generator().Generate();
+	Generator().GenerateUpdated();
 	return 0;
 }
