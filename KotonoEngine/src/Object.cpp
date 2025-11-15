@@ -7,6 +7,7 @@
 #include "log.h"
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/Path.h>
+#include "object_factories.h"
 
 KObject::KObject(UPtrOwnerBase* ptrOwner) :
     ptrOwner_(ptrOwner),
@@ -17,6 +18,7 @@ KObject::KObject(UPtrOwnerBase* ptrOwner) :
 
 void KObject::Init()
 {
+    type_ = TypeName();
     isConstructed_ = true; // todo: maybe move that
 }
 
@@ -64,7 +66,7 @@ const std::string& KObject::GetName() const
     return name_;
 }
 
-std::string KObject::GetTypeName() const
+std::string KObject::TypeName() const
 {
     std::string_view name = Type().name();
     return std::string(name.substr(6));
@@ -105,7 +107,6 @@ void KObject::Serialize() const
     nlohmann::json json{};
     KtSerializer serializer{};
     SerializeTo(json);
-    auto a = Path();
     serializer.WriteData(Path(), json);
 }
 
@@ -120,6 +121,25 @@ void KObject::Deserialize()
 std::string KObject::ToString() const
 {
     return name_;
+}
+
+UPtr<KObject> KObject::FromGuid(const UGuid& guid)
+{
+    nlohmann::json json{};
+    KtSerializer serializer{};
+    const auto path{ Framework.Path().Project() / "assets" / "objects" / std::format("{}.kobject", static_cast<std::string>(guid)) };
+    serializer.ReadData(path, json);
+
+    const auto it{ ObjectFactories.find(json.at("type_")) };
+    if (it != ObjectFactories.end())
+    {
+        UPtr object{ it->second() };
+        object->guid_ = guid;
+        object->Deserialize();
+        return object;
+    }
+
+    return nullptr;
 }
 
 void KObject::Delay(const KtDelegate<>& delegate, const UDuration& delay) const

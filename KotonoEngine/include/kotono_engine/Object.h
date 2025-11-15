@@ -17,6 +17,8 @@ class KObject
 	GENERATED_KOBJECT()
 
 	friend class SObjectManager;
+	friend void serialize_kobject(nlohmann::json&, const KObject*);
+	friend void deserialize_kobject(const nlohmann::json&, KObject*);
 
 public:
 	KObject(UPtrOwnerBase* ptrOwner);
@@ -35,7 +37,7 @@ public:
 	bool IsDelete() const;
 	bool GetCanUpdate() const;
 	const std::string& GetName() const;
-	std::string GetTypeName() const;
+	std::string TypeName() const;
 	KtEvent<>& GetEventCleanup();
 
 	void SetName(const std::string& name);
@@ -52,6 +54,9 @@ public:
 
 	virtual std::string ToString() const;
 
+public:
+	static UPtr<KObject> FromGuid(const UGuid& guid);
+
 protected:
 	void Delay(const KtDelegate<>& delegate, const UDuration& delay) const;
 	void Delay(KtDelegate<>&& delegate, const UDuration& delay) const;
@@ -66,6 +71,7 @@ protected:
 private:
 	UPtrOwnerBase* const ptrOwner_;
 	SERIALIZE UGuid guid_;
+	SERIALIZE std::string type_;
 	SERIALIZE std::string name_;
 	bool isConstructed_;
 	bool isDelete_;
@@ -80,4 +86,3 @@ private:
 	bool isInit_;
 
 };
-

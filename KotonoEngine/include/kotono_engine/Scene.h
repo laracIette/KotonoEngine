@@ -24,7 +24,5 @@ public:
 
 private:
 	SERIALIZE KtPool<UPtr<TSceneObject>> sceneObjects_;
-
-	UPtr<TSceneObject> GetSceneObject(const std::string_view type);
 };
 

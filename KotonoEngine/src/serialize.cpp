@@ -133,7 +133,9 @@ void serialize(nlohmann::json& json, const URect& v)
 
 void serialize_kobject(nlohmann::json& json, const KObject* v)
 {
-    v->SerializeTo(json);
+    serialize(json, v->guid_);
+    v->Serialize();
+    //v->SerializeTo(json);
 }
 
 void deserialize(const nlohmann::json& json, int8_t& v)
@@ -261,5 +263,7 @@ void deserialize(const nlohmann::json& json, URect& v)
 
 void deserialize_kobject(const nlohmann::json& json, KObject* v)
 {
-    v->DeserializeFrom(json);
+    deserialize(json, v->guid_);
+    v->Deserialize();
+    //v->DeserializeFrom(json);
 }

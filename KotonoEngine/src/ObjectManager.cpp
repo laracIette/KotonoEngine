@@ -26,9 +26,8 @@ void SObjectManager::Init()
 		.AddListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
 
 	UPtr scene{ Create<KScene>() };
-	scene->Serialize();
-
-	scene->SpawnSceneObjects();
+	scene->guid_ = "6ed943411c1d0145-fa7e129d436fefc7-d610a013cfe163f9-48ab854138be189a";
+	scene->Deserialize();
 
 	//Framework.InputManager().Keyboard().KeyEvent(KT_KEY_R, KT_INPUT_STATE_PRESSED)
 	//	.AddListener(KtDelegate(scene.Get(), &KScene::Reload));
@@ -80,7 +79,7 @@ void SObjectManager::Register(KObject* object, UPtrOwnerBase* ptrOwner)
 {
 	inits_.Add(ptrOwner);
 	object->initIndex_ = inits_.LastIndex();
-	object->SetName(std::format("{}_{}", object->GetTypeName(), static_cast<std::string>(object->Guid())));
+	object->SetName(std::format("{}_{}", object->TypeName(), static_cast<std::string>(object->Guid())));
 	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "REG object %s", object->GetName().c_str());
 }
 

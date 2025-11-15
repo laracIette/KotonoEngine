@@ -5,11 +5,13 @@
 void KObject::SerializeTo(nlohmann::json& json) const
 {
 	serialize(json["guid_"], guid_);
+	serialize(json["type_"], type_);
 	serialize(json["name_"], name_);
 }
 
 void KObject::DeserializeFrom(const nlohmann::json& json)
 {
 	deserialize(json.at("guid_"), guid_);
+	deserialize(json.at("type_"), type_);
 	deserialize(json.at("name_"), name_);
 }
