@@ -2,12 +2,24 @@
 #include <nlohmann/json.hpp>
 #include <glm/glm.hpp>
 #include <kotono_framework/Color.h>
+#include <kotono_framework/Framework.h>
+#include <kotono_framework/Shader.h>
+#include <kotono_framework/ShaderManager.h>
+#include <kotono_framework/ImageTexture.h>
+#include <kotono_framework/ImageTextureManager.h>
+#include <kotono_framework/Model.h>
+#include <kotono_framework/ModelManager.h>
 #include <filesystem>
 #include "Ptr.h"
 #include "Object.h"
 #include "Transform.h"
 #include "Rect.h"
+#include "Duration.h"
 
+void serialize(nlohmann::json& json, const bool v)
+{
+    json = v;
+}
 
 void serialize(nlohmann::json& json, const int8_t v)
 {
@@ -57,6 +69,16 @@ void serialize(nlohmann::json& json, const float v)
 void serialize(nlohmann::json& json, const double v)
 {
     json = v;
+}
+
+void serialize(nlohmann::json& json, const EVisibility v)
+{
+    json = static_cast<char>(v);
+}
+
+void serialize(nlohmann::json& json, const EMobility v)
+{
+    json = static_cast<char>(v);
 }
 
 void serialize(nlohmann::json& json, const std::string& v)
@@ -131,11 +153,61 @@ void serialize(nlohmann::json& json, const URect& v)
     //json["anchor"] = rect.anchor;
 }
 
+void serialize(nlohmann::json& json, const UDuration& v)
+{
+    serialize(json["isSeconds"], v.IsSeconds());
+    if (v.IsSeconds())
+    {
+        serialize(json["duration"], v.Seconds());
+    }
+    else
+    {
+        serialize(json["duration"], v.Updates());
+    }
+}
+
+void serialize(nlohmann::json& json, const KtShader* v)
+{
+    if (!v)
+    {
+        return;
+    }
+    serialize(json, v->Path());
+}
+
+void serialize(nlohmann::json& json, const KtImageTexture* v)
+{
+    if (!v)
+    {
+        return;
+    }
+    serialize(json, v->Path());
+}
+
+void serialize(nlohmann::json& json, const KtModel* v)
+{
+    if (!v)
+    {
+        return;
+    } 
+    serialize(json, v->Path());
+}
+
 void serialize_kobject(nlohmann::json& json, const KObject* v)
 {
+    if (!v)
+    {
+        return;
+    }
+
     serialize(json, v->guid_);
     v->Serialize();
     //v->SerializeTo(json);
+}
+
+void deserialize(const nlohmann::json& json, bool& v)
+{
+    v = json;
 }
 
 void deserialize(const nlohmann::json& json, int8_t& v)
@@ -188,6 +260,15 @@ void deserialize(const nlohmann::json& json, double& v)
     v = json;
 }
 
+void deserialize(const nlohmann::json& json, EVisibility& v)
+{
+    v = static_cast<EVisibility>(json.get<char>());
+}
+
+void deserialize(const nlohmann::json& json, EMobility& v)
+{
+    v = static_cast<EMobility>(json.get<char>());
+}
 
 void deserialize(const nlohmann::json& json, std::string& v)
 {
@@ -261,8 +342,43 @@ void deserialize(const nlohmann::json& json, URect& v)
     //rect.anchor = json.at("anchor");
 }
 
+void deserialize(const nlohmann::json& json, UDuration& v)
+{
+    if (json.at("isSeconds").get<bool>())
+    {
+        v = UDuration::FromSeconds(json.at("duration").get<float>());
+    }
+    else
+    {
+        v = UDuration::FromUpdates(json.at("duration").get<uint64_t>());
+    }
+}
+
+void deserialize(const nlohmann::json& json, KtShader*& v)
+{
+    const std::filesystem::path path(json.get<std::string>());
+    v = Framework.ShaderManager().Get(path);
+}
+
+void deserialize(const nlohmann::json& json, KtImageTexture*& v)
+{
+    const std::filesystem::path path(json.get<std::string>());
+    v = Framework.ImageTextureManager().Get(path);
+}
+
+void deserialize(const nlohmann::json& json, KtModel*& v)
+{
+    const std::filesystem::path path(json.get<std::string>());
+    v = Framework.ModelManager().Get(path);
+}
+
 void deserialize_kobject(const nlohmann::json& json, KObject* v)
 {
+    if (!v)
+    {
+        return;
+    }
+
     deserialize(json, v->guid_);
     v->Deserialize();
     //v->DeserializeFrom(json);

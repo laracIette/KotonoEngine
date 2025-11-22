@@ -27,8 +27,11 @@ void SObjectManager::Init()
 
 	UPtr scene{ Create<KScene>() };
 	scene->guid_ = "6ed943411c1d0145-fa7e129d436fefc7-d610a013cfe163f9-48ab854138be189a";
+#if true
+	scene->Serialize();
+#else
 	scene->Deserialize();
-
+#endif
 	//Framework.InputManager().Keyboard().KeyEvent(KT_KEY_R, KT_INPUT_STATE_PRESSED)
 	//	.AddListener(KtDelegate(scene.Get(), &KScene::Reload));
 	//UPtr interface{ Create<KInterface>() };
@@ -75,12 +78,14 @@ void SObjectManager::Cleanup()
 		.RemoveListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
 }
 
-void SObjectManager::Register(KObject* object, UPtrOwnerBase* ptrOwner)
+void SObjectManager::Register(KObject* object, UPtrOwnerBase* ptrOwner, const UPtr<KObject>& ptr)
 {
 	inits_.Add(ptrOwner);
 	object->initIndex_ = inits_.LastIndex();
 	object->SetName(std::format("{}_{}", object->TypeName(), static_cast<std::string>(object->Guid())));
 	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "REG object %s", object->GetName().c_str());
+
+	register_[object->Guid()] = ptr;
 }
 
 void SObjectManager::Delete(UPtrOwnerBase* ptrOwner)
@@ -159,6 +164,8 @@ void SObjectManager::DeleteObjects()
 				object->initIndex_ = index;
 			}
 		}
+
+		register_.erase(object->Guid());
 	}
 	for (auto* ptr : deletes_)
 	{
@@ -179,6 +186,16 @@ uint64_t SObjectManager::GetCurrentUpdate() const
 const UPtr<KObject>& SObjectManager::SelectedObject() const
 {
 	return selectedObject_;
+}
+
+UPtr<KObject> SObjectManager::Get(const UGuid& guid) const
+{
+	const auto it{ register_.find(guid) };
+	if (it != register_.end())
+	{
+		return it->second;
+	}
+	return nullptr;
 }
 
 void SObjectManager::LogUPS() const

@@ -2,8 +2,8 @@
 
 ## Build
 
-### Visual Studio 17
-- To build the solution for Visual Studio 17, execute *[build_vs17.sh](build_vs17.sh)*.
+### Visual Studio
+- To build the solution for Visual Studio, execute *[build_vs17.sh](build_vs17.sh)* for Visual Studio 2022, or *[build_vs18.sh](build_vs18.sh)* for Visual Studio 2026.
 
 - All generated build files will be located in *build/*.
 

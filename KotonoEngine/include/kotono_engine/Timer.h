@@ -24,8 +24,8 @@ public:
 
 private:
 	bool isPlaying_;
-	bool isRepeat_;
-	UDuration duration_;
+	SERIALIZE bool isRepeat_;
+	SERIALIZE UDuration duration_;
 	UDuration current_;
 	KtEvent<> eventCompleted_;
 };

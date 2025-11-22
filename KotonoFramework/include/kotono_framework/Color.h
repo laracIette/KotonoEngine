@@ -152,6 +152,7 @@ struct KtColor final
 		case 3: rgb = { p, q, v }; break;
 		case 4: rgb = { t, p, v }; break;
 		case 5: rgb = { v, p, q }; break;
+		default: rgb = {}; break;
 		}
 
 		return { rgb.r, rgb.g, rgb.b, 1.0f };

@@ -1,0 +1,25 @@
+{
+    "guid_": "654528286073774e-2f774c1c54f2d435-1e1927c2290a5a96-407ba2951b7d81f1",
+    "mobility_": 0,
+    "name_": "KSceneMeshComponent_654528286073774e-2f774c1c54f2d435-1e1927c2290a5a96-407ba2951b7d81f1",
+    "transform_": {
+        "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "rotation": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        }
+    },
+    "type_": "",
+    "visibility_": 0
+}

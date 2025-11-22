@@ -14,6 +14,6 @@ public:
 	const UPtr<KSceneMeshComponent>& GetMeshComponent() const;
 
 private:
-	SERIALIZE UPtr<KSceneMeshComponent> meshComponent_;
+	UPtr<KSceneMeshComponent> meshComponent_;
 };
 

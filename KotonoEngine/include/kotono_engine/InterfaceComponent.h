@@ -107,16 +107,16 @@ private:
 	UPtr<KInterfaceComponent> parent_;
 	KtPool<UPtr<KInterfaceComponent>> children_;
 	size_t childrenIndex_;
-	URect rect_;
-	EVisibility visibility_;
-	int32_t layer_;
+	SERIALIZE URect rect_;
+	SERIALIZE EVisibility visibility_;
+	SERIALIZE int32_t layer_;
 	KtInterfaceRenderableProxy* boundsProxy_;
 	KtEvent<> eventRectUpdated_;
 	KtEvent<> eventLayerUpdated_;
 	KtEvent<> eventColorUpdated_;
 	size_t componentIndex_;
 	KtCached<glm::mat4> modelMatrix_;
-	KtColor color_;
+	SERIALIZE KtColor color_;
 
 	void CreateBoundsProxy();
 	void MarkBoundsProxyRectDirty();

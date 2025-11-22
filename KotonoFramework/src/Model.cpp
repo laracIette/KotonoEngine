@@ -76,9 +76,9 @@ void KtModel::Load()
 				};
 
 				KtVertex3D vertex{};
-				vertex.Position = { pos.x, pos.y, pos.z };
-				vertex.TexCoord = { texCoord.x, texCoord.y };
-				vertex.KtColor = { 1.0f, 1.0f, 1.0f };
+				vertex.position = { pos.x, pos.y, pos.z };
+				vertex.texCoord = { texCoord.x, texCoord.y };
+				vertex.color = { 1.0f, 1.0f, 1.0f };
 
 				if (!uniqueVertices.contains(vertex))
 				{

@@ -2,6 +2,8 @@
 #include <nlohmann/json_fwd.hpp>
 #include <glm/fwd.hpp>
 #include "Ptr.h"
+#include "Visibility.h"
+#include "Mobility.h"
 
 #define SERIALIZE
 
@@ -14,11 +16,16 @@ namespace std
 }
 
 struct KtColor;
-class UGuid;
+struct UGuid;
 struct UTransform;
 struct URect;
+struct UDuration;
+class KtShader;
+class KtImageTexture;
+class KtModel;
 class KObject;
 
+void serialize(nlohmann::json& json, const bool v);
 void serialize(nlohmann::json& json, const int8_t v);
 void serialize(nlohmann::json& json, const int16_t v);
 void serialize(nlohmann::json& json, const int32_t v);
@@ -29,6 +36,9 @@ void serialize(nlohmann::json& json, const uint32_t v);
 void serialize(nlohmann::json& json, const uint64_t v);
 void serialize(nlohmann::json& json, const float v);
 void serialize(nlohmann::json& json, const double v);
+
+void serialize(nlohmann::json& json, const EVisibility v);
+void serialize(nlohmann::json& json, const EMobility v);
 
 void serialize(nlohmann::json& json, const std::string& v);
 void serialize(nlohmann::json& json, const std::filesystem::path& v);
@@ -44,16 +54,26 @@ void serialize(nlohmann::json& json, const KtColor& v);
 void serialize(nlohmann::json& json, const UGuid& v);
 void serialize(nlohmann::json& json, const UTransform& v);
 void serialize(nlohmann::json& json, const URect& v);
+void serialize(nlohmann::json& json, const UDuration& v);
+
+void serialize(nlohmann::json& json, const KtShader* v);
+void serialize(nlohmann::json& json, const KtImageTexture* v);
+void serialize(nlohmann::json& json, const KtModel* v);
 
 template <class T>
 	requires std::is_base_of_v<KObject, T>
 void serialize(nlohmann::json& json, const UPtr<T>& v)
 {
+	if (!v)
+	{
+		return;
+	}
 	serialize_kobject(json, static_cast<KObject*>(v.Get()));
 }
 void serialize_kobject(nlohmann::json& json, const KObject* object);
 
 
+void deserialize(const nlohmann::json& json, bool& v);
 void deserialize(const nlohmann::json& json, int8_t& v);
 void deserialize(const nlohmann::json& json, int16_t& v);
 void deserialize(const nlohmann::json& json, int32_t& v);
@@ -64,6 +84,9 @@ void deserialize(const nlohmann::json& json, uint32_t& v);
 void deserialize(const nlohmann::json& json, uint64_t& v);
 void deserialize(const nlohmann::json& json, float& v);
 void deserialize(const nlohmann::json& json, double& v);
+
+void deserialize(const nlohmann::json& json, EVisibility& v);
+void deserialize(const nlohmann::json& json, EMobility& v);
 
 void deserialize(const nlohmann::json& json, std::string& v);
 void deserialize(const nlohmann::json& json, std::filesystem::path& v);
@@ -79,11 +102,20 @@ void deserialize(const nlohmann::json& json, KtColor& v);
 void deserialize(const nlohmann::json& json, UGuid& v);
 void deserialize(const nlohmann::json& json, UTransform& v);
 void deserialize(const nlohmann::json& json, URect& v);
+void deserialize(const nlohmann::json& json, UDuration& v);
+
+void deserialize(const nlohmann::json& json, KtShader*& v);
+void deserialize(const nlohmann::json& json, KtImageTexture*& v);
+void deserialize(const nlohmann::json& json, KtModel*& v);
 
 template <class T>
 	requires std::is_base_of_v<KObject, T>
 void deserialize(const nlohmann::json& json, UPtr<T>& v)
 {
+	if (!v)
+	{
+		return;
+	}
 	deserialize_kobject(json, static_cast<KObject*>(v.Get()));
 }
 void deserialize_kobject(const nlohmann::json& json, KObject* v);

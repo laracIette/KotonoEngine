@@ -1,8 +1,11 @@
 #pragma once
 #include <string>
 #include <array>
-class UGuid final
+#include <kotono_framework/hash_utils.h>
+struct UGuid final
 {
+	friend struct std::hash<UGuid>;
+
 public:
 	UGuid();
 
@@ -12,6 +15,20 @@ public:
 	bool operator==(const UGuid& other) const;
 
 private:
-	std::array<uint64_t, 4> _data;
+	std::array<uint64_t, 4> data_;
+};
+
+template<>
+struct std::hash<UGuid>
+{
+	size_t operator()(const UGuid& g) const noexcept
+	{
+		size_t h{ 0 };
+		combine(h, std::hash<uint64_t>{}(g.data_[0]));
+		combine(h, std::hash<uint64_t>{}(g.data_[1]));
+		combine(h, std::hash<uint64_t>{}(g.data_[2]));
+		combine(h, std::hash<uint64_t>{}(g.data_[3]));
+		return h;
+	}
 };
 

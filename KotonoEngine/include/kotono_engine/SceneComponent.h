@@ -88,9 +88,9 @@ private:
 	UPtr<KSceneComponent> parent_;
 	KtPool<UPtr<KSceneComponent>> children_;
 	UTransform spawnTransform_; // todo: prob parse later
-	UTransform transform_;
-	EVisibility visibility_;
-	EMobility mobility_;
+	SERIALIZE UTransform transform_;
+	SERIALIZE EVisibility visibility_;
+	SERIALIZE EMobility mobility_;
 	KtEvent<> eventTransformUpdated_; // todo: maybe replace by eventPositionChanged...
 									  // dirty children matrix in setposition...
 	size_t componentIndex_;

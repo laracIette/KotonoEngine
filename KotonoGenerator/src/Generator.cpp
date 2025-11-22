@@ -1,6 +1,7 @@
 ﻿#include "Generator.h"
 #include <fstream>
 #include <regex>
+#include <iostream>
 #include <nlohmann/json.hpp>
 
 const std::filesystem::path EnginePath{ "W:/Visual Studio/Projects/KotonoEngine/KotonoEngine" };
@@ -96,6 +97,8 @@ static std::string to_upper(std::string s)
 
 void Generator::GenerateAll() const
 {
+	std::cout << "Generating all..." << std::endl;
+
 	const auto headerDirectoryPath{ EnginePath / "include" / "kotono_engine" };
 	for (const auto& entry : std::filesystem::directory_iterator(headerDirectoryPath))
 	{
@@ -110,6 +113,8 @@ void Generator::GenerateAll() const
 
 void Generator::GenerateUpdated() const
 {
+	std::cout << "Generating updated..." << std::endl;
+
 	nlohmann::json json{};
 	const auto registryPath{ EnginePath / "include" / "kotono_engine" / "objects.ktregistry" };
 	read_data(registryPath, json);
@@ -384,4 +389,6 @@ void Generator::Generate(const std::filesystem::path& header) const
 
 	const auto fileCPP{ EnginePath / "src" / "generated" / header.filename().replace_extension(".generated.cpp") };
 	write_string(fileCPP, generatedCodeCPP);
+
+	std::cout << "Generated '" << header << "'" << std::endl;
 }

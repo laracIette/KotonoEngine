@@ -4,6 +4,7 @@
 #include <memory>
 #include <iostream>
 #include "log.h"
+#include "hash_utils.h"
 
 template <typename... Args>
 class KtDelegate final
@@ -61,17 +62,14 @@ private:
     CallbackFunction callbackFunction_;
 };
 
-namespace std
+template <typename... Args>
+struct std::hash<KtDelegate<Args...>>
 {
-    template <typename... Args>
-    struct hash<KtDelegate<Args...>>
+    size_t operator()(const KtDelegate<Args...>& delegate) const noexcept
     {
-        size_t operator()(const KtDelegate<Args...>& delegate) const noexcept
-        {
-            const size_t h1 = hash<void*>{}(delegate.instance_);
-            const size_t h2 = hash<void*>{}(delegate.functionIdentity_);
-
-            return h1 ^ (h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2));
-        }
-    };
-}
+        size_t h{ 0 };
+        combine(h, std::hash<void*>{}(delegate.instance_));
+        combine(h, std::hash<void*>{}(delegate.functionIdentity_));
+        return h;
+    }
+};

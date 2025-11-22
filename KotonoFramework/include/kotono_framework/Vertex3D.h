@@ -2,31 +2,31 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/gtx/hash.hpp>
+#include "hash_utils.h"
 struct KtVertex3D final
 {
-    glm::vec3 Position;
-    glm::vec3 KtColor;
-    glm::vec2 TexCoord;
+    glm::vec3 position;
+    glm::vec3 color;
+    glm::vec2 texCoord;
 
     bool operator==(const KtVertex3D& other) const
     {
-        return Position == other.Position
-            && KtColor == other.KtColor
-            && TexCoord == other.TexCoord;
+        return position == other.position
+            && color == other.color
+            && texCoord == other.texCoord;
     }
 };
 
-namespace std
+template<> 
+struct std::hash<KtVertex3D>
 {
-    template<> 
-    struct hash<KtVertex3D>
+    size_t operator()(const KtVertex3D& v) const noexcept
     {
-        size_t operator()(KtVertex3D const& vertex) const
-        {
-            return ((hash<glm::vec3>{}(vertex.Position) ^
-                (hash<glm::vec3>{}(vertex.KtColor) << 1)) >> 1) ^
-                (hash<glm::vec2>{}(vertex.TexCoord) << 1);
-        }
-    };
-}
+        size_t h{ 0 };
+        combine(h, std::hash<glm::vec3>{}(v.position));
+        combine(h, std::hash<glm::vec3>{}(v.color));
+        combine(h, std::hash<glm::vec2>{}(v.texCoord));
+        return h;
+    }
+};
 

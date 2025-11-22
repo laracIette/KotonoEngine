@@ -24,7 +24,7 @@ public:
 private:
 	bool isPlaying_;
 	UDuration current_;
-	UDuration duration_;
+	SERIALIZE UDuration duration_;
 	KtEvent<> eventUpdate_;
 	KtEvent<> eventCompleted_;
 };

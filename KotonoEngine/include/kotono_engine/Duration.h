@@ -69,5 +69,15 @@ struct UDuration final
         return std::holds_alternative<uint64_t>(value);
     }
 
+    constexpr float Seconds() const
+    {
+        return std::get<float>(value);
+    }
+
+    constexpr uint64_t Updates() const
+    {
+        return std::get<uint64_t>(value);
+    }
+
     std::variant<float, uint64_t> value;
 };
