@@ -52,14 +52,10 @@ target_compile_definitions(KotonoFramework PUBLIC
 
 target_compile_definitions(KotonoFramework PUBLIC ROOT_DIRECTORY="${CMAKE_SOURCE_DIR}")
 
-# Library search folder
-link_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib")
-
 # Link system + third-party libs
 target_link_libraries(KotonoFramework PUBLIC
     "${THIRD_PARTY_DIR}/lib/vulkan-1.lib"
     "${THIRD_PARTY_DIR}/lib/glfw3.lib"
-    "${THIRD_PARTY_DIR}/lib/OpenAL32.lib"
     "${THIRD_PARTY_DIR}/lib/SPIRV-Reflect.lib"
 
     $<$<CONFIG:Debug>:${THIRD_PARTY_DIR}/lib/zlibstaticd.lib>
@@ -72,3 +68,8 @@ target_link_libraries(KotonoFramework PUBLIC
 file(GLOB_RECURSE KFRAMEWORK_SHADERS "shaders/*")
 source_group("Shaders" FILES ${KFRAMEWORK_SHADERS})
 target_sources(KotonoFramework PRIVATE ${KFRAMEWORK_SHADERS})
+
+# Link libs
+target_link_libraries(KotonoFramework PUBLIC
+    KotonoAudio
+)

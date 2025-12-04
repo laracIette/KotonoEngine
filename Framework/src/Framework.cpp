@@ -5,7 +5,7 @@
 #include "Context.h"
 #include "Renderer.h"
 #include "TimeManager.h"
-#include "AudioManager.h"
+#include <kotono_audio/AudioManager.h>
 #include "InputManager.h"
 #include "ModelManager.h"
 #include "ShaderManager.h"
