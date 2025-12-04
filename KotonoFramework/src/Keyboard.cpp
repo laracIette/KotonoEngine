@@ -63,7 +63,7 @@ void KtKeyboard::UpdateKey(const KtKey key, const int action)
     keyStates_[key] = keyStates;
 }
 
-KtEvent<>& KtKeyboard::KeyEvent(const KtKey key, const KtInputState inputState)
+KtEvent<>& KtKeyboard::EventKey(const KtKey key, const KtInputState inputState)
 {
     return keyEvents_[key][inputState];
 }

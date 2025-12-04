@@ -4,9 +4,11 @@ class KScene;
 class KInterface;
 class SGame final
 {
+	friend class SEngine;
 	friend class STimeManager;
 
 private:
+	void Init();
 	void Update();
 
 public:

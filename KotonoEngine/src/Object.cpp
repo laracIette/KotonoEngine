@@ -7,7 +7,6 @@
 #include "log.h"
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/Path.h>
-#include "object_factories.h"
 
 KObject::KObject(UPtrOwnerBase* ptrOwner) :
     ptrOwner_(ptrOwner),
@@ -20,10 +19,6 @@ void KObject::Init()
 {
     type_ = TypeName();
     isConstructed_ = true; // todo: maybe move that
-}
-
-void KObject::Update() 
-{
 }
 
 void KObject::Cleanup() 
@@ -51,14 +46,9 @@ bool KObject::IsDelete() const
     return isDelete_;
 }
 
-bool KObject::GetCanUpdate() const
-{
-    return canUpdate_;
-}
-
 const std::filesystem::path KObject::Path() const
 {
-    return Framework.Path().Project() / "assets" / "objects" / std::format("{}.kobject", static_cast<std::string>(guid_));
+    return Framework.Path().Project() / "assets" / "objects" / std::format("{}.kobject", guid_.ToString());
 }
 
 const std::string& KObject::GetName() const
@@ -82,11 +72,6 @@ void KObject::SetName(const std::string& name)
     name_ = name;
 }
 
-void KObject::SetCanUpdate(const bool canUpdate)
-{
-    canUpdate_ = canUpdate;
-}
-
 void KObject::Delete()
 {
     if (isDelete_)
@@ -97,24 +82,22 @@ void KObject::Delete()
     Engine.ObjectManager().Delete(ptrOwner_);
 }
 
-void KObject::DelayDelete(const UDuration& delay)
-{
-    Delay(KtDelegate(this, &KObject::Delete), delay);
-}
+//void KObject::DelayDelete(const UDuration& delay)
+//{
+//    Delay(KtDelegate(this, &KObject::Delete), delay);
+//}
 
 void KObject::Serialize() const
 {
     nlohmann::json json{};
-    KtSerializer serializer{};
     SerializeTo(json);
-    serializer.WriteData(Path(), json);
+    KtSerializer::Serialize(json, Path());
 }
 
 void KObject::Deserialize()
 {
     nlohmann::json json{};
-    KtSerializer serializer{};
-    serializer.ReadData(Path(), json);
+    KtSerializer::Deserialize(json, Path());
     DeserializeFrom(json);
 }
 
@@ -123,39 +106,20 @@ std::string KObject::ToString() const
     return name_;
 }
 
-UPtr<KObject> KObject::FromGuid(const UGuid& guid)
-{
-    nlohmann::json json{};
-    KtSerializer serializer{};
-    const auto path{ Framework.Path().Project() / "assets" / "objects" / std::format("{}.kobject", static_cast<std::string>(guid)) };
-    serializer.ReadData(path, json);
-
-    const auto it{ ObjectFactories.find(json.at("type_")) };
-    if (it != ObjectFactories.end())
-    {
-        UPtr object{ it->second() };
-        object->guid_ = guid;
-        object->Deserialize();
-        return object;
-    }
-
-    return nullptr;
-}
-
-void KObject::Delay(const KtDelegate<>& delegate, const UDuration& delay) const
-{
-    UPtr timer = Engine.ObjectManager().Create<KTimer>();
-    timer->EventCompleted().AddListener(KtDelegate(timer.Get(), &KTimer::Delete));
-    timer->EventCompleted().AddListener(delegate);
-    timer->SetDuration(delay);
-    timer->Start();
-}
-
-void KObject::Delay(KtDelegate<>&& delegate, const UDuration& delay) const
-{
-    UPtr timer = Engine.ObjectManager().Create<KTimer>();
-    timer->EventCompleted().AddListener(KtDelegate(timer.Get(), &KTimer::Delete));
-    timer->EventCompleted().AddListener(std::move(delegate));
-    timer->SetDuration(delay);
-    timer->Start();
-}
+//void KObject::Delay(const KtDelegate<>& delegate, const UDuration& delay) const
+//{
+//    UTimer timer{};
+//    timer.duration = delay;
+//    timer.eventCompleted.AddListener(KtDelegate(&timer, &UTimer::Delete));
+//    timer.eventCompleted.AddListener(delegate);
+//    timer->Start();
+//}
+//
+//void KObject::Delay(KtDelegate<>&& delegate, const UDuration& delay) const
+//{
+//    UPtr timer = Engine.ObjectManager().Create<UTimer>();
+//    timer->EventCompleted().AddListener(KtDelegate(timer.Get(), &UTimer::Delete));
+//    timer->EventCompleted().AddListener(std::move(delegate));
+//    timer->SetDuration(delay);
+//    timer->Start();
+//}

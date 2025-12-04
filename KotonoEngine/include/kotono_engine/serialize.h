@@ -19,7 +19,6 @@ struct KtColor;
 struct UGuid;
 struct UTransform;
 struct URect;
-struct UDuration;
 class KtShader;
 class KtImageTexture;
 class KtModel;
@@ -54,23 +53,18 @@ void serialize(nlohmann::json& json, const KtColor& v);
 void serialize(nlohmann::json& json, const UGuid& v);
 void serialize(nlohmann::json& json, const UTransform& v);
 void serialize(nlohmann::json& json, const URect& v);
-void serialize(nlohmann::json& json, const UDuration& v);
 
 void serialize(nlohmann::json& json, const KtShader* v);
 void serialize(nlohmann::json& json, const KtImageTexture* v);
 void serialize(nlohmann::json& json, const KtModel* v);
 
+void serialize_kobject(nlohmann::json& json, const UPtr<KObject>& v);
 template <class T>
 	requires std::is_base_of_v<KObject, T>
 void serialize(nlohmann::json& json, const UPtr<T>& v)
 {
-	if (!v)
-	{
-		return;
-	}
-	serialize_kobject(json, static_cast<KObject*>(v.Get()));
+	serialize_kobject(json, v);
 }
-void serialize_kobject(nlohmann::json& json, const KObject* object);
 
 
 void deserialize(const nlohmann::json& json, bool& v);
@@ -102,21 +96,15 @@ void deserialize(const nlohmann::json& json, KtColor& v);
 void deserialize(const nlohmann::json& json, UGuid& v);
 void deserialize(const nlohmann::json& json, UTransform& v);
 void deserialize(const nlohmann::json& json, URect& v);
-void deserialize(const nlohmann::json& json, UDuration& v);
 
 void deserialize(const nlohmann::json& json, KtShader*& v);
 void deserialize(const nlohmann::json& json, KtImageTexture*& v);
 void deserialize(const nlohmann::json& json, KtModel*& v);
 
+UPtr<KObject> deserialize_kobject(const nlohmann::json& json);
 template <class T>
 	requires std::is_base_of_v<KObject, T>
 void deserialize(const nlohmann::json& json, UPtr<T>& v)
 {
-	if (!v)
-	{
-		return;
-	}
-	deserialize_kobject(json, static_cast<KObject*>(v.Get()));
+	v = deserialize_kobject(json);
 }
-void deserialize_kobject(const nlohmann::json& json, KObject* v);
-

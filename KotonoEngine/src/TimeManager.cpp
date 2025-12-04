@@ -4,7 +4,6 @@
 #include <kotono_framework/Stopwatch.h>
 #include "Engine.h"
 #include "Game.h"
-#include "log.h"
 
 void STimeManager::Init()
 {

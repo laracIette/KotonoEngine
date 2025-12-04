@@ -7,11 +7,11 @@ WButton::WButton(const ButtonSettings& buttonSettings) :
 	buttonSettings_(buttonSettings)
 {
 
-	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonPressed));
-	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
+	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonDown));
-	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
+	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonReleased));
 	Framework.InputManager().Mouse().EventVerticalScroll()
 		.AddListener(KtDelegate(this, &WButton::OnMouseVerticalScroll));
@@ -19,11 +19,11 @@ WButton::WButton(const ButtonSettings& buttonSettings) :
 
 void WButton::Cleanup()
 {
-	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonPressed));
-	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
+	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonDown));
-	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
+	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonReleased));
 	Framework.InputManager().Mouse().EventVerticalScroll()
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseVerticalScroll));

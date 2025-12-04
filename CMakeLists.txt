@@ -16,7 +16,6 @@ endif()
 option(WITH_EDITOR "Build the Kotono Editor" ON)
 
 # --- Add all modules (subprojects) ---
-# Order matters!
 add_subdirectory(KotonoFramework)
 add_subdirectory(KotonoGenerator)
 add_subdirectory(KotonoInterface)

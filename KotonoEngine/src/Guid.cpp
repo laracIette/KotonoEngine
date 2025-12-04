@@ -21,11 +21,11 @@ UGuid::UGuid()
 
 UGuid::operator std::string() const
 {
-    static constexpr char hexDigits[] = "0123456789abcdef";
+    static constexpr const char hexDigits[]{ "0123456789abcdef" };
     std::string result;
     result.reserve(data_.size() * (16llu + 1) - 1); // 16 hex chars per u64 + (N-1) dashes
 
-    for (size_t i = 0; i < data_.size(); ++i)
+    for (size_t i{ 0 }; i < data_.size(); ++i)
     {
         if (i != 0)
         {
@@ -33,7 +33,7 @@ UGuid::operator std::string() const
         }
 
         const uint64_t value = data_[i];
-        for (int j = 60; j >= 0; j -= 4)
+        for (int j{ 60 }; j >= 0; j -= 4)
         {  // 16 nibbles (4 bits per hex digit)
             result.push_back(hexDigits[(value >> j) & 0xF]);
         }
@@ -58,7 +58,7 @@ void UGuid::operator=(const std::string& string)
 
 bool UGuid::operator==(const UGuid& other) const
 {
-	for (size_t i = 0; i < data_.size(); i++)
+    for (size_t i{ 0 }; i < data_.size(); i++)
 	{
 		if (data_[i] != other.data_[i])
 		{
@@ -66,4 +66,9 @@ bool UGuid::operator==(const UGuid& other) const
 		}
 	}
 	return true;
+}
+
+std::string UGuid::ToString() const
+{
+    return static_cast<std::string>(*this);
 }

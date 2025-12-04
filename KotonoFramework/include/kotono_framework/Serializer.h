@@ -3,7 +3,7 @@
 class KtSerializer final
 {
 public:
-	void ReadData(const std::filesystem::path& path, nlohmann::json& json) const;
-	void WriteData(const std::filesystem::path& path, const nlohmann::json& json) const;
+	static void Serialize(const nlohmann::json& json, const std::filesystem::path& path);
+	static void Deserialize(nlohmann::json& json, const std::filesystem::path& path);
 };
 

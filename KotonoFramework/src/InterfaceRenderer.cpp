@@ -344,7 +344,7 @@ void KtInterfaceRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const Pr
 	CmdBindVertexBuffer(commandBuffer);
 	CmdBindIndexBuffer(commandBuffer);
 
-	for (size_t i{ 0 }; i < proxies.Size();)
+	for (size_t i{ 0 }; i < proxies.size();)
 	{
 		const KtInterfaceRenderableProxy* proxy{ proxies[i] };
 		const KtShader* shader{ proxy->shader };
@@ -352,7 +352,7 @@ void KtInterfaceRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const Pr
 		const KtScissor scissor{ proxy->scissor };
 
 		size_t instanceCount{ 1 };
-		while (i + instanceCount < proxies.Size())
+		while (i + instanceCount < proxies.size())
 		{
 			const auto* next{ proxies[i + instanceCount] };
 			if (next->shader != shader || next->scissor.extent != scissor.extent || next->scissor.offset != scissor.offset)

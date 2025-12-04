@@ -23,8 +23,11 @@ protected:
 	void Init() override;
 	void Cleanup() override;
 
+	virtual void Update();
+
 public:
 	const UPtr<TSceneObject>& Owner() const;
+	bool GetCanUpdate() const;
 	const UTransform& GetTransform() const;
 	EVisibility GetVisibility() const;
 	EMobility GetMobility() const;
@@ -54,6 +57,7 @@ public:
 
 	glm::vec3 GetScreenPosition() const;
 
+	void SetCanUpdate(const bool canUpdate);
 	virtual void SetVisibility(const EVisibility visibility, const bool propagateToChildren = false);
 	virtual void SetMobility(const EMobility mobility);
 
@@ -85,6 +89,7 @@ public:
 
 private:
 	const UPtr<TSceneObject> owner_;
+	bool canUpdate_;
 	UPtr<KSceneComponent> parent_;
 	KtPool<UPtr<KSceneComponent>> children_;
 	UTransform spawnTransform_; // todo: prob parse later

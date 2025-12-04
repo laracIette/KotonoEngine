@@ -72,7 +72,7 @@ public:
 		data_.clear();
 	}
 
-	constexpr void Reserve(const size_t size)
+	constexpr void reserve(const size_t size)
 	{
 		data_.reserve(size);
 	}
@@ -113,7 +113,7 @@ public:
 		return data_.end(); 
 	}
 
-	constexpr size_t Size() const noexcept
+	constexpr size_t size() const noexcept
 	{
 		return data_.size();
 	}

@@ -94,7 +94,7 @@ public:
 	KtPool<ValueType> GetPool() const
 	{
 		KtPool<ValueType> result{};
-		result.Reserve(std::distance(begin_, end_));
+		result.reserve(std::distance(begin_, end_));
 		for (const ValueType& item : *this)
 		{
 			result.Add(item);

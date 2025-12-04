@@ -48,6 +48,8 @@ target_compile_definitions(KotonoFramework PUBLIC
     ASSIMP_BUILD_NO_EXPORT
 )
 
+target_compile_definitions(KotonoFramework PUBLIC ROOT_DIRECTORY="${CMAKE_SOURCE_DIR}")
+
 # Library search folder
 link_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib")
 

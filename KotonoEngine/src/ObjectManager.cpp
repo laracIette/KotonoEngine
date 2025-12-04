@@ -14,43 +14,23 @@
 #include "InterfaceObject.h"
 #include "InterfaceComponent.h"
 #include "Interface.h"
+#include <nlohmann/json.hpp>
+#include <kotono_framework/Serializer.h>
 
 #define KT_LOG_IMPORTANCE_LEVEL_OBJECT KT_LOG_IMPORTANCE_LEVEL_NONE
-#undef interface
 
 void SObjectManager::Init()
 {
-	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
+	Framework.InputManager().Keyboard().EventKey(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &SObjectManager::Quit));
-	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
-
-	UPtr scene{ Create<KScene>() };
-	scene->guid_ = "6ed943411c1d0145-fa7e129d436fefc7-d610a013cfe163f9-48ab854138be189a";
-#if true
-	scene->Serialize();
-#else
-	scene->Deserialize();
-#endif
-	//Framework.InputManager().Keyboard().KeyEvent(KT_KEY_R, KT_INPUT_STATE_PRESSED)
-	//	.AddListener(KtDelegate(scene.Get(), &KScene::Reload));
-	//UPtr interface{ Create<KInterface>() };
 
 	auto& logUPSTimer{ Framework.TimeManager().GetTimer("log ups timer") };
 	logUPSTimer.SetDuration(1.0f);
 	logUPSTimer.SetIsRepeat(true);
 	logUPSTimer.EventCompleted().AddListener(KtDelegate(this, &SObjectManager::LogUPS));
 	logUPSTimer.Start();
-
-	currentUpdate_ = 0;
-}
-
-void SObjectManager::Update()
-{
-	InitObjects();
-	UpdateObjects();
-	DeleteObjects();
-	++currentUpdate_;
 }
 
 void SObjectManager::Cleanup()
@@ -72,20 +52,19 @@ void SObjectManager::Cleanup()
 	}
 	deletes_.Clear();
 
-	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
+	Framework.InputManager().Keyboard().EventKey(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
 		.RemoveListener(KtDelegate(this, &SObjectManager::Quit));
-	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.RemoveListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
 }
 
-void SObjectManager::Register(KObject* object, UPtrOwnerBase* ptrOwner, const UPtr<KObject>& ptr)
+void SObjectManager::Register(KObject* object, UPtrOwnerBase* ptrOwner)
 {
 	inits_.Add(ptrOwner);
 	object->initIndex_ = inits_.LastIndex();
-	object->SetName(std::format("{}_{}", object->TypeName(), static_cast<std::string>(object->Guid())));
+	object->type_ = object->TypeName();
+	object->SetName(std::format("{}_{}", object->TypeName(), object->Guid().ToString()));
 	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "REG object %s", object->GetName().c_str());
-
-	register_[object->Guid()] = ptr;
 }
 
 void SObjectManager::Delete(UPtrOwnerBase* ptrOwner)
@@ -105,7 +84,7 @@ void SObjectManager::InitObjects()
 		return;
 	}
 
-	for (size_t i{ 0 }; i < inits_.Size(); ++i)
+	for (size_t i{ 0 }; i < inits_.size(); ++i)
 	{
 		auto* ptr{ inits_[i] };
 		auto* object{ static_cast<KObject*>(ptr->Get()) };
@@ -117,19 +96,7 @@ void SObjectManager::InitObjects()
 	}
 	inits_.Clear();
 
-	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "object count %llu", objects_.Size());
-}
-
-void SObjectManager::UpdateObjects()
-{
-	for (auto* ptr : objects_)
-	{
-		auto* object{ static_cast<KObject*>(ptr->Get()) };
-		if (object->GetCanUpdate())
-		{
-			object->Update();
-		}
-	}
+	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "object count %llu", objects_.size());
 }
 
 void SObjectManager::DeleteObjects()
@@ -139,7 +106,7 @@ void SObjectManager::DeleteObjects()
 		return;
 	}
 
-	for (size_t i{ 0 }; i < deletes_.Size(); ++i)
+	for (size_t i{ 0 }; i < deletes_.size(); ++i)
 	{
 		auto* ptr{ deletes_[i] };
 		auto* object{ static_cast<KObject*>(ptr->Get()) };
@@ -164,8 +131,6 @@ void SObjectManager::DeleteObjects()
 				object->initIndex_ = index;
 			}
 		}
-
-		register_.erase(object->Guid());
 	}
 	for (auto* ptr : deletes_)
 	{
@@ -178,24 +143,9 @@ void SObjectManager::DeleteObjects()
 	deletes_.Clear();
 }
 
-uint64_t SObjectManager::GetCurrentUpdate() const
-{
-	return currentUpdate_;
-}
-
 const UPtr<KObject>& SObjectManager::SelectedObject() const
 {
 	return selectedObject_;
-}
-
-UPtr<KObject> SObjectManager::Get(const UGuid& guid) const
-{
-	const auto it{ register_.find(guid) };
-	if (it != register_.end())
-	{
-		return it->second;
-	}
-	return nullptr;
 }
 
 void SObjectManager::LogUPS() const
@@ -222,7 +172,11 @@ void SObjectManager::OnMouseButtonLeftPressed()
 		}
 	}
 
-	selectedObject_ = selectedComponent ? selectedComponent->Owner() : selectedObject_;
+	if (selectedComponent)
+	{
+		selectedObject_ = selectedComponent->Owner();
+	}
+
 	if (selectedObject_)
 	{
 		KT_LOG_KE(KT_LOG_COMPILE_TIME_LEVEL, "selected %s", selectedObject_->GetName().c_str());

@@ -1,11 +1,13 @@
 #include "Engine.h"
 #include "TimeManager.h"
 #include "ObjectManager.h"
+#include "ObjectFactory.h"
 #include "Game.h"
 #include "InterfacePhysicsManager.h"
 
 static STimeManager TimeManager;
 static SObjectManager ObjectManager;
+static SObjectFactory ObjectFactory;
 static SGame Game;
 static SInterfacePhysicsManager InterfacePhysicsManager;
 
@@ -13,11 +15,13 @@ void SEngine::Init()
 {
     ::TimeManager.Init();
     ::ObjectManager.Init();
+    ::Game.Init();
 }
 
 void SEngine::Update()
 {
     ::TimeManager.Update();
+    ::Game.Update();
     ::InterfacePhysicsManager.Update();
 }
 
@@ -44,6 +48,16 @@ SObjectManager& SEngine::ObjectManager()
 const SObjectManager& SEngine::ObjectManager() const
 {
     return ::ObjectManager;
+}
+
+SObjectFactory& SEngine::ObjectFactory()
+{
+    return ::ObjectFactory;
+}
+
+const SObjectFactory& SEngine::ObjectFactory() const
+{
+    return ::ObjectFactory;
 }
 
 SGame& SEngine::Game() 

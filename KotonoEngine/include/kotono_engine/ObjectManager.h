@@ -18,7 +18,6 @@ class SObjectManager final
 
 private:
 	void Init();
-	void Update();
 	void Cleanup();
 
 public:
@@ -28,17 +27,13 @@ public:
 		auto* ptrOwner{ new UPtrOwner<T>() };
 		auto* object{ new T(ptrOwner, args...) };
 		UPtr<T> ptr{ ptrOwner };
-		Register(object, ptrOwner, ptr);
+		Register(object, ptrOwner);
 		return ptr;
 	}
 
 	void Delete(UPtrOwnerBase* ptrOwner);
 
-	uint64_t GetCurrentUpdate() const;
-
 	const UPtr<KObject>& SelectedObject() const;
-
-	UPtr<KObject> Get(const UGuid& guid) const;
 
 private:
 	void Quit();
@@ -47,16 +42,11 @@ private:
 	KtPool<UPtrOwnerBase*> objects_;
 	KtPool<UPtrOwnerBase*> deletes_;
 
-	std::unordered_map<UGuid, UPtr<KObject>> register_;
-
 	UPtr<KObject> selectedObject_;
 
-	uint64_t currentUpdate_;
-
-	void Register(KObject* object, UPtrOwnerBase* ptrOwner, const UPtr<KObject>& ptr);
+	void Register(KObject* object, UPtrOwnerBase* ptrOwner);
 
 	void InitObjects();
-	void UpdateObjects();
 	void DeleteObjects();
 
 	void LogUPS() const;

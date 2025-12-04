@@ -14,7 +14,8 @@
 #include "Object.h"
 #include "Transform.h"
 #include "Rect.h"
-#include "Duration.h"
+#include "Engine.h"
+#include "ObjectFactory.h"
 
 void serialize(nlohmann::json& json, const bool v)
 {
@@ -134,7 +135,7 @@ void serialize(nlohmann::json& json, const KtColor& v)
 
 void serialize(nlohmann::json& json, const UGuid& v)
 {
-    json = static_cast<std::string>(v);
+    json = v.ToString();
 }
 
 void serialize(nlohmann::json& json, const UTransform& v)
@@ -151,19 +152,6 @@ void serialize(nlohmann::json& json, const URect& v)
     serialize(json["scale"], v.scale);
     json["rotation"] = v.rotation;
     //json["anchor"] = rect.anchor;
-}
-
-void serialize(nlohmann::json& json, const UDuration& v)
-{
-    serialize(json["isSeconds"], v.IsSeconds());
-    if (v.IsSeconds())
-    {
-        serialize(json["duration"], v.Seconds());
-    }
-    else
-    {
-        serialize(json["duration"], v.Updates());
-    }
 }
 
 void serialize(nlohmann::json& json, const KtShader* v)
@@ -193,16 +181,17 @@ void serialize(nlohmann::json& json, const KtModel* v)
     serialize(json, v->Path());
 }
 
-void serialize_kobject(nlohmann::json& json, const KObject* v)
+void serialize_kobject(nlohmann::json& json, const UPtr<KObject>& v)
 {
-    if (!v)
+    if (v)
     {
-        return;
+        serialize(json, v->Guid());
+        v->Serialize();
     }
-
-    serialize(json, v->guid_);
-    v->Serialize();
-    //v->SerializeTo(json);
+    else
+    {
+        json = "";
+    }
 }
 
 void deserialize(const nlohmann::json& json, bool& v)
@@ -323,7 +312,11 @@ void deserialize(const nlohmann::json& json, KtColor& v)
 
 void deserialize(const nlohmann::json& json, UGuid& v)
 {
-    v = json;
+    const auto string{ json.get<std::string>() };
+    if (!string.empty())
+    {
+        v = json;
+    }
 }
 
 void deserialize(const nlohmann::json& json, UTransform& v)
@@ -340,18 +333,6 @@ void deserialize(const nlohmann::json& json, URect& v)
     deserialize(json.at("scale"), v.scale);
     v.rotation = json.at("rotation");
     //rect.anchor = json.at("anchor");
-}
-
-void deserialize(const nlohmann::json& json, UDuration& v)
-{
-    if (json.at("isSeconds").get<bool>())
-    {
-        v = UDuration::FromSeconds(json.at("duration").get<float>());
-    }
-    else
-    {
-        v = UDuration::FromUpdates(json.at("duration").get<uint64_t>());
-    }
 }
 
 void deserialize(const nlohmann::json& json, KtShader*& v)
@@ -372,14 +353,9 @@ void deserialize(const nlohmann::json& json, KtModel*& v)
     v = Framework.ModelManager().Get(path);
 }
 
-void deserialize_kobject(const nlohmann::json& json, KObject* v)
+UPtr<KObject> deserialize_kobject(const nlohmann::json& json)
 {
-    if (!v)
-    {
-        return;
-    }
-
-    deserialize(json, v->guid_);
-    v->Deserialize();
-    //v->DeserializeFrom(json);
+    UGuid guid{};
+    deserialize(json, guid);
+    return Engine.ObjectFactory().Get(guid);
 }

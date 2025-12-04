@@ -1,32 +1,18 @@
 #pragma once
-#include "generated/Timer.generated.h"
-#include "Object.h"
 #include <kotono_framework/Event.h>
-class KTimer : public KObject
+struct UTimer
 {
-	GENERATED_KTIMER()
+	bool isPlaying;
+	bool isRepeat;
+	float duration;
+	KtEvent<> eventCompleted;
 
-protected:
-	void Init() override;
-	void Update() override;
-
-public:
-	bool GetIsPlaying() const;
-	bool GetIsRepeat() const;
-	const UDuration& GetDuration() const;
-	KtEvent<>& EventCompleted();
-
-	void SetIsRepeat(const bool isRepeat);
-	void SetDuration(const UDuration& duration);
+	void Update();
 
 	void Start(const bool isOverride = true);
 	void Stop();
 
 private:
-	bool isPlaying_;
-	SERIALIZE bool isRepeat_;
-	SERIALIZE UDuration duration_;
-	UDuration current_;
-	KtEvent<> eventCompleted_;
+	float current_;
 };
 

@@ -15,13 +15,26 @@ add_library(KotonoEngine STATIC)
 # Require C++20
 target_compile_features(KotonoEngine PUBLIC cxx_std_20)
 
-file(GLOB_RECURSE KENGINE_SOURCES "src/*.cpp")
-file(GLOB_RECURSE KENGINE_HEADERS "include/kotono_engine/*.h")
+file(GLOB KENGINE_HEADERS "include/kotono_engine/*.h")
+file(GLOB KENGINE_SOURCES "src/*.cpp")
+
+file(GLOB KENGINE_GENERATED_HEADERS "include/kotono_engine/generated/*.generated.h")
+file(GLOB KENGINE_GENERATED_SOURCES "src/generated/*.generated.cpp")
 
 target_sources(KotonoEngine
-    PRIVATE ${KENGINE_SOURCES}
     PRIVATE ${KENGINE_HEADERS} 
+    PRIVATE ${KENGINE_SOURCES}
+    PRIVATE ${KENGINE_GENERATED_HEADERS} 
+    PRIVATE ${KENGINE_GENERATED_SOURCES} 
 )
+
+# Main groups
+source_group("Header Files" FILES ${KENGINE_HEADERS})
+source_group("Source Files" FILES ${KENGINE_SOURCES})
+
+# Generated groups
+source_group("Header Files\\Generated" FILES ${KENGINE_GENERATED_HEADERS})
+source_group("Source Files\\Generated" FILES ${KENGINE_GENERATED_SOURCES})
 
 # Include directories
 target_include_directories(KotonoEngine 

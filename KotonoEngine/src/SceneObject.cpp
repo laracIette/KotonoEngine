@@ -23,10 +23,30 @@ void TSceneObject::Cleanup()
 {
 	Base::Cleanup();
 
-	for (const auto& component : components_)
+	for (const auto& sceneComponent : sceneComponents_)
 	{
-		component->Delete();
+		sceneComponent->Delete();
 	}
+}
+
+void TSceneObject::Update()
+{
+}
+
+void TSceneObject::UpdateSceneComponents()
+{
+	for (const auto& sceneComponent : sceneComponents_)
+	{
+		if (sceneComponent->GetCanUpdate())
+		{
+			sceneComponent->Update();
+		}
+	}
+}
+
+bool TSceneObject::GetCanUpdate() const
+{
+	return canUpdate_;
 }
 
 KtWindowViewport* TSceneObject::GetViewport() const
@@ -42,6 +62,11 @@ const UPtr<TSceneObject>& TSceneObject::GetParent() const
 const UPtr<KSceneComponent>& TSceneObject::RootComponent() const
 {
 	return rootComponent_;
+}
+
+void TSceneObject::SetCanUpdate(const bool canUpdate)
+{
+	canUpdate_ = canUpdate;
 }
 
 void TSceneObject::SetViewport(KtWindowViewport* viewport)
@@ -80,28 +105,15 @@ void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinate
 
 void TSceneObject::AddComponent(const UPtr<KSceneComponent>& component)
 {
-	components_.Add(component);
-	component->componentIndex_ = components_.LastIndex();
+	sceneComponents_.Add(component);
+	component->componentIndex_ = sceneComponents_.LastIndex();
 }
 
 void TSceneObject::RemoveComponent(const UPtr<KSceneComponent>& component)
 {
 	const size_t index{ component->componentIndex_ };
-	if (components_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+	if (sceneComponents_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 	{
-		components_[index]->componentIndex_ = index;
+		sceneComponents_[index]->componentIndex_ = index;
 	}
 }
-
-//void TSceneObject::SerializeTo(nlohmann::json& json) const
-//{
-//	Base::SerializeTo(json);
-//	json["parent"] = parent_ ? static_cast<std::string>(parent_->Guid()) : ""; // ??
-//}
-
-//void TSceneObject::DeserializeFrom(const nlohmann::json& json)
-//{
-//	Base::DeserializeFrom(json);
-//	// parent
-//	rootComponent_->DeserializeFrom(json["rootComponent_"]);
-//}

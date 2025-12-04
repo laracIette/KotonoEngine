@@ -13,6 +13,8 @@ public:
 	KScene(UPtrOwnerBase* ptrOwner);
 
 public:
+	void UpdateSceneObjects();
+
 	void Load();
 	void Unload();
 	void Reload();

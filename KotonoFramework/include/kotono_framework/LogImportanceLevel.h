@@ -7,3 +7,9 @@ enum KtLogImportanceLevel : char
 	KT_LOG_IMPORTANCE_LEVEL_HIGH
 };
 
+
+#ifndef KT_LOG_COMPILE_TIME_LEVEL
+#define KT_LOG_COMPILE_TIME_LEVEL KT_LOG_IMPORTANCE_LEVEL_HIGH
+#endif
+
+#define KT_SHOULD_LOG(level) ((level) >= KT_LOG_COMPILE_TIME_LEVEL)

@@ -3,10 +3,10 @@
 
 void SInterfacePhysicsManager::Update()
 {
-	//for (size_t i{ 0 }; i < colliderComponents_.Size(); ++i)
+	//for (size_t i{ 0 }; i < colliderComponents_.size(); ++i)
 	//{
 	//	auto* current{ colliderComponents_[i] };
-	//	for (size_t j{ i + 1 }; j < colliderComponents_.Size(); ++j)
+	//	for (size_t j{ i + 1 }; j < colliderComponents_.size(); ++j)
 	//	{
 	//		auto* other{ colliderComponents_[j] };
 	//		if (current->GetIsOverlapping(other))

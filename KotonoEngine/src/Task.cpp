@@ -2,27 +2,18 @@
 #include "Engine.h"
 #include "TimeManager.h"
 
-void KTask::Init()
+void UTask::Update()
 {
-    SetCanUpdate(true);
-}
-
-void KTask::Update()
-{
-    Base::Update();
-
-    if (!isPlaying_)
+    if (!isPlaying)
     {
         return;
     }
 
-    current_ += duration_.IsSeconds()
-        ? UDuration::FromSeconds(Engine.TimeManager().GameTime().lastDelta)
-        : UDuration::FromUpdates(1);
+    current_ += Engine.TimeManager().GameTime().lastDelta;
 
-    if (current_ < duration_)
+    if (current_ < duration)
     {
-        eventUpdate_.Broadcast();
+        eventUpdate.Broadcast();
     }
     else
     {
@@ -31,36 +22,14 @@ void KTask::Update()
     
 }
 
-const UDuration& KTask::GetDuration() const
+void UTask::Start()
 {
-    return duration_;
+    isPlaying = true;
+    current_ = 0.0f;
 }
 
-KtEvent<>& KTask::EventUpdate()
+void UTask::Stop()
 {
-    return eventUpdate_;
-}
-
-KtEvent<>& KTask::EventCompleted()
-{
-    return eventCompleted_;
-}
-
-void KTask::SetDuration(const UDuration& duration)
-{
-    duration_ = duration;
-}
-
-void KTask::Start()
-{
-    isPlaying_ = true;
-    current_ = duration_.IsSeconds()
-        ? UDuration::FromSeconds(0.0f)
-        : UDuration::FromUpdates(0);
-}
-
-void KTask::Stop()
-{
-    isPlaying_ = false;
-    eventCompleted_.Broadcast();
+    isPlaying = false;
+    eventCompleted.Broadcast();
 }

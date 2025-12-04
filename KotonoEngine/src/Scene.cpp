@@ -35,6 +35,19 @@ KScene::KScene(UPtrOwnerBase* ptrOwner) :
 	sceneObjects_.Append({ mesh1, mesh2 });
 }
 
+void KScene::UpdateSceneObjects()
+{
+	for (const auto& sceneObject : sceneObjects_)
+	{
+		if (sceneObject->GetCanUpdate())
+		{
+			sceneObject->Update();
+		}
+
+		sceneObject->UpdateSceneComponents();
+	}
+}
+
 void KScene::Load()
 {
 	Deserialize();

@@ -75,7 +75,14 @@ public:
 		requires std::is_base_of_v<T, U>
 	UPtr(const UPtr<U>& other)
 	{
-		SetOwner(reinterpret_cast<Owner*>(other.GetOwner())); // get owner because different type
+		SetOwner(reinterpret_cast<Owner*>(other.GetOwner())); // GetOwner() because different type
+	}
+
+	template <class V>
+		requires std::is_base_of_v<V, T>
+	UPtr(const UPtr<V>& other)
+	{
+		SetOwner(reinterpret_cast<Owner*>(other.GetOwner()));
 	}
 
 	~UPtr()
@@ -87,7 +94,15 @@ public:
 		requires std::is_base_of_v<T, U>
 	UPtr& operator=(const UPtr<U>& other)
 	{
-		SetOwner(reinterpret_cast<Owner*>(other.GetOwner())); // get owner because different type
+		SetOwner(reinterpret_cast<Owner*>(other.GetOwner())); 
+		return *this;
+	}
+
+	template <class V>
+		requires std::is_base_of_v<V, T>
+	UPtr& operator=(const UPtr<V>& other)
+	{
+		SetOwner(reinterpret_cast<Owner*>(other.GetOwner()));
 		return *this;
 	}
 

@@ -1,31 +1,18 @@
 #pragma once
-#include "generated/Task.generated.h"
-#include "Object.h"
 #include <kotono_framework/Event.h>
-#include "Duration.h"
-class KTask : public KObject
+struct UTask
 {
-	GENERATED_KTASK()
+	bool isPlaying;
+	float duration;
+	KtEvent<> eventUpdate;
+	KtEvent<> eventCompleted;
 
-protected:
-	void Init() override;
-	void Update() override;
-
-public:
-	const UDuration& GetDuration() const;
-	KtEvent<>& EventUpdate();
-	KtEvent<>& EventCompleted();
-
-	void SetDuration(const UDuration& duration);
+	void Update();
 
 	void Start();
 	void Stop();
 
 private:
-	bool isPlaying_;
-	UDuration current_;
-	SERIALIZE UDuration duration_;
-	KtEvent<> eventUpdate_;
-	KtEvent<> eventCompleted_;
+	float current_;
 };
 

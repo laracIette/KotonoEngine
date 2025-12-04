@@ -1,36 +1,25 @@
 #include "Timer.h"
 #include "Engine.h"
 #include "TimeManager.h"
-#include "ObjectManager.h"
-#include "log.h"
 
-void KTimer::Init()
+void UTimer::Update()
 {
-    SetCanUpdate(true);
-}
-
-void KTimer::Update()
-{
-	Base::Update();
-
-    if (!isPlaying_)
+    if (!isPlaying)
     {
         return;
     }
 
-    current_ += duration_.IsSeconds()
-        ? UDuration::FromSeconds(Engine.TimeManager().GameTime().lastDelta)
-        : UDuration::FromUpdates(1);
+    current_ += Engine.TimeManager().GameTime().lastDelta;
 
-    if (current_ < duration_)
+    if (current_ < duration)
     {
         return;
     }
 
-    eventCompleted_.Broadcast();
-    if (isRepeat_)
+    eventCompleted.Broadcast();
+    if (isRepeat)
     {
-        current_ -= duration_;
+        current_ -= duration;
         Start();
     }
     else
@@ -39,51 +28,18 @@ void KTimer::Update()
     }
 }
 
-bool KTimer::GetIsPlaying() const
+void UTimer::Start(const bool isOverride)
 {
-    return isPlaying_;
-}
-
-bool KTimer::GetIsRepeat() const
-{
-    return isRepeat_;
-}
-
-const UDuration& KTimer::GetDuration() const
-{
-    return duration_;
-}
-
-KtEvent<>& KTimer::EventCompleted()
-{
-    return eventCompleted_;
-}
-
-void KTimer::SetIsRepeat(const bool isRepeat)
-{
-    isRepeat_ = isRepeat;
-}
-
-void KTimer::SetDuration(const UDuration& duration)
-{
-    duration_ = duration;
-}
-
-void KTimer::Start(const bool isOverride)
-{
-    if (isPlaying_ && !isOverride)
+    if (isPlaying && !isOverride)
     {
         return;
     }
 
-    isPlaying_ = true;
-
-    current_ = duration_.IsSeconds()
-        ? UDuration::FromSeconds(0.0f)
-        : UDuration::FromUpdates(0);
+    isPlaying = true;
+    current_ = 0.0f;
 }
 
-void KTimer::Stop()
+void UTimer::Stop()
 {
-    isPlaying_ = false;
+    isPlaying = false;
 }

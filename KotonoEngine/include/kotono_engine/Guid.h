@@ -14,6 +14,8 @@ public:
 
 	bool operator==(const UGuid& other) const;
 
+	std::string ToString() const;
+
 private:
 	std::array<uint64_t, 4> data_;
 };

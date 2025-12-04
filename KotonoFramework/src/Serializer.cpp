@@ -7,26 +7,7 @@
 
 #define KT_LOG_IMPORTANCE_LEVEL_SERIALIZER KT_LOG_IMPORTANCE_LEVEL_HIGH
 
-void KtSerializer::ReadData(const std::filesystem::path& path, nlohmann::json& json) const
-{
-	if (path.empty())
-	{
-		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "can't read data from empty path");
-		return;
-	}
-
-	const KtFile file(path);
-	if (!file.Exists())
-	{
-		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "file at path '%s' doesn't exist", path.string().c_str());
-		return;
-	}
-
-	std::istringstream stream(file.ReadString());
-	stream >> json;
-}
-
-void KtSerializer::WriteData(const std::filesystem::path& path, const nlohmann::json& json) const
+void KtSerializer::Serialize(const nlohmann::json& json, const std::filesystem::path& path)
 {
 	if (path.empty())
 	{
@@ -43,5 +24,24 @@ void KtSerializer::WriteData(const std::filesystem::path& path, const nlohmann::
 	const KtFile file(path);
 	const std::string jsonString{ json.dump(4) };
 
-	file.WriteString(jsonString); 
+	file.WriteString(jsonString);
+}
+
+void KtSerializer::Deserialize(nlohmann::json& json, const std::filesystem::path& path)
+{
+	if (path.empty())
+	{
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "can't read data from empty path");
+		return;
+	}
+
+	const KtFile file(path);
+	if (!file.Exists())
+	{
+		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "file at path '%s' doesn't exist", path.string().c_str());
+		return;
+	}
+
+	std::istringstream stream(file.ReadString());
+	stream >> json;
 }

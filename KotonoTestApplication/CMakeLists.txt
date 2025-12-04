@@ -20,8 +20,8 @@ if (WITH_EDITOR)
 endif()
 
 # --- Add source files ---
-file(GLOB_RECURSE KTESTAPPLICATION_SOURCES "src/*.cpp")
-file(GLOB_RECURSE KTESTAPPLICATION_HEADERS "include/kotono_testapplication/*.h")
+file(GLOB_RECURSE KTESTAPPLICATION_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE KTESTAPPLICATION_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_testapplication/*.h")
 
 target_sources(KotonoTestApplication
     PRIVATE ${KTESTAPPLICATION_SOURCES}
@@ -40,3 +40,11 @@ if (WITH_EDITOR)
 else()
     target_link_libraries(KotonoTestApplication PRIVATE KotonoEngine)
 endif()
+
+# --- Copy config file ---
+add_custom_command(TARGET KotonoTestApplication POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E echo "Copying config.json..."
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/config.json"
+        "$<TARGET_FILE_DIR:KotonoTestApplication>/config.json"
+)

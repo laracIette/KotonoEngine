@@ -22,8 +22,6 @@ static KtShader* WireframeShader = nullptr;
 KSceneMeshComponent::KSceneMeshComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSceneObject>& owner) :
     Base(ptrOwner, owner)
 {
-    spinTask_ = Engine.ObjectManager().Create<KTask>();
-
     if (!WireframeShader)
     {
         const auto path{ Framework.Path().Framework() / R"(shaders\wireframe3D.ktshader)" };
@@ -35,14 +33,21 @@ void KSceneMeshComponent::Init()
 {
     Base::Init();
 
-    spinTask_->SetDuration(UDuration::FromSeconds(5.0f));
-    spinTask_->EventUpdate().AddListener(KtDelegate(this, &KSceneMeshComponent::Spin));
-    spinTask_->Start();
+    spinTask_.duration = 5.0f;
+    spinTask_.eventUpdate.AddListener(KtDelegate(this, &KSceneMeshComponent::Spin));
+    spinTask_.Start();
 
-    Framework.InputManager().Keyboard().KeyEvent(KT_KEY_N, KT_INPUT_STATE_PRESSED)
+    Framework.InputManager().Keyboard().EventKey(KT_KEY_N, KT_INPUT_STATE_PRESSED)
         .AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
-    Framework.InputManager().Keyboard().KeyEvent(KT_KEY_M, KT_INPUT_STATE_PRESSED)
+    Framework.InputManager().Keyboard().EventKey(KT_KEY_M, KT_INPUT_STATE_PRESSED)
         .AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
+}
+
+void KSceneMeshComponent::Update()
+{
+    Base::Update();
+
+    spinTask_.Update();
 }
 
 void KSceneMeshComponent::Cleanup()
@@ -52,11 +57,9 @@ void KSceneMeshComponent::Cleanup()
     UnregisterModelProxy();
     EventTransformUpdated().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
 
-    spinTask_->Delete();
-
-    Framework.InputManager().Keyboard().KeyEvent(KT_KEY_N, KT_INPUT_STATE_PRESSED)
+    Framework.InputManager().Keyboard().EventKey(KT_KEY_N, KT_INPUT_STATE_PRESSED)
         .RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
-    Framework.InputManager().Keyboard().KeyEvent(KT_KEY_M, KT_INPUT_STATE_PRESSED)
+    Framework.InputManager().Keyboard().EventKey(KT_KEY_M, KT_INPUT_STATE_PRESSED)
         .RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
 }
 

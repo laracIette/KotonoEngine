@@ -346,7 +346,7 @@ void KtSceneRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const Proxie
 	const KtShader* currentShader{ nullptr };
 	const KtRenderable3D* currentRenderable{ nullptr };
 
-	for (size_t i = 0; i < proxies.Size();)
+	for (size_t i = 0; i < proxies.size();)
 	{
 		const KtRenderable3DProxy* proxy{ proxies[i] };
 		const KtShader* shader{ proxy->shader };
@@ -355,7 +355,7 @@ void KtSceneRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const Proxie
 
 		// Find the extent of the current batch
 		size_t instanceCount{ 1 };
-		while (i + instanceCount < proxies.Size())
+		while (i + instanceCount < proxies.size())
 		{
 			const auto* next = proxies[i + instanceCount];
 			if (next->shader != shader || next->renderable != renderable || next->scissor.extent != scissor.extent || next->scissor.offset != scissor.offset)

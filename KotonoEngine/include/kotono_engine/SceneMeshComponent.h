@@ -2,10 +2,10 @@
 #include "generated/SceneMeshComponent.generated.h"
 #include <kotono_framework/Renderable3DProxy.h>
 #include "SceneComponent.h"
+#include "Task.h"
 
 class KtShader;
 class KtModel;
-class KTask;
 
 class KSceneMeshComponent : public KSceneComponent
 {
@@ -16,6 +16,7 @@ public:
 
 protected:
 	void Init() override;
+	void Update() override;
 	void Cleanup() override;
 
 public:
@@ -34,9 +35,9 @@ public:
 	void Spawn() override;
 
 private:
-	KtShader* shader_;
-	KtModel* model_;
-	UPtr<KTask> spinTask_;
+	SERIALIZE KtShader* shader_;
+	SERIALIZE KtModel* model_;
+	UTask spinTask_;
 	KtRenderable3DProxy modelProxy_;
 
 	void CreateModelProxy();

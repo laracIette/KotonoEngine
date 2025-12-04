@@ -114,7 +114,7 @@ float KtMouse::GetVerticalScrollDelta() const
     return verticalScrollDelta_;
 }
 
-KtEvent<>& KtMouse::ButtonEvent(const KtButton button, const KtInputState inputState)
+KtEvent<>& KtMouse::EventButton(const KtButton button, const KtInputState inputState)
 {
     return buttonEvents_[button][inputState];
 }

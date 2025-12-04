@@ -24,24 +24,24 @@ void SCamera::Init()
 
 	// todo: input manager is engine time, not game time
 
-	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_W, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardWKeyDown));
-	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_A, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardAKeyDown));
-	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_S, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardSKeyDown));
-	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_D, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardDKeyDown));
-	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_RIGHT, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &SCamera::OnMouseRightButtonPressed));
-	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_RIGHT, KT_INPUT_STATE_RELEASED).AddListener(KtDelegate(this, &SCamera::OnMouseRightButtonReleased));
+	Framework.InputManager().Keyboard().EventKey(KT_KEY_W, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardWKeyDown));
+	Framework.InputManager().Keyboard().EventKey(KT_KEY_A, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardAKeyDown));
+	Framework.InputManager().Keyboard().EventKey(KT_KEY_S, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardSKeyDown));
+	Framework.InputManager().Keyboard().EventKey(KT_KEY_D, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardDKeyDown));
+	Framework.InputManager().Mouse().EventButton(KT_BUTTON_RIGHT, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &SCamera::OnMouseRightButtonPressed));
+	Framework.InputManager().Mouse().EventButton(KT_BUTTON_RIGHT, KT_INPUT_STATE_RELEASED).AddListener(KtDelegate(this, &SCamera::OnMouseRightButtonReleased));
 	Framework.InputManager().Mouse().EventMove().AddListener(KtDelegate(this, &SCamera::OnMouseMove));
 	Framework.InputManager().Mouse().EventVerticalScroll().AddListener(KtDelegate(this, &SCamera::OnMouseVerticalScroll));
 }
 
 void SCamera::Cleanup()
 {
-	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_W, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardWKeyDown));
-	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_A, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardAKeyDown));
-	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_S, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardSKeyDown));
-	Framework.InputManager().Keyboard().KeyEvent(KT_KEY_D, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardDKeyDown));
-	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_RIGHT, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &SCamera::OnMouseRightButtonPressed));
-	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_RIGHT, KT_INPUT_STATE_RELEASED).RemoveListener(KtDelegate(this, &SCamera::OnMouseRightButtonReleased));
+	Framework.InputManager().Keyboard().EventKey(KT_KEY_W, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardWKeyDown));
+	Framework.InputManager().Keyboard().EventKey(KT_KEY_A, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardAKeyDown));
+	Framework.InputManager().Keyboard().EventKey(KT_KEY_S, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardSKeyDown));
+	Framework.InputManager().Keyboard().EventKey(KT_KEY_D, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardDKeyDown));
+	Framework.InputManager().Mouse().EventButton(KT_BUTTON_RIGHT, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &SCamera::OnMouseRightButtonPressed));
+	Framework.InputManager().Mouse().EventButton(KT_BUTTON_RIGHT, KT_INPUT_STATE_RELEASED).RemoveListener(KtDelegate(this, &SCamera::OnMouseRightButtonReleased));
 	Framework.InputManager().Mouse().EventMove().RemoveListener(KtDelegate(this, &SCamera::OnMouseMove));
 	Framework.InputManager().Mouse().EventVerticalScroll().RemoveListener(KtDelegate(this, &SCamera::OnMouseVerticalScroll));
 }

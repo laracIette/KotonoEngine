@@ -298,11 +298,9 @@ void Generator::Generate(const std::filesystem::path& header) const
 		if (variable.isIterable)
 		{
 			serializeCode
-				<< "\tsize_t i{ 0 };\n"
-				<< "\tfor (const auto& v : " << variable.name << ")\n"
+				<< "\tfor (size_t i{ 0 }; i < " << variable.name << ".size(); ++i)\n"
 				<< "\t{\n"
-				<< "\t\tserialize(json[\"" << variable.name << "\"][i], v);\n"
-				<< "\t\t++i;\n"
+				<< "\t\tserialize(json[\"" << variable.name << "\"][i], " << variable.name << "[i]);\n"
 				<< "\t}\n";
 		}
 		else
@@ -316,11 +314,10 @@ void Generator::Generate(const std::filesystem::path& header) const
 		if (variable.isIterable)
 		{
 			deserializeCode
-				<< "\tsize_t i{ 0 };\n"
-				<< "\tfor (auto& v : " << variable.name << ")\n"
+				<< "\t" << variable.name << ".reserve(json.at(\"" << variable.name << "\").size()); \n"
+				<< "\tfor (size_t i{ 0 }; i < " << variable.name << ".size(); ++i)\n"
 				<< "\t{\n"
-				<< "\t\tdeserialize(json.at(\"" << variable.name << "\")[i], v);\n"
-				<< "\t\t++i;\n"
+				<< "\t\tdeserialize(json.at(\"" << variable.name << "\")[i], " << variable.name << "[i]);\n"
 				<< "\t}\n";
 		}
 		else
@@ -390,5 +387,5 @@ void Generator::Generate(const std::filesystem::path& header) const
 	const auto fileCPP{ EnginePath / "src" / "generated" / header.filename().replace_extension(".generated.cpp") };
 	write_string(fileCPP, generatedCodeCPP);
 
-	std::cout << "Generated '" << header << "'" << std::endl;
+	std::cout << "Generated " << header << std::endl;
 }

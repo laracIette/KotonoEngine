@@ -15,9 +15,9 @@ void KInterfaceColliderComponent::Init()
 {
 	Base::Init();	
 
-	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
-	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED).AddListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
-	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
+	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
+	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED).AddListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
+	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
 }
 
 void KInterfaceColliderComponent::Cleanup()
@@ -26,9 +26,9 @@ void KInterfaceColliderComponent::Cleanup()
 
 	Engine.InterfacePhysicsManager().Unregister(this);
 
-	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
-	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED).RemoveListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
-	Framework.InputManager().Mouse().ButtonEvent(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
+	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
+	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED).RemoveListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
+	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
 }
 
 KtEvent<>& KInterfaceColliderComponent::GetEventPressed()

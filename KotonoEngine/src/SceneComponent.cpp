@@ -31,9 +31,18 @@ void KSceneComponent::Cleanup()
     Base::Cleanup();
 }
 
+void KSceneComponent::Update()
+{
+}
+
 const UPtr<TSceneObject>& KSceneComponent::Owner() const
 {
     return owner_;
+}
+
+bool KSceneComponent::GetCanUpdate() const
+{
+    return canUpdate_;
 }
 
 const UTransform& KSceneComponent::GetTransform() const
@@ -74,6 +83,11 @@ const glm::quat& KSceneComponent::GetSpawnRotation() const
 const glm::vec3& KSceneComponent::GetSpawnScale() const
 {
     return spawnTransform_.scale;
+}
+
+void KSceneComponent::SetCanUpdate(const bool canUpdate)
+{
+    canUpdate_ = canUpdate;
 }
 
 void KSceneComponent::SetVisibility(const EVisibility visibility, const bool propagateToChildren)

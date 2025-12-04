@@ -1,15 +1,23 @@
 #include "Path.h"
+#include "Serializer.h"
+#include <nlohmann/json.hpp>
 #include <Windows.h>
 
 void KtPath::Init()
 {
-    char path[MAX_PATH];
-    GetModuleFileNameA(nullptr, path, MAX_PATH);
+    char executablePath[MAX_PATH];
+    GetModuleFileNameA(nullptr, executablePath, MAX_PATH);
 
-    rootPath_ = std::filesystem::path(path).parent_path().parent_path().parent_path().parent_path();
+    const auto executableDirectory{ std::filesystem::path(executablePath).parent_path() };
+
+    nlohmann::json json{};
+    KtSerializer::Deserialize(json, executableDirectory / "config.json");
+
+    rootPath_ = ROOT_DIRECTORY;
     frameworkPath_ = rootPath_ / R"(KotonoFramework)";
     enginePath_ = rootPath_ / R"(KotonoEngine)";
-    projectPath_ = rootPath_ / R"(KotonoTestApplication)";
+
+    projectPath_ = json.at("projectPath").get<std::string>();
 }
 
 const std::filesystem::path& KtPath::Root() const

@@ -1,10 +1,34 @@
 #include "Game.h"
 #include "Engine.h"
 #include "ObjectManager.h"
+#include "Scene.h"
+#include <kotono_framework/Framework.h>
+#include <kotono_framework/Path.h>
+#include <kotono_framework/Serializer.h>
+#include <nlohmann/json.hpp>
+#include "serialize.h"
+
+void SGame::Init()
+{
+	nlohmann::json json{};
+	KtSerializer::Deserialize(json, Framework.Path().Project() / "config.json");
+
+#   if false
+	    deserialize(json.at("startupScene"), scene_);
+#   else
+        scene_ = Engine.ObjectManager().Create<KScene>();
+        scene_->guid_ = "6ed943411c1d0145-fa7e129d436fefc7-d610a013cfe163f9-48ab854138be189a";
+        scene_->Serialize();
+#   endif
+
+    scene_->SpawnSceneObjects();
+}
 
 void SGame::Update()
 {
-    Engine.ObjectManager().Update();
+    Engine.ObjectManager().InitObjects();
+    scene_->UpdateSceneObjects();
+    Engine.ObjectManager().DeleteObjects();
 }
 
 void SGame::OpenScene(const UPtr<KScene>& scene)
