@@ -16,14 +16,14 @@ endif()
 option(WITH_EDITOR "Build the Kotono Editor" ON)
 
 # --- Add all modules (subprojects) ---
-add_subdirectory(KotonoFramework)
-add_subdirectory(KotonoGenerator)
-add_subdirectory(KotonoInterface)
-add_subdirectory(KotonoEngine)
+add_subdirectory(Framework)
+add_subdirectory(Generator)
+add_subdirectory(Interface)
+add_subdirectory(Engine)
 if (WITH_EDITOR)
-    add_subdirectory(KotonoEditor)
+    add_subdirectory(Editor)
 endif()
-add_subdirectory(KotonoTestApplication)
+add_subdirectory(TestApplication)
 
 if (MSVC)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
