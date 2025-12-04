@@ -26,7 +26,6 @@ set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/ThirdParty")
 
 # Include directories
 target_include_directories(KotonoAudio
-    PUBLIC  "${THIRD_PARTY_DIR}/include"
     PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_audio"
 )
@@ -39,4 +38,9 @@ set_target_properties(KotonoAudio PROPERTIES
 # Link system + third-party libs
 target_link_libraries(KotonoAudio PUBLIC
     "${THIRD_PARTY_DIR}/lib/OpenAL32.lib"
+)
+
+# Link libs
+target_link_libraries(KotonoAudio PUBLIC
+    KotonoCommon
 )

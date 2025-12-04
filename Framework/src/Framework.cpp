@@ -1,6 +1,6 @@
 #include "Framework.h"
 #include "Clock.h"
-#include "Path.h"
+#include <kotono_common/Path.h>
 #include "Window.h"
 #include "Context.h"
 #include "Renderer.h"

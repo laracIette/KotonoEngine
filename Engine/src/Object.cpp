@@ -1,12 +1,12 @@
 #include "Object.h"
 #include <nlohmann/json.hpp>
-#include <kotono_framework/Serializer.h>
+#include <kotono_io/Serializer.h>
 #include "Engine.h"
 #include "ObjectManager.h"
 #include "Timer.h"
 #include "log.h"
 #include <kotono_framework/Framework.h>
-#include <kotono_framework/Path.h>
+#include <kotono_common/Path.h>
 
 KObject::KObject(UPtrOwnerBase* ptrOwner) :
     ptrOwner_(ptrOwner),

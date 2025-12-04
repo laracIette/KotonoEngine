@@ -1,6 +1,6 @@
 #include "InterfaceRenderer.h"
 #include "Framework.h"
-#include "log.h"
+#include <kotono_common/log.h>
 #include "Context.h"
 #include "Vertex2D.h"
 #include "InterfaceCuller.h"

@@ -3,7 +3,7 @@
 #include <type_traits>
 #include <memory>
 #include <iostream>
-#include "log.h"
+#include <kotono_common/log.h>
 #include "hash_utils.h"
 
 template <typename... Args>

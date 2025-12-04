@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include "log.h"
+#include <kotono_common/log.h>
 
 #define KT_LOG_IMPORTANCE_LEVEL_FILE KT_LOG_IMPORTANCE_LEVEL_HIGH
 

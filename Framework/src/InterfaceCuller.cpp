@@ -1,5 +1,5 @@
 #include "InterfaceCuller.h"
-#include "log.h"
+#include <kotono_common/log.h>
 #include "InterfaceRenderableProxy.h"
 
 #define KT_LOG_IMPORTANCE_LEVEL_NULLPTR KT_LOG_IMPORTANCE_LEVEL_HIGH

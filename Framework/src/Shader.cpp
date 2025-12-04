@@ -4,12 +4,12 @@
 #include "Context.h"
 #include "ImageTextureManager.h"
 #include "ImageTexture.h"
-#include "Path.h"
-#include "File.h"
+#include <kotono_common/Path.h>
+#include <kotono_io/File.h>
 #include <spirv-reflect/spirv_reflect.h>
 #include <nlohmann/json.hpp>
-#include "Serializer.h"
-#include "log.h"
+#include <kotono_io/Serializer.h>
+#include <kotono_common/log.h>
 #include "Renderer.h"
 
 #define KT_LOG_IMPORTANCE_LEVEL_SHADER KT_LOG_IMPORTANCE_LEVEL_MEDIUM

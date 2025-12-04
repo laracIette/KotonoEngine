@@ -3,7 +3,7 @@
 #include "Window.h"
 #include <set>
 #include <array>
-#include "log.h"
+#include <kotono_common/log.h>
 #include "vk_utils.h"
 #include <glm/common.hpp>
 

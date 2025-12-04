@@ -1,4 +1,4 @@
-#include "log.h"
+#include <kotono_common/log.h>
 
 #ifdef _DEBUG
 

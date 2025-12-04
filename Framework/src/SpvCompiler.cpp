@@ -1,11 +1,11 @@
 #include "SpvCompiler.h"
 #include "Framework.h"
-#include "Path.h"
-#include "log.h"
+#include <kotono_common/Path.h>
+#include <kotono_common/log.h>
 #include <nlohmann/json.hpp>
-#include "Serializer.h"
+#include <kotono_io/Serializer.h>
 #include <format>
-#include "FileExplorer.h"
+#include <kotono_io/FileExplorer.h>
 
 void KtSpvCompiler::CompileUpdated() const
 {

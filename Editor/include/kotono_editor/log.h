@@ -1,6 +1,6 @@
 #pragma once
 
-#include <kotono_framework/LogImportanceLevel.h>
+#include <kotono_common/LogImportanceLevel.h>
 
 #ifdef _DEBUG
 #include <cstdio>

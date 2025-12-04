@@ -2,7 +2,7 @@
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/ImageTextureManager.h>
-#include <kotono_framework/Path.h>
+#include <kotono_common/Path.h>
 #include <kotono_framework/Shader.h>
 #include "Engine.h"
 #include "InterfaceImageObject.h"

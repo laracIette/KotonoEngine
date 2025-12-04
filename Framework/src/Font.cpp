@@ -2,7 +2,7 @@
 #include "Framework.h"
 #include "ImageTextureManager.h"
 #include "ImageTexture.h"
-#include "Path.h"
+#include <kotono_common/Path.h>
 #include <unordered_map>
 
 static const std::unordered_map<char, const char*> CHARACTER_NAMES =

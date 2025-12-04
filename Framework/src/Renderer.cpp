@@ -2,7 +2,7 @@
 #include "Framework.h"
 #include "Context.h"
 #include "Window.h"
-#include "log.h"
+#include <kotono_common/log.h>
 #include "vk_utils.h"
 #include "time_utils.h"
 

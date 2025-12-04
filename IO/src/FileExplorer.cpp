@@ -1,9 +1,8 @@
 #include "FileExplorer.h"
-#include "Framework.h"
-#include "Path.h"
+#include "File.h"
 
 KtFileExplorer::KtFileExplorer() :
-    directoryPath_(Framework.Path().Root())
+    directoryPath_("")
 {
 }
 

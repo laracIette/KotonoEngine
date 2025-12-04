@@ -26,7 +26,6 @@ set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/ThirdParty")
 
 # Include directories
 target_include_directories(KotonoFramework
-    PUBLIC  "${THIRD_PARTY_DIR}/include"
     PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_framework"
 )
@@ -38,7 +37,6 @@ set_target_properties(KotonoFramework PROPERTIES
 
 # Preprocessor defines for all builds
 target_compile_definitions(KotonoFramework PUBLIC
-    NOMINMAX
     GLM_FORCE_RADIANS
     GLM_FORCE_LEFT_HANDED
     GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -49,8 +47,6 @@ target_compile_definitions(KotonoFramework PUBLIC
     VK_USE_PLATFORM_WIN32_KHR
     ASSIMP_BUILD_NO_EXPORT
 )
-
-target_compile_definitions(KotonoFramework PUBLIC ROOT_DIRECTORY="${CMAKE_SOURCE_DIR}")
 
 # Link system + third-party libs
 target_link_libraries(KotonoFramework PUBLIC
@@ -71,5 +67,6 @@ target_sources(KotonoFramework PRIVATE ${KFRAMEWORK_SHADERS})
 
 # Link libs
 target_link_libraries(KotonoFramework PUBLIC
+    KotonoIO
     KotonoAudio
 )

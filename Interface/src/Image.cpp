@@ -3,7 +3,7 @@
 #include <kotono_framework/WindowViewport.h>
 #include <kotono_framework/InterfaceRenderableProxy.h>
 #include <kotono_framework/ImageTexture.h>
-#include <kotono_framework/Path.h>
+#include <kotono_common/Path.h>
 #include <kotono_framework/Renderer.h>
 #include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/ImageTextureManager.h>

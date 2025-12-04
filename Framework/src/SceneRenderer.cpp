@@ -8,7 +8,7 @@
 #include "Shader.h"
 #include "Renderable3DProxy.h"
 #include "Collection.h"
-#include "log.h"
+#include <kotono_common/log.h>
 #include "vk_utils.h"
 #include <unordered_set>
 

@@ -2,7 +2,7 @@
 #include "Framework.h"
 #include "Context.h"
 #include "WindowViewport.h"
-#include "log.h"
+#include <kotono_common/log.h>
 
 void framebuffersize_callback_(GLFWwindow* window, int width, int height);
 

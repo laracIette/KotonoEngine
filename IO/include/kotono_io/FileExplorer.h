@@ -1,7 +1,8 @@
 #pragma once
-#include "File.h"
 #include <vector>
 #include <functional>
+#include <filesystem>
+class KtFile;
 class KtFileExplorer final
 {
 private:

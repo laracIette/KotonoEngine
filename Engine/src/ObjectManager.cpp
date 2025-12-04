@@ -4,7 +4,7 @@
 #include <kotono_framework/Timer.h>
 #include <kotono_framework/Window.h>
 #include <kotono_framework/InputManager.h>
-#include <kotono_framework/Path.h>
+#include <kotono_common/Path.h>
 #include "log.h"
 #include "Object.h"
 #include "Scene.h"
@@ -15,7 +15,7 @@
 #include "InterfaceComponent.h"
 #include "Interface.h"
 #include <nlohmann/json.hpp>
-#include <kotono_framework/Serializer.h>
+#include <kotono_io/Serializer.h>
 
 #define KT_LOG_IMPORTANCE_LEVEL_OBJECT KT_LOG_IMPORTANCE_LEVEL_NONE
 

@@ -2,7 +2,7 @@
 #include <stbimage/stb_image.h>
 #include "Framework.h"
 #include "Context.h"
-#include "log.h"
+#include <kotono_common/log.h>
 
 KtImageTexture::KtImageTexture(const std::filesystem::path& path) :
 	path_(path)

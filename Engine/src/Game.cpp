@@ -3,8 +3,8 @@
 #include "ObjectManager.h"
 #include "Scene.h"
 #include <kotono_framework/Framework.h>
-#include <kotono_framework/Path.h>
-#include <kotono_framework/Serializer.h>
+#include <kotono_common/Path.h>
+#include <kotono_io/Serializer.h>
 #include <nlohmann/json.hpp>
 #include "serialize.h"
 

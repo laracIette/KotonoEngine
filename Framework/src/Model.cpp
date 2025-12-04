@@ -6,7 +6,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <array>
-#include "log.h"
+#include <kotono_common/log.h>
 
 KtModel::KtModel(const std::filesystem::path& path) :
 	path_(path)

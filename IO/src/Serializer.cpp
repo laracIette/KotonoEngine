@@ -3,7 +3,7 @@
 #include "File.h"
 #include <fstream>
 #include <iostream>
-#include "log.h"
+#include <kotono_common/log.h>
 
 #define KT_LOG_IMPORTANCE_LEVEL_SERIALIZER KT_LOG_IMPORTANCE_LEVEL_HIGH
 
