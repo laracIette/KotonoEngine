@@ -1,6 +1,6 @@
 #include "Image.h"
 #include <kotono_framework/Framework.h>
-#include <kotono_framework/WindowViewport.h>
+#include <kotono_platform/WindowViewport.h>
 #include <kotono_framework/InterfaceRenderableProxy.h>
 #include <kotono_framework/ImageTexture.h>
 #include <kotono_common/Path.h>

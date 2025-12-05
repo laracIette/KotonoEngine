@@ -1,7 +1,5 @@
 #include "WindowViewport.h"
 
-KtWindowViewport WindowViewport;
-
 const glm::uvec2& KtWindowViewport::GetExtent() const
 {
 	return extent_;
@@ -26,8 +24,8 @@ void KtWindowViewport::SetExtent(const glm::uvec2& extent)
 {
 	if (isKeepAspectRatio_)
 	{
-		uint32_t width = extent.x;
-		uint32_t height = extent.y;
+		uint32_t width{ extent.x };
+		uint32_t height{ extent.y };
 
 		if (width > height * aspectRatio_)
 		{
@@ -38,7 +36,7 @@ void KtWindowViewport::SetExtent(const glm::uvec2& extent)
 			height = static_cast<uint32_t>(width / aspectRatio_);
 		}
 
-		extent_ = glm::uvec2(width, height);
+		extent_ = { width, height };
 		return;
 	}
 

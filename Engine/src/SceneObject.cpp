@@ -1,7 +1,7 @@
 #include "SceneObject.h"
 #include <nlohmann/json.hpp>
 #include "log.h"
-#include <kotono_framework/WindowViewport.h>
+#include <kotono_platform/WindowViewport.h>
 #include "SceneComponent.h"
 #include "Engine.h"
 #include "ObjectManager.h"

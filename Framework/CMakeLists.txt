@@ -35,14 +35,6 @@ set_target_properties(KotonoFramework PROPERTIES
 
 # Preprocessor defines for all builds
 target_compile_definitions(KotonoFramework PUBLIC
-    GLM_FORCE_RADIANS
-    GLM_FORCE_LEFT_HANDED
-    GLM_FORCE_DEPTH_ZERO_TO_ONE
-    GLM_ENABLE_EXPERIMENTAL
-    GLM_FORCE_CXX20
-    GLFW_INCLUDE_VULKAN
-    GLFW_EXPOSE_NATIVE_WIN32
-    VK_USE_PLATFORM_WIN32_KHR
     ASSIMP_BUILD_NO_EXPORT
 )
 
@@ -50,8 +42,6 @@ set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/ThirdParty")
 
 # Link system + third-party libs
 target_link_libraries(KotonoFramework PUBLIC
-    "${THIRD_PARTY_DIR}/lib/vulkan-1.lib"
-    "${THIRD_PARTY_DIR}/lib/glfw3.lib"
     "${THIRD_PARTY_DIR}/lib/SPIRV-Reflect.lib"
 
     $<$<CONFIG:Debug>:${THIRD_PARTY_DIR}/lib/zlibstaticd.lib>
@@ -70,4 +60,5 @@ target_link_libraries(KotonoFramework PUBLIC
     KotonoIO
     KotonoAudio
     KotonoTiming
+    KotonoPlatform
 )

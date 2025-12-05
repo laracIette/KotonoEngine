@@ -1,5 +1,5 @@
 #include "utils.h"
-#include <kotono_framework/WindowViewport.h>
+#include <kotono_platform/WindowViewport.h>
 
 glm::vec2 px_to_ndc_size(const glm::vec2 px) noexcept
 {

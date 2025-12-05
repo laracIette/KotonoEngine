@@ -1,14 +1,14 @@
 #include "InterfaceRenderer.h"
 #include "Framework.h"
 #include <kotono_common/log.h>
-#include "Context.h"
+#include <kotono_platform/Context.h>
 #include "Vertex2D.h"
 #include "InterfaceCuller.h"
 #include "Renderer.h"
 #include "ImageTexture.h"
 #include "Shader.h"
-#include "WindowViewport.h"
-#include "vk_utils.h"
+#include <kotono_platform/WindowViewport.h>
+#include <kotono_platform/vk_utils.h>
 #include "InterfaceRenderableProxy.h"
 #include <kotono_common/Collection.h>
 
@@ -87,8 +87,8 @@ void KtInterfaceRenderer::Update(const uint32_t frameIndex)
 void KtInterfaceRenderer::Cleanup() const
 {
 	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaning up 2D renderer");
-	vmaDestroyBuffer(Framework.Context().GetAllocator(), indexBuffer_.Buffer, indexBuffer_.Allocation);
-	vmaDestroyBuffer(Framework.Context().GetAllocator(), vertexBuffer_.Buffer, vertexBuffer_.Allocation);
+	vmaDestroyBuffer(Context.GetAllocator(), indexBuffer_.Buffer, indexBuffer_.Allocation);
+	vmaDestroyBuffer(Context.GetAllocator(), vertexBuffer_.Buffer, vertexBuffer_.Allocation);
 	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaned up 2D renderer");
 }
 
@@ -96,7 +96,7 @@ void KtInterfaceRenderer::CreateVertexBuffer()
 {
 	const VkDeviceSize bufferSize{ sizeof(KtVertex2D) * Vertices.size() };
 
-	Framework.Context().CreateBuffer(
+	Context.CreateBuffer(
 		bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
@@ -106,7 +106,7 @@ void KtInterfaceRenderer::CreateVertexBuffer()
 
 	memcpy(stagingVertexBuffer_.AllocationInfo.pMappedData, Vertices.data(), static_cast<size_t>(bufferSize));
 
-	Framework.Context().CreateBuffer(
+	Context.CreateBuffer(
 		bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -114,15 +114,15 @@ void KtInterfaceRenderer::CreateVertexBuffer()
 		vertexBuffer_
 	);
 
-	Framework.Context().CopyBuffer(stagingVertexBuffer_.Buffer, vertexBuffer_.Buffer, bufferSize);
-	Framework.Context().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtInterfaceRenderer::DestroyStagingVertexBuffer));
+	Context.CopyBuffer(stagingVertexBuffer_.Buffer, vertexBuffer_.Buffer, bufferSize);
+	Context.GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtInterfaceRenderer::DestroyStagingVertexBuffer));
 }
 
 void KtInterfaceRenderer::CreateIndexBuffer()
 {
 	const VkDeviceSize bufferSize{ sizeof(uint32_t) * Indices.size() };
 
-	Framework.Context().CreateBuffer(
+	Context.CreateBuffer(
 		bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
@@ -132,7 +132,7 @@ void KtInterfaceRenderer::CreateIndexBuffer()
 
 	memcpy(stagingIndexBuffer_.AllocationInfo.pMappedData, Indices.data(), static_cast<size_t>(bufferSize));
 
-	Framework.Context().CreateBuffer(
+	Context.CreateBuffer(
 		bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -140,18 +140,18 @@ void KtInterfaceRenderer::CreateIndexBuffer()
 		indexBuffer_
 	);
 
-	Framework.Context().CopyBuffer(stagingIndexBuffer_.Buffer, indexBuffer_.Buffer, bufferSize);
-	Framework.Context().GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtInterfaceRenderer::DestroyStagingIndexBuffer));
+	Context.CopyBuffer(stagingIndexBuffer_.Buffer, indexBuffer_.Buffer, bufferSize);
+	Context.GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtInterfaceRenderer::DestroyStagingIndexBuffer));
 }
 
 void KtInterfaceRenderer::DestroyStagingVertexBuffer() const
 {
-	vmaDestroyBuffer(Framework.Context().GetAllocator(), stagingVertexBuffer_.Buffer, stagingVertexBuffer_.Allocation);
+	vmaDestroyBuffer(Context.GetAllocator(), stagingVertexBuffer_.Buffer, stagingVertexBuffer_.Allocation);
 }
 
 void KtInterfaceRenderer::DestroyStagingIndexBuffer() const
 {
-	vmaDestroyBuffer(Framework.Context().GetAllocator(), stagingIndexBuffer_.Buffer, stagingIndexBuffer_.Allocation);
+	vmaDestroyBuffer(Context.GetAllocator(), stagingIndexBuffer_.Buffer, stagingIndexBuffer_.Allocation);
 }
 
 void KtInterfaceRenderer::CmdBindVertexBuffer(VkCommandBuffer commandBuffer) const
@@ -184,7 +184,7 @@ void KtInterfaceRenderer::CreateCommandBuffer(const uint32_t frameIndex)
 	};
  
 	VK_CHECK_THROW(
-		vkAllocateCommandBuffers(Framework.Context().GetDevice(), &allocInfo, &commandBuffers_[frameIndex]),
+		vkAllocateCommandBuffers(Context.GetDevice(), &allocInfo, &commandBuffers_[frameIndex]),
 		"failed to allocate command buffers!"
 	);
 }

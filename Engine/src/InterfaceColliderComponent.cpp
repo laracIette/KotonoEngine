@@ -3,7 +3,7 @@
 #include "InterfacePhysicsManager.h"
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/InputManager.h>
-#include <kotono_framework/WindowViewport.h>
+#include <kotono_platform/WindowViewport.h>
 
 KInterfaceColliderComponent::KInterfaceColliderComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner) :
 	Base(ptrOwner, owner)

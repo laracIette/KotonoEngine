@@ -1,6 +1,6 @@
 #include "InterfaceObject.h"
 #include "log.h"
-#include <kotono_framework/WindowViewport.h>
+#include <kotono_platform/WindowViewport.h>
 #include "Engine.h"
 #include "InterfaceComponent.h"
 #include "ObjectManager.h"

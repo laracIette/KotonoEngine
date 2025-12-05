@@ -1,7 +1,7 @@
 #include "Framework.h"
 #include <kotono_common/Path.h>
-#include "Window.h"
-#include "Context.h"
+#include <kotono_platform/Window.h>
+#include <kotono_platform/Context.h>
 #include "Renderer.h"
 #include <kotono_timing/TimeManager.h>
 #include <kotono_audio/AudioManager.h>
@@ -11,8 +11,6 @@
 #include "ImageTextureManager.h"
 
 static KtPath Path;
-static KtWindow Window;
-static KtContext Context;
 static KtRenderer Renderer;
 static KtTimeManager TimeManager;
 static KtAudioManager AudioManager;
@@ -24,8 +22,8 @@ static KtImageTextureManager ImageTextureManager;
 void KtFramework::Init()
 {
     ::Path.Init();
-    ::Window.Init();
-    ::Context.Init();
+    Window.Init();
+    Context.Init();
     ::Renderer.Init();
     ::AudioManager.Init();
     ::InputManager.Init();
@@ -51,8 +49,8 @@ void KtFramework::Cleanup()
     ::ModelManager.Cleanup();
     ::AudioManager.Cleanup();
     ::Renderer.Cleanup();
-    ::Context.Cleanup();
-    ::Window.Cleanup();
+    Context.Cleanup();
+    Window.Cleanup();
 }
 
 KtPath& KtFramework::Path()
@@ -63,26 +61,6 @@ KtPath& KtFramework::Path()
 const KtPath& KtFramework::Path() const
 {
     return ::Path;
-}
-
-KtWindow& KtFramework::Window()
-{
-    return ::Window;
-}
-
-const KtWindow& KtFramework::Window() const
-{
-    return ::Window;
-}
-
-KtContext& KtFramework::Context()
-{
-    return ::Context;
-}
-
-const KtContext& KtFramework::Context() const
-{
-    return ::Context;
 }
 
 KtRenderer& KtFramework::Renderer()

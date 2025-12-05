@@ -1,7 +1,7 @@
 ﻿#include "Shader.h"
 #include "Framework.h"
-#include "vk_utils.h"
-#include "Context.h"
+#include <kotono_platform/vk_utils.h>
+#include <kotono_platform/Context.h>
 #include "ImageTextureManager.h"
 #include "ImageTexture.h"
 #include <kotono_common/Path.h>
@@ -44,8 +44,8 @@ void KtShader::Cleanup()
 {
 	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_SHADER, "cleaning up shader '%s'", _name.c_str());
 
-	vkDestroyPipeline(Framework.Context().GetDevice(), _graphicsPipeline, nullptr);
-	vkDestroyPipelineLayout(Framework.Context().GetDevice(), _pipelineLayout, nullptr);
+	vkDestroyPipeline(Context.GetDevice(), _graphicsPipeline, nullptr);
+	vkDestroyPipelineLayout(Context.GetDevice(), _pipelineLayout, nullptr);
 
 	for (const auto& descriptorSetLayoutData : _descriptorSetLayoutDatas)
 	{
@@ -53,15 +53,15 @@ void KtShader::Cleanup()
 		{
 			for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
 			{
-				vmaDestroyBuffer(Framework.Context().GetAllocator(), descriptorSetLayoutBindingData.Buffers[i].Buffer, descriptorSetLayoutBindingData.Buffers[i].Allocation);
-				vmaDestroyBuffer(Framework.Context().GetAllocator(), descriptorSetLayoutBindingData.StagingBuffers[i].Buffer, descriptorSetLayoutBindingData.StagingBuffers[i].Allocation);
+				vmaDestroyBuffer(Context.GetAllocator(), descriptorSetLayoutBindingData.Buffers[i].Buffer, descriptorSetLayoutBindingData.Buffers[i].Allocation);
+				vmaDestroyBuffer(Context.GetAllocator(), descriptorSetLayoutBindingData.StagingBuffers[i].Buffer, descriptorSetLayoutBindingData.StagingBuffers[i].Allocation);
 			}
 		}
 
-		vkDestroyDescriptorSetLayout(Framework.Context().GetDevice(), descriptorSetLayoutData.DescriptorSetLayout, nullptr);
+		vkDestroyDescriptorSetLayout(Context.GetDevice(), descriptorSetLayoutData.DescriptorSetLayout, nullptr);
 	}
 
-	vkDestroyDescriptorPool(Framework.Context().GetDevice(), _descriptorPool, nullptr);
+	vkDestroyDescriptorPool(Context.GetDevice(), _descriptorPool, nullptr);
 
 	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_SHADER, "cleaned up shader '%s'", _name.c_str());
 }
@@ -194,7 +194,7 @@ void KtShader::CreateDescriptorSetLayout(
 	layoutInfo.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT;
 
 	VK_CHECK_THROW(
-		vkCreateDescriptorSetLayout(Framework.Context().GetDevice(), &layoutInfo, nullptr, &layout),
+		vkCreateDescriptorSetLayout(Context.GetDevice(), &layoutInfo, nullptr, &layout),
 		"failed to create descriptor set layout!"
 	);
 }
@@ -229,7 +229,7 @@ void KtShader::CreateDescriptorSets()
 		}
 
 		VK_CHECK_THROW(
-			vkAllocateDescriptorSets(Framework.Context().GetDevice(), &allocInfo, descriptorSetLayoutData.DescriptorSets.data()),
+			vkAllocateDescriptorSets(Context.GetDevice(), &allocInfo, descriptorSetLayoutData.DescriptorSets.data()),
 			"failed to allocate descriptor sets!"
 		);
 
@@ -266,7 +266,7 @@ void KtShader::CreateDescriptorPool(const std::span<VkDescriptorPoolSize> poolSi
 	poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
 
 	VK_CHECK_THROW(
-		vkCreateDescriptorPool(Framework.Context().GetDevice(), &poolInfo, nullptr, &_descriptorPool),
+		vkCreateDescriptorPool(Context.GetDevice(), &poolInfo, nullptr, &_descriptorPool),
 		"failed to create descriptor pool!"
 	);
 }
@@ -279,7 +279,7 @@ void KtShader::CreateShaderModule(VkShaderModule& shaderModule, const std::span<
 	createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
 	VK_CHECK_THROW(
-		vkCreateShaderModule(Framework.Context().GetDevice(), &createInfo, nullptr, &shaderModule),
+		vkCreateShaderModule(Context.GetDevice(), &createInfo, nullptr, &shaderModule),
 		"failed to create shader module!"
 	);
 }
@@ -328,7 +328,7 @@ void KtShader::CreateGraphicsPipeline()
 	VkPipelineMultisampleStateCreateInfo multisampling{};
 	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 	multisampling.sampleShadingEnable = dataMultisampling["sampleShadingEnable"]; // enable sample shading in the pipeline
-	multisampling.rasterizationSamples = Framework.Context().GetMSAASamples();
+	multisampling.rasterizationSamples = Context.GetMSAASamples();
 	multisampling.minSampleShading = dataMultisampling["minSampleShading"]; // min fraction for sample shading; closer to one is smoother
 	multisampling.pSampleMask = nullptr; // Optional
 	multisampling.alphaToCoverageEnable = dataMultisampling["alphaToCoverageEnable"]; // Optional
@@ -431,7 +431,7 @@ void KtShader::CreateGraphicsPipeline()
 	pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 
 	VK_CHECK_THROW(
-		vkCreatePipelineLayout(Framework.Context().GetDevice(), &pipelineLayoutInfo, nullptr, &_pipelineLayout),
+		vkCreatePipelineLayout(Context.GetDevice(), &pipelineLayoutInfo, nullptr, &_pipelineLayout),
 		"failed to create pipeline layout!"
 	);
 
@@ -454,13 +454,13 @@ void KtShader::CreateGraphicsPipeline()
 	pipelineInfo.basePipelineIndex = -1; // Optional
 
 	VK_CHECK_THROW(
-		vkCreateGraphicsPipelines(Framework.Context().GetDevice(), nullptr, 1, &pipelineInfo, nullptr, &_graphicsPipeline),
+		vkCreateGraphicsPipelines(Context.GetDevice(), nullptr, 1, &pipelineInfo, nullptr, &_graphicsPipeline),
 		"failed to create graphics pipeline!"
 	);
 
 	for (auto shaderModule : shaderModules)
 	{
-		vkDestroyShaderModule(Framework.Context().GetDevice(), shaderModule, nullptr);
+		vkDestroyShaderModule(Context.GetDevice(), shaderModule, nullptr);
 	}
 }
 
@@ -497,7 +497,7 @@ void KtShader::CreateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBinding
 
 	if (bufferUsageFlagBits)
 	{
-		Framework.Context().CreateBuffer(
+		Context.CreateBuffer(
 			descriptorSetLayoutBindingData.MemberSize * descriptorSetLayoutBindingData.MemberCounts[imageIndex],
 			bufferUsageFlagBits | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -506,7 +506,7 @@ void KtShader::CreateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBinding
 			VMA_MEMORY_USAGE_GPU_ONLY
 		);
 
-		Framework.Context().CreateBuffer(
+		Context.CreateBuffer(
 			descriptorSetLayoutBindingData.MemberSize * descriptorSetLayoutBindingData.MemberCounts[imageIndex],
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
@@ -584,7 +584,7 @@ void KtShader::UpdateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBinding
 
 	memcpy(descriptorSetLayoutBindingData.StagingBuffers[imageIndex].AllocationInfo.pMappedData, data, dataSize);
 
-	Framework.Context().CopyBuffer(
+	Context.CopyBuffer(
 		descriptorSetLayoutBindingData.StagingBuffers[imageIndex].Buffer,
 		descriptorSetLayoutBindingData.Buffers[imageIndex].Buffer,
 		dataSize
@@ -607,8 +607,8 @@ void KtShader::UpdateDescriptorSetLayoutBindingBufferMemberCount(DescriptorSetLa
 	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_LOW, "descriptorSetLayoutBindingData member count at frame %u: %llu", imageIndex, memberCount);
 	descriptorSetLayoutBindingData.MemberCounts[imageIndex] = std::max(1llu, memberCount);
 
-	vmaDestroyBuffer(Framework.Context().GetAllocator(), descriptorSetLayoutBindingData.Buffers[imageIndex].Buffer, descriptorSetLayoutBindingData.Buffers[imageIndex].Allocation);
-	vmaDestroyBuffer(Framework.Context().GetAllocator(), descriptorSetLayoutBindingData.StagingBuffers[imageIndex].Buffer, descriptorSetLayoutBindingData.StagingBuffers[imageIndex].Allocation);
+	vmaDestroyBuffer(Context.GetAllocator(), descriptorSetLayoutBindingData.Buffers[imageIndex].Buffer, descriptorSetLayoutBindingData.Buffers[imageIndex].Allocation);
+	vmaDestroyBuffer(Context.GetAllocator(), descriptorSetLayoutBindingData.StagingBuffers[imageIndex].Buffer, descriptorSetLayoutBindingData.StagingBuffers[imageIndex].Allocation);
 
 	CreateDescriptorSetLayoutBindingBuffer(descriptorSetLayoutBindingData, imageIndex);
 
@@ -668,7 +668,7 @@ void KtShader::UpdateDescriptorSetLayoutBindingBufferDescriptorSet(DescriptorSet
 	bufferInfo.range = descriptorSetLayoutBindingData.MemberSize * descriptorSetLayoutBindingData.MemberCounts[imageIndex];
 	writeDescriptorSet.pBufferInfo = &bufferInfo;
 
-	vkUpdateDescriptorSets(Framework.Context().GetDevice(), 1, &writeDescriptorSet, 0, nullptr);
+	vkUpdateDescriptorSets(Context.GetDevice(), 1, &writeDescriptorSet, 0, nullptr);
 }
 
 void KtShader::UpdateDescriptorSetLayoutBindingImageSamplerDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const uint32_t imageIndex)
@@ -682,7 +682,7 @@ void KtShader::UpdateDescriptorSetLayoutBindingImageSamplerDescriptorSet(Descrip
 	writeDescriptorSet.descriptorCount = descriptorSetLayoutBindingData.DescriptorCount;
 	writeDescriptorSet.pImageInfo = descriptorSetLayoutBindingData.ImageInfos[imageIndex].data();
 
-	vkUpdateDescriptorSets(Framework.Context().GetDevice(), 1, &writeDescriptorSet, 0, nullptr);
+	vkUpdateDescriptorSets(Context.GetDevice(), 1, &writeDescriptorSet, 0, nullptr);
 }
 
 KtShader::DescriptorSetLayoutBindingData* KtShader::GetDescriptorSetLayoutBinding(const std::string& name) 

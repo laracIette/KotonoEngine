@@ -1,5 +1,4 @@
 #include "Context.h"
-#include "Framework.h"
 #include "Window.h"
 #include <set>
 #include <array>
@@ -7,12 +6,12 @@
 #include "vk_utils.h"
 #include <glm/common.hpp>
 
-constexpr std::array<const char*, 1> ValidationLayers =
+static constexpr std::array<const char*, 1> ValidationLayers
 {
 	"VK_LAYER_KHRONOS_validation"
 };
 
-constexpr std::array<const char*, 3> DeviceExtensions =
+static constexpr std::array<const char*, 3> DeviceExtensions
 {
 	VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 	VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME,
@@ -20,9 +19,9 @@ constexpr std::array<const char*, 3> DeviceExtensions =
 };
 
 #ifdef _DEBUG
-constexpr bool enableValidationLayers = true;
+static constexpr bool enableValidationLayers{ true };
 #else
-constexpr bool enableValidationLayers = false;
+static constexpr bool enableValidationLayers{ false };
 #endif
 
 void KtContext::Init()
@@ -258,7 +257,7 @@ bool KtContext::IsDeviceSuitable(VkPhysicalDevice device)
 	if (extensionsSupported)
 	{
 		KtSwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device);
-		swapChainAdequate = !swapChainSupport.Formats.empty() && !swapChainSupport.PresentModes.empty();
+		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 	}
 
 	VkPhysicalDeviceFeatures supportedFeatures;
@@ -417,7 +416,7 @@ void KtContext::CreateLogicalDevice()
 void KtContext::CreateSurface()
 {
 	VK_CHECK_THROW(
-		glfwCreateWindowSurface(instance_, Framework.Window().GetGLFWWindow(), nullptr, &surface_),
+		glfwCreateWindowSurface(instance_, Window.GetGLFWWindow(), nullptr, &surface_),
 		"failed to create window surface!"
 	);
 }
@@ -426,15 +425,15 @@ KtSwapChainSupportDetails KtContext::QuerySwapChainSupport(VkPhysicalDevice devi
 {
 	KtSwapChainSupportDetails details;
 
-	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_, &details.Capabilities);
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_, &details.capabilities);
 
 	uint32_t formatCount;
 	vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, nullptr);
 
 	if (formatCount != 0)
 	{
-		details.Formats.resize(formatCount);
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, details.Formats.data());
+		details.formats.resize(formatCount);
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, details.formats.data());
 	}
 
 	uint32_t presentModeCount;
@@ -442,8 +441,8 @@ KtSwapChainSupportDetails KtContext::QuerySwapChainSupport(VkPhysicalDevice devi
 
 	if (presentModeCount != 0)
 	{
-		details.PresentModes.resize(presentModeCount);
-		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, details.PresentModes.data());
+		details.presentModes.resize(presentModeCount);
+		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, details.presentModes.data());
 	}
 
 	return details;
@@ -506,7 +505,7 @@ VkExtent2D KtContext::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilit
 	else
 	{
 		int width, height;
-		glfwGetFramebufferSize(Framework.Window().GetGLFWWindow(), &width, &height);
+		glfwGetFramebufferSize(Window.GetGLFWWindow(), &width, &height);
 
 		VkExtent2D actualExtent =
 		{

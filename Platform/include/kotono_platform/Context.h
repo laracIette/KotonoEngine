@@ -98,3 +98,5 @@ private:
 		return VK_FALSE;
 	}
 };
+
+inline KtContext Context;

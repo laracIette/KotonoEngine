@@ -1,15 +1,15 @@
 #include "SceneRenderer.h"
 #include "Framework.h"
-#include "Context.h"
+#include <kotono_platform/Context.h>
+#include <kotono_platform/WindowViewport.h>
+#include <kotono_platform/vk_utils.h>
 #include "Renderer.h"
 #include "Culler3D.h"
 #include "Renderable3D.h"
-#include "WindowViewport.h"
 #include "Shader.h"
 #include "Renderable3DProxy.h"
 #include <kotono_common/Collection.h>
 #include <kotono_common/log.h>
-#include "vk_utils.h"
 #include <unordered_set>
 
 #define KT_LOG_IMPORTANCE_LEVEL_PROXY KT_LOG_IMPORTANCE_LEVEL_HIGH
@@ -76,7 +76,7 @@ void KtSceneRenderer::CreateStaticCommandBuffer(const uint32_t frameIndex)
 	allocInfo.commandBufferCount = 1;
 
 	VK_CHECK_THROW(
-		vkAllocateCommandBuffers(Framework.Context().GetDevice(), &allocInfo, &staticCommandBuffers_[frameIndex]),
+		vkAllocateCommandBuffers(Context.GetDevice(), &allocInfo, &staticCommandBuffers_[frameIndex]),
 		"failed to allocate command buffers!"
 	);
 }
@@ -98,7 +98,7 @@ void KtSceneRenderer::CreateDynamicCommandBuffer(const uint32_t frameIndex)
 	allocInfo.commandBufferCount = 1;
 
 	VK_CHECK_THROW(
-		vkAllocateCommandBuffers(Framework.Context().GetDevice(), &allocInfo, &dynamicCommandBuffers_[frameIndex]),
+		vkAllocateCommandBuffers(Context.GetDevice(), &allocInfo, &dynamicCommandBuffers_[frameIndex]),
 		"failed to allocate command buffers!"
 	);
 }

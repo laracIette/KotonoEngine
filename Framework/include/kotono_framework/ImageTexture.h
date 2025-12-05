@@ -2,7 +2,7 @@
 #include <vulkan/vulkan_core.h>
 #include <filesystem>
 #include <vma/vk_mem_alloc.h>
-#include "AllocatedBuffer.h"
+#include <kotono_platform/AllocatedBuffer.h>
 #include "InterfaceRenderable.h"
 #include <glm/vec2.hpp>
 class KtImageTexture final : public KtInterfaceRenderable

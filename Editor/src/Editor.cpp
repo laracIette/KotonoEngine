@@ -1,6 +1,6 @@
 #include "Editor.h"
 #include "MainWindow.h"
-#include <kotono_framework/WindowViewport.h>
+#include <kotono_platform/WindowViewport.h>
 #include "GameManager.h"
 #include "Visualizer.h"
 #include "Camera.h"

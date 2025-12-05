@@ -2,7 +2,7 @@
 #include <kotono_framework/Framework.h>
 #include <kotono_timing/TimeManager.h>
 #include <kotono_timing/Timer.h>
-#include <kotono_framework/Window.h>
+#include <kotono_platform/Window.h>
 #include <kotono_framework/InputManager.h>
 #include "log.h"
 #include "Object.h"
@@ -71,7 +71,7 @@ void SObjectManager::Delete(UPtrOwnerBase* ptrOwner)
 
 void SObjectManager::Quit()
 {
-	Framework.Window().SetShouldClose(true);
+	Window.SetShouldClose(true);
 }
 
 void SObjectManager::InitObjects()

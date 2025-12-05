@@ -2,7 +2,7 @@
 #include "Renderable3D.h" 
 #include <filesystem>
 #include "Vertex3D.h"
-#include "AllocatedBuffer.h"
+#include <kotono_platform/AllocatedBuffer.h>
 class KtModel final : public KtRenderable3D
 {
 public:

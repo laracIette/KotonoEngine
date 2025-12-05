@@ -1,6 +1,6 @@
 #include "Keyboard.h"
 #include "Framework.h"
-#include "Window.h"
+#include <kotono_platform/Window.h>
 #include "InputManager.h"
 #include <GLFW/glfw3.h>
 
@@ -10,7 +10,7 @@ constexpr KtKey GLFWKeyToKey(const int key);
 
 void KtKeyboard::Init()
 {
-    glfwSetKeyCallback(Framework.Window().GetGLFWWindow(), key_callback_);
+    glfwSetKeyCallback(Window.GetGLFWWindow(), key_callback_);
 }
 
 void KtKeyboard::Update()

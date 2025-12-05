@@ -1,7 +1,5 @@
 #pragma once
 class KtPath;
-class KtWindow;
-class KtContext;
 class KtRenderer;
 class KtTimeManager;
 class KtAudioManager;
@@ -19,10 +17,6 @@ public:
 public:
 	KtPath& Path();
 	const KtPath& Path() const;
-	KtWindow& Window();
-	const KtWindow& Window() const;
-	KtContext& Context();
-	const KtContext& Context() const;
 	KtRenderer& Renderer();
 	const KtRenderer& Renderer() const;
 	KtTimeManager& TimeManager();

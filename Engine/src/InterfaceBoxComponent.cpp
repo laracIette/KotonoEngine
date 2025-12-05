@@ -7,7 +7,7 @@
 #include <kotono_framework/Renderer.h>
 #include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/ImageTextureManager.h>
-#include <kotono_framework/WindowViewport.h>
+#include <kotono_platform/WindowViewport.h>
 
 KInterfaceBoxComponent::KInterfaceBoxComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner) :
 	Base(ptrOwner, owner)

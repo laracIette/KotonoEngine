@@ -1,6 +1,6 @@
 #include "Mouse.h"
 #include "Framework.h"
-#include "Window.h"
+#include <kotono_platform/Window.h>
 #include "InputManager.h"
 #include <GLFW/glfw3.h>
 
@@ -10,9 +10,9 @@ void scroll_callback_(GLFWwindow* window, double xoffset, double yoffset);
 
 void KtMouse::Init()
 {
-    glfwSetMouseButtonCallback(Framework.Window().GetGLFWWindow(), mousebutton_callback_);
-    glfwSetCursorPosCallback(Framework.Window().GetGLFWWindow(), cursorpos_callback_);
-    glfwSetScrollCallback(Framework.Window().GetGLFWWindow(), scroll_callback_);
+    glfwSetMouseButtonCallback(Window.GetGLFWWindow(), mousebutton_callback_);
+    glfwSetCursorPosCallback(Window.GetGLFWWindow(), cursorpos_callback_);
+    glfwSetScrollCallback(Window.GetGLFWWindow(), scroll_callback_);
 }
 
 void KtMouse::Update()
@@ -95,7 +95,7 @@ const glm::vec2& KtMouse::GetCursorPosition() const
 
 glm::vec2 KtMouse::GetCursorPositionNormalized() const
 {
-    const auto& windowSize = Framework.Window().GetSize();
+    const auto& windowSize = Window.GetSize();
     return 2.0f * cursorPosition_ / glm::vec2(windowSize) - 1.0f;
 }
 

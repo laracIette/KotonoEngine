@@ -1,5 +1,4 @@
 #include "Window.h"
-#include "Framework.h"
 #include "Context.h"
 #include "WindowViewport.h"
 #include <kotono_common/log.h>
@@ -51,7 +50,7 @@ bool KtWindow::GetShouldClose() const
 {
     if (shouldClose_ || glfwWindowShouldClose(window_))
     {
-        vkDeviceWaitIdle(Framework.Context().GetDevice());
+        vkDeviceWaitIdle(Context.GetDevice());
         return true;
     }
 
@@ -87,15 +86,15 @@ void KtWindow::SetSize(const glm::uvec2& size)
 void framebuffersize_callback_(GLFWwindow* window, int width, int height)
 {   
     // Replace to only freeze render
-    while (width == 0 || height == 0)                                                   
-    {                                                                                   
-        glfwGetFramebufferSize(Framework.Window().GetGLFWWindow(), &width, &height); 
-        glfwWaitEvents();                                                               
-    } 
+    while (width == 0 || height == 0)
+    {
+        glfwGetFramebufferSize(window, &width, &height);
+        glfwWaitEvents();
+    }
 
-    WindowViewport.SetExtent(glm::uvec2(width, height));
+    WindowViewport.SetExtent({ width, height });
 
-    Framework.Window().GetEventWindowResized().Broadcast();
+    Window.GetEventWindowResized().Broadcast();
 
     KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "window resized: %d x %d", width, height);
 }

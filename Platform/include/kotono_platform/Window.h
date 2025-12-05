@@ -29,3 +29,4 @@ private:
 	KtEvent<> eventWindowResized_;
 };
 
+inline KtWindow Window;

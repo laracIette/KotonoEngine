@@ -1,5 +1,5 @@
 #include <kotono_framework/Framework.h>
-#include <kotono_framework/Window.h>
+#include <kotono_platform/Window.h>
 #include <kotono_engine/Engine.h>
 #ifdef EDITOR
     #include <kotono_editor/Editor.h>
@@ -13,7 +13,7 @@ int main()
         Editor.Init();
 #   endif
 
-    while (!Framework.Window().GetShouldClose())
+    while (!Window.GetShouldClose())
     {
         Framework.Update();
         Engine.Update();

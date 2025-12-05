@@ -5,7 +5,7 @@
 #include <array>
 #include <unordered_map>
 #include "frames_in_flight.h"
-#include "AllocatedBuffer.h"
+#include <kotono_platform/AllocatedBuffer.h>
 #include "ShaderLayout.h"
 class KtShader final
 {

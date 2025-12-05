@@ -6,7 +6,7 @@
 #include <kotono_framework/Shader.h>
 #include <kotono_framework/ImageTexture.h>
 #include <kotono_framework/InterfaceRenderableProxy.h>
-#include <kotono_framework/WindowViewport.h>
+#include <kotono_platform/WindowViewport.h>
 #include "InterfaceObject.h"
 #include "log.h"
 

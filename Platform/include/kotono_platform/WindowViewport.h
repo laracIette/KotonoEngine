@@ -26,4 +26,4 @@ private:
 	float aspectRatio_;
 };
 
-extern KtWindowViewport WindowViewport;
+inline KtWindowViewport WindowViewport;
