@@ -9,7 +9,7 @@
 #include <kotono_framework/ImageTextureManager.h>
 #include <kotono_platform/WindowViewport.h>
 #include <kotono_framework/InterfaceRenderableProxy.h>
-#include <kotono_framework/InputManager.h>
+#include <kotono_input/InputManager.h>
 #include "log.h"
 
 KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner) :
@@ -462,7 +462,7 @@ bool KInterfaceComponent::GetIsOverlapping(const UPtr<KInterfaceComponent>& othe
 
 bool KInterfaceComponent::IsHovered() const
 {
-    const auto& cursorPosition = Framework.InputManager().Mouse().GetCursorPosition();
+    const auto& cursorPosition = InputManager.Mouse().GetCursorPosition();
     const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
     const auto worldPosition = cursorPosition / viewportSize * 2.0f - glm::vec2(1.0f);
     return GetIsOverlapping(worldPosition);

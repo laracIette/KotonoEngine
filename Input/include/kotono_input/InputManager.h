@@ -3,7 +3,7 @@
 #include "Keyboard.h"
 class KtInputManager final
 {
-	friend class KtFramework;
+	friend class SEngine;
 
 private:
 	void Init();
@@ -20,3 +20,4 @@ private:
 	KtKeyboard keyboard_;
 };
 
+inline KtInputManager InputManager;

@@ -5,7 +5,7 @@
 #include <kotono_engine/InterfaceObject.h>
 #include <kotono_engine/InterfaceComponent.h>
 #include <kotono_framework/Framework.h>
-#include <kotono_framework/InputManager.h>
+#include <kotono_input/InputManager.h>
 
 WWidget* WPropertiesWindow::Build()
 {
@@ -47,7 +47,7 @@ WWidget* WPropertiesWindow::Build()
                                                 return;
                                             }
 
-                                            const auto delta = Framework.InputManager().Mouse().GetCursorPositionDelta().x;
+                                            const auto delta = InputManager.Mouse().GetCursorPositionDelta().x;
                                             if (!delta)
                                             {
                                                 return;
@@ -80,7 +80,7 @@ WWidget* WPropertiesWindow::Build()
                                                 return;
                                             }
 
-                                            const auto delta = Framework.InputManager().Mouse().GetCursorPositionDelta().x;
+                                            const auto delta = InputManager.Mouse().GetCursorPositionDelta().x;
                                             if (!delta)
                                             {
                                                 return;

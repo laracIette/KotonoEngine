@@ -49,6 +49,7 @@ set_target_properties(KotonoEngine PROPERTIES
 # Link libs
 target_link_libraries(KotonoEngine PUBLIC
     KotonoFramework
+    KotonoInput
 )
 
 add_custom_target(RunKotonoGenerator

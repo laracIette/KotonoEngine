@@ -3,7 +3,6 @@ class KtPath;
 class KtRenderer;
 class KtTimeManager;
 class KtAudioManager;
-class KtInputManager;
 class KtModelManager;
 class KtShaderManager;
 class KtImageTextureManager;
@@ -23,8 +22,6 @@ public:
 	const KtTimeManager& TimeManager() const;
 	KtAudioManager& AudioManager();
 	const KtAudioManager& AudioManager() const;
-	KtInputManager& InputManager();
-	const KtInputManager& InputManager() const;
 	KtModelManager& ModelManager();
 	const KtModelManager& ModelManager() const;
 	KtShaderManager& ShaderManager();

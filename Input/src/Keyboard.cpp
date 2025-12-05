@@ -1,5 +1,4 @@
 #include "Keyboard.h"
-#include "Framework.h"
 #include <kotono_platform/Window.h>
 #include "InputManager.h"
 #include <GLFW/glfw3.h>
@@ -75,7 +74,7 @@ void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mo
         return;
     }
 
-    Framework.InputManager().Keyboard().UpdateKey(GLFWKeyToKey(key), action);
+    InputManager.Keyboard().UpdateKey(GLFWKeyToKey(key), action);
 }
 
 constexpr int keyToGLFWKey(const KtKey key)

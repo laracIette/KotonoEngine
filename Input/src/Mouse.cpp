@@ -1,5 +1,4 @@
 #include "Mouse.h"
-#include "Framework.h"
 #include <kotono_platform/Window.h>
 #include "InputManager.h"
 #include <GLFW/glfw3.h>
@@ -136,16 +135,16 @@ KtEvent<float>& KtMouse::EventVerticalScroll()
 
 void mousebutton_callback_(GLFWwindow* window, int button, int action, int mods)
 {
-    Framework.InputManager().Mouse().UpdateButton(static_cast<KtButton>(button), action);
+    InputManager.Mouse().UpdateButton(static_cast<KtButton>(button), action);
 }
 
 void cursorpos_callback_(GLFWwindow* window, double xpos, double ypos)
 {
-    Framework.InputManager().Mouse().cursorPosition_ = { xpos, ypos };
+    InputManager.Mouse().cursorPosition_ = { xpos, ypos };
 }
 
 void scroll_callback_(GLFWwindow* window, double xoffset, double yoffset)
 {
-    Framework.InputManager().Mouse().horizontalScrollDelta_ = static_cast<float>(xoffset);
-    Framework.InputManager().Mouse().verticalScrollDelta_ = static_cast<float>(yoffset);
+    InputManager.Mouse().horizontalScrollDelta_ = static_cast<float>(xoffset);
+    InputManager.Mouse().verticalScrollDelta_ = static_cast<float>(yoffset);
 }

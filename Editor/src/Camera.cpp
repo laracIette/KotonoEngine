@@ -2,7 +2,7 @@
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/Renderer.h>
 #include <kotono_platform/WindowViewport.h>
-#include <kotono_framework/InputManager.h>
+#include <kotono_input/InputManager.h>
 #include <kotono_timing/TimeManager.h>
 #include <kotono_engine/Engine.h>
 #include <kotono_engine/TimeManager.h>
@@ -24,26 +24,26 @@ void SCamera::Init()
 
 	// todo: input manager is engine time, not game time
 
-	Framework.InputManager().Keyboard().EventKey(KT_KEY_W, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardWKeyDown));
-	Framework.InputManager().Keyboard().EventKey(KT_KEY_A, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardAKeyDown));
-	Framework.InputManager().Keyboard().EventKey(KT_KEY_S, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardSKeyDown));
-	Framework.InputManager().Keyboard().EventKey(KT_KEY_D, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardDKeyDown));
-	Framework.InputManager().Mouse().EventButton(KT_BUTTON_RIGHT, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &SCamera::OnMouseRightButtonPressed));
-	Framework.InputManager().Mouse().EventButton(KT_BUTTON_RIGHT, KT_INPUT_STATE_RELEASED).AddListener(KtDelegate(this, &SCamera::OnMouseRightButtonReleased));
-	Framework.InputManager().Mouse().EventMove().AddListener(KtDelegate(this, &SCamera::OnMouseMove));
-	Framework.InputManager().Mouse().EventVerticalScroll().AddListener(KtDelegate(this, &SCamera::OnMouseVerticalScroll));
+	InputManager.Keyboard().EventKey(KT_KEY_W, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardWKeyDown));
+	InputManager.Keyboard().EventKey(KT_KEY_A, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardAKeyDown));
+	InputManager.Keyboard().EventKey(KT_KEY_S, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardSKeyDown));
+	InputManager.Keyboard().EventKey(KT_KEY_D, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardDKeyDown));
+	InputManager.Mouse().EventButton(KT_BUTTON_RIGHT, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &SCamera::OnMouseRightButtonPressed));
+	InputManager.Mouse().EventButton(KT_BUTTON_RIGHT, KT_INPUT_STATE_RELEASED).AddListener(KtDelegate(this, &SCamera::OnMouseRightButtonReleased));
+	InputManager.Mouse().EventMove().AddListener(KtDelegate(this, &SCamera::OnMouseMove));
+	InputManager.Mouse().EventVerticalScroll().AddListener(KtDelegate(this, &SCamera::OnMouseVerticalScroll));
 }
 
 void SCamera::Cleanup()
 {
-	Framework.InputManager().Keyboard().EventKey(KT_KEY_W, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardWKeyDown));
-	Framework.InputManager().Keyboard().EventKey(KT_KEY_A, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardAKeyDown));
-	Framework.InputManager().Keyboard().EventKey(KT_KEY_S, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardSKeyDown));
-	Framework.InputManager().Keyboard().EventKey(KT_KEY_D, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardDKeyDown));
-	Framework.InputManager().Mouse().EventButton(KT_BUTTON_RIGHT, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &SCamera::OnMouseRightButtonPressed));
-	Framework.InputManager().Mouse().EventButton(KT_BUTTON_RIGHT, KT_INPUT_STATE_RELEASED).RemoveListener(KtDelegate(this, &SCamera::OnMouseRightButtonReleased));
-	Framework.InputManager().Mouse().EventMove().RemoveListener(KtDelegate(this, &SCamera::OnMouseMove));
-	Framework.InputManager().Mouse().EventVerticalScroll().RemoveListener(KtDelegate(this, &SCamera::OnMouseVerticalScroll));
+	InputManager.Keyboard().EventKey(KT_KEY_W, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardWKeyDown));
+	InputManager.Keyboard().EventKey(KT_KEY_A, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardAKeyDown));
+	InputManager.Keyboard().EventKey(KT_KEY_S, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardSKeyDown));
+	InputManager.Keyboard().EventKey(KT_KEY_D, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardDKeyDown));
+	InputManager.Mouse().EventButton(KT_BUTTON_RIGHT, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &SCamera::OnMouseRightButtonPressed));
+	InputManager.Mouse().EventButton(KT_BUTTON_RIGHT, KT_INPUT_STATE_RELEASED).RemoveListener(KtDelegate(this, &SCamera::OnMouseRightButtonReleased));
+	InputManager.Mouse().EventMove().RemoveListener(KtDelegate(this, &SCamera::OnMouseMove));
+	InputManager.Mouse().EventVerticalScroll().RemoveListener(KtDelegate(this, &SCamera::OnMouseVerticalScroll));
 }
 
 void SCamera::Use()

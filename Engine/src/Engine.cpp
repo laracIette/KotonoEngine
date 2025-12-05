@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include <kotono_input/InputManager.h>
 #include "TimeManager.h"
 #include "ObjectManager.h"
 #include "ObjectFactory.h"
@@ -13,6 +14,7 @@ static SInterfacePhysicsManager InterfacePhysicsManager;
 
 void SEngine::Init()
 {
+    InputManager.Init();
     ::TimeManager.Init();
     ::ObjectManager.Init();
     ::Game.Init();
@@ -20,6 +22,7 @@ void SEngine::Init()
 
 void SEngine::Update()
 {
+    InputManager.Update();
     ::TimeManager.Update();
     ::Game.Update();
     ::InterfacePhysicsManager.Update();

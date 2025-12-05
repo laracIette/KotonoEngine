@@ -1,7 +1,7 @@
 #include "SceneMeshComponent.h"
 #include <kotono_framework/Framework.h>
 #include <kotono_framework/Renderer.h>
-#include <kotono_framework/InputManager.h>
+#include <kotono_input/InputManager.h>
 #include <kotono_framework/ShaderManager.h>
 #include <kotono_framework/ModelManager.h>
 #include <kotono_common/Path.h>
@@ -36,9 +36,9 @@ void KSceneMeshComponent::Init()
     spinTask_.eventUpdate.AddListener(KtDelegate(this, &KSceneMeshComponent::Spin));
     spinTask_.Start();
 
-    Framework.InputManager().Keyboard().EventKey(KT_KEY_N, KT_INPUT_STATE_PRESSED)
+    InputManager.Keyboard().EventKey(KT_KEY_N, KT_INPUT_STATE_PRESSED)
         .AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
-    Framework.InputManager().Keyboard().EventKey(KT_KEY_M, KT_INPUT_STATE_PRESSED)
+    InputManager.Keyboard().EventKey(KT_KEY_M, KT_INPUT_STATE_PRESSED)
         .AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
 }
 
@@ -56,9 +56,9 @@ void KSceneMeshComponent::Cleanup()
     UnregisterModelProxy();
     EventTransformUpdated().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
 
-    Framework.InputManager().Keyboard().EventKey(KT_KEY_N, KT_INPUT_STATE_PRESSED)
+    InputManager.Keyboard().EventKey(KT_KEY_N, KT_INPUT_STATE_PRESSED)
         .RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
-    Framework.InputManager().Keyboard().EventKey(KT_KEY_M, KT_INPUT_STATE_PRESSED)
+    InputManager.Keyboard().EventKey(KT_KEY_M, KT_INPUT_STATE_PRESSED)
         .RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
 }
 

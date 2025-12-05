@@ -3,7 +3,7 @@
 #include <kotono_timing/TimeManager.h>
 #include <kotono_timing/Timer.h>
 #include <kotono_platform/Window.h>
-#include <kotono_framework/InputManager.h>
+#include <kotono_input/InputManager.h>
 #include "log.h"
 #include "Object.h"
 #include "TimeManager.h"
@@ -18,9 +18,9 @@
 
 void SObjectManager::Init()
 {
-	Framework.InputManager().Keyboard().EventKey(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
+	InputManager.Keyboard().EventKey(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &SObjectManager::Quit));
-	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
 
 	auto& logUPSTimer{ Framework.TimeManager().GetTimer("log ups timer") };
@@ -49,9 +49,9 @@ void SObjectManager::Cleanup()
 	}
 	deletes_.Clear();
 
-	Framework.InputManager().Keyboard().EventKey(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
+	InputManager.Keyboard().EventKey(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
 		.RemoveListener(KtDelegate(this, &SObjectManager::Quit));
-	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.RemoveListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
 }
 

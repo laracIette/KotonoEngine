@@ -1,31 +1,31 @@
 #include "Button.h"
 #include <kotono_framework/Framework.h>
-#include <kotono_framework/InputManager.h>
+#include <kotono_input/InputManager.h>
 #include "log.h"
 
 WButton::WButton(const ButtonSettings& buttonSettings) :
 	buttonSettings_(buttonSettings)
 {
 
-	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonPressed));
-	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
+	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonDown));
-	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
+	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonReleased));
-	Framework.InputManager().Mouse().EventVerticalScroll()
+	InputManager.Mouse().EventVerticalScroll()
 		.AddListener(KtDelegate(this, &WButton::OnMouseVerticalScroll));
 }
 
 void WButton::Cleanup()
 {
-	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonPressed));
-	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
+	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonDown));
-	Framework.InputManager().Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
+	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonReleased));
-	Framework.InputManager().Mouse().EventVerticalScroll()
+	InputManager.Mouse().EventVerticalScroll()
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseVerticalScroll));
 
 	WWidget::Cleanup();
@@ -33,7 +33,7 @@ void WButton::Cleanup()
 
 bool WButton::IsMouseHovering() const
 {
-	const auto& cursorPos{ Framework.InputManager().Mouse().GetCursorPosition() };
+	const auto& cursorPos{ InputManager.Mouse().GetCursorPosition() };
 	const auto position{ GetPosition() };
 	const auto size{ GetSize() };
 
