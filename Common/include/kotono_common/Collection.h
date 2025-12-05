@@ -2,7 +2,7 @@
 #include <functional>
 #include <vector>
 #include <span>
-#include <kotono_common/Pool.h>
+#include "Pool.h"
 /// <summary>
 /// Non-owning container wrapper with filtering
 /// </summary>

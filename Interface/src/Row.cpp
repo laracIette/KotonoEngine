@@ -2,7 +2,7 @@
 #include "Expanded.h"
 #include "Spacer.h"
 #include <algorithm>
-#include <kotono_framework/bitwise_utils.h>
+#include <kotono_common/bitwise_utils.h>
 #include <glm/common.hpp>
 
 WRow::WRow(const RowSettings& rowSettings) :

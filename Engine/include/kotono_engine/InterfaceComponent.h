@@ -7,7 +7,7 @@
 #include "RotationUnit.h"
 #include "Visibility.h"
 #include <kotono_framework/Color.h>
-#include <kotono_framework/Cached.h>
+#include <kotono_common/Cached.h>
 #include <glm/fwd.hpp>
 #include <glm/mat4x4.hpp>
 

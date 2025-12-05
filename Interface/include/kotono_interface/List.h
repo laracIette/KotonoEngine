@@ -1,6 +1,6 @@
 #pragma once
 #include "Widget.h"
-#include <kotono_framework/Buildable.h>
+#include <kotono_common/Buildable.h>
 class WList : public WWidget
 {
 	friend class WListBody;

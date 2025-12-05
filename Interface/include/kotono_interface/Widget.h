@@ -1,7 +1,7 @@
 #pragma once
 #include <functional>
 #include "Flex.h"
-#include <kotono_framework/Cached.h>
+#include <kotono_common/Cached.h>
 #include <kotono_framework/Scissor.h>
 #include <glm/fwd.hpp>
 #include <glm/vec2.hpp>

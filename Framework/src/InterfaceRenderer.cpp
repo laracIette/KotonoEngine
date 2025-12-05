@@ -10,7 +10,7 @@
 #include "WindowViewport.h"
 #include "vk_utils.h"
 #include "InterfaceRenderableProxy.h"
-#include "Collection.h"
+#include <kotono_common/Collection.h>
 
 static constexpr std::array<KtVertex2D, 4> Vertices
 {//                   Position,              KtColor,      TexCoords
