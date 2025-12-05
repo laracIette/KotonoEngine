@@ -1,7 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include "VisualizationField.h"
-#include <kotono_framework/Event.h>
+#include <kotono_common/Event.h>
 class SVisualizer final
 {
 	friend class SEditor;

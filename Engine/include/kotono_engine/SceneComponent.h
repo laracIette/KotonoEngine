@@ -6,7 +6,7 @@
 #include "CoordinateSpace.h"
 #include "Mobility.h"
 #include <kotono_framework/Cached.h>
-#include <kotono_framework/Pool.h>
+#include <kotono_common/Pool.h>
 
 class TSceneObject;
 

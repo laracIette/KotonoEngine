@@ -1,6 +1,6 @@
 #pragma once
-#include <kotono_framework/Event.h>
-struct UTask
+#include <kotono_common/Event.h>
+struct UTask final
 {
 	bool isPlaying;
 	float duration;

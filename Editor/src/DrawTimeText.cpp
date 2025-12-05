@@ -1,7 +1,7 @@
 #include "DrawTimeText.h"
 #include <kotono_framework/Framework.h>
-#include <kotono_framework/TimeManager.h>
-#include <kotono_framework/Timer.h>
+#include <kotono_timing/TimeManager.h>
+#include <kotono_timing/Timer.h>
 #include <kotono_interface/widgets.h>
 
 WWidget* WDrawTimeText::Build()
@@ -10,7 +10,7 @@ WWidget* WDrawTimeText::Build()
         .AddListener(KtDelegate(this, &WDrawTimeText::UpdateText));
 
     return new WText({
-        .text = std::format("D {:.8f}s", Framework.TimeManager().AverageRenderTime()), // todo: move to framework
+        .text = std::format("D {:.8f}s", 0.0f/*Framework.TimeManager().AverageRenderTime()*/), // todo: move to framework
         .fontSize = { 20.0f, 24.0f },
         .spacing = -6.0f,
     });

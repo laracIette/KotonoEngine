@@ -1,15 +1,15 @@
 #include "Stopwatch.h"
-#include "Framework.h"
 #include "Clock.h"
+#include <kotono_common/Delegate.h>
 
 void KtStopwatch::Start()
 {
-    start_ = Framework.Clock().Now();
+    start_ = KtClock::Now();
 }
 
 void KtStopwatch::Stop()
 {
-    end_ = Framework.Clock().Now();
+    end_ = KtClock::Now();
 }
 
 float KtStopwatch::ElapsedSeconds() const

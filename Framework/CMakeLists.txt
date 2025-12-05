@@ -22,8 +22,6 @@ target_sources(KotonoFramework
     PRIVATE ${KFRAMEWORK_HEADERS}
 )
 
-set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/ThirdParty")
-
 # Include directories
 target_include_directories(KotonoFramework
     PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
@@ -48,6 +46,8 @@ target_compile_definitions(KotonoFramework PUBLIC
     ASSIMP_BUILD_NO_EXPORT
 )
 
+set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/ThirdParty")
+
 # Link system + third-party libs
 target_link_libraries(KotonoFramework PUBLIC
     "${THIRD_PARTY_DIR}/lib/vulkan-1.lib"
@@ -69,4 +69,5 @@ target_sources(KotonoFramework PRIVATE ${KFRAMEWORK_SHADERS})
 target_link_libraries(KotonoFramework PUBLIC
     KotonoIO
     KotonoAudio
+    KotonoTiming
 )

@@ -1,5 +1,5 @@
 #pragma once
-#include <kotono_framework/Pool.h>
+#include <kotono_common/Pool.h>
 #include <type_traits>
 template <class T>
 class UPtr;

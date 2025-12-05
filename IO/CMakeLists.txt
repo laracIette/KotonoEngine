@@ -22,8 +22,6 @@ target_sources(KotonoIO
     PRIVATE ${KIO_HEADERS}
 )
 
-set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/ThirdParty")
-
 # Include directories
 target_include_directories(KotonoIO
     PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"

@@ -1,7 +1,8 @@
 #include "TimeManager.h"
 #include <kotono_framework/Framework.h>
-#include <kotono_framework/TimeManager.h>
-#include <kotono_framework/Stopwatch.h>
+#include <kotono_timing/TimeManager.h>
+#include <kotono_timing/TimeContext.h>
+#include <kotono_timing/Stopwatch.h>
 #include "Engine.h"
 #include "Game.h"
 

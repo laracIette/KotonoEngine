@@ -1,6 +1,6 @@
 #pragma once
 #include "GameState.h"
-#include <kotono_framework/Event.h>
+#include <kotono_common/Event.h>
 #include <kotono_engine/Ptr.h>
 class SGameManager final
 {

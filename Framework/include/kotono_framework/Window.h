@@ -1,7 +1,7 @@
 #pragma once
 #include <GLFW/glfw3.h>
 #include <glm/vec2.hpp>
-#include "Event.h"
+#include <kotono_common/Event.h>
 class KtWindow final
 {
 	friend class KtFramework;

@@ -1,7 +1,7 @@
 #pragma once
 #include "SceneUniformData.h"
 #include "frames_in_flight.h"
-#include "Pool.h"
+#include <kotono_common/Pool.h>
 #include "RendererFrameStats.h"
 #include <vulkan/vulkan_core.h>
 struct KtRenderable3DProxy;

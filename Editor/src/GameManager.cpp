@@ -1,7 +1,7 @@
 #include "GameManager.h"
 #include <kotono_engine/Engine.h>
 #include <kotono_engine/TimeManager.h>
-#include <kotono_framework/TimeContext.h>
+#include <kotono_timing/TimeContext.h>
 
 bool SGameManager::IsPlaying() const
 {

@@ -3,15 +3,12 @@ class KtClock final
 {
 	friend class KtFramework;
 
-private:
-	void Init();
-
 public:
 	// Current exact UTC Time since Epoch in seconds.
-	double ExactUTC() const;
+	static double ExactUTC();
 	// Current Time since the start of the program in seconds.
-	float Now() const;
+	static float Now();
 
 private:
-	double _startUTC;
+	static double startUTC_;
 };

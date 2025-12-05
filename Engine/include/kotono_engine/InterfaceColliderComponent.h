@@ -1,8 +1,8 @@
 #pragma once
 #include "generated/InterfaceColliderComponent.generated.h"
 #include "InterfaceComponent.h"
-#include <kotono_framework/Event.h>
-#include <kotono_framework/Pool.h>
+#include <kotono_common/Event.h>
+#include <kotono_common/Pool.h>
 class KInterfaceColliderComponent : public KInterfaceComponent
 {
 	GENERATED_KINTERFACECOLLIDERCOMPONENT()

@@ -5,7 +5,7 @@
 #include <filesystem>
 #include <nlohmann/json_fwd.hpp>
 #include "Guid.h"
-#include <kotono_framework/Event.h>
+#include <kotono_common/Event.h>
 #include "Ptr.h"
 #include "serialize.h"
 

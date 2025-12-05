@@ -2,7 +2,15 @@
 #include <vector>
 #include <functional>
 #include <concepts>
-#include "PoolRemoveResult.h"
+
+enum class KtPoolRemoveResult : char
+{
+	IndexOutOfRange,
+	ItemNotFound,
+	ItemRemoved,
+	ItemSwappedAndRemoved
+};
+
 /// <summary>
 /// std::vector wrapper with fast item removal
 /// </summary>

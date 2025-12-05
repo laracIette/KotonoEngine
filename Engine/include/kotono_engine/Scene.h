@@ -1,7 +1,7 @@
 #pragma once
 #include "generated/Scene.generated.h"
 #include "Object.h"
-#include <kotono_framework/Pool.h>
+#include <kotono_common/Pool.h>
 
 class TSceneObject;
 

@@ -2,7 +2,7 @@
 #include "InterfaceUniformData.h"
 #include "frames_in_flight.h"
 #include "AllocatedBuffer.h"
-#include "Pool.h"
+#include <kotono_common/Pool.h>
 #include <vulkan/vulkan_core.h>
 #include <vector>
 #include <unordered_map>

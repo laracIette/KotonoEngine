@@ -2,7 +2,7 @@
 #include <map>
 #include <unordered_set>
 #include <array>
-#include "Event.h"
+#include <kotono_common/Event.h>
 #include "Key.h"
 #include "InputState.h"
 class KtKeyboard final

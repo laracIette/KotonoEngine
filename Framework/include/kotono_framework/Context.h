@@ -8,7 +8,7 @@
 #include "QueueFamilyIndices.h"
 #include "SwapChainSupportDetails.h"
 #include "AllocatedBuffer.h"
-#include "Event.h"
+#include <kotono_common/Event.h>
 
 class KtContext final
 {

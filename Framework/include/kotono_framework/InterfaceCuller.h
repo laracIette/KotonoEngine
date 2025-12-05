@@ -1,5 +1,6 @@
 #pragma once
-#include "Pool.h"
+template <typename T>
+class KtPool;
 struct KtInterfaceRenderableProxy;
 class KtInterfaceCuller final
 {

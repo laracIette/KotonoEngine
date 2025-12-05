@@ -1,8 +1,8 @@
 #pragma once
 #include <type_traits>
 #include <unordered_map>
-#include <kotono_framework/Pool.h>
-#include <kotono_framework/Average.h>
+#include <kotono_common/Pool.h>
+#include <kotono_common/Average.h>
 #include "Ptr.h"
 #include "Guid.h"
 

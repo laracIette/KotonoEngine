@@ -1,6 +1,6 @@
 #pragma once
 #include <array>
-#include <kotono_framework/Event.h>
+#include <kotono_common/Event.h>
 #include <kotono_framework/InputState.h>
 #include <kotono_framework/Key.h>
 class SInputManager final

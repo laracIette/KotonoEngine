@@ -1,15 +1,13 @@
 #include "Timer.h"
-#include "Framework.h"
-#include "TimeManager.h"
 
-void KtTimer::Update()
+void KtTimer::Update(const float delta)
 {
     if (!isPlaying_)
     {
         return;
     }
 
-    current_ += Framework.TimeManager().Delta();
+    current_ += delta;
 
     if (current_ < duration_)
     {

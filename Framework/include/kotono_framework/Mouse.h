@@ -1,6 +1,6 @@
 #pragma once
 #include "Button.h"
-#include "Event.h"
+#include <kotono_common/Event.h>
 #include "InputState.h"
 #include <array>
 #include <unordered_set>

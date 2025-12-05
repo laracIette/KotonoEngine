@@ -3,7 +3,7 @@
 #include "Object.h"
 #include "CoordinateSpace.h"
 #include <kotono_framework/Collection.h>
-#include <kotono_framework/Pool.h>
+#include <kotono_common/Pool.h>
 
 class KtWindowViewport;
 class KInterfaceComponent;

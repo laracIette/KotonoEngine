@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <array>
-#include <kotono_framework/hash_utils.h>
+#include <kotono_common/hash_utils.h>
 struct UGuid final
 {
 	friend struct std::hash<UGuid>;

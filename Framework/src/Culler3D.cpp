@@ -1,6 +1,7 @@
 #include "Culler3D.h"
 #include <kotono_common/log.h>
 #include "Renderable3DProxy.h"
+#include <kotono_common/Pool.h>
 
 #define KT_LOG_IMPORTANCE_LEVEL_NULLPTR KT_LOG_IMPORTANCE_LEVEL_HIGH
 

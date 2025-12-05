@@ -1,6 +1,6 @@
 #pragma once
 #include <kotono_engine/Transform.h>
-#include <kotono_framework/Event.h>
+#include <kotono_common/Event.h>
 class SCamera final
 {
 	friend class SEditor;

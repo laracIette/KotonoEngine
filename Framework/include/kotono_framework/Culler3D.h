@@ -1,6 +1,7 @@
 #pragma once
-#include "Pool.h"
 #include "Culler3DField.h"
+template <typename T>
+class KtPool;
 struct KtRenderable3DProxy;
 class KtCuller3D final
 {

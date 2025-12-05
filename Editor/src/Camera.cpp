@@ -3,7 +3,7 @@
 #include <kotono_framework/Renderer.h>
 #include <kotono_framework/WindowViewport.h>
 #include <kotono_framework/InputManager.h>
-#include <kotono_framework/TimeManager.h>
+#include <kotono_timing/TimeManager.h>
 #include <kotono_engine/Engine.h>
 #include <kotono_engine/TimeManager.h>
 #include <algorithm>

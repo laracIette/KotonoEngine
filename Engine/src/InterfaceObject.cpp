@@ -4,7 +4,6 @@
 #include "Engine.h"
 #include "InterfaceComponent.h"
 #include "ObjectManager.h"
-#include <kotono_framework/Stopwatch.h>
 
 RInterfaceObject::RInterfaceObject(UPtrOwnerBase* ptrOwner) :
 	Base(ptrOwner)

@@ -4,7 +4,7 @@
 #include "Window.h"
 #include <kotono_common/log.h>
 #include "vk_utils.h"
-#include "time_utils.h"
+#include <kotono_timing/time_utils.h>
 
 void KtRenderer::Init()
 {

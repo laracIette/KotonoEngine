@@ -2,7 +2,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/gtx/hash.hpp>
-#include "hash_utils.h"
+#include <kotono_common/hash_utils.h>
 struct KtVertex3D final
 {
     glm::vec3 position;

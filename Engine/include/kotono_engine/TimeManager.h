@@ -1,6 +1,6 @@
 #pragma once
-#include <kotono_framework/Average.h>
-#include <kotono_framework/TimeContext.h>
+#include <kotono_common/Average.h>
+#include <kotono_timing/TimeContext.h>
 class STimeManager final
 {
 	friend class SEngine;

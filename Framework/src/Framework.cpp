@@ -1,17 +1,15 @@
 #include "Framework.h"
-#include "Clock.h"
 #include <kotono_common/Path.h>
 #include "Window.h"
 #include "Context.h"
 #include "Renderer.h"
-#include "TimeManager.h"
+#include <kotono_timing/TimeManager.h>
 #include <kotono_audio/AudioManager.h>
 #include "InputManager.h"
 #include "ModelManager.h"
 #include "ShaderManager.h"
 #include "ImageTextureManager.h"
 
-static KtClock Clock;
 static KtPath Path;
 static KtWindow Window;
 static KtContext Context;
@@ -25,15 +23,19 @@ static KtImageTextureManager ImageTextureManager;
 
 void KtFramework::Init()
 {
-    ::Clock.Init();
     ::Path.Init();
     ::Window.Init();
     ::Context.Init();
     ::Renderer.Init();
-    ::TimeManager.Init();
     ::AudioManager.Init();
     ::InputManager.Init();
     ::ShaderManager.Init();
+
+    auto& renderTimer{ ::TimeManager.GetTimer("render") };
+    renderTimer.SetDuration(1.0f / 60.0f);
+    renderTimer.SetIsRepeat(true);
+    renderTimer.EventCompleted().AddListener(KtDelegate(&::Renderer, &KtRenderer::DrawFrame));
+    renderTimer.Start();
 }
 
 void KtFramework::Update()
@@ -51,16 +53,6 @@ void KtFramework::Cleanup()
     ::Renderer.Cleanup();
     ::Context.Cleanup();
     ::Window.Cleanup();
-}
-
-KtClock& KtFramework::Clock()
-{
-    return ::Clock;
-}
-
-const KtClock& KtFramework::Clock() const
-{
-    return ::Clock;
 }
 
 KtPath& KtFramework::Path()

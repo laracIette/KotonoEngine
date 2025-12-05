@@ -1,7 +1,7 @@
 #include "UpdateTimeText.h"
 #include <kotono_framework/Framework.h>
-#include <kotono_framework/TimeManager.h>
-#include <kotono_framework/Timer.h>
+#include <kotono_timing/TimeManager.h>
+#include <kotono_timing/Timer.h>
 #include <kotono_interface/widgets.h>
 
 WWidget* WUpdateTimeText::Build()

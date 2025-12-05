@@ -1,6 +1,6 @@
 #pragma once
-#include "Delegate.h"
-
+template <typename... Args>
+class KtDelegate;
 class KtStopwatch final
 {
 public:

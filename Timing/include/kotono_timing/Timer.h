@@ -1,11 +1,11 @@
 #pragma once
-#include "Event.h"
+#include <kotono_common/Event.h>
 class KtTimer final
 {
 	friend class KtTimeManager;
 
 private:
-	void Update();
+	void Update(const float delta);
 
 public:
 	bool GetIsPlaying() const;

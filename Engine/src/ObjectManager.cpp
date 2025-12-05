@@ -1,14 +1,11 @@
 #include "ObjectManager.h"
 #include <kotono_framework/Framework.h>
-#include <kotono_framework/TimeManager.h>
-#include <kotono_framework/Timer.h>
+#include <kotono_timing/TimeManager.h>
+#include <kotono_timing/Timer.h>
 #include <kotono_framework/Window.h>
 #include <kotono_framework/InputManager.h>
-#include <kotono_common/Path.h>
 #include "log.h"
 #include "Object.h"
-#include "Scene.h"
-#include "Engine.h"
 #include "TimeManager.h"
 #include "Timer.h"
 #include "InterfaceObject.h"
