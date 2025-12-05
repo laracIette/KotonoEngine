@@ -4,7 +4,7 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 
-const std::filesystem::path EnginePath{ "W:/Visual Studio/Projects/KotonoEngine/Engine" };
+const std::filesystem::path EnginePath{ std::filesystem::path(ROOT_DIRECTORY) / "Engine" };
 
 static std::string read_string(const std::filesystem::path& path)
 {
