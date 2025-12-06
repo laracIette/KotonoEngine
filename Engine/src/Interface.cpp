@@ -1,5 +1,4 @@
 #include "Interface.h"
-#include <kotono_graphics/Framework.h>
 #include <kotono_graphics/ShaderManager.h>
 #include <kotono_graphics/ImageTextureManager.h>
 #include <kotono_common/Path.h>
@@ -16,11 +15,11 @@ void KInterface::Init()
 	image1->GetImageComponent()->SetScreenSize({ 1024.0f, 1024.0f });
 	image2->GetImageComponent()->SetScreenSize({ 1024.0f, 1024.0f });
 
-	auto* shader2D{ Framework.ShaderManager().Get(Framework.Path().Framework() / R"(shaders\shader2D.ktshader)") };
+	auto* shader2D{ ShaderManager.Get(::Path.Framework() / R"(shaders\shader2D.ktshader)") };
 	shader2D->SetName("2D Shader");
 
-	auto* imageTexture1{ Framework.ImageTextureManager().Get(Framework.Path().Framework() / R"(assets\models\viking_room.png)") };
-	auto* imageTexture2{ Framework.ImageTextureManager().Get(Framework.Path().Framework() / R"(assets\textures\default_texture.jpg)") };
+	auto* imageTexture1{ ImageTextureManager.Get(::Path.Framework() / R"(assets\models\viking_room.png)") };
+	auto* imageTexture2{ ImageTextureManager.Get(::Path.Framework() / R"(assets\textures\default_texture.jpg)") };
 
 	image1->RootComponent()->SetScreenSize({ 1024.0f, 1024.0f });
 	image1->RootComponent()->SetRelativeScale({ 0.25f, 0.25f });

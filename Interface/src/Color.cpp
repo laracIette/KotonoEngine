@@ -1,5 +1,4 @@
 #include "Color.h"
-#include <kotono_graphics/Framework.h>
 #include <kotono_platform/WindowViewport.h>
 #include <kotono_graphics/InterfaceRenderableProxy.h>
 #include <kotono_graphics/ImageTexture.h>
@@ -15,12 +14,12 @@ WColor::WColor(const ColorSettings& colorSettings) :
 
 void WColor::DisplayInternal(DisplaySettings displaySettings)
 {
-	static const auto shaderPath = Framework.Path().Framework() / R"(shaders\flatColor2D.ktshader)";
-	static const auto imagePath = Framework.Path().Framework() / R"(assets\textures\white_texture.jpg)";
+	static const auto shaderPath = Path.Framework() / R"(shaders\flatColor2D.ktshader)";
+	static const auto imagePath = Path.Framework() / R"(assets\textures\white_texture.jpg)";
 
-	colorProxy_ = Framework.Renderer().GetInterfaceRenderer().CreateProxy();
-	colorProxy_->shader = Framework.ShaderManager().Get(shaderPath);
-	colorProxy_->renderable = Framework.ImageTextureManager().Get(imagePath);
+	colorProxy_ = Renderer.GetInterfaceRenderer().CreateProxy();
+	colorProxy_->shader = ShaderManager.Get(shaderPath);
+	colorProxy_->renderable = ImageTextureManager.Get(imagePath);
 	colorProxy_->layer = displaySettings.layer;
 	colorProxy_->objectData.modelMatrix = ModelMatrix();
 	colorProxy_->objectData.color = colorSettings_.color;
@@ -28,13 +27,13 @@ void WColor::DisplayInternal(DisplaySettings displaySettings)
 #	ifdef _DEBUG
 		colorProxy_->source = this;
 #	endif
-	Framework.Renderer().GetInterfaceRenderer().Register(colorProxy_);
+	Renderer.GetInterfaceRenderer().Register(colorProxy_);
 }
 
 void WColor::Cleanup()
 {
-	Framework.Renderer().GetInterfaceRenderer().Unregister(colorProxy_);
-	Framework.Renderer().GetInterfaceRenderer().DeleteProxy(colorProxy_);
+	Renderer.GetInterfaceRenderer().Unregister(colorProxy_);
+	Renderer.GetInterfaceRenderer().DeleteProxy(colorProxy_);
 
 	WWidget::Cleanup();
 }

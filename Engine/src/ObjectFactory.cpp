@@ -1,5 +1,4 @@
 #include "ObjectFactory.h"
-#include <kotono_graphics/Framework.h>
 #include <kotono_common/Path.h>
 #include <kotono_io/Serializer.h>
 #include <nlohmann/json.hpp>
@@ -52,7 +51,7 @@ UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 		return registryIt->second;
 	}
 
-	const auto path{ Framework.Path().Project() / "assets" / "objects" / std::format("{}.kobject", guid.ToString()) };
+	const auto path{ Path.Project() / "assets" / "objects" / std::format("{}.kobject", guid.ToString()) };
 
 	// Add to registry
 	nlohmann::json json{};

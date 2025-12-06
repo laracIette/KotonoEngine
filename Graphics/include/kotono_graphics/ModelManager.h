@@ -6,7 +6,7 @@ class KtModel;
 
 class KtModelManager final
 {
-	friend class KtFramework;
+	friend class SEngine;
 
 private:
 	void Cleanup();
@@ -20,3 +20,4 @@ private:
 	KtModel* Create(const std::filesystem::path& path);
 };
 
+inline KtModelManager ModelManager;

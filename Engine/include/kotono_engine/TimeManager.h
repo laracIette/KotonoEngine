@@ -11,11 +11,15 @@ private:
 
 public:
 	KtTimeContext& GameTime();
+	KtTimeContext& RenderTime();
 
 	float AverageGameTime() const;
+	float AverageRenderTime() const;
 
 private:
 	KtTimeContext gameTime_;
+	KtTimeContext renderTime_;
 
 	KtAverage<256> averageGameTime_;
+	KtAverage<256> averageRenderTime_;
 };

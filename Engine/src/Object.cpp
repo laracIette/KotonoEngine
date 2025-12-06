@@ -5,7 +5,6 @@
 #include "ObjectManager.h"
 #include "Timer.h"
 #include "log.h"
-#include <kotono_graphics/Framework.h>
 #include <kotono_common/Path.h>
 
 KObject::KObject(UPtrOwnerBase* ptrOwner) :
@@ -48,7 +47,7 @@ bool KObject::IsDelete() const
 
 const std::filesystem::path KObject::Path() const
 {
-    return Framework.Path().Project() / "assets" / "objects" / std::format("{}.kobject", guid_.ToString());
+    return ::Path.Project() / "assets" / "objects" / std::format("{}.kobject", guid_.ToString());
 }
 
 const std::string& KObject::GetName() const

@@ -1,6 +1,5 @@
 #include "InterfaceComponent.h"
 #include "InterfaceObject.h"
-#include <kotono_graphics/Framework.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_common/Path.h>
 #include <kotono_graphics/Shader.h>
@@ -26,7 +25,7 @@ KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner, const UPtr<RIn
         SetParent(Owner()->RootComponent(), ECoordinateSpace::Relative);
     }
 
-    boundsProxy_ = Framework.Renderer().GetInterfaceRenderer().CreateProxy();
+    boundsProxy_ = Renderer.GetInterfaceRenderer().CreateProxy();
 }
 
 void KInterfaceComponent::Init()
@@ -34,7 +33,7 @@ void KInterfaceComponent::Init()
     Base::Init();
 
     CreateBoundsProxy();
-    Framework.Renderer().GetInterfaceRenderer().Register(boundsProxy_);
+    Renderer.GetInterfaceRenderer().Register(boundsProxy_);
 
     EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
 }
@@ -51,8 +50,8 @@ void KInterfaceComponent::Cleanup()
 
     Owner()->RemoveComponent(Ptr<KInterfaceComponent>());
 
-    Framework.Renderer().GetInterfaceRenderer().Unregister(boundsProxy_);
-    Framework.Renderer().GetInterfaceRenderer().DeleteProxy(boundsProxy_);
+    Renderer.GetInterfaceRenderer().Unregister(boundsProxy_);
+    Renderer.GetInterfaceRenderer().DeleteProxy(boundsProxy_);
 
     Base::Cleanup();
 }
@@ -495,11 +494,11 @@ void KInterfaceComponent::RemoveChildren(const UPtr<KInterfaceComponent>& interf
 
 void KInterfaceComponent::CreateBoundsProxy()
 {
-    const auto shaderPath = Framework.Path().Framework() / R"(shaders\flatColor2D.ktshader)";
-    const auto texturePath = Framework.Path().Framework() / R"(assets\textures\white_texture.jpg)";
+    const auto shaderPath{ ::Path.Framework() / R"(shaders\flatColor2D.ktshader)" };
+    const auto texturePath{ ::Path.Framework() / R"(assets\textures\white_texture.jpg)" };
 
-    boundsProxy_->shader = Framework.ShaderManager().Get(shaderPath);
-    boundsProxy_->renderable = Framework.ImageTextureManager().Get(texturePath);
+    boundsProxy_->shader = ShaderManager.Get(shaderPath);
+    boundsProxy_->renderable = ImageTextureManager.Get(texturePath);
     boundsProxy_->layer = GetLayer();
     boundsProxy_->objectData.modelMatrix = ModelMatrix();
     boundsProxy_->scissor.offset = WindowViewport.GetOffset();

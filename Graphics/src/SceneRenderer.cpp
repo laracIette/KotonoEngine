@@ -1,5 +1,4 @@
 #include "SceneRenderer.h"
-#include "Framework.h"
 #include <kotono_platform/Context.h>
 #include <kotono_platform/WindowViewport.h>
 #include <kotono_platform/vk_utils.h>
@@ -71,7 +70,7 @@ void KtSceneRenderer::CreateStaticCommandBuffer(const uint32_t frameIndex)
 {
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = Framework.Renderer().GetCommandPool(frameIndex);
+	allocInfo.commandPool = Renderer.GetCommandPool(frameIndex);
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
 	allocInfo.commandBufferCount = 1;
 
@@ -93,7 +92,7 @@ void KtSceneRenderer::CreateDynamicCommandBuffer(const uint32_t frameIndex)
 {
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = Framework.Renderer().GetCommandPool(frameIndex);
+	allocInfo.commandPool = Renderer.GetCommandPool(frameIndex);
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
 	allocInfo.commandBufferCount = 1;
 
@@ -127,9 +126,9 @@ void KtSceneRenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer, const ui
 
 	VkCommandBufferInheritanceInfo inheritanceInfo{};
 	inheritanceInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
-	inheritanceInfo.renderPass = Framework.Renderer().GetRenderPass();
+	inheritanceInfo.renderPass = Renderer.GetRenderPass();
 	inheritanceInfo.subpass = 0;
-	inheritanceInfo.framebuffer = Framework.Renderer().GetFramebuffer(frameIndex);
+	inheritanceInfo.framebuffer = Renderer.GetFramebuffer(frameIndex);
 
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;

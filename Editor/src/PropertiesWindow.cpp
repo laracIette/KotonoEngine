@@ -4,7 +4,6 @@
 #include <kotono_engine/ObjectManager.h>
 #include <kotono_engine/InterfaceObject.h>
 #include <kotono_engine/InterfaceComponent.h>
-#include <kotono_graphics/Framework.h>
 #include <kotono_input/InputManager.h>
 
 WWidget* WPropertiesWindow::Build()

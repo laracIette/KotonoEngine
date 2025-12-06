@@ -1,5 +1,4 @@
 #include "SpvCompiler.h"
-#include "Framework.h"
 #include <kotono_common/Path.h>
 #include <kotono_common/log.h>
 #include <nlohmann/json.hpp>
@@ -9,7 +8,7 @@
 
 void KtSpvCompiler::CompileUpdated() const
 {
-    const auto path{ Framework.Path().Framework() / "shaders" };
+    const auto path{ Path.Framework() / "shaders" };
     const auto registryPath{ path / "shaders.ktregistry" };
 
     nlohmann::json json{};
@@ -66,7 +65,7 @@ void KtSpvCompiler::CompileAll() const
 {
     KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "compiling all spirv shaders");
 
-    const auto path = Framework.Path().Framework() / "shaders";
+    const auto path = Path.Framework() / "shaders";
     for (const auto& directory : { "vert", "frag" })
     {
         for (const auto& entry : std::filesystem::directory_iterator(path / directory))

@@ -1,5 +1,4 @@
 #include "Font.h"
-#include "Framework.h"
 #include "ImageTextureManager.h"
 #include "ImageTexture.h"
 #include <kotono_common/Path.h>
@@ -62,18 +61,18 @@ void KtFont::SetSpacing(const float spacing)
 
 std::vector<std::filesystem::path> KtFont::GetTextPaths(const std::string_view text) const
 {
-    std::vector<std::filesystem::path> result;
+    std::vector<std::filesystem::path> result{};
     result.reserve(text.size());
 
     for (const auto character : text)
     {
         // default texture
-        auto characterPath = Framework.Path().Framework() / R"(assets\textures\white_texture.jpg)";
+        auto characterPath = ::Path.Framework() / R"(assets\textures\white_texture.jpg)";
 
-        const auto it = CHARACTER_NAMES.find(character);
+        const auto it{ CHARACTER_NAMES.find(character) };
         if (it != CHARACTER_NAMES.end())
         {
-            const auto fontCharacterPath = path_ / std::format("{}.png", it->second);
+            const auto fontCharacterPath{ path_ / std::format("{}.png", it->second) };
             if (std::filesystem::exists(fontCharacterPath))
             {
                 // actual character texture if found
@@ -94,7 +93,7 @@ std::vector<KtImageTexture*> KtFont::GetTextTextures(const std::string_view text
 
     for (const auto& path : GetTextPaths(text))
     {
-        result.push_back(Framework.ImageTextureManager().Get(path));
+        result.push_back(ImageTextureManager.Get(path));
     }
 
     return result;

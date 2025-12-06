@@ -1,16 +1,15 @@
 #include "UpdateTimeText.h"
-#include <kotono_graphics/Framework.h>
 #include <kotono_timing/TimeManager.h>
 #include <kotono_timing/Timer.h>
 #include <kotono_interface/widgets.h>
 
 WWidget* WUpdateTimeText::Build()
 {
-    Framework.TimeManager().GetTimer("update time text").EventCompleted()
+    TimeManager.GetTimer("update time text").EventCompleted()
         .AddListener(KtDelegate(this, &WUpdateTimeText::UpdateText));
 
     return new WText({
-        .text = std::format("U {:.8f}s", Framework.TimeManager().AverageUpdateTime()),
+        .text = std::format("U {:.8f}s", TimeManager.AverageUpdateTime()),
         .fontSize = { 20.0f, 24.0f },
         .spacing = -6.0f,
     });
@@ -18,7 +17,7 @@ WWidget* WUpdateTimeText::Build()
 
 void WUpdateTimeText::Cleanup()
 {
-    Framework.TimeManager().GetTimer("update time text").EventCompleted()
+    TimeManager.GetTimer("update time text").EventCompleted()
         .RemoveListener(KtDelegate(this, &WUpdateTimeText::UpdateText));
 
     WWidget::Cleanup();

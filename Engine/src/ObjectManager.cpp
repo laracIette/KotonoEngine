@@ -1,5 +1,4 @@
 #include "ObjectManager.h"
-#include <kotono_graphics/Framework.h>
 #include <kotono_timing/TimeManager.h>
 #include <kotono_timing/Timer.h>
 #include <kotono_platform/Window.h>
@@ -23,7 +22,7 @@ void SObjectManager::Init()
 	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
 
-	auto& logUPSTimer{ Framework.TimeManager().GetTimer("log ups timer") };
+	auto& logUPSTimer{ TimeManager.GetTimer("log ups timer") };
 	logUPSTimer.SetDuration(1.0f);
 	logUPSTimer.SetIsRepeat(true);
 	logUPSTimer.EventCompleted().AddListener(KtDelegate(this, &SObjectManager::LogUPS));
@@ -147,7 +146,7 @@ const UPtr<KObject>& SObjectManager::SelectedObject() const
 
 void SObjectManager::LogUPS() const
 {
-	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "%.2f ups", 1.0f / Framework.TimeManager().AverageUpdateTime());
+	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "%.2f ups", 1.0f / TimeManager.AverageUpdateTime());
 }
 
 void SObjectManager::OnMouseButtonLeftPressed()

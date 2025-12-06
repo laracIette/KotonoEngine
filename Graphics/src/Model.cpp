@@ -1,5 +1,4 @@
 #include "Model.h"
-#include "Framework.h"
 #include <kotono_platform/Context.h>
 #include <unordered_map>
 #include <assimp/Importer.hpp>

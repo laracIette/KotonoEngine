@@ -1,6 +1,5 @@
 #include "InterfaceBoxComponent.h"
 #include "InterfaceObject.h"
-#include <kotono_graphics/Framework.h>
 #include <kotono_graphics/InterfaceRenderableProxy.h>
 #include <kotono_graphics/ImageTexture.h>
 #include <kotono_common/Path.h>
@@ -12,7 +11,7 @@
 KInterfaceBoxComponent::KInterfaceBoxComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner) :
 	Base(ptrOwner, owner)
 {
-    boxProxy_ = Framework.Renderer().GetInterfaceRenderer().CreateProxy();
+    boxProxy_ = Renderer.GetInterfaceRenderer().CreateProxy();
 }
 
 void KInterfaceBoxComponent::Init()
@@ -20,7 +19,7 @@ void KInterfaceBoxComponent::Init()
     Base::Init();
 
     CreateBoxProxy();
-    Framework.Renderer().GetInterfaceRenderer().Register(boxProxy_);
+    Renderer.GetInterfaceRenderer().Register(boxProxy_);
 
     EventColorUpdated().AddListener(KtDelegate(this, &KInterfaceBoxComponent::MarkBoxProxyColorDirty));
     EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceBoxComponent::MarkBoxProxyRectDirty));
@@ -30,17 +29,17 @@ void KInterfaceBoxComponent::Cleanup()
 {
     Base::Cleanup();
 
-    Framework.Renderer().GetInterfaceRenderer().Unregister(boxProxy_);
-    Framework.Renderer().GetInterfaceRenderer().DeleteProxy(boxProxy_);
+    Renderer.GetInterfaceRenderer().Unregister(boxProxy_);
+    Renderer.GetInterfaceRenderer().DeleteProxy(boxProxy_);
 }
 
 void KInterfaceBoxComponent::CreateBoxProxy()
 {
-    const auto shaderPath = Framework.Path().Framework() / R"(shaders\flatColor2D.ktshader)";
-    const auto texturePath = Framework.Path().Framework() / R"(assets\textures\white_texture.jpg)";
+    const auto shaderPath{ ::Path.Framework() / R"(shaders\flatColor2D.ktshader)" };
+    const auto texturePath{ ::Path.Framework() / R"(assets\textures\white_texture.jpg)" };
     
-    boxProxy_->shader = Framework.ShaderManager().Get(shaderPath);
-    boxProxy_->renderable = Framework.ImageTextureManager().Get(texturePath);
+    boxProxy_->shader = ShaderManager.Get(shaderPath);
+    boxProxy_->renderable = ImageTextureManager.Get(texturePath);
     boxProxy_->layer = GetLayer();
     boxProxy_->objectData.modelMatrix = ModelMatrix();
     boxProxy_->objectData.color = GetColor(); 

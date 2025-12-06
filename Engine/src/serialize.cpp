@@ -2,7 +2,6 @@
 #include <nlohmann/json.hpp>
 #include <glm/glm.hpp>
 #include <kotono_graphics/Color.h>
-#include <kotono_graphics/Framework.h>
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/ShaderManager.h>
 #include <kotono_graphics/ImageTexture.h>
@@ -338,19 +337,19 @@ void deserialize(const nlohmann::json& json, URect& v)
 void deserialize(const nlohmann::json& json, KtShader*& v)
 {
     const std::filesystem::path path(json.get<std::string>());
-    v = Framework.ShaderManager().Get(path);
+    v = ShaderManager.Get(path);
 }
 
 void deserialize(const nlohmann::json& json, KtImageTexture*& v)
 {
     const std::filesystem::path path(json.get<std::string>());
-    v = Framework.ImageTextureManager().Get(path);
+    v = ImageTextureManager.Get(path);
 }
 
 void deserialize(const nlohmann::json& json, KtModel*& v)
 {
     const std::filesystem::path path(json.get<std::string>());
-    v = Framework.ModelManager().Get(path);
+    v = ModelManager.Get(path);
 }
 
 UPtr<KObject> deserialize_kobject(const nlohmann::json& json)

@@ -11,7 +11,7 @@
 
 class KtRenderer final
 {
-	friend class KtFramework;
+	friend class SEngine;
 
 private:
 	void Init();
@@ -102,3 +102,5 @@ private:
 	uint32_t GetRenderThreadFrame() const;
 	uint32_t GetRHIThreadFrame() const;
 };
+
+inline KtRenderer Renderer;

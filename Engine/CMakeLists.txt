@@ -50,6 +50,7 @@ set_target_properties(KotonoEngine PROPERTIES
 target_link_libraries(KotonoEngine PUBLIC
     KotonoAudio
     KotonoInput
+    KotonoTiming
     KotonoGraphics
 )
 

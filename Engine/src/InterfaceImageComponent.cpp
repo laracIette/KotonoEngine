@@ -1,5 +1,4 @@
 #include "InterfaceImageComponent.h"
-#include <kotono_graphics/Framework.h>
 #include <kotono_graphics/ShaderManager.h>
 #include <kotono_common/Path.h>
 #include <kotono_graphics/Renderer.h>
@@ -17,19 +16,19 @@ KInterfaceImageComponent::KInterfaceImageComponent(UPtrOwnerBase* ptrOwner, cons
 {
 	if (!WireframeShader)
 	{
-		static const auto path{ Framework.Path().Framework() / R"(shaders\wireframe2D.ktshader)" };
-		WireframeShader = Framework.ShaderManager().Get(path);
+		static const auto path{ ::Path.Framework() / R"(shaders\wireframe2D.ktshader)" };
+		WireframeShader = ShaderManager.Get(path);
 		WireframeShader->SetName("2D Wireframe Shader");
 	}
 
-	imageTextureProxy_ = Framework.Renderer().GetInterfaceRenderer().CreateProxy();
+	imageTextureProxy_ = Renderer.GetInterfaceRenderer().CreateProxy();
 }
 
 void KInterfaceImageComponent::Init()
 {
 	Base::Init();
 
-	Framework.Renderer().GetInterfaceRenderer().Register(imageTextureProxy_);
+	Renderer.GetInterfaceRenderer().Register(imageTextureProxy_);
 	CreateImageTextureProxy();
 
 	EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyRectDirty));
@@ -42,8 +41,8 @@ void KInterfaceImageComponent::Cleanup()
 {
 	Base::Cleanup();
 
-	Framework.Renderer().GetInterfaceRenderer().Unregister(imageTextureProxy_);
-	Framework.Renderer().GetInterfaceRenderer().DeleteProxy(imageTextureProxy_);
+	Renderer.GetInterfaceRenderer().Unregister(imageTextureProxy_);
+	Renderer.GetInterfaceRenderer().DeleteProxy(imageTextureProxy_);
 }
 
 KtShader* KInterfaceImageComponent::GetShader() const

@@ -2,7 +2,6 @@
 #include "Engine.h"
 #include "ObjectManager.h"
 #include "Scene.h"
-#include <kotono_graphics/Framework.h>
 #include <kotono_common/Path.h>
 #include <kotono_io/Serializer.h>
 #include <nlohmann/json.hpp>
@@ -11,7 +10,7 @@
 void SGame::Init()
 {
 	nlohmann::json json{};
-	KtSerializer::Deserialize(json, Framework.Path().Project() / "config.json");
+	KtSerializer::Deserialize(json, Path.Project() / "config.json");
 
 #   if false
 	    deserialize(json.at("startupScene"), scene_);

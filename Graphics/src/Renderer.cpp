@@ -1,10 +1,8 @@
 #include "Renderer.h"
-#include "Framework.h"
 #include <kotono_platform/Context.h>
 #include <kotono_platform/Window.h>
 #include <kotono_common/log.h>
 #include <kotono_platform/vk_utils.h>
-#include <kotono_timing/time_utils.h>
 
 void KtRenderer::Init()
 {
@@ -31,7 +29,7 @@ void KtRenderer::Cleanup()
 
 	interfaceRenderer_.Cleanup();
 	sceneRenderer_.Cleanup();
-	
+
 	CleanupSwapChain();
 
 	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; ++i)
@@ -64,7 +62,7 @@ void KtRenderer::CreateSwapChain()
 	{
 		imageCount = swapChainSupport.capabilities.maxImageCount;
 	}
-	
+
 	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtRenderer::CreateSwapChain(): swap chain image count: %u", imageCount);
 
 	VkSwapchainCreateInfoKHR createInfo{};
@@ -79,10 +77,10 @@ void KtRenderer::CreateSwapChain()
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
 	const KtQueueFamilyIndices indices = Context.FindQueueFamilies(Context.GetPhysicalDevice());
-	const std::array<uint32_t, 2> queueFamilyIndices = 
-	{ 
-		indices.graphicsFamily.value(), 
-		indices.presentFamily.value() 
+	const std::array<uint32_t, 2> queueFamilyIndices =
+	{
+		indices.graphicsFamily.value(),
+		indices.presentFamily.value()
 	};
 
 	if (indices.graphicsFamily != indices.presentFamily)
@@ -238,11 +236,11 @@ void KtRenderer::CreateRenderPass()
 	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
-	const std::array<VkAttachmentDescription, 3> attachments = 
-	{ 
-		colorAttachment, 
-		depthAttachment, 
-		colorAttachmentResolve 
+	const std::array<VkAttachmentDescription, 3> attachments =
+	{
+		colorAttachment,
+		depthAttachment,
+		colorAttachmentResolve
 	};
 
 	VkRenderPassCreateInfo renderPassInfo{};
@@ -266,7 +264,7 @@ void KtRenderer::CreateFramebuffers()
 
 	for (size_t i = 0; i < swapChainImageViews_.size(); i++)
 	{
-		const std::array<VkImageView, 3> attachments = 
+		const std::array<VkImageView, 3> attachments =
 		{
 			colorImageView_,
 			depthImageView_,
@@ -307,8 +305,8 @@ void KtRenderer::CreateColorResources()
 	);
 
 	colorImageView_ = Context.CreateImageView(
-		colorImage_, 
-		colorFormat, 
+		colorImage_,
+		colorFormat,
 		VK_IMAGE_ASPECT_COLOR_BIT,
 		1
 	);
@@ -332,9 +330,9 @@ void KtRenderer::CreateDepthResources()
 	);
 
 	depthImageView_ = Context.CreateImageView(
-		depthImage_, 
-		depthFormat, 
-		VK_IMAGE_ASPECT_DEPTH_BIT, 
+		depthImage_,
+		depthFormat,
+		VK_IMAGE_ASPECT_DEPTH_BIT,
 		1
 	);
 
@@ -479,7 +477,7 @@ void KtRenderer::DrawFrame()
 		Context.ExecuteSingleTimeCommands();
 		SubmitCommandBuffer(frameIndex);
 	}
-	
+
 	frameCount_++;
 }
 
@@ -489,7 +487,7 @@ void KtRenderer::UpdateRenderers(const uint32_t frameIndex)
 	interfaceRenderer_.Update(frameIndex);
 }
 
-void KtRenderer::RecordCommandBuffer(const uint32_t frameIndex) 
+void KtRenderer::RecordCommandBuffer(const uint32_t frameIndex)
 {
 	VkCommandBuffer commandBuffer = commandBuffers_[frameIndex];
 	vkResetCommandBuffer(commandBuffer, 0);
@@ -500,7 +498,7 @@ void KtRenderer::RecordCommandBuffer(const uint32_t frameIndex)
 	beginInfo.pInheritanceInfo = nullptr; // Optional
 
 	VK_CHECK_THROW(
-		vkBeginCommandBuffer(commandBuffer, &beginInfo), 
+		vkBeginCommandBuffer(commandBuffer, &beginInfo),
 		"failed to begin recording command buffer!"
 	);
 
@@ -527,7 +525,7 @@ void KtRenderer::RecordCommandBuffer(const uint32_t frameIndex)
 	vkCmdEndRenderPass(commandBuffer);
 
 	VK_CHECK_THROW(
-		vkEndCommandBuffer(commandBuffer), 
+		vkEndCommandBuffer(commandBuffer),
 		"failed to record command buffer!"
 	);
 }
@@ -610,7 +608,7 @@ bool KtRenderer::TryAcquireNextImage(const uint32_t frameIndex)
 	vkWaitForFences(Context.GetDevice(), 1, &inFlightFences_[frameIndex], VK_TRUE, UINT64_MAX);
 
 	// Set image index for current frame
-	static constexpr uint64_t timeout = ms_to_ns(1llu);
+	static constexpr uint64_t timeout{ 1000000 };
 	const VkResult result = vkAcquireNextImageKHR(Context.GetDevice(), swapChain_, timeout, imageAvailableSemaphores_[frameIndex], VK_NULL_HANDLE, &imageIndices_[frameIndex]);
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
@@ -635,7 +633,7 @@ void KtRenderer::JoinThread(std::thread& thread) const
 	}
 }
 
-uint32_t KtRenderer::GetGameThreadFrame() const 
+uint32_t KtRenderer::GetGameThreadFrame() const
 {
 	// Prepare game thread for render thread
 	return frameCount_ % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
@@ -707,7 +705,7 @@ void KtRenderer::CleanupSwapChain()
 
 	vkDestroyImageView(Context.GetDevice(), colorImageView_, nullptr);
 	vmaDestroyImage(Context.GetAllocator(), colorImage_, colorImageAllocation_);
-	
+
 	vkDestroyImageView(Context.GetDevice(), depthImageView_, nullptr);
 	vmaDestroyImage(Context.GetAllocator(), depthImage_, depthImageAllocation_);
 

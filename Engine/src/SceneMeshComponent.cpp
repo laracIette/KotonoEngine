@@ -1,5 +1,4 @@
 #include "SceneMeshComponent.h"
-#include <kotono_graphics/Framework.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_input/InputManager.h>
 #include <kotono_graphics/ShaderManager.h>
@@ -23,8 +22,8 @@ KSceneMeshComponent::KSceneMeshComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSc
 {
     if (!WireframeShader)
     {
-        const auto path{ Framework.Path().Framework() / R"(shaders\wireframe3D.ktshader)" };
-        WireframeShader = Framework.ShaderManager().Get(path);
+        const auto path{ ::Path.Framework() / R"(shaders\wireframe3D.ktshader)" };
+        WireframeShader = ShaderManager.Get(path);
     }
 }
 
@@ -92,8 +91,8 @@ void KSceneMeshComponent::SetModel(KtModel* model)
 //void KSceneMeshComponent::DeserializeFrom(const nlohmann::json& json)
 //{
 //    Base::DeserializeFrom(json);
-//    shader_ = Framework.ShaderManager().Get(json["shader"]);
-//    model_ = Framework.ModelManager().Get(json["model"]);
+//    shader_ = ShaderManager.Get(json["shader"]);
+//    model_ = ModelManager.Get(json["model"]);
 //}
 
 void KSceneMeshComponent::Spawn()
@@ -143,12 +142,12 @@ void KSceneMeshComponent::RegisterModelProxy()
     {
     case EMobility::Dynamic:
     {
-        Framework.Renderer().GetSceneRenderer().RegisterDynamic(&modelProxy_);
+        Renderer.GetSceneRenderer().RegisterDynamic(&modelProxy_);
         break;
     }
     case EMobility::Static:
     {
-        Framework.Renderer().GetSceneRenderer().RegisterStatic(&modelProxy_);
+        Renderer.GetSceneRenderer().RegisterStatic(&modelProxy_);
         break;
     }
     }
@@ -160,12 +159,12 @@ void KSceneMeshComponent::UnregisterModelProxy()
     {
     case EMobility::Dynamic:
     {
-        Framework.Renderer().GetSceneRenderer().UnregisterDynamic(&modelProxy_);
+        Renderer.GetSceneRenderer().UnregisterDynamic(&modelProxy_);
         break;
     }
     case EMobility::Static:
     {
-        Framework.Renderer().GetSceneRenderer().UnregisterStatic(&modelProxy_);
+        Renderer.GetSceneRenderer().UnregisterStatic(&modelProxy_);
         break;
     }
     }

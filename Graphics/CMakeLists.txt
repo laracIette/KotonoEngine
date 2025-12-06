@@ -58,6 +58,5 @@ target_sources(KotonoGraphics PRIVATE ${KGRAPHICS_SHADERS})
 # Link libs
 target_link_libraries(KotonoGraphics PUBLIC
     KotonoIO
-    KotonoTiming
     KotonoPlatform
 )

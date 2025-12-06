@@ -1,5 +1,4 @@
 ﻿#include "Shader.h"
-#include "Framework.h"
 #include <kotono_platform/vk_utils.h>
 #include <kotono_platform/Context.h>
 #include "ImageTextureManager.h"
@@ -293,7 +292,7 @@ void KtShader::CreateGraphicsPipeline()
 	KtSerializer::Deserialize(json, path_);
 	for (const auto& shader : json["shaders"])
 	{
-		const auto path = Framework.Path().Framework() / "shaders" / shader["path"];
+		const auto path{ ::Path.Framework() / "shaders" / shader["path"] };
 		std::vector<uint8_t> shaderCode = KtFile(path).ReadBinary();
 
 		VkShaderModule shaderModule;
@@ -378,14 +377,14 @@ void KtShader::CreateGraphicsPipeline()
 	VkViewport viewport{};
 	viewport.x = 0.0f;
 	viewport.y = 0.0f;
-	viewport.width = (float)Framework.Renderer().GetSwapChainExtent().width;
-	viewport.height = (float)Framework.Renderer().GetSwapChainExtent().height;
+	viewport.width = (float)Renderer.GetSwapChainExtent().width;
+	viewport.height = (float)Renderer.GetSwapChainExtent().height;
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
 
 	VkRect2D scissor{};
 	scissor.offset = { 0, 0 };
-	scissor.extent = Framework.Renderer().GetSwapChainExtent();
+	scissor.extent = Renderer.GetSwapChainExtent();
 
 	VkPipelineViewportStateCreateInfo viewportState{};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -448,7 +447,7 @@ void KtShader::CreateGraphicsPipeline()
 	pipelineInfo.pColorBlendState = &colorBlending;
 	pipelineInfo.pDynamicState = &dynamicState;
 	pipelineInfo.layout = _pipelineLayout;
-	pipelineInfo.renderPass = Framework.Renderer().GetRenderPass();
+	pipelineInfo.renderPass = Renderer.GetRenderPass();
 	pipelineInfo.subpass = 0;
 	pipelineInfo.basePipelineHandle = nullptr; // Optional
 	pipelineInfo.basePipelineIndex = -1; // Optional
@@ -525,8 +524,8 @@ void KtShader::CreateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutB
 		return;
 	}
 
-	static const auto path = Framework.Path().Framework() / R"(assets\textures\default_texture.jpg)";
-	static const auto* imageTexture = Framework.ImageTextureManager().Get(path);
+	static const auto path{ ::Path.Framework() / R"(assets\textures\default_texture.jpg)" };
+	static const auto* imageTexture{ ImageTextureManager.Get(path) };
 
 	UpdateDescriptorSetLayoutBindingImageSampler(descriptorSetLayoutBindingData, { imageTexture->GetDescriptorImageInfo() }, imageIndex);
 }
@@ -717,8 +716,8 @@ void KtShader::CreateShaderLayout()
 	KtSerializer::Deserialize(json, path_);
 	for (const auto& shader : json["shaders"])
 	{
-		const auto path = Framework.Path().Framework() / "shaders" / shader["path"];
-		std::vector<uint8_t> shaderCode = KtFile(path).ReadBinary();
+		const auto path{ ::Path.Framework() / "shaders" / shader["path"] };
+		std::vector<uint8_t> shaderCode{ KtFile(path).ReadBinary() };
 		PopulateShaderLayout(shaderCode, shader["shaderStage"]);
 	}
 }

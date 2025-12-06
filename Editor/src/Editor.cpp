@@ -4,7 +4,6 @@
 #include "GameManager.h"
 #include "Visualizer.h"
 #include "Camera.h"
-#include <kotono_graphics/Framework.h>
 #include <kotono_timing/TimeManager.h>
 
 static SGameManager GameManager;
@@ -16,7 +15,7 @@ void SEditor::Init()
 	::Visualizer.Init();
 	::Camera.Init();
 
-	auto& updateTimer{ Framework.TimeManager().GetTimer("update time text") };
+	auto& updateTimer{ TimeManager.GetTimer("update time text") };
 	updateTimer.SetDuration(1.0f / 24.0f);
 	updateTimer.SetIsRepeat(true);
 	updateTimer.Start();

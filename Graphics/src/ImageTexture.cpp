@@ -1,6 +1,5 @@
 #include "ImageTexture.h"
 #include <stbimage/stb_image.h>
-#include "Framework.h"
 #include <kotono_platform/Context.h>
 #include <kotono_common/log.h>
 

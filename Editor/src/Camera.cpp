@@ -1,5 +1,4 @@
 #include "Camera.h"
-#include <kotono_graphics/Framework.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_platform/WindowViewport.h>
 #include <kotono_input/InputManager.h>
@@ -91,28 +90,28 @@ void SCamera::Rotate(const glm::quat& rotation)
 void SCamera::OnKeyboardWKeyDown()
 {
 	const auto direction{ ForwardVector() };
-	const auto delta{ direction * Framework.TimeManager().Delta() };
+	const auto delta{ direction * TimeManager.Delta() };
 	Translate(delta * speed_);
 }
 
 void SCamera::OnKeyboardAKeyDown()
 {
 	const auto direction{ -RightVector() };
-	const auto delta{ direction * Framework.TimeManager().Delta() };
+	const auto delta{ direction * TimeManager.Delta() };
 	Translate(delta * speed_);
 }
 
 void SCamera::OnKeyboardSKeyDown()
 {
 	const auto direction{ -ForwardVector() };
-	const auto delta{ direction * Framework.TimeManager().Delta() };
+	const auto delta{ direction * TimeManager.Delta() };
 	Translate(delta * speed_);
 }
 
 void SCamera::OnKeyboardDKeyDown()
 {
 	const auto direction{ RightVector() };
-	const auto delta{ direction * Framework.TimeManager().Delta() };
+	const auto delta{ direction * TimeManager.Delta() };
 	Translate(delta * speed_);
 }
 
@@ -170,5 +169,5 @@ void SCamera::OnEventUpdateTransform() const
 	};
 	//ubo.projection[1][1] *= -1.0f;
 
-	Framework.Renderer().GetSceneRenderer().SetUniformData(ubo);
+	Renderer.GetSceneRenderer().SetUniformData(ubo);
 }

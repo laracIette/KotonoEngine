@@ -1,0 +1,27 @@
+{
+    "guid_": "ddf0d8093836124d-b6383df994bc5f93-66dae976d91eaa25-359b7d403e3b2330",
+    "mobility_": 0,
+    "model_": "W:/Visual Studio/Projects/KotonoEngine\\Graphics\\assets\\models\\viking_room.obj",
+    "name_": "KSceneMeshComponent_ddf0d8093836124d-b6383df994bc5f93-66dae976d91eaa25-359b7d403e3b2330",
+    "shader_": "W:/Visual Studio/Projects/KotonoEngine\\Graphics\\shaders\\shader3D.ktshader",
+    "transform_": {
+        "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "rotation": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        }
+    },
+    "type_": "KSceneMeshComponent",
+    "visibility_": 0
+}

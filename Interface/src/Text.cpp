@@ -1,6 +1,5 @@
 #include "Text.h"
 #include "widgets.h"
-#include <kotono_graphics/Framework.h>
 #include <kotono_graphics/Font.h>
 #include <kotono_common/Path.h>
 #include "log.h"
@@ -28,7 +27,7 @@ WWidget::WidgetVector WText::GetCharacters() const
 {
 	WidgetVector result{};
 
-	const auto fontPath{ Framework.Path().Framework() / R"(assets\fonts\default)" };
+	const auto fontPath{ Path.Framework() / R"(assets\fonts\default)" };
 	const KtFont font(fontPath);
 
 	const auto characterPaths{ font.GetTextPaths(textSettings_.text) };

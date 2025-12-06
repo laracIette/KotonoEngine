@@ -1,8 +1,6 @@
 #pragma once
 class KtClock final
 {
-	friend class KtFramework;
-
 public:
 	// Current exact UTC Time since Epoch in seconds.
 	static double ExactUTC();

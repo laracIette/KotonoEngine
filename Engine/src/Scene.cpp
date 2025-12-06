@@ -4,7 +4,6 @@
 #include "SceneObject.h"
 #include "SceneMeshComponent.h"
 #include "SceneMeshObject.h"
-#include <kotono_graphics/Framework.h>
 #include <kotono_graphics/ShaderManager.h>
 #include <kotono_graphics/ModelManager.h>
 #include <kotono_common/Path.h>
@@ -14,11 +13,11 @@
 KScene::KScene(UPtrOwnerBase* ptrOwner) :
 	Base(ptrOwner)
 {
-	auto* shader3D{ Framework.ShaderManager().Get(Framework.Path().Framework() / R"(shaders\shader3D.ktshader)") };
+	auto* shader3D{ ShaderManager.Get(::Path.Framework() / R"(shaders\shader3D.ktshader)") };
 	shader3D->SetName("3D Shader");
 
-	auto* model1{ Framework.ModelManager().Get(Framework.Path().Framework() / R"(assets\models\viking_room.obj)") };
-	auto* model2{ Framework.ModelManager().Get(Framework.Path().Framework() / R"(assets\models\SM_Column_low.fbx)") };
+	auto* model1{ ModelManager.Get(::Path.Framework() / R"(assets\models\viking_room.obj)") };
+	auto* model2{ ModelManager.Get(::Path.Framework() / R"(assets\models\SM_Column_low.fbx)") };
 
 	UPtr mesh1{ Engine.ObjectManager().Create<TSceneMeshObject>() };
 	mesh1->GetMeshComponent()->SetShader(shader3D);

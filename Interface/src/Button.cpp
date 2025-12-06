@@ -1,5 +1,4 @@
 #include "Button.h"
-#include <kotono_graphics/Framework.h>
 #include <kotono_input/InputManager.h>
 #include "log.h"
 

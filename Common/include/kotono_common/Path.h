@@ -2,7 +2,7 @@
 #include <filesystem>
 class KtPath final
 {
-	friend class KtFramework;
+	friend class SEngine;
 
 private:
 	void Init();
@@ -20,3 +20,4 @@ private:
 	std::filesystem::path projectPath_;
 };
 
+inline KtPath Path;

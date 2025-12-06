@@ -5,7 +5,7 @@
 #include <kotono_common/Average.h>
 class KtTimeManager final
 {
-	friend class KtFramework;
+	friend class SEngine;
 
 private:
 	void Update();
@@ -27,3 +27,5 @@ private:
 private:
 	std::unordered_map<std::string_view, KtTimer> timers_;
 };
+
+inline KtTimeManager TimeManager;

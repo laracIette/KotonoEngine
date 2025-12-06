@@ -1,5 +1,4 @@
 #include "InterfaceRenderer.h"
-#include "Framework.h"
 #include <kotono_common/log.h>
 #include <kotono_platform/Context.h>
 #include "Vertex2D.h"
@@ -178,7 +177,7 @@ void KtInterfaceRenderer::CreateCommandBuffer(const uint32_t frameIndex)
 {
 	const VkCommandBufferAllocateInfo allocInfo{
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-		.commandPool = Framework.Renderer().GetCommandPool(frameIndex),
+		.commandPool = Renderer.GetCommandPool(frameIndex),
 		.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY,
 		.commandBufferCount = 1,
 	};
@@ -203,9 +202,9 @@ void KtInterfaceRenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer, cons
 
 	const VkCommandBufferInheritanceInfo inheritanceInfo{
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO,
-		.renderPass = Framework.Renderer().GetRenderPass(),
+		.renderPass = Renderer.GetRenderPass(),
 		.subpass = 0,
-		.framebuffer = Framework.Renderer().GetFramebuffer(frameIndex),
+		.framebuffer = Renderer.GetFramebuffer(frameIndex),
 	};
 
 	const VkCommandBufferBeginInfo beginInfo{
@@ -230,7 +229,7 @@ void KtInterfaceRenderer::EndCommandBuffer(VkCommandBuffer commandBuffer)
 
 void KtInterfaceRenderer::SetUniformData(const KtInterfaceUniformData& uniformData)
 {
-	uniformDatas_[Framework.Renderer().GetGameThreadFrame()] = uniformData;
+	uniformDatas_[Renderer.GetGameThreadFrame()] = uniformData;
 }
 
 void KtInterfaceRenderer::Register(KtInterfaceRenderableProxy* proxy)

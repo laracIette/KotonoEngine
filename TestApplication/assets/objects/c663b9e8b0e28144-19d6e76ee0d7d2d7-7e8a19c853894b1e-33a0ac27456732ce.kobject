@@ -1,0 +1,27 @@
+{
+    "guid_": "c663b9e8b0e28144-19d6e76ee0d7d2d7-7e8a19c853894b1e-33a0ac27456732ce",
+    "mobility_": 0,
+    "model_": "W:/Visual Studio/Projects/KotonoEngine\\Graphics\\assets\\models\\SM_Column_low.fbx",
+    "name_": "KSceneMeshComponent_c663b9e8b0e28144-19d6e76ee0d7d2d7-7e8a19c853894b1e-33a0ac27456732ce",
+    "shader_": "W:/Visual Studio/Projects/KotonoEngine\\Graphics\\shaders\\shader3D.ktshader",
+    "transform_": {
+        "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "rotation": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        }
+    },
+    "type_": "KSceneMeshComponent",
+    "visibility_": 0
+}

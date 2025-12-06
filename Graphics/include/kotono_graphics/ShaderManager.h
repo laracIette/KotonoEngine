@@ -6,7 +6,7 @@ class KtShader;
 
 class KtShaderManager final
 {
-	friend class KtFramework;
+	friend class SEngine;
 
 private:
 	void Init(); 
@@ -21,3 +21,4 @@ private:
 	KtShader* Create(const std::filesystem::path& path);
 };
 
+inline KtShaderManager ShaderManager;

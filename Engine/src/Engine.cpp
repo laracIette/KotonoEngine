@@ -1,87 +1,107 @@
 #include "Engine.h"
+#include <kotono_common/Path.h>
 #include <kotono_audio/AudioManager.h>
+#include <kotono_timing/TimeManager.h>
+#include <kotono_platform/Window.h>
+#include <kotono_platform/Context.h>
 #include <kotono_input/InputManager.h>
+#include <kotono_graphics/Renderer.h>
+#include <kotono_graphics/ModelManager.h>
+#include <kotono_graphics/ShaderManager.h>
+#include <kotono_graphics/ImageTextureManager.h>
 #include "TimeManager.h"
 #include "ObjectManager.h"
 #include "ObjectFactory.h"
 #include "Game.h"
 #include "InterfacePhysicsManager.h"
 
-static STimeManager TimeManager;
-static SObjectManager ObjectManager;
-static SObjectFactory ObjectFactory;
-static SGame Game;
-static SInterfacePhysicsManager InterfacePhysicsManager;
+static STimeManager sTimeManager;
+static SObjectManager sObjectManager;
+static SObjectFactory sObjectFactory;
+static SGame sGame;
+static SInterfacePhysicsManager sInterfacePhysicsManager;
 
 void SEngine::Init()
 {
-    AudioManager.Init();
-    InputManager.Init();
-    ::TimeManager.Init();
-    ::ObjectManager.Init();
-    ::Game.Init();
+    ::Path.Init();
+    ::Window.Init();
+    ::Context.Init();
+    ::Renderer.Init();
+    ::ShaderManager.Init();
+    ::AudioManager.Init();
+    ::InputManager.Init();
+    sTimeManager.Init();
+    sObjectManager.Init();
+    sGame.Init();
 }
 
 void SEngine::Update()
 {
-    InputManager.Update();
     ::TimeManager.Update();
-    ::Game.Update();
-    ::InterfacePhysicsManager.Update();
+    ::InputManager.Update();
+    sTimeManager.Update();
+    sGame.Update();
+    sInterfacePhysicsManager.Update();
 }
 
 void SEngine::Cleanup()
 {
-    ::ObjectManager.Cleanup();
-    AudioManager.Cleanup();
+    sObjectManager.Cleanup();
+    ::AudioManager.Cleanup();
+    ::ImageTextureManager.Cleanup();
+    ::ShaderManager.Cleanup();
+    ::ModelManager.Cleanup();
+    ::Renderer.Cleanup();
+    ::Context.Cleanup();
+    ::Window.Cleanup();
 }
 
 STimeManager& SEngine::TimeManager()
 {
-    return ::TimeManager;
+    return sTimeManager;
 }
 
 const STimeManager& SEngine::TimeManager() const
 {
-    return ::TimeManager;
+    return sTimeManager;
 }
 
 SObjectManager& SEngine::ObjectManager()
 {
-    return ::ObjectManager;
+    return sObjectManager;
 }
 
 const SObjectManager& SEngine::ObjectManager() const
 {
-    return ::ObjectManager;
+    return sObjectManager;
 }
 
 SObjectFactory& SEngine::ObjectFactory()
 {
-    return ::ObjectFactory;
+    return sObjectFactory;
 }
 
 const SObjectFactory& SEngine::ObjectFactory() const
 {
-    return ::ObjectFactory;
+    return sObjectFactory;
 }
 
-SGame& SEngine::Game() 
+SGame& SEngine::Game()
 {
-    return ::Game;
+    return sGame;
 }
 
 const SGame& SEngine::Game() const
 {
-    return ::Game;
+    return sGame;
 }
 
 SInterfacePhysicsManager& SEngine::InterfacePhysicsManager()
 {
-    return ::InterfacePhysicsManager;
+    return sInterfacePhysicsManager;
 }
 
 const SInterfacePhysicsManager& SEngine::InterfacePhysicsManager() const
 {
-    return ::InterfacePhysicsManager;
+    return sInterfacePhysicsManager;
 }

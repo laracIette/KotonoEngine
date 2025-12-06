@@ -6,7 +6,7 @@ class KtImageTexture;
 
 class KtImageTextureManager final
 {
-	friend class KtFramework;
+	friend class SEngine;
 
 private:
 	void Cleanup(); 
@@ -20,3 +20,4 @@ private:
 	KtImageTexture* Create(const std::filesystem::path& path);
 };
 
+inline KtImageTextureManager ImageTextureManager;

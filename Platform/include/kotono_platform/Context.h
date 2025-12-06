@@ -12,7 +12,7 @@
 
 class KtContext final
 {
-	friend class KtFramework;
+	friend class SEngine;
 
 private:
 	void Init();
