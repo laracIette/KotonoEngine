@@ -2,7 +2,7 @@
 #include <kotono_interface/widgets.h>
 #include "Editor.h"
 #include "Visualizer.h"
-#include "log.h"
+#include <kotono_common/log.h>
 
 WWidget* WVisualizerWindow::Build()
 {

@@ -1,5 +1,5 @@
 #include "Widget.h"
-#include "log.h"
+#include <kotono_common/log.h>
 #include "utils.h"
 #include <glm/ext/matrix_transform.hpp>
 

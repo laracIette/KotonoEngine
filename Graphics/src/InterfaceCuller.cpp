@@ -20,19 +20,19 @@ KtInterfaceCuller::ProxiesPool KtInterfaceCuller::ComputeNullCulling(const Proxi
 	{
 		if (!proxy)
 		{
-			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "KtInterfaceCuller::ComputeNullCulling(): proxy is nullptr");
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "Graphics", "KtInterfaceCuller::ComputeNullCulling(): proxy is nullptr");
 			continue;
 		}
 
 		if (!proxy->shader)
 		{
-			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "KtInterfaceCuller::ComputeNullCulling(): shader is nullptr");
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "Graphics", "KtInterfaceCuller::ComputeNullCulling(): shader is nullptr");
 			continue;
 		}
 
 		if (!proxy->renderable)
 		{
-			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "KtInterfaceCuller::ComputeNullCulling(): renderable is nullptr");
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "Graphics", "KtInterfaceCuller::ComputeNullCulling(): renderable is nullptr");
 			continue;
 		}
 

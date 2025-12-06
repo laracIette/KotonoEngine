@@ -1,4 +1,4 @@
-#include <kotono_common/log.h>
+#include <kotono_common/LogImportanceLevel.h>
 
 #ifdef _DEBUG
 

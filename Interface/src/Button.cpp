@@ -1,6 +1,6 @@
 #include "Button.h"
 #include <kotono_input/InputManager.h>
-#include "log.h"
+#include <kotono_common/log.h>
 
 WButton::WButton(const ButtonSettings& buttonSettings) :
 	buttonSettings_(buttonSettings)

@@ -7,7 +7,7 @@
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/Model.h>
 #include <kotono_platform/WindowViewport.h>
-#include "log.h"
+#include <kotono_common/log.h>
 #include <nlohmann/json.hpp>
 #include "TimeManager.h"
 #include "ObjectManager.h"
@@ -179,11 +179,11 @@ void KSceneMeshComponent::Spin()
 void KSceneMeshComponent::SetMobilityStatic()
 {
     SetMobility(EMobility::Static);
-    KT_LOG_KE(KT_LOG_COMPILE_TIME_LEVEL, "static");
+    KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Core", "static");
 }
 
 void KSceneMeshComponent::SetMobilityDynamic()
 {
     SetMobility(EMobility::Dynamic);
-    KT_LOG_KE(KT_LOG_COMPILE_TIME_LEVEL, "dynamic");
+    KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Core", "dynamic");
 }

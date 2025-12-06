@@ -5,12 +5,12 @@
 #ifdef _DEBUG
 #include <cstdio>
 
-#define KT_LOG_KF(level, format, ...)                \
+#define KT_LOG(level, category, format, ...)                \
     if constexpr (KT_SHOULD_LOG(level))              \
     {                                                \
-        printf("[KF] " format "\n", ##__VA_ARGS__);  \
-    }                                                  
+        printf("[" category "] " format "\n", ##__VA_ARGS__);  \
+    }
 
 #else
-#define KT_LOG_KF(level, format, ...)
-#endif
+#define KT_LOG(level, category, format, ...)
+#endif // _DEBUG

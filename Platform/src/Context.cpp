@@ -37,7 +37,7 @@ void KtContext::Init()
 
 void KtContext::Cleanup()
 {
-	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaning up context");
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Platform", "cleaning up context");
 	vkDestroyCommandPool(device_, commandPool_, nullptr);
 
 	if constexpr (KT_SHOULD_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW))
@@ -45,13 +45,13 @@ void KtContext::Cleanup()
 		VmaTotalStatistics stats{};
 		vmaCalculateStatistics(allocator_, &stats);
 
-		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_LOW, "VMA Allocator Stats:");
-		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_LOW, "Total memory allocated: %llu bytes", stats.total.statistics.allocationBytes);
-		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_LOW, "Number of allocations: %u", stats.total.statistics.allocationCount);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Platform", "VMA Allocator Stats:");
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Platform", "Total memory allocated: %llu bytes", stats.total.statistics.allocationBytes);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Platform", "Number of allocations: %u", stats.total.statistics.allocationCount);
 
 		char* statsString;
 		vmaBuildStatsString(allocator_, &statsString, true);
-		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_LOW, "VMA Stats:\n%s", statsString);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Platform", "VMA Stats:\n%s", statsString);
 		vmaFreeStatsString(allocator_, statsString);
 	}
 
@@ -66,7 +66,7 @@ void KtContext::Cleanup()
 
 	vkDestroySurfaceKHR(instance_, surface_, nullptr);
 	vkDestroyInstance(instance_, nullptr);
-	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaned up context");
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Platform", "cleaned up context");
 }
 
 void KtContext::CreateInstance()
@@ -227,7 +227,7 @@ void KtContext::PickPhysicalDevice()
 				maxVRAM = totalVRAM;
 				bestDevice = device;
 
-				KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Selected GPU: %s, VRAM: %llu MB", deviceProperties.deviceName, totalVRAM / (1024llu * 1024));
+				KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Platform", "Selected GPU: %s, VRAM: %llu MB", deviceProperties.deviceName, totalVRAM / (1024llu * 1024));
 			}
 
 			// Stop on cpu if on battery

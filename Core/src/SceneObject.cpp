@@ -1,6 +1,6 @@
 #include "SceneObject.h"
 #include <nlohmann/json.hpp>
-#include "log.h"
+#include <kotono_common/log.h>
 #include <kotono_platform/WindowViewport.h>
 #include "SceneComponent.h"
 #include "ObjectManager.h"
@@ -77,12 +77,12 @@ void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinate
 {
 	if (parent == this)
 	{
-		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "TSceneObject::SetParent(): couldn't set the parent of '%s' to itself", GetName().c_str());
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core", "TSceneObject::SetParent(): couldn't set the parent of '%s' to itself", GetName().c_str());
 		return;
 	}
 	if (parent == parent_)
 	{
-		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "TSceneObject::SetParent(): couldn't set the parent of '%s' to the same", GetName().c_str());
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core", "TSceneObject::SetParent(): couldn't set the parent of '%s' to the same", GetName().c_str());
 		return;
 	}
 	if (parent_)

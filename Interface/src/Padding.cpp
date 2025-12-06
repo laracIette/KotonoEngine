@@ -1,5 +1,5 @@
 #include "Padding.h"
-#include "log.h"
+#include <kotono_common/log.h>
 
 WPadding::WPadding(const PaddingSettings& paddingSettings) :
 	WChildOwnerWidget(paddingSettings.child),

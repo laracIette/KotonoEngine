@@ -3,7 +3,7 @@
 #include <kotono_timing/Timer.h>
 #include <kotono_platform/Window.h>
 #include <kotono_input/InputManager.h>
-#include "log.h"
+#include <kotono_common/log.h>
 #include "Object.h"
 #include "TimeManager.h"
 #include "Timer.h"
@@ -42,7 +42,7 @@ void SObjectManager::Cleanup()
 	for (auto* ptr : objects)
 	{
 		auto* object{ static_cast<KObject*>(ptr->Get()) };
-		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "DEL object %s", object->GetName().c_str());
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core", "DEL object %s", object->GetName().c_str());
 		delete object;
 		delete ptr;
 	}
@@ -60,7 +60,7 @@ void SObjectManager::Register(KObject* object, UPtrOwnerBase* ptrOwner)
 	object->initIndex_ = inits_.LastIndex();
 	object->type_ = object->TypeName();
 	object->SetName(std::format("{}_{}", object->TypeName(), object->Guid().ToString()));
-	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "REG object %s", object->GetName().c_str());
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core", "REG object %s", object->GetName().c_str());
 }
 
 void SObjectManager::Delete(UPtrOwnerBase* ptrOwner)
@@ -92,7 +92,7 @@ void SObjectManager::InitObjects()
 	}
 	inits_.Clear();
 
-	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "object count %llu", objects_.size());
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core", "object count %llu", objects_.size());
 }
 
 void SObjectManager::DeleteObjects()
@@ -131,7 +131,7 @@ void SObjectManager::DeleteObjects()
 	for (auto* ptr : deletes_)
 	{
 		auto* object{ static_cast<KObject*>(ptr->Get()) };
-		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "DEL object %s", object->GetName().c_str());
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core", "DEL object %s", object->GetName().c_str());
 		delete object;
 		delete ptr;
 	}
@@ -146,7 +146,7 @@ const UPtr<KObject>& SObjectManager::SelectedObject() const
 
 void SObjectManager::LogUPS() const
 {
-	KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "%.2f ups", 1.0f / TimerManager.AverageUpdateTime());
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core", "%.2f ups", 1.0f / TimerManager.AverageUpdateTime());
 }
 
 void SObjectManager::OnMouseButtonLeftPressed()
@@ -175,6 +175,6 @@ void SObjectManager::OnMouseButtonLeftPressed()
 
 	if (selectedObject_)
 	{
-		KT_LOG_KE(KT_LOG_COMPILE_TIME_LEVEL, "selected %s", selectedObject_->GetName().c_str());
+		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Core", "selected %s", selectedObject_->GetName().c_str());
 	}
 }

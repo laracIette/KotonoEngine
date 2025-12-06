@@ -2,7 +2,7 @@
 #include "widgets.h"
 #include <kotono_graphics/Font.h>
 #include <kotono_common/Path.h>
-#include "log.h"
+#include <kotono_common/log.h>
 
 WText::WText(const TextSettings& textSettings) :
 	textSettings_(textSettings)

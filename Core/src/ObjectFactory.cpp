@@ -3,7 +3,7 @@
 #include <kotono_io/Serializer.h>
 #include <nlohmann/json.hpp>
 #include "ObjectManager.h"
-#include "log.h"
+#include <kotono_common/log.h>
 #include "Interface.h"
 #include "InterfaceBoxComponent.h"
 #include "InterfaceButtonComponent.h"
@@ -66,7 +66,7 @@ UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 		return object;
 	}
 
-	KT_LOG_KE(KT_LOG_COMPILE_TIME_LEVEL, "missing value for type %s in object factories", type.c_str());
+	KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Core", "missing value for type %s in object factories", type.c_str());
 	return nullptr;
 }
 

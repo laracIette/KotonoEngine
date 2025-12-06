@@ -22,7 +22,7 @@ void KtRenderer::Init()
 
 void KtRenderer::Cleanup()
 {
-	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaning up renderer");
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics", "cleaning up renderer");
 
 	JoinThread(renderThread_);
 	JoinThread(rhiThread_);
@@ -46,7 +46,7 @@ void KtRenderer::Cleanup()
 		vkDestroyFence(Context.GetDevice(), inFlightFences_[i], nullptr);
 	}
 
-	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "cleaned up renderer");
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics", "cleaned up renderer");
 }
 
 void KtRenderer::CreateSwapChain()
@@ -63,7 +63,7 @@ void KtRenderer::CreateSwapChain()
 		imageCount = swapChainSupport.capabilities.maxImageCount;
 	}
 
-	KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtRenderer::CreateSwapChain(): swap chain image count: %u", imageCount);
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics", "KtRenderer::CreateSwapChain(): swap chain image count: %u", imageCount);
 
 	VkSwapchainCreateInfoKHR createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -457,7 +457,7 @@ void KtRenderer::DrawFrame()
 
 		if (frameCount_ >= 2)
 		{
-			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "frame %u rendered", frameCount_);
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics", "frame %u rendered", frameCount_);
 
 			JoinThread(rhiThread_);
 			Context.ExecuteSingleTimeCommands();
@@ -469,7 +469,7 @@ void KtRenderer::DrawFrame()
 	{
 		if (!TryAcquireNextImage(frameIndex))
 		{
-			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtRenderer::DrawFrame(): frame skipped");
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics", "KtRenderer::DrawFrame(): frame skipped");
 			return;
 		}
 
@@ -595,7 +595,7 @@ void KtRenderer::SubmitCommandBuffer(const uint32_t frameIndex)
 	{
 		if (!TryAcquireNextImage(frameIndex))
 		{
-			KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "KtRenderer::DrawFrame(): frame skipped");
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics", "KtRenderer::DrawFrame(): frame skipped");
 			return;
 		}
 	}

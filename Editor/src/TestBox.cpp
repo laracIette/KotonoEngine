@@ -2,7 +2,7 @@
 #include <kotono_core/ObjectManager.h>
 #include <kotono_core/Object.h>
 #include <kotono_interface/widgets.h>
-#include "log.h"
+#include <kotono_common/log.h>
 
 WWidget* WTestBox::Build()
 {

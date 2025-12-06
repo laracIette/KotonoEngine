@@ -3,7 +3,6 @@
 #include <type_traits>
 #include <memory>
 #include <iostream>
-#include "log.h"
 #include "hash_utils.h"
 
 template <typename... Args>
@@ -38,10 +37,6 @@ public:
         if (instance_)
         {
             callbackFunction_(args...);
-        }
-        else
-        {
-            KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_HIGH, "can't call callbackFunction_, instance_ is nullptr");
         }
     }
 

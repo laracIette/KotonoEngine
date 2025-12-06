@@ -9,7 +9,7 @@
 #include <kotono_platform/WindowViewport.h>
 #include <kotono_graphics/InterfaceRenderableProxy.h>
 #include <kotono_input/InputManager.h>
-#include "log.h"
+#include <kotono_common/log.h>
 
 KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner) :
     Base(ptrOwner),

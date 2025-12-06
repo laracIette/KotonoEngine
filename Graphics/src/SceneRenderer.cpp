@@ -176,7 +176,7 @@ void KtSceneRenderer::UpdateStaticProxies(const uint32_t frameIndex)
 		}
 
 		isStaticCommandBufferDirty_[frameIndex] = true;
-		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_PROXY, "DIRTY STATIC command buffer frame %u", frameIndex);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics", "DIRTY STATIC command buffer frame %u", frameIndex);
 
 		if (count > 0)
 		{
@@ -213,7 +213,7 @@ void KtSceneRenderer::UpdateDynamicProxies(const uint32_t frameIndex)
 		}
 
 		isDynamicCommandBufferDirty_[frameIndex] = true;
-		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_PROXY, "DIRTY DYNAMIC command buffer frame %u", frameIndex);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics", "DIRTY DYNAMIC command buffer frame %u", frameIndex);
 
 		if (count > 0)
 		{
@@ -271,13 +271,13 @@ void KtSceneRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t fram
 		
 		UpdateDescriptorSetObjectBuffers(sortedGlobalProxies, frameIndex);
 		MarkDynamicProxiesNotDirty(frameIndex);
-		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_PROXY, "update DESCRIPTOR sets frame %u", frameIndex);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics", "update DESCRIPTOR sets frame %u", frameIndex);
 	}
 
 	if (isUniformBufferDirty_[frameIndex])
 	{
 		isUniformBufferDirty_[frameIndex] = false;
-		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_LOW, "update uniform");
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Graphics", "update uniform");
 		UpdateDescriptorSetUniformBuffers(staticProxies_[frameIndex], frameIndex);
 		UpdateDescriptorSetUniformBuffers(dynamicProxies_[frameIndex], frameIndex);
 	}
@@ -286,13 +286,13 @@ void KtSceneRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t fram
 	{
 		isStaticCommandBufferDirty_[frameIndex] = false;
 		RecordStaticCommandBuffer(frameIndex);
-		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_PROXY, "update STATIC command buffer frame %u", frameIndex);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics", "update STATIC command buffer frame %u", frameIndex);
 	}
 	if (isDynamicCommandBufferDirty_[frameIndex])
 	{
 		isDynamicCommandBufferDirty_[frameIndex] = false;
 		RecordDynamicCommandBuffer(frameIndex);
-		KT_LOG_KF(KT_LOG_IMPORTANCE_LEVEL_PROXY, "update DYNAMIC command buffer frame %u", frameIndex);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics", "update DYNAMIC command buffer frame %u", frameIndex);
 	}
 
 	CmdExecuteCommandBuffers(commandBuffer, frameIndex);

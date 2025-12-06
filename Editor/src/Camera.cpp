@@ -4,7 +4,7 @@
 #include <kotono_input/InputManager.h>
 #include <kotono_timing/TimerManager.h>
 #include <algorithm>
-#include "log.h"
+#include <kotono_common/log.h>
 
 void SCamera::Init()
 {

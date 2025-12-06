@@ -7,7 +7,7 @@
 #include <kotono_graphics/InterfaceRenderableProxy.h>
 #include <kotono_platform/WindowViewport.h>
 #include "InterfaceObject.h"
-#include "log.h"
+#include <kotono_common/log.h>
 
 static constinit KtShader* WireframeShader{ nullptr };
 

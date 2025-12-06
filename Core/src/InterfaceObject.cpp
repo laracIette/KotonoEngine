@@ -1,5 +1,5 @@
 #include "InterfaceObject.h"
-#include "log.h"
+#include <kotono_common/log.h>
 #include <kotono_platform/WindowViewport.h>
 #include "InterfaceComponent.h"
 #include "ObjectManager.h"
@@ -56,12 +56,12 @@ void RInterfaceObject::SetParent(const UPtr<RInterfaceObject>& parent, const ECo
 {
 	if (parent == this)
 	{
-		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "RInterfaceObject::SetParent(): couldn't set the parent of '%s' to itself", GetName().c_str());
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core", "RInterfaceObject::SetParent(): couldn't set the parent of '%s' to itself", GetName().c_str());
 		return;
 	}
 	if (parent == parent_)
 	{
-		KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "RInterfaceObject::SetParent(): couldn't set the parent of '%s' to the same", GetName().c_str());
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core", "RInterfaceObject::SetParent(): couldn't set the parent of '%s' to the same", GetName().c_str());
 		return;
 	}
 	if (parent_)

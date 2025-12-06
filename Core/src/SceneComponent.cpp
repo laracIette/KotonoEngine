@@ -1,6 +1,6 @@
 #include "SceneComponent.h"
 #include "SceneObject.h"
-#include "log.h"
+#include <kotono_common/log.h>
 #include <stdexcept>
 #include <nlohmann/json.hpp>
 
@@ -197,7 +197,7 @@ void KSceneComponent::SetParent(const UPtr<KSceneComponent>& parent, const ECoor
 
     if (!GetCanSetTransform())
     {
-        KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "can't set parent for %s, its mobility is static", GetName().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core", "can't set parent for %s, its mobility is static", GetName().c_str());
         return;
     }
 
@@ -255,7 +255,7 @@ void KSceneComponent::SetRelativePosition(const glm::vec3& relativePosition)
 {
     if (!GetCanSetTransform())
     {
-        KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "can't set position for %s, its mobility is static", GetName().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core", "can't set position for %s, its mobility is static", GetName().c_str());
         return;
     }
 
@@ -272,7 +272,7 @@ void KSceneComponent::SetRelativeRotation(const glm::quat& relativeRotation)
 {
     if (!GetCanSetTransform())
     {
-        KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "can't set rotation for %s, its mobility is static", GetName().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core", "can't set rotation for %s, its mobility is static", GetName().c_str());
         return;
     }
 
@@ -289,7 +289,7 @@ void KSceneComponent::SetRelativeScale(const glm::vec3& relativeScale)
 {
     if (!GetCanSetTransform())
     {
-        KT_LOG_KE(KT_LOG_IMPORTANCE_LEVEL_HIGH, "can't set scale for %s, its mobility is static", GetName().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core", "can't set scale for %s, its mobility is static", GetName().c_str());
         return;
     }
 

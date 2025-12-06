@@ -1,7 +1,7 @@
 #include "List.h"
 #include "widgets.h"
 #include "ListBody.h"
-#include "log.h"
+#include <kotono_common/log.h>
 
 WList::WList(const ListSettings& listSettings) :
 	listSettings_(listSettings),
