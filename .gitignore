@@ -403,10 +403,8 @@ FodyWeavers.xsd
 
 *.spv
 
-Graphics/lib/KotonoGraphics.lib
-Interface/lib/KotonoInterface.lib
-Engine/lib/KotonoEngine.lib
-Editor/lib/KotonoEditor.lib
+
+# --- Kotono Engine ---
 
 build/
 

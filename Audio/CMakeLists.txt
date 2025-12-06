@@ -28,11 +28,6 @@ target_include_directories(KotonoAudio
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_audio"
 )
 
-# Output .lib to KotonoAudio/lib/
-set_target_properties(KotonoAudio PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
-)
-
 set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/ThirdParty")
 
 # Link system + third-party libs

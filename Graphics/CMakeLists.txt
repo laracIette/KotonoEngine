@@ -28,11 +28,6 @@ target_include_directories(KotonoGraphics
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_graphics"
 )
 
-# Output .lib to KotonoGraphics/lib/
-set_target_properties(KotonoGraphics PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
-)
-
 # Preprocessor defines for all builds
 target_compile_definitions(KotonoGraphics PUBLIC
     ASSIMP_BUILD_NO_EXPORT

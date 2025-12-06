@@ -28,11 +28,6 @@ target_include_directories(KotonoPlatform
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_platform"
 )
 
-# Output .lib to KotonoPlatform/lib/
-set_target_properties(KotonoPlatform PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
-)
-
 # Preprocessor defines for all builds
 target_compile_definitions(KotonoPlatform PUBLIC
     GLM_FORCE_RADIANS

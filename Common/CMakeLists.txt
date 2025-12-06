@@ -31,11 +31,6 @@ target_include_directories(KotonoCommon
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_common"
 )
 
-# Output .lib to KotonoCommon/lib/
-set_target_properties(KotonoCommon PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
-)
-
 # Preprocessor defines for all builds
 target_compile_definitions(KotonoCommon PUBLIC
     NOMINMAX

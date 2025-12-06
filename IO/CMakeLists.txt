@@ -28,11 +28,6 @@ target_include_directories(KotonoIO
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_io"
 )
 
-# Output .lib to KotonoIO/lib/
-set_target_properties(KotonoIO PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
-)
-
 # Link libs
 target_link_libraries(KotonoIO PUBLIC
     KotonoCommon

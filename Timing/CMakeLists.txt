@@ -28,11 +28,6 @@ target_include_directories(KotonoTiming
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_timing"
 )
 
-# Output .lib to KotonoTiming/lib/
-set_target_properties(KotonoTiming PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
-)
-
 # Link libs
 target_link_libraries(KotonoTiming PUBLIC
     KotonoCommon
