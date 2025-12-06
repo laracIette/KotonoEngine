@@ -1,5 +1,4 @@
 #include "Scene.h"
-#include "Engine.h"
 #include "ObjectManager.h"
 #include "SceneObject.h"
 #include "SceneMeshComponent.h"
@@ -19,12 +18,12 @@ KScene::KScene(UPtrOwnerBase* ptrOwner) :
 	auto* model1{ ModelManager.Get(::Path.Framework() / R"(assets\models\viking_room.obj)") };
 	auto* model2{ ModelManager.Get(::Path.Framework() / R"(assets\models\SM_Column_low.fbx)") };
 
-	UPtr mesh1{ Engine.ObjectManager().Create<TSceneMeshObject>() };
+	UPtr mesh1{ ObjectManager.Create<TSceneMeshObject>() };
 	mesh1->GetMeshComponent()->SetShader(shader3D);
 	mesh1->GetMeshComponent()->SetModel(model1);
 	mesh1->RootComponent()->SetSpawnPosition({ -1.0f, 0.0f, 0.0f });
 
-	UPtr mesh2{ Engine.ObjectManager().Create<TSceneMeshObject>() };
+	UPtr mesh2{ ObjectManager.Create<TSceneMeshObject>() };
 	mesh2->GetMeshComponent()->SetShader(shader3D);
 	mesh2->GetMeshComponent()->SetModel(model2);
 	mesh2->RootComponent()->SetSpawnPosition({ 1.0f, 0.0f, 0.0f });

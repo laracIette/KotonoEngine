@@ -1,5 +1,4 @@
 #include "Timer.h"
-#include "Engine.h"
 #include "TimeManager.h"
 
 void UTimer::Update()
@@ -9,7 +8,7 @@ void UTimer::Update()
         return;
     }
 
-    current_ += Engine.TimeManager().GameTime().lastDelta;
+    current_ += TimeManager.GameTime().lastDelta;
 
     if (current_ < duration)
     {

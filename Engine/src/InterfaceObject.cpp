@@ -1,7 +1,6 @@
 #include "InterfaceObject.h"
 #include "log.h"
 #include <kotono_platform/WindowViewport.h>
-#include "Engine.h"
 #include "InterfaceComponent.h"
 #include "ObjectManager.h"
 
@@ -9,7 +8,7 @@ RInterfaceObject::RInterfaceObject(UPtrOwnerBase* ptrOwner) :
 	Base(ptrOwner)
 {
 	viewport_ = &WindowViewport;
-	rootComponent_ = Engine.ObjectManager().Create<KInterfaceComponent>(Ptr<RInterfaceObject>());
+	rootComponent_ = ObjectManager.Create<KInterfaceComponent>(Ptr<RInterfaceObject>());
 	AddComponent(rootComponent_);
 }
 

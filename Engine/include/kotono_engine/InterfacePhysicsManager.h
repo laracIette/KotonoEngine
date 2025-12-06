@@ -16,3 +16,4 @@ private:
 	KtPool<KInterfaceColliderComponent*> colliderComponents_;
 };
 
+inline SInterfacePhysicsManager InterfacePhysicsManager;

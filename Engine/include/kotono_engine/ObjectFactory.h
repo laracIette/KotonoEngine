@@ -23,3 +23,5 @@ private:
 
 	UPtr<KObject> GetFactory(const std::string_view typeName) const;
 };
+
+inline SObjectFactory ObjectFactory;

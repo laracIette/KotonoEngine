@@ -21,5 +21,7 @@ private:
 	KtTimeContext renderTime_;
 
 	KtAverage<256> averageGameTime_;
-	KtAverage<256> averageRenderTime_;
+	KtAverage<64> averageRenderTime_;
 };
+
+inline STimeManager TimeManager;

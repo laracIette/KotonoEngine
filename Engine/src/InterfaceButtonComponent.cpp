@@ -1,13 +1,12 @@
 #include "InterfaceButtonComponent.h"
 #include "InterfaceColliderComponent.h"
 #include "InterfaceObject.h"
-#include "Engine.h"
 #include "ObjectManager.h"
 
 KInterfaceButtonComponent::KInterfaceButtonComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner) :
 	Base(ptrOwner, owner)
 {
-	collider_ = Engine.ObjectManager().Create<KInterfaceColliderComponent>(Owner());
+	collider_ = ObjectManager.Create<KInterfaceColliderComponent>(Owner());
 	Owner()->AddComponent(collider_);
 }
 

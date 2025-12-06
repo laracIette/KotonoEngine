@@ -1,6 +1,5 @@
 #include "PropertiesWindow.h"
 #include <kotono_interface/widgets.h>
-#include <kotono_engine/Engine.h>
 #include <kotono_engine/ObjectManager.h>
 #include <kotono_engine/InterfaceObject.h>
 #include <kotono_engine/InterfaceComponent.h>
@@ -40,7 +39,7 @@ WWidget* WPropertiesWindow::Build()
                                     }),
                                     new WButton({
                                         .onDown = []() {
-                                            const auto& selectedObject{ Engine.ObjectManager().SelectedObject() };
+                                            const auto& selectedObject{ ObjectManager.SelectedObject() };
                                             if (!selectedObject)
                                             {
                                                 return;
@@ -73,7 +72,7 @@ WWidget* WPropertiesWindow::Build()
                                     }),
                                     new WButton({
                                         .onDown = []() {
-                                            const auto& selectedObject{ Engine.ObjectManager().SelectedObject() };
+                                            const auto& selectedObject{ ObjectManager.SelectedObject() };
                                             if (!selectedObject)
                                             {
                                                 return;

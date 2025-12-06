@@ -53,3 +53,5 @@ private:
 
 	void OnMouseButtonLeftPressed();
 };
+
+inline SObjectManager ObjectManager;

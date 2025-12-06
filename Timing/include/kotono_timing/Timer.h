@@ -2,7 +2,7 @@
 #include <kotono_common/Event.h>
 class KtTimer final
 {
-	friend class KtTimeManager;
+	friend class KtTimerManager;
 
 private:
 	void Update(const float delta);

@@ -3,14 +3,13 @@
 #include "log.h"
 #include <kotono_platform/WindowViewport.h>
 #include "SceneComponent.h"
-#include "Engine.h"
 #include "ObjectManager.h"
 
 TSceneObject::TSceneObject(UPtrOwnerBase* ptrOwner) :
 	Base(ptrOwner)
 {
 	viewport_ = &WindowViewport;
-	rootComponent_ = Engine.ObjectManager().Create<KSceneComponent>(Ptr<TSceneObject>());
+	rootComponent_ = ObjectManager.Create<KSceneComponent>(Ptr<TSceneObject>());
 	AddComponent(rootComponent_);
 }
 

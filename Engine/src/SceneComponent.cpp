@@ -2,7 +2,6 @@
 #include "SceneObject.h"
 #include "log.h"
 #include <stdexcept>
-#include "Engine.h"
 #include <nlohmann/json.hpp>
 
 KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSceneObject>& owner) :

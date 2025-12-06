@@ -2,7 +2,6 @@
 #include <kotono_common/Path.h>
 #include <kotono_io/Serializer.h>
 #include <nlohmann/json.hpp>
-#include "Engine.h"
 #include "ObjectManager.h"
 #include "log.h"
 #include "Interface.h"
@@ -20,7 +19,7 @@
 #include "SceneMeshObject.h"
 #include "SceneObject.h"
 
-#define OBJECT_FACTORY(Type) { #Type, []() { return Engine.ObjectManager().Create<Type>(); } }
+#define OBJECT_FACTORY(Type) { #Type, []() { return ObjectManager.Create<Type>(); } }
 
 SObjectFactory::SObjectFactory() :
     objectFactories_({

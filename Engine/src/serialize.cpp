@@ -13,7 +13,6 @@
 #include "Object.h"
 #include "Transform.h"
 #include "Rect.h"
-#include "Engine.h"
 #include "ObjectFactory.h"
 
 void serialize(nlohmann::json& json, const bool v)
@@ -356,5 +355,5 @@ UPtr<KObject> deserialize_kobject(const nlohmann::json& json)
 {
     UGuid guid{};
     deserialize(json, guid);
-    return Engine.ObjectFactory().Get(guid);
+    return ObjectFactory.Get(guid);
 }

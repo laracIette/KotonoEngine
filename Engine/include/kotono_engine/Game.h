@@ -21,3 +21,4 @@ private:
 	UPtr<KInterface> interface_;
 };
 
+inline SGame Game;

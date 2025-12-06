@@ -2,9 +2,7 @@
 #include <kotono_graphics/Renderer.h>
 #include <kotono_platform/WindowViewport.h>
 #include <kotono_input/InputManager.h>
-#include <kotono_timing/TimeManager.h>
-#include <kotono_engine/Engine.h>
-#include <kotono_engine/TimeManager.h>
+#include <kotono_timing/TimerManager.h>
 #include <algorithm>
 #include "log.h"
 
@@ -90,28 +88,28 @@ void SCamera::Rotate(const glm::quat& rotation)
 void SCamera::OnKeyboardWKeyDown()
 {
 	const auto direction{ ForwardVector() };
-	const auto delta{ direction * TimeManager.Delta() };
+	const auto delta{ direction * TimerManager.Delta() };
 	Translate(delta * speed_);
 }
 
 void SCamera::OnKeyboardAKeyDown()
 {
 	const auto direction{ -RightVector() };
-	const auto delta{ direction * TimeManager.Delta() };
+	const auto delta{ direction * TimerManager.Delta() };
 	Translate(delta * speed_);
 }
 
 void SCamera::OnKeyboardSKeyDown()
 {
 	const auto direction{ -ForwardVector() };
-	const auto delta{ direction * TimeManager.Delta() };
+	const auto delta{ direction * TimerManager.Delta() };
 	Translate(delta * speed_);
 }
 
 void SCamera::OnKeyboardDKeyDown()
 {
 	const auto direction{ RightVector() };
-	const auto delta{ direction * TimeManager.Delta() };
+	const auto delta{ direction * TimerManager.Delta() };
 	Translate(delta * speed_);
 }
 

@@ -1,5 +1,4 @@
 #include "Task.h"
-#include "Engine.h"
 #include "TimeManager.h"
 
 void UTask::Update()
@@ -9,7 +8,7 @@ void UTask::Update()
         return;
     }
 
-    current_ += Engine.TimeManager().GameTime().lastDelta;
+    current_ += TimeManager.GameTime().lastDelta;
 
     if (current_ < duration)
     {

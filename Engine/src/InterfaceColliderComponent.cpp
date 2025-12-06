@@ -1,5 +1,4 @@
 #include "InterfaceColliderComponent.h"
-#include "Engine.h"
 #include "InterfacePhysicsManager.h"
 #include <kotono_input/InputManager.h>
 #include <kotono_platform/WindowViewport.h>
@@ -7,7 +6,7 @@
 KInterfaceColliderComponent::KInterfaceColliderComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner) :
 	Base(ptrOwner, owner)
 {
-	Engine.InterfacePhysicsManager().Register(this);
+	InterfacePhysicsManager.Register(this);
 }
 
 void KInterfaceColliderComponent::Init()
@@ -23,7 +22,7 @@ void KInterfaceColliderComponent::Cleanup()
 {
 	Base::Cleanup();
 
-	Engine.InterfacePhysicsManager().Unregister(this);
+	InterfacePhysicsManager.Unregister(this);
 
 	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
 	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED).RemoveListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));

@@ -1,9 +1,8 @@
 #include "TimeManager.h"
 #include <kotono_graphics/Renderer.h>
-#include <kotono_timing/TimeManager.h>
+#include <kotono_timing/TimerManager.h>
 #include <kotono_timing/TimeContext.h>
 #include <kotono_timing/Stopwatch.h>
-#include "Engine.h"
 #include "Game.h"
 
 void STimeManager::Init()
@@ -29,11 +28,11 @@ void STimeManager::Init()
 
 void STimeManager::Update()
 {
-	const float delta{ TimeManager.Delta() };
+	const float delta{ TimerManager.Delta() };
 
 	if (gameTime_.Update(delta))
 	{
-		const float gameTime{ KtStopwatch::Time(KtDelegate(&Engine.Game(), &SGame::Update)) };
+		const float gameTime{ KtStopwatch::Time(KtDelegate(&Game, &SGame::Update)) };
 		averageGameTime_.Add(gameTime);
 	}
 

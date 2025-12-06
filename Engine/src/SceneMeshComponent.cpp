@@ -9,7 +9,6 @@
 #include <kotono_platform/WindowViewport.h>
 #include "log.h"
 #include <nlohmann/json.hpp>
-#include "Engine.h"
 #include "TimeManager.h"
 #include "ObjectManager.h"
 #include "SceneObject.h"
@@ -172,7 +171,7 @@ void KSceneMeshComponent::UnregisterModelProxy()
 
 void KSceneMeshComponent::Spin()
 {
-    const float speed{ 10.0f * Engine.TimeManager().GameTime().lastDelta };
+    const float speed{ 10.0f * TimeManager.GameTime().lastDelta };
     const glm::quat rotation{ glm::quat(glm::radians(glm::vec3(0.0f, speed, 0.0f))) };
     Rotate(rotation);
 }

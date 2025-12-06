@@ -1,8 +1,8 @@
-#include "TimeManager.h"
+#include "TimerManager.h"
 #include "Timer.h"
 #include "Clock.h"
 
-void KtTimeManager::Update()
+void KtTimerManager::Update()
 {
     const float now{ KtClock::Now() };
     delta_ = now - now_;
@@ -17,22 +17,22 @@ void KtTimeManager::Update()
     }
 }
 
-KtTimer& KtTimeManager::GetTimer(const std::string_view name)
+KtTimer& KtTimerManager::GetTimer(const std::string_view name)
 {
     return timers_[name];
 }
 
-float KtTimeManager::Now() const
+float KtTimerManager::Now() const
 {
     return now_;
 }
 
-float KtTimeManager::Delta() const
+float KtTimerManager::Delta() const
 {
     return delta_;
 }
 
-float KtTimeManager::AverageUpdateTime() const
+float KtTimerManager::AverageUpdateTime() const
 {
     return updateAverageTime_.Get();
 }

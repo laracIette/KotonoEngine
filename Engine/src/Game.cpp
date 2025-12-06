@@ -1,5 +1,4 @@
 #include "Game.h"
-#include "Engine.h"
 #include "ObjectManager.h"
 #include "Scene.h"
 #include <kotono_common/Path.h>
@@ -15,7 +14,7 @@ void SGame::Init()
 #   if false
 	    deserialize(json.at("startupScene"), scene_);
 #   else
-        scene_ = Engine.ObjectManager().Create<KScene>();
+        scene_ = ObjectManager.Create<KScene>();
         scene_->guid_ = "6ed943411c1d0145-fa7e129d436fefc7-d610a013cfe163f9-48ab854138be189a";
         scene_->Serialize();
 #   endif
@@ -25,9 +24,9 @@ void SGame::Init()
 
 void SGame::Update()
 {
-    Engine.ObjectManager().InitObjects();
+    ObjectManager.InitObjects();
     scene_->UpdateSceneObjects();
-    Engine.ObjectManager().DeleteObjects();
+    ObjectManager.DeleteObjects();
 }
 
 void SGame::OpenScene(const UPtr<KScene>& scene)

@@ -1,5 +1,4 @@
 #include "TestBox.h"
-#include <kotono_engine/Engine.h>
 #include <kotono_engine/ObjectManager.h>
 #include <kotono_engine/Object.h>
 #include <kotono_interface/widgets.h>
@@ -14,10 +13,10 @@ WWidget* WTestBox::Build()
                 new WColor({ KtColor::Red() }),
                 new WButton({
                     .onDown = [this]() { 
-                        if (Engine.ObjectManager().SelectedObject())
+                        if (ObjectManager.SelectedObject())
                         {
                             SetState([]() {
-                                Engine.ObjectManager().SelectedObject()->Delete();
+                                ObjectManager.SelectedObject()->Delete();
                             });
                         }
                     },

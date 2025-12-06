@@ -3,7 +3,7 @@
 #include <string>
 #include "Timer.h"
 #include <kotono_common/Average.h>
-class KtTimeManager final
+class KtTimerManager final
 {
 	friend class SEngine;
 
@@ -28,4 +28,4 @@ private:
 	std::unordered_map<std::string_view, KtTimer> timers_;
 };
 
-inline KtTimeManager TimeManager;
+inline KtTimerManager TimerManager;

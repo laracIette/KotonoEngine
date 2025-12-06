@@ -1,6 +1,5 @@
 #include "MainWindow.h"
 #include <kotono_interface/widgets.h>
-#include <kotono_engine/Engine.h>
 #include <kotono_engine/Timer.h>
 #include "UpdateTimeText.h"
 #include "DrawTimeText.h"

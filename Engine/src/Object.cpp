@@ -1,7 +1,6 @@
 #include "Object.h"
 #include <nlohmann/json.hpp>
 #include <kotono_io/Serializer.h>
-#include "Engine.h"
 #include "ObjectManager.h"
 #include "Timer.h"
 #include "log.h"
@@ -78,7 +77,7 @@ void KObject::Delete()
         return;
     }
     isDelete_ = true;
-    Engine.ObjectManager().Delete(ptrOwner_);
+    ObjectManager.Delete(ptrOwner_);
 }
 
 //void KObject::DelayDelete(const UDuration& delay)
@@ -116,7 +115,7 @@ std::string KObject::ToString() const
 //
 //void KObject::Delay(KtDelegate<>&& delegate, const UDuration& delay) const
 //{
-//    UPtr timer = Engine.ObjectManager().Create<UTimer>();
+//    UPtr timer = ObjectManager.Create<UTimer>();
 //    timer->EventCompleted().AddListener(KtDelegate(timer.Get(), &UTimer::Delete));
 //    timer->EventCompleted().AddListener(std::move(delegate));
 //    timer->SetDuration(delay);

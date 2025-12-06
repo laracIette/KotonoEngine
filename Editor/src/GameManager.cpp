@@ -1,5 +1,4 @@
 #include "GameManager.h"
-#include <kotono_engine/Engine.h>
 #include <kotono_engine/TimeManager.h>
 #include <kotono_timing/TimeContext.h>
 
@@ -50,13 +49,13 @@ void SGameManager::SetState(const EGameState state)
     switch (state_)
     {
     case EGameState::Playing:
-        Engine.TimeManager().GameTime().state = KT_TIME_CONTEXT_STATE_PLAYING;
+        TimeManager.GameTime().state = KT_TIME_CONTEXT_STATE_PLAYING;
         break;
     case EGameState::Stopped:
-        Engine.TimeManager().GameTime().total = 0.0f;
+        TimeManager.GameTime().total = 0.0f;
         [[fallthrough]];
     case EGameState::Paused:
-        Engine.TimeManager().GameTime().state = KT_TIME_CONTEXT_STATE_PAUSED;
+        TimeManager.GameTime().state = KT_TIME_CONTEXT_STATE_PAUSED;
         break;
     }
 

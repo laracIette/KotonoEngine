@@ -3,15 +3,14 @@
 #include <kotono_graphics/ImageTextureManager.h>
 #include <kotono_common/Path.h>
 #include <kotono_graphics/Shader.h>
-#include "Engine.h"
 #include "InterfaceImageObject.h"
 #include "InterfaceImageComponent.h"
 #include "ObjectManager.h"
 
 void KInterface::Init()
 {
-	UPtr image1{ Engine.ObjectManager().Create<RInterfaceImageObject>() };
-	UPtr image2{ Engine.ObjectManager().Create<RInterfaceImageObject>() };
+	UPtr image1{ ObjectManager.Create<RInterfaceImageObject>() };
+	UPtr image2{ ObjectManager.Create<RInterfaceImageObject>() };
 	image1->GetImageComponent()->SetScreenSize({ 1024.0f, 1024.0f });
 	image2->GetImageComponent()->SetScreenSize({ 1024.0f, 1024.0f });
 
