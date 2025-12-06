@@ -4,12 +4,12 @@
 #include <kotono_common/Pool.h>
 #include "RendererFrameStats.h"
 #include <vulkan/vulkan_core.h>
-struct KtRenderable3DProxy;
+struct KtSceneRenderableProxy;
 class KtShader;
 class KtSceneRenderer final
 {
 private:
-	using ProxiesPool = KtPool<KtRenderable3DProxy*>;
+	using ProxiesPool = KtPool<KtSceneRenderableProxy*>;
 
 public:
 	void Init();
@@ -18,10 +18,10 @@ public:
 
 	void SetUniformData(const KtSceneUniformData& uniformData);
 
-	void RegisterStatic(KtRenderable3DProxy* proxy);
-	void RegisterDynamic(KtRenderable3DProxy* proxy);
-	void UnregisterStatic(KtRenderable3DProxy* proxy);
-	void UnregisterDynamic(KtRenderable3DProxy* proxy);
+	void RegisterStatic(KtSceneRenderableProxy* proxy);
+	void RegisterDynamic(KtSceneRenderableProxy* proxy);
+	void UnregisterStatic(KtSceneRenderableProxy* proxy);
+	void UnregisterDynamic(KtSceneRenderableProxy* proxy);
 
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 
@@ -37,8 +37,8 @@ private:
 	KtFramesInFlightArray<bool> isStaticCommandBufferDirty_;
 	KtFramesInFlightArray<bool> isDynamicCommandBufferDirty_;
 
-	std::unordered_map<KtRenderable3DProxy*, int32_t> stagingStaticProxies_;
-	std::unordered_map<KtRenderable3DProxy*, int32_t> stagingDynamicProxies_;
+	std::unordered_map<KtSceneRenderableProxy*, int32_t> stagingStaticProxies_;
+	std::unordered_map<KtSceneRenderableProxy*, int32_t> stagingDynamicProxies_;
 	KtFramesInFlightArray<ProxiesPool> staticProxies_;
 	KtFramesInFlightArray<ProxiesPool> dynamicProxies_;
 

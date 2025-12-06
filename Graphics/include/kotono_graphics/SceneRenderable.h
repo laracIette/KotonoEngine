@@ -2,10 +2,10 @@
 
 #include <vulkan/vulkan_core.h>
 
-class KtRenderable3D
+class KtSceneRenderable
 {
 public:
-	virtual ~KtRenderable3D() = default;
+	virtual ~KtSceneRenderable() = default;
 
 	virtual void CmdBind(VkCommandBuffer commandBuffer) const = 0;
 	virtual void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t instanceCount, const uint32_t firstInstance) const = 0;

@@ -277,7 +277,7 @@ void KtInterfaceRenderer::UpdateDescriptorSets(const ProxiesPool& proxies, const
 {
 	struct ShaderData final
 	{
-		std::vector<KtObjectData2D> objectBufferDatas;
+		std::vector<KtInterfaceObjectData> objectBufferDatas;
 		std::vector<KtInterfaceRenderable*> renderables;
 		std::vector<uint32_t> renderableIndices;
 	};

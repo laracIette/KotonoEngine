@@ -1,14 +1,14 @@
 #pragma once
-#include "ObjectData3D.h"
+#include "SceneObjectData.h"
 #include "Scissor.h"
 class KtShader;
-class KtRenderable3D;
+class KtSceneRenderable;
 class KtWindowViewport;
-struct KtRenderable3DProxy final
+struct KtSceneRenderableProxy final
 {
 	KtShader* shader;
-	KtRenderable3D* renderable;
-	KtObjectData3D objectData;
+	KtSceneRenderable* renderable;
+	KtSceneObjectData objectData;
 	KtScissor scissor;
 
     bool isDirty;

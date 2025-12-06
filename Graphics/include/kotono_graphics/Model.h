@@ -1,9 +1,9 @@
 #pragma once
-#include "Renderable3D.h" 
+#include "SceneRenderable.h" 
 #include <filesystem>
 #include "Vertex3D.h"
 #include <kotono_platform/AllocatedBuffer.h>
-class KtModel final : public KtRenderable3D
+class KtModel final : public KtSceneRenderable
 {
 public:
 	KtModel(const std::filesystem::path& path);

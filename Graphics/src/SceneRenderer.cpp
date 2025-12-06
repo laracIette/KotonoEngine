@@ -4,10 +4,10 @@
 #include <kotono_platform/WindowViewport.h>
 #include <kotono_platform/vk_utils.h>
 #include "Renderer.h"
-#include "Culler3D.h"
-#include "Renderable3D.h"
+#include "SceneCuller.h"
+#include "SceneRenderable.h"
 #include "Shader.h"
-#include "Renderable3DProxy.h"
+#include "SceneRenderableProxy.h"
 #include <kotono_common/Collection.h>
 #include <kotono_common/log.h>
 #include <unordered_set>
@@ -39,22 +39,22 @@ void KtSceneRenderer::SetUniformData(const KtSceneUniformData& uniformData)
 	stagingUniformData_ = { uniformData, static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT) };
 }
 
-void KtSceneRenderer::RegisterStatic(KtRenderable3DProxy* proxy)
+void KtSceneRenderer::RegisterStatic(KtSceneRenderableProxy* proxy)
 {
 	stagingStaticProxies_[proxy] = static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
-void KtSceneRenderer::RegisterDynamic(KtRenderable3DProxy* proxy)
+void KtSceneRenderer::RegisterDynamic(KtSceneRenderableProxy* proxy)
 {
 	stagingDynamicProxies_[proxy] = static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
-void KtSceneRenderer::UnregisterStatic(KtRenderable3DProxy* proxy)
+void KtSceneRenderer::UnregisterStatic(KtSceneRenderableProxy* proxy)
 {
 	stagingStaticProxies_[proxy] = -static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
 }
 
-void KtSceneRenderer::UnregisterDynamic(KtRenderable3DProxy* proxy)
+void KtSceneRenderer::UnregisterDynamic(KtSceneRenderableProxy* proxy)
 {
 	stagingDynamicProxies_[proxy] = -static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
 }
@@ -192,7 +192,7 @@ void KtSceneRenderer::UpdateStaticProxies(const uint32_t frameIndex)
 	}
 
 	std::erase_if(stagingStaticProxies_,
-		[](const std::pair<KtRenderable3DProxy*, int32_t>& pair)
+		[](const std::pair<KtSceneRenderableProxy*, int32_t>& pair)
 		{
 			return pair.second == 0;
 		}
@@ -229,7 +229,7 @@ void KtSceneRenderer::UpdateDynamicProxies(const uint32_t frameIndex)
 	}
 
 	std::erase_if(stagingDynamicProxies_,
-		[](const std::pair<KtRenderable3DProxy*, int32_t>& pair)
+		[](const std::pair<KtSceneRenderableProxy*, int32_t>& pair)
 		{
 			return pair.second == 0;
 		}
@@ -239,7 +239,7 @@ void KtSceneRenderer::UpdateDynamicProxies(const uint32_t frameIndex)
 void KtSceneRenderer::SortProxies(ProxiesPool& proxies) 
 {
 	std::sort(proxies.begin(), proxies.end(),
-		[](const KtRenderable3DProxy* a, const KtRenderable3DProxy* b)
+		[](const KtSceneRenderableProxy* a, const KtSceneRenderableProxy* b)
 		{
 			if (a->shader != b->shader)
 			{
@@ -261,7 +261,7 @@ void KtSceneRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t fram
 		isDynamicCommandBufferDirty_[frameIndex] || 
 		GetIsDynamicProxiesDirty(frameIndex))
 	{
-		const KtCuller3D culler(KT_CULLER_3D_FIELD_ALL);
+		const KtSceneCuller culler(KT_SCENE_CULLER_FIELD_ALL);
 		auto culledStaticProxies = culler.ComputeCulling(staticProxies_[frameIndex]);
 		auto culledDynamicProxies = culler.ComputeCulling(dynamicProxies_[frameIndex]);
 		SortProxies(culledStaticProxies);
@@ -301,7 +301,7 @@ void KtSceneRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t fram
 
 void KtSceneRenderer::UpdateDescriptorSetObjectBuffers(const ProxiesPool& proxies, const uint32_t frameIndex) const
 {
-	std::unordered_map<KtShader*, std::vector<KtObjectData3D>> shaderObjectBufferDatas{};
+	std::unordered_map<KtShader*, std::vector<KtSceneObjectData>> shaderObjectBufferDatas{};
 	for (const auto* proxy : proxies)
 	{
 		shaderObjectBufferDatas[proxy->shader].push_back(proxy->objectData);
@@ -344,13 +344,13 @@ void KtSceneRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const Proxie
 	WindowViewport.CmdUse(commandBuffer);
 
 	const KtShader* currentShader{ nullptr };
-	const KtRenderable3D* currentRenderable{ nullptr };
+	const KtSceneRenderable* currentRenderable{ nullptr };
 
 	for (size_t i = 0; i < proxies.size();)
 	{
-		const KtRenderable3DProxy* proxy{ proxies[i] };
+		const KtSceneRenderableProxy* proxy{ proxies[i] };
 		const KtShader* shader{ proxy->shader };
-		const KtRenderable3D* renderable{ proxy->renderable };
+		const KtSceneRenderable* renderable{ proxy->renderable };
 		const KtScissor scissor{ proxy->scissor };
 
 		// Find the extent of the current batch
@@ -409,7 +409,7 @@ void KtSceneRenderer::CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, co
 bool KtSceneRenderer::GetIsDynamicProxiesDirty(const uint32_t frameIndex) const
 {
 	auto proxies = KtCollection(dynamicProxies_[frameIndex].begin(), dynamicProxies_[frameIndex].end());
-	proxies.AddFilter([](const KtRenderable3DProxy* proxy) { return proxy->isDirty; });
+	proxies.AddFilter([](const KtSceneRenderableProxy* proxy) { return proxy->isDirty; });
 	return proxies.GetFirst() != nullptr;
 }
 
