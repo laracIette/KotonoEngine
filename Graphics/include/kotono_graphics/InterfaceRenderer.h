@@ -1,0 +1,76 @@
+#pragma once
+#include "InterfaceUniformData.h"
+#include "frames_in_flight.h"
+#include <kotono_platform/AllocatedBuffer.h>
+#include <kotono_common/Pool.h>
+#include <vulkan/vulkan_core.h>
+#include <unordered_map>
+class KtShader;
+struct KtInterfaceRenderableProxy;
+class KtInterfaceRenderer final
+{
+private:
+	using ProxiesPool = KtPool<KtInterfaceRenderableProxy*>;
+
+	enum class StagingProxyState : char
+	{
+		None,
+		Add,
+		Remove
+	};
+
+public:
+	void Init();
+	void Update(const uint32_t frameIndex);
+	void Cleanup() const;
+
+	void SetUniformData(const KtInterfaceUniformData& uniformData);
+
+	void Register(KtInterfaceRenderableProxy* proxy);
+	void Unregister(KtInterfaceRenderableProxy* proxy);
+
+	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
+
+	KtInterfaceRenderableProxy* CreateProxy();
+	void DeleteProxy(KtInterfaceRenderableProxy* proxy);
+
+private:
+	KtAllocatedBuffer vertexBuffer_;
+	KtAllocatedBuffer indexBuffer_;
+	KtAllocatedBuffer stagingVertexBuffer_;
+	KtAllocatedBuffer stagingIndexBuffer_;
+
+	KtFramesInFlightArray<KtInterfaceUniformData> uniformDatas_;
+
+	KtFramesInFlightArray<VkCommandBuffer> commandBuffers_;
+	KtFramesInFlightArray<bool> isCommandBufferDirty_;
+
+	std::unordered_map<KtInterfaceRenderableProxy*, KtFramesInFlightArray<StagingProxyState>> stagingProxies_;
+	KtFramesInFlightArray<ProxiesPool> proxies_;
+	ProxiesPool deleteProxies_;
+
+	KtFramesInFlightArray<std::unordered_map<const KtShader*, uint32_t>> instanceIndices_;
+
+	void CreateVertexBuffer();
+	void CreateIndexBuffer();
+	void DestroyStagingVertexBuffer() const;
+	void DestroyStagingIndexBuffer() const;
+
+	void CmdBindVertexBuffer(VkCommandBuffer commandBuffer) const;
+	void CmdBindIndexBuffer(VkCommandBuffer commandBuffer) const;
+
+	void CreateCommandBuffers();
+	void CreateCommandBuffer(const uint32_t frameIndex);
+	void RecordCommandBuffer(const ProxiesPool& proxies, const uint32_t frameIndex);
+	void BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
+	void EndCommandBuffer(VkCommandBuffer commandBuffer);
+	
+	void UpdateDescriptorSets(const ProxiesPool& renderQueueData, const uint32_t frameIndex);
+
+	void CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex);
+	
+	void SortProxies(ProxiesPool& proxies);
+	bool GetIsAnyProxyDirty(const uint32_t frameIndex) const;
+	void MarkProxiesNotDirty(const uint32_t frameIndex);
+};
+

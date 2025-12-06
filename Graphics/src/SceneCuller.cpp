@@ -1,0 +1,75 @@
+#include "SceneCuller.h"
+#include <kotono_common/log.h>
+#include "SceneRenderableProxy.h"
+#include <kotono_common/Pool.h>
+
+#define KT_LOG_IMPORTANCE_LEVEL_NULLPTR KT_LOG_IMPORTANCE_LEVEL_HIGH
+
+KtSceneCuller::KtSceneCuller(const KtSceneCullerField field) :
+	field_(field)
+{
+}
+
+KtSceneCuller::ProxiesPool KtSceneCuller::ComputeCulling(ProxiesPool proxies) const
+{
+	if ((field_ & KT_SCENE_CULLER_FIELD_NULLPTR) == KT_SCENE_CULLER_FIELD_NULLPTR)
+	{
+		proxies = ComputeNullCulling(proxies);
+	}
+	if ((field_ & KT_SCENE_CULLER_FIELD_DISTANCE) == KT_SCENE_CULLER_FIELD_DISTANCE)
+	{
+		proxies = ComputeDistanceCulling(proxies);
+	}
+	return proxies;
+}
+
+KtSceneCuller::ProxiesPool KtSceneCuller::ComputeNullCulling(const ProxiesPool& proxies) const
+{
+	ProxiesPool culledData{};
+
+	for (auto* proxy : proxies)
+	{
+		if (!proxy)
+		{
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "Graphics", "KtSceneCuller::ComputeNullCulling(): proxy is nullptr");
+			continue;
+		}
+
+		if (!proxy->shader)
+		{
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "Graphics", "KtSceneCuller::ComputeNullCulling(): shader is nullptr");
+			continue;
+		}
+
+		if (!proxy->renderable)
+		{
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "Graphics", "KtSceneCuller::ComputeNullCulling(): renderable is nullptr");
+			continue;
+		}
+
+		culledData.Add(proxy);
+	}
+
+	return culledData;
+}
+
+KtSceneCuller::ProxiesPool KtSceneCuller::ComputeDistanceCulling(const ProxiesPool& proxies) const
+{
+	ProxiesPool culledData{};
+
+	for (auto* proxy : proxies)
+	{
+		const glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+		const glm::vec3 objectPosition = glm::vec3(proxy->objectData.modelMatrix[3]);
+		const float distance = glm::distance(cameraPosition, objectPosition);
+		static constexpr float maxDistance = 10.0f;
+		if (distance > maxDistance)
+		{
+			continue;
+		}
+
+		culledData.Add(proxy);
+	}
+
+	return culledData;
+}

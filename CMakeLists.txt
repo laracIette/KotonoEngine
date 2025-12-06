@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(Kotono LANGUAGES CXX)
+project(KotonoEngine LANGUAGES CXX)
 
 # --- Global settings ---
 set(CMAKE_CXX_STANDARD 20)
@@ -16,14 +16,20 @@ endif()
 option(WITH_EDITOR "Build the Kotono Editor" ON)
 
 # --- Add all modules (subprojects) ---
-add_subdirectory(KotonoFramework)
-add_subdirectory(KotonoGenerator)
-add_subdirectory(KotonoInterface)
-add_subdirectory(KotonoEngine)
+add_subdirectory(Common)
+add_subdirectory(Generator)
+add_subdirectory(IO)
+add_subdirectory(Audio)
+add_subdirectory(Timing)
+add_subdirectory(Platform)
+add_subdirectory(Input)
+add_subdirectory(Graphics)
+add_subdirectory(Interface)
+add_subdirectory(Core)
 if (WITH_EDITOR)
-    add_subdirectory(KotonoEditor)
+    add_subdirectory(Editor)
 endif()
-add_subdirectory(KotonoTestApplication)
+add_subdirectory(TestApplication)
 
 if (MSVC)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}

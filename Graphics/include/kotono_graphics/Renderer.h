@@ -1,0 +1,106 @@
+#pragma once
+#include <vma/vk_mem_alloc.h>
+#include <vulkan/vulkan_core.h>
+#include "frames_in_flight.h"
+#include <vector>
+#include <span>
+#include "InterfaceRenderer.h"
+#include "SceneRenderer.h"
+#include <thread>
+#include <mutex>
+
+class KtRenderer final
+{
+	friend class SCore;
+
+private:
+	void Init();
+	void Cleanup();
+
+public:
+	void DrawFrame();
+
+	uint32_t GetGameThreadFrame() const; // todo: make private
+
+	VkExtent2D GetSwapChainExtent() const;
+
+	KtInterfaceRenderer& GetInterfaceRenderer();
+	KtSceneRenderer& GetSceneRenderer();
+
+	VkRenderPass& GetRenderPass();
+	VkFramebuffer& GetFramebuffer(const uint32_t frameIndex);
+	VkCommandPool& GetCommandPool(const uint32_t frameIndex);
+
+private:
+	KtInterfaceRenderer interfaceRenderer_;
+	KtSceneRenderer sceneRenderer_;
+
+	VkSwapchainKHR swapChain_;
+	std::vector<VkImage> swapChainImages_;
+	VkFormat swapChainImageFormat_;
+	VkExtent2D swapChainExtent_;
+	std::vector<VkImageView> swapChainImageViews_;
+	std::vector<VkFramebuffer> swapChainFramebuffers_;
+
+	VkRenderPass renderPass_;
+
+	KtFramesInFlightArray<VkCommandPool> commandPools_;
+	KtFramesInFlightArray<VkCommandBuffer> commandBuffers_;
+
+	std::thread renderThread_;
+	std::thread rhiThread_;
+	std::mutex renderMutex_;
+
+	VkImage colorImage_;
+	VmaAllocation colorImageAllocation_;
+	VkImageView colorImageView_;
+
+	VkImage depthImage_;
+	VmaAllocation depthImageAllocation_;
+	VkImageView depthImageView_;
+
+	KtFramesInFlightArray<VkSemaphore> imageAvailableSemaphores_;
+	KtFramesInFlightArray<VkSemaphore> renderFinishedSemaphores_;
+	KtFramesInFlightArray<VkFence> inFlightFences_;
+	KtFramesInFlightArray<uint32_t> imageIndices_;
+
+	uint32_t frameCount_;
+
+	void CreateSwapChain();
+	void CleanupSwapChain();
+	void RecreateSwapChain();
+	VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::span<VkSurfaceFormatKHR> availableFormats) const;
+	VkPresentModeKHR ChooseSwapPresentMode(const std::span<VkPresentModeKHR> availablePresentModes) const;
+	VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
+	void CreateImageViews();
+
+	void CreateRenderPass();
+	void CreateFramebuffers();
+
+	void CreateColorResources();
+	void CreateDepthResources();
+	VkFormat FindSupportedFormat(const std::span<VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const;
+	VkFormat FindDepthFormat() const;
+	bool HasStencilComponent(const VkFormat format) const;
+
+	bool TryAcquireNextImage(const uint32_t frameIndex);
+
+	void CreateCommandPools();
+	void CreateCommandPool(const uint32_t frameIndex);
+	void CreateCommandBuffers();
+	void CreateCommandBuffer(const uint32_t frameIndex);
+	void RecordCommandBuffer(const uint32_t frameIndex);
+	void SubmitCommandBuffer(const uint32_t frameIndex);
+
+	void CreateSyncObjects();
+
+	void UpdateRenderers(const uint32_t frameIndex);
+	void CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
+
+	void JoinThread(std::thread& thread) const;
+
+	uint32_t GetRenderThreadFrame() const;
+	uint32_t GetRHIThreadFrame() const;
+};
+
+inline KtRenderer Renderer;
