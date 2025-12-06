@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/SceneMeshComponent.generated.h"
-#include <kotono_framework/Renderable3DProxy.h>
+#include <kotono_graphics/Renderable3DProxy.h>
 #include "SceneComponent.h"
 #include "Task.h"
 

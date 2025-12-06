@@ -1,5 +1,5 @@
 #include "TimeManager.h"
-#include <kotono_framework/Framework.h>
+#include <kotono_graphics/Framework.h>
 #include <kotono_timing/TimeManager.h>
 #include <kotono_timing/TimeContext.h>
 #include <kotono_timing/Stopwatch.h>

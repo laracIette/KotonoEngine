@@ -4,7 +4,6 @@
 #include <kotono_platform/Context.h>
 #include "Renderer.h"
 #include <kotono_timing/TimeManager.h>
-#include <kotono_audio/AudioManager.h>
 #include "ModelManager.h"
 #include "ShaderManager.h"
 #include "ImageTextureManager.h"
@@ -12,7 +11,6 @@
 static KtPath Path;
 static KtRenderer Renderer;
 static KtTimeManager TimeManager;
-static KtAudioManager AudioManager;
 static KtModelManager ModelManager;
 static KtShaderManager ShaderManager;
 static KtImageTextureManager ImageTextureManager;
@@ -23,7 +21,6 @@ void KtFramework::Init()
     Window.Init();
     Context.Init();
     ::Renderer.Init();
-    ::AudioManager.Init();
     ::ShaderManager.Init();
 
     auto& renderTimer{ ::TimeManager.GetTimer("render") };
@@ -43,7 +40,6 @@ void KtFramework::Cleanup()
     ::ImageTextureManager.Cleanup();
     ::ShaderManager.Cleanup();
     ::ModelManager.Cleanup();
-    ::AudioManager.Cleanup();
     ::Renderer.Cleanup();
     Context.Cleanup();
     Window.Cleanup();
@@ -77,16 +73,6 @@ KtTimeManager& KtFramework::TimeManager()
 const KtTimeManager& KtFramework::TimeManager() const
 {
     return ::TimeManager;
-}
-
-KtAudioManager& KtFramework::AudioManager()
-{
-    return ::AudioManager;
-}
-
-const KtAudioManager& KtFramework::AudioManager() const
-{
-    return ::AudioManager;
 }
 
 KtModelManager& KtFramework::ModelManager()

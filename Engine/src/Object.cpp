@@ -5,7 +5,7 @@
 #include "ObjectManager.h"
 #include "Timer.h"
 #include "log.h"
-#include <kotono_framework/Framework.h>
+#include <kotono_graphics/Framework.h>
 #include <kotono_common/Path.h>
 
 KObject::KObject(UPtrOwnerBase* ptrOwner) :

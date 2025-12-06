@@ -1,4 +1,4 @@
-#include <kotono_framework/Framework.h>
+#include <kotono_graphics/Framework.h>
 #include <kotono_platform/Window.h>
 #include <kotono_engine/Engine.h>
 #ifdef EDITOR

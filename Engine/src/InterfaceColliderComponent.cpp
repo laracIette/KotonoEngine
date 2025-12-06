@@ -1,7 +1,7 @@
 #include "InterfaceColliderComponent.h"
 #include "Engine.h"
 #include "InterfacePhysicsManager.h"
-#include <kotono_framework/Framework.h>
+#include <kotono_graphics/Framework.h>
 #include <kotono_input/InputManager.h>
 #include <kotono_platform/WindowViewport.h>
 

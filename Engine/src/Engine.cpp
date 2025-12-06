@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include <kotono_audio/AudioManager.h>
 #include <kotono_input/InputManager.h>
 #include "TimeManager.h"
 #include "ObjectManager.h"
@@ -14,6 +15,7 @@ static SInterfacePhysicsManager InterfacePhysicsManager;
 
 void SEngine::Init()
 {
+    AudioManager.Init();
     InputManager.Init();
     ::TimeManager.Init();
     ::ObjectManager.Init();
@@ -31,6 +33,7 @@ void SEngine::Update()
 void SEngine::Cleanup()
 {
     ::ObjectManager.Cleanup();
+    AudioManager.Cleanup();
 }
 
 STimeManager& SEngine::TimeManager()

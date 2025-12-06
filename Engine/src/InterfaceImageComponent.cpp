@@ -1,11 +1,11 @@
 #include "InterfaceImageComponent.h"
-#include <kotono_framework/Framework.h>
-#include <kotono_framework/ShaderManager.h>
+#include <kotono_graphics/Framework.h>
+#include <kotono_graphics/ShaderManager.h>
 #include <kotono_common/Path.h>
-#include <kotono_framework/Renderer.h>
-#include <kotono_framework/Shader.h>
-#include <kotono_framework/ImageTexture.h>
-#include <kotono_framework/InterfaceRenderableProxy.h>
+#include <kotono_graphics/Renderer.h>
+#include <kotono_graphics/Shader.h>
+#include <kotono_graphics/ImageTexture.h>
+#include <kotono_graphics/InterfaceRenderableProxy.h>
 #include <kotono_platform/WindowViewport.h>
 #include "InterfaceObject.h"
 #include "log.h"

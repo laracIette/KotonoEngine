@@ -403,11 +403,11 @@ FodyWeavers.xsd
 
 *.spv
 
-Framework/lib/KotonoFramework.lib
+Graphics/lib/KotonoGraphics.lib
 Interface/lib/KotonoInterface.lib
 Engine/lib/KotonoEngine.lib
 Editor/lib/KotonoEditor.lib
 
 build/
 
-Framework/shaders/shaders.ktregistry
+Graphics/shaders/shaders.ktregistry

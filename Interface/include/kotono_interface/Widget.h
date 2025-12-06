@@ -2,7 +2,7 @@
 #include <functional>
 #include "Flex.h"
 #include <kotono_common/Cached.h>
-#include <kotono_framework/Scissor.h>
+#include <kotono_graphics/Scissor.h>
 #include <glm/fwd.hpp>
 #include <glm/vec2.hpp>
 #include <string>

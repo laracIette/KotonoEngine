@@ -14,7 +14,7 @@ void KtPath::Init()
     //KtSerializer::Deserialize(json, executableDirectory / "config.json");
 
     rootPath_ = ROOT_DIRECTORY;
-    frameworkPath_ = rootPath_ / "Framework";
+    frameworkPath_ = rootPath_ / "Graphics";
     enginePath_ = rootPath_ / "Engine";
 
     //projectPath_ = json.at("projectPath").get<std::string>();

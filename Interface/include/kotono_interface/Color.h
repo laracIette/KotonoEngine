@@ -1,6 +1,6 @@
 #pragma once
 #include "Widget.h"
-#include <kotono_framework/Color.h>
+#include <kotono_graphics/Color.h>
 struct KtInterfaceRenderableProxy;
 class WColor : public WWidget
 {

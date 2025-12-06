@@ -35,6 +35,6 @@ set_target_properties(KotonoInterface PROPERTIES
 
 # Link libs
 target_link_libraries(KotonoInterface PUBLIC
-    KotonoFramework
     KotonoInput
+    KotonoGraphics
 )

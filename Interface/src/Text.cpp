@@ -1,7 +1,7 @@
 #include "Text.h"
 #include "widgets.h"
-#include <kotono_framework/Framework.h>
-#include <kotono_framework/Font.h>
+#include <kotono_graphics/Framework.h>
+#include <kotono_graphics/Font.h>
 #include <kotono_common/Path.h>
 #include "log.h"
 

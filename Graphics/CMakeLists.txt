@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(KotonoFramework LANGUAGES CXX)
+project(KotonoGraphics LANGUAGES CXX)
 
 if (MSVC)
     # Enable SDL security checks
@@ -9,39 +9,39 @@ if (MSVC)
 endif()
 
 # Static library
-add_library(KotonoFramework STATIC)
+add_library(KotonoGraphics STATIC)
 
 # Require C++20
-target_compile_features(KotonoFramework PUBLIC cxx_std_20)
+target_compile_features(KotonoGraphics PUBLIC cxx_std_20)
 
-file(GLOB_RECURSE KFRAMEWORK_SOURCES "src/*.cpp")
-file(GLOB_RECURSE KFRAMEWORK_HEADERS "include/kotono_framework/*.h")
+file(GLOB_RECURSE KGRAPHICS_SOURCES "src/*.cpp")
+file(GLOB_RECURSE KGRAPHICS_HEADERS "include/kotono_graphics/*.h")
 
-target_sources(KotonoFramework
-    PRIVATE ${KFRAMEWORK_SOURCES}
-    PRIVATE ${KFRAMEWORK_HEADERS}
+target_sources(KotonoGraphics
+    PRIVATE ${KGRAPHICS_SOURCES}
+    PRIVATE ${KGRAPHICS_HEADERS}
 )
 
 # Include directories
-target_include_directories(KotonoFramework
+target_include_directories(KotonoGraphics
     PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_framework"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_graphics"
 )
 
-# Output .lib to KotonoFramework/lib/
-set_target_properties(KotonoFramework PROPERTIES
+# Output .lib to KotonoGraphics/lib/
+set_target_properties(KotonoGraphics PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
 )
 
 # Preprocessor defines for all builds
-target_compile_definitions(KotonoFramework PUBLIC
+target_compile_definitions(KotonoGraphics PUBLIC
     ASSIMP_BUILD_NO_EXPORT
 )
 
 set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/ThirdParty")
 
 # Link system + third-party libs
-target_link_libraries(KotonoFramework PUBLIC
+target_link_libraries(KotonoGraphics PUBLIC
     "${THIRD_PARTY_DIR}/lib/SPIRV-Reflect.lib"
 
     $<$<CONFIG:Debug>:${THIRD_PARTY_DIR}/lib/zlibstaticd.lib>
@@ -51,14 +51,13 @@ target_link_libraries(KotonoFramework PUBLIC
 )
 
 # Shader folder included for IDE visibility (not compiled)
-file(GLOB_RECURSE KFRAMEWORK_SHADERS "shaders/*")
-source_group("Shaders" FILES ${KFRAMEWORK_SHADERS})
-target_sources(KotonoFramework PRIVATE ${KFRAMEWORK_SHADERS})
+file(GLOB_RECURSE KGRAPHICS_SHADERS "shaders/*")
+source_group("Shaders" FILES ${KGRAPHICS_SHADERS})
+target_sources(KotonoGraphics PRIVATE ${KGRAPHICS_SHADERS})
 
 # Link libs
-target_link_libraries(KotonoFramework PUBLIC
+target_link_libraries(KotonoGraphics PUBLIC
     KotonoIO
-    KotonoAudio
     KotonoTiming
     KotonoPlatform
 )

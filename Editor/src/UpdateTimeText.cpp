@@ -1,5 +1,5 @@
 #include "UpdateTimeText.h"
-#include <kotono_framework/Framework.h>
+#include <kotono_graphics/Framework.h>
 #include <kotono_timing/TimeManager.h>
 #include <kotono_timing/Timer.h>
 #include <kotono_interface/widgets.h>

@@ -1,6 +1,6 @@
 #include "Camera.h"
-#include <kotono_framework/Framework.h>
-#include <kotono_framework/Renderer.h>
+#include <kotono_graphics/Framework.h>
+#include <kotono_graphics/Renderer.h>
 #include <kotono_platform/WindowViewport.h>
 #include <kotono_input/InputManager.h>
 #include <kotono_timing/TimeManager.h>
