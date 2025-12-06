@@ -2,7 +2,7 @@
 #include <filesystem>
 class KtPath final
 {
-	friend class SEngine;
+	friend class SCore;
 
 private:
 	void Init();

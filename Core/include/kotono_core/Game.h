@@ -1,11 +1,11 @@
 #pragma once
-#include <kotono_engine/Ptr.h>
+#include <kotono_core/Ptr.h>
 #undef interface
 class KScene;
 class KInterface;
 class SGame final
 {
-	friend class SEngine;
+	friend class SCore;
 	friend class STimeManager;
 
 private:

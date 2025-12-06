@@ -1,5 +1,5 @@
 #pragma once
-class SEngine final
+class SCore final
 {
 public:
 	void Init();
@@ -7,4 +7,4 @@ public:
 	void Cleanup();
 };
 
-inline SEngine Engine;
+inline SCore Core;

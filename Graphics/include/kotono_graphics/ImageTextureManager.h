@@ -6,7 +6,7 @@ class KtImageTexture;
 
 class KtImageTextureManager final
 {
-	friend class SEngine;
+	friend class SCore;
 
 private:
 	void Cleanup(); 

@@ -1,4 +1,4 @@
-#include "Engine.h"
+#include "Core.h"
 #include <kotono_common/Path.h>
 #include <kotono_audio/AudioManager.h>
 #include <kotono_timing/TimerManager.h>
@@ -14,7 +14,7 @@
 #include "Game.h"
 #include "InterfacePhysicsManager.h"
 
-void SEngine::Init()
+void SCore::Init()
 {
     ::Path.Init();
     ::Window.Init();
@@ -28,7 +28,7 @@ void SEngine::Init()
     ::Game.Init();
 }
 
-void SEngine::Update()
+void SCore::Update()
 {
     ::TimerManager.Update();
     ::InputManager.Update();
@@ -37,7 +37,7 @@ void SEngine::Update()
     ::InterfacePhysicsManager.Update();
 }
 
-void SEngine::Cleanup()
+void SCore::Cleanup()
 {
     ::ObjectManager.Cleanup();
     ::AudioManager.Cleanup();

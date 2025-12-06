@@ -3,7 +3,7 @@
 #include "Keyboard.h"
 class KtInputManager final
 {
-	friend class SEngine;
+	friend class SCore;
 
 private:
 	void Init();

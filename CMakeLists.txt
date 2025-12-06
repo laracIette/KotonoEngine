@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(Kotono LANGUAGES CXX)
+project(KotonoEngine LANGUAGES CXX)
 
 # --- Global settings ---
 set(CMAKE_CXX_STANDARD 20)
@@ -25,7 +25,7 @@ add_subdirectory(Platform)
 add_subdirectory(Input)
 add_subdirectory(Graphics)
 add_subdirectory(Interface)
-add_subdirectory(Engine)
+add_subdirectory(Core)
 if (WITH_EDITOR)
     add_subdirectory(Editor)
 endif()

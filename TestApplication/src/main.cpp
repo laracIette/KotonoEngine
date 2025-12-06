@@ -1,28 +1,28 @@
 #include <kotono_platform/Window.h>
-#include <kotono_engine/Engine.h>
+#include <kotono_core/Core.h>
 #ifdef EDITOR
     #include <kotono_editor/Editor.h>
 #endif
 
 int main()
 {
-    Engine.Init();
+    Core.Init();
 #   ifdef EDITOR
         Editor.Init();
 #   endif
 
     while (!Window.GetShouldClose())
     {
-        Engine.Update();
+        Core.Update();
 #       ifdef EDITOR
-            Editor.Update();
+        Editor.Update();
 #       endif
     }
 
 #   ifdef EDITOR
-        Editor.Cleanup();
+    Editor.Cleanup();
 #   endif
-    Engine.Cleanup();
+    Core.Cleanup();
 
 	return 0;
 }

@@ -21,7 +21,7 @@
             "path": "Engine.h"
         },
         {
-            "modified": "2025-12-06-14:04:59.2576956",
+            "modified": "2025-12-06-17:26:57.9654591",
             "path": "Game.h"
         },
         {
@@ -65,7 +65,7 @@
             "path": "InterfaceObject.h"
         },
         {
-            "modified": "2025-12-06-14:04:11.2185462",
+            "modified": "2025-12-06-17:26:58.0962009",
             "path": "InterfacePhysicsManager.h"
         },
         {
@@ -85,7 +85,7 @@
             "path": "Object.h"
         },
         {
-            "modified": "2025-12-06-13:57:02.1507131",
+            "modified": "2025-12-06-17:26:57.9444255",
             "path": "ObjectManager.h"
         },
         {
@@ -133,7 +133,7 @@
             "path": "Task.h"
         },
         {
-            "modified": "2025-12-06-14:05:39.7129595",
+            "modified": "2025-12-06-17:26:58.0791632",
             "path": "TimeManager.h"
         },
         {
@@ -155,6 +155,10 @@
         {
             "modified": "2025-12-06-13:58:38.4200350",
             "path": "ObjectFactory.h"
+        },
+        {
+            "modified": "2025-12-06-17:26:06.5244125",
+            "path": "Core.h"
         }
     ]
 }

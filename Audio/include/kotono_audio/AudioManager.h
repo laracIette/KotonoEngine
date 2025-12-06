@@ -5,7 +5,7 @@ struct ALCcontext;
 
 class KtAudioManager final
 {
-	friend class SEngine;
+	friend class SCore;
 
 private:
 	void Init();

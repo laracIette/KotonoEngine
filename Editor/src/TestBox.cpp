@@ -1,6 +1,6 @@
 #include "TestBox.h"
-#include <kotono_engine/ObjectManager.h>
-#include <kotono_engine/Object.h>
+#include <kotono_core/ObjectManager.h>
+#include <kotono_core/Object.h>
 #include <kotono_interface/widgets.h>
 #include "log.h"
 
@@ -12,7 +12,7 @@ WWidget* WTestBox::Build()
             .children = {
                 new WColor({ KtColor::Red() }),
                 new WButton({
-                    .onDown = [this]() { 
+                    .onDown = [this]() {
                         if (ObjectManager.SelectedObject())
                         {
                             SetState([]() {

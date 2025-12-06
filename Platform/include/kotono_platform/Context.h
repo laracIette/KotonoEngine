@@ -12,7 +12,7 @@
 
 class KtContext final
 {
-	friend class SEngine;
+	friend class SCore;
 
 private:
 	void Init();

@@ -3,7 +3,7 @@
 class KInterfaceColliderComponent;
 class SInterfacePhysicsManager final
 {
-	friend class SEngine;
+	friend class SCore;
 
 private:
 	void Update();

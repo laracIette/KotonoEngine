@@ -30,6 +30,6 @@ target_include_directories(KotonoEditor
 
 # Link libs
 target_link_libraries(KotonoEditor PUBLIC
-    KotonoEngine
+    KotonoCore
     KotonoInterface
 )

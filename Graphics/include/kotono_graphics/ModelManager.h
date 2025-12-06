@@ -6,7 +6,7 @@ class KtModel;
 
 class KtModelManager final
 {
-	friend class SEngine;
+	friend class SCore;
 
 private:
 	void Cleanup();

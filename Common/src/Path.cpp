@@ -9,13 +9,13 @@ void KtPath::Init()
     GetModuleFileNameA(nullptr, executablePath, MAX_PATH);
 
     const auto executableDirectory{ std::filesystem::path(executablePath).parent_path() };
-    
+
     //nlohmann::json json{};
     //KtSerializer::Deserialize(json, executableDirectory / "config.json");
 
     rootPath_ = ROOT_DIRECTORY;
     frameworkPath_ = rootPath_ / "Graphics";
-    enginePath_ = rootPath_ / "Engine";
+    enginePath_ = rootPath_ / "Core";
 
     //projectPath_ = json.at("projectPath").get<std::string>();
     projectPath_ = rootPath_ / "TestApplication";

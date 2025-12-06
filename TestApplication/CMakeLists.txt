@@ -39,7 +39,7 @@ target_include_directories(KotonoTestApplication
 if (WITH_EDITOR)
     target_link_libraries(KotonoTestApplication PRIVATE KotonoEditor)
 else()
-    target_link_libraries(KotonoTestApplication PRIVATE KotonoEngine)
+    target_link_libraries(KotonoTestApplication PRIVATE KotonoCore)
 endif()
 
 # --- Copy config file ---

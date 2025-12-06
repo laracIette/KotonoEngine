@@ -1,6 +1,6 @@
 #include "MainWindow.h"
 #include <kotono_interface/widgets.h>
-#include <kotono_engine/Timer.h>
+#include <kotono_core/Timer.h>
 #include "UpdateTimeText.h"
 #include "DrawTimeText.h"
 #include "TestBox.h"
@@ -59,7 +59,7 @@ WWidget* WMainWindow::Build()
 										new WColor({ KtColor::Red() }),
 										new WList({
 											.spacing = 75.0f,
-											.children = []() { 
+											.children = []() {
 												return WidgetVector{
 													new WText({
 														.text = "Tesstt",
@@ -85,7 +85,7 @@ WWidget* WMainWindow::Build()
 														.text = "Tstststt",
 														.spacing = -20.0f,
 													}),
-												}; 
+												};
 											}
 										}),
 									},

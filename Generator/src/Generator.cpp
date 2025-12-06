@@ -4,7 +4,7 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 
-const std::filesystem::path EnginePath{ std::filesystem::path(ROOT_DIRECTORY) / "Engine" };
+const std::filesystem::path CorePath{ std::filesystem::path(ROOT_DIRECTORY) / "Core" };
 
 static std::string read_string(const std::filesystem::path& path)
 {
@@ -69,7 +69,7 @@ static void read_data(const std::filesystem::path& path, nlohmann::json& json)
 	stream >> json;
 }
 
-static void write_data(const std::filesystem::path& path, const nlohmann::json& json) 
+static void write_data(const std::filesystem::path& path, const nlohmann::json& json)
 {
 	if (path.empty())
 	{
@@ -89,7 +89,7 @@ static void write_data(const std::filesystem::path& path, const nlohmann::json& 
 
 static std::string to_upper(std::string s)
 {
-	std::ranges::transform(s, s.begin(), 
+	std::ranges::transform(s, s.begin(),
 		[](unsigned char c) { return std::toupper(c); }
 	);
 	return s;
@@ -99,7 +99,7 @@ void Generator::GenerateAll() const
 {
 	std::cout << "Generating all..." << std::endl;
 
-	const auto headerDirectoryPath{ EnginePath / "include" / "kotono_engine" };
+	const auto headerDirectoryPath{ CorePath / "include" / "kotono_core" };
 	for (const auto& entry : std::filesystem::directory_iterator(headerDirectoryPath))
 	{
 		if (!entry.is_regular_file() || entry.path().extension() != ".h")
@@ -116,10 +116,10 @@ void Generator::GenerateUpdated() const
 	std::cout << "Generating updated..." << std::endl;
 
 	nlohmann::json json{};
-	const auto registryPath{ EnginePath / "include" / "kotono_engine" / "objects.ktregistry" };
+	const auto registryPath{ CorePath / "include" / "kotono_core" / "objects.ktregistry" };
 	read_data(registryPath, json);
 
-	const auto headerDirectoryPath{ EnginePath / "include" / "kotono_engine" };
+	const auto headerDirectoryPath{ CorePath / "include" / "kotono_core" };
 	for (const auto& entry : std::filesystem::directory_iterator(headerDirectoryPath))
 	{
 		if (!entry.is_regular_file() || entry.path().extension() != ".h")
@@ -180,7 +180,7 @@ std::string Generator::GetClassName(const std::string& content) const
 
 	if (std::regex_search(content, match, classRegex))
 	{
-		return match[1].str(); 
+		return match[1].str();
 	}
 
 	return "";
@@ -193,7 +193,7 @@ std::string Generator::GetBaseClassName(const std::string& content) const
 
 	if (std::regex_search(content, match, baseRegex))
 	{
-		return match[1].str(); 
+		return match[1].str();
 	}
 
 	return "";
@@ -213,7 +213,7 @@ std::vector<Generator::VariableInfo> Generator::GetClassVariables(const std::str
 		const bool isIterable{
 			typeName.find("KtPool") != std::string::npos ||
 			typeName.find("std::vector") != std::string::npos ||
-			typeName.find("std::array") != std::string::npos 
+			typeName.find("std::array") != std::string::npos
 		};
 
 		result.push_back({ varName, isIterable });
@@ -225,7 +225,7 @@ std::vector<Generator::VariableInfo> Generator::GetClassVariables(const std::str
 std::vector<std::string> Generator::GetForwardDeclaredClasses(const std::string& content) const
 {
 	std::vector<std::string> result;
-	
+
 	const std::regex fwdRegex(R"(\bclass\s+(?:\w+\s+)*([A-Za-z_]\w*)\s*;)");
 
 	for (std::sregex_iterator it(content.begin(), content.end(), fwdRegex), end; it != end; ++it)
@@ -248,7 +248,7 @@ bool Generator::IsObjectClass(const std::string& className) const
 	{
 		return false;
 	}
-	return className[0] == 'K' 
+	return className[0] == 'K'
 		|| className[0] == 'T'
 		|| className[0] == 'R';
 }
@@ -288,7 +288,7 @@ void Generator::Generate(const std::filesystem::path& header) const
 		)
 	};
 
-	const auto fileHeader{ EnginePath / "include" / "kotono_engine" / "generated" / header.filename().replace_extension(".generated.h") };
+	const auto fileHeader{ CorePath / "include" / "kotono_core" / "generated" / header.filename().replace_extension(".generated.h") };
 	write_string(fileHeader, generatedCodeHeader);
 
 
@@ -384,7 +384,7 @@ void Generator::Generate(const std::filesystem::path& header) const
 		)
 	};
 
-	const auto fileCPP{ EnginePath / "src" / "generated" / header.filename().replace_extension(".generated.cpp") };
+	const auto fileCPP{ CorePath / "src" / "generated" / header.filename().replace_extension(".generated.cpp") };
 	write_string(fileCPP, generatedCodeCPP);
 
 	std::cout << "Generated " << header << std::endl;

@@ -6,7 +6,7 @@ class KtShader;
 
 class KtShaderManager final
 {
-	friend class SEngine;
+	friend class SCore;
 
 private:
 	void Init(); 

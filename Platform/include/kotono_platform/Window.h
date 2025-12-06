@@ -4,7 +4,7 @@
 #include <kotono_common/Event.h>
 class KtWindow final
 {
-	friend class SEngine;
+	friend class SCore;
 
 private:
 	void Init(); 

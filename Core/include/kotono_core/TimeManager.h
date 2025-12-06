@@ -3,7 +3,7 @@
 #include <kotono_timing/TimeContext.h>
 class STimeManager final
 {
-	friend class SEngine;
+	friend class SCore;
 
 private:
 	void Init();

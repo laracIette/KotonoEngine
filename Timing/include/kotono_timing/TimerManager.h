@@ -5,7 +5,7 @@
 #include <kotono_common/Average.h>
 class KtTimerManager final
 {
-	friend class SEngine;
+	friend class SCore;
 
 private:
 	void Update();
