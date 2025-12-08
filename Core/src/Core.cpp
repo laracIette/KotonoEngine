@@ -1,7 +1,6 @@
 #include "Core.h"
 #include <kotono_common/Path.h>
 #include <kotono_audio/AudioManager.h>
-#include <kotono_timing/TimerManager.h>
 #include <kotono_platform/Window.h>
 #include <kotono_platform/Context.h>
 #include <kotono_input/InputManager.h>
@@ -30,7 +29,6 @@ void SCore::Init()
 
 void SCore::Update()
 {
-    ::TimerManager.Update();
     ::InputManager.Update();
     ::TimeManager.Update();
     ::Game.Update();

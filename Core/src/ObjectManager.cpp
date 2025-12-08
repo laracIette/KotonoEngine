@@ -146,7 +146,7 @@ const UPtr<KObject>& SObjectManager::SelectedObject() const
 
 void SObjectManager::LogUPS() const
 {
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core", "%.2f ups", 1.0f / TimerManager.AverageUpdateTime());
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core", "%.2f ups", 1.0f / TimeManager.AverageUpdateTime());
 }
 
 void SObjectManager::OnMouseButtonLeftPressed()

@@ -5,6 +5,7 @@
 #include "Visualizer.h"
 #include "Camera.h"
 #include <kotono_timing/TimerManager.h>
+#include <kotono_timing/Timer.h>
 
 static SGameManager GameManager;
 static SVisualizer Visualizer;
