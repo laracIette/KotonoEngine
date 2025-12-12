@@ -54,11 +54,9 @@ target_compile_definitions(KotonoGraphics PUBLIC
     ASSIMP_BUILD_NO_EXPORT
 )
 
-set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/ThirdParty")
-
 # Link system + third-party libs
 target_link_libraries(KotonoGraphics PUBLIC
-    "${THIRD_PARTY_DIR}/lib/SPIRV-Reflect.lib"
+    SPIRVReflect
     assimp::assimp
 )
 

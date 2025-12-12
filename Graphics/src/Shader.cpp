@@ -770,7 +770,7 @@ static const size_t GetTypeSize(const SpvReflectTypeDescription* type)
 void KtShader::PopulateShaderLayout(const std::span<uint8_t> spirvData, const VkShaderStageFlagBits shaderStage)
 {
 	SpvReflectShaderModule module;
-	SpvReflectResult result = spvReflectCreateShaderModule(spirvData.size() * sizeof(uint8_t), spirvData.data(), &module, 0);
+	SpvReflectResult result = spvReflectCreateShaderModule(spirvData.size() * sizeof(uint8_t), spirvData.data(), &module);
 
 	if (result != SPV_REFLECT_RESULT_SUCCESS)
 	{
