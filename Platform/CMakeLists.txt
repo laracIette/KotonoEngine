@@ -8,19 +8,22 @@ if (MSVC)
     add_compile_options(/MP)
 endif()
 
-# --- Add GLFW via FetchContent ---
 include(FetchContent)
 
-# 1. Define how to fetch GLFW (e.g., from its GitHub repository)
+##############
+# --- glfw ---
 FetchContent_Declare(
     glfw
     GIT_REPOSITORY https://github.com/glfw/glfw.git
-    GIT_TAG 3.4 # Use a specific version tag
-    # Force static linking by setting the option
-    CMAKE_ARGS -DBUILD_SHARED_LIBS=OFF
+    GIT_TAG        3.4
+    GIT_SHALLOW    TRUE
 )
 
+# Build glfw as a static library
+set(BUILD_SHARED_LIBS OFF)
+
 FetchContent_MakeAvailable(glfw)
+##############
 
 find_package(Vulkan REQUIRED)
 
@@ -38,8 +41,12 @@ target_sources(KotonoPlatform
     PRIVATE ${KPLATFORM_HEADERS}
 )
 
+set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/ThirdParty")
+
 # Include directories
 target_include_directories(KotonoPlatform
+    PUBLIC  "${THIRD_PARTY_DIR}/glm/include"
+    PUBLIC  "${THIRD_PARTY_DIR}/vma/include"
     PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_platform"
 )

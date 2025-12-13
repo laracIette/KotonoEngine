@@ -23,8 +23,11 @@ target_sources(KotonoGenerator
 	PRIVATE ${KGENERATOR_HEADERS}
 )
 
+set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/ThirdParty")
+
 # Include directories
 target_include_directories(KotonoGenerator
+    PRIVATE "${THIRD_PARTY_DIR}/nlohmann/include"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_generator"
 )

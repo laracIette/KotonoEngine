@@ -8,16 +8,18 @@ if (MSVC)
     add_compile_options(/MP)
 endif()
 
-# --- Add Assimp via FetchContent ---
 include(FetchContent)
 
+################
+# --- Assimp ---
 FetchContent_Declare(
     assimp
     GIT_REPOSITORY https://github.com/assimp/assimp.git
     GIT_TAG        v6.0.2
+    GIT_SHALLOW    TRUE
 )
 
-# Force Assimp to build as a STATIC library
+# Force Assimp to build as a static library
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
 # Disable unnecessary Assimp extras to speed up build times
@@ -26,8 +28,8 @@ set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INSTALL_PDB OFF CACHE BOOL "" FORCE)
 
-# Download and add Assimp to the build
 FetchContent_MakeAvailable(assimp)
+################
 
 # Static library
 add_library(KotonoGraphics STATIC)
@@ -43,8 +45,11 @@ target_sources(KotonoGraphics
     PRIVATE ${KGRAPHICS_HEADERS}
 )
 
+set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/ThirdParty")
+
 # Include directories
 target_include_directories(KotonoGraphics
+    PUBLIC  "${THIRD_PARTY_DIR}/stbimage/include"
     PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_graphics"
 )

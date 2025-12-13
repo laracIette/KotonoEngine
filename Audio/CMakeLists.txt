@@ -8,6 +8,29 @@ if (MSVC)
     add_compile_options(/MP)
 endif()
 
+include(FetchContent)
+
+################
+# --- OpenAL ---
+FetchContent_Declare(
+    OpenAL
+    GIT_REPOSITORY https://github.com/kcat/openal-soft.git
+    GIT_TAG        1.24.3
+    GIT_SHALLOW    TRUE
+)
+
+# Tell OpenAL Soft to not try to install itself globally
+set(CMAKE_INSTALL_DO_NOT_USE_INSTALL_NAME_DIR YES)
+
+set(BUILD_SHARED_LIBS OFF)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(ALSOFT_EXAMPLES OFF)
+set(ALSOFT_UTILS OFF)
+set(ALSOFT_TESTS OFF)
+
+FetchContent_MakeAvailable(OpenAL)
+################
+
 # Static library
 add_library(KotonoAudio STATIC)
 
@@ -28,11 +51,9 @@ target_include_directories(KotonoAudio
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_audio"
 )
 
-set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/ThirdParty")
-
 # Link system + third-party libs
 target_link_libraries(KotonoAudio PUBLIC
-    "${THIRD_PARTY_DIR}/lib/OpenAL32.lib"
+    OpenAL::OpenAL
 )
 
 # Link libs
