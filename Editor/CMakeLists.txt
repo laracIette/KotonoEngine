@@ -14,12 +14,38 @@ add_library(KotonoEditor STATIC)
 # Require C++20
 target_compile_features(KotonoEditor PUBLIC cxx_std_20)
 
-file(GLOB_RECURSE KEDITOR_SOURCES "src/*.cpp")
-file(GLOB_RECURSE KEDITOR_HEADERS "include/kotono_editor/*.h")
+set(KEDITOR_HEADERS
+    "include/kotono_editor/Camera.h"
+    "include/kotono_editor/DrawTimeText.h"
+    "include/kotono_editor/Editor.h"
+    "include/kotono_editor/GameManager.h"
+    "include/kotono_editor/GameState.h"
+    "include/kotono_editor/GameStateButton.h"
+    "include/kotono_editor/MainWindow.h"
+    "include/kotono_editor/PropertiesWindow.h"
+    "include/kotono_editor/TestBox.h"
+    "include/kotono_editor/UpdateTimeText.h"
+    "include/kotono_editor/VisualizationField.h"
+    "include/kotono_editor/Visualizer.h"
+    "include/kotono_editor/VisualizerWindow.h"
+)
+set(KEDITOR_SOURCES
+    "src/Camera.cpp"
+    "src/DrawTimeText.cpp"
+    "src/Editor.cpp"
+    "src/GameManager.cpp"
+    "src/GameStateButton.cpp"
+    "src/MainWindow.cpp"
+    "src/PropertiesWindow.cpp"
+    "src/TestBox.cpp"
+    "src/UpdateTimeText.cpp"
+    "src/Visualizer.cpp"
+    "src/VisualizerWindow.cpp"
+)
 
 target_sources(KotonoEditor
-    PRIVATE ${KEDITOR_SOURCES}
     PRIVATE ${KEDITOR_HEADERS}
+    PRIVATE ${KEDITOR_SOURCES}
 )
 
 # Include directories

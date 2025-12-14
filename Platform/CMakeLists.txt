@@ -33,12 +33,25 @@ add_library(KotonoPlatform STATIC)
 # Require C++20
 target_compile_features(KotonoPlatform PUBLIC cxx_std_20)
 
-file(GLOB_RECURSE KPLATFORM_SOURCES "src/*.cpp")
-file(GLOB_RECURSE KPLATFORM_HEADERS "include/kotono_platform/*.h")
+set(KPLATFORM_HEADERS
+    "include/kotono_platform/AllocatedBuffer.h"
+    "include/kotono_platform/Context.h"
+    "include/kotono_platform/QueueFamilyIndices.h"
+    "include/kotono_platform/SwapChainSupportDetails.h"
+    "include/kotono_platform/vk_utils.h"
+    "include/kotono_platform/Window.h"
+    "include/kotono_platform/WindowViewport.h"
+)
+set(KPLATFORM_SOURCES
+    "src/Context.cpp"
+    "src/vk_utils.cpp"
+    "src/Window.cpp"
+    "src/WindowViewport.cpp"
+)
 
 target_sources(KotonoPlatform
-    PRIVATE ${KPLATFORM_SOURCES}
     PRIVATE ${KPLATFORM_HEADERS}
+    PRIVATE ${KPLATFORM_SOURCES}
 )
 
 set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/ThirdParty")

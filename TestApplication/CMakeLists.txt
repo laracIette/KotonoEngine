@@ -21,12 +21,15 @@ if (WITH_EDITOR)
 endif()
 
 # --- Add source files ---
-file(GLOB_RECURSE KTESTAPPLICATION_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
-file(GLOB_RECURSE KTESTAPPLICATION_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_testapplication/*.h")
+set(KTESTAPPLICATION_HEADERS
+)
+set(KTESTAPPLICATION_SOURCES
+    "src/main.cpp"
+)
 
 target_sources(KotonoTestApplication
-    PRIVATE ${KTESTAPPLICATION_SOURCES}
     PRIVATE ${KTESTAPPLICATION_HEADERS}
+    PRIVATE ${KTESTAPPLICATION_SOURCES}
 )
 
 # --- Includes ---

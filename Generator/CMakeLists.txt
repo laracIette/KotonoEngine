@@ -15,12 +15,17 @@ add_executable(KotonoGenerator)
 target_compile_features(KotonoGenerator PRIVATE cxx_std_20)
 
 # Collect sources
-file(GLOB_RECURSE KGENERATOR_SOURCES "src/*.cpp")
-file(GLOB_RECURSE KGENERATOR_HEADERS "include/kotono_generator/*.h")
+set(KGENERATOR_HEADERS
+    "include/kotono_generator/Generator.h"
+)
+set(KGENERATOR_SOURCES
+    "src/Generator.cpp"
+    "src/main.cpp"
+)
 
 target_sources(KotonoGenerator
-	PRIVATE ${KGENERATOR_SOURCES}
-	PRIVATE ${KGENERATOR_HEADERS}
+    PRIVATE ${KGENERATOR_HEADERS}
+    PRIVATE ${KGENERATOR_SOURCES}
 )
 
 set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/ThirdParty")

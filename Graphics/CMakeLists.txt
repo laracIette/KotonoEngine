@@ -22,6 +22,9 @@ FetchContent_Declare(
 # Force Assimp to build as a static library
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
+# Build zlib
+set(ASSIMP_BUILD_ZLIB ON CACHE BOOL "" FORCE)
+
 # Disable unnecessary Assimp extras to speed up build times
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
@@ -37,12 +40,57 @@ add_library(KotonoGraphics STATIC)
 # Require C++20
 target_compile_features(KotonoGraphics PUBLIC cxx_std_20)
 
-file(GLOB_RECURSE KGRAPHICS_SOURCES "src/*.cpp")
-file(GLOB_RECURSE KGRAPHICS_HEADERS "include/kotono_graphics/*.h")
+set(KGRAPHICS_HEADERS
+    "include/kotono_graphics/Color.h"
+    "include/kotono_graphics/Font.h"
+    "include/kotono_graphics/frames_in_flight.h"
+    "include/kotono_graphics/ImageTexture.h"
+    "include/kotono_graphics/ImageTextureManager.h"
+    "include/kotono_graphics/InterfaceCuller.h"
+    "include/kotono_graphics/InterfaceObjectData.h"
+    "include/kotono_graphics/InterfaceRenderable.h"
+    "include/kotono_graphics/InterfaceRenderableProxy.h"
+    "include/kotono_graphics/InterfaceRenderer.h"
+    "include/kotono_graphics/InterfaceUniformData.h"
+    "include/kotono_graphics/Model.h"
+    "include/kotono_graphics/ModelManager.h"
+    "include/kotono_graphics/Renderer.h"
+    "include/kotono_graphics/RendererFrameStats.h"
+    "include/kotono_graphics/SceneCuller.h"
+    "include/kotono_graphics/SceneCullerField.h"
+    "include/kotono_graphics/SceneObjectData.h"
+    "include/kotono_graphics/SceneRenderable.h"
+    "include/kotono_graphics/SceneRenderableProxy.h"
+    "include/kotono_graphics/SceneRenderer.h"
+    "include/kotono_graphics/SceneUniformData.h"
+    "include/kotono_graphics/Scissor.h"
+    "include/kotono_graphics/Shader.h"
+    "include/kotono_graphics/ShaderLayout.h"
+    "include/kotono_graphics/ShaderManager.h"
+    "include/kotono_graphics/SpvCompiler.h"
+    "include/kotono_graphics/Vertex2D.h"
+    "include/kotono_graphics/Vertex3D.h"
+)
+set(KGRAPHICS_SOURCES
+    "src/Font.cpp"
+    "src/ImageTexture.cpp"
+    "src/ImageTextureManager.cpp"
+    "src/implementations.cpp"
+    "src/InterfaceCuller.cpp"
+    "src/InterfaceRenderer.cpp"
+    "src/Model.cpp"
+    "src/ModelManager.cpp"
+    "src/Renderer.cpp"
+    "src/SceneCuller.cpp"
+    "src/SceneRenderer.cpp"
+    "src/Shader.cpp"
+    "src/ShaderManager.cpp"
+    "src/SpvCompiler.cpp"
+)
 
 target_sources(KotonoGraphics
-    PRIVATE ${KGRAPHICS_SOURCES}
     PRIVATE ${KGRAPHICS_HEADERS}
+    PRIVATE ${KGRAPHICS_SOURCES}
 )
 
 set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/ThirdParty")

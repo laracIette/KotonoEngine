@@ -14,12 +14,23 @@ add_library(KotonoInput STATIC)
 # Require C++20
 target_compile_features(KotonoInput PUBLIC cxx_std_20)
 
-file(GLOB_RECURSE KINPUT_SOURCES "src/*.cpp")
-file(GLOB_RECURSE KINPUT_HEADERS "include/kotono_input/*.h")
+set(KINPUT_HEADERS
+    "include/kotono_input/Button.h"
+    "include/kotono_input/InputManager.h"
+    "include/kotono_input/InputState.h"
+    "include/kotono_input/Key.h"
+    "include/kotono_input/Keyboard.h"
+    "include/kotono_input/Mouse.h"
+)
+set(KINPUT_SOURCES
+    "src/InputManager.cpp"
+    "src/Keyboard.cpp"
+    "src/Mouse.cpp"
+)
 
 target_sources(KotonoInput
-    PRIVATE ${KINPUT_SOURCES}
     PRIVATE ${KINPUT_HEADERS}
+    PRIVATE ${KINPUT_SOURCES}
 )
 
 # Include directories

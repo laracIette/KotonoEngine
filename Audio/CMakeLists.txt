@@ -37,12 +37,16 @@ add_library(KotonoAudio STATIC)
 # Require C++20
 target_compile_features(KotonoAudio PUBLIC cxx_std_20)
 
-file(GLOB_RECURSE KAUDIO_SOURCES "src/*.cpp")
-file(GLOB_RECURSE KAUDIO_HEADERS "include/kotono_audio/*.h")
+set(KAUDIO_HEADERS
+    "include/kotono_audio/AudioManager.h"
+)
+set(KAUDIO_SOURCES
+    "src/AudioManager.cpp"
+)
 
 target_sources(KotonoAudio
-    PRIVATE ${KAUDIO_SOURCES}
     PRIVATE ${KAUDIO_HEADERS}
+    PRIVATE ${KAUDIO_SOURCES}
 )
 
 # Include directories
