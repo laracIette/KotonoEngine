@@ -13,23 +13,23 @@ public:
 	struct DescriptorSetLayoutBindingData final
 	{														  
 		VkDescriptorSetLayout                                      DescriptorSetLayout;
-		KtFramesInFlightArray<VkDescriptorSet>                       DescriptorSets;
+		KtFramesInFlightArray<VkDescriptorSet>                     DescriptorSets;
 		std::string                                                Name;
-		KtFramesInFlightArray<KtAllocatedBuffer>                     Buffers;
-		KtFramesInFlightArray<KtAllocatedBuffer>                     StagingBuffers;
-		KtFramesInFlightArray<size_t>                                MemberCounts;
+		KtFramesInFlightArray<KtAllocatedBuffer>                   Buffers;
+		KtFramesInFlightArray<KtAllocatedBuffer>                   StagingBuffers;
+		KtFramesInFlightArray<size_t>                              MemberCounts;
 		size_t                                                     MemberSize;
 		VkDescriptorType                                           DescriptorType;
 		uint32_t                                                   Binding;
 		uint32_t                                                   DescriptorCount;
 		VkShaderStageFlags                                         ShaderStageFlags;
 		VkDescriptorBindingFlags                                   BindingFlags;
-		KtFramesInFlightArray<std::vector<VkDescriptorImageInfo>>    ImageInfos;
+		KtFramesInFlightArray<std::vector<VkDescriptorImageInfo>>  ImageInfos;
 	};
 	struct DescriptorSetLayoutData final
 	{
 	    VkDescriptorSetLayout                               DescriptorSetLayout;
-		KtFramesInFlightArray<VkDescriptorSet>                DescriptorSets;
+		KtFramesInFlightArray<VkDescriptorSet>              DescriptorSets;
 	    std::vector<DescriptorSetLayoutBindingData>         DescriptorSetLayoutBindingDatas;
 	};
 
@@ -58,18 +58,17 @@ public:
 
 
 protected:
-	std::string _name;
-
 	const std::filesystem::path path_;
+	std::string name_;
 
-	KtShaderLayout _shaderLayout;
+	KtShaderLayout shaderLayout_;
 
-	VkPipelineLayout _pipelineLayout;
-	VkPipeline _graphicsPipeline;
+	VkPipelineLayout pipelineLayout_;
+	VkPipeline graphicsPipeline_;
 
-	VkDescriptorPool _descriptorPool;
-	std::vector<DescriptorSetLayoutData> _descriptorSetLayoutDatas;
-	std::unordered_map<std::string, DescriptorSetLayoutBindingData*> _descriptorSetLayoutBindingDataRegistry;
+	VkDescriptorPool descriptorPool_;
+	std::vector<DescriptorSetLayoutData> descriptorSetLayoutDatas_;
+	std::unordered_map<std::string, DescriptorSetLayoutBindingData*> descriptorSetLayoutBindingDataRegistry_;
 
 	void CreateShaderLayout();
 	void PopulateShaderLayout(const std::span<uint8_t> spirvData, const VkShaderStageFlagBits shaderStage);

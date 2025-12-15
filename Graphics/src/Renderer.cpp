@@ -22,7 +22,7 @@ void KtRenderer::Init()
 
 void KtRenderer::Cleanup()
 {
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics", "cleaning up renderer");
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics.KtRenderer::Cleanup()", "cleaning up renderer");
 
 	JoinThread(renderThread_);
 	JoinThread(rhiThread_);
@@ -32,21 +32,21 @@ void KtRenderer::Cleanup()
 
 	CleanupSwapChain();
 
-	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; ++i)
+	for (size_t i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
 	{
 		vkDestroyCommandPool(Context.GetDevice(), commandPools_[i], nullptr);
 	}
 
 	vkDestroyRenderPass(Context.GetDevice(), renderPass_, nullptr);
 
-	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; i++)
+	for (size_t i{ 0 }; i < KT_FRAMES_IN_FLIGHT; i++)
 	{
 		vkDestroySemaphore(Context.GetDevice(), renderFinishedSemaphores_[i], nullptr);
 		vkDestroySemaphore(Context.GetDevice(), imageAvailableSemaphores_[i], nullptr);
 		vkDestroyFence(Context.GetDevice(), inFlightFences_[i], nullptr);
 	}
 
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics", "cleaned up renderer");
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics.KtRenderer::Cleanup()", "cleaned up renderer");
 }
 
 void KtRenderer::CreateSwapChain()
@@ -63,7 +63,7 @@ void KtRenderer::CreateSwapChain()
 		imageCount = swapChainSupport.capabilities.maxImageCount;
 	}
 
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics", "KtRenderer::CreateSwapChain(): swap chain image count: %u", imageCount);
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics.KtRenderer::CreateSwapChain()", "swap chain image count: %u", imageCount);
 
 	VkSwapchainCreateInfoKHR createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -440,10 +440,10 @@ void KtRenderer::CreateSyncObjects()
 		}
 	}
 }
-static constexpr bool IS_MULTI_THREADED = false;
+static constexpr bool IS_MULTI_THREADED{ false };
 void KtRenderer::DrawFrame()
 {
-	const uint32_t frameIndex = GetGameThreadFrame();
+	const uint32_t frameIndex{ GetGameThreadFrame() };
 	UpdateRenderers(frameIndex);
 
 	if constexpr (IS_MULTI_THREADED)
@@ -451,17 +451,17 @@ void KtRenderer::DrawFrame()
 		if (frameCount_ >= 1)
 		{
 			JoinThread(renderThread_);
-			const uint32_t renderThreadFrame = GetRenderThreadFrame();
+			const uint32_t renderThreadFrame{ GetRenderThreadFrame() };
 			renderThread_ = std::thread(&KtRenderer::RecordCommandBuffer, this, renderThreadFrame);
 		}
 
 		if (frameCount_ >= 2)
 		{
-			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics", "frame %u rendered", frameCount_);
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics.KtRenderer::DrawFrame()", "frame %u rendered", frameCount_);
 
 			JoinThread(rhiThread_);
 			Context.ExecuteSingleTimeCommands();
-			const uint32_t renderRHIFrame = GetRHIThreadFrame();
+			const uint32_t renderRHIFrame{ GetRHIThreadFrame() };
 			rhiThread_ = std::thread(&KtRenderer::SubmitCommandBuffer, this, renderRHIFrame);
 		}
 	}
@@ -469,7 +469,7 @@ void KtRenderer::DrawFrame()
 	{
 		if (!TryAcquireNextImage(frameIndex))
 		{
-			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics", "KtRenderer::DrawFrame(): frame skipped");
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics.KtRenderer::DrawFrame()", "frame %u skipped", frameCount_);
 			return;
 		}
 
@@ -595,7 +595,7 @@ void KtRenderer::SubmitCommandBuffer(const uint32_t frameIndex)
 	{
 		if (!TryAcquireNextImage(frameIndex))
 		{
-			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics", "KtRenderer::DrawFrame(): frame skipped");
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics.KtRenderer::SubmitCommandBuffer()", "frame %u skipped", frameCount_);
 			return;
 		}
 	}

@@ -176,7 +176,7 @@ void KtSceneRenderer::UpdateStaticProxies(const uint32_t frameIndex)
 		}
 
 		isStaticCommandBufferDirty_[frameIndex] = true;
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics", "DIRTY STATIC command buffer frame %u", frameIndex);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics.KtSceneRenderer::UpdateStaticProxies()", "dirty static command buffer frame %u", frameIndex);
 
 		if (count > 0)
 		{
@@ -213,7 +213,7 @@ void KtSceneRenderer::UpdateDynamicProxies(const uint32_t frameIndex)
 		}
 
 		isDynamicCommandBufferDirty_[frameIndex] = true;
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics", "DIRTY DYNAMIC command buffer frame %u", frameIndex);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics.KtSceneRenderer::UpdateDynamicProxies()", "dirty dynamic command buffer frame %u", frameIndex);
 
 		if (count > 0)
 		{
@@ -271,7 +271,7 @@ void KtSceneRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t fram
 		
 		UpdateDescriptorSetObjectBuffers(sortedGlobalProxies, frameIndex);
 		MarkDynamicProxiesNotDirty(frameIndex);
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics", "update DESCRIPTOR sets frame %u", frameIndex);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics.KtSceneRenderer::CmdDraw()", "update descriptor sets frame %u", frameIndex);
 	}
 
 	if (isUniformBufferDirty_[frameIndex])
@@ -286,13 +286,13 @@ void KtSceneRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t fram
 	{
 		isStaticCommandBufferDirty_[frameIndex] = false;
 		RecordStaticCommandBuffer(frameIndex);
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics", "update STATIC command buffer frame %u", frameIndex);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics.KtSceneRenderer::CmdDraw()", "update static command buffer frame %u", frameIndex);
 	}
 	if (isDynamicCommandBufferDirty_[frameIndex])
 	{
 		isDynamicCommandBufferDirty_[frameIndex] = false;
 		RecordDynamicCommandBuffer(frameIndex);
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics", "update DYNAMIC command buffer frame %u", frameIndex);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics.KtSceneRenderer::CmdDraw()", "update dynamic command buffer frame %u", frameIndex);
 	}
 
 	CmdExecuteCommandBuffers(commandBuffer, frameIndex);
@@ -396,7 +396,7 @@ void KtSceneRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const Proxie
 
 void KtSceneRenderer::CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
 {
-	const std::array<VkCommandBuffer, 2> commandBuffers =
+	const std::array<VkCommandBuffer, 2> commandBuffers 
 	{
 		staticCommandBuffers_[frameIndex],
 		dynamicCommandBuffers_[frameIndex]

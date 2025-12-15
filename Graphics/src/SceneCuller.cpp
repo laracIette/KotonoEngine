@@ -31,19 +31,19 @@ KtSceneCuller::ProxiesPool KtSceneCuller::ComputeNullCulling(const ProxiesPool& 
 	{
 		if (!proxy)
 		{
-			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "Graphics", "KtSceneCuller::ComputeNullCulling(): proxy is nullptr");
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "Graphics.KtSceneCuller::ComputeNullCulling()", "proxy is nullptr");
 			continue;
 		}
 
 		if (!proxy->shader)
 		{
-			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "Graphics", "KtSceneCuller::ComputeNullCulling(): shader is nullptr");
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "GraphicsKtSceneCuller::ComputeNullCulling()", "shader is nullptr");
 			continue;
 		}
 
 		if (!proxy->renderable)
 		{
-			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "Graphics", "KtSceneCuller::ComputeNullCulling(): renderable is nullptr");
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "GraphicsKtSceneCuller::ComputeNullCulling()", "renderable is nullptr");
 			continue;
 		}
 
@@ -59,10 +59,10 @@ KtSceneCuller::ProxiesPool KtSceneCuller::ComputeDistanceCulling(const ProxiesPo
 
 	for (auto* proxy : proxies)
 	{
-		const glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-		const glm::vec3 objectPosition = glm::vec3(proxy->objectData.modelMatrix[3]);
-		const float distance = glm::distance(cameraPosition, objectPosition);
-		static constexpr float maxDistance = 10.0f;
+		const glm::vec3 cameraPosition{ 0.0f, 0.0f, 0.0f };
+		const glm::vec3 objectPosition{ glm::vec3(proxy->objectData.modelMatrix[3]) };
+		const float distance{ glm::distance(cameraPosition, objectPosition) };
+		static constexpr float maxDistance{ 10.0f };
 		if (distance > maxDistance)
 		{
 			continue;

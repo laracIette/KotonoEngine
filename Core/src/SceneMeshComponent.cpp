@@ -179,11 +179,11 @@ void KSceneMeshComponent::Spin()
 void KSceneMeshComponent::SetMobilityStatic()
 {
     SetMobility(EMobility::Static);
-    KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Core", "static");
+    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core.KSceneMeshComponent::SetMobilityStatic()", "%s", GetName().c_str());
 }
 
 void KSceneMeshComponent::SetMobilityDynamic()
 {
     SetMobility(EMobility::Dynamic);
-    KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Core", "dynamic");
+    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core.KSceneMeshComponent::SetMobilityDynamic()", "%s", GetName().c_str());
 }

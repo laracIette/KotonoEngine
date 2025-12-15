@@ -46,7 +46,7 @@ std::string KtFile::ReadString() const
     // Check if path exists.
     if (!Exists())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to find a file at '%s'", path_.string().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.KtFile::ReadString()", "Failed to find a file at %s", path_.string().c_str());
         return "";
     }
 
@@ -55,7 +55,7 @@ std::string KtFile::ReadString() const
 
     if (!file.is_open())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to open the file at '%s'", path_.string().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.KtFile::ReadString()", "Failed to open the file at %s", path_.string().c_str());
         return "";
     }
 
@@ -72,7 +72,7 @@ std::vector<uint8_t> KtFile::ReadBinary() const
 {
     if (!Exists())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to find a file at '%s'", path_.string().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.KtFile::ReadBinary()", "Failed to find a file at %s", path_.string().c_str());
         return {};
     }
 
@@ -80,7 +80,7 @@ std::vector<uint8_t> KtFile::ReadBinary() const
 
     if (!file.is_open())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to open the file at '%s'", path_.string().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.KtFile::ReadBinary()", "Failed to open the file at %s", path_.string().c_str());
         return {};
     }
 
@@ -102,7 +102,7 @@ void KtFile::WriteString(const std::string_view data) const
 
     if (!file.is_open())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to open the file at '%s'", path_.string().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.KtFile::WriteString()", "Failed to open the file at %s", path_.string().c_str());
         return;
     }
 
@@ -120,7 +120,7 @@ void KtFile::WriteBinary(const std::span<uint32_t> data) const
 
     if (!file.is_open())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to open the file at '%s'", path_.string().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.KtFile::WriteBinary()", "Failed to open the file at %s", path_.string().c_str());
         return;
     }
 

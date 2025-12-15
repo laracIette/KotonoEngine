@@ -11,13 +11,13 @@ void KtSerializer::Serialize(const nlohmann::json& json, const std::filesystem::
 {
 	if (path.empty())
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO", "can't write data to empty path");
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO.KtSerializer::Serialize()", "can't write data to empty path");
 		return;
 	}
 
 	if (json.is_null())
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO", "can't write null json to '%s'", path.string().c_str());
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO.KtSerializer::Serialize()", "can't write null json to %s", path.string().c_str());
 		return;
 	}
 
@@ -31,14 +31,14 @@ void KtSerializer::Deserialize(nlohmann::json& json, const std::filesystem::path
 {
 	if (path.empty())
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO", "can't read data from empty path");
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO.KtSerializer::Deserialize()", "can't read data from empty path");
 		return;
 	}
 
 	const KtFile file(path);
 	if (!file.Exists())
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO", "file at path '%s' doesn't exist", path.string().c_str());
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO.KtSerializer::Deserialize()", "file at path %s doesn't exist", path.string().c_str());
 		return;
 	}
 

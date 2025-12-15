@@ -85,10 +85,9 @@ void KtInterfaceRenderer::Update(const uint32_t frameIndex)
 
 void KtInterfaceRenderer::Cleanup() const
 {
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics", "cleaning up 2D renderer");
 	vmaDestroyBuffer(Context.GetAllocator(), indexBuffer_.Buffer, indexBuffer_.Allocation);
 	vmaDestroyBuffer(Context.GetAllocator(), vertexBuffer_.Buffer, vertexBuffer_.Allocation);
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics", "cleaned up 2D renderer");
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics.KtInterfaceRenderer::Cleanup()", "cleaned up interface renderer");
 }
 
 void KtInterfaceRenderer::CreateVertexBuffer()

@@ -66,7 +66,7 @@ UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 		return object;
 	}
 
-	KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Core", "missing value for type %s in object factories", type.c_str());
+	KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Core.SObjectFactory::Get()", "missing value for type %s in object factories", type.c_str());
 	return nullptr;
 }
 

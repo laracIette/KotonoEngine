@@ -16,7 +16,7 @@ void SGame::Init()
 #   else
         scene_ = ObjectManager.Create<KScene>();
         scene_->guid_ = "6ed943411c1d0145-fa7e129d436fefc7-d610a013cfe163f9-48ab854138be189a";
-        scene_->Serialize();
+        //scene_->Serialize();
 #   endif
 
     scene_->SpawnSceneObjects();

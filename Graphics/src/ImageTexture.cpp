@@ -36,11 +36,10 @@ void KtImageTexture::Init()
 
 void KtImageTexture::Cleanup() const
 {
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Graphics", "cleaning up image texture");
 	vkDestroySampler(Context.GetDevice(), sampler_, nullptr);
 	vkDestroyImageView(Context.GetDevice(), imageView_, nullptr);
 	vmaDestroyImage(Context.GetAllocator(), image_, allocation_);
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Graphics", "cleaned up image texture");
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Graphics.KtImageTexture::Cleanup()", "cleaned up %s", Path().string().c_str());
 }
 
 void KtImageTexture::CreateTextureImage()
