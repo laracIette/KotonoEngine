@@ -47,5 +47,5 @@ target_include_directories(KotonoCommon
 # Preprocessor defines for all builds
 target_compile_definitions(KotonoCommon PUBLIC
     NOMINMAX
-    ROOT_DIRECTORY="${CMAKE_SOURCE_DIR}"
+    ENGINE_DIRECTORY="${CMAKE_SOURCE_DIR}"
 )

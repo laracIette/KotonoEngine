@@ -4,7 +4,7 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 
-const std::filesystem::path CorePath{ std::filesystem::path(ROOT_DIRECTORY) / "Core" };
+const std::filesystem::path CorePath{ std::filesystem::path(ENGINE_DIRECTORY) / "Core" };
 
 static std::string read_string(const std::filesystem::path& path)
 {

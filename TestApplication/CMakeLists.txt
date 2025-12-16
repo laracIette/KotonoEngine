@@ -45,10 +45,7 @@ else()
     target_link_libraries(KotonoTestApplication PRIVATE KotonoCore)
 endif()
 
-# --- Copy config file ---
-add_custom_command(TARGET KotonoTestApplication POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E echo "Copying config.json..."
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_CURRENT_SOURCE_DIR}/config.json"
-        "$<TARGET_FILE_DIR:KotonoTestApplication>/config.json"
+# Preprocessor defines for all builds
+target_compile_definitions(KotonoTestApplication PRIVATE
+    PROJECT_DIRECTORY="${CMAKE_CURRENT_SOURCE_DIR}"
 )

@@ -13,7 +13,7 @@ void KtPath::Init()
     //nlohmann::json json{};
     //KtSerializer::Deserialize(json, executableDirectory / "config.json");
 
-    rootPath_ = ROOT_DIRECTORY;
+    rootPath_ = ENGINE_DIRECTORY;
     frameworkPath_ = rootPath_ / "Graphics";
     enginePath_ = rootPath_ / "Core";
 
