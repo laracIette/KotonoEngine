@@ -1,15 +1,15 @@
 {
     "headers": [
         {
-            "modified": "2025-12-07-10:39:28.8187863",
+            "modified": "2025-12-06-18:47:01.4941780",
             "path": "Anchor.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8413449",
+            "modified": "2025-12-06-18:47:01.5041894",
             "path": "base_class.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8197848",
+            "modified": "2025-12-06-18:47:01.4946786",
             "path": "CoordinateSpace.h"
         },
         {
@@ -21,11 +21,11 @@
             "path": "Engine.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8207865",
+            "modified": "2025-12-06-18:47:01.4951806",
             "path": "Game.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8217859",
+            "modified": "2025-12-06-18:47:01.4956781",
             "path": "Guid.h"
         },
         {
@@ -33,39 +33,39 @@
             "path": "InputManager.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8217859",
+            "modified": "2025-12-06-18:47:01.4956781",
             "path": "Interface.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8227864",
+            "modified": "2025-12-06-18:47:01.4956781",
             "path": "InterfaceBoxComponent.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8237847",
+            "modified": "2025-12-06-18:47:01.4966846",
             "path": "InterfaceButtonComponent.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8242913",
+            "modified": "2025-12-06-18:47:01.4966846",
             "path": "InterfaceColliderComponent.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8252988",
+            "modified": "2025-12-06-18:47:01.4971916",
             "path": "InterfaceComponent.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8252988",
+            "modified": "2025-12-06-18:47:01.4976944",
             "path": "InterfaceImageComponent.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8263026",
+            "modified": "2025-12-06-18:47:01.4976944",
             "path": "InterfaceImageObject.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8273015",
+            "modified": "2025-12-06-18:47:01.4981911",
             "path": "InterfaceObject.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8283009",
+            "modified": "2025-12-06-18:47:01.4986909",
             "path": "InterfacePhysicsManager.h"
         },
         {
@@ -73,79 +73,79 @@
             "path": "log.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8516287",
+            "modified": "2025-12-06-18:47:01.5097020",
             "path": "math_utils.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8283009",
+            "modified": "2025-12-06-18:47:01.4986909",
             "path": "Mobility.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8293018",
+            "modified": "2025-12-06-18:47:01.4991910",
             "path": "Object.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8303002",
+            "modified": "2025-12-06-18:47:01.4996912",
             "path": "ObjectManager.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8313002",
+            "modified": "2025-12-06-18:47:01.5001947",
             "path": "Orientation.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8323004",
+            "modified": "2025-12-06-18:47:01.5001947",
             "path": "Ptr.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8333007",
+            "modified": "2025-12-06-18:47:01.5006914",
             "path": "Rect.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8333007",
+            "modified": "2025-12-06-18:47:01.5011913",
             "path": "RotationUnit.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8343003",
+            "modified": "2025-12-06-18:47:01.5011913",
             "path": "Scene.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8353474",
+            "modified": "2025-12-06-18:47:01.5016908",
             "path": "SceneComponent.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8353474",
+            "modified": "2025-12-06-18:47:01.5021913",
             "path": "SceneMeshComponent.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8363449",
+            "modified": "2025-12-06-18:47:01.5021913",
             "path": "SceneMeshObject.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8373468",
+            "modified": "2025-12-06-18:47:01.5026902",
             "path": "SceneObject.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8531975",
+            "modified": "2025-12-06-18:47:01.5102027",
             "path": "serialize.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8373468",
+            "modified": "2025-12-06-18:47:01.5031912",
             "path": "Task.h"
         },
         {
-            "modified": "2025-12-09-11:47:12.9091711",
+            "modified": "2025-12-08-20:00:18.0980387",
             "path": "TimeManager.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8393465",
+            "modified": "2025-12-06-18:47:01.5036892",
             "path": "Timer.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8393465",
+            "modified": "2025-12-06-18:47:01.5036892",
             "path": "Transform.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8403465",
+            "modified": "2025-12-06-18:47:01.5041894",
             "path": "Visibility.h"
         },
         {
@@ -153,12 +153,20 @@
             "path": "object_factories.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8303002",
+            "modified": "2025-12-06-18:47:01.4991910",
             "path": "ObjectFactory.h"
         },
         {
-            "modified": "2025-12-07-10:39:28.8197848",
+            "modified": "2025-12-06-18:47:01.4946786",
             "path": "Core.h"
+        },
+        {
+            "modified": "2025-12-16-19:53:02.1785260",
+            "path": "ProjectSettings.h"
+        },
+        {
+            "modified": "2025-12-16-18:29:28.5149248",
+            "path": "Setting.h"
         }
     ]
 }

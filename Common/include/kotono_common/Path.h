@@ -3,6 +3,7 @@
 class KtPath final
 {
 	friend class SCore;
+	friend void init_project_path();
 
 private:
 	void Init();

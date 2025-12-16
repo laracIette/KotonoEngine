@@ -1,18 +1,14 @@
 #include "Game.h"
 #include "ObjectManager.h"
 #include "Scene.h"
+#include "ProjectSettings.h"
 #include <kotono_common/Path.h>
-#include <kotono_io/Serializer.h>
-#include <nlohmann/json.hpp>
 #include "serialize.h"
 
 void SGame::Init()
 {
-	nlohmann::json json{};
-	KtSerializer::Deserialize(json, Path.Project() / "config.json");
-
 #   if false
-	    deserialize(json.at("startupScene"), scene_);
+	    deserialize(ProjectSettings.Get<std::string>("startupScene"), scene_);
 #   else
         scene_ = ObjectManager.Create<KScene>();
         scene_->guid_ = "6ed943411c1d0145-fa7e129d436fefc7-d610a013cfe163f9-48ab854138be189a";

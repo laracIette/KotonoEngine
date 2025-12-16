@@ -1,5 +1,6 @@
 #pragma once
 #include <nlohmann/json_fwd.hpp>
+#include <filesystem>
 class KtSerializer final
 {
 public:
