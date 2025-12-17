@@ -408,4 +408,4 @@ FodyWeavers.xsd
 
 build/
 
-Graphics/shaders/shaders.ktregistry
+*.ktregistry
