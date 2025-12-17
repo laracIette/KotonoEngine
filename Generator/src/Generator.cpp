@@ -116,7 +116,7 @@ void Generator::GenerateUpdated() const
 	std::cout << "Generating updated..." << std::endl;
 
 	nlohmann::json json{};
-	const auto registryPath{ CorePath / "include" / "kotono_core" / "objects.ktregistry" };
+	const auto registryPath{ CorePath / "objects.ktregistry" };
 	read_data(registryPath, json);
 
 	const auto headerDirectoryPath{ CorePath / "include" / "kotono_core" };
