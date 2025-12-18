@@ -401,11 +401,8 @@ FodyWeavers.xsd
 
 *.idb
 
-*.spv
-
 
 # --- Kotono Engine ---
 
-build/
-
+*.spv
 *.ktregistry

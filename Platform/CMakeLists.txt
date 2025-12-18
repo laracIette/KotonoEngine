@@ -54,7 +54,7 @@ target_sources(KotonoPlatform
     PRIVATE ${KPLATFORM_SOURCES}
 )
 
-set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/ThirdParty")
+set(THIRD_PARTY_DIR "${ENGINE_PATH}/ThirdParty")
 
 # Include directories
 target_include_directories(KotonoPlatform

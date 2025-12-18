@@ -12,9 +12,6 @@ if (MSVC)
     add_compile_options(/sdl)
 endif()
 
-# --- Editor option (propagates to child targets) ---
-option(WITH_EDITOR "Build the Kotono Editor" ON)
-
 # --- Add all modules (subprojects) ---
 add_subdirectory(Common)
 add_subdirectory(Generator)
@@ -29,11 +26,4 @@ add_subdirectory(Interface)
 add_subdirectory(Core)
 if (WITH_EDITOR)
     add_subdirectory(Editor)
-endif()
-add_subdirectory(TestApplication)
-
-if (MSVC)
-    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        PROPERTY VS_STARTUP_PROJECT KotonoTestApplication
-    )
 endif()
