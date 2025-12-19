@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(SPIRVReflect LANGUAGES CXX)
+project(SPIRVReflect LANGUAGES C CXX)
 
 if (MSVC)
     # Enable SDL security checks

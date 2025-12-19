@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(KotonoInput LANGUAGES CXX)
+project(KotonoInput LANGUAGES C CXX)
 
 if (MSVC)
     # Enable SDL security checks
