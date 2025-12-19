@@ -4,7 +4,11 @@
 
 These instructions are to be run within your project folder, see the *[Kotono Template Project](https://github.com/laracIette/KotonoTemplateProject)*.
 
-- To build the solution run *[build.sh](build.sh)*.
+- To build the project run *[generate_cmakepresets.sh](generate_cmakepresets.sh)*.
+
+    - This generates a *CMakePresets.json* that your IDE or cmake in the command line can generate a build from.
+
+    - Use the command 'cmake --build --preset release' to build manually (replace 'release' with 'debug' for the debug build).
 
     - All generated build files will be located in *build/*.
 
