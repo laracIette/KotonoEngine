@@ -7,11 +7,13 @@
 
 void SGame::Init()
 {
+    const auto startupScene{ ProjectSettings.Get<std::string>("/startupScene") };
+
 #   if false
-	    deserialize(ProjectSettings.Get<std::string>("startupScene"), scene_);
+	    deserialize(startupScene, scene_);
 #   else
         scene_ = ObjectManager.Create<KScene>();
-        scene_->guid_ = "6ed943411c1d0145-fa7e129d436fefc7-d610a013cfe163f9-48ab854138be189a";
+        scene_->guid_ = startupScene;
         //scene_->Serialize();
 #   endif
 
