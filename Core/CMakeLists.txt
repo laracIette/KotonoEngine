@@ -14,6 +14,8 @@ add_library(KotonoCore STATIC)
 # Require C++20
 target_compile_features(KotonoCore PUBLIC cxx_std_20)
 
+set_target_properties(KotonoCore PROPERTIES FOLDER "KotonoEngine")
+
 set(KCORE_HEADERS
     "include/kotono_core/Anchor.h"
     "include/kotono_core/base_class.h"
@@ -120,14 +122,6 @@ target_sources(KotonoCore
     PRIVATE ${KCORE_GENERATED_HEADERS}
     PRIVATE ${KCORE_GENERATED_SOURCES}
 )
-
-# Main groups
-source_group("Header Files" FILES ${KCORE_HEADERS})
-source_group("Source Files" FILES ${KCORE_SOURCES})
-
-# Generated groups
-source_group("Header Files\\Generated" FILES ${KCORE_GENERATED_HEADERS})
-source_group("Source Files\\Generated" FILES ${KCORE_GENERATED_SOURCES})
 
 # Include directories
 target_include_directories(KotonoCore

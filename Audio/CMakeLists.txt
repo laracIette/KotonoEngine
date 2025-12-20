@@ -37,6 +37,8 @@ add_library(KotonoAudio STATIC)
 # Require C++20
 target_compile_features(KotonoAudio PUBLIC cxx_std_20)
 
+set_target_properties(KotonoAudio PROPERTIES FOLDER "KotonoEngine")
+
 set(KAUDIO_HEADERS
     "include/kotono_audio/AudioManager.h"
 )

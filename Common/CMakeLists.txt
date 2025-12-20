@@ -14,6 +14,8 @@ add_library(KotonoCommon STATIC)
 # Require C++20
 target_compile_features(KotonoCommon PUBLIC cxx_std_20)
 
+set_target_properties(KotonoCommon PROPERTIES FOLDER "KotonoEngine")
+
 set(KCOMMON_HEADERS
     "include/kotono_common/Average.h"
     "include/kotono_common/bitwise_utils.h"

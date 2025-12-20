@@ -14,6 +14,8 @@ add_library(KotonoEditor STATIC)
 # Require C++20
 target_compile_features(KotonoEditor PUBLIC cxx_std_20)
 
+set_target_properties(KotonoEditor PROPERTIES FOLDER "KotonoEngine")
+
 set(KEDITOR_HEADERS
     "include/kotono_editor/Camera.h"
     "include/kotono_editor/DrawTimeText.h"

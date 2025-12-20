@@ -14,6 +14,8 @@ add_library(KotonoInterface STATIC)
 # Require C++20
 target_compile_features(KotonoInterface PUBLIC cxx_std_20)
 
+set_target_properties(KotonoInterface PROPERTIES FOLDER "KotonoEngine")
+
 set(KINTERFACE_HEADERS
     "include/kotono_interface/Box.h"
     "include/kotono_interface/Button.h"

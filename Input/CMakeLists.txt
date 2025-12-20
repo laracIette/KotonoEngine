@@ -14,6 +14,8 @@ add_library(KotonoInput STATIC)
 # Require C++20
 target_compile_features(KotonoInput PUBLIC cxx_std_20)
 
+set_target_properties(KotonoInput PROPERTIES FOLDER "KotonoEngine")
+
 set(KINPUT_HEADERS
     "include/kotono_input/Button.h"
     "include/kotono_input/InputManager.h"

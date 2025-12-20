@@ -33,6 +33,8 @@ add_library(KotonoPlatform STATIC)
 # Require C++20
 target_compile_features(KotonoPlatform PUBLIC cxx_std_20)
 
+set_target_properties(KotonoPlatform PROPERTIES FOLDER "KotonoEngine")
+
 set(KPLATFORM_HEADERS
     "include/kotono_platform/AllocatedBuffer.h"
     "include/kotono_platform/Context.h"

@@ -14,6 +14,8 @@ add_executable(KotonoGenerator)
 # Enable C++20
 target_compile_features(KotonoGenerator PRIVATE cxx_std_20)
 
+set_target_properties(KotonoGenerator PROPERTIES FOLDER "KotonoEngine")
+
 # Collect sources
 set(KGENERATOR_HEADERS
     "include/kotono_generator/Generator.h"

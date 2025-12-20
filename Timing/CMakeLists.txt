@@ -14,6 +14,8 @@ add_library(KotonoTiming STATIC)
 # Require C++20
 target_compile_features(KotonoTiming PUBLIC cxx_std_20)
 
+set_target_properties(KotonoTiming PROPERTIES FOLDER "KotonoEngine")
+
 set(KTIMING_HEADERS
     "include/kotono_timing/Clock.h"
     "include/kotono_timing/Stopwatch.h"

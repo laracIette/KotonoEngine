@@ -14,6 +14,8 @@ add_library(KotonoIO STATIC)
 # Require C++20
 target_compile_features(KotonoIO PUBLIC cxx_std_20)
 
+set_target_properties(KotonoIO PROPERTIES FOLDER "KotonoEngine")
+
 set(KIO_HEADERS
     "include/kotono_io/File.h"
     "include/kotono_io/FileExplorer.h"

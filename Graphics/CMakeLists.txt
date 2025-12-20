@@ -40,6 +40,8 @@ add_library(KotonoGraphics STATIC)
 # Require C++20
 target_compile_features(KotonoGraphics PUBLIC cxx_std_20)
 
+set_target_properties(KotonoGraphics PROPERTIES FOLDER "KotonoEngine")
+
 set(KGRAPHICS_HEADERS
     "include/kotono_graphics/Color.h"
     "include/kotono_graphics/Font.h"
