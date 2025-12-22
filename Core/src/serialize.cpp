@@ -9,7 +9,6 @@
 #include <kotono_graphics/Model.h>
 #include <kotono_graphics/ModelManager.h>
 #include <filesystem>
-#include "Ptr.h"
 #include "Object.h"
 #include "Transform.h"
 #include "Rect.h"

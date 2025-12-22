@@ -32,7 +32,7 @@ UGuid::operator std::string() const
             result.push_back('-');
         }
 
-        const uint64_t value = data_[i];
+        const uint64_t value{ data_[i] };
         for (int j{ 60 }; j >= 0; j -= 4)
         {  // 16 nibbles (4 bits per hex digit)
             result.push_back(hexDigits[(value >> j) & 0xF]);

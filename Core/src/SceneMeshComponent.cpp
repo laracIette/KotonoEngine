@@ -16,12 +16,12 @@
 
 static KtShader* WireframeShader = nullptr;
 
-KSceneMeshComponent::KSceneMeshComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSceneObject>& owner) :
-    Base(ptrOwner, owner)
+KSceneMeshComponent::KSceneMeshComponent(UPtrOwnerBase* ptrOwner) :
+    Base(ptrOwner)
 {
     if (!WireframeShader)
     {
-        const auto path{ ::Path.Framework() / R"(shaders\wireframe3D.ktshader)" };
+        const auto path{ KtPath::Graphics() / R"(shaders\wireframe3D.ktshader)" };
         WireframeShader = ShaderManager.Get(path);
     }
 }
@@ -80,20 +80,6 @@ void KSceneMeshComponent::SetModel(KtModel* model)
     model_ = model;
 }
 
-//void KSceneMeshComponent::SerializeTo(nlohmann::json& json) const
-//{
-//    Base::SerializeTo(json);
-//    json["shader"] = shader_ ? shader_->Path() : "";
-//    json["model"] = model_ ? model_->Path() : "";
-//}
-
-//void KSceneMeshComponent::DeserializeFrom(const nlohmann::json& json)
-//{
-//    Base::DeserializeFrom(json);
-//    shader_ = ShaderManager.Get(json["shader"]);
-//    model_ = ModelManager.Get(json["model"]);
-//}
-
 void KSceneMeshComponent::Spawn()
 {
     Base::Spawn();
@@ -122,8 +108,8 @@ void KSceneMeshComponent::CreateModelProxy()
     modelProxy_.shader = shader_;
     modelProxy_.renderable = model_;
     modelProxy_.objectData.modelMatrix = ModelMatrix();
-    modelProxy_.scissor.offset = Owner()->GetViewport()->GetOffset();
-    modelProxy_.scissor.extent = Owner()->GetViewport()->GetExtent();
+    modelProxy_.scissor.offset = GetOwner()->GetViewport()->GetOffset();
+    modelProxy_.scissor.extent = GetOwner()->GetViewport()->GetExtent();
 #   ifdef _DEBUG
         modelProxy_.source = this;
 #   endif

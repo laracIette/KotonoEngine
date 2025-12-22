@@ -12,7 +12,7 @@ class KSceneMeshComponent : public KSceneComponent
 	GENERATED_KSCENEMESHCOMPONENT()
 
 public:
-	KSceneMeshComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSceneObject>& owner);
+	KSceneMeshComponent(UPtrOwnerBase* ptrOwner);
 
 protected:
 	void Init() override;

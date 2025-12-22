@@ -39,7 +39,6 @@ set(KCORE_HEADERS
     "include/kotono_core/ObjectManager.h"
     "include/kotono_core/Orientation.h"
     "include/kotono_core/ProjectSettings.h"
-    "include/kotono_core/Ptr.h"
     "include/kotono_core/Rect.h"
     "include/kotono_core/RotationUnit.h"
     "include/kotono_core/Scene.h"

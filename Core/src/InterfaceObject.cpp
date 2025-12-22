@@ -8,8 +8,8 @@ RInterfaceObject::RInterfaceObject(UPtrOwnerBase* ptrOwner) :
 	Base(ptrOwner)
 {
 	viewport_ = &WindowViewport;
-	rootComponent_ = ObjectManager.Create<KInterfaceComponent>(Ptr<RInterfaceObject>());
-	AddComponent(rootComponent_);
+	rootComponent_ = ObjectManager.Create<KInterfaceComponent>();
+	rootComponent_->SetOwner(Ptr<RInterfaceObject>());
 }
 
 void RInterfaceObject::Init()

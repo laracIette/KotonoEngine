@@ -22,14 +22,14 @@ class KInterfaceComponent : public KObject
 	friend class RInterfaceObject;
 
 public:
-	KInterfaceComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner);
+	KInterfaceComponent(UPtrOwnerBase* ptrOwner);
 
 protected:
 	void Init() override;
 	void Cleanup() override;
 
 public:
-	const UPtr<RInterfaceObject>& Owner() const;
+	const UPtr<RInterfaceObject>& GetOwner() const;
 	const UPtr<KInterfaceComponent>& GetParent() const;
 	const URect& GetRect() const;
 	EVisibility GetVisibility() const;
@@ -55,6 +55,7 @@ public:
 
 	const KtColor& GetColor() const;
 
+	void SetOwner(const UPtr<RInterfaceObject>& owner);
 	void SetVisibility(const EVisibility visibility, const bool propagateToChildren = false);
 	void SetLayer(const int32_t layer);
 
@@ -103,7 +104,7 @@ public:
 	void RemoveChildren(const UPtr<KInterfaceComponent>& interfaceComponent);
 
 private:
-	const UPtr<RInterfaceObject> owner_;
+	UPtr<RInterfaceObject> owner_;
 	UPtr<KInterfaceComponent> parent_;
 	KtPool<UPtr<KInterfaceComponent>> children_;
 	size_t childrenIndex_;

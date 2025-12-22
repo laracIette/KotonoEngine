@@ -2,7 +2,7 @@
 #include "File.h"
 
 KtFileExplorer::KtFileExplorer() :
-    directoryPath_("")
+    directoryPath_(ENGINE_DIRECTORY)
 {
 }
 

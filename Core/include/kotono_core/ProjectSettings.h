@@ -1,15 +1,16 @@
 #pragma once
 #include <kotono_io/Serializer.h>
-#include <kotono_common/Path.h>
 #include <nlohmann/json.hpp>
 class SProjectSettings final
 {
 public:
+	static std::filesystem::path Path();
+
 	template <typename T>
 	static T Get(const std::string& name)
 	{
 		nlohmann::json json{};
-		KtSerializer::Deserialize(json, Path.Project() / "projectSettings.json");
+		KtSerializer::Deserialize(json, Path());
 
 		return json.at(nlohmann::json::json_pointer(name)).get<T>();
 	}
@@ -17,11 +18,9 @@ public:
 	static void Set(const std::string& name, const auto& value)
 	{
 		nlohmann::json json{};
-		KtSerializer::Deserialize(json, Path.Project() / "projectSettings.json");
+		KtSerializer::Deserialize(json, Path());
 
 		json.at(nlohmann::json::json_pointer(name)) = value;
-		KtSerializer::Serialize(json, Path.Project() / "projectSettings.json");
+		KtSerializer::Serialize(json, Path());
 	}
 };
-
-inline SProjectSettings ProjectSettings;

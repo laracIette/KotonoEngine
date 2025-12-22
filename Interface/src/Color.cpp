@@ -14,8 +14,8 @@ WColor::WColor(const ColorSettings& colorSettings) :
 
 void WColor::DisplayInternal(DisplaySettings displaySettings)
 {
-	static const auto shaderPath = Path.Framework() / R"(shaders\flatColor2D.ktshader)";
-	static const auto imagePath = Path.Framework() / R"(assets\textures\white_texture.jpg)";
+	static const auto shaderPath = KtPath::Graphics() / R"(shaders\flatColor2D.ktshader)";
+	static const auto imagePath = KtPath::Graphics() / R"(assets\textures\white_texture.jpg)";
 
 	colorProxy_ = Renderer.GetInterfaceRenderer().CreateProxy();
 	colorProxy_->shader = ShaderManager.Get(shaderPath);

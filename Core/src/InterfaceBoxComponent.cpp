@@ -8,8 +8,8 @@
 #include <kotono_graphics/ImageTextureManager.h>
 #include <kotono_platform/WindowViewport.h>
 
-KInterfaceBoxComponent::KInterfaceBoxComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner) :
-	Base(ptrOwner, owner)
+KInterfaceBoxComponent::KInterfaceBoxComponent(UPtrOwnerBase* ptrOwner) :
+	Base(ptrOwner)
 {
     boxProxy_ = Renderer.GetInterfaceRenderer().CreateProxy();
 }
@@ -35,8 +35,8 @@ void KInterfaceBoxComponent::Cleanup()
 
 void KInterfaceBoxComponent::CreateBoxProxy()
 {
-    const auto shaderPath{ ::Path.Framework() / R"(shaders\flatColor2D.ktshader)" };
-    const auto texturePath{ ::Path.Framework() / R"(assets\textures\white_texture.jpg)" };
+    const auto shaderPath{ KtPath::Graphics() / R"(shaders\flatColor2D.ktshader)" };
+    const auto texturePath{ KtPath::Graphics() / R"(assets\textures\white_texture.jpg)" };
     
     boxProxy_->shader = ShaderManager.Get(shaderPath);
     boxProxy_->renderable = ImageTextureManager.Get(texturePath);

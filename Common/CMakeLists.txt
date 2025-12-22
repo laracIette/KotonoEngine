@@ -28,7 +28,8 @@ set(KCOMMON_HEADERS
     "include/kotono_common/log.h"
     "include/kotono_common/LogImportanceLevel.h"
     "include/kotono_common/Path.h"
-    "include/kotono_common/Pool.h"
+    "include/kotono_common/Pool.h"    
+    "include/kotono_common/Ptr.h"
 )
 set(KCOMMON_SOURCES
     "src/hash_utils.cpp"

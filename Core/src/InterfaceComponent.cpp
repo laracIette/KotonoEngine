@@ -11,19 +11,13 @@
 #include <kotono_input/InputManager.h>
 #include <kotono_common/log.h>
 
-KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner) :
+KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner) :
     Base(ptrOwner),
-    owner_(owner),
     visibility_(EVisibility::Visible),
     modelMatrix_([this]() { return TranslationMatrix() * RotationMatrix() * ScaleMatrix(); }),
     color_(KtColor::White())
 {
     eventRectUpdated_.AddListener(KtDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
-
-    if (Owner()->RootComponent() != this)
-    {
-        SetParent(Owner()->RootComponent(), ECoordinateSpace::Relative);
-    }
 
     boundsProxy_ = Renderer.GetInterfaceRenderer().CreateProxy();
 }
@@ -31,6 +25,11 @@ KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner, const UPtr<RIn
 void KInterfaceComponent::Init()
 {
     Base::Init();
+
+    if (owner_->RootComponent() != this)
+    {
+        SetParent(owner_->RootComponent(), ECoordinateSpace::Relative);
+    }
 
     CreateBoundsProxy();
     Renderer.GetInterfaceRenderer().Register(boundsProxy_);
@@ -48,7 +47,7 @@ void KInterfaceComponent::Cleanup()
 
     SetParent(nullptr, ECoordinateSpace::Relative);
 
-    Owner()->RemoveComponent(Ptr<KInterfaceComponent>());
+    owner_->RemoveComponent(Ptr<KInterfaceComponent>());
 
     Renderer.GetInterfaceRenderer().Unregister(boundsProxy_);
     Renderer.GetInterfaceRenderer().DeleteProxy(boundsProxy_);
@@ -56,7 +55,7 @@ void KInterfaceComponent::Cleanup()
     Base::Cleanup();
 }
 
-const UPtr<RInterfaceObject>& KInterfaceComponent::Owner() const
+const UPtr<RInterfaceObject>& KInterfaceComponent::GetOwner() const
 {
     return owner_;
 }
@@ -174,6 +173,11 @@ EAnchor KInterfaceComponent::GetAnchor() const
 const KtColor& KInterfaceComponent::GetColor() const
 {
     return color_;
+}
+
+void KInterfaceComponent::SetOwner(const UPtr<RInterfaceObject>& owner)
+{
+	owner_ = owner;
 }
 
 void KInterfaceComponent::SetVisibility(const EVisibility visibility, const bool propagateToChildren)
@@ -351,14 +355,14 @@ void KInterfaceComponent::Rotate(const float rotation, const ERotationUnit unit)
 
 void KInterfaceComponent::SetScreenPosition(const glm::vec2& screenPosition)
 {
-    const auto viewportSize = glm::vec2(Owner()->GetViewport()->GetExtent());
+    const auto viewportSize = glm::vec2(GetOwner()->GetViewport()->GetExtent());
     const auto newPosition = screenPosition / viewportSize * 2.0f - glm::vec2(1.0f);
     SetWorldPosition(newPosition);
 }
 
 void KInterfaceComponent::SetScreenSize(const glm::vec2& screenSize)
 {
-    const auto viewportSize = glm::vec2(Owner()->GetViewport()->GetExtent());
+    const auto viewportSize = glm::vec2(GetOwner()->GetViewport()->GetExtent());
     const auto newSize = screenSize / viewportSize * 2.0f;
     SetWorldSize(newSize);
 }
@@ -409,8 +413,8 @@ glm::mat4 KInterfaceComponent::RotationMatrix() const
 
 glm::mat4 KInterfaceComponent::ScaleMatrix() const
 {
-    const auto viewportSize = glm::vec2(Owner()->GetViewport()->GetExtent());
-    const float aspectRatio = Owner()->GetViewport()->GetAspectRatio();
+    const auto viewportSize = glm::vec2(GetOwner()->GetViewport()->GetExtent());
+    const float aspectRatio = GetOwner()->GetViewport()->GetAspectRatio();
     const float rotation = GetWorldRotation(ERotationUnit::Radians);
 
     // x *= 1 at rot 0
@@ -494,8 +498,8 @@ void KInterfaceComponent::RemoveChildren(const UPtr<KInterfaceComponent>& interf
 
 void KInterfaceComponent::CreateBoundsProxy()
 {
-    const auto shaderPath{ ::Path.Framework() / R"(shaders\flatColor2D.ktshader)" };
-    const auto texturePath{ ::Path.Framework() / R"(assets\textures\white_texture.jpg)" };
+    const auto shaderPath{ KtPath::Graphics() / R"(shaders\flatColor2D.ktshader)" };
+    const auto texturePath{ KtPath::Graphics() / R"(assets\textures\white_texture.jpg)" };
 
     boundsProxy_->shader = ShaderManager.Get(shaderPath);
     boundsProxy_->renderable = ImageTextureManager.Get(texturePath);

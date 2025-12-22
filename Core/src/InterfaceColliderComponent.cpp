@@ -3,8 +3,8 @@
 #include <kotono_input/InputManager.h>
 #include <kotono_platform/WindowViewport.h>
 
-KInterfaceColliderComponent::KInterfaceColliderComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner) :
-	Base(ptrOwner, owner)
+KInterfaceColliderComponent::KInterfaceColliderComponent(UPtrOwnerBase* ptrOwner) :
+	Base(ptrOwner)
 {
 	InterfacePhysicsManager.Register(this);
 }

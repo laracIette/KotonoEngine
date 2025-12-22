@@ -1,9 +1,9 @@
 #pragma once
-#include <nlohmann/json_fwd.hpp>
-#include <glm/fwd.hpp>
-#include "Ptr.h"
-#include "Visibility.h"
 #include "Mobility.h"
+#include "Visibility.h"
+#include <glm/fwd.hpp>
+#include <kotono_common/Ptr.h>
+#include <nlohmann/json_fwd.hpp>
 
 #define SERIALIZE
 
@@ -59,8 +59,7 @@ void serialize(nlohmann::json& json, const KtImageTexture* v);
 void serialize(nlohmann::json& json, const KtModel* v);
 
 void serialize_kobject(nlohmann::json& json, const UPtr<KObject>& v);
-template <class T>
-	requires std::is_base_of_v<KObject, T>
+template <std::derived_from<KObject> T>
 void serialize(nlohmann::json& json, const UPtr<T>& v)
 {
 	serialize_kobject(json, v);
@@ -102,8 +101,7 @@ void deserialize(const nlohmann::json& json, KtImageTexture*& v);
 void deserialize(const nlohmann::json& json, KtModel*& v);
 
 UPtr<KObject> deserialize_kobject(const nlohmann::json& json);
-template <class T>
-	requires std::is_base_of_v<KObject, T>
+template <std::derived_from<KObject> T>
 void deserialize(const nlohmann::json& json, UPtr<T>& v)
 {
 	v = deserialize_kobject(json);

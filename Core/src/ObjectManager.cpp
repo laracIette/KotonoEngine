@@ -13,7 +13,7 @@
 #include <nlohmann/json.hpp>
 #include <kotono_io/Serializer.h>
 
-#define KT_LOG_IMPORTANCE_LEVEL_OBJECT KT_LOG_IMPORTANCE_LEVEL_NONE
+#define KT_LOG_IMPORTANCE_LEVEL_OBJECT KT_LOG_IMPORTANCE_LEVEL_HIGH
 
 void SObjectManager::Init()
 {
@@ -31,22 +31,13 @@ void SObjectManager::Init()
 
 void SObjectManager::Cleanup()
 {
-	KtPool<UPtrOwnerBase*> objects{};
-	objects.Merge(inits_);
-	objects.Merge(objects_);
-	for (auto* ptr : objects)
+	KtPool<UPtrOwnerBase*> deletes{};
+	deletes.Merge(inits_);
+	deletes.Merge(objects_);
+	for (int64_t i{ deletes.LastIndex() }; i >= 0; --i)
 	{
-		auto* object{ static_cast<KObject*>(ptr->Get()) };
-		object->Cleanup();
+		Delete(deletes[i]);
 	}
-	for (auto* ptr : objects)
-	{
-		auto* object{ static_cast<KObject*>(ptr->Get()) };
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core.SObjectManager::Cleanup()", "delete object %s", object->GetName().c_str());
-		delete object;
-		delete ptr;
-	}
-	deletes_.Clear();
 
 	InputManager.Keyboard().EventKey(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
 		.RemoveListener(KtDelegate(this, &SObjectManager::Quit));
@@ -65,7 +56,33 @@ void SObjectManager::Register(KObject* object, UPtrOwnerBase* ptrOwner)
 
 void SObjectManager::Delete(UPtrOwnerBase* ptrOwner)
 {
-	deletes_.Add(ptrOwner);
+	auto* object{ static_cast<KObject*>(ptrOwner->Get()) };
+
+	object->Cleanup();
+
+	if (object->isInit_)
+	{
+		const size_t index{ object->objectIndex_ };
+		if (objects_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+		{
+			auto* swapped{ static_cast<KObject*>(objects_[index]->Get()) };
+			swapped->objectIndex_ = index;
+		}
+	}
+	else
+	{
+		const size_t index{ object->initIndex_ };
+		if (inits_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+		{
+			auto* swapped{ static_cast<KObject*>(inits_[index]->Get()) };
+			swapped->initIndex_ = index;
+		}
+	}
+
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core.SObjectManager::Delete()", "delete object %s", object->GetName().c_str());
+
+	delete object;
+	delete ptrOwner;
 }
 
 void SObjectManager::Quit()
@@ -93,50 +110,6 @@ void SObjectManager::InitObjects()
 	inits_.Clear();
 
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core.SObjectManager::InitObjects()", "object count %llu", objects_.size());
-}
-
-void SObjectManager::DeleteObjects()
-{
-	if (deletes_.Empty())
-	{
-		return;
-	}
-
-	for (size_t i{ 0 }; i < deletes_.size(); ++i)
-	{
-		auto* ptr{ deletes_[i] };
-		auto* object{ static_cast<KObject*>(ptr->Get()) };
-
-		object->Cleanup();
-
-		if (object->isInit_)
-		{
-			const size_t index{ object->objectIndex_ };
-			if (objects_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
-			{
-				auto* object{ static_cast<KObject*>(objects_[index]->Get()) };
-				object->objectIndex_ = index;
-			}
-		}
-		else
-		{
-			const size_t index{ object->initIndex_ };
-			if (inits_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
-			{
-				auto* object{ static_cast<KObject*>(inits_[index]->Get()) };
-				object->initIndex_ = index;
-			}
-		}
-	}
-	for (auto* ptr : deletes_)
-	{
-		auto* object{ static_cast<KObject*>(ptr->Get()) };
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core.SObjectManager::DeleteObjects()", "delete object %s", object->GetName().c_str());
-		delete object;
-		delete ptr;
-	}
-
-	deletes_.Clear();
 }
 
 const UPtr<KObject>& SObjectManager::SelectedObject() const
@@ -170,7 +143,7 @@ void SObjectManager::OnMouseButtonLeftPressed()
 
 	if (selectedComponent)
 	{
-		selectedObject_ = selectedComponent->Owner();
+		selectedObject_ = selectedComponent->GetOwner();
 	}
 
 	if (selectedObject_)

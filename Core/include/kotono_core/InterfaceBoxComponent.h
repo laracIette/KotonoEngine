@@ -6,7 +6,7 @@ class KInterfaceBoxComponent : public KInterfaceComponent
 	GENERATED_KINTERFACEBOXCOMPONENT()
 
 public:
-	KInterfaceBoxComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner);
+	KInterfaceBoxComponent(UPtrOwnerBase* ptrOwner);
 	
 protected:
 	void Init() override;

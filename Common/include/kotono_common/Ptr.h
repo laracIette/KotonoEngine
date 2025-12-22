@@ -1,6 +1,14 @@
 #pragma once
 #include <kotono_common/Pool.h>
 #include <type_traits>
+#include <concepts>
+
+template <typename T, typename Derived>
+concept BaseOf = std::is_base_of_v<T, Derived>;
+
+template <typename T, typename Base>
+concept DerivedFrom = std::is_base_of_v<Base, T>;
+
 template <class T>
 class UPtr;
 
@@ -18,7 +26,6 @@ class UPtrOwner final : public UPtrOwnerBase
 {
 	using Child = UPtr<T>;
 	friend Child;
-	friend class SObjectManager;
 
 public:
 	using PointerType = T;
@@ -36,7 +43,7 @@ public:
 
 	void Set(void* pointer) override
 	{
-		pointer_ = static_cast<T*>(pointer);
+		pointer_ = static_cast<PointerType*>(pointer);
 	}
 
 	void* Get() const override
@@ -45,7 +52,7 @@ public:
 	}
 
 private:
-	T* pointer_{ nullptr };
+	PointerType* pointer_{ nullptr };
 	KtPool<Child*> children_{};
 };
 
@@ -71,15 +78,13 @@ public:
 		SetOwner(other.owner_);
 	}
 
-	template <class U>
-		requires std::is_base_of_v<T, U>
+	template <DerivedFrom<PointerType> U>
 	UPtr(const UPtr<U>& other)
 	{
 		SetOwner(reinterpret_cast<Owner*>(other.GetOwner())); // GetOwner() because different type
 	}
 
-	template <class V>
-		requires std::is_base_of_v<V, T>
+	template <BaseOf<PointerType> V>
 	UPtr(const UPtr<V>& other)
 	{
 		SetOwner(reinterpret_cast<Owner*>(other.GetOwner()));
@@ -90,16 +95,14 @@ public:
 		SetOwner(nullptr);
 	}
 
-	template <class U>
-		requires std::is_base_of_v<T, U>
+	template <DerivedFrom<PointerType> U>
 	UPtr& operator=(const UPtr<U>& other)
 	{
 		SetOwner(reinterpret_cast<Owner*>(other.GetOwner())); 
 		return *this;
 	}
 
-	template <class V>
-		requires std::is_base_of_v<V, T>
+	template <BaseOf<PointerType> V>
 	UPtr& operator=(const UPtr<V>& other)
 	{
 		SetOwner(reinterpret_cast<Owner*>(other.GetOwner()));
@@ -126,17 +129,17 @@ public:
 		return owner_ == other.owner_;
 	}
 
-	constexpr bool operator==(T* ptr) const noexcept
+	constexpr bool operator==(PointerType* ptr) const noexcept
 	{
 		return owner_ && owner_->pointer_ == ptr;
 	}
 
-	constexpr T* Get() const noexcept
+	constexpr PointerType* Get() const noexcept
 	{
 		return owner_->pointer_;
 	}
 
-	constexpr T* operator->() const noexcept
+	constexpr PointerType* operator->() const noexcept
 	{
 		return owner_->pointer_;
 	}

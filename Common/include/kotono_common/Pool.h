@@ -85,6 +85,11 @@ public:
 		data_.reserve(size);
 	}
 
+	constexpr void resize(const size_t size)
+	{
+		data_.resize(size);
+	}
+
 	constexpr void Append(const KtPool& pool)
 	{
 		data_.insert(end(), pool.begin(), pool.end());

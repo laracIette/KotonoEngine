@@ -292,7 +292,7 @@ void KtShader::CreateGraphicsPipeline()
 	KtSerializer::Deserialize(json, path_);
 	for (const auto& shader : json["shaders"])
 	{
-		const auto path{ ::Path.Framework() / "shaders" / shader["path"] };
+		const auto path{ KtPath::Graphics() / "shaders" / shader["path"] };
 		std::vector<uint8_t> shaderCode = KtFile(path).ReadBinary();
 
 		VkShaderModule shaderModule;
@@ -524,7 +524,7 @@ void KtShader::CreateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutB
 		return;
 	}
 
-	static const auto path{ ::Path.Framework() / "assets" / "textures" / "default_texture.jpg"};
+	static const auto path{ KtPath::Graphics() / "assets" / "textures" / "default_texture.jpg"};
 	static const auto* imageTexture{ ImageTextureManager.Get(path) };
 
 	UpdateDescriptorSetLayoutBindingImageSampler(descriptorSetLayoutBindingData, { imageTexture->GetDescriptorImageInfo() }, imageIndex);
@@ -716,7 +716,7 @@ void KtShader::CreateShaderLayout()
 	KtSerializer::Deserialize(json, path_);
 	for (const auto& shader : json["shaders"])
 	{
-		const auto path{ ::Path.Framework() / "shaders" / shader["path"] };
+		const auto path{ KtPath::Graphics() / "shaders" / shader["path"] };
 		std::vector<uint8_t> shaderCode{ KtFile(path).ReadBinary() };
 		PopulateShaderLayout(shaderCode, shader["shaderStage"]);
 	}

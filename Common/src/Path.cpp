@@ -1,28 +1,11 @@
 #include "Path.h"
 
-void KtPath::Init()
+std::filesystem::path KtPath::Graphics()
 {
-    rootPath_ = ENGINE_DIRECTORY;
-    frameworkPath_ = rootPath_ / "Graphics";
-    enginePath_ = rootPath_ / "Core";
+    return std::filesystem::path(ENGINE_DIRECTORY) / "Graphics";
 }
 
-const std::filesystem::path& KtPath::Root() const
-{
-    return rootPath_;
-}
-
-const std::filesystem::path& KtPath::Framework() const
-{
-    return frameworkPath_;
-}
-
-const std::filesystem::path& KtPath::Engine() const
-{
-    return enginePath_;
-}
-
-const std::filesystem::path& KtPath::Project() const
+const std::filesystem::path& KtPath::Project()
 {
     return projectPath_;
 }

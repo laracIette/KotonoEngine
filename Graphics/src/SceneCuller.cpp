@@ -2,6 +2,7 @@
 #include <kotono_common/log.h>
 #include "SceneRenderableProxy.h"
 #include <kotono_common/Pool.h>
+#include <kotono_common/bitwise_utils.h>
 
 #define KT_LOG_IMPORTANCE_LEVEL_NULLPTR KT_LOG_IMPORTANCE_LEVEL_HIGH
 
@@ -12,11 +13,11 @@ KtSceneCuller::KtSceneCuller(const KtSceneCullerField field) :
 
 KtSceneCuller::ProxiesPool KtSceneCuller::ComputeCulling(ProxiesPool proxies) const
 {
-	if ((field_ & KT_SCENE_CULLER_FIELD_NULLPTR) == KT_SCENE_CULLER_FIELD_NULLPTR)
+	if (has_flag(field_, KT_SCENE_CULLER_FIELD_NULLPTR))
 	{
 		proxies = ComputeNullCulling(proxies);
 	}
-	if ((field_ & KT_SCENE_CULLER_FIELD_DISTANCE) == KT_SCENE_CULLER_FIELD_DISTANCE)
+	if (has_flag(field_, KT_SCENE_CULLER_FIELD_DISTANCE))
 	{
 		proxies = ComputeDistanceCulling(proxies);
 	}

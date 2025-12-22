@@ -11,12 +11,12 @@
 
 static constinit KtShader* WireframeShader{ nullptr };
 
-KInterfaceImageComponent::KInterfaceImageComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner) :
-	Base(ptrOwner, owner)
+KInterfaceImageComponent::KInterfaceImageComponent(UPtrOwnerBase* ptrOwner) :
+	Base(ptrOwner)
 {
 	if (!WireframeShader)
 	{
-		static const auto path{ ::Path.Framework() / R"(shaders\wireframe2D.ktshader)" };
+		static const auto path{ KtPath::Graphics() / R"(shaders\wireframe2D.ktshader)" };
 		WireframeShader = ShaderManager.Get(path);
 		WireframeShader->SetName("2D Wireframe Shader");
 	}
@@ -83,8 +83,8 @@ void KInterfaceImageComponent::CreateImageTextureProxy()
 	imageTextureProxy_->renderable = GetImageTexture();
 	imageTextureProxy_->layer = GetLayer();
 	imageTextureProxy_->objectData.modelMatrix = ModelMatrix();
-	imageTextureProxy_->scissor.offset = Owner()->GetViewport()->GetOffset();
-	imageTextureProxy_->scissor.extent = Owner()->GetViewport()->GetExtent();
+	imageTextureProxy_->scissor.offset = GetOwner()->GetViewport()->GetOffset();
+	imageTextureProxy_->scissor.extent = GetOwner()->GetViewport()->GetExtent();
 #	ifdef _DEBUG
 		imageTextureProxy_->source = this;
 #	endif

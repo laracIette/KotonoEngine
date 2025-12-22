@@ -10,7 +10,7 @@ class KInterfaceColliderComponent : public KInterfaceComponent
 	friend class SInterfacePhysicsManager;
 
 public:
-	KInterfaceColliderComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner);
+	KInterfaceColliderComponent(UPtrOwnerBase* ptrOwner);
 
 protected:
 	void Init() override;

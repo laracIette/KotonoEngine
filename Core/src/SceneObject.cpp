@@ -9,8 +9,6 @@ TSceneObject::TSceneObject(UPtrOwnerBase* ptrOwner) :
 	Base(ptrOwner)
 {
 	viewport_ = &WindowViewport;
-	rootComponent_ = ObjectManager.Create<KSceneComponent>(Ptr<TSceneObject>());
-	AddComponent(rootComponent_);
 }
 
 void TSceneObject::Init()
@@ -20,12 +18,12 @@ void TSceneObject::Init()
 
 void TSceneObject::Cleanup()
 {
-	Base::Cleanup();
-
-	for (const auto& sceneComponent : sceneComponents_)
+	for (int64_t i{ sceneComponents_.LastIndex() }; i >= 0; --i)
 	{
-		sceneComponent->Delete();
+		sceneComponents_[i]->Delete();
 	}
+
+	Base::Cleanup();
 }
 
 void TSceneObject::Update()
@@ -104,6 +102,10 @@ void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinate
 
 void TSceneObject::AddComponent(const UPtr<KSceneComponent>& component)
 {
+	if (sceneComponents_.Empty())
+	{
+		rootComponent_ = component;
+	}
 	sceneComponents_.Add(component);
 	component->componentIndex_ = sceneComponents_.LastIndex();
 }
@@ -114,5 +116,25 @@ void TSceneObject::RemoveComponent(const UPtr<KSceneComponent>& component)
 	if (sceneComponents_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 	{
 		sceneComponents_[index]->componentIndex_ = index;
+	}
+}
+
+void TSceneObject::Serialize() const
+{
+	Base::Serialize();
+}
+
+void TSceneObject::Deserialize()
+{
+	Base::Deserialize();
+
+	for (const auto& sceneComponent : sceneComponents_)
+	{
+		sceneComponent->owner_ = Ptr<TSceneObject>();
+	}
+
+	for (const auto& sceneObject : children_)
+	{
+		sceneObject->parent_ = Ptr<TSceneObject>();
 	}
 }

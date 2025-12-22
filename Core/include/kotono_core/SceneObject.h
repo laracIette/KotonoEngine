@@ -52,15 +52,18 @@ public:
 	void AddComponent(const UPtr<KSceneComponent>& component);
 	void RemoveComponent(const UPtr<KSceneComponent>& component);
 
+	void Serialize() const override;
+	void Deserialize() override;
+
 private:
 	void UpdateSceneComponents();
 
 private:
 	bool canUpdate_;
 	KtWindowViewport* viewport_;
+	SERIALIZE UPtr<KSceneComponent> rootComponent_;
 	UPtr<TSceneObject> parent_;
-	UPtr<KSceneComponent> rootComponent_;
-	KtPool<UPtr<TSceneObject>> children_;
-	KtPool<UPtr<KSceneComponent>> sceneComponents_;
+	SERIALIZE KtPool<UPtr<KSceneComponent>> sceneComponents_;
+	SERIALIZE KtPool<UPtr<TSceneObject>> children_;
 	size_t childrenIndex_;
 };

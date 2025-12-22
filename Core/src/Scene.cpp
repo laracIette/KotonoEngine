@@ -8,29 +8,30 @@
 #include <kotono_common/Path.h>
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/Model.h>
+#include <kotono_common/log.h>
 
 KScene::KScene(UPtrOwnerBase* ptrOwner) :
 	Base(ptrOwner)
 {
-	auto* shader3D{ ShaderManager.Get(::Path.Framework() / R"(shaders\shader3D.ktshader)") };
-	shader3D->SetName("3D Shader");
-
-	auto* model1{ ModelManager.Get(::Path.Framework() / R"(assets\models\viking_room.obj)") };
-	auto* model2{ ModelManager.Get(::Path.Framework() / R"(assets\models\SM_Column_low.fbx)") };
-
-	UPtr mesh1{ ObjectManager.Create<TSceneMeshObject>() };
-	mesh1->GetMeshComponent()->SetShader(shader3D);
-	mesh1->GetMeshComponent()->SetModel(model1);
-	mesh1->RootComponent()->SetSpawnPosition({ -1.0f, 0.0f, 0.0f });
-
-	UPtr mesh2{ ObjectManager.Create<TSceneMeshObject>() };
-	mesh2->GetMeshComponent()->SetShader(shader3D);
-	mesh2->GetMeshComponent()->SetModel(model2);
-	mesh2->RootComponent()->SetSpawnPosition({ 1.0f, 0.0f, 0.0f });
-	mesh2->RootComponent()->SetSpawnScale({ 0.2f, 0.2f, 0.2f });
-	mesh2->SetParent(mesh1, ECoordinateSpace::World);
-
-	sceneObjects_.Append({ mesh1, mesh2 });
+	//auto* shader3D{ ShaderManager.Get(KtPath::Graphics() / "shaders" / "shader3D.ktshader") };
+	//shader3D->SetName("3D Shader");
+	//
+	//auto* model1{ ModelManager.Get(KtPath::Graphics() / "assets" / "models" / "viking_room.obj") };
+	//auto* model2{ ModelManager.Get(KtPath::Graphics() / "assets" / "models" / "SM_Column_low.fbx") };
+	//
+	//UPtr mesh1{ ObjectManager.Create<TSceneObject>() };
+	//UPtr rootComponent1{ ObjectManager.Create<KSceneComponent>() };
+	//UPtr meshComponent1{ ObjectManager.Create<KSceneMeshComponent>() };
+	//
+	//rootComponent1->SetOwner(mesh1);
+	//meshComponent1->SetOwner(mesh1);
+	//
+	//rootComponent1->SetRelativePosition({ -1.0f, 0.0f, 0.0f });
+	//meshComponent1->SetShader(shader3D);
+	//meshComponent1->SetModel(model1);
+	//meshComponent1->SetParent(rootComponent1, ECoordinateSpace::Relative);
+	//
+	//sceneObjects_.Append({ mesh1 });
 }
 
 void KScene::UpdateSceneObjects()
@@ -80,6 +81,9 @@ void KScene::SpawnSceneObjects() const
 {
 	for (const auto& sceneObject : sceneObjects_)
 	{
-		sceneObject->RootComponent()->Spawn();
+		if (sceneObject && sceneObject->RootComponent())
+		{
+			sceneObject->RootComponent()->Spawn();
+		}
 	}
 }

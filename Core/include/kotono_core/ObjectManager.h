@@ -1,15 +1,12 @@
 #pragma once
+#include "Guid.h"
+#include <kotono_common/Average.h>
+#include <kotono_common/Pool.h>
+#include <kotono_common/Ptr.h>
 #include <type_traits>
 #include <unordered_map>
-#include <kotono_common/Pool.h>
-#include <kotono_common/Average.h>
-#include "Ptr.h"
-#include "Guid.h"
 
 class KObject;
-
-template <class T>
-concept Object = std::is_base_of_v<KObject, T>;
 
 class SObjectManager final
 {
@@ -21,11 +18,11 @@ private:
 	void Cleanup();
 
 public:
-	template <Object T, typename... Args> 
-	UPtr<T> Create(Args... args)
+	template <std::derived_from<KObject> T> 
+	UPtr<T> Create()
 	{
 		auto* ptrOwner{ new UPtrOwner<T>() };
-		auto* object{ new T(ptrOwner, args...) };
+		auto* object{ new T(ptrOwner) };
 		UPtr<T> ptr{ ptrOwner };
 		Register(object, ptrOwner);
 		return ptr;
@@ -40,14 +37,12 @@ private:
 
 	KtPool<UPtrOwnerBase*> inits_;
 	KtPool<UPtrOwnerBase*> objects_;
-	KtPool<UPtrOwnerBase*> deletes_;
 
 	UPtr<KObject> selectedObject_;
 
 	void Register(KObject* object, UPtrOwnerBase* ptrOwner);
 
 	void InitObjects();
-	void DeleteObjects();
 
 	void LogUPS() const;
 

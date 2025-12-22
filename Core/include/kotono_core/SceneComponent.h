@@ -17,7 +17,7 @@ class KSceneComponent : public KObject
 	friend class TSceneObject;
 
 public:
-	KSceneComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSceneObject>& owner);
+	KSceneComponent(UPtrOwnerBase* ptrOwner);
 
 protected:
 	void Init() override;
@@ -26,17 +26,13 @@ protected:
 	virtual void Update();
 
 public:
-	const UPtr<TSceneObject>& Owner() const;
+	const UPtr<TSceneObject>& GetOwner() const;
 	bool GetCanUpdate() const;
 	const UTransform& GetTransform() const;
 	EVisibility GetVisibility() const;
 	EMobility GetMobility() const;
-	bool GetCanSetTransform() const;
+	bool CanSetTransform() const;
 	KtEvent<>& EventTransformUpdated();
-
-	const glm::vec3& GetSpawnPosition() const;
-	const glm::quat& GetSpawnRotation() const;
-	const glm::vec3& GetSpawnScale() const;
 
 	const glm::vec3& GetRelativePosition() const;
 	const glm::quat& GetRelativeRotation() const;
@@ -57,15 +53,12 @@ public:
 
 	glm::vec3 GetScreenPosition() const;
 
+	void SetOwner(const UPtr<TSceneObject>& owner);
 	void SetCanUpdate(const bool canUpdate);
 	virtual void SetVisibility(const EVisibility visibility, const bool propagateToChildren = false);
 	virtual void SetMobility(const EMobility mobility);
 
 	void SetParent(const UPtr<KSceneComponent>& parent, const ECoordinateSpace keepTransform);
-
-	void SetSpawnPosition(const glm::vec3& spawnPosition);
-	void SetSpawnRotation(const glm::quat& spawnRotation);
-	void SetSpawnScale(const glm::vec3& spawnScale);
 
 	void SetRelativePosition(const glm::vec3& relativePosition);
 	void SetRelativeRotation(const glm::quat& relativeRotation);
@@ -84,15 +77,14 @@ public:
 
 	virtual void Spawn();
 
-	//void SerializeTo(nlohmann::json& json) const override;
-	//void DeserializeFrom(const nlohmann::json& json) override;
+	void Serialize() const override;
+	void Deserialize() override;
 
 private:
-	const UPtr<TSceneObject> owner_;
 	bool canUpdate_;
+	UPtr<TSceneObject> owner_;
 	UPtr<KSceneComponent> parent_;
-	KtPool<UPtr<KSceneComponent>> children_;
-	UTransform spawnTransform_; // todo: prob parse later
+	SERIALIZE KtPool<UPtr<KSceneComponent>> children_;
 	SERIALIZE UTransform transform_;
 	SERIALIZE EVisibility visibility_;
 	SERIALIZE EMobility mobility_;

@@ -1,5 +1,5 @@
 #pragma once
-#include <kotono_core/Ptr.h>
+#include <kotono_common/Ptr.h>
 #undef interface
 class KScene;
 class KInterface;

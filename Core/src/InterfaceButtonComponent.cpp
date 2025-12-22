@@ -3,11 +3,11 @@
 #include "InterfaceObject.h"
 #include "ObjectManager.h"
 
-KInterfaceButtonComponent::KInterfaceButtonComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner) :
-	Base(ptrOwner, owner)
+KInterfaceButtonComponent::KInterfaceButtonComponent(UPtrOwnerBase* ptrOwner) :
+	Base(ptrOwner)
 {
-	collider_ = ObjectManager.Create<KInterfaceColliderComponent>(Owner());
-	Owner()->AddComponent(collider_);
+	collider_ = ObjectManager.Create<KInterfaceColliderComponent>();
+	collider_->SetOwner(GetOwner());
 }
 
 void KInterfaceButtonComponent::Init()

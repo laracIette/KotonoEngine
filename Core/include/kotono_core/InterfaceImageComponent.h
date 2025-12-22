@@ -11,7 +11,7 @@ class KInterfaceImageComponent : public KInterfaceComponent
 	GENERATED_KINTERFACEIMAGECOMPONENT()
 
 public:
-	KInterfaceImageComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner);
+	KInterfaceImageComponent(UPtrOwnerBase* ptrOwner);
 
 protected:
 	void Init() override;

@@ -1,7 +1,6 @@
 #pragma once
 #include "GameState.h"
 #include <kotono_common/Event.h>
-#include <kotono_core/Ptr.h>
 class SGameManager final
 {
 	friend class SEditor;

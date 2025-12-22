@@ -27,7 +27,7 @@ WWidget::WidgetVector WText::GetCharacters() const
 {
 	WidgetVector result{};
 
-	const auto fontPath{ Path.Framework() / R"(assets\fonts\default)" };
+	const auto fontPath{ KtPath::Graphics() / R"(assets\fonts\default)" };
 	const KtFont font(fontPath);
 
 	const auto characterPaths{ font.GetTextPaths(textSettings_.text) };

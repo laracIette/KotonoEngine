@@ -2,20 +2,13 @@
 #include "SceneObject.h"
 #include <kotono_common/log.h>
 #include <stdexcept>
-#include <nlohmann/json.hpp>
 
-KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner, const UPtr<TSceneObject>& owner) :
+KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner) :
     Base(ptrOwner),
-    owner_(owner),
     visibility_(EVisibility::Visible),
     modelMatrix_([this]() { return TranslationMatrix() * RotationMatrix() * ScaleMatrix(); })
 {
     eventTransformUpdated_.AddListener(KtDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
-    
-    if (Owner()->RootComponent() != this)
-    {
-        SetParent(Owner()->RootComponent(), ECoordinateSpace::Relative);
-    }
 }
 
 void KSceneComponent::Init()
@@ -25,7 +18,7 @@ void KSceneComponent::Init()
 
 void KSceneComponent::Cleanup()
 {
-    Owner()->RemoveComponent(Ptr<KSceneComponent>());
+	SetOwner(nullptr);
 
     Base::Cleanup();
 }
@@ -34,7 +27,7 @@ void KSceneComponent::Update()
 {
 }
 
-const UPtr<TSceneObject>& KSceneComponent::Owner() const
+const UPtr<TSceneObject>& KSceneComponent::GetOwner() const
 {
     return owner_;
 }
@@ -59,7 +52,7 @@ EMobility KSceneComponent::GetMobility() const
     return mobility_;
 }
 
-bool KSceneComponent::GetCanSetTransform() const
+bool KSceneComponent::CanSetTransform() const
 {
     return mobility_ == EMobility::Dynamic || !IsConstructed();
 }
@@ -69,19 +62,31 @@ KtEvent<>& KSceneComponent::EventTransformUpdated()
     return eventTransformUpdated_;
 }
 
-const glm::vec3& KSceneComponent::GetSpawnPosition() const
+void KSceneComponent::SetOwner(const UPtr<TSceneObject>& owner)
 {
-    return spawnTransform_.position;
-}
+    if (owner == owner_)
+    {
+        return;
+	}
 
-const glm::quat& KSceneComponent::GetSpawnRotation() const
-{
-    return spawnTransform_.rotation;
-}
+    if (owner_)
+    {
+        owner_->RemoveComponent(Ptr<KSceneComponent>());
+	}
 
-const glm::vec3& KSceneComponent::GetSpawnScale() const
-{
-    return spawnTransform_.scale;
+	owner_ = owner;
+
+    if (!owner_)
+    {
+        return;
+	}
+
+	owner_->AddComponent(Ptr<KSceneComponent>());
+
+    if (owner_->RootComponent() != this)
+    {
+        SetParent(owner_->RootComponent(), ECoordinateSpace::Relative);
+    }
 }
 
 void KSceneComponent::SetCanUpdate(const bool canUpdate)
@@ -195,7 +200,7 @@ void KSceneComponent::SetParent(const UPtr<KSceneComponent>& parent, const ECoor
         return;
     }
 
-    if (!GetCanSetTransform())
+    if (!CanSetTransform())
     {
         KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core.KSceneComponent::SetParent()", "can't set parent for %s, its mobility is static", GetName().c_str());
         return;
@@ -236,24 +241,9 @@ void KSceneComponent::SetParent(const UPtr<KSceneComponent>& parent, const ECoor
     }
 }
 
-void KSceneComponent::SetSpawnPosition(const glm::vec3& spawnPosition)
-{
-    spawnTransform_.position = spawnPosition;
-}
-
-void KSceneComponent::SetSpawnRotation(const glm::quat& spawnRotation)
-{
-    spawnTransform_.rotation = spawnRotation;
-}
-
-void KSceneComponent::SetSpawnScale(const glm::vec3& spawnScale)
-{
-    spawnTransform_.scale = spawnScale;
-}
-
 void KSceneComponent::SetRelativePosition(const glm::vec3& relativePosition)
 {
-    if (!GetCanSetTransform())
+    if (!CanSetTransform())
     {
         KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core.KSceneComponent::SetRelativePosition()", "can't set position for %s, its mobility is static", GetName().c_str());
         return;
@@ -270,7 +260,7 @@ void KSceneComponent::SetRelativePosition(const glm::vec3& relativePosition)
 
 void KSceneComponent::SetRelativeRotation(const glm::quat& relativeRotation)
 {
-    if (!GetCanSetTransform())
+    if (!CanSetTransform())
     {
         KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core.KSceneComponent::SetRelativeRotation()", "can't set rotation for %s, its mobility is static", GetName().c_str());
         return;
@@ -287,7 +277,7 @@ void KSceneComponent::SetRelativeRotation(const glm::quat& relativeRotation)
 
 void KSceneComponent::SetRelativeScale(const glm::vec3& relativeScale)
 {
-    if (!GetCanSetTransform())
+    if (!CanSetTransform())
     {
         KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core.KSceneComponent::SetRelativeScale()", "can't set scale for %s, its mobility is static", GetName().c_str());
         return;
@@ -359,50 +349,23 @@ float KSceneComponent::GetDistance(const UPtr<KSceneComponent>& other) const
 
 void KSceneComponent::Spawn()
 {
-    SetRelativePosition(GetSpawnPosition());
-    SetRelativeRotation(GetSpawnRotation());
-    SetRelativeScale(GetSpawnScale());
-
     for (const auto& sceneComponent : children_)
     {
         sceneComponent->Spawn();
     }
 }
 
-//void KSceneComponent::SerializeTo(nlohmann::json& json) const
-//{
-//    Base::SerializeTo(json);
-//
-//    json["transform_"]["position"]["x"] = transform_.position.x;
-//    json["transform_"]["position"]["y"] = transform_.position.y;
-//    json["transform_"]["position"]["z"] = transform_.position.z;
-//    json["transform_"]["rotation"]["w"] = transform_.rotation.w;
-//    json["transform_"]["rotation"]["x"] = transform_.rotation.x;
-//    json["transform_"]["rotation"]["y"] = transform_.rotation.y;
-//    json["transform_"]["rotation"]["z"] = transform_.rotation.z;
-//    json["transform_"]["scale"]["x"] = transform_.scale.x;
-//    json["transform_"]["scale"]["y"] = transform_.scale.y;
-//    json["transform_"]["scale"]["z"] = transform_.scale.z;
-//}
+void KSceneComponent::Serialize() const
+{
+	Base::Serialize();
+}
 
-//void KSceneComponent::DeserializeFrom(const nlohmann::json& json)
-//{
-//    Base::DeserializeFrom(json);
-//
-//    SetRelativePosition({
-//        json["transform_"]["position"]["x"],
-//        json["transform_"]["position"]["y"],
-//        json["transform_"]["position"]["z"]
-//    });
-//    SetRelativeRotation({
-//        json["transform_"]["rotation"]["w"],
-//        json["transform_"]["rotation"]["x"],
-//        json["transform_"]["rotation"]["y"],
-//        json["transform_"]["rotation"]["z"]
-//    });
-//    SetRelativeScale({
-//        json["transform_"]["scale"]["x"],
-//        json["transform_"]["scale"]["y"],
-//        json["transform_"]["scale"]["z"]
-//    });
-//}
+void KSceneComponent::Deserialize()
+{
+	Base::Deserialize();
+
+    for (const auto& child : children_)
+    {
+        child->parent_ = Ptr<KSceneComponent>();
+    }
+}

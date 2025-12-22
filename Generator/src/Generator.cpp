@@ -298,6 +298,7 @@ void Generator::Generate(const std::filesystem::path& header) const
 		if (variable.isIterable)
 		{
 			serializeCode
+				<< "\tjson[\"" << variable.name << "\"] = nlohmann::json::array({});\n"
 				<< "\tfor (size_t i{ 0 }; i < " << variable.name << ".size(); ++i)\n"
 				<< "\t{\n"
 				<< "\t\tserialize(json[\"" << variable.name << "\"][i], " << variable.name << "[i]);\n"
@@ -314,7 +315,7 @@ void Generator::Generate(const std::filesystem::path& header) const
 		if (variable.isIterable)
 		{
 			deserializeCode
-				<< "\t" << variable.name << ".reserve(json.at(\"" << variable.name << "\").size()); \n"
+				<< "\t" << variable.name << ".resize(json.at(\"" << variable.name << "\").size()); \n"
 				<< "\tfor (size_t i{ 0 }; i < " << variable.name << ".size(); ++i)\n"
 				<< "\t{\n"
 				<< "\t\tdeserialize(json.at(\"" << variable.name << "\")[i], " << variable.name << "[i]);\n"

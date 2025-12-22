@@ -7,7 +7,7 @@ class KInterfaceButtonComponent : public KInterfaceComponent
 	GENERATED_KINTERFACEBUTTONCOMPONENT()
 
 public:
-	KInterfaceButtonComponent(UPtrOwnerBase* ptrOwner, const UPtr<RInterfaceObject>& owner);
+	KInterfaceButtonComponent(UPtrOwnerBase* ptrOwner);
 
 protected:
 	void Init() override;

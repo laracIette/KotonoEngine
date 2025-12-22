@@ -1,15 +1,13 @@
 #pragma once
-#include "generated/Object.generated.h"
 #include "base_class.h"
-#include <string>
-#include <filesystem>
-#include <nlohmann/json_fwd.hpp>
+#include "generated/Object.generated.h"
 #include "Guid.h"
-#include <kotono_common/Event.h>
-#include "Ptr.h"
 #include "serialize.h"
-
-class UPtrOwnerBase;
+#include <filesystem>
+#include <kotono_common/Event.h>
+#include <kotono_common/Ptr.h>
+#include <nlohmann/json_fwd.hpp>
+#include <string>
 
 class KObject
 {
@@ -32,30 +30,29 @@ public:
 	const std::type_info& Type() const;
 	const std::filesystem::path Path() const;
 	bool IsConstructed() const;
-	bool IsDelete() const;
 	const std::string& GetName() const;
 	std::string TypeName() const;
 	KtEvent<>& GetEventCleanup();
 
+	// Read json from disk
+	nlohmann::json ReadJson() const;
+	// Write the object to json
+	nlohmann::json WriteJson() const;
+
 	void SetName(const std::string& name);
 
-	// Stages the deletion at the end of the update
-	void Delete();
-	//void DelayDelete(const UDuration& delay);
+	// Delete the object immediately
+	void Delete() const;
 
 	// Serialize and write to the object's path
-	void Serialize() const;
+	virtual void Serialize() const;
 	// Read from the object's path and deserialize
-	void Deserialize();	
+	virtual void Deserialize();	
 
 	virtual std::string ToString() const;
 
 protected:
-	//void Delay(const KtDelegate<>& delegate, const UDuration& delay) const;
-	//void Delay(KtDelegate<>&& delegate, const UDuration& delay) const;
-
-	template <class T>
-		requires std::is_base_of_v<KObject, T>
+	template <std::derived_from<KObject> T>
 	UPtr<T> Ptr() const
 	{
 		return static_cast<UPtrOwner<T>*>(ptrOwner_);
@@ -67,7 +64,6 @@ private:
 	SERIALIZE std::string type_;
 	SERIALIZE std::string name_;
 	bool isConstructed_;
-	bool isDelete_;
 	KtEvent<> eventCleanup_;
 
 	union

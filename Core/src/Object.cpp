@@ -39,14 +39,9 @@ bool KObject::IsConstructed() const
     return isConstructed_;
 }
 
-bool KObject::IsDelete() const
-{
-    return isDelete_;
-}
-
 const std::filesystem::path KObject::Path() const
 {
-    return ::Path.Project() / "assets" / "objects" / std::format("{}.kobject", guid_.ToString());
+    return KtPath::Project() / "assets" / "objects" / std::format("{}.kobject", guid_.ToString());
 }
 
 const std::string& KObject::GetName() const
@@ -56,7 +51,7 @@ const std::string& KObject::GetName() const
 
 std::string KObject::TypeName() const
 {
-    std::string_view name = Type().name();
+    std::string_view name{ Type().name() };
     return std::string(name.substr(6));
 }
 
@@ -65,59 +60,41 @@ KtEvent<>& KObject::GetEventCleanup()
     return eventCleanup_;
 }
 
+nlohmann::json KObject::ReadJson() const
+{
+    nlohmann::json json{};
+    KtSerializer::Deserialize(json, Path());
+    return json;
+}
+
+nlohmann::json KObject::WriteJson() const
+{
+    nlohmann::json json{};
+    SerializeTo(json);
+    return json;
+}
+
 void KObject::SetName(const std::string& name)
 {
     name_ = name;
 }
 
-void KObject::Delete()
+void KObject::Delete() const
 {
-    if (isDelete_)
-    {
-        return;
-    }
-    isDelete_ = true;
     ObjectManager.Delete(ptrOwner_);
 }
 
-//void KObject::DelayDelete(const UDuration& delay)
-//{
-//    Delay(KtDelegate(this, &KObject::Delete), delay);
-//}
-
 void KObject::Serialize() const
 {
-    nlohmann::json json{};
-    SerializeTo(json);
-    KtSerializer::Serialize(json, Path());
+    KtSerializer::Serialize(WriteJson(), Path());
 }
 
 void KObject::Deserialize()
 {
-    nlohmann::json json{};
-    KtSerializer::Deserialize(json, Path());
-    DeserializeFrom(json);
+    DeserializeFrom(ReadJson());
 }
 
 std::string KObject::ToString() const
 {
     return name_;
 }
-
-//void KObject::Delay(const KtDelegate<>& delegate, const UDuration& delay) const
-//{
-//    UTimer timer{};
-//    timer.duration = delay;
-//    timer.eventCompleted.AddListener(KtDelegate(&timer, &UTimer::Delete));
-//    timer.eventCompleted.AddListener(delegate);
-//    timer->Start();
-//}
-//
-//void KObject::Delay(KtDelegate<>&& delegate, const UDuration& delay) const
-//{
-//    UPtr timer = ObjectManager.Create<UTimer>();
-//    timer->EventCompleted().AddListener(KtDelegate(timer.Get(), &UTimer::Delete));
-//    timer->EventCompleted().AddListener(std::move(delegate));
-//    timer->SetDuration(delay);
-//    timer->Start();
-//}
