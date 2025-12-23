@@ -32,7 +32,6 @@ public:
 	bool IsConstructed() const;
 	const std::string& GetName() const;
 	std::string TypeName() const;
-	KtEvent<>& GetEventCleanup();
 
 	// Read json from disk
 	nlohmann::json ReadJson() const;
@@ -64,7 +63,6 @@ private:
 	SERIALIZE std::string type_;
 	SERIALIZE std::string name_;
 	bool isConstructed_;
-	KtEvent<> eventCleanup_;
 
 	union
 	{

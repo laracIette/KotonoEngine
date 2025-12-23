@@ -19,8 +19,8 @@ public:
 		isDirty_(true) 
 	{}
 
-	// Get the current value without setting it if dirty
-	T GetValue() const noexcept
+	// Get the current value without updating it
+	T Value() const noexcept
 	{
 		return value_;
 	}
@@ -35,7 +35,7 @@ public:
 		}
 	}
 
-	bool GetIsDirty() const noexcept
+	bool IsDirty() const noexcept
 	{
 		return isDirty_;
 	}
@@ -45,6 +45,7 @@ public:
 		isDirty_ = true;
 	}
 
+	// Try to update and return the value
 	operator T()
 	{
 		TryUpdateValue();

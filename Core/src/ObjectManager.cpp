@@ -112,9 +112,25 @@ void SObjectManager::InitObjects()
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core.SObjectManager::InitObjects()", "object count %llu", objects_.size());
 }
 
-const UPtr<KObject>& SObjectManager::SelectedObject() const
+const UPtr<KObject>& SObjectManager::GetSelectedObject() const
 {
 	return selectedObject_;
+}
+
+void SObjectManager::SetSelectedObject(const UPtr<KObject>& object)
+{
+	if (selectedObject_ == object)
+	{
+		return;
+	}
+
+	selectedObject_ = object;
+	eventSelectedObjectChanged_.Broadcast();
+}
+
+KtEvent<>& SObjectManager::EventSelectedObjectChanged()
+{
+	return eventSelectedObjectChanged_;
 }
 
 void SObjectManager::LogUPS() const

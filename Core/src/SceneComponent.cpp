@@ -82,11 +82,6 @@ void KSceneComponent::SetOwner(const UPtr<TSceneObject>& owner)
 	}
 
 	owner_->AddComponent(Ptr<KSceneComponent>());
-
-    if (owner_->RootComponent() != this)
-    {
-        SetParent(owner_->RootComponent(), ECoordinateSpace::Relative);
-    }
 }
 
 void KSceneComponent::SetCanUpdate(const bool canUpdate)
@@ -214,11 +209,6 @@ void KSceneComponent::SetParent(const UPtr<KSceneComponent>& parent, const ECoor
             parent_->children_[index]->childrenIndex_ = index;
         }
     }
-    if (parent)
-    {
-        parent->children_.Add(Ptr<KSceneComponent>());
-        childrenIndex_ = parent->children_.LastIndex();
-    }
 
     switch (keepTransform)
     {
@@ -229,15 +219,21 @@ void KSceneComponent::SetParent(const UPtr<KSceneComponent>& parent, const ECoor
     }
     case ECoordinateSpace::World:
     {
-        const auto position = GetWorldPosition();
-        const auto rotation = GetWorldRotation();
-        const auto scale = GetWorldScale();
+        const auto position{ GetWorldPosition() };
+        const auto rotation{ GetWorldRotation() };
+        const auto scale{ GetWorldScale() };
         parent_ = parent;
         SetWorldPosition(position);
         SetWorldRotation(rotation);
         SetWorldScale(scale);
         break;
     }
+    }
+
+    if (parent_)
+    {
+        parent_->children_.Add(Ptr<KSceneComponent>());
+        childrenIndex_ = parent_->children_.LastIndex();
     }
 }
 
@@ -349,10 +345,6 @@ float KSceneComponent::GetDistance(const UPtr<KSceneComponent>& other) const
 
 void KSceneComponent::Spawn()
 {
-    for (const auto& sceneComponent : children_)
-    {
-        sceneComponent->Spawn();
-    }
 }
 
 void KSceneComponent::Serialize() const

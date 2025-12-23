@@ -11,7 +11,7 @@ WWidget::WWidget() :
 void WWidget::CacheBuild()
 {
 	cachedBuild_.TryUpdateValue();
-	WWidget* build{ cachedBuild_.GetValue() };
+	WWidget* build{ cachedBuild_.Value() };
 	if (build && build != this)
 	{
 		build->CacheBuild();
@@ -25,7 +25,7 @@ WWidget* WWidget::Build()
 
 void WWidget::Cleanup()
 {
-	WWidget* build{ cachedBuild_.GetValue() };
+	WWidget* build{ cachedBuild_.Value() };
 	if (build && build != this)
 	{
 		build->Cleanup();
@@ -38,7 +38,7 @@ void WWidget::Display(DisplaySettings displaySettings)
 {
 	SetDisplaySettings(displaySettings);
 
-	WWidget* build{ cachedBuild_.GetValue() };
+	WWidget* build{ cachedBuild_.Value() };
 	if (build && build != this)
 	{
 		build->Display(displaySettings);
@@ -52,7 +52,7 @@ void WWidget::Display(DisplaySettings displaySettings)
 
 WWidget::DisplaySettings WWidget::GetDisplaySettings(DisplaySettings displaySettings) const
 {
-	const WWidget* build{ cachedBuild_.GetValue() };
+	const WWidget* build{ cachedBuild_.Value() };
 	if (build && build != this)
 	{
 		return build->GetDisplaySettings(displaySettings);
@@ -63,7 +63,7 @@ WWidget::DisplaySettings WWidget::GetDisplaySettings(DisplaySettings displaySett
 
 EFlex WWidget::GetFlex() const
 {
-	const WWidget* build{ cachedBuild_.GetValue() };
+	const WWidget* build{ cachedBuild_.Value() };
 	if (build && build != this)
 	{
 		return build->GetFlex();
@@ -73,7 +73,7 @@ EFlex WWidget::GetFlex() const
 
 WWidget::WidgetVector WWidget::GetWidgetTree()
 {
-	WWidget* build{ cachedBuild_.GetValue() };
+	WWidget* build{ cachedBuild_.Value() };
 	if (build && build != this)
 	{
 		return { build };
@@ -84,7 +84,7 @@ WWidget::WidgetVector WWidget::GetWidgetTree()
 void WWidget::Rebuild()
 {
 	auto displaySettings{ displaySettings_ };
-	const WWidget* build{ cachedBuild_.GetValue() };
+	const WWidget* build{ cachedBuild_.Value() };
 	if (build && build != this)
 	{
 		displaySettings = build->displaySettings_;
@@ -112,8 +112,7 @@ void WWidget::SetParent(WWidget* parent)
 void WWidget::SetState(const StateFunction& function)
 {
 	function();
-	cachedBuild_.MarkDirty();
-	Rebuild();
+	Refresh();
 }
 
 void WWidget::SetDisplaySettings(const DisplaySettings& displaySettings)
@@ -143,4 +142,10 @@ glm::mat4 WWidget::ModelMatrix() const
 
 void WWidget::DisplayInternal(DisplaySettings displaySettings)
 {
+}
+
+void WWidget::Refresh()
+{
+	cachedBuild_.MarkDirty();
+	Rebuild();
 }

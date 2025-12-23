@@ -7,6 +7,7 @@
 #include "VisualizerWindow.h"
 #include "PropertiesWindow.h"
 #include "GameStateButton.h"
+#include "SceneExplorer.h"
 
 WWidget* WMainWindow::Build()
 {
@@ -52,6 +53,11 @@ WWidget* WMainWindow::Build()
 					.child = new WRow({
 						.spacing = 10.0f,
 						.children = {
+							new WBox({ 
+								.size = { 300.0f, 500.0f },
+								.child = new WSceneExplorer(),
+							}),
+							
 							new WBox({
 								.size = { 300.0f, 300.0f },
 								.child = new WStack({

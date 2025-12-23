@@ -18,6 +18,7 @@ void TSceneObject::SerializeTo(nlohmann::json& json) const
 	{
 		serialize(json["children_"][i], children_[i]);
 	}
+	serialize(json["childrenIndex_"], childrenIndex_);
 }
 
 void TSceneObject::DeserializeFrom(const nlohmann::json& json)
@@ -34,4 +35,5 @@ void TSceneObject::DeserializeFrom(const nlohmann::json& json)
 	{
 		deserialize(json.at("children_")[i], children_[i]);
 	}
+	deserialize(json.at("childrenIndex_"), childrenIndex_);
 }

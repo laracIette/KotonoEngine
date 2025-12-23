@@ -129,9 +129,15 @@ public:
 		return owner_ == other.owner_;
 	}
 
+	template <DerivedFrom<PointerType> U>
+	constexpr bool operator==(const UPtr<U>& other) const noexcept
+	{
+		return owner_ == reinterpret_cast<Owner*>(other.GetOwner());
+	}
+
 	constexpr bool operator==(PointerType* ptr) const noexcept
 	{
-		return owner_ && owner_->pointer_ == ptr;
+		return (!owner_ && !ptr) || (owner_ && owner_->pointer_ == ptr);
 	}
 
 	constexpr PointerType* Get() const noexcept

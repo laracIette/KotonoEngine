@@ -23,6 +23,8 @@ void TSceneObject::Cleanup()
 		sceneComponents_[i]->Delete();
 	}
 
+	SetParent(nullptr, ECoordinateSpace::Relative);
+
 	Base::Cleanup();
 }
 
@@ -78,11 +80,13 @@ void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinate
 		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core.TSceneObject::SetParent()", "couldn't set the parent of '%s' to itself", GetName().c_str());
 		return;
 	}
+
 	if (parent == parent_)
 	{
 		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core.TSceneObject::SetParent()", "couldn't set the parent of '%s' to the same", GetName().c_str());
 		return;
 	}
+
 	if (parent_)
 	{
 		const size_t index{ childrenIndex_ };
@@ -91,13 +95,19 @@ void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinate
 			parent_->children_[index]->childrenIndex_ = index;
 		}
 	}
-	if (parent)
-	{
-		parent->children_.Add(Ptr<TSceneObject>());
-		childrenIndex_ = parent->children_.LastIndex();
-	}
+
 	parent_ = parent;
-	RootComponent()->SetParent(parent_ ? parent_->RootComponent() : nullptr, keepTransform);
+
+	if (parent_)
+	{
+		parent_->children_.Add(Ptr<TSceneObject>());
+		childrenIndex_ = parent_->children_.LastIndex();
+	}
+
+	if (rootComponent_)
+	{
+		rootComponent_->SetParent(parent_ ? parent_->RootComponent() : nullptr, keepTransform);
+	}
 }
 
 void TSceneObject::AddComponent(const UPtr<KSceneComponent>& component)
@@ -105,6 +115,10 @@ void TSceneObject::AddComponent(const UPtr<KSceneComponent>& component)
 	if (sceneComponents_.Empty())
 	{
 		rootComponent_ = component;
+	}
+	else
+	{
+		component->SetParent(rootComponent_, ECoordinateSpace::Relative);
 	}
 	sceneComponents_.Add(component);
 	component->componentIndex_ = sceneComponents_.LastIndex();
@@ -116,6 +130,19 @@ void TSceneObject::RemoveComponent(const UPtr<KSceneComponent>& component)
 	if (sceneComponents_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 	{
 		sceneComponents_[index]->componentIndex_ = index;
+		if (component == rootComponent_)
+		{
+			rootComponent_ = sceneComponents_[index];
+		}
+	}
+	else if (component == rootComponent_)
+	{
+		rootComponent_ = nullptr;
+	}
+	
+	for (size_t i{ 1 }; i < sceneComponents_.size(); ++i)
+	{
+		sceneComponents_[i]->SetParent(rootComponent_, ECoordinateSpace::Relative);
 	}
 }
 
@@ -136,5 +163,13 @@ void TSceneObject::Deserialize()
 	for (const auto& sceneObject : children_)
 	{
 		sceneObject->parent_ = Ptr<TSceneObject>();
+	}
+}
+
+void TSceneObject::Spawn()
+{
+	for (const auto& sceneComponent : sceneComponents_)
+	{
+		sceneComponent->Spawn();
 	}
 }

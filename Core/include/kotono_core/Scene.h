@@ -24,6 +24,8 @@ public:
 
 	void SpawnSceneObjects() const;
 
+	const KtPool<UPtr<TSceneObject>>& SceneObjects() const;
+
 private:
 	SERIALIZE KtPool<UPtr<TSceneObject>> sceneObjects_;
 };

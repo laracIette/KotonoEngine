@@ -7,7 +7,7 @@ public:
 	{
 		/// default = ""
 		std::string text{ "" };
-		/// default = 12.0f
+		/// default = { 50.0f, 60.0f }
 		glm::vec2 fontSize{ 50.0f, 60.0f };
 		/// default = 0.0f
 		float spacing{ 0.0f };

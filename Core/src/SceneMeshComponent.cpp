@@ -49,8 +49,6 @@ void KSceneMeshComponent::Update()
 
 void KSceneMeshComponent::Cleanup()
 {
-    Base::Cleanup();
-
     UnregisterModelProxy();
     EventTransformUpdated().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
 
@@ -58,6 +56,8 @@ void KSceneMeshComponent::Cleanup()
         .RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
     InputManager.Keyboard().EventKey(KT_KEY_M, KT_INPUT_STATE_PRESSED)
         .RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
+
+    Base::Cleanup();
 }
 
 KtShader* KSceneMeshComponent::GetShader() const

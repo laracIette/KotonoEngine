@@ -39,7 +39,7 @@ WWidget* WPropertiesWindow::Build()
                                     }),
                                     new WButton({
                                         .onDown = []() {
-                                            const auto& selectedObject{ ObjectManager.SelectedObject() };
+                                            const auto& selectedObject{ ObjectManager.GetSelectedObject() };
                                             if (!selectedObject)
                                             {
                                                 return;
@@ -72,7 +72,7 @@ WWidget* WPropertiesWindow::Build()
                                     }),
                                     new WButton({
                                         .onDown = []() {
-                                            const auto& selectedObject{ ObjectManager.SelectedObject() };
+                                            const auto& selectedObject{ ObjectManager.GetSelectedObject() };
                                             if (!selectedObject)
                                             {
                                                 return;
@@ -97,5 +97,5 @@ WWidget* WPropertiesWindow::Build()
                 }),
             }),
         },
-        });
+    });
 }

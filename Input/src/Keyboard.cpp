@@ -1,7 +1,10 @@
-#include "Keyboard.h"
-#include <kotono_platform/Window.h>
 #include "InputManager.h"
+#include "Keyboard.h"
 #include <GLFW/glfw3.h>
+#include <kotono_common/log.h>
+#include <kotono_platform/Window.h>
+
+#define KT_LOG_IMPORTANCE_LEVEL_KEYBOARD KT_LOG_IMPORTANCE_LEVEL_LOW
 
 void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mods);
 constexpr int keyToGLFWKey(const KtKey key);
@@ -14,57 +17,60 @@ void KtKeyboard::Init()
 
 void KtKeyboard::Update()
 {
-    for (size_t key{ 0 }; key < keyStates_.size(); ++key)
+    for (size_t key{ 0 }; key < KT_KEY_COUNT; ++key)
     {
-        if (keyStates_[key].empty())
+        for (size_t inputState{ 0 }; inputState < KT_INPUT_STATE_COUNT; ++inputState)
         {
-            continue;
-        }
-
-        for (const auto inputState : keyStates_[key])
-        {
-            keyEvents_[key][inputState].Broadcast();
-        }
-
-        std::erase_if(keyStates_[key],
-            [](const KtInputState inputState)
+            if (keyStates_[key][inputState])
             {
-                return inputState == KT_INPUT_STATE_PRESSED || inputState == KT_INPUT_STATE_RELEASED;
+                keyEvents_[key][inputState].Broadcast();
             }
-        );
+        }
+
+        if (keyStates_[key][KT_INPUT_STATE_PRESSED])
+        {
+            keyStates_[key][KT_INPUT_STATE_PRESSED] = false;
+        }
     }
 }
 
 void KtKeyboard::UpdateKey(const KtKey key, const int action)
-{
-    std::unordered_set<KtInputState> keyStates;
-    
+{    
     switch (action)
     {
     case GLFW_PRESS:
     {
-        keyStates.insert(KT_INPUT_STATE_DOWN);
-        if (!keyStates_[key].contains(KT_INPUT_STATE_DOWN))
-        {
-            keyStates.insert(KT_INPUT_STATE_PRESSED);
-        }
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input.KtKeyboard::UpdateKey()", "GLFW_PRESS key %d", key);
+
+        keyStates_[key][KT_INPUT_STATE_RELEASED] = false;
+
+        keyStates_[key][KT_INPUT_STATE_PRESSED] = true;
+        keyStates_[key][KT_INPUT_STATE_DOWN] = true;
         break;
     }
     case GLFW_RELEASE:
     {
-        keyStates.insert(KT_INPUT_STATE_RELEASED);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input.KtKeyboard::UpdateKey()", "GLFW_RELEASE key %d", key);
+
+        keyStates_[key][KT_INPUT_STATE_PRESSED] = false;
+        keyStates_[key][KT_INPUT_STATE_DOWN] = false;
+
+        keyStates_[key][KT_INPUT_STATE_RELEASED] = true;
         break;
     }
     default:
         break;
     }
-
-    keyStates_[key] = keyStates;
 }
 
 KtEvent<>& KtKeyboard::EventKey(const KtKey key, const KtInputState inputState)
 {
     return keyEvents_[key][inputState];
+}
+
+bool KtKeyboard::KeyState(const KtKey key, const KtInputState inputState) const
+{
+    return keyStates_[key][inputState];
 }
 
 void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mods)

@@ -90,8 +90,8 @@ private:
 	SERIALIZE EMobility mobility_;
 	KtEvent<> eventTransformUpdated_; // todo: maybe replace by eventPositionChanged...
 									  // dirty children matrix in setposition...
-	size_t componentIndex_;
-	size_t childrenIndex_;
+	SERIALIZE size_t componentIndex_;
+	SERIALIZE size_t childrenIndex_;
 	KtCached<glm::mat4> modelMatrix_;
 };
 

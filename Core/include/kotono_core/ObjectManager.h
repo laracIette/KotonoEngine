@@ -1,6 +1,7 @@
 #pragma once
 #include "Guid.h"
 #include <kotono_common/Average.h>
+#include <kotono_common/Event.h>
 #include <kotono_common/Pool.h>
 #include <kotono_common/Ptr.h>
 #include <type_traits>
@@ -30,7 +31,9 @@ public:
 
 	void Delete(UPtrOwnerBase* ptrOwner);
 
-	const UPtr<KObject>& SelectedObject() const;
+	const UPtr<KObject>& GetSelectedObject() const;
+	void SetSelectedObject(const UPtr<KObject>& object);
+	KtEvent<>& EventSelectedObjectChanged();
 
 private:
 	void Quit();
@@ -39,6 +42,7 @@ private:
 	KtPool<UPtrOwnerBase*> objects_;
 
 	UPtr<KObject> selectedObject_;
+	KtEvent<> eventSelectedObjectChanged_;
 
 	void Register(KObject* object, UPtrOwnerBase* ptrOwner);
 

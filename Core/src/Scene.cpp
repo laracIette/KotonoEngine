@@ -81,9 +81,11 @@ void KScene::SpawnSceneObjects() const
 {
 	for (const auto& sceneObject : sceneObjects_)
 	{
-		if (sceneObject && sceneObject->RootComponent())
-		{
-			sceneObject->RootComponent()->Spawn();
-		}
+		sceneObject->Spawn();
 	}
+}
+
+const KtPool<UPtr<TSceneObject>>& KScene::SceneObjects() const
+{
+	return sceneObjects_;
 }

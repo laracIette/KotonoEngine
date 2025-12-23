@@ -55,15 +55,17 @@ public:
 	void Serialize() const override;
 	void Deserialize() override;
 
+	virtual void Spawn();
+
 private:
 	void UpdateSceneComponents();
 
 private:
 	bool canUpdate_;
 	KtWindowViewport* viewport_;
-	SERIALIZE UPtr<KSceneComponent> rootComponent_;
 	UPtr<TSceneObject> parent_;
+	SERIALIZE UPtr<KSceneComponent> rootComponent_;
 	SERIALIZE KtPool<UPtr<KSceneComponent>> sceneComponents_;
 	SERIALIZE KtPool<UPtr<TSceneObject>> children_;
-	size_t childrenIndex_;
+	SERIALIZE size_t childrenIndex_;
 };

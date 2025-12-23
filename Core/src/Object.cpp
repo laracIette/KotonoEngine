@@ -21,7 +21,6 @@ void KObject::Init()
 
 void KObject::Cleanup() 
 {
-    eventCleanup_.Broadcast();
 }
 
 const UGuid& KObject::Guid() const
@@ -53,11 +52,6 @@ std::string KObject::TypeName() const
 {
     std::string_view name{ Type().name() };
     return std::string(name.substr(6));
-}
-
-KtEvent<>& KObject::GetEventCleanup()
-{
-    return eventCleanup_;
 }
 
 nlohmann::json KObject::ReadJson() const

@@ -60,6 +60,8 @@ protected:
 
 	virtual void DisplayInternal(DisplaySettings displaySettings);
 
+	void Refresh();
+
 private:
 	KtCached<WWidget*> cachedBuild_;
 

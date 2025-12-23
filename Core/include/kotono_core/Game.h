@@ -16,9 +16,13 @@ public:
 	void OpenScene(const UPtr<KScene>& scene);
 	void OpenInterface(const UPtr<KInterface>& interface);
 
+	const UPtr<KScene>& GetOpenedScene() const;
+
 private:
 	UPtr<KScene> scene_;
 	UPtr<KInterface> interface_;
+
+	void OnKeySPressed() const;
 };
 
 inline SGame Game;
