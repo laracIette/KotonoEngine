@@ -1,9 +1,10 @@
 #pragma once
 #include "SceneObjectData.h"
 #include "Scissor.h"
+#include <atomic>
+#include <kotono_graphics/frames_in_flight.h>
 class KtShader;
 class KtSceneRenderable;
-class KtWindowViewport;
 struct KtSceneRenderableProxy final
 {
 	KtShader* shader;
@@ -11,7 +12,15 @@ struct KtSceneRenderableProxy final
 	KtSceneObjectData objectData;
 	KtScissor scissor;
 
-    bool isDirty;
+    KtFramesInFlightArray<std::atomic<bool>> isDirty;
+
+	void MarkDirty()
+	{
+		for (auto& dirty : isDirty)
+		{
+			dirty.store(true, std::memory_order_release);
+		}
+	}
 
 #	ifdef _DEBUG
 		void* source;

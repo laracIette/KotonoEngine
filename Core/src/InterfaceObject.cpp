@@ -9,7 +9,7 @@ RInterfaceObject::RInterfaceObject(UPtrOwnerBase* ptrOwner) :
 {
 	viewport_ = &WindowViewport;
 	rootComponent_ = ObjectManager.Create<KInterfaceComponent>();
-	rootComponent_->SetOwner(Ptr<RInterfaceObject>());
+	rootComponent_->SetOwner(Ptr());
 }
 
 void RInterfaceObject::Init()
@@ -32,12 +32,12 @@ KtWindowViewport* RInterfaceObject::GetViewport() const
 	return viewport_;
 }
 
-const UPtr<RInterfaceObject>& RInterfaceObject::GetParent() const
+UPtr<RInterfaceObject>& RInterfaceObject::GetParent() 
 {
 	return parent_;
 }
 
-const UPtr<KInterfaceComponent>& RInterfaceObject::RootComponent() const
+UPtr<KInterfaceComponent>& RInterfaceObject::RootComponent() 
 {
 	return rootComponent_;
 }
@@ -52,7 +52,7 @@ void RInterfaceObject::SetViewport(KtWindowViewport* viewport)
 	viewport_ = viewport;
 }
 
-void RInterfaceObject::SetParent(const UPtr<RInterfaceObject>& parent, const ECoordinateSpace keepRect)
+void RInterfaceObject::SetParent(UPtr<RInterfaceObject> parent, const ECoordinateSpace keepRect)
 {
 	if (parent == this)
 	{
@@ -74,7 +74,7 @@ void RInterfaceObject::SetParent(const UPtr<RInterfaceObject>& parent, const ECo
 	}
 	if (parent)
 	{
-		parent->children_.Add(Ptr<RInterfaceObject>());
+		parent->children_.Add(Ptr());
 		childrenIndex_ = parent->children_.LastIndex();
 	}
 	parent_ = parent;
@@ -88,7 +88,7 @@ bool RInterfaceObject::IsHovered() const
 	);
 }
 
-void RInterfaceObject::AddComponent(const UPtr<KInterfaceComponent>& component)
+void RInterfaceObject::AddComponent(UPtr<KInterfaceComponent> component)
 {
 	components_.Add(component);
 	component->componentIndex_ = components_.LastIndex();

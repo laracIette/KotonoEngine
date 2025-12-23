@@ -114,7 +114,7 @@ void KtShader::CreateDescriptorSetLayouts()
 	descriptorSetLayoutDatas_.reserve(shaderLayout_.DescriptorSetLayouts.size());
 	for (const auto& [set, setLayout] : shaderLayout_.DescriptorSetLayouts)
 	{
-		const size_t bindingCount = setLayout.DescriptorSetLayoutBindings.size();
+		const size_t bindingCount = setLayout.Bindings.size();
 
 		std::vector<VkDescriptorSetLayoutBinding> setBindings{};
 		std::vector<VkDescriptorBindingFlags> setBindingFlags{};
@@ -122,7 +122,7 @@ void KtShader::CreateDescriptorSetLayouts()
 		setBindings.reserve(bindingCount);
 		setBindingFlags.reserve(bindingCount);
 		setBindingDatas.reserve(bindingCount);
-		for (const auto& ktBinding : setLayout.DescriptorSetLayoutBindings)
+		for (const auto& ktBinding : setLayout.Bindings)
 		{
 
 			VkDescriptorSetLayoutBinding vkBinding{};
@@ -699,7 +699,7 @@ void KtShader::CreateDescriptorPools()
 	std::vector<VkDescriptorPoolSize> poolSizes{};
 	for (const auto& [index, setLayout] : shaderLayout_.DescriptorSetLayouts)
 	{
-		for (const auto& binding : setLayout.DescriptorSetLayoutBindings)
+		for (const auto& binding : setLayout.Bindings)
 		{
 			VkDescriptorPoolSize poolSize{};
 			poolSize.type = binding.DescriptorType;
@@ -793,7 +793,7 @@ void KtShader::PopulateShaderLayout(const std::span<uint8_t> spirvData, const Vk
 		{
 			const SpvReflectDescriptorBinding* binding = set->bindings[i];
 
-			KtShaderLayout::DescriptorSetLayout::DescriptorSetLayoutBinding ktBinding{};
+			KtShaderLayout::DescriptorSetLayout::Binding ktBinding{};
 			ktBinding.Name = binding->name;
 			ktBinding.Binding = binding->binding;
 			ktBinding.DescriptorCount = binding->count;
@@ -801,7 +801,7 @@ void KtShader::PopulateShaderLayout(const std::span<uint8_t> spirvData, const Vk
 			ktBinding.ShaderStageFlags = shaderStage;
 			ktBinding.Size = GetTypeSize(binding->type_description);
 
-			shaderLayout_.DescriptorSetLayouts[set->set].DescriptorSetLayoutBindings.push_back(ktBinding);
+			shaderLayout_.DescriptorSetLayouts[set->set].Bindings.push_back(ktBinding);
 		}
 	}
 

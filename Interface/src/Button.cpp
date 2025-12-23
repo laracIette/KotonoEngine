@@ -1,30 +1,30 @@
 #include "Button.h"
-#include <kotono_input/InputManager.h>
 #include <kotono_common/log.h>
+#include <kotono_input/Mouse.h>
 
 WButton::WButton(const ButtonSettings& buttonSettings) :
 	buttonSettings_(buttonSettings)
 {
 
-	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+	Mouse.EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonPressed));
-	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
+	Mouse.EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonDown));
-	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
+	Mouse.EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonReleased));
-	InputManager.Mouse().EventVerticalScroll()
+	Mouse.EventVerticalScroll()
 		.AddListener(KtDelegate(this, &WButton::OnMouseVerticalScroll));
 }
 
 void WButton::Cleanup()
 {
-	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+	Mouse.EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonPressed));
-	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
+	Mouse.EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonDown));
-	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
+	Mouse.EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonReleased));
-	InputManager.Mouse().EventVerticalScroll()
+	Mouse.EventVerticalScroll()
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseVerticalScroll));
 
 	WWidget::Cleanup();
@@ -32,7 +32,7 @@ void WButton::Cleanup()
 
 bool WButton::IsMouseHovering() const
 {
-	const auto& cursorPos{ InputManager.Mouse().GetCursorPosition() };
+	const auto& cursorPos{ Mouse.CursorPosition() };
 	const auto position{ GetPosition() };
 	const auto size{ GetSize() };
 

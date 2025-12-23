@@ -1,4 +1,3 @@
-#include "InputManager.h"
 #include "Keyboard.h"
 #include <GLFW/glfw3.h>
 #include <kotono_common/log.h>
@@ -7,15 +6,16 @@
 #define KT_LOG_IMPORTANCE_LEVEL_KEYBOARD KT_LOG_IMPORTANCE_LEVEL_LOW
 
 void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mods);
+
 constexpr int keyToGLFWKey(const KtKey key);
 constexpr KtKey GLFWKeyToKey(const int key);
 
-void KtKeyboard::Init()
+void SKeyboard::Init()
 {
     glfwSetKeyCallback(Window.GetGLFWWindow(), key_callback_);
 }
 
-void KtKeyboard::Update()
+void SKeyboard::Update()
 {
     for (size_t key{ 0 }; key < KT_KEY_COUNT; ++key)
     {
@@ -34,13 +34,13 @@ void KtKeyboard::Update()
     }
 }
 
-void KtKeyboard::UpdateKey(const KtKey key, const int action)
+void SKeyboard::UpdateKey(const KtKey key, const int action)
 {    
     switch (action)
     {
     case GLFW_PRESS:
     {
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input.KtKeyboard::UpdateKey()", "GLFW_PRESS key %d", key);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input.SKeyboard::UpdateKey()", "GLFW_PRESS key %d", key);
 
         keyStates_[key][KT_INPUT_STATE_RELEASED] = false;
 
@@ -50,7 +50,7 @@ void KtKeyboard::UpdateKey(const KtKey key, const int action)
     }
     case GLFW_RELEASE:
     {
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input.KtKeyboard::UpdateKey()", "GLFW_RELEASE key %d", key);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input.SKeyboard::UpdateKey()", "GLFW_RELEASE key %d", key);
 
         keyStates_[key][KT_INPUT_STATE_PRESSED] = false;
         keyStates_[key][KT_INPUT_STATE_DOWN] = false;
@@ -63,12 +63,12 @@ void KtKeyboard::UpdateKey(const KtKey key, const int action)
     }
 }
 
-KtEvent<>& KtKeyboard::EventKey(const KtKey key, const KtInputState inputState)
+KtEvent<>& SKeyboard::EventKey(const KtKey key, const KtInputState inputState)
 {
     return keyEvents_[key][inputState];
 }
 
-bool KtKeyboard::KeyState(const KtKey key, const KtInputState inputState) const
+bool SKeyboard::KeyState(const KtKey key, const KtInputState inputState) const
 {
     return keyStates_[key][inputState];
 }
@@ -80,7 +80,7 @@ void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mo
         return;
     }
 
-    InputManager.Keyboard().UpdateKey(GLFWKeyToKey(key), action);
+    Keyboard.UpdateKey(GLFWKeyToKey(key), action);
 }
 
 constexpr int keyToGLFWKey(const KtKey key)

@@ -1,4 +1,5 @@
 #include "SceneComponent.h"
+#include "Ptr.h"
 #include "serialize.h"
 #include <nlohmann/json.hpp>
 #include "SceneObject.h"
@@ -32,4 +33,9 @@ void KSceneComponent::DeserializeFrom(const nlohmann::json& json)
 	deserialize(json.at("mobility_"), mobility_);
 	deserialize(json.at("componentIndex_"), componentIndex_);
 	deserialize(json.at("childrenIndex_"), childrenIndex_);
+}
+
+UPtr<KSceneComponent> KSceneComponent::Ptr() const
+{
+	return static_cast<UPtrOwner<KSceneComponent>*>(ptrOwner_);
 }

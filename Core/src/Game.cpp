@@ -3,12 +3,11 @@
 #include "ProjectSettings.h"
 #include "Scene.h"
 #include <kotono_common/log.h>
-#include <kotono_input/InputManager.h>
 #include <kotono_input/Keyboard.h>
 
 void SGame::Init()
 {
-	InputManager.Keyboard().EventKey(KT_KEY_S, KT_INPUT_STATE_PRESSED)
+	Keyboard.EventKey(KT_KEY_S, KT_INPUT_STATE_PRESSED)
         .AddListener(KtDelegate(this, &SGame::OnKeySPressed));
 
     const auto startupScene{ SProjectSettings::Get<std::string>("/startupScene") };
@@ -42,7 +41,7 @@ const UPtr<KScene>& SGame::GetOpenedScene() const
 
 void SGame::OnKeySPressed() const
 {
-    if (!InputManager.Keyboard().KeyState(KT_KEY_LEFT_CONTROL, KT_INPUT_STATE_DOWN))
+    if (!Keyboard.KeyState(KT_KEY_LEFT_CONTROL, KT_INPUT_STATE_DOWN))
     {
         return;
     }

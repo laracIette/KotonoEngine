@@ -2,4 +2,5 @@
 	public: \
 		virtual void SerializeTo(nlohmann::json& json) const; \
 		virtual void DeserializeFrom(const nlohmann::json& json); \
-	private:
+	private: \
+		UPtr<KObject> Ptr() const;

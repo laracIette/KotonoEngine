@@ -5,4 +5,5 @@
 	public: \
 		void SerializeTo(nlohmann::json& json) const override; \
 		void DeserializeFrom(const nlohmann::json& json) override; \
-	private:
+	private: \
+		UPtr<KScene> Ptr() const;

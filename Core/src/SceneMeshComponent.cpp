@@ -1,18 +1,18 @@
-#include "SceneMeshComponent.h"
-#include <kotono_graphics/Renderer.h>
-#include <kotono_input/InputManager.h>
-#include <kotono_graphics/ShaderManager.h>
-#include <kotono_graphics/ModelManager.h>
-#include <kotono_common/Path.h>
-#include <kotono_graphics/Shader.h>
-#include <kotono_graphics/Model.h>
-#include <kotono_platform/WindowViewport.h>
-#include <kotono_common/log.h>
-#include <nlohmann/json.hpp>
-#include "TimeManager.h"
 #include "ObjectManager.h"
+#include "SceneMeshComponent.h"
 #include "SceneObject.h"
 #include "Task.h"
+#include "TimeManager.h"
+#include <kotono_common/log.h>
+#include <kotono_common/Path.h>
+#include <kotono_graphics/Model.h>
+#include <kotono_graphics/ModelManager.h>
+#include <kotono_graphics/Renderer.h>
+#include <kotono_graphics/Shader.h>
+#include <kotono_graphics/ShaderManager.h>
+#include <kotono_input/Keyboard.h>
+#include <kotono_platform/WindowViewport.h>
+#include <nlohmann/json.hpp>
 
 static KtShader* WireframeShader = nullptr;
 
@@ -21,7 +21,7 @@ KSceneMeshComponent::KSceneMeshComponent(UPtrOwnerBase* ptrOwner) :
 {
     if (!WireframeShader)
     {
-        const auto path{ KtPath::Graphics() / R"(shaders\wireframe3D.ktshader)" };
+        const auto path{ KtPath::Graphics() / "shaders" / "wireframe3D.ktshader" };
         WireframeShader = ShaderManager.Get(path);
     }
 }
@@ -30,13 +30,11 @@ void KSceneMeshComponent::Init()
 {
     Base::Init();
 
-    spinTask_.duration = 5.0f;
-    spinTask_.eventUpdate.AddListener(KtDelegate(this, &KSceneMeshComponent::Spin));
-    spinTask_.Start();
+    EventTransformUpdated().AddListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
 
-    InputManager.Keyboard().EventKey(KT_KEY_N, KT_INPUT_STATE_PRESSED)
+    Keyboard.EventKey(KT_KEY_N, KT_INPUT_STATE_PRESSED)
         .AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
-    InputManager.Keyboard().EventKey(KT_KEY_M, KT_INPUT_STATE_PRESSED)
+    Keyboard.EventKey(KT_KEY_M, KT_INPUT_STATE_PRESSED)
         .AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
 }
 
@@ -52,9 +50,9 @@ void KSceneMeshComponent::Cleanup()
     UnregisterModelProxy();
     EventTransformUpdated().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
 
-    InputManager.Keyboard().EventKey(KT_KEY_N, KT_INPUT_STATE_PRESSED)
+    Keyboard.EventKey(KT_KEY_N, KT_INPUT_STATE_PRESSED)
         .RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
-    InputManager.Keyboard().EventKey(KT_KEY_M, KT_INPUT_STATE_PRESSED)
+    Keyboard.EventKey(KT_KEY_M, KT_INPUT_STATE_PRESSED)
         .RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
 
     Base::Cleanup();
@@ -86,7 +84,10 @@ void KSceneMeshComponent::Spawn()
 
     CreateModelProxy();
     RegisterModelProxy();
-    EventTransformUpdated().AddListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
+
+    spinTask_.duration = 5.0f;
+    spinTask_.eventUpdate.AddListener(KtDelegate(this, &KSceneMeshComponent::Spin));
+    spinTask_.Start();
 }
 
 void KSceneMeshComponent::SetVisibility(const EVisibility visibility, const bool propagateToChildren)
@@ -117,8 +118,9 @@ void KSceneMeshComponent::CreateModelProxy()
 
 void KSceneMeshComponent::MarkModelProxyTransformDirty()
 {
-    modelProxy_.isDirty = true;
+    modelProxy_.MarkDirty();
     modelProxy_.objectData.modelMatrix = ModelMatrix();
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Core.KSceneMeshComponent::MarkModelProxyTransformDirty()", "%s", GetName().c_str());
 }
 
 void KSceneMeshComponent::RegisterModelProxy()

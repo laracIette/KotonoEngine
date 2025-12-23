@@ -271,8 +271,10 @@ void Generator::Generate(const std::filesystem::path& header) const
 			"\tpublic: \\\n"
 			"\t\tvirtual void SerializeTo(nlohmann::json& json) const; \\\n"
 			"\t\tvirtual void DeserializeFrom(const nlohmann::json& json); \\\n"
-			"\tprivate:\n",
-			to_upper(classInfo.name)
+			"\tprivate: \\\n"
+			"\t\tUPtr<{}> Ptr() const;\n",
+			to_upper(classInfo.name),
+			classInfo.name
 		)
 		: std::format(
 			"#define GENERATED_{}() \\\n"
@@ -282,9 +284,11 @@ void Generator::Generate(const std::filesystem::path& header) const
 			"\tpublic: \\\n"
 			"\t\tvoid SerializeTo(nlohmann::json& json) const override; \\\n"
 			"\t\tvoid DeserializeFrom(const nlohmann::json& json) override; \\\n"
-			"\tprivate:\n",
+			"\tprivate: \\\n"
+			"\t\tUPtr<{}> Ptr() const;\n",
 			to_upper(classInfo.name),
-			classInfo.baseName
+			classInfo.baseName,
+			classInfo.name
 		)
 	};
 
@@ -339,6 +343,7 @@ void Generator::Generate(const std::filesystem::path& header) const
 	const std::string generatedCodeCPP{ isKObject
 		? std::format(
 			"#include \"{}\"\n"
+			"#include \"Ptr.h\"\n"
 			"#include \"serialize.h\"\n"
 			"#include <nlohmann/json.hpp>\n"
 			"{}"
@@ -351,16 +356,25 @@ void Generator::Generate(const std::filesystem::path& header) const
 			"void {}::DeserializeFrom(const nlohmann::json& json)\n"
 			"{{\n"
 			"{}"
+			"}}\n"
+			"\n"
+			"UPtr<{}> {}::Ptr() const\n"
+			"{{\n"
+			"\treturn static_cast<UPtrOwner<{}>*>(ptrOwner_);\n"
 			"}}\n",
 			header.filename().string(),
 			objectClassHeaders.str(),
 			classInfo.name,
 			serializeCode.str(),
 			classInfo.name,
-			deserializeCode.str()
+			deserializeCode.str(),
+			classInfo.name,
+			classInfo.name,
+			classInfo.name
 		)
 		: std::format(
 			"#include \"{}\"\n"
+			"#include \"Ptr.h\"\n"
 			"#include \"serialize.h\"\n"
 			"#include <nlohmann/json.hpp>\n"
 			"{}"
@@ -375,13 +389,21 @@ void Generator::Generate(const std::filesystem::path& header) const
 			"{{\n"
 			"\tBase::DeserializeFrom(json);\n"
 			"{}"
+			"}}\n"
+			"\n"
+			"UPtr<{}> {}::Ptr() const\n"
+			"{{\n"
+			"\treturn static_cast<UPtrOwner<{}>*>(ptrOwner_);\n"
 			"}}\n",
 			header.filename().string(),
 			objectClassHeaders.str(),
 			classInfo.name,
 			serializeCode.str(),
 			classInfo.name,
-			deserializeCode.str()
+			deserializeCode.str(),
+			classInfo.name,
+			classInfo.name,
+			classInfo.name
 		)
 	};
 

@@ -100,7 +100,7 @@ public:
 
 	bool IsHovered() const;
 
-	void AddChildren(const UPtr<KInterfaceComponent>& interfaceComponent);
+	void AddChildren(UPtr<KInterfaceComponent> interfaceComponent);
 	void RemoveChildren(const UPtr<KInterfaceComponent>& interfaceComponent);
 
 private:

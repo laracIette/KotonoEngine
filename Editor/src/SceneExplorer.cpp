@@ -35,7 +35,7 @@ WWidget* WSceneExplorer::Build()
 										.onPress = [this]() {
 											if (UPtr scene{ Game.GetOpenedScene() })
 											{
-												SetState([this, scene]() {
+												SetState([this, &scene]() {
 													auto* shader3D{ ShaderManager.Get(KtPath::Graphics() / "shaders" / "shader3D.ktshader") };													
 													auto* model{ ModelManager.Get(KtPath::Graphics() / "assets" / "models" / "viking_room.obj") };
 													

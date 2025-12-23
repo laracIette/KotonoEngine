@@ -1,4 +1,5 @@
 #include "Object.h"
+#include "Ptr.h"
 #include "serialize.h"
 #include <nlohmann/json.hpp>
 
@@ -14,4 +15,9 @@ void KObject::DeserializeFrom(const nlohmann::json& json)
 	deserialize(json.at("guid_"), guid_);
 	deserialize(json.at("type_"), type_);
 	deserialize(json.at("name_"), name_);
+}
+
+UPtr<KObject> KObject::Ptr() const
+{
+	return static_cast<UPtrOwner<KObject>*>(ptrOwner_);
 }

@@ -8,7 +8,8 @@
 #include <kotono_graphics/ModelManager.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/ShaderManager.h>
-#include <kotono_input/InputManager.h>
+#include <kotono_input/Keyboard.h>
+#include <kotono_input/Mouse.h>
 #include <kotono_platform/Context.h>
 #include <kotono_platform/Window.h>
 
@@ -19,7 +20,8 @@ void SCore::Init()
     ::Renderer.Init();
     ::ShaderManager.Init();
     ::AudioManager.Init();
-    ::InputManager.Init();
+    ::Keyboard.Init();
+    ::Mouse.Init();
     ::TimeManager.Init();
     ::ObjectManager.Init();
     ::Game.Init();
@@ -27,7 +29,8 @@ void SCore::Init()
 
 void SCore::Update()
 {
-    ::InputManager.Update();
+    ::Keyboard.Update();
+    ::Mouse.Update();
     ::TimeManager.Update();
     ::Game.Update();
     ::InterfacePhysicsManager.Update();

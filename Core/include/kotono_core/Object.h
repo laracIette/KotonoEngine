@@ -5,7 +5,7 @@
 #include "serialize.h"
 #include <filesystem>
 #include <kotono_common/Event.h>
-#include <kotono_common/Ptr.h>
+#include "Ptr.h"
 #include <nlohmann/json_fwd.hpp>
 #include <string>
 
@@ -51,14 +51,9 @@ public:
 	virtual std::string ToString() const;
 
 protected:
-	template <std::derived_from<KObject> T>
-	UPtr<T> Ptr() const
-	{
-		return static_cast<UPtrOwner<T>*>(ptrOwner_);
-	}
+	UPtrOwnerBase* const ptrOwner_;
 
 private:
-	UPtrOwnerBase* const ptrOwner_;
 	SERIALIZE UGuid guid_;
 	SERIALIZE std::string type_;
 	SERIALIZE std::string name_;

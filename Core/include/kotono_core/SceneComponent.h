@@ -49,7 +49,7 @@ public:
 	glm::mat4 TranslationMatrix() const;
 	glm::mat4 RotationMatrix() const;
 	glm::mat4 ScaleMatrix() const;
-	glm::mat4 ModelMatrix();
+	const glm::mat4& ModelMatrix();
 
 	glm::vec3 GetScreenPosition() const;
 

@@ -6,10 +6,10 @@ RInterfaceImageObject::RInterfaceImageObject(UPtrOwnerBase* ptrOwner) :
 	Base(ptrOwner)
 {
 	imageComponent_ = ObjectManager.Create<KInterfaceImageComponent>();
-	imageComponent_->SetOwner(Ptr<RInterfaceImageObject>());
+	imageComponent_->SetOwner(Ptr());
 }
 
-const UPtr<KInterfaceImageComponent>& RInterfaceImageObject::GetImageComponent() const
+UPtr<KInterfaceImageComponent>& RInterfaceImageObject::ImageComponent()
 {
 	return imageComponent_;
 }

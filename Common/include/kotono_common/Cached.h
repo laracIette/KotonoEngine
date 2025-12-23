@@ -13,14 +13,14 @@ public:
 		isDirty_(true)
 	{}
 
-	explicit KtCached(ValueFunction&& valueFunction) : 
+	KtCached(ValueFunction&& valueFunction) : 
 		value_(T{}),
 		valueFunction_(std::move(valueFunction)),
 		isDirty_(true) 
 	{}
 
 	// Get the current value without updating it
-	T Value() const noexcept
+	const T& Value() const noexcept
 	{
 		return value_;
 	}
@@ -46,7 +46,7 @@ public:
 	}
 
 	// Try to update and return the value
-	operator T()
+	operator T&()
 	{
 		TryUpdateValue();
 		return value_;

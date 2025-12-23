@@ -1,15 +1,15 @@
 #include "InterfaceComponent.h"
 #include "InterfaceObject.h"
-#include <kotono_graphics/Renderer.h>
+#include <kotono_common/log.h>
 #include <kotono_common/Path.h>
-#include <kotono_graphics/Shader.h>
-#include <kotono_graphics/ShaderManager.h>
 #include <kotono_graphics/ImageTexture.h>
 #include <kotono_graphics/ImageTextureManager.h>
-#include <kotono_platform/WindowViewport.h>
 #include <kotono_graphics/InterfaceRenderableProxy.h>
-#include <kotono_input/InputManager.h>
-#include <kotono_common/log.h>
+#include <kotono_graphics/Renderer.h>
+#include <kotono_graphics/Shader.h>
+#include <kotono_graphics/ShaderManager.h>
+#include <kotono_input/Mouse.h>
+#include <kotono_platform/WindowViewport.h>
 
 KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner) :
     Base(ptrOwner),
@@ -47,7 +47,7 @@ void KInterfaceComponent::Cleanup()
 
     SetParent(nullptr, ECoordinateSpace::Relative);
 
-    owner_->RemoveComponent(Ptr<KInterfaceComponent>());
+    owner_->RemoveComponent(Ptr());
 
     Renderer.GetInterfaceRenderer().Unregister(boundsProxy_);
     Renderer.GetInterfaceRenderer().DeleteProxy(boundsProxy_);
@@ -185,7 +185,7 @@ void KInterfaceComponent::SetVisibility(const EVisibility visibility, const bool
     visibility_ = visibility;
     if (propagateToChildren)
     {
-        for (const auto& interfaceComponent : children_)
+        for (auto& interfaceComponent : children_)
         {
             interfaceComponent->SetVisibility(visibility, propagateToChildren);
         }
@@ -208,7 +208,7 @@ void KInterfaceComponent::SetParent(const UPtr<KInterfaceComponent>& parent, con
     if (parent_)
     {
         parent_->EventRectUpdated().RemoveListener(KtDelegate(&eventRectUpdated_, &KtEvent<>::Broadcast));
-        parent_->RemoveChildren(Ptr<KInterfaceComponent>());
+        parent_->RemoveChildren(Ptr());
     }
 
     switch (keepRect)
@@ -235,7 +235,7 @@ void KInterfaceComponent::SetParent(const UPtr<KInterfaceComponent>& parent, con
     if (parent_)
     {
         parent_->EventRectUpdated().AddListener(KtDelegate(&eventRectUpdated_, &KtEvent<>::Broadcast));
-        parent_->AddChildren(Ptr<KInterfaceComponent>());
+        parent_->AddChildren(Ptr());
     }
 }
 
@@ -465,13 +465,13 @@ bool KInterfaceComponent::GetIsOverlapping(const UPtr<KInterfaceComponent>& othe
 
 bool KInterfaceComponent::IsHovered() const
 {
-    const auto& cursorPosition = InputManager.Mouse().GetCursorPosition();
+    const auto& cursorPosition = Mouse.CursorPosition();
     const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
     const auto worldPosition = cursorPosition / viewportSize * 2.0f - glm::vec2(1.0f);
     return GetIsOverlapping(worldPosition);
 }
 
-void KInterfaceComponent::AddChildren(const UPtr<KInterfaceComponent>& interfaceComponent)
+void KInterfaceComponent::AddChildren(UPtr<KInterfaceComponent> interfaceComponent)
 {
     if (!interfaceComponent)
     {

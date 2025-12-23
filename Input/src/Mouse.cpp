@@ -1,44 +1,42 @@
 #include "Mouse.h"
-#include <kotono_platform/Window.h>
-#include "InputManager.h"
 #include <GLFW/glfw3.h>
+#include <kotono_common/log.h> 
+#include <kotono_platform/Window.h>
+
+#define KT_LOG_IMPORTANCE_LEVEL_MOUSE KT_LOG_IMPORTANCE_LEVEL_LOW
 
 void mousebutton_callback_(GLFWwindow* window, int button, int action, int mods);
 void cursorpos_callback_(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback_(GLFWwindow* window, double xoffset, double yoffset);
 
-void KtMouse::Init()
+void SMouse::Init()
 {
     glfwSetMouseButtonCallback(Window.GetGLFWWindow(), mousebutton_callback_);
     glfwSetCursorPosCallback(Window.GetGLFWWindow(), cursorpos_callback_);
     glfwSetScrollCallback(Window.GetGLFWWindow(), scroll_callback_);
 }
 
-void KtMouse::Update()
+void SMouse::Update()
 {
-    for (size_t button{ 0 }; button < buttonStates_.size(); ++button)
+    for (size_t button{ 0 }; button < KT_BUTTON_COUNT; ++button)
     {
-        if (buttonStates_[button].empty())
+        for (size_t inputState{ 0 }; inputState < KT_INPUT_STATE_COUNT; ++inputState)
         {
-            continue;
-        }
-
-        for (const auto inputState : buttonStates_[button])
-        {
-            buttonEvents_[button][inputState].Broadcast();
-        }
-
-        std::erase_if(buttonStates_[button],
-            [](const KtInputState inputState) 
+            if (buttonStates_[button][inputState])
             {
-                return inputState == KT_INPUT_STATE_PRESSED || inputState == KT_INPUT_STATE_RELEASED;
+                buttonEvents_[button][inputState].Broadcast();
             }
-        );
+        }
+
+        if (buttonStates_[button][KT_INPUT_STATE_PRESSED])
+        {
+            buttonStates_[button][KT_INPUT_STATE_PRESSED] = false;
+        }
     }
 
     if (cursorPosition_ != previousCursorPosition_)
     {
-        eventMove_.Broadcast(GetCursorPositionDelta());
+        eventMove_.Broadcast(CursorPositionDelta());
         previousCursorPosition_ = cursorPosition_;
     }
 
@@ -55,96 +53,103 @@ void KtMouse::Update()
     }
 }
 
-void KtMouse::UpdateButton(const KtButton button, const int action)
+void SMouse::UpdateButton(const KtButton button, const int action)
 {
-    std::unordered_set<KtInputState> buttonStates;
-
     switch (action)
     {
     case GLFW_PRESS:
     {
-        buttonStates.insert(KT_INPUT_STATE_DOWN);
-        if (!buttonStates_[button].contains(KT_INPUT_STATE_DOWN))
-        {
-            buttonStates.insert(KT_INPUT_STATE_PRESSED);
-        }
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_MOUSE, "Input.SMouse::UpdateButton()", "GLFW_PRESS button %d", button);
+
+        buttonStates_[button][KT_INPUT_STATE_RELEASED] = false;
+
+        buttonStates_[button][KT_INPUT_STATE_PRESSED] = true;
+        buttonStates_[button][KT_INPUT_STATE_DOWN] = true;
         break;
     }
     case GLFW_RELEASE:
     {
-        buttonStates.insert(KT_INPUT_STATE_RELEASED);
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_MOUSE, "Input.SMouse::UpdateButton()", "GLFW_RELEASE button %d", button);
+        
+        buttonStates_[button][KT_INPUT_STATE_PRESSED] = false;
+        buttonStates_[button][KT_INPUT_STATE_DOWN] = false;
+
+        buttonStates_[button][KT_INPUT_STATE_RELEASED] = true;
         break;
     }
     default:
         break;
     }
-
-    buttonStates_[button] = buttonStates;
 }
 
-const glm::vec2& KtMouse::GetPreviousCursorPosition() const
+const glm::vec2& SMouse::PreviousCursorPosition() const
 {
     return previousCursorPosition_;
 }
 
-const glm::vec2& KtMouse::GetCursorPosition() const
+const glm::vec2& SMouse::CursorPosition() const
 {
     return cursorPosition_;
 }
 
-glm::vec2 KtMouse::GetCursorPositionNormalized() const
+glm::vec2 SMouse::CursorPositionNormalized() const
 {
     const auto& windowSize = Window.GetSize();
     return 2.0f * cursorPosition_ / glm::vec2(windowSize) - 1.0f;
 }
 
-glm::vec2 KtMouse::GetCursorPositionDelta() const
+glm::vec2 SMouse::CursorPositionDelta() const
 {
     return cursorPosition_ - previousCursorPosition_;
 }
 
-float KtMouse::GetHorizontalScrollDelta() const
+float SMouse::HorizontalScrollDelta() const
 {
     return horizontalScrollDelta_;
 }
 
-float KtMouse::GetVerticalScrollDelta() const
+float SMouse::VerticalScrollDelta() const
 {
     return verticalScrollDelta_;
 }
 
-KtEvent<>& KtMouse::EventButton(const KtButton button, const KtInputState inputState)
+KtEvent<>& SMouse::EventButton(const KtButton button, const KtInputState inputState)
 {
     return buttonEvents_[button][inputState];
 }
 
-KtEvent<glm::vec2>& KtMouse::EventMove()
+bool SMouse::ButtonState(const KtButton button, const KtInputState inputState) const
+{
+    return buttonStates_[button][inputState];
+}
+
+KtEvent<glm::vec2>& SMouse::EventMove()
 {
     return eventMove_;
 }
 
-KtEvent<float>& KtMouse::EventHorizontalScroll()
+KtEvent<float>& SMouse::EventHorizontalScroll()
 {
     return eventHorizontalScroll_;
 }
 
-KtEvent<float>& KtMouse::EventVerticalScroll()
+KtEvent<float>& SMouse::EventVerticalScroll()
 {
     return eventVerticalScroll_;
 }
 
 void mousebutton_callback_(GLFWwindow* window, int button, int action, int mods)
 {
-    InputManager.Mouse().UpdateButton(static_cast<KtButton>(button), action);
+    Mouse.UpdateButton(static_cast<KtButton>(button), action);
 }
 
 void cursorpos_callback_(GLFWwindow* window, double xpos, double ypos)
 {
-    InputManager.Mouse().cursorPosition_ = { xpos, ypos };
+    Mouse.cursorPosition_ = { xpos, ypos };
 }
 
 void scroll_callback_(GLFWwindow* window, double xoffset, double yoffset)
 {
-    InputManager.Mouse().horizontalScrollDelta_ = static_cast<float>(xoffset);
-    InputManager.Mouse().verticalScrollDelta_ = static_cast<float>(yoffset);
+    Mouse.horizontalScrollDelta_ = static_cast<float>(xoffset);
+    Mouse.verticalScrollDelta_ = static_cast<float>(yoffset);
 }

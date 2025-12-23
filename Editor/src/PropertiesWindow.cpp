@@ -1,101 +1,89 @@
 #include "PropertiesWindow.h"
-#include <kotono_interface/widgets.h>
-#include <kotono_core/ObjectManager.h>
-#include <kotono_core/InterfaceObject.h>
+#include <kotono_common/log.h>
 #include <kotono_core/InterfaceComponent.h>
-#include <kotono_input/InputManager.h>
+#include <kotono_core/InterfaceObject.h>
+#include <kotono_core/ObjectManager.h>
+#include <kotono_core/SceneComponent.h>
+#include <kotono_core/SceneObject.h>
+#include <kotono_input/Mouse.h>
+#include <kotono_interface/widgets.h>
 
 WWidget* WPropertiesWindow::Build()
 {
-    return new WStack({
-        .children = {
-            new WColor({ KtColor::Blue().WithAlpha(0.5f) }),
-            new WPadding({
-                .padding = WPadding::Padding::All(8.0f),
-                .child = new WColumn({
-                    .spacing = 10.0f,
-                    .children = {
-                        new WStack({
-                            .children = {
-                                new WText({
-                                    .text = "Properties",
-                                    .spacing = -20.0f,
+    ObjectManager.EventSelectedObjectChanged().AddListener(KtDelegate(this, &WPropertiesWindow::Refresh));
+
+    if (UPtr selectedObject{ TryCast<TSceneObject>(ObjectManager.GetSelectedObject()) })
+    {
+        return new WStack({
+            .children = {
+                new WColor({ KtColor::Blue().WithAlpha(0.5f) }),
+                new WPadding({
+                    .padding = WPadding::Padding::All(8.0f),
+                    .child = new WList({
+                        .spacing = 10.0f,
+                        .children = [this, selectedObject]() mutable {
+							return WidgetVector{
+                                new WStack({
+                                    .children = {
+                                        new WText({
+                                            .text = "Properties",
+                                            .spacing = -20.0f,
+                                        }),
+                                        new WBox({
+                                            .size = { 400.0f, 60.0f },
+                                            .child = new WColor({ KtColor::Black().WithAlpha(0.5f) }),
+                                        }),
+                                    },
                                 }),
-                                new WBox({
-                                    .size = { 400.0f, 60.0f },
-                                    .child = new WColor({ KtColor::Black().WithAlpha(0.5f) }),
+                                Slider("Position X", [selectedObject](const float delta) mutable {
+								    selectedObject->RootComponent()->Translate({ delta * 0.1f, 0.0f, 0.0f });
                                 }),
-                            },
-                        }),
-                        new WBox({
-                            .size = { 250.0f, 25.0f },
-                            .child = new WStack({
-                                .children = {
-                                    new WColor({ KtColor::White().WithValue(0.5f) }),
-                                    new WText({
-                                        .text = "Position.x",
-                                        .fontSize = { 20.0f, 25.0f },
-                                        .spacing = -8.0f,
-                                    }),
-                                    new WButton({
-                                        .onDown = []() {
-                                            const auto& selectedObject{ ObjectManager.GetSelectedObject() };
-                                            if (!selectedObject)
-                                            {
-                                                return;
-                                            }
+                                Slider("Position Y", [selectedObject](const float delta) mutable {
+                                    selectedObject->RootComponent()->Translate({ 0.0f, delta * 0.1f, 0.0f });
+                                }),
+                                Slider("Position Z", [selectedObject](const float delta) mutable {
+                                    selectedObject->RootComponent()->Translate({ 0.0f, 0.0f, delta * 0.1f });
+                                }),
+                            };
+                        },
+                    }),
+                }),
+            },
+        });
+    }
 
-                                            const auto delta = InputManager.Mouse().GetCursorPositionDelta().x;
-                                            if (!delta)
-                                            {
-                                                return;
-                                            }
+    return nullptr;
+}
 
-                                            if (auto* asInterfaceObject = dynamic_cast<RInterfaceObject*>(selectedObject.Get()))
-                                            {
-                                                asInterfaceObject->RootComponent()->Translate({ delta / 800.0f, 0.0f });
-                                            }
-                                        },
-                                    }),
-                                },
-                            }),
-                        }),
-                        new WBox({
-                            .size = { 250.0f, 25.0f },
-                            .child = new WStack({
-                                .children = {
-                                    new WColor({ KtColor::White().WithValue(0.5f) }),
-                                    new WText({
-                                        .text = "Position.y",
-                                        .fontSize = { 20.0f, 25.0f },
-                                        .spacing = -8.0f,
-                                    }),
-                                    new WButton({
-                                        .onDown = []() {
-                                            const auto& selectedObject{ ObjectManager.GetSelectedObject() };
-                                            if (!selectedObject)
-                                            {
-                                                return;
-                                            }
+void WPropertiesWindow::Cleanup()
+{
+    ObjectManager.EventSelectedObjectChanged().RemoveListener(KtDelegate(this, &WPropertiesWindow::Refresh));
 
-                                            const auto delta = InputManager.Mouse().GetCursorPositionDelta().x;
-                                            if (!delta)
-                                            {
-                                                return;
-                                            }
+    WWidget::Cleanup();
+}
 
-                                            if (auto* asInterfaceObject = dynamic_cast<RInterfaceObject*>(selectedObject.Get()))
-                                            {
-                                                asInterfaceObject->RootComponent()->Translate({ 0.0f, delta / 800.0f });
-                                            }
-                                        },
-                                    }),
-                                },
-                            }),
-                        }),
+WWidget* WPropertiesWindow::Slider(const std::string& label, const ValueChangedFunction& function)
+{
+    return new WBox({
+        .size = { 250.0f, 25.0f },
+        .child = new WStack({
+            .children = {
+                new WColor({ KtColor::White().WithValue(0.5f) }),
+                new WText({
+                    .text = label,
+                    .fontSize = { 20.0f, 25.0f },
+                    .spacing = -8.0f,
+                }),
+                new WButton({
+                    .onDown = [function]() {
+                        const float delta{ Mouse.CursorPositionDelta().x };
+                        if (delta != 0.0f)
+                        {
+                            function(delta);
+                        }
                     },
                 }),
-            }),
-        },
+            },
+        }),
     });
 }

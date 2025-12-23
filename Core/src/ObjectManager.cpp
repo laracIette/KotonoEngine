@@ -1,25 +1,23 @@
 #include "ObjectManager.h"
-#include <kotono_timing/TimerManager.h>
-#include <kotono_timing/Timer.h>
-#include <kotono_platform/Window.h>
-#include <kotono_input/InputManager.h>
-#include <kotono_common/log.h>
+#include "InterfaceComponent.h"
+#include "InterfaceObject.h"
 #include "Object.h"
 #include "TimeManager.h"
-#include "Timer.h"
-#include "InterfaceObject.h"
-#include "InterfaceComponent.h"
-#include "Interface.h"
-#include <nlohmann/json.hpp>
+#include <kotono_common/log.h>
+#include <kotono_input/Keyboard.h>
+#include <kotono_input/Mouse.h>
 #include <kotono_io/Serializer.h>
+#include <kotono_platform/Window.h>
+#include <kotono_timing/Timer.h>
+#include <kotono_timing/TimerManager.h>
 
-#define KT_LOG_IMPORTANCE_LEVEL_OBJECT KT_LOG_IMPORTANCE_LEVEL_HIGH
+#define KT_LOG_IMPORTANCE_LEVEL_OBJECT KT_LOG_IMPORTANCE_LEVEL_MEDIUM
 
 void SObjectManager::Init()
 {
-	InputManager.Keyboard().EventKey(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
+	Keyboard.EventKey(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &SObjectManager::Quit));
-	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+	Mouse.EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.AddListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
 
 	auto& logUPSTimer{ TimerManager.GetTimer("log ups timer") };
@@ -39,9 +37,9 @@ void SObjectManager::Cleanup()
 		Delete(deletes[i]);
 	}
 
-	InputManager.Keyboard().EventKey(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
+	Keyboard.EventKey(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
 		.RemoveListener(KtDelegate(this, &SObjectManager::Quit));
-	InputManager.Mouse().EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+	Mouse.EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
 		.RemoveListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
 }
 
@@ -112,7 +110,7 @@ void SObjectManager::InitObjects()
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core.SObjectManager::InitObjects()", "object count %llu", objects_.size());
 }
 
-const UPtr<KObject>& SObjectManager::GetSelectedObject() const
+UPtr<KObject>& SObjectManager::GetSelectedObject()
 {
 	return selectedObject_;
 }

@@ -78,14 +78,14 @@ public:
 		SetOwner(other.owner_);
 	}
 
-	template <DerivedFrom<PointerType> U>
-	UPtr(const UPtr<U>& other)
+	template <DerivedFrom<PointerType> Derived>
+	UPtr(const UPtr<Derived>& other)
 	{
 		SetOwner(reinterpret_cast<Owner*>(other.GetOwner())); // GetOwner() because different type
 	}
 
-	template <BaseOf<PointerType> V>
-	UPtr(const UPtr<V>& other)
+	template <BaseOf<PointerType> Base>
+	UPtr(const UPtr<Base>& other)
 	{
 		SetOwner(reinterpret_cast<Owner*>(other.GetOwner()));
 	}
@@ -95,15 +95,15 @@ public:
 		SetOwner(nullptr);
 	}
 
-	template <DerivedFrom<PointerType> U>
-	UPtr& operator=(const UPtr<U>& other)
+	template <DerivedFrom<PointerType> Derived>
+	UPtr& operator=(const UPtr<Derived>& other)
 	{
 		SetOwner(reinterpret_cast<Owner*>(other.GetOwner())); 
 		return *this;
 	}
 
-	template <BaseOf<PointerType> V>
-	UPtr& operator=(const UPtr<V>& other)
+	template <BaseOf<PointerType> Base>
+	UPtr& operator=(const UPtr<Base>& other)
 	{
 		SetOwner(reinterpret_cast<Owner*>(other.GetOwner()));
 		return *this;
@@ -129,8 +129,8 @@ public:
 		return owner_ == other.owner_;
 	}
 
-	template <DerivedFrom<PointerType> U>
-	constexpr bool operator==(const UPtr<U>& other) const noexcept
+	template <DerivedFrom<PointerType> Derived>
+	constexpr bool operator==(const UPtr<Derived>& other) const noexcept
 	{
 		return owner_ == reinterpret_cast<Owner*>(other.GetOwner());
 	}
@@ -145,7 +145,12 @@ public:
 		return owner_->pointer_;
 	}
 
-	constexpr PointerType* operator->() const noexcept
+	constexpr PointerType* operator->() noexcept
+	{
+		return owner_->pointer_;
+	}
+
+	constexpr const PointerType* operator->() const noexcept
 	{
 		return owner_->pointer_;
 	}
@@ -184,3 +189,13 @@ private:
 	}
 };
 
+template <typename Derived, typename Base>
+	requires std::is_base_of_v<Base, Derived>
+UPtr<Derived> TryCast(const UPtr<Base>& ptr)
+{
+	if (ptr && dynamic_cast<Derived*>(ptr.Get()))
+	{
+		return ptr;
+	}
+	return nullptr;
+}

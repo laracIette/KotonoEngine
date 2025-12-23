@@ -11,7 +11,7 @@ class RInterfaceImageObject : public RInterfaceObject
 public:
 	RInterfaceImageObject(UPtrOwnerBase* ptrOwner);
 
-	const UPtr<KInterfaceImageComponent>& GetImageComponent() const;
+	UPtr<KInterfaceImageComponent>& ImageComponent();
 
 private:
 	UPtr<KInterfaceImageComponent> imageComponent_;

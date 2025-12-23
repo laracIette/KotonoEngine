@@ -24,12 +24,12 @@ protected:
 
 public:
 	KtWindowViewport* GetViewport() const;
-	const UPtr<RInterfaceObject>& GetParent() const;
-	const UPtr<KInterfaceComponent>& RootComponent() const;
+	UPtr<RInterfaceObject>& GetParent();
+	UPtr<KInterfaceComponent>& RootComponent();
 	const KtPool<UPtr<RInterfaceObject>>& GetChildren() const;
 
 	void SetViewport(KtWindowViewport* viewport);
-	void SetParent(const UPtr<RInterfaceObject>& parent, const ECoordinateSpace keepRect);
+	void SetParent(UPtr<RInterfaceObject> parent, const ECoordinateSpace keepRect);
 
 	/// Returns true if any component is hovered
 	bool IsHovered() const;
@@ -46,7 +46,7 @@ public:
 		return components.GetFirst();
 	}
 
-	void AddComponent(const UPtr<KInterfaceComponent>& component);
+	void AddComponent(UPtr<KInterfaceComponent> component);
 	void RemoveComponent(const UPtr<KInterfaceComponent>& component);
 
 private:

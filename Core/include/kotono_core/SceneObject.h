@@ -8,9 +8,6 @@
 class KtWindowViewport;
 class KSceneComponent; 
 
-template <class T>
-concept SceneComponent = std::is_base_of_v<KSceneComponent, T>;
-
 class TSceneObject : public KObject
 {
 	GENERATED_TSCENEOBJECT()
@@ -30,14 +27,14 @@ protected:
 public:
 	bool GetCanUpdate() const;
 	KtWindowViewport* GetViewport() const;
-	const UPtr<TSceneObject>& GetParent() const;
-	const UPtr<KSceneComponent>& RootComponent() const;
+	UPtr<TSceneObject>& GetParent();
+	UPtr<KSceneComponent>& RootComponent();
 
 	void SetCanUpdate(const bool canUpdate);
 	void SetViewport(KtWindowViewport* viewport);
 	void SetParent(const UPtr<TSceneObject>& parent, const ECoordinateSpace keepTransform);
 
-	template <SceneComponent T>
+	template <std::derived_from<KSceneComponent> T>
 	UPtr<T> GetComponent() const
 	{
 		auto components = KtCollection(sceneComponents_.begin(), sceneComponents_.end());
@@ -49,7 +46,7 @@ public:
 		return components.GetFirst();
 	}
 
-	void AddComponent(const UPtr<KSceneComponent>& component);
+	void AddComponent(UPtr<KSceneComponent> component);
 	void RemoveComponent(const UPtr<KSceneComponent>& component);
 
 	void Serialize() const override;

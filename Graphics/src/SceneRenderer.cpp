@@ -1,17 +1,16 @@
 #include "SceneRenderer.h"
-#include <kotono_platform/Context.h>
-#include <kotono_platform/WindowViewport.h>
-#include <kotono_platform/vk_utils.h>
 #include "Renderer.h"
 #include "SceneCuller.h"
 #include "SceneRenderable.h"
-#include "Shader.h"
 #include "SceneRenderableProxy.h"
-#include <kotono_common/Collection.h>
+#include "Shader.h"
 #include <kotono_common/log.h>
+#include <kotono_platform/Context.h>
+#include <kotono_platform/vk_utils.h>
+#include <kotono_platform/WindowViewport.h>
 #include <unordered_set>
 
-#define KT_LOG_IMPORTANCE_LEVEL_PROXY KT_LOG_IMPORTANCE_LEVEL_HIGH
+#define KT_LOG_IMPORTANCE_LEVEL_PROXY KT_LOG_IMPORTANCE_LEVEL_MEDIUM
 
 void KtSceneRenderer::Init()
 {
@@ -277,7 +276,7 @@ void KtSceneRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t fram
 	if (isUniformBufferDirty_[frameIndex])
 	{
 		isUniformBufferDirty_[frameIndex] = false;
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Graphics", "update uniform");
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Graphics.KtSceneRenderer::CmdDraw()", "update uniform");
 		UpdateDescriptorSetUniformBuffers(staticProxies_[frameIndex], frameIndex);
 		UpdateDescriptorSetUniformBuffers(dynamicProxies_[frameIndex], frameIndex);
 	}
@@ -407,15 +406,18 @@ void KtSceneRenderer::CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, co
 
 bool KtSceneRenderer::GetIsDynamicProxiesDirty(const uint32_t frameIndex) const
 {
-	auto proxies = KtCollection(dynamicProxies_[frameIndex].begin(), dynamicProxies_[frameIndex].end());
-	proxies.AddFilter([](const KtSceneRenderableProxy* proxy) { return proxy->isDirty; });
-	return proxies.GetFirst() != nullptr;
+	return std::any_of(dynamicProxies_[frameIndex].begin(), dynamicProxies_[frameIndex].end(),
+		[frameIndex](const KtSceneRenderableProxy* proxy) 
+		{
+			return proxy->isDirty[frameIndex].load(std::memory_order_acquire); 
+		}
+	);
 }
 
 void KtSceneRenderer::MarkDynamicProxiesNotDirty(const uint32_t frameIndex)
 {
 	for (auto* proxy : dynamicProxies_[frameIndex])
 	{
-		proxy->isDirty = false;
+		proxy->isDirty[frameIndex].store(false, std::memory_order_release);
 	}
 }

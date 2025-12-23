@@ -62,7 +62,7 @@ UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 
     const auto type{ json.at("type_").get<std::string>() };
 
-	if (const auto object{ GetFactory(type) })
+	if (UPtr object{ GetFactory(type) })
 	{
 		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Core.SObjectFactory::Get()", "created object %s", object->GetName().c_str());
 		object->guid_ = guid;

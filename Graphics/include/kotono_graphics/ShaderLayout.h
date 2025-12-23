@@ -5,11 +5,9 @@
 #include <map>
 struct KtShaderLayout final
 {
-	std::vector<VkShaderStageFlagBits>              ShaderStages;
-
 	struct DescriptorSetLayout final
 	{
-		struct DescriptorSetLayoutBinding final
+		struct Binding final
 		{
 			std::string           Name; // todo: maybe const char*
 			uint32_t              Binding;
@@ -18,14 +16,18 @@ struct KtShaderLayout final
 			VkShaderStageFlags    ShaderStageFlags;
 			size_t                Size;
 		};
-		std::vector<DescriptorSetLayoutBinding>     DescriptorSetLayoutBindings;
-	};
-	std::map<size_t, DescriptorSetLayout>           DescriptorSetLayouts; // for some reason map unordered_map crashes
-	 
-	std::vector<VkVertexInputBindingDescription>    VertexInputBindingDescriptions;
-	std::vector<VkVertexInputAttributeDescription>  VertexInputAttributeDescriptions;
 
-	std::vector<VkDescriptorType>                   DescriptorPoolTypes; // deducted
-	std::vector<VkWriteDescriptorSet>               WriteDescriptorSets; // deducted
+		std::vector<Binding>    Bindings;
+	};
+
+	std::vector<VkShaderStageFlagBits>                ShaderStages;
+													  
+	std::map<size_t, DescriptorSetLayout>             DescriptorSetLayouts;
+	 												  
+	std::vector<VkVertexInputBindingDescription>      VertexInputBindingDescriptions;
+	std::vector<VkVertexInputAttributeDescription>    VertexInputAttributeDescriptions;
+													  
+	std::vector<VkDescriptorType>                     DescriptorPoolTypes; // deducted
+	std::vector<VkWriteDescriptorSet>                 WriteDescriptorSets; // deducted
 };
 

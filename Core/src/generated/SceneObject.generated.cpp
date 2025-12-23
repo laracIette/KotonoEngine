@@ -1,4 +1,5 @@
 #include "SceneObject.h"
+#include "Ptr.h"
 #include "serialize.h"
 #include <nlohmann/json.hpp>
 #include "SceneComponent.h"
@@ -36,4 +37,9 @@ void TSceneObject::DeserializeFrom(const nlohmann::json& json)
 		deserialize(json.at("children_")[i], children_[i]);
 	}
 	deserialize(json.at("childrenIndex_"), childrenIndex_);
+}
+
+UPtr<TSceneObject> TSceneObject::Ptr() const
+{
+	return static_cast<UPtrOwner<TSceneObject>*>(ptrOwner_);
 }

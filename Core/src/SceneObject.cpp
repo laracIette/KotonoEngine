@@ -34,7 +34,7 @@ void TSceneObject::Update()
 
 void TSceneObject::UpdateSceneComponents()
 {
-	for (const auto& sceneComponent : sceneComponents_)
+	for (auto& sceneComponent : sceneComponents_)
 	{
 		if (sceneComponent->GetCanUpdate())
 		{
@@ -53,12 +53,12 @@ KtWindowViewport* TSceneObject::GetViewport() const
 	return viewport_;
 }
 
-const UPtr<TSceneObject>& TSceneObject::GetParent() const
+UPtr<TSceneObject>& TSceneObject::GetParent()
 {
 	return parent_;
 }
 
-const UPtr<KSceneComponent>& TSceneObject::RootComponent() const
+UPtr<KSceneComponent>& TSceneObject::RootComponent()
 {
 	return rootComponent_;
 }
@@ -75,15 +75,20 @@ void TSceneObject::SetViewport(KtWindowViewport* viewport)
 
 void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinateSpace keepTransform)
 {
+	if (!parent && !parent_)
+	{
+		return;
+	}
+
 	if (parent == this)
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core.TSceneObject::SetParent()", "couldn't set the parent of '%s' to itself", GetName().c_str());
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core.TSceneObject::SetParent()", "couldn't set the parent of %s to itself", GetName().c_str());
 		return;
 	}
 
 	if (parent == parent_)
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core.TSceneObject::SetParent()", "couldn't set the parent of '%s' to the same", GetName().c_str());
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core.TSceneObject::SetParent()", "couldn't set the parent of %s to its current parent", GetName().c_str());
 		return;
 	}
 
@@ -100,7 +105,7 @@ void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinate
 
 	if (parent_)
 	{
-		parent_->children_.Add(Ptr<TSceneObject>());
+		parent_->children_.Add(Ptr());
 		childrenIndex_ = parent_->children_.LastIndex();
 	}
 
@@ -110,7 +115,7 @@ void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinate
 	}
 }
 
-void TSceneObject::AddComponent(const UPtr<KSceneComponent>& component)
+void TSceneObject::AddComponent(UPtr<KSceneComponent> component)
 {
 	if (sceneComponents_.Empty())
 	{
@@ -155,20 +160,25 @@ void TSceneObject::Deserialize()
 {
 	Base::Deserialize();
 
-	for (const auto& sceneComponent : sceneComponents_)
+	for (auto& sceneComponent : sceneComponents_)
 	{
-		sceneComponent->owner_ = Ptr<TSceneObject>();
+		sceneComponent->owner_ = Ptr();
+		if (sceneComponent->parent_) 
+		{
+			sceneComponent->parent_->EventTransformUpdated()
+				.AddListener(KtDelegate<>(&sceneComponent->EventTransformUpdated(), &KtEvent<>::Broadcast));
+		}
 	}
 
-	for (const auto& sceneObject : children_)
+	for (auto& sceneObject : children_)
 	{
-		sceneObject->parent_ = Ptr<TSceneObject>();
+		sceneObject->parent_ = Ptr();
 	}
 }
 
 void TSceneObject::Spawn()
 {
-	for (const auto& sceneComponent : sceneComponents_)
+	for (auto& sceneComponent : sceneComponents_)
 	{
 		sceneComponent->Spawn();
 	}

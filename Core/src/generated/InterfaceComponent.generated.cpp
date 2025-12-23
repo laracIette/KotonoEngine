@@ -1,4 +1,5 @@
 #include "InterfaceComponent.h"
+#include "Ptr.h"
 #include "serialize.h"
 #include <nlohmann/json.hpp>
 #include "InterfaceObject.h"
@@ -20,4 +21,9 @@ void KInterfaceComponent::DeserializeFrom(const nlohmann::json& json)
 	deserialize(json.at("visibility_"), visibility_);
 	deserialize(json.at("layer_"), layer_);
 	deserialize(json.at("color_"), color_);
+}
+
+UPtr<KInterfaceComponent> KInterfaceComponent::Ptr() const
+{
+	return static_cast<UPtrOwner<KInterfaceComponent>*>(ptrOwner_);
 }

@@ -15,14 +15,10 @@ public:
 public:
 	void UpdateSceneObjects();
 
-	void Load();
-	void Unload();
-	void Reload();
-
 	void Add(const UPtr<TSceneObject>& sceneObject);
 	void Remove(const UPtr<TSceneObject>& sceneObject);
 
-	void SpawnSceneObjects() const;
+	void SpawnSceneObjects();
 
 	const KtPool<UPtr<TSceneObject>>& SceneObjects() const;
 

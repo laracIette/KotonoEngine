@@ -3,7 +3,7 @@
 #include <kotono_common/Average.h>
 #include <kotono_common/Event.h>
 #include <kotono_common/Pool.h>
-#include <kotono_common/Ptr.h>
+#include "Ptr.h"
 #include <type_traits>
 #include <unordered_map>
 
@@ -31,7 +31,7 @@ public:
 
 	void Delete(UPtrOwnerBase* ptrOwner);
 
-	const UPtr<KObject>& GetSelectedObject() const;
+	UPtr<KObject>& GetSelectedObject();
 	void SetSelectedObject(const UPtr<KObject>& object);
 	KtEvent<>& EventSelectedObjectChanged();
 

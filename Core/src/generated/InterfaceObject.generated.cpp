@@ -1,4 +1,5 @@
 #include "InterfaceObject.h"
+#include "Ptr.h"
 #include "serialize.h"
 #include <nlohmann/json.hpp>
 #include "InterfaceComponent.h"
@@ -11,4 +12,9 @@ void RInterfaceObject::SerializeTo(nlohmann::json& json) const
 void RInterfaceObject::DeserializeFrom(const nlohmann::json& json)
 {
 	Base::DeserializeFrom(json);
+}
+
+UPtr<RInterfaceObject> RInterfaceObject::Ptr() const
+{
+	return static_cast<UPtrOwner<RInterfaceObject>*>(ptrOwner_);
 }

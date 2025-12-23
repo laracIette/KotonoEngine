@@ -18,14 +18,12 @@ set_target_properties(KotonoInput PROPERTIES FOLDER "KotonoEngine")
 
 set(KINPUT_HEADERS
     "include/kotono_input/Button.h"
-    "include/kotono_input/InputManager.h"
     "include/kotono_input/InputState.h"
     "include/kotono_input/Key.h"
     "include/kotono_input/Keyboard.h"
     "include/kotono_input/Mouse.h"
 )
 set(KINPUT_SOURCES
-    "src/InputManager.cpp"
     "src/Keyboard.cpp"
     "src/Mouse.cpp"
 )

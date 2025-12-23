@@ -2,7 +2,7 @@
 #include "Mobility.h"
 #include "Visibility.h"
 #include <glm/fwd.hpp>
-#include <kotono_common/Ptr.h>
+#include "Ptr.h"
 #include <nlohmann/json_fwd.hpp>
 
 #define SERIALIZE
