@@ -47,7 +47,13 @@ void KtModel::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t instanceCoun
 void KtModel::Load()
 {
 	Assimp::Importer importer{};
-	const aiScene* scene = importer.ReadFile(path_.string().c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = importer.ReadFile(path_.string().c_str(), 
+		aiProcess_Triangulate | 
+		aiProcess_FlipUVs |
+		aiProcess_MakeLeftHanded |
+		//aiProcess_FlipWindingOrder | 
+		aiProcess_JoinIdenticalVertices
+	);
 
 	if (!scene || !scene->HasMeshes())
 	{
@@ -58,11 +64,11 @@ void KtModel::Load()
 
 	for (uint32_t m{ 0 }; m < scene->mNumMeshes; ++m)
 	{
-		const aiMesh* mesh = scene->mMeshes[m];
+		const aiMesh* mesh{ scene->mMeshes[m] };
 
 		for (uint32_t i{ 0 }; i < mesh->mNumFaces; ++i)
 		{
-			const aiFace& face = mesh->mFaces[i];
+			const aiFace& face{ mesh->mFaces[i] };
 
 			for (uint32_t j{ 0 }; j < face.mNumIndices; ++j)
 			{
@@ -72,10 +78,11 @@ void KtModel::Load()
 					: aiVector3D(0.0f, 0.0f, 0.0f) 
 				};
 
-				KtVertex3D vertex{};
-				vertex.position = { pos.x, pos.y, pos.z };
-				vertex.texCoord = { texCoord.x, texCoord.y };
-				vertex.color = { 1.0f, 1.0f, 1.0f };
+				const KtVertex3D vertex{
+					.position = { pos.x, pos.y, pos.z },
+					.color = { 1.0f, 1.0f, 1.0f },
+					.texCoord = { texCoord.x, texCoord.y },
+				};
 
 				if (!uniqueVertices.contains(vertex))
 				{

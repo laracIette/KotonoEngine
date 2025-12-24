@@ -1,12 +1,18 @@
 #pragma once
-enum KtInputState : char
+#include <cstdint>
+enum class EInputState : uint8_t
 {
 	// Occurs the first frame where the input is down.
-	KT_INPUT_STATE_PRESSED,
+	Pressed,
 	// Occurs the first frame where the input is up.
-	KT_INPUT_STATE_RELEASED,
+	Released,
 	// Occurs every frame where the input is down.
-	KT_INPUT_STATE_DOWN,
-
-	KT_INPUT_STATE_COUNT = 3
+	Down
 };
+
+inline constexpr size_t InputStateCount{ 3 };
+
+constexpr size_t to_index(const EInputState inputState)
+{
+	return static_cast<size_t>(inputState);
+}

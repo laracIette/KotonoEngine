@@ -524,7 +524,7 @@ void KtShader::CreateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutB
 		return;
 	}
 
-	static const auto path{ KtPath::Graphics() / "assets" / "textures" / "default_texture.jpg"};
+	static const auto path{ KtPath::Graphics() / "assets" / "models" / "viking_room.png"};
 	static const auto* imageTexture{ ImageTextureManager.Get(path) };
 
 	UpdateDescriptorSetLayoutBindingImageSampler(descriptorSetLayoutBindingData, { imageTexture->GetDescriptorImageInfo() }, imageIndex);

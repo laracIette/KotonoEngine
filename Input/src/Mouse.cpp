@@ -18,9 +18,9 @@ void SMouse::Init()
 
 void SMouse::Update()
 {
-    for (size_t button{ 0 }; button < KT_BUTTON_COUNT; ++button)
+    for (size_t button{ 0 }; button < ButtonCount; ++button)
     {
-        for (size_t inputState{ 0 }; inputState < KT_INPUT_STATE_COUNT; ++inputState)
+        for (size_t inputState{ 0 }; inputState < InputStateCount; ++inputState)
         {
             if (buttonStates_[button][inputState])
             {
@@ -28,9 +28,9 @@ void SMouse::Update()
             }
         }
 
-        if (buttonStates_[button][KT_INPUT_STATE_PRESSED])
+        if (buttonStates_[button][to_index(EInputState::Pressed)])
         {
-            buttonStates_[button][KT_INPUT_STATE_PRESSED] = false;
+            buttonStates_[button][to_index(EInputState::Pressed)] = false;
         }
     }
 
@@ -53,28 +53,30 @@ void SMouse::Update()
     }
 }
 
-void SMouse::UpdateButton(const KtButton button, const int action)
+void SMouse::UpdateButton(const EButton button, const int action)
 {
+	const size_t buttonIndex{ to_index(button) };
+
     switch (action)
     {
     case GLFW_PRESS:
     {
         KT_LOG(KT_LOG_IMPORTANCE_LEVEL_MOUSE, "Input.SMouse::UpdateButton()", "GLFW_PRESS button %d", button);
 
-        buttonStates_[button][KT_INPUT_STATE_RELEASED] = false;
+        buttonStates_[buttonIndex][to_index(EInputState::Released)] = false;
 
-        buttonStates_[button][KT_INPUT_STATE_PRESSED] = true;
-        buttonStates_[button][KT_INPUT_STATE_DOWN] = true;
+        buttonStates_[buttonIndex][to_index(EInputState::Pressed)] = true;
+        buttonStates_[buttonIndex][to_index(EInputState::Down)] = true;
         break;
     }
     case GLFW_RELEASE:
     {
         KT_LOG(KT_LOG_IMPORTANCE_LEVEL_MOUSE, "Input.SMouse::UpdateButton()", "GLFW_RELEASE button %d", button);
-        
-        buttonStates_[button][KT_INPUT_STATE_PRESSED] = false;
-        buttonStates_[button][KT_INPUT_STATE_DOWN] = false;
 
-        buttonStates_[button][KT_INPUT_STATE_RELEASED] = true;
+        buttonStates_[buttonIndex][to_index(EInputState::Pressed)] = false;
+        buttonStates_[buttonIndex][to_index(EInputState::Down)] = false;
+
+        buttonStates_[buttonIndex][to_index(EInputState::Released)] = true;
         break;
     }
     default:
@@ -113,14 +115,14 @@ float SMouse::VerticalScrollDelta() const
     return verticalScrollDelta_;
 }
 
-KtEvent<>& SMouse::EventButton(const KtButton button, const KtInputState inputState)
+KtEvent<>& SMouse::EventButton(const EButton button, const EInputState inputState)
 {
-    return buttonEvents_[button][inputState];
+    return buttonEvents_[to_index(button)][to_index(inputState)];
 }
 
-bool SMouse::ButtonState(const KtButton button, const KtInputState inputState) const
+bool SMouse::ButtonState(const EButton button, const EInputState inputState) const
 {
-    return buttonStates_[button][inputState];
+    return buttonStates_[to_index(button)][to_index(inputState)];
 }
 
 KtEvent<glm::vec2>& SMouse::EventMove()
@@ -140,7 +142,7 @@ KtEvent<float>& SMouse::EventVerticalScroll()
 
 void mousebutton_callback_(GLFWwindow* window, int button, int action, int mods)
 {
-    Mouse.UpdateButton(static_cast<KtButton>(button), action);
+    Mouse.UpdateButton(static_cast<EButton>(button), action);
 }
 
 void cursorpos_callback_(GLFWwindow* window, double xpos, double ypos)

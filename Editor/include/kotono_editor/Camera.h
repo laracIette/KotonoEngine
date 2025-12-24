@@ -10,11 +10,9 @@ private:
 	void Cleanup();
 
 public:
-	void Use();
-
 	glm::vec3 RightVector() const;
-	glm::vec3 ForwardVector() const;
 	glm::vec3 UpVector() const;
+	glm::vec3 ForwardVector() const;
 
 	void SetPosition(const glm::vec3& position);
 	void SetRotation(const glm::quat& rotation);
@@ -25,7 +23,6 @@ public:
 private:
 	UTransform transform_;
 
-	bool isCurrent_;
 	bool isFocused_;
 
 	// Vertical fov in degrees

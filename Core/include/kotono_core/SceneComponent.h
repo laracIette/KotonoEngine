@@ -43,8 +43,8 @@ public:
 	glm::vec3 GetWorldScale() const;
 
 	glm::vec3 RightVector() const;
-	glm::vec3 ForwardVector() const;
 	glm::vec3 UpVector() const;
+	glm::vec3 ForwardVector() const;
 
 	glm::mat4 TranslationMatrix() const;
 	glm::mat4 RotationMatrix() const;

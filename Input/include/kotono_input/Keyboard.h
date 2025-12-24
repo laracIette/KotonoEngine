@@ -14,14 +14,14 @@ public:
 	void Init();
 	void Update();
 
-	KtEvent<>& EventKey(const KtKey key, const KtInputState inputState);
-	bool KeyState(const KtKey key, const KtInputState inputState) const;
+	KtEvent<>& EventKey(const EKey key, const EInputState inputState);
+	bool KeyState(const EKey key, const EInputState inputState) const;
 
 private:
-	std::array<std::array<KtEvent<>, KT_INPUT_STATE_COUNT>, KT_KEY_COUNT> keyEvents_;
-	std::array<std::array<bool, KT_INPUT_STATE_COUNT>, KT_KEY_COUNT> keyStates_;
+	std::array<std::array<KtEvent<>, InputStateCount>, KeyCount> keyEvents_;
+	std::array<std::array<bool, InputStateCount>, KeyCount> keyStates_;
 
-	void UpdateKey(const KtKey key, const int action);
+	void UpdateKey(const EKey key, const int action);
 };
 
 inline SKeyboard Keyboard;

@@ -23,8 +23,8 @@ public:
 	float HorizontalScrollDelta() const;
 	float VerticalScrollDelta() const;
 
-	KtEvent<>& EventButton(const KtButton button, const KtInputState inputState);
-	bool ButtonState(const KtButton button, const KtInputState inputState) const;
+	KtEvent<>& EventButton(const EButton button, const EInputState inputState);
+	bool ButtonState(const EButton button, const EInputState inputState) const;
 	KtEvent<glm::vec2>& EventMove();
 	KtEvent<float>& EventHorizontalScroll();
 	KtEvent<float>& EventVerticalScroll();
@@ -39,10 +39,10 @@ private:
 	KtEvent<float> eventHorizontalScroll_;
 	KtEvent<float> eventVerticalScroll_;
 
-	std::array<std::array<KtEvent<>, KT_INPUT_STATE_COUNT>, KT_BUTTON_COUNT> buttonEvents_;
-	std::array<std::array<bool, KT_INPUT_STATE_COUNT>, KT_BUTTON_COUNT> buttonStates_;
+	std::array<std::array<KtEvent<>, InputStateCount>, ButtonCount> buttonEvents_;
+	std::array<std::array<bool, InputStateCount>, ButtonCount> buttonStates_;
 
-	void UpdateButton(const KtButton button, const int action);
+	void UpdateButton(const EButton button, const int action);
 };
 
 inline SMouse Mouse;

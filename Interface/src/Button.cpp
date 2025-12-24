@@ -6,11 +6,11 @@ WButton::WButton(const ButtonSettings& buttonSettings) :
 	buttonSettings_(buttonSettings)
 {
 
-	Mouse.EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+	Mouse.EventButton(EButton::Left, EInputState::Pressed)
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonPressed));
-	Mouse.EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
+	Mouse.EventButton(EButton::Left, EInputState::Down)
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonDown));
-	Mouse.EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
+	Mouse.EventButton(EButton::Left, EInputState::Released)
 		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonReleased));
 	Mouse.EventVerticalScroll()
 		.AddListener(KtDelegate(this, &WButton::OnMouseVerticalScroll));
@@ -18,11 +18,11 @@ WButton::WButton(const ButtonSettings& buttonSettings) :
 
 void WButton::Cleanup()
 {
-	Mouse.EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+	Mouse.EventButton(EButton::Left, EInputState::Pressed)
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonPressed));
-	Mouse.EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_DOWN)
+	Mouse.EventButton(EButton::Left, EInputState::Down)
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonDown));
-	Mouse.EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_RELEASED)
+	Mouse.EventButton(EButton::Left, EInputState::Released)
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonReleased));
 	Mouse.EventVerticalScroll()
 		.RemoveListener(KtDelegate(this, &WButton::OnMouseVerticalScroll));

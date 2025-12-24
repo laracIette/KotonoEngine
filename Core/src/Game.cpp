@@ -7,7 +7,7 @@
 
 void SGame::Init()
 {
-	Keyboard.EventKey(KT_KEY_S, KT_INPUT_STATE_PRESSED)
+	Keyboard.EventKey(EKey::S, EInputState::Pressed)
         .AddListener(KtDelegate(this, &SGame::OnKeySPressed));
 
     const auto startupScene{ SProjectSettings::Get<std::string>("/startupScene") };
@@ -41,7 +41,7 @@ const UPtr<KScene>& SGame::GetOpenedScene() const
 
 void SGame::OnKeySPressed() const
 {
-    if (!Keyboard.KeyState(KT_KEY_LEFT_CONTROL, KT_INPUT_STATE_DOWN))
+    if (!Keyboard.KeyState(EKey::LeftControl, EInputState::Down))
     {
         return;
     }

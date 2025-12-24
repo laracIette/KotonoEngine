@@ -1,6 +1,7 @@
 #include "SceneComponent.h"
 #include "SceneObject.h"
 #include <kotono_common/log.h>
+#include <kotono_platform/glm_utils.h>
 #include <stdexcept>
 #include <glm/gtx/string_cast.hpp>
 
@@ -151,17 +152,17 @@ glm::vec3 KSceneComponent::GetWorldScale() const
 
 glm::vec3 KSceneComponent::RightVector() const
 {
-    return GetWorldRotation() * glm::vec3(-1.0f, 0.0f, 0.0f);
-}
-
-glm::vec3 KSceneComponent::ForwardVector() const
-{
-    return GetWorldRotation() * glm::vec3(0.0f, 0.0f, 1.0f);
+    return GetWorldRotation() * WorldRightVector;
 }
 
 glm::vec3 KSceneComponent::UpVector() const
 {
-    return GetWorldRotation() * glm::vec3(0.0f, -1.0f, 0.0f);
+    return GetWorldRotation() * WorldUpVector;
+}
+
+glm::vec3 KSceneComponent::ForwardVector() const
+{
+    return GetWorldRotation() * WorldForwardVector;
 }
 
 glm::mat4 KSceneComponent::TranslationMatrix() const

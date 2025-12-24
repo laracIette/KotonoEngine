@@ -5,12 +5,11 @@
 #include <kotono_graphics/Renderer.h>
 #include <kotono_input/Keyboard.h>
 #include <kotono_input/Mouse.h>
+#include <kotono_platform/glm_utils.h>
 #include <kotono_platform/WindowViewport.h>
 
 void SCamera::Init()
 {
-	Use();
-
 	fov_ = 90.0f;
 	depthNear_ = 0.01f;
 	depthFar_ = 1000.0f;
@@ -18,50 +17,43 @@ void SCamera::Init()
 	sensitivity_ = 0.005f;
 
 	eventTransformUpdated_.AddListener(KtDelegate(this, &SCamera::OnEventUpdateTransform));
-	SetPosition({ 0.0f, 0.0f, -3.0f });
+	SetPosition(WorldForwardVector * -3.0f + WorldUpVector);
 
-	// todo: input manager is engine time, not game time
-
-	Keyboard.EventKey(KT_KEY_W, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardWKeyDown));
-	Keyboard.EventKey(KT_KEY_A, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardAKeyDown));
-	Keyboard.EventKey(KT_KEY_S, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardSKeyDown));
-	Keyboard.EventKey(KT_KEY_D, KT_INPUT_STATE_DOWN).AddListener(KtDelegate(this, &SCamera::OnKeyboardDKeyDown));
-	Mouse.EventButton(KT_BUTTON_RIGHT, KT_INPUT_STATE_PRESSED).AddListener(KtDelegate(this, &SCamera::OnMouseRightButtonPressed));
-	Mouse.EventButton(KT_BUTTON_RIGHT, KT_INPUT_STATE_RELEASED).AddListener(KtDelegate(this, &SCamera::OnMouseRightButtonReleased));
+	Keyboard.EventKey(EKey::W, EInputState::Down).AddListener(KtDelegate(this, &SCamera::OnKeyboardWKeyDown));
+	Keyboard.EventKey(EKey::A, EInputState::Down).AddListener(KtDelegate(this, &SCamera::OnKeyboardAKeyDown));
+	Keyboard.EventKey(EKey::S, EInputState::Down).AddListener(KtDelegate(this, &SCamera::OnKeyboardSKeyDown));
+	Keyboard.EventKey(EKey::D, EInputState::Down).AddListener(KtDelegate(this, &SCamera::OnKeyboardDKeyDown));
+	Mouse.EventButton(EButton::Right, EInputState::Pressed).AddListener(KtDelegate(this, &SCamera::OnMouseRightButtonPressed));
+	Mouse.EventButton(EButton::Right, EInputState::Released).AddListener(KtDelegate(this, &SCamera::OnMouseRightButtonReleased));
 	Mouse.EventMove().AddListener(KtDelegate(this, &SCamera::OnMouseMove));
 	Mouse.EventVerticalScroll().AddListener(KtDelegate(this, &SCamera::OnMouseVerticalScroll));
 }
 
 void SCamera::Cleanup()
 {
-	Keyboard.EventKey(KT_KEY_W, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardWKeyDown));
-	Keyboard.EventKey(KT_KEY_A, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardAKeyDown));
-	Keyboard.EventKey(KT_KEY_S, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardSKeyDown));
-	Keyboard.EventKey(KT_KEY_D, KT_INPUT_STATE_DOWN).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardDKeyDown));
-	Mouse.EventButton(KT_BUTTON_RIGHT, KT_INPUT_STATE_PRESSED).RemoveListener(KtDelegate(this, &SCamera::OnMouseRightButtonPressed));
-	Mouse.EventButton(KT_BUTTON_RIGHT, KT_INPUT_STATE_RELEASED).RemoveListener(KtDelegate(this, &SCamera::OnMouseRightButtonReleased));
+	Keyboard.EventKey(EKey::W, EInputState::Down).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardWKeyDown));
+	Keyboard.EventKey(EKey::A, EInputState::Down).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardAKeyDown));
+	Keyboard.EventKey(EKey::S, EInputState::Down).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardSKeyDown));
+	Keyboard.EventKey(EKey::D, EInputState::Down).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardDKeyDown));
+	Mouse.EventButton(EButton::Right, EInputState::Pressed).RemoveListener(KtDelegate(this, &SCamera::OnMouseRightButtonPressed));
+	Mouse.EventButton(EButton::Right, EInputState::Released).RemoveListener(KtDelegate(this, &SCamera::OnMouseRightButtonReleased));
 	Mouse.EventMove().RemoveListener(KtDelegate(this, &SCamera::OnMouseMove));
 	Mouse.EventVerticalScroll().RemoveListener(KtDelegate(this, &SCamera::OnMouseVerticalScroll));
 }
 
-void SCamera::Use()
-{
-	isCurrent_ = true;
-}
-
 glm::vec3 SCamera::RightVector() const
 {
-	return transform_.rotation * glm::vec3(-1.0f, 0.0f, 0.0f);
-}
-
-glm::vec3 SCamera::ForwardVector() const
-{
-	return transform_.rotation * glm::vec3(0.0f, 0.0f, 1.0f);
+	return transform_.rotation * WorldRightVector;
 }
 
 glm::vec3 SCamera::UpVector() const
 {
-	return transform_.rotation * glm::vec3(0.0f, -1.0f, 0.0f);
+	return transform_.rotation * WorldUpVector;
+}
+
+glm::vec3 SCamera::ForwardVector() const
+{
+	return transform_.rotation * WorldForwardVector;
 }
 
 void SCamera::SetPosition(const glm::vec3& position)
@@ -95,7 +87,7 @@ void SCamera::OnKeyboardWKeyDown()
 
 void SCamera::OnKeyboardAKeyDown()
 {
-	const auto direction{ -RightVector() };
+	const auto direction{ RightVector() };
 	const auto delta{ direction * TimeManager.Delta() };
 	Translate(delta * speed_);
 }
@@ -109,7 +101,7 @@ void SCamera::OnKeyboardSKeyDown()
 
 void SCamera::OnKeyboardDKeyDown()
 {
-	const auto direction{ RightVector() };
+	const auto direction{ -RightVector() };
 	const auto delta{ direction * TimeManager.Delta() };
 	Translate(delta * speed_);
 }
@@ -131,14 +123,14 @@ void SCamera::OnMouseMove(const glm::vec2 delta)
 		return;
 	}
 
-	pitch_ += delta.y * sensitivity_;
+	pitch_ -= delta.y * sensitivity_;
 	yaw_ += delta.x * sensitivity_;
 
 	// Clamp pitch to avoid flipping
 	pitch_ = glm::clamp(pitch_, -glm::half_pi<float>(), glm::half_pi<float>());
 
-	const glm::quat qPitch{ glm::angleAxis(pitch_, glm::vec3(1.0f, 0.0f, 0.0f)) };
-	const glm::quat qYaw{ glm::angleAxis(yaw_, glm::vec3(0.0f, -1.0f, 0.0f)) };
+	const glm::quat qPitch{ glm::angleAxis(pitch_, WorldRightVector) };
+	const glm::quat qYaw{ glm::angleAxis(yaw_, WorldUpVector) };
 	
 	const glm::quat rotation{ qYaw * qPitch };
 	SetRotation(rotation);
@@ -157,16 +149,11 @@ void SCamera::OnMouseVerticalScroll(const float delta)
 
 void SCamera::OnEventUpdateTransform() const
 {
-	if (!isCurrent_)
-	{
-		return;
-	}
-
-	const KtSceneUniformData ubo{
+	KtSceneUniformData ubo{
 		.view = glm::lookAt(transform_.position, transform_.position + ForwardVector(), UpVector()),
 		.projection = glm::perspective(glm::radians(fov_), WindowViewport.GetAspectRatio(), depthNear_, depthFar_),
 	};
-	//ubo.projection[1][1] *= -1.0f;
+	ubo.projection[1][1] *= -1.0f;
 
 	Renderer.GetSceneRenderer().SetUniformData(ubo);
 }

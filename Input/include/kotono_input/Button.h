@@ -1,17 +1,24 @@
 #pragma once
-enum KtButton : char
+#include <cstdint>
+enum class EButton : uint8_t
 {
-	KT_BUTTON_1 = 0,
-	KT_BUTTON_2 = 1,
-	KT_BUTTON_3 = 2,
-	KT_BUTTON_4 = 3,
-	KT_BUTTON_5 = 4,
-	KT_BUTTON_6 = 5,
-	KT_BUTTON_7 = 6,
-	KT_BUTTON_8 = 7,
-	KT_BUTTON_LAST = KT_BUTTON_8,
-	KT_BUTTON_LEFT = KT_BUTTON_1,
-	KT_BUTTON_RIGHT = KT_BUTTON_2,
-	KT_BUTTON_MIDDLE = KT_BUTTON_3,
-	KT_BUTTON_COUNT = 8
+	Button1 = 0,
+	Button2 = 1,
+	Button3 = 2,
+	Button4 = 3,
+	Button5 = 4,
+	Button6 = 5,
+	Button7 = 6,
+	Button8 = 7,
+	Left = Button1,
+	Right = Button2,
+	Middle = Button3,
+	Last = Button8
 };
+
+inline constexpr size_t ButtonCount{ 8 };
+
+constexpr size_t to_index(const EButton button)
+{
+	return static_cast<size_t>(button);
+}

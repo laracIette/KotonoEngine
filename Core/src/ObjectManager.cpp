@@ -15,9 +15,9 @@
 
 void SObjectManager::Init()
 {
-	Keyboard.EventKey(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
+	Keyboard.EventKey(EKey::Escape, EInputState::Pressed)
 		.AddListener(KtDelegate(this, &SObjectManager::Quit));
-	Mouse.EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+	Mouse.EventButton(EButton::Left, EInputState::Pressed)
 		.AddListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
 
 	auto& logUPSTimer{ TimerManager.GetTimer("log ups timer") };
@@ -37,9 +37,9 @@ void SObjectManager::Cleanup()
 		Delete(deletes[i]);
 	}
 
-	Keyboard.EventKey(KT_KEY_ESCAPE, KT_INPUT_STATE_PRESSED)
+	Keyboard.EventKey(EKey::Escape, EInputState::Pressed)
 		.RemoveListener(KtDelegate(this, &SObjectManager::Quit));
-	Mouse.EventButton(KT_BUTTON_LEFT, KT_INPUT_STATE_PRESSED)
+	Mouse.EventButton(EButton::Left, EInputState::Pressed)
 		.RemoveListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
 }
 

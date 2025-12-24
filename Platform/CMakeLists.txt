@@ -42,7 +42,8 @@ set_target_properties(KotonoPlatform PROPERTIES FOLDER "KotonoEngine")
 
 set(KPLATFORM_HEADERS
     "include/kotono_platform/AllocatedBuffer.h"
-    "include/kotono_platform/Context.h"
+    "include/kotono_platform/Context.h"    
+    "include/kotono_platform/glm_utils.h"
     "include/kotono_platform/QueueFamilyIndices.h"
     "include/kotono_platform/SwapChainSupportDetails.h"
     "include/kotono_platform/vk_utils.h"
