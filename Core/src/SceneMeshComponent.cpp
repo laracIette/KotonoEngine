@@ -31,13 +31,6 @@ void KSceneMeshComponent::Init()
     Base::Init();
 
 	SetCanUpdate(true);
-
-    EventTransformUpdated().AddListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
-
-    Keyboard.EventKey(EKey::N, EInputState::Pressed)
-        .AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
-    Keyboard.EventKey(EKey::M, EInputState::Pressed)
-        .AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
 }
 
 void KSceneMeshComponent::Update()
@@ -50,6 +43,7 @@ void KSceneMeshComponent::Update()
 void KSceneMeshComponent::Cleanup()
 {
     UnregisterModelProxy();
+
     EventTransformUpdated().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
 
     Keyboard.EventKey(EKey::N, EInputState::Pressed)
@@ -87,6 +81,13 @@ void KSceneMeshComponent::Spawn()
     CreateModelProxy();
     RegisterModelProxy();
 
+    EventTransformUpdated().AddListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
+
+    Keyboard.EventKey(EKey::N, EInputState::Pressed)
+        .AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
+    Keyboard.EventKey(EKey::M, EInputState::Pressed)
+        .AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
+    
     spinTask_.duration = 5.0f;
     spinTask_.eventUpdate.AddListener(KtDelegate(this, &KSceneMeshComponent::Spin));
     spinTask_.Start();
@@ -122,7 +123,7 @@ void KSceneMeshComponent::MarkModelProxyTransformDirty()
 {
     modelProxy_.MarkDirty();
     modelProxy_.objectData.modelMatrix = ModelMatrix();
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Core.KSceneMeshComponent::MarkModelProxyTransformDirty()", "%s", GetName().c_str());
+	KT_LOG(ELogImportanceLevel::Medium, "Core.KSceneMeshComponent::MarkModelProxyTransformDirty()", "%s", GetName().c_str());
 }
 
 void KSceneMeshComponent::RegisterModelProxy()
@@ -169,11 +170,11 @@ void KSceneMeshComponent::Spin()
 void KSceneMeshComponent::SetMobilityStatic()
 {
     SetMobility(EMobility::Static);
-    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core.KSceneMeshComponent::SetMobilityStatic()", "%s", GetName().c_str());
+    KT_LOG(ELogImportanceLevel::High, "Core.KSceneMeshComponent::SetMobilityStatic()", "%s", GetName().c_str());
 }
 
 void KSceneMeshComponent::SetMobilityDynamic()
 {
     SetMobility(EMobility::Dynamic);
-    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core.KSceneMeshComponent::SetMobilityDynamic()", "%s", GetName().c_str());
+    KT_LOG(ELogImportanceLevel::High, "Core.KSceneMeshComponent::SetMobilityDynamic()", "%s", GetName().c_str());
 }

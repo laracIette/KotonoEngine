@@ -5,7 +5,7 @@
 #include <iostream>
 #include <kotono_common/log.h>
 
-#define KT_LOG_IMPORTANCE_LEVEL_SERIALIZER KT_LOG_IMPORTANCE_LEVEL_HIGH
+#define KT_LOG_IMPORTANCE_LEVEL_SERIALIZER ELogImportanceLevel::High
 
 void KtSerializer::Serialize(const nlohmann::json& json, const std::filesystem::path& path)
 {

@@ -87,7 +87,7 @@ void KtInterfaceRenderer::Cleanup() const
 {
 	vmaDestroyBuffer(Context.GetAllocator(), indexBuffer_.Buffer, indexBuffer_.Allocation);
 	vmaDestroyBuffer(Context.GetAllocator(), vertexBuffer_.Buffer, vertexBuffer_.Allocation);
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Graphics.KtInterfaceRenderer::Cleanup()", "cleaned up interface renderer");
+	KT_LOG(ELogImportanceLevel::High, "Graphics.KtInterfaceRenderer::Cleanup()", "cleaned up interface renderer");
 }
 
 void KtInterfaceRenderer::CreateVertexBuffer()

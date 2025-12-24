@@ -4,7 +4,8 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 
-const std::filesystem::path CorePath{ std::filesystem::path(ENGINE_DIRECTORY) / "Core" };
+static const auto CorePath{ std::filesystem::path(ENGINE_DIRECTORY) / "Core" };
+static const auto RegistryPath{ CorePath / "objects.ktregistry" };
 
 static std::string read_string(const std::filesystem::path& path)
 {
@@ -97,27 +98,18 @@ static std::string to_upper(std::string s)
 
 void Generator::GenerateAll() const
 {
-	std::cout << "Generating all..." << std::endl;
-
-	const auto headerDirectoryPath{ CorePath / "include" / "kotono_core" };
-	for (const auto& entry : std::filesystem::directory_iterator(headerDirectoryPath))
-	{
-		if (!entry.is_regular_file() || entry.path().extension() != ".h")
-		{
-			continue;
-		}
-
-		Generate(entry.path());
-	}
+	std::cout << "Clearing registry..." << std::endl;
+	write_data(RegistryPath, nlohmann::json::object());
+	GenerateUpdated();
 }
 
 void Generator::GenerateUpdated() const
 {
-	std::cout << "Generating updated..." << std::endl;
+	std::cout << "Generating..." << std::endl;
 
 	nlohmann::json json{};
-	const auto registryPath{ CorePath / "objects.ktregistry" };
-	read_data(registryPath, json);
+	
+	read_data(RegistryPath, json);
 
 	const auto headerDirectoryPath{ CorePath / "include" / "kotono_core" };
 	for (const auto& entry : std::filesystem::directory_iterator(headerDirectoryPath))
@@ -160,7 +152,7 @@ void Generator::GenerateUpdated() const
 		}
 	}
 
-	write_data(registryPath, json);
+	write_data(RegistryPath, json);
 }
 
 Generator::ClassInfo Generator::GetClassInfo(const std::string& content) const

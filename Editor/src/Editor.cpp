@@ -31,7 +31,6 @@ void SEditor::Init()
 
 void SEditor::Update()
 {
-
 }
 
 void SEditor::Cleanup()

@@ -37,22 +37,22 @@ void KtContext::Init()
 
 void KtContext::Cleanup()
 {
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Platform.KtContext::Cleanup()", "cleaning up context");
+	KT_LOG(ELogImportanceLevel::High, "Platform.KtContext::Cleanup()", "cleaning up context");
 
 	vkDestroyCommandPool(device_, commandPool_, nullptr);
 
-	if constexpr (KT_SHOULD_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW))
+	if constexpr (KT_SHOULD_LOG(ELogImportanceLevel::Low))
 	{
 		VmaTotalStatistics stats{};
 		vmaCalculateStatistics(allocator_, &stats);
 
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Platform.KtContext::Cleanup()", "VMA Allocator Stats:");
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Platform.KtContext::Cleanup()", "Total memory allocated: %llu bytes", stats.total.statistics.allocationBytes);
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Platform.KtContext::Cleanup()", "Number of allocations: %u", stats.total.statistics.allocationCount);
+		KT_LOG(ELogImportanceLevel::Low, "Platform.KtContext::Cleanup()", "VMA Allocator Stats:");
+		KT_LOG(ELogImportanceLevel::Low, "Platform.KtContext::Cleanup()", "Total memory allocated: %llu bytes", stats.total.statistics.allocationBytes);
+		KT_LOG(ELogImportanceLevel::Low, "Platform.KtContext::Cleanup()", "Number of allocations: %u", stats.total.statistics.allocationCount);
 
 		char* statsString;
 		vmaBuildStatsString(allocator_, &statsString, true);
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Platform.KtContext::Cleanup()", "VMA Stats:\n%s", statsString);
+		KT_LOG(ELogImportanceLevel::Low, "Platform.KtContext::Cleanup()", "VMA Stats:\n%s", statsString);
 		vmaFreeStatsString(allocator_, statsString);
 	}
 
@@ -68,7 +68,7 @@ void KtContext::Cleanup()
 	vkDestroySurfaceKHR(instance_, surface_, nullptr);
 	vkDestroyInstance(instance_, nullptr);
 
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Platform.KtContext::Cleanup()", "cleaned up context");
+	KT_LOG(ELogImportanceLevel::High, "Platform.KtContext::Cleanup()", "cleaned up context");
 }
 
 void KtContext::CreateInstance()
@@ -229,7 +229,7 @@ void KtContext::PickPhysicalDevice()
 				maxVRAM = totalVRAM;
 				bestDevice = device;
 
-				KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Platform.KtContext::PickPhysicalDevice()", "Selected GPU: %s, VRAM: %llu MB", deviceProperties.deviceName, totalVRAM / (1024llu * 1024));
+				KT_LOG(ELogImportanceLevel::High, "Platform.KtContext::PickPhysicalDevice()", "Selected GPU: %s, VRAM: %llu MB", deviceProperties.deviceName, totalVRAM / (1024llu * 1024));
 			}
 
 			// Stop on cpu if on battery

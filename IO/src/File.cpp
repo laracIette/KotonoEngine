@@ -4,7 +4,7 @@
 #include <iostream>
 #include <kotono_common/log.h>
 
-#define KT_LOG_IMPORTANCE_LEVEL_FILE KT_LOG_IMPORTANCE_LEVEL_HIGH
+#define KT_LOG_IMPORTANCE_LEVEL_FILE ELogImportanceLevel::High
 
 KtFile::KtFile(const std::filesystem::path& path) :
     path_(path)

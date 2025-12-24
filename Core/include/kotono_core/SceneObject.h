@@ -49,7 +49,6 @@ public:
 	void AddComponent(UPtr<KSceneComponent> component);
 	void RemoveComponent(const UPtr<KSceneComponent>& component);
 
-	void Serialize() const override;
 	void Deserialize() override;
 
 	virtual void Spawn();

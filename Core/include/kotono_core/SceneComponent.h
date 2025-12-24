@@ -75,10 +75,9 @@ public:
 	glm::vec3 GetDirection(const UPtr<KSceneComponent>& target) const;
 	float GetDistance(const UPtr<KSceneComponent>& other) const;
 
-	virtual void Spawn();
-
-	void Serialize() const override;
 	void Deserialize() override;
+
+	virtual void Spawn();
 
 private:
 	bool canUpdate_;

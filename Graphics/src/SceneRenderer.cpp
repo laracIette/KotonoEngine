@@ -10,7 +10,7 @@
 #include <kotono_platform/WindowViewport.h>
 #include <unordered_set>
 
-#define KT_LOG_IMPORTANCE_LEVEL_PROXY KT_LOG_IMPORTANCE_LEVEL_MEDIUM
+#define KT_LOG_IMPORTANCE_LEVEL_PROXY ELogImportanceLevel::Medium
 
 void KtSceneRenderer::Init()
 {
@@ -234,7 +234,7 @@ void KtSceneRenderer::UpdateDynamicProxies(const uint32_t frameIndex)
 	);
 }
 
-void KtSceneRenderer::SortProxies(ProxiesPool& proxies) 
+void KtSceneRenderer::SortProxies(ProxiesPool& proxies)
 {
 	std::sort(proxies.begin(), proxies.end(),
 		[](const KtSceneRenderableProxy* a, const KtSceneRenderableProxy* b)
@@ -255,8 +255,8 @@ void KtSceneRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t fram
 	// that only records once per frame in flight at every change
 	stats_[frameIndex] = {};
 
-	if (isStaticCommandBufferDirty_[frameIndex] || 
-		isDynamicCommandBufferDirty_[frameIndex] || 
+	if (isStaticCommandBufferDirty_[frameIndex] ||
+		isDynamicCommandBufferDirty_[frameIndex] ||
 		GetIsDynamicProxiesDirty(frameIndex))
 	{
 		const KtSceneCuller culler(KT_SCENE_CULLER_FIELD_ALL);
@@ -267,7 +267,7 @@ void KtSceneRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t fram
 
 		ProxiesPool sortedGlobalProxies = culledStaticProxies;
 		sortedGlobalProxies.Merge(culledDynamicProxies);
-		
+
 		UpdateDescriptorSetObjectBuffers(sortedGlobalProxies, frameIndex);
 		MarkDynamicProxiesNotDirty(frameIndex);
 		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics.KtSceneRenderer::CmdDraw()", "update descriptor sets frame %u", frameIndex);
@@ -276,7 +276,7 @@ void KtSceneRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t fram
 	if (isUniformBufferDirty_[frameIndex])
 	{
 		isUniformBufferDirty_[frameIndex] = false;
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Graphics.KtSceneRenderer::CmdDraw()", "update uniform");
+		KT_LOG(ELogImportanceLevel::Low, "Graphics.KtSceneRenderer::CmdDraw()", "update uniform");
 		UpdateDescriptorSetUniformBuffers(staticProxies_[frameIndex], frameIndex);
 		UpdateDescriptorSetUniformBuffers(dynamicProxies_[frameIndex], frameIndex);
 	}

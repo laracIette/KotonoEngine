@@ -9,9 +9,6 @@ class KScene : public KObject
 {
 	GENERATED_KSCENE()
 
-public:
-	KScene(UPtrOwnerBase* ptrOwner);
-
 protected:
 	void Cleanup() override;
 
@@ -25,7 +22,10 @@ public:
 
 	const KtPool<UPtr<TSceneObject>>& SceneObjects() const;
 
+	KtEvent<>& EventSceneObjectsUpdated();
+
 private:
 	SERIALIZE KtPool<UPtr<TSceneObject>> sceneObjects_;
+	KtEvent<> eventSceneObjectsUpdated_;
 };
 

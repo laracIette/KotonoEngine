@@ -16,12 +16,11 @@
 #include "Scene.h"
 #include "SceneComponent.h"
 #include "SceneMeshComponent.h"
-#include "SceneMeshObject.h"
 #include "SceneObject.h"
 
 #define OBJECT_FACTORY(Type) { #Type, []() { return ObjectManager.Create<Type>(); } }
 
-#define KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY KT_LOG_IMPORTANCE_LEVEL_HIGH
+#define KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY ELogImportanceLevel::High
 
 SObjectFactory::SObjectFactory() :
     objectFactories_({
@@ -37,7 +36,6 @@ SObjectFactory::SObjectFactory() :
         OBJECT_FACTORY(KScene),
         OBJECT_FACTORY(KSceneComponent),
         OBJECT_FACTORY(KSceneMeshComponent),
-        OBJECT_FACTORY(TSceneMeshObject),
         OBJECT_FACTORY(TSceneObject),
     })
 {
@@ -68,7 +66,7 @@ UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 		return nullptr;
 	}
 
-    const auto type{ json.at("type_").get<std::string>() };
+	const auto type{ json.at("type_").get<std::string>() };
 
 	if (UPtr object{ GetFactory(type) })
 	{

@@ -45,7 +45,6 @@ set(KCORE_HEADERS
     "include/kotono_core/Scene.h"
     "include/kotono_core/SceneComponent.h"
     "include/kotono_core/SceneMeshComponent.h"
-    "include/kotono_core/SceneMeshObject.h"
     "include/kotono_core/SceneObject.h"
     "include/kotono_core/serialize.h"
     "include/kotono_core/Task.h"
@@ -75,7 +74,6 @@ set(KCORE_SOURCES
     "src/Scene.cpp"
     "src/SceneComponent.cpp"
     "src/SceneMeshComponent.cpp"
-    "src/SceneMeshObject.cpp"
     "src/SceneObject.cpp"
     "src/serialize.cpp"
     "src/Task.cpp"
@@ -96,7 +94,6 @@ set(KCORE_GENERATED_HEADERS
     "include/kotono_core/generated/Scene.generated.h"
     "include/kotono_core/generated/SceneComponent.generated.h"
     "include/kotono_core/generated/SceneMeshComponent.generated.h"
-    "include/kotono_core/generated/SceneMeshObject.generated.h"
     "include/kotono_core/generated/SceneObject.generated.h"
 )
 set(KCORE_GENERATED_SOURCES
@@ -112,7 +109,6 @@ set(KCORE_GENERATED_SOURCES
     "src/generated/Scene.generated.cpp"
     "src/generated/SceneComponent.generated.cpp"
     "src/generated/SceneMeshComponent.generated.cpp"
-    "src/generated/SceneMeshObject.generated.cpp"
     "src/generated/SceneObject.generated.cpp"
 )
 

@@ -5,7 +5,7 @@
 #include <kotono_io/Serializer.h>
 #include <nlohmann/json.hpp>
 
-#define KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER KT_LOG_IMPORTANCE_LEVEL_HIGH
+#define KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER ELogImportanceLevel::High
 
 void KtSpvCompiler::CompileUpdated() const
 {

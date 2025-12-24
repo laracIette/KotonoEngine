@@ -61,6 +61,6 @@ void SGame::OnKeySPressed() const
     if (scene_)
     {
         scene_->Serialize();
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core.SGame::OnKeySPressed()", "scene serialized");
+        KT_LOG(ELogImportanceLevel::High, "Core.SGame::OnKeySPressed()", "scene serialized");
     }
 }

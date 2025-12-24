@@ -3,7 +3,7 @@
 #include "InterfaceRenderableProxy.h"
 #include <kotono_common/Pool.h>
 
-#define KT_LOG_IMPORTANCE_LEVEL_NULLPTR KT_LOG_IMPORTANCE_LEVEL_HIGH
+#define KT_LOG_IMPORTANCE_LEVEL_NULLPTR ELogImportanceLevel::High
 
 KtInterfaceCuller::ProxiesPool KtInterfaceCuller::ComputeCulling(ProxiesPool proxies) const
 {

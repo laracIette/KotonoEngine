@@ -82,13 +82,13 @@ void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinate
 
 	if (parent == this)
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core.TSceneObject::SetParent()", "couldn't set the parent of %s to itself", GetName().c_str());
+		KT_LOG(ELogImportanceLevel::High, "Core.TSceneObject::SetParent()", "couldn't set the parent of %s to itself", GetName().c_str());
 		return;
 	}
 
 	if (parent == parent_)
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core.TSceneObject::SetParent()", "couldn't set the parent of %s to its current parent", GetName().c_str());
+		KT_LOG(ELogImportanceLevel::High, "Core.TSceneObject::SetParent()", "couldn't set the parent of %s to its current parent", GetName().c_str());
 		return;
 	}
 
@@ -151,11 +151,6 @@ void TSceneObject::RemoveComponent(const UPtr<KSceneComponent>& component)
 	}
 }
 
-void TSceneObject::Serialize() const
-{
-	Base::Serialize();
-}
-
 void TSceneObject::Deserialize()
 {
 	Base::Deserialize();
@@ -163,11 +158,6 @@ void TSceneObject::Deserialize()
 	for (auto& sceneComponent : sceneComponents_)
 	{
 		sceneComponent->owner_ = Ptr();
-		if (sceneComponent->parent_) 
-		{
-			sceneComponent->parent_->EventTransformUpdated()
-				.AddListener(KtDelegate<>(&sceneComponent->EventTransformUpdated(), &KtEvent<>::Broadcast));
-		}
 	}
 
 	for (auto& sceneObject : children_)

@@ -4,7 +4,7 @@
 #include <kotono_common/Pool.h>
 #include <kotono_common/bitwise_utils.h>
 
-#define KT_LOG_IMPORTANCE_LEVEL_NULLPTR KT_LOG_IMPORTANCE_LEVEL_HIGH
+#define KT_LOG_IMPORTANCE_LEVEL_NULLPTR ELogImportanceLevel::High
 
 KtSceneCuller::KtSceneCuller(const KtSceneCullerField field) :
 	field_(field)

@@ -11,7 +11,7 @@
 #include <kotono_common/log.h>
 #include "Renderer.h"
 
-#define KT_LOG_IMPORTANCE_LEVEL_SHADER KT_LOG_IMPORTANCE_LEVEL_MEDIUM
+#define KT_LOG_IMPORTANCE_LEVEL_SHADER ELogImportanceLevel::Medium
 
 static constexpr uint32_t MAX_BINDLESS_TEXTURES{ 8192 }; // todo: editable in project settings
 
@@ -524,7 +524,7 @@ void KtShader::CreateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutB
 		return;
 	}
 
-	static const auto path{ KtPath::Graphics() / "assets" / "models" / "viking_room.png"};
+	static const auto path{ KtPath::Graphics() / "assets" / "models" / "viking_room.png" };
 	static const auto* imageTexture{ ImageTextureManager.Get(path) };
 
 	UpdateDescriptorSetLayoutBindingImageSampler(descriptorSetLayoutBindingData, { imageTexture->GetDescriptorImageInfo() }, imageIndex);
@@ -603,7 +603,7 @@ void KtShader::UpdateDescriptorSetLayoutBindingBufferMemberCount(DescriptorSetLa
 		return;
 	}
 
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_LOW, "Graphics.KtShader::UpdateDescriptorSetLayoutBindingBufferMemberCount()", "descriptorSetLayoutBindingData member count at frame %u: %llu", imageIndex, memberCount);
+	KT_LOG(ELogImportanceLevel::Low, "Graphics.KtShader::UpdateDescriptorSetLayoutBindingBufferMemberCount()", "descriptorSetLayoutBindingData member count at frame %u: %llu", imageIndex, memberCount);
 	descriptorSetLayoutBindingData.MemberCounts[imageIndex] = std::max(1llu, memberCount);
 
 	vmaDestroyBuffer(Context.GetAllocator(), descriptorSetLayoutBindingData.Buffers[imageIndex].Buffer, descriptorSetLayoutBindingData.Buffers[imageIndex].Allocation);

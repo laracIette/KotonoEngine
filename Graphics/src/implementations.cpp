@@ -3,7 +3,7 @@
 #ifdef _DEBUG
 
 #ifndef VMA_LOG_IMPORTANCE_LEVEL
-#define VMA_LOG_IMPORTANCE_LEVEL KT_LOG_IMPORTANCE_LEVEL_LOW
+#define VMA_LOG_IMPORTANCE_LEVEL ELogImportanceLevel::Low
 #endif // VMA_LOG_IMPORTANCE_LEVEL
 
 #define VMA_DEBUG_LOG(format, ...)                            \

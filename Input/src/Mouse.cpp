@@ -3,7 +3,7 @@
 #include <kotono_common/log.h> 
 #include <kotono_platform/Window.h>
 
-#define KT_LOG_IMPORTANCE_LEVEL_MOUSE KT_LOG_IMPORTANCE_LEVEL_LOW
+#define KT_LOG_IMPORTANCE_LEVEL_MOUSE ELogImportanceLevel::Low
 
 void mousebutton_callback_(GLFWwindow* window, int button, int action, int mods);
 void cursorpos_callback_(GLFWwindow* window, double xpos, double ypos);

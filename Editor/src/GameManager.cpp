@@ -53,7 +53,7 @@ void SGameManager::SetState(const EGameState state)
     case EGameState::Playing:
     {
         TimeManager.GameTime().state = ETimeContextState::Playing;
-        if (UPtr scene = Game.GetOpenedScene())
+        if (UPtr scene{ Game.GetOpenedScene() })
         {
             scene->Serialize();
         }
@@ -61,6 +61,7 @@ void SGameManager::SetState(const EGameState state)
     }
     case EGameState::Stopped:
         TimeManager.GameTime().total = 0.0f;
+        TimeManager.GameTime().currentDelta = 0.0f;
         Game.OpenStartupScene();
         [[fallthrough]];
     case EGameState::Paused:

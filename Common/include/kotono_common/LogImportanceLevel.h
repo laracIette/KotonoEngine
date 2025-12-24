@@ -1,15 +1,15 @@
 #pragma once
-enum KtLogImportanceLevel : char
+#include <cstdint>
+enum class ELogImportanceLevel : uint8_t
 {
-	KT_LOG_IMPORTANCE_LEVEL_NONE,
-	KT_LOG_IMPORTANCE_LEVEL_LOW,
-	KT_LOG_IMPORTANCE_LEVEL_MEDIUM,
-	KT_LOG_IMPORTANCE_LEVEL_HIGH
+	None,
+	Low,
+	Medium,
+	High
 };
 
-
 #ifndef KT_LOG_COMPILE_TIME_LEVEL
-#define KT_LOG_COMPILE_TIME_LEVEL KT_LOG_IMPORTANCE_LEVEL_HIGH
+#define KT_LOG_COMPILE_TIME_LEVEL ELogImportanceLevel::High
 #endif
 
 #define KT_SHOULD_LOG(level) ((level) >= KT_LOG_COMPILE_TIME_LEVEL)

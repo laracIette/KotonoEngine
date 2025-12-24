@@ -3,7 +3,7 @@
 #include <kotono_common/log.h>
 #include <kotono_platform/Window.h>
 
-#define KT_LOG_IMPORTANCE_LEVEL_KEYBOARD KT_LOG_IMPORTANCE_LEVEL_LOW
+#define KT_LOG_IMPORTANCE_LEVEL_KEYBOARD ELogImportanceLevel::Low
 
 void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mods);
 

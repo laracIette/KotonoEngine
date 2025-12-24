@@ -11,7 +11,7 @@
 #include <kotono_timing/Timer.h>
 #include <kotono_timing/TimerManager.h>
 
-#define KT_LOG_IMPORTANCE_LEVEL_OBJECT KT_LOG_IMPORTANCE_LEVEL_MEDIUM
+#define KT_LOG_IMPORTANCE_LEVEL_OBJECT ELogImportanceLevel::Medium
 
 void SObjectManager::Init()
 {
@@ -133,7 +133,7 @@ KtEvent<>& SObjectManager::EventSelectedObjectChanged()
 
 void SObjectManager::LogUPS() const
 {
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_HIGH, "Core.SObjectManager::LogUPS()", "%.2f ups", 1.0f / TimeManager.AverageUpdateTime());
+	KT_LOG(ELogImportanceLevel::High, "Core.SObjectManager::LogUPS()", "%.2f ups", 1.0f / TimeManager.AverageUpdateTime());
 }
 
 void SObjectManager::OnMouseButtonLeftPressed()
