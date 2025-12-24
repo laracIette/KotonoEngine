@@ -19,6 +19,20 @@ UGuid::UGuid()
     data_[0] |= 0x0000000000000040; // Set version 4 (random GUID)
 }
 
+UGuid::UGuid(const std::string& string)
+{
+    std::istringstream iss(string);
+    char dash;
+    for (auto& part : data_)
+    {
+        if (iss >> std::hex >> part)
+        {
+            // Skip the dash characters
+            iss >> dash;
+        }
+    }
+}
+
 UGuid::operator std::string() const
 {
     static constexpr const char hexDigits[]{ "0123456789abcdef" };
@@ -42,7 +56,7 @@ UGuid::operator std::string() const
     return result;
 }
 
-void UGuid::operator=(const std::string& string)
+UGuid& UGuid::operator=(const std::string& string)
 {
     std::istringstream iss(string);
     char dash;
@@ -54,6 +68,8 @@ void UGuid::operator=(const std::string& string)
             iss >> dash;
         }
     }
+
+	return *this;
 }
 
 bool UGuid::operator==(const UGuid& other) const

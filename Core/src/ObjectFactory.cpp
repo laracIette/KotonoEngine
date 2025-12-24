@@ -49,9 +49,11 @@ UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 	const auto registryIt{ registry_.find(guid) };
 	if (registryIt != registry_.end())
 	{
-		UPtr object{ registryIt->second };
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Core.SObjectFactory::Get()", "found object %s", object->GetName().c_str());
-		return object;
+		if (UPtr object{ registryIt->second })
+		{
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Core.SObjectFactory::Get()", "found object %s", object->GetName().c_str());
+			return object;
+		}
 	}
 
 	const auto path{ KtPath::Project() / "assets" / "objects" / std::format("{}.kobject", guid.ToString()) };
@@ -59,6 +61,12 @@ UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 	// Add to registry
 	nlohmann::json json{};
 	KtSerializer::Deserialize(json, path);
+
+	if (!json.contains("type_"))
+	{
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Core.SObjectFactory::Get()", "missing element type_ in json");
+		return nullptr;
+	}
 
     const auto type{ json.at("type_").get<std::string>() };
 

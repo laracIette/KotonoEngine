@@ -12,6 +12,9 @@ class KScene : public KObject
 public:
 	KScene(UPtrOwnerBase* ptrOwner);
 
+protected:
+	void Cleanup() override;
+
 public:
 	void UpdateSceneObjects();
 

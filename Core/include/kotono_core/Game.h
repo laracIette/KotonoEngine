@@ -16,6 +16,8 @@ public:
 	void OpenScene(const UPtr<KScene>& scene);
 	void OpenInterface(const UPtr<KInterface>& interface);
 
+	void OpenStartupScene();
+
 	const UPtr<KScene>& GetOpenedScene() const;
 
 private:

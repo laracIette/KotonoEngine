@@ -8,9 +8,10 @@ struct UGuid final
 
 public:
 	UGuid();
+	UGuid(const std::string& string);
 
 	operator std::string() const;
-	void operator=(const std::string& string);
+	UGuid& operator=(const std::string& string);
 
 	bool operator==(const UGuid& other) const;
 

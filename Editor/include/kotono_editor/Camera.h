@@ -18,7 +18,6 @@ public:
 	void SetRotation(const glm::quat& rotation);
 
 	void Translate(const glm::vec3& offset);
-	void Rotate(const glm::quat& rotation);
 
 private:
 	UTransform transform_;

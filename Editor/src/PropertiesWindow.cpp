@@ -37,33 +37,33 @@ WWidget* WPropertiesWindow::Build()
                                     },
                                 }),
                                 Slider("Position X", [selectedObject](const float delta) mutable {
-								    selectedObject->RootComponent()->Translate({ delta * 0.01f, 0.0f, 0.0f });
+								    if (selectedObject) selectedObject->RootComponent()->Translate({ delta * 0.01f, 0.0f, 0.0f });
                                 }),
                                 Slider("Position Y", [selectedObject](const float delta) mutable {
-                                    selectedObject->RootComponent()->Translate({ 0.0f, delta * 0.01f, 0.0f });
+                                    if (selectedObject) selectedObject->RootComponent()->Translate({ 0.0f, delta * 0.01f, 0.0f });
                                 }),
                                 Slider("Position Z", [selectedObject](const float delta) mutable {
-                                    selectedObject->RootComponent()->Translate({ 0.0f, 0.0f, delta * 0.01f });
+                                    if (selectedObject) selectedObject->RootComponent()->Translate({ 0.0f, 0.0f, delta * 0.01f });
                                 }),
 
                                 Slider("Scale X", [selectedObject](const float delta) mutable {
-								    selectedObject->RootComponent()->Scale({ 1.0f + delta * 0.001f, 1.0f, 1.0f });
+                                    if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f + delta * 0.001f, 1.0f, 1.0f });
                                 }),
                                 Slider("Scale Y", [selectedObject](const float delta) mutable {
-                                    selectedObject->RootComponent()->Scale({ 1.0f, 1.0f + delta * 0.001f, 1.0f });
+                                    if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f, 1.0f + delta * 0.001f, 1.0f });
                                 }),
                                 Slider("Scale Z", [selectedObject](const float delta) mutable {
-                                    selectedObject->RootComponent()->Scale({ 1.0f, 1.0f, 1.0f + delta * 0.001f });
+                                    if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f, 1.0f, 1.0f + delta * 0.001f });
                                 }),
 
                                 Slider("Rotation Pitch", [selectedObject](const float delta) mutable {
-								    selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldRightVector));
+                                    if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldRightVector));
                                 }),
                                 Slider("Rotation Yaw", [selectedObject](const float delta) mutable {
-                                    selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldUpVector));
+                                    if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldUpVector));
                                 }),
                                 Slider("Rotation Roll", [selectedObject](const float delta) mutable {
-                                    selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldForwardVector));
+                                    if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldForwardVector));
                                 }),
                             };
                         },

@@ -1,13 +1,11 @@
 #include "Editor.h"
-#include "MainWindow.h"
-#include <kotono_platform/WindowViewport.h>
-#include "GameManager.h"
-#include "Visualizer.h"
 #include "Camera.h"
-#include <kotono_timing/TimerManager.h>
+#include "MainWindow.h"
+#include "Visualizer.h"
+#include <kotono_platform/WindowViewport.h>
 #include <kotono_timing/Timer.h>
+#include <kotono_timing/TimerManager.h>
 
-static SGameManager GameManager;
 static SVisualizer Visualizer;
 static SCamera Camera;
 
@@ -42,16 +40,6 @@ void SEditor::Cleanup()
 	delete widget_;
 
 	::Camera.Cleanup();
-}
-
-SGameManager& SEditor::GameManager()
-{
-	return ::GameManager;
-}
-
-const SGameManager& SEditor::GameManager() const
-{
-	return ::GameManager;
 }
 
 SVisualizer& SEditor::Visualizer()

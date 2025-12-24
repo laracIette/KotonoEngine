@@ -15,6 +15,20 @@ KScene::KScene(UPtrOwnerBase* ptrOwner) :
 {
 }
 
+void KScene::Cleanup()
+{
+	for (const auto& sceneObject : sceneObjects_)
+	{
+		if (sceneObject)
+		{
+			sceneObject->Delete();
+		}
+	}
+	sceneObjects_.Clear();
+
+	Base::Cleanup();
+}
+
 void KScene::UpdateSceneObjects()
 {
 	for (auto& sceneObject : sceneObjects_)

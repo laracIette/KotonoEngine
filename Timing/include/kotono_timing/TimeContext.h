@@ -1,8 +1,9 @@
 #pragma once
-enum KtTimeContextState : char
+#include <cstdint>
+enum class ETimeContextState : uint8_t
 {
-	KT_TIME_CONTEXT_STATE_PLAYING,
-	KT_TIME_CONTEXT_STATE_PAUSED,
+	Playing,
+	Paused
 };
 
 struct KtTimeContext final
@@ -12,7 +13,7 @@ struct KtTimeContext final
 	float currentDelta;
 	float scale;
 	float total;
-	KtTimeContextState state;
+	ETimeContextState state;
 
 	/// <summary>
 	/// Returns true if the time context updated, else false.

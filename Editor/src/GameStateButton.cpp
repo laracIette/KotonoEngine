@@ -1,7 +1,6 @@
 #include "GameStateButton.h"
-#include <kotono_interface/widgets.h>
-#include "Editor.h"
 #include "GameManager.h"
+#include <kotono_interface/widgets.h>
 
 WWidget* WGameStateButton::Build()
 {
@@ -15,18 +14,18 @@ WWidget* WGameStateButton::Build()
                         new WButton({
                             .onPress = [this]() {
                                 SetState([]() {
-                                    if (Editor.GameManager().IsPlaying())
+                                    if (GameManager.IsPlaying())
                                     {
-                                        Editor.GameManager().Pause();
+                                        GameManager.Pause();
                                     }
                                     else
                                     {
-                                        Editor.GameManager().Play();
+                                        GameManager.Play();
                                     }
                                 });
                             },
                         }),
-                        Editor.GameManager().IsPlaying() 
+                        GameManager.IsPlaying() 
                             ? new WColor({ KtColor::White().WithValue(0.5f) })
                             : new WColor({ KtColor::Green() })
                     },
@@ -38,16 +37,16 @@ WWidget* WGameStateButton::Build()
                     .children = {
                         new WButton({
                             .onPress = [this]() {
-                                if (Editor.GameManager().IsStopped())
+                                if (GameManager.IsStopped())
                                 {
                                     return;
                                 }
                                 SetState([]() {
-                                    Editor.GameManager().Stop();
+                                    GameManager.Stop();
                                 });
                             },
                         }),
-                        Editor.GameManager().IsStopped()
+                        GameManager.IsStopped()
                             ? new WColor({ KtColor::Red().WithAlpha(0.1f) })
                             : new WColor({ KtColor::Red() })
                     },

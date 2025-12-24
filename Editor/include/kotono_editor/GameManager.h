@@ -3,8 +3,6 @@
 #include <kotono_common/Event.h>
 class SGameManager final
 {
-	friend class SEditor;
-
 public:
 	bool IsPlaying() const;
 	bool IsPaused() const;
@@ -24,3 +22,4 @@ private:
 	KtEvent<EGameState> eventStateChanged_;
 };
 
+inline SGameManager GameManager;

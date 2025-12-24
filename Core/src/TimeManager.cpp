@@ -15,7 +15,7 @@ void STimeManager::Init()
 		.currentDelta = 0.0f,
 		.scale = 1.0f,
 		.total = 0.0f,
-		.state = KT_TIME_CONTEXT_STATE_PAUSED,
+		.state = ETimeContextState::Paused,
 	};
 
 	renderTime_ = {
@@ -24,7 +24,7 @@ void STimeManager::Init()
 		.currentDelta = 0.0f,
 		.scale = 1.0f,
 		.total = 0.0f,
-		.state = KT_TIME_CONTEXT_STATE_PLAYING,
+		.state = ETimeContextState::Playing,
 	};
 }
 

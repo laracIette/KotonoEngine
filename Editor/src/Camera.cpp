@@ -70,12 +70,11 @@ void SCamera::SetRotation(const glm::quat& rotation)
 
 void SCamera::Translate(const glm::vec3& offset)
 {
+	if (!isFocused_)
+	{
+		return;
+	}
 	SetPosition(transform_.position + offset);
-}
-
-void SCamera::Rotate(const glm::quat& rotation)
-{
-	SetRotation(rotation * transform_.rotation);
 }
 
 void SCamera::OnKeyboardWKeyDown()

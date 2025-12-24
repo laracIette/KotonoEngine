@@ -2,7 +2,7 @@
 
 bool KtTimeContext::Update(const float delta)
 {
-	if (state == KT_TIME_CONTEXT_STATE_PAUSED)
+	if (state == ETimeContextState::Paused)
 	{
 		return false;
 	}

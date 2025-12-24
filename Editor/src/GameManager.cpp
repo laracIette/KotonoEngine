@@ -1,5 +1,7 @@
 #include "GameManager.h"
+#include <kotono_core/Game.h>
 #include <kotono_core/TimeManager.h>
+#include <kotono_core/Scene.h>
 #include <kotono_timing/TimeContext.h>
 
 bool SGameManager::IsPlaying() const
@@ -49,13 +51,20 @@ void SGameManager::SetState(const EGameState state)
     switch (state_)
     {
     case EGameState::Playing:
-        TimeManager.GameTime().state = KT_TIME_CONTEXT_STATE_PLAYING;
+    {
+        TimeManager.GameTime().state = ETimeContextState::Playing;
+        if (UPtr scene = Game.GetOpenedScene())
+        {
+            scene->Serialize();
+        }
         break;
+    }
     case EGameState::Stopped:
         TimeManager.GameTime().total = 0.0f;
+        Game.OpenStartupScene();
         [[fallthrough]];
     case EGameState::Paused:
-        TimeManager.GameTime().state = KT_TIME_CONTEXT_STATE_PAUSED;
+        TimeManager.GameTime().state = ETimeContextState::Paused;
         break;
     }
 
