@@ -22,13 +22,27 @@ FetchContent_Declare(
 # Tell OpenAL Soft to not try to install itself globally
 set(CMAKE_INSTALL_DO_NOT_USE_INSTALL_NAME_DIR YES)
 
-set(BUILD_SHARED_LIBS OFF)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(ALSOFT_EXAMPLES OFF)
-set(ALSOFT_UTILS OFF)
-set(ALSOFT_TESTS OFF)
+set(LIBTYPE "STATIC" CACHE STRING "" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON CACHE BOOL "" FORCE)
+set(ALSOFT_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(ALSOFT_UTILS OFF CACHE BOOL "" FORCE)
+set(ALSOFT_TESTS OFF CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(OpenAL)
+
+foreach(al_target 
+    OpenAL
+    alsoft.common 
+    alsoft.excommon 
+    alsoft.fmt 
+    alsoft.build_version 
+    clang-tidy-check
+)
+    if(TARGET ${al_target})
+        set_target_properties(${al_target} PROPERTIES FOLDER "ThirdParty/OpenAL")
+    endif()
+endforeach()
 ################
 
 # Static library
@@ -55,6 +69,11 @@ target_sources(KotonoAudio
 target_include_directories(KotonoAudio
     PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_audio"
+)
+
+# Preprocessor defines for all builds
+target_compile_definitions(KotonoAudio PUBLIC
+    AL_LIBTYPE_STATIC
 )
 
 # Link system + third-party libs

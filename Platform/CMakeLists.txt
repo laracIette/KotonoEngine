@@ -28,6 +28,15 @@ set(GLFW_BUILD_DOCS     OFF CACHE INTERNAL "")
 set(GLFW_INSTALL        OFF CACHE INTERNAL "")
 
 FetchContent_MakeAvailable(glfw)
+
+foreach(glfw_target 
+    glfw
+    update_mappings
+)
+    if(TARGET ${glfw_target})
+        set_target_properties(${glfw_target} PROPERTIES FOLDER "ThirdParty/GLFW3")
+    endif()
+endforeach()
 ##############
 
 find_package(Vulkan REQUIRED)

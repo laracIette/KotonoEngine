@@ -19,6 +19,9 @@ FetchContent_Declare(
     GIT_SHALLOW    TRUE
 )
 
+# Disable the install targets
+set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
+
 # Force Assimp to build as a static library
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
@@ -32,7 +35,21 @@ set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INSTALL_PDB OFF CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(assimp)
+
+foreach(assimp_target 
+    assimp
+    UpdateAssimpLibsDebugSymbolsAndDLLs
+    zlibstatic
+)
+    if(TARGET ${assimp_target})
+        set_target_properties(${assimp_target} PROPERTIES FOLDER "ThirdParty/assimp")
+    endif()
+endforeach()
 ################
+
+if(TARGET SPIRVReflect)
+    set_target_properties(SPIRVReflect PROPERTIES FOLDER "ThirdParty")
+endif()
 
 # Static library
 add_library(KotonoGraphics STATIC)

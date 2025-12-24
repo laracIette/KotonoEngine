@@ -144,4 +144,6 @@ add_custom_target(RunKotonoGenerator
     COMMENT "Running KotonoGenerator..."
 )
 
+set_target_properties(RunKotonoGenerator PROPERTIES FOLDER "KotonoEngine/UtilityTargets")
+
 add_dependencies(KotonoCore RunKotonoGenerator)
