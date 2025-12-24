@@ -56,7 +56,7 @@ WWidget* WSceneExplorer::Build()
 													meshComponent2->SetOwner(mesh);	
 													meshComponent2->SetShader(shader3D);
 													meshComponent2->SetModel(model2);
-													meshComponent2->SetParent(rootComponent, ECoordinateSpace::Relative);
+													meshComponent2->SetParent(meshComponent1, ECoordinateSpace::Relative);
 													meshComponent2->SetRelativePosition({ 1.0f, 1.0f, 1.0f });
 
 													scene->Add(mesh);

@@ -30,6 +30,8 @@ void KSceneMeshComponent::Init()
 {
     Base::Init();
 
+	SetCanUpdate(true);
+
     EventTransformUpdated().AddListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
 
     Keyboard.EventKey(EKey::N, EInputState::Pressed)

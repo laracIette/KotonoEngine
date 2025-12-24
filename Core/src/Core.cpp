@@ -32,7 +32,6 @@ void SCore::Update()
     ::Keyboard.Update();
     ::Mouse.Update();
     ::TimeManager.Update();
-    ::Game.Update();
     ::InterfacePhysicsManager.Update();
 }
 
