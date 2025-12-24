@@ -37,19 +37,27 @@ WWidget* WSceneExplorer::Build()
 											{
 												SetState([this, &scene]() {
 													auto* shader3D{ ShaderManager.Get(KtPath::Graphics() / "shaders" / "shader3D.ktshader") };													
-													auto* model{ ModelManager.Get(KtPath::Graphics() / "assets" / "models" / "viking_room.obj") };
+													auto* model1{ ModelManager.Get(KtPath::Graphics() / "assets" / "models" / "viking_room.obj") };
+													auto* model2{ ModelManager.Get(KtPath::Graphics() / "assets" / "models" / "column.obj") };
 													
 													UPtr mesh{ ObjectManager.Create<TSceneObject>() };
 													UPtr rootComponent{ ObjectManager.Create<KSceneComponent>() };
-													UPtr meshComponent{ ObjectManager.Create<KSceneMeshComponent>() };
+													UPtr meshComponent1{ ObjectManager.Create<KSceneMeshComponent>() };
+													UPtr meshComponent2{ ObjectManager.Create<KSceneMeshComponent>() };
 													
 													rootComponent->SetOwner(mesh);
-													meshComponent->SetOwner(mesh);
-													
 													rootComponent->SetRelativePosition({ offset_, offset_, offset_ });
-													meshComponent->SetShader(shader3D);
-													meshComponent->SetModel(model);
-													meshComponent->SetParent(rootComponent, ECoordinateSpace::Relative);
+													
+													meshComponent1->SetOwner(mesh);	
+													meshComponent1->SetShader(shader3D);
+													meshComponent1->SetModel(model1);
+													meshComponent1->SetParent(rootComponent, ECoordinateSpace::Relative);
+													
+													meshComponent2->SetOwner(mesh);	
+													meshComponent2->SetShader(shader3D);
+													meshComponent2->SetModel(model2);
+													meshComponent2->SetParent(rootComponent, ECoordinateSpace::Relative);
+													meshComponent2->SetRelativePosition({ 1.0f, 1.0f, 1.0f });
 
 													scene->Add(mesh);
 													mesh->Spawn();

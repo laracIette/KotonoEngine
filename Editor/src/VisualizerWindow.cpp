@@ -7,7 +7,7 @@
 WWidget* WVisualizerWindow::Build()
 {
     return new WBox({
-        .size = { 800.0f, 400.0f },
+        .size = { 600.0f, 300.0f },
         .child = new WStack({
             .children = {
                 new WColor({ KtColor::Blue().WithAlpha(0.5f) }),
@@ -28,17 +28,19 @@ WWidget* WVisualizerWindow::Build()
                                     }),
                                 },
                             }),
-                            new WColumn({
+                            new WList({
                                 .spacing = 5.0f,
-                                .children = {
-                                    BuildVisualizationFieldWidget(EVisualizationField::SceneObject, "Scene Object"),
-                                    BuildVisualizationFieldWidget(EVisualizationField::SceneObjectBounds, "Scene Object Bounds"),
-                                    BuildVisualizationFieldWidget(EVisualizationField::SceneObjectCollider, "Scene Object Collider"),
-                                    BuildVisualizationFieldWidget(EVisualizationField::SceneObjectWireframe, "Scene Object Wireframe"),
-                                    BuildVisualizationFieldWidget(EVisualizationField::InterfaceObject, "Interface Object"),
-                                    BuildVisualizationFieldWidget(EVisualizationField::InterfaceObjectBounds, "Interface Object Bounds"),
-                                    BuildVisualizationFieldWidget(EVisualizationField::InterfaceObjectCollider, "Interface Object Collider"),
-                                    BuildVisualizationFieldWidget(EVisualizationField::InterfaceObjectWireframe, "Interface Object Wireframe"),
+                                .children = [this]() {
+                                    return WidgetVector{
+                                        BuildVisualizationFieldWidget(EVisualizationField::SceneObject, "Scene Object"),
+                                        BuildVisualizationFieldWidget(EVisualizationField::SceneObjectBounds, "Scene Object Bounds"),
+                                        BuildVisualizationFieldWidget(EVisualizationField::SceneObjectCollider, "Scene Object Collider"),
+                                        BuildVisualizationFieldWidget(EVisualizationField::SceneObjectWireframe, "Scene Object Wireframe"),
+                                        BuildVisualizationFieldWidget(EVisualizationField::InterfaceObject, "Interface Object"),
+                                        BuildVisualizationFieldWidget(EVisualizationField::InterfaceObjectBounds, "Interface Object Bounds"),
+                                        BuildVisualizationFieldWidget(EVisualizationField::InterfaceObjectCollider, "Interface Object Collider"),
+                                        BuildVisualizationFieldWidget(EVisualizationField::InterfaceObjectWireframe, "Interface Object Wireframe"),
+                                    };
                                 },
                             }),
                         },

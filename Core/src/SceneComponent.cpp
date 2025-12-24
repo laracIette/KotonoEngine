@@ -127,7 +127,7 @@ glm::vec3 KSceneComponent::GetWorldPosition() const
 {
     if (parent_)
     {
-        return parent_->GetWorldPosition() + GetRelativePosition();
+        return parent_->GetWorldPosition() + parent_->GetWorldRotation() * (parent_->GetWorldScale() * GetRelativePosition());
     }
     return GetRelativePosition();
 }
