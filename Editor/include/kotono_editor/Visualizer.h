@@ -1,7 +1,7 @@
 #pragma once
-#include <unordered_map>
 #include "VisualizationField.h"
 #include <kotono_common/Event.h>
+#include <unordered_map>
 class SVisualizer final
 {
 	friend class SEditor;
@@ -20,3 +20,4 @@ private:
 	std::unordered_map<EVisualizationField, KtEvent<bool>> eventsVisibilityChanged_;
 };
 
+inline SVisualizer Visualizer;

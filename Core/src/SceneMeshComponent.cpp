@@ -11,6 +11,7 @@
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/ShaderManager.h>
 #include <kotono_input/Keyboard.h>
+#include <kotono_platform/Window.h>
 #include <kotono_platform/WindowViewport.h>
 #include <nlohmann/json.hpp>
 
@@ -33,6 +34,7 @@ void KSceneMeshComponent::Cleanup()
     UnregisterModelProxy();
 
     EventTransformUpdated().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
+    Window.GetEventWindowResized().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyScissorDirty));
 
     Keyboard.EventKey(EKey::N, EInputState::Pressed)
         .RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
@@ -86,6 +88,7 @@ void KSceneMeshComponent::Spawn()
     RegisterModelProxy();
 
     EventTransformUpdated().AddListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
+    Window.GetEventWindowResized().AddListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyScissorDirty));
 
     Keyboard.EventKey(EKey::N, EInputState::Pressed)
         .AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
@@ -126,6 +129,13 @@ void KSceneMeshComponent::MarkModelProxyTransformDirty()
     modelProxy_.MarkDirty();
     modelProxy_.objectData.modelMatrix = ModelMatrix();
 	KT_LOG(ELogImportanceLevel::Medium, "Core.KSceneMeshComponent::MarkModelProxyTransformDirty()", "%s", GetName().c_str());
+}
+
+void KSceneMeshComponent::MarkModelProxyScissorDirty()
+{
+    modelProxy_.MarkDirty();
+    modelProxy_.scissor.offset = GetOwner()->GetViewport()->GetOffset();
+    modelProxy_.scissor.extent = GetOwner()->GetViewport()->GetExtent();
 }
 
 void KSceneMeshComponent::RegisterModelProxy()

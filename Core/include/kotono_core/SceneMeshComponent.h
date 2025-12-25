@@ -41,6 +41,7 @@ private:
 	void CreateModelProxy();
 
 	void MarkModelProxyTransformDirty();
+	void MarkModelProxyScissorDirty();
 
 	void RegisterModelProxy();
 	void UnregisterModelProxy();

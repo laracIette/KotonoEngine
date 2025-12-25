@@ -47,3 +47,4 @@ private:
 	void OnEventUpdateTransform() const;
 };
 
+inline SCamera Camera;

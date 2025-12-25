@@ -1,8 +1,7 @@
 #include "VisualizerWindow.h"
-#include <kotono_interface/widgets.h>
-#include "Editor.h"
 #include "Visualizer.h"
 #include <kotono_common/log.h>
+#include <kotono_interface/widgets.h>
 
 WWidget* WVisualizerWindow::Build()
 {
@@ -53,7 +52,7 @@ WWidget* WVisualizerWindow::Build()
 
 WWidget* WVisualizerWindow::BuildVisualizationFieldWidget(const EVisualizationField field, const std::string& name)
 {
-    const bool isFieldVisible{ Editor.Visualizer().GetIsFieldVisible(field) };
+    const bool isFieldVisible{ Visualizer.GetIsFieldVisible(field) };
     return new WRow({
         .children = {
             new WBox({
@@ -66,7 +65,7 @@ WWidget* WVisualizerWindow::BuildVisualizationFieldWidget(const EVisualizationFi
                         new WButton({
                             .onPress = [this, field, isFieldVisible]() {
                                 SetState([field, isFieldVisible]() {
-                                    Editor.Visualizer().SetIsFieldVisible(field, !isFieldVisible);
+                                    Visualizer.SetIsFieldVisible(field, !isFieldVisible);
                                 });
                             },
                         }),

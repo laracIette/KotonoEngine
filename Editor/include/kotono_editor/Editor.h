@@ -1,7 +1,5 @@
 #pragma once
 class WWidget;
-class SVisualizer;
-class SCamera;
 class SEditor final
 {
 public:
@@ -9,14 +7,13 @@ public:
 	void Update();
 	void Cleanup();
 
-public:
-	SVisualizer& Visualizer();
-	const SVisualizer& Visualizer() const;
-	SCamera& Camera();
-	const SCamera& Camera() const;
-
 private:
 	WWidget* widget_;
+
+	void CreateWidget();
+	void DeleteWidget();
+
+	void RefreshMainWindowWidget();
 };
 
 inline SEditor Editor;

@@ -9,8 +9,8 @@ void KtWindow::Init()
 {
     size_ = { 1600, 900 };
 
+    WindowViewport.SetIsKeepAspectRatio(false);
     WindowViewport.SetAspectRatio(static_cast<float>(size_.x) / size_.y);
-    WindowViewport.SetIsKeepAspectRatio(true);
 
     // Initialize GLFW
     if (!glfwInit())
