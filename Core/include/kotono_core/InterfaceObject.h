@@ -19,8 +19,9 @@ public:
 	RInterfaceObject(UPtrOwnerBase* ptrOwner);
 
 protected:
-	void Init() override;
 	void Cleanup() override;
+
+	virtual void Init();
 
 public:
 	KtWindowViewport* GetViewport() const;

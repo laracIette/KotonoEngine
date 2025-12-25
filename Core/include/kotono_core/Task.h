@@ -7,7 +7,7 @@ struct UTask final
 	KtEvent<> eventUpdate;
 	KtEvent<> eventCompleted;
 
-	void Update();
+	void Update(const float delta);
 
 	void Start();
 	void Stop();

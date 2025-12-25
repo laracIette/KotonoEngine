@@ -14,12 +14,11 @@ void SGame::Init()
     OpenStartupScene();
 }
 
-void SGame::Update()
+void SGame::Update(const float delta)
 {
-    ObjectManager.InitObjects();
     if (scene_)
     {
-        scene_->UpdateSceneObjects();
+        scene_->Update(delta);
     }
 }
 

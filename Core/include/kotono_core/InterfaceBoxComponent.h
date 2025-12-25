@@ -9,8 +9,9 @@ public:
 	KInterfaceBoxComponent(UPtrOwnerBase* ptrOwner);
 	
 protected:
-	void Init() override;
 	void Cleanup() override;
+
+	void Init() override;
 
 private:
 	KtInterfaceRenderableProxy* boxProxy_;

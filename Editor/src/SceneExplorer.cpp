@@ -1,5 +1,6 @@
 #include "SceneExplorer.h"
 #include "SceneExplorerItem.h"
+#include "GameManager.h"
 #include <kotono_common/Path.h>
 #include <kotono_core/Game.h>
 #include <kotono_core/ObjectManager.h>
@@ -15,6 +16,8 @@
 
 WWidget* WSceneExplorer::Build()
 {
+	GameManager.EventStateChanged().AddListener(KtDelegate(this, &WSceneExplorer::OnGameStateChanged));
+
 	if (UPtr scene{ Game.GetOpenedScene() })
 	{
 		scene->EventSceneObjectsUpdated().AddListener(KtDelegate(this, &WSceneExplorer::Refresh));
@@ -111,5 +114,12 @@ void WSceneExplorer::Cleanup()
 		scene->EventSceneObjectsUpdated().RemoveListener(KtDelegate(this, &WSceneExplorer::Refresh));
 	}
 
+	GameManager.EventStateChanged().RemoveListener(KtDelegate(this, &WSceneExplorer::OnGameStateChanged));
+
 	WWidget::Cleanup();
+}
+
+void WSceneExplorer::OnGameStateChanged(const EGameState gameState)
+{
+	Refresh();
 }

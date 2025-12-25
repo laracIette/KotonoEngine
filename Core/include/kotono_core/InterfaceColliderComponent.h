@@ -13,8 +13,9 @@ public:
 	KInterfaceColliderComponent(UPtrOwnerBase* ptrOwner);
 
 protected:
-	void Init() override;
 	void Cleanup() override;
+
+	void Init() override;
 
 public:
 	KtEvent<>& GetEventPressed();

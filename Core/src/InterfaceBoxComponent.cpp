@@ -14,6 +14,14 @@ KInterfaceBoxComponent::KInterfaceBoxComponent(UPtrOwnerBase* ptrOwner) :
     boxProxy_ = Renderer.GetInterfaceRenderer().CreateProxy();
 }
 
+void KInterfaceBoxComponent::Cleanup()
+{
+    Base::Cleanup();
+
+    Renderer.GetInterfaceRenderer().Unregister(boxProxy_);
+    Renderer.GetInterfaceRenderer().DeleteProxy(boxProxy_);
+}
+
 void KInterfaceBoxComponent::Init()
 {
     Base::Init();
@@ -23,14 +31,6 @@ void KInterfaceBoxComponent::Init()
 
     EventColorUpdated().AddListener(KtDelegate(this, &KInterfaceBoxComponent::MarkBoxProxyColorDirty));
     EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceBoxComponent::MarkBoxProxyRectDirty));
-}
-
-void KInterfaceBoxComponent::Cleanup()
-{
-    Base::Cleanup();
-
-    Renderer.GetInterfaceRenderer().Unregister(boxProxy_);
-    Renderer.GetInterfaceRenderer().DeleteProxy(boxProxy_);
 }
 
 void KInterfaceBoxComponent::CreateBoxProxy()

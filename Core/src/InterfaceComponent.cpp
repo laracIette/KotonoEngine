@@ -22,21 +22,6 @@ KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner) :
     boundsProxy_ = Renderer.GetInterfaceRenderer().CreateProxy();
 }
 
-void KInterfaceComponent::Init()
-{
-    Base::Init();
-
-    if (owner_->RootComponent() != this)
-    {
-        SetParent(owner_->RootComponent(), ECoordinateSpace::Relative);
-    }
-
-    CreateBoundsProxy();
-    Renderer.GetInterfaceRenderer().Register(boundsProxy_);
-
-    EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
-}
-
 void KInterfaceComponent::Cleanup()
 {
     for (int64_t i{ children_.LastIndex() }; i >= 0; --i)
@@ -53,6 +38,19 @@ void KInterfaceComponent::Cleanup()
     Renderer.GetInterfaceRenderer().DeleteProxy(boundsProxy_);
 
     Base::Cleanup();
+}
+
+void KInterfaceComponent::Init()
+{
+    if (owner_->RootComponent() != this)
+    {
+        SetParent(owner_->RootComponent(), ECoordinateSpace::Relative);
+    }
+
+    CreateBoundsProxy();
+    Renderer.GetInterfaceRenderer().Register(boundsProxy_);
+
+    EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
 }
 
 const UPtr<RInterfaceObject>& KInterfaceComponent::GetOwner() const

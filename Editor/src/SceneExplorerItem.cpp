@@ -17,7 +17,7 @@ WWidget* WSceneExplorerItem::Build()
 		.size = 30.0f,
 		.child = new WStack({
 			.children = {
-				ObjectManager.GetSelectedObject() == sceneObject_
+				sceneObject_ && (ObjectManager.GetSelectedObject() == sceneObject_)
 					? new WColor({ KtColor::Black().WithAlpha(0.2f) })
 					: new WColor({ KtColor::Transparent() }),
 				new WButton({
@@ -28,7 +28,7 @@ WWidget* WSceneExplorerItem::Build()
 					},
 				}),
 				new WText({
-					.text = sceneObject_->GetName(),
+					.text = sceneObject_ ? sceneObject_->GetName() : "",
 					.fontSize = { 20.0f, 24.0f },
 					.spacing = -3.0f,
 				}),

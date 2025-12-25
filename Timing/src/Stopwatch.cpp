@@ -1,6 +1,5 @@
 #include "Stopwatch.h"
 #include "Clock.h"
-#include <kotono_common/Delegate.h>
 
 void KtStopwatch::Start()
 {
@@ -15,13 +14,4 @@ void KtStopwatch::Stop()
 float KtStopwatch::ElapsedSeconds() const
 {
     return end_ - start_;
-}
-
-float KtStopwatch::Time(const KtDelegate<>& delegate)
-{
-    KtStopwatch stopwatch{};
-    stopwatch.Start();
-    delegate.Callback();
-    stopwatch.Stop();
-    return stopwatch.ElapsedSeconds();
 }

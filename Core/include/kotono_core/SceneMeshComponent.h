@@ -15,9 +15,10 @@ public:
 	KSceneMeshComponent(UPtrOwnerBase* ptrOwner);
 
 protected:
-	void Init() override;
-	void Update() override;
 	void Cleanup() override;
+
+	void Init() override;
+	void Update(const float delta) override;
 
 public:
 	KtShader* GetShader() const;

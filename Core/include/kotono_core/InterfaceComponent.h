@@ -25,8 +25,9 @@ public:
 	KInterfaceComponent(UPtrOwnerBase* ptrOwner);
 
 protected:
-	void Init() override;
 	void Cleanup() override;
+
+	virtual void Init();
 
 public:
 	const UPtr<RInterfaceObject>& GetOwner() const;

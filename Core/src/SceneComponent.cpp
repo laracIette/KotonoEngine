@@ -13,11 +13,6 @@ KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner) :
     eventTransformUpdated_.AddListener(KtDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
 }
 
-void KSceneComponent::Init()
-{
-    Base::Init();
-}
-
 void KSceneComponent::Cleanup()
 {
 	SetOwner(nullptr);
@@ -25,7 +20,11 @@ void KSceneComponent::Cleanup()
     Base::Cleanup();
 }
 
-void KSceneComponent::Update()
+void KSceneComponent::Init()
+{
+}
+
+void KSceneComponent::Update(const float delta)
 {
 }
 

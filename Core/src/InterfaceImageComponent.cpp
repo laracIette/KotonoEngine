@@ -24,6 +24,14 @@ KInterfaceImageComponent::KInterfaceImageComponent(UPtrOwnerBase* ptrOwner) :
 	imageTextureProxy_ = Renderer.GetInterfaceRenderer().CreateProxy();
 }
 
+void KInterfaceImageComponent::Cleanup()
+{
+	Base::Cleanup();
+
+	Renderer.GetInterfaceRenderer().Unregister(imageTextureProxy_);
+	Renderer.GetInterfaceRenderer().DeleteProxy(imageTextureProxy_);
+}
+
 void KInterfaceImageComponent::Init()
 {
 	Base::Init();
@@ -35,14 +43,6 @@ void KInterfaceImageComponent::Init()
 	GetEventShaderUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyShaderDirty));
 	GetEventImageTextureUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyImageTextureDirty));
 	EventLayerUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyLayerDirty));
-}
-
-void KInterfaceImageComponent::Cleanup()
-{
-	Base::Cleanup();
-
-	Renderer.GetInterfaceRenderer().Unregister(imageTextureProxy_);
-	Renderer.GetInterfaceRenderer().DeleteProxy(imageTextureProxy_);
 }
 
 KtShader* KInterfaceImageComponent::GetShader() const

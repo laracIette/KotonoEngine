@@ -40,7 +40,7 @@ void STimeManager::Update()
 
 	if (gameTime_.Update(delta_))
 	{
-		const float gameTime{ KtStopwatch::Time(KtDelegate(&Game, &SGame::Update)) };
+		const float gameTime{ KtStopwatch::Time(KtDelegate(&Game, &SGame::Update), gameTime_.lastDelta) };
 		averageGameTime_.Add(gameTime);
 	}
 

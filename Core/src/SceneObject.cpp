@@ -11,11 +11,6 @@ TSceneObject::TSceneObject(UPtrOwnerBase* ptrOwner) :
 	viewport_ = &WindowViewport;
 }
 
-void TSceneObject::Init()
-{
-	Base::Init();
-}
-
 void TSceneObject::Cleanup()
 {
 	for (int64_t i{ sceneComponents_.LastIndex() }; i >= 0; --i)
@@ -28,17 +23,33 @@ void TSceneObject::Cleanup()
 	Base::Cleanup();
 }
 
-void TSceneObject::Update()
+void TSceneObject::Init()
 {
 }
 
-void TSceneObject::UpdateSceneComponents()
+void TSceneObject::InitSceneComponents()
+{
+	for (auto& sceneComponent : sceneComponents_)
+	{
+		if (!sceneComponent->isInit_)
+		{
+			sceneComponent->Init();
+			sceneComponent->isInit_ = true;
+		}
+	}
+}
+
+void TSceneObject::Update(const float delta)
+{
+}
+
+void TSceneObject::UpdateSceneComponents(const float delta)
 {
 	for (auto& sceneComponent : sceneComponents_)
 	{
 		if (sceneComponent->GetCanUpdate())
 		{
-			sceneComponent->Update();
+			sceneComponent->Update(delta);
 		}
 	}
 }

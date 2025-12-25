@@ -29,12 +29,9 @@ void SObjectManager::Init()
 
 void SObjectManager::Cleanup()
 {
-	KtPool<UPtrOwnerBase*> deletes{};
-	deletes.Merge(inits_);
-	deletes.Merge(objects_);
-	for (int64_t i{ deletes.LastIndex() }; i >= 0; --i)
+	for (int64_t i{ objects_.LastIndex() }; i >= 0; --i)
 	{
-		Delete(deletes[i]);
+		Delete(objects_[i]);
 	}
 
 	Keyboard.EventKey(EKey::Escape, EInputState::Pressed)
@@ -45,8 +42,9 @@ void SObjectManager::Cleanup()
 
 void SObjectManager::Register(KObject* object, UPtrOwnerBase* ptrOwner)
 {
-	inits_.Add(ptrOwner);
-	object->initIndex_ = inits_.LastIndex();
+	objects_.Add(ptrOwner);
+	object->objectIndex_ = objects_.LastIndex();
+	object->isConstructed_ = true;
 	object->type_ = object->TypeName();
 	object->SetName(std::format("{}_{}", object->TypeName(), object->Guid().ToString()));
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core.SObjectManager::Register()", "register object %s", object->GetName().c_str());
@@ -58,23 +56,11 @@ void SObjectManager::Delete(UPtrOwnerBase* ptrOwner)
 
 	object->Cleanup();
 
-	if (object->isInit_)
+	const size_t index{ object->objectIndex_ };
+	if (objects_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 	{
-		const size_t index{ object->objectIndex_ };
-		if (objects_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
-		{
-			auto* swapped{ static_cast<KObject*>(objects_[index]->Get()) };
-			swapped->objectIndex_ = index;
-		}
-	}
-	else
-	{
-		const size_t index{ object->initIndex_ };
-		if (inits_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
-		{
-			auto* swapped{ static_cast<KObject*>(inits_[index]->Get()) };
-			swapped->initIndex_ = index;
-		}
+		auto* swapped{ static_cast<KObject*>(objects_[index]->Get()) };
+		swapped->objectIndex_ = index;
 	}
 
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core.SObjectManager::Delete()", "delete object %s", object->GetName().c_str());
@@ -86,28 +72,6 @@ void SObjectManager::Delete(UPtrOwnerBase* ptrOwner)
 void SObjectManager::Quit()
 {
 	Window.SetShouldClose(true);
-}
-
-void SObjectManager::InitObjects()
-{
-	if (inits_.Empty())
-	{
-		return;
-	}
-
-	for (size_t i{ 0 }; i < inits_.size(); ++i)
-	{
-		auto* ptr{ inits_[i] };
-		auto* object{ static_cast<KObject*>(ptr->Get()) };
-		object->Init();
-		object->isInit_ = true;
-
-		objects_.Add(ptr);
-		object->objectIndex_ = objects_.LastIndex();
-	}
-	inits_.Clear();
-
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core.SObjectManager::InitObjects()", "object count %llu", objects_.size());
 }
 
 UPtr<KObject>& SObjectManager::GetSelectedObject()

@@ -10,7 +10,7 @@ class SGame final
 
 private:
 	void Init();
-	void Update();
+	void Update(const float delta);
 
 public:
 	void OpenScene(const UPtr<KScene>& scene);

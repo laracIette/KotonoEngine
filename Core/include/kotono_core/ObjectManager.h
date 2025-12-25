@@ -38,15 +38,12 @@ public:
 private:
 	void Quit();
 
-	KtPool<UPtrOwnerBase*> inits_;
 	KtPool<UPtrOwnerBase*> objects_;
 
 	UPtr<KObject> selectedObject_;
 	KtEvent<> eventSelectedObjectChanged_;
 
 	void Register(KObject* object, UPtrOwnerBase* ptrOwner);
-
-	void InitObjects();
 
 	void LogUPS() const;
 

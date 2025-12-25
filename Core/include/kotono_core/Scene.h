@@ -9,12 +9,13 @@ class KScene : public KObject
 {
 	GENERATED_KSCENE()
 
+private:
+	friend class SGame;
+
 protected:
 	void Cleanup() override;
 
 public:
-	void UpdateSceneObjects();
-
 	void Add(const UPtr<TSceneObject>& sceneObject);
 	void Remove(const UPtr<TSceneObject>& sceneObject);
 
@@ -27,5 +28,7 @@ public:
 private:
 	SERIALIZE KtPool<UPtr<TSceneObject>> sceneObjects_;
 	KtEvent<> eventSceneObjectsUpdated_;
+
+	void Update(const float delta);
 };
 

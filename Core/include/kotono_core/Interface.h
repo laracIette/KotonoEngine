@@ -7,6 +7,6 @@ class KInterface : public KObject
 	GENERATED_KINTERFACE()
 
 protected:
-	void Init() override;
+	void Init();
 };
 

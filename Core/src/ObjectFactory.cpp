@@ -60,14 +60,14 @@ UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 	nlohmann::json json{};
 	KtSerializer::Deserialize(json, path);
 
-	if (!json.contains("type_"))
+	const auto it{ json.find("type_") };
+	if (it == json.end())
 	{
 		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Core.SObjectFactory::Get()", "missing element type_ in json");
 		return nullptr;
 	}
 
-	const auto type{ json.at("type_").get<std::string>() };
-
+	const auto type{ it->get<std::string>() };
 	if (UPtr object{ GetFactory(type) })
 	{
 		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Core.SObjectFactory::Get()", "created object %s", object->GetName().c_str());

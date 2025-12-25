@@ -24,20 +24,8 @@ KSceneMeshComponent::KSceneMeshComponent(UPtrOwnerBase* ptrOwner) :
         const auto path{ KtPath::Graphics() / "shaders" / "wireframe3D.ktshader" };
         WireframeShader = ShaderManager.Get(path);
     }
-}
 
-void KSceneMeshComponent::Init()
-{
-    Base::Init();
-
-	SetCanUpdate(true);
-}
-
-void KSceneMeshComponent::Update()
-{
-    Base::Update();
-
-    spinTask_.Update();
+    spinTask_.duration = 5.0f;
 }
 
 void KSceneMeshComponent::Cleanup()
@@ -52,6 +40,22 @@ void KSceneMeshComponent::Cleanup()
         .RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
 
     Base::Cleanup();
+}
+
+void KSceneMeshComponent::Init()
+{
+    Base::Init();
+
+    SetCanUpdate(true);
+
+    spinTask_.Start();
+}
+
+void KSceneMeshComponent::Update(const float delta)
+{
+    Base::Update(delta);
+
+    spinTask_.Update(delta);
 }
 
 KtShader* KSceneMeshComponent::GetShader() const
@@ -88,9 +92,7 @@ void KSceneMeshComponent::Spawn()
     Keyboard.EventKey(EKey::M, EInputState::Pressed)
         .AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
     
-    spinTask_.duration = 5.0f;
     spinTask_.eventUpdate.AddListener(KtDelegate(this, &KSceneMeshComponent::Spin));
-    spinTask_.Start();
 }
 
 void KSceneMeshComponent::SetVisibility(const EVisibility visibility, const bool propagateToChildren)

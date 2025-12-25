@@ -19,10 +19,10 @@ public:
 	TSceneObject(UPtrOwnerBase* ptrOwner);
 
 protected:
-	void Init() override;
 	void Cleanup() override;
 
-	virtual void Update();
+	virtual void Init();
+	virtual void Update(const float delta);
 
 public:
 	bool GetCanUpdate() const;
@@ -37,13 +37,9 @@ public:
 	template <std::derived_from<KSceneComponent> T>
 	UPtr<T> GetComponent() const
 	{
-		auto components = KtCollection(sceneComponents_.begin(), sceneComponents_.end());
-		components.AddFilter([](const UPtr<KSceneComponent>& component) { return dynamic_cast<T*>(component.Get()); });
-		if (components.Empty())
-		{
-			return nullptr;
-		}
-		return components.GetFirst();
+		return std::find_first_of(sceneComponents_.begin(), sceneComponents_.end(),
+			[](const UPtr<KSceneComponent>& component) { return TryCast<T>(component); }
+		);
 	}
 
 	void AddComponent(UPtr<KSceneComponent> component);
@@ -54,9 +50,11 @@ public:
 	virtual void Spawn();
 
 private:
-	void UpdateSceneComponents();
+	void InitSceneComponents();
+	void UpdateSceneComponents(const float delta);
 
 private:
+	bool isInit_;
 	bool canUpdate_;
 	KtWindowViewport* viewport_;
 	UPtr<TSceneObject> parent_;

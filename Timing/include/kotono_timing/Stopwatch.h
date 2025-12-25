@@ -9,7 +9,15 @@ public:
 
     float ElapsedSeconds() const;
 
-    static float Time(const KtDelegate<>& delegate);
+    template <typename... Args>
+    static float Time(const KtDelegate<Args...>& delegate, Args... args)
+    {
+        KtStopwatch stopwatch{};
+        stopwatch.Start();
+        delegate.Callback(args...);
+        stopwatch.Stop();
+        return stopwatch.ElapsedSeconds();
+    }
 
 private:
     float start_;

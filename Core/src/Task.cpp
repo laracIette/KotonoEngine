@@ -1,14 +1,14 @@
 #include "Task.h"
 #include "TimeManager.h"
 
-void UTask::Update()
+void UTask::Update(const float delta)
 {
     if (!isPlaying)
     {
         return;
     }
 
-    current_ += TimeManager.GameTime().lastDelta;
+    current_ += delta;
 
     if (current_ < duration)
     {

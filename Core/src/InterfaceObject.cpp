@@ -14,7 +14,6 @@ RInterfaceObject::RInterfaceObject(UPtrOwnerBase* ptrOwner) :
 
 void RInterfaceObject::Init()
 {
-	Base::Init();
 }
 
 void RInterfaceObject::Cleanup()

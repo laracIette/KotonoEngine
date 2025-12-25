@@ -1,22 +1,14 @@
 #include "Object.h"
-#include <nlohmann/json.hpp>
-#include <kotono_io/Serializer.h>
 #include "ObjectManager.h"
-#include "Timer.h"
-#include <kotono_common/log.h>
 #include <kotono_common/Path.h>
+#include <kotono_io/Serializer.h>
+#include <nlohmann/json.hpp>
 
 KObject::KObject(UPtrOwnerBase* ptrOwner) :
     ptrOwner_(ptrOwner),
     name_(guid_)
 {
     ptrOwner_->Set(this);
-}
-
-void KObject::Init()
-{
-    type_ = TypeName();
-    isConstructed_ = true; // todo: maybe move that
 }
 
 void KObject::Cleanup() 

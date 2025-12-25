@@ -15,14 +15,12 @@ class KObject
 
 	friend class SObjectManager;
 	friend class SObjectFactory;
-	friend class SGame;
 
 public:
 	KObject(UPtrOwnerBase* ptrOwner);
 	virtual ~KObject() = default;
 
 protected:
-	virtual void Init();
 	virtual void Cleanup();
 
 public:
@@ -58,12 +56,5 @@ private:
 	SERIALIZE std::string type_;
 	SERIALIZE std::string name_;
 	bool isConstructed_;
-
-	union
-	{
-		size_t initIndex_;
-		size_t objectIndex_;
-	};
-	bool isInit_;
-
+	size_t objectIndex_;
 };

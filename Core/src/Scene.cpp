@@ -15,16 +15,23 @@ void KScene::Cleanup()
 	Base::Cleanup();
 }
 
-void KScene::UpdateSceneObjects()
+void KScene::Update(const float delta)
 {
 	for (auto& sceneObject : sceneObjects_)
 	{
 		if (sceneObject->GetCanUpdate())
 		{
-			sceneObject->Update();
+			sceneObject->Update(delta);
 		}
 
-		sceneObject->UpdateSceneComponents();
+		if (!sceneObject->isInit_)
+		{
+			sceneObject->Init();
+			sceneObject->isInit_ = true;
+		}
+
+		sceneObject->InitSceneComponents();
+		sceneObject->UpdateSceneComponents(delta);
 	}
 }
 

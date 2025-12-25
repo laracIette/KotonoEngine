@@ -20,10 +20,10 @@ public:
 	KSceneComponent(UPtrOwnerBase* ptrOwner);
 
 protected:
-	void Init() override;
 	void Cleanup() override;
 
-	virtual void Update();
+	virtual void Init();
+	virtual void Update(const float delta);
 
 public:
 	const UPtr<TSceneObject>& GetOwner() const;
@@ -80,6 +80,7 @@ public:
 	virtual void Spawn();
 
 private:
+	bool isInit_;
 	bool canUpdate_;
 	UPtr<TSceneObject> owner_;
 	UPtr<KSceneComponent> parent_;
@@ -87,10 +88,9 @@ private:
 	SERIALIZE UTransform transform_;
 	SERIALIZE EVisibility visibility_;
 	SERIALIZE EMobility mobility_;
-	KtEvent<> eventTransformUpdated_; // todo: maybe replace by eventPositionChanged...
-									  // dirty children matrix in setposition...
 	SERIALIZE size_t componentIndex_;
 	SERIALIZE size_t childrenIndex_;
+	KtEvent<> eventTransformUpdated_; // todo: maybe replace by eventPositionChanged...
 	KtCached<glm::mat4> modelMatrix_;
 };
 
