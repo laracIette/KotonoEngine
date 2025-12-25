@@ -26,7 +26,7 @@ void KtInterfaceRenderer::Init()
 	CreateVertexBuffer();
 	CreateIndexBuffer();
 	CreateCommandBuffers();
-	isCommandBufferDirty_.fill(true);
+	MarkCommandBuffersDirty();
 }
 
 void KtInterfaceRenderer::Update(const uint32_t frameIndex)
@@ -88,6 +88,11 @@ void KtInterfaceRenderer::Cleanup() const
 	vmaDestroyBuffer(Context.GetAllocator(), indexBuffer_.Buffer, indexBuffer_.Allocation);
 	vmaDestroyBuffer(Context.GetAllocator(), vertexBuffer_.Buffer, vertexBuffer_.Allocation);
 	KT_LOG(ELogImportanceLevel::High, "Graphics.KtInterfaceRenderer::Cleanup()", "cleaned up interface renderer");
+}
+
+void KtInterfaceRenderer::MarkCommandBuffersDirty()
+{
+	isCommandBufferDirty_.fill(true);
 }
 
 void KtInterfaceRenderer::CreateVertexBuffer()

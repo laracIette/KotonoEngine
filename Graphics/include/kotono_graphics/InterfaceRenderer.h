@@ -24,6 +24,8 @@ public:
 	void Update(const uint32_t frameIndex);
 	void Cleanup() const;
 
+	void MarkCommandBuffersDirty();
+
 	void SetUniformData(const KtInterfaceUniformData& uniformData);
 
 	void Register(KtInterfaceRenderableProxy* proxy);

@@ -667,6 +667,14 @@ void KtRenderer::RecreateSwapChain()
 	CreateColorResources();
 	CreateDepthResources();
 	CreateFramebuffers();
+
+	for (size_t i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
+	{
+		vkResetCommandPool(Context.GetDevice(), commandPools_[i], 0);
+	}
+
+	interfaceRenderer_.MarkCommandBuffersDirty();
+	sceneRenderer_.MarkCommandBuffersDirty();
 }
 
 VkExtent2D KtRenderer::GetSwapChainExtent() const

@@ -17,8 +17,7 @@ void KtSceneRenderer::Init()
 	CreateStaticCommandBuffers();
 	CreateDynamicCommandBuffers();
 	isUniformBufferDirty_.fill(true);
-	isStaticCommandBufferDirty_.fill(true);
-	isDynamicCommandBufferDirty_.fill(true);
+	MarkCommandBuffersDirty();
 }
 
 void KtSceneRenderer::Update(const uint32_t frameIndex)
@@ -30,6 +29,12 @@ void KtSceneRenderer::Update(const uint32_t frameIndex)
 
 void KtSceneRenderer::Cleanup()
 {
+}
+
+void KtSceneRenderer::MarkCommandBuffersDirty()
+{
+	isStaticCommandBufferDirty_.fill(true);
+	isDynamicCommandBufferDirty_.fill(true);
 }
 
 void KtSceneRenderer::SetUniformData(const KtSceneUniformData& uniformData)

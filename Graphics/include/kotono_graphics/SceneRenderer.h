@@ -16,6 +16,8 @@ public:
 	void Update(const uint32_t frameIndex);
 	void Cleanup();
 
+	void MarkCommandBuffersDirty();
+
 	void SetUniformData(const KtSceneUniformData& uniformData);
 
 	void RegisterStatic(KtSceneRenderableProxy* proxy);
