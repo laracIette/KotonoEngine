@@ -14,6 +14,7 @@ private:
 	using Proxy = USceneProxy;
 	using ProxiesPool = KtPool<Proxy*>;
 	using StagingProxiesMap = std::unordered_map<Proxy*, int32_t>;
+	using DeleteProxiesMap = std::unordered_map<Proxy*, uint32_t>;
 
 public:
 	void Init();
@@ -66,8 +67,7 @@ private:
 	std::pair<KtSceneUniformData, uint32_t> stagingUniformData_;
 	StagingProxiesMap stagingStaticProxies_;
 	StagingProxiesMap stagingDynamicProxies_;
-
-	std::unordered_map<Proxy*, uint32_t> deleteProxies_;
+	DeleteProxiesMap deleteProxies_;
 
 	// Those are updated by the game thread then accessed from the render thread
 	KtFramesInFlightArray<FrameData> frameDatas_;
@@ -86,8 +86,8 @@ private:
 
 	void DeleteProxies();
 
+	void SortProxies(ProxiesPool& proxies, const uint32_t frameIndex);
+
 	void CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex);
 	void CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
-
-	void SortProxies(ProxiesPool& proxies, const uint32_t frameIndex);
 };

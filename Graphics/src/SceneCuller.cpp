@@ -28,7 +28,7 @@ KtSceneCuller::ProxiesPool KtSceneCuller::ComputeNullCulling(const ProxiesPool& 
 {
 	ProxiesPool culledData{};
 
-	for (const Proxy* proxy : proxies)
+	for (Proxy* proxy : proxies)
 	{
 		if (!proxy)
 		{
@@ -58,7 +58,7 @@ KtSceneCuller::ProxiesPool KtSceneCuller::ComputeDistanceCulling(const ProxiesPo
 {
 	ProxiesPool culledData{};
 
-	for (const Proxy* proxy : proxies)
+	for (Proxy* proxy : proxies)
 	{
 		const glm::vec3 cameraPosition{ 0.0f, 0.0f, 0.0f };
 		const glm::vec3 objectPosition{ glm::vec3(proxy->frameDatas_[frameIndex].objectData.modelMatrix[3]) };

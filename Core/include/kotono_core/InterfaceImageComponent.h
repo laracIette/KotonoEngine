@@ -4,7 +4,7 @@
 
 class KtShader;
 class KtImageTexture;
-struct KtInterfaceRenderableProxy;
+class UInterfaceProxy;
 
 class KInterfaceImageComponent : public KInterfaceComponent
 {
@@ -40,7 +40,7 @@ private:
 private:
 	KtShader* shader_;
 	KtImageTexture* imageTexture_;
-	KtInterfaceRenderableProxy* imageTextureProxy_;
+	UInterfaceProxy* imageTextureProxy_;
 	KtEvent<> eventShaderUpdated_;
 	KtEvent<> eventImageTextureUpdated_;
 };

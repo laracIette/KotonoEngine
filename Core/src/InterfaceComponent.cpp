@@ -4,7 +4,7 @@
 #include <kotono_common/Path.h>
 #include <kotono_graphics/ImageTexture.h>
 #include <kotono_graphics/ImageTextureManager.h>
-#include <kotono_graphics/InterfaceRenderableProxy.h>
+#include <kotono_graphics/InterfaceProxy.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/ShaderManager.h>
@@ -34,7 +34,7 @@ void KInterfaceComponent::Cleanup()
 
     owner_->RemoveComponent(Ptr());
 
-    Renderer.InterfaceRenderer().Unregister(boundsProxy_);
+    Renderer.InterfaceRenderer().UnregisterProxy(boundsProxy_);
     Renderer.InterfaceRenderer().DeleteProxy(boundsProxy_);
 
     Base::Cleanup();
@@ -519,29 +519,38 @@ void KInterfaceComponent::RemoveChildren(const UPtr<KInterfaceComponent>& interf
 void KInterfaceComponent::Spawn()
 {
     CreateBoundsProxy();
-    Renderer.InterfaceRenderer().Register(boundsProxy_);
+    Renderer.InterfaceRenderer().RegisterProxy(boundsProxy_);
 
     EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
 }
 
 void KInterfaceComponent::CreateBoundsProxy()
 {
-    const auto shaderPath{ KtPath::Graphics() / R"(shaders\flatColor2D.ktshader)" };
-    const auto texturePath{ KtPath::Graphics() / R"(assets\textures\white_texture.jpg)" };
+    boundsProxy_->ScheduleUpdate(
+        [this](UInterfaceProxy::FrameData& frameData)
+        {
+            const auto shaderPath{ KtPath::Graphics() / "shaders" / "flatColor2D.ktshader" };
+            const auto texturePath{ KtPath::Graphics() / "assets" / "textures" / "white_texture.jpg" };
 
-    boundsProxy_->shader = ShaderManager.Get(shaderPath);
-    boundsProxy_->renderable = ImageTextureManager.Get(texturePath);
-    boundsProxy_->layer = GetLayer();
-    boundsProxy_->objectData.modelMatrix = ModelMatrix();
-    boundsProxy_->scissor.offset = WindowViewport.GetOffset();
-    boundsProxy_->scissor.extent = WindowViewport.GetExtent();
-    boundsProxy_->objectData.color = { 1.0f, 1.0f, 1.0f, 0.01f };
+            frameData.shader = ShaderManager.Get(shaderPath);
+            frameData.renderable = ImageTextureManager.Get(texturePath);
+            frameData.layer = GetLayer();
+            frameData.objectData.modelMatrix = ModelMatrix();
+            frameData.objectData.color = { 1.0f, 1.0f, 1.0f, 0.01f };
+            frameData.scissor.offset = WindowViewport.GetOffset();
+            frameData.scissor.extent = WindowViewport.GetExtent();
+        }
+    );
 }
 
 void KInterfaceComponent::MarkBoundsProxyRectDirty()
 {
-    boundsProxy_->isDirty = true;
-    boundsProxy_->objectData.modelMatrix = ModelMatrix();
+    boundsProxy_->ScheduleUpdate(
+        [this](UInterfaceProxy::FrameData& frameData)
+        {
+            frameData.objectData.modelMatrix = ModelMatrix();
+        }
+    );
 }
 
 glm::vec2 KInterfaceComponent::GetAnchorOffset() const

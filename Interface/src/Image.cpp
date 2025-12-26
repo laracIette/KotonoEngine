@@ -1,11 +1,12 @@
 #include "Image.h"
-#include <kotono_platform/WindowViewport.h>
-#include <kotono_graphics/InterfaceRenderableProxy.h>
-#include <kotono_graphics/ImageTexture.h>
+#include <kotono_common/log.h>
 #include <kotono_common/Path.h>
+#include <kotono_graphics/ImageTexture.h>
+#include <kotono_graphics/ImageTextureManager.h>
+#include <kotono_graphics/InterfaceProxy.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/ShaderManager.h>
-#include <kotono_graphics/ImageTextureManager.h>
+#include <kotono_platform/WindowViewport.h>
 
 WImage::WImage(const ImageSettings& imageSettings) : 
 	imageSettings_(imageSettings)
@@ -14,23 +15,26 @@ WImage::WImage(const ImageSettings& imageSettings) :
 
 void WImage::DisplayInternal(DisplaySettings displaySettings)
 {
-	static const auto shaderPath = KtPath::Graphics() / R"(shaders\shader2D.ktshader)";
-
 	imageProxy_ = Renderer.InterfaceRenderer().CreateProxy();
-	imageProxy_->shader = ShaderManager.Get(shaderPath);
-	imageProxy_->renderable = ImageTextureManager.Get(imageSettings_.path);
-	imageProxy_->layer = displaySettings.layer;
-	imageProxy_->objectData.modelMatrix = ModelMatrix();
-	imageProxy_->scissor = displaySettings.scissor;
-#	ifdef _DEBUG
-		imageProxy_->source = this;
-#	endif
-	Renderer.InterfaceRenderer().Register(imageProxy_);
+	Renderer.InterfaceRenderer().RegisterProxy(imageProxy_);
+
+	imageProxy_->ScheduleUpdate(
+		[this, displaySettings](UInterfaceProxy::FrameData& frameData)
+		{
+			static const auto shaderPath{ KtPath::Graphics() / "shaders"/ "shader2D.ktshader" };
+
+			frameData.shader = ShaderManager.Get(shaderPath);
+			frameData.renderable = ImageTextureManager.Get(imageSettings_.path);
+			frameData.layer = displaySettings.layer;
+			frameData.objectData.modelMatrix = ModelMatrix();
+			frameData.scissor = displaySettings.scissor;
+		}
+	);
 }
 
 void WImage::Cleanup()
 {
-	Renderer.InterfaceRenderer().Unregister(imageProxy_);
+	Renderer.InterfaceRenderer().UnregisterProxy(imageProxy_);
 	Renderer.InterfaceRenderer().DeleteProxy(imageProxy_);
 
 	WWidget::Cleanup();

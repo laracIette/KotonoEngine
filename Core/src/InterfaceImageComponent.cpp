@@ -4,7 +4,7 @@
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/ImageTexture.h>
-#include <kotono_graphics/InterfaceRenderableProxy.h>
+#include <kotono_graphics/InterfaceProxy.h>
 #include <kotono_platform/WindowViewport.h>
 #include "InterfaceObject.h"
 #include <kotono_common/log.h>
@@ -28,7 +28,7 @@ void KInterfaceImageComponent::Cleanup()
 {
 	Base::Cleanup();
 
-	Renderer.InterfaceRenderer().Unregister(imageTextureProxy_);
+	Renderer.InterfaceRenderer().UnregisterProxy(imageTextureProxy_);
 	Renderer.InterfaceRenderer().DeleteProxy(imageTextureProxy_);
 }
 
@@ -73,7 +73,7 @@ void KInterfaceImageComponent::Spawn()
 {
 	Base::Spawn();
 
-	Renderer.InterfaceRenderer().Register(imageTextureProxy_);
+	Renderer.InterfaceRenderer().RegisterProxy(imageTextureProxy_);
 	CreateImageTextureProxy();
 
 	EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyRectDirty));
@@ -84,37 +84,56 @@ void KInterfaceImageComponent::Spawn()
 
 void KInterfaceImageComponent::CreateImageTextureProxy()
 {
-	imageTextureProxy_->shader = GetShader();
-	imageTextureProxy_->renderable = GetImageTexture();
-	imageTextureProxy_->layer = GetLayer();
-	imageTextureProxy_->objectData.modelMatrix = ModelMatrix();
-	imageTextureProxy_->scissor.offset = GetOwner()->GetViewport()->GetOffset();
-	imageTextureProxy_->scissor.extent = GetOwner()->GetViewport()->GetExtent();
-#	ifdef _DEBUG
-		imageTextureProxy_->source = this;
-#	endif
+	imageTextureProxy_->ScheduleUpdate(
+		[this](UInterfaceProxy::FrameData& frameData)
+		{
+			frameData.shader = GetShader();
+			frameData.renderable = GetImageTexture();;
+			frameData.layer = GetLayer();
+			frameData.objectData.modelMatrix = ModelMatrix();
+			frameData.objectData.color = GetColor();
+			frameData.scissor.offset = WindowViewport.GetOffset();
+			frameData.scissor.extent = WindowViewport.GetExtent();
+		}
+	);
 }
 
 void KInterfaceImageComponent::MarkImageTextureProxyRectDirty()
 {
-	imageTextureProxy_->isDirty = true;
-	imageTextureProxy_->objectData.modelMatrix = ModelMatrix();
+	imageTextureProxy_->ScheduleUpdate(
+		[this](UInterfaceProxy::FrameData& frameData)
+		{
+			frameData.objectData.modelMatrix = ModelMatrix();
+		}
+	);
 }
 
 void KInterfaceImageComponent::MarkImageTextureProxyShaderDirty()
 {
-	imageTextureProxy_->isDirty = true;
-	imageTextureProxy_->shader = GetShader();
+	imageTextureProxy_->ScheduleUpdate(
+		[this](UInterfaceProxy::FrameData& frameData)
+		{
+			frameData.shader = GetShader();
+		}
+	);
 }
 
 void KInterfaceImageComponent::MarkImageTextureProxyImageTextureDirty()
 {
-	imageTextureProxy_->isDirty = true;
-	imageTextureProxy_->renderable = GetImageTexture();
+	imageTextureProxy_->ScheduleUpdate(
+		[this](UInterfaceProxy::FrameData& frameData)
+		{
+			frameData.renderable = GetImageTexture();
+		}
+	);
 }
 
 void KInterfaceImageComponent::MarkImageTextureProxyLayerDirty()
 {
-	imageTextureProxy_->isDirty = true;
-	imageTextureProxy_->layer = GetLayer();
+	imageTextureProxy_->ScheduleUpdate(
+		[this](UInterfaceProxy::FrameData& frameData)
+		{
+			frameData.layer = GetLayer();
+		}
+	);
 }

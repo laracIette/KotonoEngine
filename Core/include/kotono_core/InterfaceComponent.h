@@ -13,7 +13,7 @@
 
 class KtWindowViewport;
 class RInterfaceObject;
-struct KtInterfaceRenderableProxy;
+class UInterfaceProxy;
 
 class KInterfaceComponent : public KObject
 {
@@ -130,7 +130,7 @@ private:
 	SERIALIZE EVisibility visibility_;
 	SERIALIZE int32_t layer_;
 	SERIALIZE KtColor color_;
-	KtInterfaceRenderableProxy* boundsProxy_;
+	UInterfaceProxy* boundsProxy_;
 	KtEvent<> eventRectUpdated_;
 	KtEvent<> eventLayerUpdated_;
 	KtEvent<> eventColorUpdated_;

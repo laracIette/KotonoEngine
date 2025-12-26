@@ -1,23 +1,24 @@
 #pragma once
 #include "frames_in_flight.h"
-#include "SceneObjectData.h"
+#include "InterfaceObjectData.h"
 #include "Scissor.h"
 #include <functional>
 #include <kotono_common/Pool.h>
 class KtShader;
-class KtSceneRenderable;
-class USceneProxy final
+class KtInterfaceRenderable;
+class UInterfaceProxy final
 {
 private:
-	friend class KtSceneCuller;
-	friend class KtSceneRenderer;
+	friend class KtInterfaceCuller;
+	friend class KtInterfaceRenderer;
 
 public:
 	struct FrameData
 	{
 		KtShader* shader;
-		KtSceneRenderable* renderable;
-		KtSceneObjectData objectData;
+		KtInterfaceRenderable* renderable;
+		int32_t layer;
+		KtInterfaceObjectData objectData;
 		KtScissor scissor;
 	};
 

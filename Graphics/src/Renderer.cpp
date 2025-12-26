@@ -608,8 +608,7 @@ bool KtRenderer::TryAcquireNextImage(const uint32_t frameIndex)
 	vkWaitForFences(Context.GetDevice(), 1, &inFlightFences_[frameIndex], VK_TRUE, UINT64_MAX);
 
 	// Set image index for current frame
-	static constexpr uint64_t timeout{ 1000000 };
-	const VkResult result = vkAcquireNextImageKHR(Context.GetDevice(), swapChain_, timeout, imageAvailableSemaphores_[frameIndex], VK_NULL_HANDLE, &imageIndices_[frameIndex]);
+	const VkResult result = vkAcquireNextImageKHR(Context.GetDevice(), swapChain_, UINT64_MAX, imageAvailableSemaphores_[frameIndex], VK_NULL_HANDLE, &imageIndices_[frameIndex]);
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
 		RecreateSwapChain();

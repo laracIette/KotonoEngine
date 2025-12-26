@@ -1,14 +1,14 @@
 #include "InterfaceRenderer.h"
+#include "ImageTexture.h"
+#include "InterfaceCuller.h"
+#include "InterfaceProxy.h"
+#include "Renderer.h"
+#include "Shader.h"
+#include "Vertex2D.h"
 #include <kotono_common/log.h>
 #include <kotono_platform/Context.h>
-#include "Vertex2D.h"
-#include "InterfaceCuller.h"
-#include "Renderer.h"
-#include "ImageTexture.h"
-#include "Shader.h"
-#include <kotono_platform/WindowViewport.h>
 #include <kotono_platform/vk_utils.h>
-#include "InterfaceRenderableProxy.h"
+#include <kotono_platform/WindowViewport.h>
 
 static constexpr std::array<KtVertex2D, 4> Vertices
 {//                   Position,              KtColor,      TexCoords
@@ -30,56 +30,9 @@ void KtInterfaceRenderer::Init()
 
 void KtInterfaceRenderer::Update(const uint32_t frameIndex)
 {
-	if (stagingProxies_.empty())
-	{
-		return;
-	}
-
-	for (auto& [proxy, states] : stagingProxies_)
-	{
-		auto& state{ states[frameIndex] };
-
-		if (state == StagingProxyState::None)
-		{
-			continue;
-		}
-
-		isCommandBufferDirty_[frameIndex] = true;
-
-		if (state == StagingProxyState::Add)
-		{
-			proxies_[frameIndex].Add(proxy);
-		}
-		else if (state == StagingProxyState::Remove)
-		{
-			proxies_[frameIndex].Remove(proxy);
-		}
-
-		state = StagingProxyState::None;
-	}
-
-	std::erase_if(stagingProxies_,
-		[](const std::pair<KtInterfaceRenderableProxy*, KtFramesInFlightArray<StagingProxyState>>& pair)
-		{
-			const auto states{ pair.second };
-			return std::all_of(states.begin(), states.end(),
-				[](const StagingProxyState state)
-				{
-					return state == StagingProxyState::None;
-				}
-			);
-		}
-	);
-	
-	for (int64_t i{ deleteProxies_.LastIndex() }; i >= 0; --i)
-	{
-		auto* proxy = deleteProxies_[i];
-		if (!stagingProxies_.contains(proxy))
-		{
-			delete proxy;
-			deleteProxies_.RemoveAt(i);
-		}
-	}
+	UpdateStagingProxies(frameIndex);
+	UpdateProxies(frameIndex);
+	DeleteProxies();
 }
 
 void KtInterfaceRenderer::Cleanup() const
@@ -91,7 +44,59 @@ void KtInterfaceRenderer::Cleanup() const
 
 void KtInterfaceRenderer::MarkCommandBuffersDirty()
 {
-	isCommandBufferDirty_.fill(true);
+	for (auto& frameData : frameDatas_)
+	{
+		frameData.objectBuffer.isDirty = true;
+	}
+}
+
+void KtInterfaceRenderer::SetUniformData(const KtInterfaceUniformData& uniformData)
+{
+	frameDatas_[Renderer.GetGameThreadFrame()].uniformData = uniformData;
+}
+
+void KtInterfaceRenderer::RegisterProxy(Proxy* proxy)
+{
+	stagingProxies_[proxy] = static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
+}
+
+void KtInterfaceRenderer::UnregisterProxy(Proxy* proxy)
+{
+	stagingProxies_[proxy] = -static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
+}
+
+void KtInterfaceRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
+{
+	KT_LOG(ELogImportanceLevel::Low, "Graphics.KtInterfaceRenderer::CmdDraw()", 
+		"%llu proxies", frameDatas_[frameIndex].objectBuffer.proxies.size());
+
+	if (frameDatas_[frameIndex].objectBuffer.isDirty)
+	{
+		frameDatas_[frameIndex].objectBuffer.isDirty = false;
+
+		frameDatas_[frameIndex].instanceIndices.clear();
+
+		//const KtInterfaceCuller culler{};
+		//frameDatas_[frameIndex].sortedProxies = culler.ComputeCulling(frameDatas_[frameIndex].proxies, frameIndex);
+
+		frameDatas_[frameIndex].objectBuffer.sortedProxies = frameDatas_[frameIndex].objectBuffer.proxies;
+		SortProxies(frameDatas_[frameIndex].objectBuffer.sortedProxies, frameIndex);
+		UpdateDescriptorSets(frameDatas_[frameIndex].objectBuffer.sortedProxies, frameIndex);
+
+		RecordCommandBuffer(frameIndex);
+	}
+
+	vkCmdExecuteCommands(commandBuffer, 1, &frameDatas_[frameIndex].objectBuffer.commandBuffer);
+}
+
+UInterfaceProxy* KtInterfaceRenderer::CreateProxy() const
+{
+	return new Proxy{};
+}
+
+void KtInterfaceRenderer::DeleteProxy(Proxy* proxy)
+{
+	deleteProxies_[proxy] = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);;
 }
 
 void KtInterfaceRenderer::CreateVertexBuffer()
@@ -184,18 +189,18 @@ void KtInterfaceRenderer::CreateCommandBuffer(const uint32_t frameIndex)
 		.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY,
 		.commandBufferCount = 1,
 	};
- 
+
 	VK_CHECK_THROW(
-		vkAllocateCommandBuffers(Context.GetDevice(), &allocInfo, &commandBuffers_[frameIndex]),
+		vkAllocateCommandBuffers(Context.GetDevice(), &allocInfo, &frameDatas_[frameIndex].objectBuffer.commandBuffer),
 		"failed to allocate command buffers!"
 	);
 }
 
-void KtInterfaceRenderer::RecordCommandBuffer(const ProxiesPool& proxies, const uint32_t frameIndex)
+void KtInterfaceRenderer::RecordCommandBuffer(const uint32_t frameIndex)
 {
-	VkCommandBuffer commandBuffer{ commandBuffers_[frameIndex] };
+	VkCommandBuffer commandBuffer{ frameDatas_[frameIndex].objectBuffer.commandBuffer };
 	BeginCommandBuffer(commandBuffer, frameIndex);
-	CmdDrawProxies(commandBuffer, proxies, frameIndex);
+	CmdDrawProxies(commandBuffer, frameDatas_[frameIndex].objectBuffer.sortedProxies, frameIndex);
 	EndCommandBuffer(commandBuffer);
 }
 
@@ -230,54 +235,73 @@ void KtInterfaceRenderer::EndCommandBuffer(VkCommandBuffer commandBuffer)
 	);
 }
 
-void KtInterfaceRenderer::SetUniformData(const KtInterfaceUniformData& uniformData)
+void KtInterfaceRenderer::UpdateProxies(const uint32_t frameIndex)
 {
-	uniformDatas_[Renderer.GetGameThreadFrame()] = uniformData;
-}
-
-void KtInterfaceRenderer::Register(KtInterfaceRenderableProxy* proxy)
-{
-	stagingProxies_[proxy].fill(StagingProxyState::Add);
-}
-
-void KtInterfaceRenderer::Unregister(KtInterfaceRenderableProxy* proxy)
-{
-	stagingProxies_[proxy].fill(StagingProxyState::Remove);
-}
-
-void KtInterfaceRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
-{
-	if (isCommandBufferDirty_[frameIndex] || GetIsAnyProxyDirty(frameIndex))
+	for (Proxy* proxy : frameDatas_[frameIndex].objectBuffer.proxies)
 	{
-		isCommandBufferDirty_[frameIndex] = false;
+		if (proxy->IsDirty())
+		{
+			frameDatas_[frameIndex].objectBuffer.isDirty = true;
+			proxy->ApplyPendingUpdates(frameIndex);
+		}
+	}
+}
 
-		const KtInterfaceCuller culler{};
-		ProxiesPool culledData{ culler.ComputeCulling(proxies_[frameIndex]) };
-		SortProxies(culledData);
-
-		instanceIndices_[frameIndex].clear();
-		UpdateDescriptorSets(culledData, frameIndex);
-
-		RecordCommandBuffer(culledData, frameIndex);
-		MarkProxiesNotDirty(frameIndex);
+void KtInterfaceRenderer::UpdateStagingProxies(const uint32_t frameIndex)
+{
+	if (stagingProxies_.empty())
+	{
+		return;
 	}
 
-	vkCmdExecuteCommands(commandBuffer, 1, &commandBuffers_[frameIndex]);
-}
+	for (auto& [proxy, count] : stagingProxies_)
+	{
+		if (count == 0)
+		{
+			continue;
+		}
 
-KtInterfaceRenderableProxy* KtInterfaceRenderer::CreateProxy()
-{
-	return new KtInterfaceRenderableProxy{};
-}
+		frameDatas_[frameIndex].objectBuffer.isDirty = true;
+		KT_LOG(ELogImportanceLevel::Medium, "Graphics.KtInterfaceRenderer::UpdateStagingProxies()", "dirty command buffer frame %u", frameIndex);
 
-void KtInterfaceRenderer::DeleteProxy(KtInterfaceRenderableProxy* proxy)
-{
-	deleteProxies_.Add(proxy);
+		if (count > 0)
+		{
+			if (!proxy->poolDatas_[frameIndex].isRegistered)
+			{
+				proxy->poolDatas_[frameIndex].isRegistered = true;
+				frameDatas_[frameIndex].objectBuffer.proxies.Add(proxy);
+				proxy->poolDatas_[frameIndex].index = frameDatas_[frameIndex].objectBuffer.proxies.LastIndex();
+			}
+			
+			--count;
+		}
+		else if (count < 0)
+		{
+			if (proxy->poolDatas_[frameIndex].isRegistered)
+			{
+				proxy->poolDatas_[frameIndex].isRegistered = false;
+				const size_t index{ proxy->poolDatas_[frameIndex].index };
+				if (frameDatas_[frameIndex].objectBuffer.proxies.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+				{
+					frameDatas_[frameIndex].objectBuffer.proxies[index]->poolDatas_[frameIndex].index = index;
+				}
+			}
+
+			++count;
+		}
+	}
+
+	std::erase_if(stagingProxies_,
+		[](const std::pair<const Proxy*, int32_t>& pair)
+		{
+			return pair.second == 0;
+		}
+	);
 }
 
 void KtInterfaceRenderer::UpdateDescriptorSets(const ProxiesPool& proxies, const uint32_t frameIndex)
 {
-	struct ShaderData final
+	struct ShaderData
 	{
 		std::vector<KtInterfaceObjectData> objectBufferDatas;
 		std::vector<KtInterfaceRenderable*> renderables;
@@ -288,17 +312,18 @@ void KtInterfaceRenderer::UpdateDescriptorSets(const ProxiesPool& proxies, const
 
 	for (const auto* proxy : proxies)
 	{
-		auto& shaderData{ shaderDatas[proxy->shader] };
+		auto& frameData{ proxy->frameDatas_[frameIndex] };
+		auto& shaderData{ shaderDatas[frameData.shader] };
 
-		shaderData.objectBufferDatas.push_back(proxy->objectData);
+		shaderData.objectBufferDatas.push_back(frameData.objectData);
 
-		const auto it{ std::find(shaderData.renderables.begin(), shaderData.renderables.end(), proxy->renderable) };
+		const auto it{ std::find(shaderData.renderables.begin(), shaderData.renderables.end(), frameData.renderable) };
 
 		size_t index;
 		if (it == shaderData.renderables.end())
 		{
 			index = shaderData.renderables.size();
-			shaderData.renderables.push_back(proxy->renderable);
+			shaderData.renderables.push_back(frameData.renderable);
 		}
 		else
 		{
@@ -337,6 +362,45 @@ void KtInterfaceRenderer::UpdateDescriptorSets(const ProxiesPool& proxies, const
 	}
 }
 
+void KtInterfaceRenderer::DeleteProxies()
+{
+	for (auto& [proxy, count] : deleteProxies_)
+	{
+		--count;
+		if (count == 0)
+		{
+			delete proxy;
+		}
+	}
+
+	std::erase_if(deleteProxies_,
+		[](const std::pair<const Proxy*, uint32_t>& pair)
+		{
+			return pair.second == 0;
+		}
+	);
+}
+
+void KtInterfaceRenderer::SortProxies(ProxiesPool& proxies, const uint32_t frameIndex)
+{
+	std::sort(proxies.begin(), proxies.end(),
+		[frameIndex](const Proxy* a, const Proxy* b)
+		{
+			const auto& aFrameData{ a->frameDatas_[frameIndex] };
+			const auto& bFrameData{ b->frameDatas_[frameIndex] };
+			if (aFrameData.layer != bFrameData.layer)
+			{
+				return aFrameData.layer < bFrameData.layer;
+			}
+			if (aFrameData.shader != bFrameData.shader)
+			{
+				return aFrameData.shader < bFrameData.shader;
+			}
+			return aFrameData.renderable < bFrameData.renderable;
+		}
+	);
+}
+
 void KtInterfaceRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex)
 {
 	const KtShader* currentShader{ nullptr };
@@ -348,20 +412,21 @@ void KtInterfaceRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const Pr
 
 	for (size_t i{ 0 }; i < proxies.size();)
 	{
-		const KtInterfaceRenderableProxy* proxy{ proxies[i] };
-		const KtShader* shader{ proxy->shader };
-		const int32_t layer{ proxy->layer };
-		const KtScissor scissor{ proxy->scissor };
+		const auto& frameData{ proxies[i]->frameDatas_[frameIndex] };
+		const KtShader* shader{ frameData.shader };
+		const int32_t layer{ frameData.layer };
+		const KtScissor scissor{ frameData.scissor };
 
 		size_t instanceCount{ 1 };
-		while (i + instanceCount < proxies.size())
+		for (; i + instanceCount < proxies.size(); ++instanceCount)
 		{
-			const auto* next{ proxies[i + instanceCount] };
-			if (next->shader != shader || next->scissor.extent != scissor.extent || next->scissor.offset != scissor.offset)
+			const auto& nextFrameData{ proxies[i + instanceCount]->frameDatas_[frameIndex] };
+			if (nextFrameData.shader != shader ||
+				nextFrameData.scissor.extent != scissor.extent || 
+				nextFrameData.scissor.offset != scissor.offset)
 			{
 				break;
 			}
-			++instanceCount;
 		}
 
 		if (currentShader != shader)
@@ -378,46 +443,10 @@ void KtInterfaceRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const Pr
 			.extent = { extent.x, extent.y },
 		};
 		vkCmdSetScissor(commandBuffer, 0, 1, &vkScissor);
-		
-		vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(Indices.size()), static_cast<uint32_t>(instanceCount), 0, 0, instanceIndices_[frameIndex][shader]);
-		instanceIndices_[frameIndex][shader] += static_cast<uint32_t>(instanceCount);
+
+		vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(Indices.size()), static_cast<uint32_t>(instanceCount), 0, 0, frameDatas_[frameIndex].instanceIndices[shader]);
+		frameDatas_[frameIndex].instanceIndices[shader] += static_cast<uint32_t>(instanceCount);
 
 		i += instanceCount;
-	}
-}
-
-void KtInterfaceRenderer::SortProxies(ProxiesPool& proxies)
-{
-	std::sort(proxies.begin(), proxies.end(),
-		[](const KtInterfaceRenderableProxy* a, const KtInterfaceRenderableProxy* b)
-		{
-			if (a->layer != b->layer)
-			{
-				return a->layer < b->layer;
-			}
-			if (a->shader != b->shader)
-			{
-				return a->shader < b->shader;
-			}
-			return a->renderable < b->renderable;
-		}
-	);
-}
-
-bool KtInterfaceRenderer::GetIsAnyProxyDirty(const uint32_t frameIndex) const
-{
-	return std::any_of(proxies_[frameIndex].begin(), proxies_[frameIndex].end(),
-		[](const KtInterfaceRenderableProxy* proxy)
-		{
-			return proxy->isDirty;
-		}
-	);
-}
-
-void KtInterfaceRenderer::MarkProxiesNotDirty(const uint32_t frameIndex)
-{
-	for (auto* proxy : proxies_[frameIndex])
-	{
-		proxy->isDirty = false;
 	}
 }

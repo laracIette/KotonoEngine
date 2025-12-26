@@ -13,12 +13,15 @@ protected:
 
 	void Init() override;
 
+public:
+	void Spawn() override;
+
 private:
 	void CreateBoxProxy();
 	void MarkBoxProxyColorDirty();
 	void MarkBoxProxyRectDirty();
 
 private:
-	KtInterfaceRenderableProxy* boxProxy_;
+	UInterfaceProxy* boxProxy_;
 };
 

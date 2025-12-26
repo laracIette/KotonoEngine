@@ -1,5 +1,6 @@
 #pragma once
 #include "SceneCullerField.h"
+#include <cstdint>
 template <typename T>
 class KtPool;
 class USceneProxy;
@@ -8,7 +9,7 @@ class KtSceneCuller final
 private:
 	// todo: make proxy pool element to store index and not copy pool every time
 	using Proxy = USceneProxy;
-	using ProxiesPool = KtPool<const Proxy*>;
+	using ProxiesPool = KtPool<Proxy*>;
 
 public:
 	KtSceneCuller(const KtSceneCullerField field);

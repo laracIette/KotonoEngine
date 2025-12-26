@@ -13,7 +13,7 @@ void SEditor::Init()
 	Camera.Init();
 
 	auto& updateTimer{ TimerManager.GetTimer("update time text") };
-	updateTimer.SetDuration(1.0f / 24.0f);
+	updateTimer.SetDuration(1.0f / 20.0f);
 	updateTimer.SetIsRepeat(true);
 	updateTimer.Start();
 
@@ -44,11 +44,15 @@ void SEditor::CreateWidget()
 		.bounds = static_cast<glm::vec2>(WindowViewport.GetExtent()),
 		.layer = 0,
 		.scissor = { glm::zero<glm::ivec2>(), WindowViewport.GetExtent() },
-		});
+	});
 }
 
 void SEditor::DeleteWidget()
 {
+	if (!widget_)
+	{
+		return;
+	}
 	widget_->Cleanup();
 	delete widget_;
 }
