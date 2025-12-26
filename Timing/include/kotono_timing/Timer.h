@@ -4,9 +4,6 @@ class KtTimer final
 {
 	friend class KtTimerManager;
 
-private:
-	void Update(const float delta);
-
 public:
 	bool GetIsPlaying() const;
 	bool GetIsRepeat() const;
@@ -18,6 +15,9 @@ public:
 
 	void Start(const bool isOverride = true);
 	void Stop();
+
+private:
+	void Update(const float deltaTime);
 
 private:
 	bool isPlaying_;

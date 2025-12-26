@@ -6,11 +6,11 @@ class KtTimerManager final
 {
 	friend class STimeManager;
 
-private:
-	void Update(const float delta);
-
 public:
 	KtTimer& GetTimer(const std::string_view name);
+
+private:
+	void Update(const float deltaTime);
 
 private:
 	std::unordered_map<std::string_view, KtTimer> timers_;

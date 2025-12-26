@@ -14,10 +14,11 @@ protected:
 	void Init() override;
 
 private:
-	KtInterfaceRenderableProxy* boxProxy_;
-
 	void CreateBoxProxy();
 	void MarkBoxProxyColorDirty();
 	void MarkBoxProxyRectDirty();
+
+private:
+	KtInterfaceRenderableProxy* boxProxy_;
 };
 

@@ -18,9 +18,10 @@ public:
 	KtEvent<>& GetEventClicked();
 
 private:
+	void OnColliderReleased();
+
+private:
 	UPtr<KInterfaceColliderComponent> collider_;
 	KtEvent<> eventClicked_;
-
-	void OnColliderReleased();
 };
 

@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Interface.h"
 #include "ObjectFactory.h"
 #include "ObjectManager.h"
 #include "ProjectSettings.h"
@@ -11,15 +12,25 @@ void SGame::Init()
 	Keyboard.EventKey(EKey::S, EInputState::Pressed)
         .AddListener(KtDelegate(this, &SGame::OnKeySPressed));
 
+    OpenStartupInterface();
     OpenStartupScene();
 }
 
-void SGame::Update(const float delta)
+void SGame::Update(const float deltaTime)
 {
+    if (interface_)
+    {
+        interface_->Update(deltaTime);
+    }
     if (scene_)
     {
-        scene_->Update(delta);
+        scene_->Update(deltaTime);
     }
+}
+
+void SGame::OpenInterface(const UPtr<KInterface>& interface)
+{
+    interface_ = interface;
 }
 
 void SGame::OpenScene(const UPtr<KScene>& scene)
@@ -27,9 +38,10 @@ void SGame::OpenScene(const UPtr<KScene>& scene)
     scene_ = scene;
 }
 
-void SGame::OpenInterface(const UPtr<KInterface>& interface)
+void SGame::OpenStartupInterface()
 {
-    interface_ = interface;
+    interface_ = ObjectManager.Create<KInterface>();
+    interface_->SpawnInterfaceObjects();
 }
 
 void SGame::OpenStartupScene()

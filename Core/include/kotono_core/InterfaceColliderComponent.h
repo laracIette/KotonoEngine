@@ -25,6 +25,11 @@ public:
 	KtEvent<UPtr<KInterfaceColliderComponent>>& GetEventOverlap();
 
 private:
+	void OnEventMouseLeftButtonPressed();
+	void OnEventMouseLeftButtonReleased();
+	void OnEventMouseLeftButtonDown();
+
+private:
 	KtPool<UPtr<KInterfaceColliderComponent>> overlaps_;
 	KtEvent<UPtr<KInterfaceColliderComponent>> eventOverlap_;
 
@@ -35,9 +40,5 @@ private:
 	bool isPressed_;
 
 	size_t physicsIndex_;
-
-	void OnEventMouseLeftButtonPressed();
-	void OnEventMouseLeftButtonReleased();
-	void OnEventMouseLeftButtonDown();
 };
 

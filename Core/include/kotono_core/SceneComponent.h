@@ -14,6 +14,7 @@ class KSceneComponent : public KObject
 {
 	GENERATED_KSCENECOMPONENT()
 
+private:
 	friend class TSceneObject;
 
 public:
@@ -23,10 +24,11 @@ protected:
 	void Cleanup() override;
 
 	virtual void Init();
-	virtual void Update(const float delta);
+	virtual void Update(const float deltaTime);
 
 public:
 	const UPtr<TSceneObject>& GetOwner() const;
+	const UPtr<KSceneComponent>& GetParent() const;
 	bool GetCanUpdate() const;
 	const UTransform& GetTransform() const;
 	EVisibility GetVisibility() const;

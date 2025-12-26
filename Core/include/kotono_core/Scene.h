@@ -26,9 +26,11 @@ public:
 	KtEvent<>& EventSceneObjectsUpdated();
 
 private:
+	void Update(const float deltaTime);
+
+private:
 	SERIALIZE KtPool<UPtr<TSceneObject>> sceneObjects_;
 	KtEvent<> eventSceneObjectsUpdated_;
 
-	void Update(const float delta);
 };
 

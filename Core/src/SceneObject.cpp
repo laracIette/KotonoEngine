@@ -1,9 +1,7 @@
 #include "SceneObject.h"
-#include <nlohmann/json.hpp>
 #include <kotono_common/log.h>
 #include <kotono_platform/WindowViewport.h>
 #include "SceneComponent.h"
-#include "ObjectManager.h"
 
 TSceneObject::TSceneObject(UPtrOwnerBase* ptrOwner) :
 	Base(ptrOwner)
@@ -13,7 +11,7 @@ TSceneObject::TSceneObject(UPtrOwnerBase* ptrOwner) :
 
 void TSceneObject::Cleanup()
 {
-	for (int64_t i{ sceneComponents_.LastIndex() }; i >= 0; --i)
+	for (int64_t i{ sceneComponents_.LastIndex() }; i >= 0 && i < sceneComponents_.size(); --i)
 	{
 		sceneComponents_[i]->Delete();
 	}
@@ -27,31 +25,8 @@ void TSceneObject::Init()
 {
 }
 
-void TSceneObject::InitSceneComponents()
+void TSceneObject::Update(const float deltaTime)
 {
-	for (auto& sceneComponent : sceneComponents_)
-	{
-		if (!sceneComponent->isInit_)
-		{
-			sceneComponent->Init();
-			sceneComponent->isInit_ = true;
-		}
-	}
-}
-
-void TSceneObject::Update(const float delta)
-{
-}
-
-void TSceneObject::UpdateSceneComponents(const float delta)
-{
-	for (auto& sceneComponent : sceneComponents_)
-	{
-		if (sceneComponent->GetCanUpdate())
-		{
-			sceneComponent->Update(delta);
-		}
-	}
 }
 
 bool TSceneObject::GetCanUpdate() const
@@ -182,5 +157,28 @@ void TSceneObject::Spawn()
 	for (auto& sceneComponent : sceneComponents_)
 	{
 		sceneComponent->Spawn();
+	}
+}
+
+void TSceneObject::InitSceneComponents()
+{
+	for (auto& sceneComponent : sceneComponents_)
+	{
+		if (!sceneComponent->isInit_)
+		{
+			sceneComponent->Init();
+			sceneComponent->isInit_ = true;
+		}
+	}
+}
+
+void TSceneObject::UpdateSceneComponents(const float deltaTime)
+{
+	for (auto& sceneComponent : sceneComponents_)
+	{
+		if (sceneComponent->GetCanUpdate())
+		{
+			sceneComponent->Update(deltaTime);
+		}
 	}
 }

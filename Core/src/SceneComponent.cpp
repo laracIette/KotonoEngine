@@ -24,13 +24,18 @@ void KSceneComponent::Init()
 {
 }
 
-void KSceneComponent::Update(const float delta)
+void KSceneComponent::Update(const float deltaTime)
 {
 }
 
 const UPtr<TSceneObject>& KSceneComponent::GetOwner() const
 {
     return owner_;
+}
+
+const UPtr<KSceneComponent>& KSceneComponent::GetParent() const
+{
+	return parent_;
 }
 
 bool KSceneComponent::GetCanUpdate() const

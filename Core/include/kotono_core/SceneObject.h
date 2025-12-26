@@ -21,7 +21,7 @@ protected:
 	void Cleanup() override;
 
 	virtual void Init();
-	virtual void Update(const float delta);
+	virtual void Update(const float deltaTime);
 
 public:
 	bool GetCanUpdate() const;
@@ -50,7 +50,7 @@ public:
 
 private:
 	void InitSceneComponents();
-	void UpdateSceneComponents(const float delta);
+	void UpdateSceneComponents(const float deltaTime);
 
 private:
 	bool isInit_;

@@ -28,17 +28,20 @@ public:
 	void SetShader(KtShader* shader);
 	void SetImageTexture(KtImageTexture* imageTexture);
 
+	void Spawn() override;
+
+private:
+	void CreateImageTextureProxy();
+	void MarkImageTextureProxyRectDirty();
+	void MarkImageTextureProxyShaderDirty();
+	void MarkImageTextureProxyImageTextureDirty();
+	void MarkImageTextureProxyLayerDirty();
+
 private:
 	KtShader* shader_;
 	KtImageTexture* imageTexture_;
 	KtInterfaceRenderableProxy* imageTextureProxy_;
 	KtEvent<> eventShaderUpdated_;
 	KtEvent<> eventImageTextureUpdated_;
-
-	void CreateImageTextureProxy();
-	void MarkImageTextureProxyRectDirty();
-	void MarkImageTextureProxyShaderDirty();
-	void MarkImageTextureProxyImageTextureDirty();
-	void MarkImageTextureProxyLayerDirty();
 };
 

@@ -29,7 +29,7 @@ void SObjectManager::Init()
 
 void SObjectManager::Cleanup()
 {
-	for (int64_t i{ objects_.LastIndex() }; i >= 0; --i)
+	for (int64_t i{ objects_.LastIndex() }; i >= 0 && i < objects_.size(); --i)
 	{
 		Delete(objects_[i]);
 	}

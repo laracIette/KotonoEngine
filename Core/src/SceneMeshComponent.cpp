@@ -53,11 +53,11 @@ void KSceneMeshComponent::Init()
     spinTask_.Start();
 }
 
-void KSceneMeshComponent::Update(const float delta)
+void KSceneMeshComponent::Update(const float deltaTime)
 {
-    Base::Update(delta);
+    Base::Update(deltaTime);
 
-    spinTask_.Update(delta);
+    spinTask_.Update(deltaTime);
 }
 
 KtShader* KSceneMeshComponent::GetShader() const

@@ -18,5 +18,5 @@ struct KtTimeContext final
 	/// <summary>
 	/// Returns true if the time context updated, else false.
 	/// </summary>
-	bool Update(const float delta);
+	bool Update(const float deltaTime);
 };

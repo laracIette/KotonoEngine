@@ -10,7 +10,6 @@
 #include "InterfaceColliderComponent.h"
 #include "InterfaceComponent.h"
 #include "InterfaceImageComponent.h"
-#include "InterfaceImageObject.h"
 #include "InterfaceObject.h"
 #include "Object.h"
 #include "Scene.h"
@@ -30,7 +29,6 @@ SObjectFactory::SObjectFactory() :
         OBJECT_FACTORY(KInterfaceColliderComponent),
         OBJECT_FACTORY(KInterfaceComponent),
         OBJECT_FACTORY(KInterfaceImageComponent),
-        OBJECT_FACTORY(RInterfaceImageObject),
         OBJECT_FACTORY(RInterfaceObject),
         OBJECT_FACTORY(KObject),
         OBJECT_FACTORY(KScene),

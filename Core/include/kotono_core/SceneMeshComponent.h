@@ -18,7 +18,7 @@ protected:
 	void Cleanup() override;
 
 	void Init() override;
-	void Update(const float delta) override;
+	void Update(const float deltaTime) override;
 
 public:
 	KtShader* GetShader() const;
@@ -33,11 +33,6 @@ public:
 	void Spawn() override;
 
 private:
-	SERIALIZE KtShader* shader_;
-	SERIALIZE KtModel* model_;
-	UTask spinTask_;
-	USceneProxy* modelProxy_;
-
 	void CreateModelProxy();
 
 	void MarkModelProxyTransformDirty();
@@ -50,5 +45,11 @@ private:
 	void Spin();
 	void SetMobilityStatic();
 	void SetMobilityDynamic();
+
+private:
+	SERIALIZE KtShader* shader_;
+	SERIALIZE KtModel* model_;
+	UTask spinTask_;
+	USceneProxy* modelProxy_;
 };
 

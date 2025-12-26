@@ -19,6 +19,8 @@ class KInterfaceComponent : public KObject
 {
 	GENERATED_KINTERFACECOMPONENT()
 
+
+private:
 	friend class RInterfaceObject;
 
 public:
@@ -28,10 +30,12 @@ protected:
 	void Cleanup() override;
 
 	virtual void Init();
+	virtual void Update(const float deltaTime);
 
 public:
 	const UPtr<RInterfaceObject>& GetOwner() const;
 	const UPtr<KInterfaceComponent>& GetParent() const;
+	bool GetCanUpdate() const;
 	const URect& GetRect() const;
 	EVisibility GetVisibility() const;
 	int32_t GetLayer() const;
@@ -57,6 +61,7 @@ public:
 	const KtColor& GetColor() const;
 
 	void SetOwner(const UPtr<RInterfaceObject>& owner);
+	void SetCanUpdate(const bool canUpdate);
 	void SetVisibility(const EVisibility visibility, const bool propagateToChildren = false);
 	void SetLayer(const int32_t layer);
 
@@ -104,7 +109,19 @@ public:
 	void AddChildren(UPtr<KInterfaceComponent> interfaceComponent);
 	void RemoveChildren(const UPtr<KInterfaceComponent>& interfaceComponent);
 
+	virtual void Spawn();
+
 private:
+	void CreateBoundsProxy();
+	void MarkBoundsProxyRectDirty();
+
+	glm::vec2 GetAnchorOffset() const;
+	glm::vec2 GetWorldPositionWithAnchorOffset() const;
+	glm::vec2 GetAnchorRelativePosition() const;
+
+private:
+	bool isInit_;
+	bool canUpdate_;
 	UPtr<RInterfaceObject> owner_;
 	UPtr<KInterfaceComponent> parent_;
 	KtPool<UPtr<KInterfaceComponent>> children_;
@@ -112,19 +129,12 @@ private:
 	SERIALIZE URect rect_;
 	SERIALIZE EVisibility visibility_;
 	SERIALIZE int32_t layer_;
+	SERIALIZE KtColor color_;
 	KtInterfaceRenderableProxy* boundsProxy_;
 	KtEvent<> eventRectUpdated_;
 	KtEvent<> eventLayerUpdated_;
 	KtEvent<> eventColorUpdated_;
 	size_t componentIndex_;
 	KtCached<glm::mat4> modelMatrix_;
-	SERIALIZE KtColor color_;
-
-	void CreateBoundsProxy();
-	void MarkBoundsProxyRectDirty();
-
-	glm::vec2 GetAnchorOffset() const;
-	glm::vec2 GetWorldPositionWithAnchorOffset() const;
-	glm::vec2 GetAnchorRelativePosition() const;
 };
 

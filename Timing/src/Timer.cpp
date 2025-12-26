@@ -1,13 +1,13 @@
 #include "Timer.h"
 
-void KtTimer::Update(const float delta)
+void KtTimer::Update(const float deltaTime)
 {
     if (!isPlaying_)
     {
         return;
     }
 
-    current_ += delta;
+    current_ += deltaTime;
 
     if (current_ < duration_)
     {

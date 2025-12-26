@@ -1,14 +1,14 @@
 #include "TimeContext.h"
 
-bool KtTimeContext::Update(const float delta)
+bool KtTimeContext::Update(const float deltaTime)
 {
 	if (state == ETimeContextState::Paused)
 	{
 		return false;
 	}
 
-	total += delta * scale;
-	currentDelta += delta * scale;
+	total += deltaTime * scale;
+	currentDelta += deltaTime * scale;
 
 	if (currentDelta >= frequency)
 	{

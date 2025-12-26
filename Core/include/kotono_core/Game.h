@@ -1,8 +1,8 @@
 #pragma once
 #include "Ptr.h"
 #undef interface
-class KScene;
 class KInterface;
+class KScene;
 class SGame final
 {
 	friend class SCore;
@@ -10,21 +10,23 @@ class SGame final
 
 private:
 	void Init();
-	void Update(const float delta);
+	void Update(const float deltaTime);
 
 public:
-	void OpenScene(const UPtr<KScene>& scene);
 	void OpenInterface(const UPtr<KInterface>& interface);
+	void OpenScene(const UPtr<KScene>& scene);
 
+	void OpenStartupInterface();
 	void OpenStartupScene();
 
 	const UPtr<KScene>& GetOpenedScene() const;
 
 private:
+	void OnKeySPressed() const;
+
+private:
 	UPtr<KScene> scene_;
 	UPtr<KInterface> interface_;
-
-	void OnKeySPressed() const;
 };
 
 inline SGame Game;

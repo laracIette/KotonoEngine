@@ -42,15 +42,10 @@ void KInterfaceComponent::Cleanup()
 
 void KInterfaceComponent::Init()
 {
-    if (owner_->RootComponent() != this)
-    {
-        SetParent(owner_->RootComponent(), ECoordinateSpace::Relative);
-    }
+}
 
-    CreateBoundsProxy();
-    Renderer.InterfaceRenderer().Register(boundsProxy_);
-
-    EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
+void KInterfaceComponent::Update(const float deltaTime)
+{
 }
 
 const UPtr<RInterfaceObject>& KInterfaceComponent::GetOwner() const
@@ -61,6 +56,11 @@ const UPtr<RInterfaceObject>& KInterfaceComponent::GetOwner() const
 const UPtr<KInterfaceComponent>& KInterfaceComponent::GetParent() const
 {
     return parent_;
+}
+
+bool KInterfaceComponent::GetCanUpdate() const
+{
+    return canUpdate_;
 }
 
 const URect& KInterfaceComponent::GetRect() const
@@ -175,7 +175,29 @@ const KtColor& KInterfaceComponent::GetColor() const
 
 void KInterfaceComponent::SetOwner(const UPtr<RInterfaceObject>& owner)
 {
-	owner_ = owner;
+    if (owner == owner_)
+    {
+        return;
+    }
+
+    if (owner_)
+    {
+        owner_->RemoveComponent(Ptr());
+    }
+
+    owner_ = owner;
+
+    if (!owner_)
+    {
+        return;
+    }
+
+    owner_->AddComponent(Ptr());
+}
+
+void KInterfaceComponent::SetCanUpdate(const bool canUpdate)
+{
+	canUpdate_ = canUpdate;
 }
 
 void KInterfaceComponent::SetVisibility(const EVisibility visibility, const bool propagateToChildren)
@@ -492,6 +514,14 @@ void KInterfaceComponent::RemoveChildren(const UPtr<KInterfaceComponent>& interf
     {
         children_[index]->childrenIndex_ = index;
     }
+}
+
+void KInterfaceComponent::Spawn()
+{
+    CreateBoundsProxy();
+    Renderer.InterfaceRenderer().Register(boundsProxy_);
+
+    EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
 }
 
 void KInterfaceComponent::CreateBoundsProxy()
