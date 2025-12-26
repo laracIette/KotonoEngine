@@ -5,7 +5,6 @@
 #include "SceneUniformData.h"
 #include <kotono_common/Pool.h>
 #include <unordered_map>
-#include <unordered_set>
 #include <vulkan/vulkan_core.h>
 class USceneProxy;
 class KtShader;
@@ -32,6 +31,9 @@ public:
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 
 	Proxy* CreateProxy() const;
+	// Stage deletion of the proxy after KT_FRAMES_IN_FLIGHT frames, 
+	// warning: MUST be called after UnregisterProxy
+	void DeleteProxy(Proxy* proxy);
 
 private:
 	struct FrameData
@@ -65,6 +67,8 @@ private:
 	StagingProxiesMap stagingStaticProxies_;
 	StagingProxiesMap stagingDynamicProxies_;
 
+	std::unordered_map<Proxy*, uint32_t> deleteProxies_;
+
 	// Those are updated by the game thread then accessed from the render thread
 	KtFramesInFlightArray<FrameData> frameDatas_;
 
@@ -79,6 +83,8 @@ private:
 	void UpdateStagingProxies(StagingProxiesMap& stagingProxies, FrameData::ObjectBufferData& objectBuffer, const uint32_t frameIndex);
 	void UpdateDescriptorSetObjectBuffers(const ProxiesPool& proxies, const uint32_t frameIndex) const;
 	void UpdateDescriptorSetUniformBuffers(const ProxiesPool& proxies, const uint32_t frameIndex) const;
+
+	void DeleteProxies();
 
 	void CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex);
 	void CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, const uint32_t frameIndex);

@@ -26,6 +26,7 @@ void KtSceneRenderer::Update(const uint32_t frameIndex)
 	UpdateStagingProxies(stagingDynamicProxies_, frameDatas_[frameIndex].dynamicBuffer, frameIndex);
 	UpdateProxies(frameDatas_[frameIndex].staticBuffer, frameIndex);
 	UpdateProxies(frameDatas_[frameIndex].dynamicBuffer, frameIndex);
+	DeleteProxies();
 }
 
 void KtSceneRenderer::Cleanup()
@@ -283,6 +284,11 @@ USceneProxy* KtSceneRenderer::CreateProxy() const
 	return new USceneProxy{};
 }
 
+void KtSceneRenderer::DeleteProxy(Proxy* proxy)
+{
+	deleteProxies_[proxy] = static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
+}
+
 void KtSceneRenderer::UpdateDescriptorSetObjectBuffers(const ProxiesPool& proxies, const uint32_t frameIndex) const
 {
 	std::unordered_map<KtShader*, std::vector<KtSceneObjectData>> shaderObjectBufferDatas{};
@@ -318,6 +324,25 @@ void KtSceneRenderer::UpdateDescriptorSetUniformBuffers(const ProxiesPool& proxi
 			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, &frameDatas_[frameIndex].uniformBuffer.uniformData, frameIndex);
 		}
 	}
+}
+
+void KtSceneRenderer::DeleteProxies()
+{
+	for (auto& [proxy, count] : deleteProxies_)
+	{
+		--count;
+		if (count == 0)
+		{
+			delete proxy;
+		}
+	}
+
+	std::erase_if(deleteProxies_,
+		[](const std::pair<const Proxy*, uint32_t>& pair)
+		{
+			return pair.second == 0;
+		}
+	);
 }
 
 void KtSceneRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex)

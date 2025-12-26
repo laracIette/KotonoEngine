@@ -1,4 +1,3 @@
-#include "ObjectManager.h"
 #include "SceneMeshComponent.h"
 #include "SceneObject.h"
 #include "Task.h"
@@ -6,14 +5,12 @@
 #include <kotono_common/log.h>
 #include <kotono_common/Path.h>
 #include <kotono_graphics/Model.h>
-#include <kotono_graphics/ModelManager.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/ShaderManager.h>
 #include <kotono_input/Keyboard.h>
 #include <kotono_platform/Window.h>
 #include <kotono_platform/WindowViewport.h>
-#include <nlohmann/json.hpp>
 
 static KtShader* WireframeShader = nullptr;
 
@@ -26,12 +23,15 @@ KSceneMeshComponent::KSceneMeshComponent(UPtrOwnerBase* ptrOwner) :
         WireframeShader = ShaderManager.Get(path);
     }
 
+    modelProxy_ = Renderer.SceneRenderer().CreateProxy();
+
     spinTask_.duration = 5.0f;
 }
 
 void KSceneMeshComponent::Cleanup()
 {
     UnregisterModelProxy();
+	Renderer.SceneRenderer().DeleteProxy(modelProxy_);
 
     EventTransformUpdated().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
     Window.GetEventWindowResized().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyScissorDirty));
@@ -114,8 +114,6 @@ void KSceneMeshComponent::SetMobility(const EMobility mobility)
 
 void KSceneMeshComponent::CreateModelProxy()
 {
-	modelProxy_ = Renderer.SceneRenderer().CreateProxy();
-
     modelProxy_->ScheduleUpdate(
         [this](USceneProxy::FrameData& frameData)
         {
