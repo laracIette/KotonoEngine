@@ -1,5 +1,6 @@
 #pragma once
-enum KtSceneCullerField : char
+#include <cstdint>
+enum KtSceneCullerField : uint8_t
 {
 	KT_SCENE_CULLER_FIELD_NONE = 0x00,
 	KT_SCENE_CULLER_FIELD_NULLPTR = 0x01,

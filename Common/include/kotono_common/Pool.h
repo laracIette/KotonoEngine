@@ -24,11 +24,25 @@ private:
 	using ConditionFunction = std::function<bool(const ValueType&)>;
 
 public:
+	KtPool() : data_() {}
+
+	KtPool(IteratorType begin, IteratorType end) : data_(begin, end) {}
+
+	KtPool(ConstIteratorType begin, ConstIteratorType end) : data_(begin, end) {}
+
+	template <std::input_iterator CustomIteratorType>
+	KtPool(CustomIteratorType begin, CustomIteratorType end) : data_(begin, end) {}
+
 	template <typename T>
 		requires std::constructible_from<ValueType, T&&>
 	constexpr void Add(T&& value)
 	{
 		data_.push_back(std::forward<T>(value));
+	}
+
+	constexpr void Add(const ValueType& value)
+	{
+		data_.push_back(value);
 	}
 
 	// Remove the specified item with O(n) complexity

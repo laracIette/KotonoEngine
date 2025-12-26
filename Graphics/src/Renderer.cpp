@@ -677,22 +677,22 @@ void KtRenderer::RecreateSwapChain()
 	sceneRenderer_.MarkCommandBuffersDirty();
 }
 
-VkExtent2D KtRenderer::GetSwapChainExtent() const
+VkExtent2D KtRenderer::SwapChainExtent() const
 {
 	return swapChainExtent_;
 }
 
-KtInterfaceRenderer& KtRenderer::GetInterfaceRenderer()
+KtInterfaceRenderer& KtRenderer::InterfaceRenderer()
 {
 	return interfaceRenderer_;
 }
 
-KtSceneRenderer& KtRenderer::GetSceneRenderer()
+KtSceneRenderer& KtRenderer::SceneRenderer()
 {
 	return sceneRenderer_;
 }
 
-VkRenderPass& KtRenderer::GetRenderPass()
+VkRenderPass& KtRenderer::RenderPass()
 {
 	return renderPass_;
 }

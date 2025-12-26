@@ -21,22 +21,22 @@ KInterfaceImageComponent::KInterfaceImageComponent(UPtrOwnerBase* ptrOwner) :
 		WireframeShader->SetName("2D Wireframe Shader");
 	}
 
-	imageTextureProxy_ = Renderer.GetInterfaceRenderer().CreateProxy();
+	imageTextureProxy_ = Renderer.InterfaceRenderer().CreateProxy();
 }
 
 void KInterfaceImageComponent::Cleanup()
 {
 	Base::Cleanup();
 
-	Renderer.GetInterfaceRenderer().Unregister(imageTextureProxy_);
-	Renderer.GetInterfaceRenderer().DeleteProxy(imageTextureProxy_);
+	Renderer.InterfaceRenderer().Unregister(imageTextureProxy_);
+	Renderer.InterfaceRenderer().DeleteProxy(imageTextureProxy_);
 }
 
 void KInterfaceImageComponent::Init()
 {
 	Base::Init();
 
-	Renderer.GetInterfaceRenderer().Register(imageTextureProxy_);
+	Renderer.InterfaceRenderer().Register(imageTextureProxy_);
 	CreateImageTextureProxy();
 
 	EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyRectDirty));

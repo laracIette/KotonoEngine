@@ -1,15 +1,19 @@
 #pragma once
-#include "SceneUniformData.h"
 #include "frames_in_flight.h"
-#include <kotono_common/Pool.h>
+#include "Mobility.h"
 #include "RendererFrameStats.h"
+#include "SceneUniformData.h"
+#include <kotono_common/Pool.h>
+#include <unordered_map>
+#include <unordered_set>
 #include <vulkan/vulkan_core.h>
-struct KtSceneRenderableProxy;
+class USceneProxy;
 class KtShader;
 class KtSceneRenderer final
 {
 private:
-	using ProxiesPool = KtPool<KtSceneRenderableProxy*>;
+	using Proxy = USceneProxy;
+	using ProxiesPool = KtPool<Proxy*>;
 
 public:
 	void Init();
@@ -20,12 +24,12 @@ public:
 
 	void SetUniformData(const KtSceneUniformData& uniformData);
 
-	void RegisterStatic(KtSceneRenderableProxy* proxy);
-	void RegisterDynamic(KtSceneRenderableProxy* proxy);
-	void UnregisterStatic(KtSceneRenderableProxy* proxy);
-	void UnregisterDynamic(KtSceneRenderableProxy* proxy);
+	void RegisterProxy(Proxy* proxy, const EMobility mobility);
+	void UnregisterProxy(Proxy* proxy, const EMobility mobility);
 
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
+
+	Proxy* CreateProxy() const;
 
 private:
 	KtFramesInFlightArray<KtRendererFrameStats> stats_;
@@ -34,15 +38,17 @@ private:
 	KtFramesInFlightArray<KtSceneUniformData> uniformDatas_;
 	KtFramesInFlightArray<bool> isUniformBufferDirty_;
 
+	std::unordered_map<Proxy*, int32_t> stagingStaticProxies_;
+	std::unordered_map<Proxy*, int32_t> stagingDynamicProxies_;
+	KtFramesInFlightArray<ProxiesPool> staticProxies_;
+	KtFramesInFlightArray<ProxiesPool> dynamicProxies_;
+	KtFramesInFlightArray<ProxiesPool> sortedStaticProxies_;
+	KtFramesInFlightArray<ProxiesPool> sortedDynamicProxies_;
+
 	KtFramesInFlightArray<VkCommandBuffer> staticCommandBuffers_;
 	KtFramesInFlightArray<VkCommandBuffer> dynamicCommandBuffers_;
 	KtFramesInFlightArray<bool> isStaticCommandBufferDirty_;
 	KtFramesInFlightArray<bool> isDynamicCommandBufferDirty_;
-
-	std::unordered_map<KtSceneRenderableProxy*, int32_t> stagingStaticProxies_;
-	std::unordered_map<KtSceneRenderableProxy*, int32_t> stagingDynamicProxies_;
-	KtFramesInFlightArray<ProxiesPool> staticProxies_;
-	KtFramesInFlightArray<ProxiesPool> dynamicProxies_;
 
 	KtFramesInFlightArray<std::unordered_map<const KtShader*, uint32_t>> instanceIndices_;
 
@@ -59,14 +65,14 @@ private:
 
 	void UpdateStaticProxies(const uint32_t frameIndex);
 	void UpdateDynamicProxies(const uint32_t frameIndex);
+	void UpdateStagingStaticProxies(const uint32_t frameIndex);
+	void UpdateStagingDynamicProxies(const uint32_t frameIndex);
 	void UpdateDescriptorSetObjectBuffers(const ProxiesPool& proxies, const uint32_t frameIndex) const;
 	void UpdateDescriptorSetUniformBuffers(const ProxiesPool& proxies, const uint32_t frameIndex) const;
 
 	void CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex);
 	void CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 
-	void SortProxies(ProxiesPool& proxies);
-	bool GetIsDynamicProxiesDirty(const uint32_t frameIndex) const;
-	void MarkDynamicProxiesNotDirty(const uint32_t frameIndex);
+	void SortProxies(ProxiesPool& proxies, const uint32_t frameIndex);
 };
 

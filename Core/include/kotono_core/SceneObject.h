@@ -1,8 +1,7 @@
 #pragma once
 #include "generated/SceneObject.generated.h"
-#include "Object.h"
 #include "CoordinateSpace.h"
-#include <kotono_common/Collection.h>
+#include "Object.h"
 #include <kotono_common/Pool.h>
 
 class KtWindowViewport;

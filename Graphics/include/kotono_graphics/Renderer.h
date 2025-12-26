@@ -22,12 +22,12 @@ public:
 
 	uint32_t GetGameThreadFrame() const; // todo: make private
 
-	VkExtent2D GetSwapChainExtent() const;
+	VkExtent2D SwapChainExtent() const;
 
-	KtInterfaceRenderer& GetInterfaceRenderer();
-	KtSceneRenderer& GetSceneRenderer();
+	KtInterfaceRenderer& InterfaceRenderer();
+	KtSceneRenderer& SceneRenderer();
 
-	VkRenderPass& GetRenderPass();
+	VkRenderPass& RenderPass();
 	VkFramebuffer& GetFramebuffer(const uint32_t frameIndex);
 	VkCommandPool& GetCommandPool(const uint32_t frameIndex);
 

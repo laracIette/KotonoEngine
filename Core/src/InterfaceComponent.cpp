@@ -19,7 +19,7 @@ KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner) :
 {
     eventRectUpdated_.AddListener(KtDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
 
-    boundsProxy_ = Renderer.GetInterfaceRenderer().CreateProxy();
+    boundsProxy_ = Renderer.InterfaceRenderer().CreateProxy();
 }
 
 void KInterfaceComponent::Cleanup()
@@ -34,8 +34,8 @@ void KInterfaceComponent::Cleanup()
 
     owner_->RemoveComponent(Ptr());
 
-    Renderer.GetInterfaceRenderer().Unregister(boundsProxy_);
-    Renderer.GetInterfaceRenderer().DeleteProxy(boundsProxy_);
+    Renderer.InterfaceRenderer().Unregister(boundsProxy_);
+    Renderer.InterfaceRenderer().DeleteProxy(boundsProxy_);
 
     Base::Cleanup();
 }
@@ -48,7 +48,7 @@ void KInterfaceComponent::Init()
     }
 
     CreateBoundsProxy();
-    Renderer.GetInterfaceRenderer().Register(boundsProxy_);
+    Renderer.InterfaceRenderer().Register(boundsProxy_);
 
     EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
 }

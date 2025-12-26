@@ -33,7 +33,6 @@ set(KCORE_HEADERS
     "include/kotono_core/InterfaceObject.h"
     "include/kotono_core/InterfacePhysicsManager.h"
     "include/kotono_core/math_utils.h"
-    "include/kotono_core/Mobility.h"
     "include/kotono_core/Object.h"
     "include/kotono_core/ObjectFactory.h"
     "include/kotono_core/ObjectManager.h"

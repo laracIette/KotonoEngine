@@ -17,7 +17,7 @@ void WColor::DisplayInternal(DisplaySettings displaySettings)
 	static const auto shaderPath = KtPath::Graphics() / R"(shaders\flatColor2D.ktshader)";
 	static const auto imagePath = KtPath::Graphics() / R"(assets\textures\white_texture.jpg)";
 
-	colorProxy_ = Renderer.GetInterfaceRenderer().CreateProxy();
+	colorProxy_ = Renderer.InterfaceRenderer().CreateProxy();
 	colorProxy_->shader = ShaderManager.Get(shaderPath);
 	colorProxy_->renderable = ImageTextureManager.Get(imagePath);
 	colorProxy_->layer = displaySettings.layer;
@@ -27,13 +27,13 @@ void WColor::DisplayInternal(DisplaySettings displaySettings)
 #	ifdef _DEBUG
 		colorProxy_->source = this;
 #	endif
-	Renderer.GetInterfaceRenderer().Register(colorProxy_);
+	Renderer.InterfaceRenderer().Register(colorProxy_);
 }
 
 void WColor::Cleanup()
 {
-	Renderer.GetInterfaceRenderer().Unregister(colorProxy_);
-	Renderer.GetInterfaceRenderer().DeleteProxy(colorProxy_);
+	Renderer.InterfaceRenderer().Unregister(colorProxy_);
+	Renderer.InterfaceRenderer().DeleteProxy(colorProxy_);
 
 	WWidget::Cleanup();
 }

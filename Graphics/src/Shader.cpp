@@ -377,14 +377,14 @@ void KtShader::CreateGraphicsPipeline()
 	VkViewport viewport{};
 	viewport.x = 0.0f;
 	viewport.y = 0.0f;
-	viewport.width = (float)Renderer.GetSwapChainExtent().width;
-	viewport.height = (float)Renderer.GetSwapChainExtent().height;
+	viewport.width = (float)Renderer.SwapChainExtent().width;
+	viewport.height = (float)Renderer.SwapChainExtent().height;
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
 
 	VkRect2D scissor{};
 	scissor.offset = { 0, 0 };
-	scissor.extent = Renderer.GetSwapChainExtent();
+	scissor.extent = Renderer.SwapChainExtent();
 
 	VkPipelineViewportStateCreateInfo viewportState{};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -447,7 +447,7 @@ void KtShader::CreateGraphicsPipeline()
 	pipelineInfo.pColorBlendState = &colorBlending;
 	pipelineInfo.pDynamicState = &dynamicState;
 	pipelineInfo.layout = pipelineLayout_;
-	pipelineInfo.renderPass = Renderer.GetRenderPass();
+	pipelineInfo.renderPass = Renderer.RenderPass();
 	pipelineInfo.subpass = 0;
 	pipelineInfo.basePipelineHandle = nullptr; // Optional
 	pipelineInfo.basePipelineIndex = -1; // Optional

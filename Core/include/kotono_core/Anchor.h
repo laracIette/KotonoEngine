@@ -1,5 +1,6 @@
 #pragma once
-enum class EAnchor : char
+#include <cstdint>
+enum class EAnchor : uint8_t
 {
     Center = 0x00,
     Top = 0x01,
@@ -14,10 +15,10 @@ enum class EAnchor : char
 
 inline constexpr EAnchor operator&(EAnchor first, EAnchor second)
 {
-    return static_cast<EAnchor>(static_cast<char>(first) & static_cast<char>(second));
+    return static_cast<EAnchor>(static_cast<uint8_t>(first) & static_cast<uint8_t>(second));
 }
 
 inline constexpr EAnchor operator|(EAnchor first, EAnchor second)
 {
-    return static_cast<EAnchor>(static_cast<char>(first) | static_cast<char>(second));
+    return static_cast<EAnchor>(static_cast<uint8_t>(first) | static_cast<uint8_t>(second));
 }

@@ -1,8 +1,8 @@
 #pragma once
-#include "Mobility.h"
+#include "Ptr.h"
 #include "Visibility.h"
 #include <glm/fwd.hpp>
-#include "Ptr.h"
+#include <kotono_graphics/Mobility.h>
 #include <nlohmann/json_fwd.hpp>
 
 #define SERIALIZE

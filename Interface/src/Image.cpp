@@ -16,7 +16,7 @@ void WImage::DisplayInternal(DisplaySettings displaySettings)
 {
 	static const auto shaderPath = KtPath::Graphics() / R"(shaders\shader2D.ktshader)";
 
-	imageProxy_ = Renderer.GetInterfaceRenderer().CreateProxy();
+	imageProxy_ = Renderer.InterfaceRenderer().CreateProxy();
 	imageProxy_->shader = ShaderManager.Get(shaderPath);
 	imageProxy_->renderable = ImageTextureManager.Get(imageSettings_.path);
 	imageProxy_->layer = displaySettings.layer;
@@ -25,13 +25,13 @@ void WImage::DisplayInternal(DisplaySettings displaySettings)
 #	ifdef _DEBUG
 		imageProxy_->source = this;
 #	endif
-	Renderer.GetInterfaceRenderer().Register(imageProxy_);
+	Renderer.InterfaceRenderer().Register(imageProxy_);
 }
 
 void WImage::Cleanup()
 {
-	Renderer.GetInterfaceRenderer().Unregister(imageProxy_);
-	Renderer.GetInterfaceRenderer().DeleteProxy(imageProxy_);
+	Renderer.InterfaceRenderer().Unregister(imageProxy_);
+	Renderer.InterfaceRenderer().DeleteProxy(imageProxy_);
 
 	WWidget::Cleanup();
 }

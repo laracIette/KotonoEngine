@@ -35,12 +35,12 @@ public:
 		}
 	}
 
-	bool IsDirty() const noexcept
+	constexpr bool IsDirty() const noexcept
 	{
 		return isDirty_;
 	}
 
-	void MarkDirty() noexcept
+	constexpr void MarkDirty() noexcept
 	{
 		isDirty_ = true;
 	}

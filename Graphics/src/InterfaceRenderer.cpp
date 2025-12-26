@@ -9,7 +9,6 @@
 #include <kotono_platform/WindowViewport.h>
 #include <kotono_platform/vk_utils.h>
 #include "InterfaceRenderableProxy.h"
-#include <kotono_common/Collection.h>
 
 static constexpr std::array<KtVertex2D, 4> Vertices
 {//                   Position,              KtColor,      TexCoords
@@ -206,7 +205,7 @@ void KtInterfaceRenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer, cons
 
 	const VkCommandBufferInheritanceInfo inheritanceInfo{
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO,
-		.renderPass = Renderer.GetRenderPass(),
+		.renderPass = Renderer.RenderPass(),
 		.subpass = 0,
 		.framebuffer = Renderer.GetFramebuffer(frameIndex),
 	};
@@ -407,9 +406,12 @@ void KtInterfaceRenderer::SortProxies(ProxiesPool& proxies)
 
 bool KtInterfaceRenderer::GetIsAnyProxyDirty(const uint32_t frameIndex) const
 {
-	auto proxies{ KtCollection(proxies_[frameIndex].begin(), proxies_[frameIndex].end()) };
-	proxies.AddFilter([](const KtInterfaceRenderableProxy* proxy) { return proxy->isDirty; });
-	return proxies.GetFirst() != nullptr;
+	return std::any_of(proxies_[frameIndex].begin(), proxies_[frameIndex].end(),
+		[](const KtInterfaceRenderableProxy* proxy)
+		{
+			return proxy->isDirty;
+		}
+	);
 }
 
 void KtInterfaceRenderer::MarkProxiesNotDirty(const uint32_t frameIndex)

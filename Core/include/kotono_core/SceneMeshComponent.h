@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/SceneMeshComponent.generated.h"
-#include <kotono_graphics/SceneRenderableProxy.h>
+#include <kotono_graphics/SceneProxy.h>
 #include "SceneComponent.h"
 #include "Task.h"
 
@@ -36,15 +36,15 @@ private:
 	SERIALIZE KtShader* shader_;
 	SERIALIZE KtModel* model_;
 	UTask spinTask_;
-	KtSceneRenderableProxy modelProxy_;
+	USceneProxy* modelProxy_;
 
 	void CreateModelProxy();
 
 	void MarkModelProxyTransformDirty();
 	void MarkModelProxyScissorDirty();
 
-	void RegisterModelProxy();
-	void UnregisterModelProxy();
+	void RegisterModelProxy() const;
+	void UnregisterModelProxy() const;
 
 	// temp
 	void Spin();

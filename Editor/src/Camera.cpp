@@ -154,5 +154,5 @@ void SCamera::OnEventUpdateTransform() const
 	};
 	ubo.projection[1][1] *= -1.0f;
 
-	Renderer.GetSceneRenderer().SetUniformData(ubo);
+	Renderer.SceneRenderer().SetUniformData(ubo);
 }

@@ -1,15 +1,11 @@
 #pragma once
 #include "generated/InterfaceObject.generated.h"
-#include "Object.h"
 #include "CoordinateSpace.h"
-#include <kotono_common/Collection.h>
+#include "Object.h"
 #include <kotono_common/Pool.h>
 
 class KtWindowViewport;
 class KInterfaceComponent;
-
-template <class T>
-concept InterfaceComponent = std::is_base_of_v<KInterfaceComponent, T>;
 
 class RInterfaceObject : public KObject
 {
@@ -35,16 +31,12 @@ public:
 	/// Returns true if any component is hovered
 	bool IsHovered() const;
 
-	template <InterfaceComponent T>
+	template <std::derived_from<KInterfaceComponent> T>
 	UPtr<T> GetComponent() const
 	{
-		auto components = KtCollection(components_.begin(), components_.end());
-		components.AddFilter([](const UPtr<KInterfaceComponent>& component) { return dynamic_cast<T*>(component.Get()); });
-		if (components.Empty())
-		{
-			return nullptr;
-		}
-		return components.GetFirst();
+		return std::find_first_of(interfaceComponents_.begin(), interfaceComponents_.end(),
+			[](const UPtr<KInterfaceComponent>& component) { return TryCast<T>(component); }
+		);
 	}
 
 	void AddComponent(UPtr<KInterfaceComponent> component);
@@ -55,7 +47,7 @@ private:
 	UPtr<RInterfaceObject> parent_;
 	UPtr<KInterfaceComponent> rootComponent_;
 	KtPool<UPtr<RInterfaceObject>> children_;
-	KtPool<UPtr<KInterfaceComponent>> components_;
+	KtPool<UPtr<KInterfaceComponent>> interfaceComponents_;
 	size_t childrenIndex_;
 };
 

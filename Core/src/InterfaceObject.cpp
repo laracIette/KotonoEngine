@@ -20,7 +20,7 @@ void RInterfaceObject::Cleanup()
 {
 	Base::Cleanup();
 
-	for (const auto& component : components_)
+	for (const auto& component : interfaceComponents_)
 	{
 		component->Delete();
 	}
@@ -82,22 +82,22 @@ void RInterfaceObject::SetParent(UPtr<RInterfaceObject> parent, const ECoordinat
 
 bool RInterfaceObject::IsHovered() const
 {
-	return std::any_of(components_.begin(), components_.end(),
+	return std::any_of(interfaceComponents_.begin(), interfaceComponents_.end(),
 		[](const UPtr<KInterfaceComponent>& component) { return component->IsHovered(); }
 	);
 }
 
 void RInterfaceObject::AddComponent(UPtr<KInterfaceComponent> component)
 {
-	components_.Add(component);
-	component->componentIndex_ = components_.LastIndex();
+	interfaceComponents_.Add(component);
+	component->componentIndex_ = interfaceComponents_.LastIndex();
 }
 
 void RInterfaceObject::RemoveComponent(const UPtr<KInterfaceComponent>& component)
 {
 	const size_t index{ component->componentIndex_ };
-	if (components_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+	if (interfaceComponents_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 	{
-		components_[index]->componentIndex_ = index;
+		interfaceComponents_[index]->componentIndex_ = index;
 	}
 }

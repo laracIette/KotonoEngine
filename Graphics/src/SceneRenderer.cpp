@@ -2,7 +2,7 @@
 #include "Renderer.h"
 #include "SceneCuller.h"
 #include "SceneRenderable.h"
-#include "SceneRenderableProxy.h"
+#include "SceneProxy.h"
 #include "Shader.h"
 #include <kotono_common/log.h>
 #include <kotono_platform/Context.h>
@@ -23,6 +23,8 @@ void KtSceneRenderer::Init()
 void KtSceneRenderer::Update(const uint32_t frameIndex)
 {
 	UpdateUniformData(frameIndex);
+	UpdateStagingStaticProxies(frameIndex);
+	UpdateStagingDynamicProxies(frameIndex);
 	UpdateStaticProxies(frameIndex);
 	UpdateDynamicProxies(frameIndex);
 }
@@ -42,29 +44,35 @@ void KtSceneRenderer::SetUniformData(const KtSceneUniformData& uniformData)
 	stagingUniformData_ = { uniformData, static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT) };
 }
 
-void KtSceneRenderer::RegisterStatic(KtSceneRenderableProxy* proxy)
+void KtSceneRenderer::RegisterProxy(Proxy* proxy, const EMobility mobility)
 {
-	stagingStaticProxies_[proxy] = static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
+	switch (mobility)
+	{
+	case EMobility::Dynamic:
+		stagingDynamicProxies_[proxy] = static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
+		break;
+	case EMobility::Static:
+		stagingStaticProxies_[proxy] = static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
+		break;
+	}
 }
 
-void KtSceneRenderer::RegisterDynamic(KtSceneRenderableProxy* proxy)
+void KtSceneRenderer::UnregisterProxy(Proxy* proxy, const EMobility mobility)
 {
-	stagingDynamicProxies_[proxy] = static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
-}
-
-void KtSceneRenderer::UnregisterStatic(KtSceneRenderableProxy* proxy)
-{
-	stagingStaticProxies_[proxy] = -static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
-}
-
-void KtSceneRenderer::UnregisterDynamic(KtSceneRenderableProxy* proxy)
-{
-	stagingDynamicProxies_[proxy] = -static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
+	switch (mobility)
+	{
+	case EMobility::Dynamic:
+		stagingDynamicProxies_[proxy] = -static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
+		break;
+	case EMobility::Static:
+		stagingStaticProxies_[proxy] = -static_cast<int32_t>(KT_FRAMES_IN_FLIGHT);
+		break;
+	}
 }
 
 void KtSceneRenderer::CreateStaticCommandBuffers()
 {
-	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; ++i)
+	for (size_t i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
 	{
 		CreateStaticCommandBuffer(static_cast<uint32_t>(i));
 	}
@@ -72,11 +80,12 @@ void KtSceneRenderer::CreateStaticCommandBuffers()
 
 void KtSceneRenderer::CreateStaticCommandBuffer(const uint32_t frameIndex)
 {
-	VkCommandBufferAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = Renderer.GetCommandPool(frameIndex);
-	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
-	allocInfo.commandBufferCount = 1;
+	const VkCommandBufferAllocateInfo allocInfo{
+		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+		.commandPool = Renderer.GetCommandPool(frameIndex),
+		.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY,
+		.commandBufferCount = 1,
+	};
 
 	VK_CHECK_THROW(
 		vkAllocateCommandBuffers(Context.GetDevice(), &allocInfo, &staticCommandBuffers_[frameIndex]),
@@ -86,7 +95,7 @@ void KtSceneRenderer::CreateStaticCommandBuffer(const uint32_t frameIndex)
 
 void KtSceneRenderer::CreateDynamicCommandBuffers()
 {
-	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; ++i)
+	for (size_t i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
 	{
 		CreateDynamicCommandBuffer(static_cast<uint32_t>(i));
 	}
@@ -94,12 +103,12 @@ void KtSceneRenderer::CreateDynamicCommandBuffers()
 
 void KtSceneRenderer::CreateDynamicCommandBuffer(const uint32_t frameIndex)
 {
-	VkCommandBufferAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = Renderer.GetCommandPool(frameIndex);
-	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
-	allocInfo.commandBufferCount = 1;
-
+	const VkCommandBufferAllocateInfo allocInfo{
+		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+		.commandPool = Renderer.GetCommandPool(frameIndex),
+		.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY,
+		.commandBufferCount = 1,
+	};
 	VK_CHECK_THROW(
 		vkAllocateCommandBuffers(Context.GetDevice(), &allocInfo, &dynamicCommandBuffers_[frameIndex]),
 		"failed to allocate command buffers!"
@@ -108,19 +117,19 @@ void KtSceneRenderer::CreateDynamicCommandBuffer(const uint32_t frameIndex)
 
 void KtSceneRenderer::RecordStaticCommandBuffer(const uint32_t frameIndex)
 {
-	SortProxies(staticProxies_[frameIndex]);
-	VkCommandBuffer commandBuffer = staticCommandBuffers_[frameIndex];
+	//SortProxies(staticProxies_[frameIndex]);
+	VkCommandBuffer commandBuffer{ staticCommandBuffers_[frameIndex] };
 	BeginCommandBuffer(commandBuffer, frameIndex);
-	CmdDrawProxies(commandBuffer, staticProxies_[frameIndex], frameIndex);
+	CmdDrawProxies(commandBuffer, sortedStaticProxies_[frameIndex], frameIndex);
 	EndCommandBuffer(commandBuffer);
 }
 
 void KtSceneRenderer::RecordDynamicCommandBuffer(const uint32_t frameIndex)
 {
-	SortProxies(dynamicProxies_[frameIndex]);
-	VkCommandBuffer commandBuffer = dynamicCommandBuffers_[frameIndex];
+	//SortProxies(dynamicProxies_[frameIndex]);
+	VkCommandBuffer commandBuffer{ dynamicCommandBuffers_[frameIndex] };
 	BeginCommandBuffer(commandBuffer, frameIndex);
-	CmdDrawProxies(commandBuffer, dynamicProxies_[frameIndex], frameIndex);
+	CmdDrawProxies(commandBuffer, sortedDynamicProxies_[frameIndex], frameIndex);
 	EndCommandBuffer(commandBuffer);
 }
 
@@ -128,17 +137,17 @@ void KtSceneRenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer, const ui
 {
 	vkResetCommandBuffer(commandBuffer, 0);
 
-	VkCommandBufferInheritanceInfo inheritanceInfo{};
-	inheritanceInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
-	inheritanceInfo.renderPass = Renderer.GetRenderPass();
-	inheritanceInfo.subpass = 0;
-	inheritanceInfo.framebuffer = Renderer.GetFramebuffer(frameIndex);
-
-	VkCommandBufferBeginInfo beginInfo{};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT;
-	beginInfo.pInheritanceInfo = &inheritanceInfo;
-
+	const VkCommandBufferInheritanceInfo inheritanceInfo{
+		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO,
+		.renderPass = Renderer.RenderPass(),
+		.subpass = 0,
+		.framebuffer = Renderer.GetFramebuffer(frameIndex),
+	};
+	const VkCommandBufferBeginInfo beginInfo{
+		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+		.flags = VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT,
+		.pInheritanceInfo = &inheritanceInfo,
+	};
 	VK_CHECK_THROW(
 		vkBeginCommandBuffer(commandBuffer, &beginInfo),
 		"failed to begin recording command buffer!"
@@ -167,6 +176,30 @@ void KtSceneRenderer::UpdateUniformData(const uint32_t frameIndex)
 
 void KtSceneRenderer::UpdateStaticProxies(const uint32_t frameIndex)
 {
+	for (Proxy* proxy : staticProxies_[frameIndex])
+	{
+		if (proxy->IsDirty())
+		{
+			isStaticCommandBufferDirty_[frameIndex] = true;
+			proxy->ApplyPendingUpdates(frameIndex);
+		}
+	}
+}
+
+void KtSceneRenderer::UpdateDynamicProxies(const uint32_t frameIndex)
+{
+	for (Proxy* proxy : dynamicProxies_[frameIndex])
+	{
+		if (proxy->IsDirty())
+		{
+			isDynamicCommandBufferDirty_[frameIndex] = true;
+			proxy->ApplyPendingUpdates(frameIndex);
+		}
+	}
+}
+
+void KtSceneRenderer::UpdateStagingStaticProxies(const uint32_t frameIndex)
+{
 	if (stagingStaticProxies_.empty())
 	{
 		return;
@@ -180,29 +213,34 @@ void KtSceneRenderer::UpdateStaticProxies(const uint32_t frameIndex)
 		}
 
 		isStaticCommandBufferDirty_[frameIndex] = true;
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics.KtSceneRenderer::UpdateStaticProxies()", "dirty static command buffer frame %u", frameIndex);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics.KtSceneRenderer::UpdateStagingStaticProxies()", "dirty static command buffer frame %u", frameIndex);
 
 		if (count > 0)
 		{
 			staticProxies_[frameIndex].Add(proxy);
+			proxy->index_[frameIndex] = staticProxies_[frameIndex].LastIndex();
 			--count;
 		}
 		else if (count < 0)
 		{
-			staticProxies_[frameIndex].Remove(proxy);
+			const size_t index{ proxy->index_[frameIndex] };
+			if (staticProxies_[frameIndex].RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+			{
+				staticProxies_[frameIndex][index]->index_[frameIndex] = index;
+			}
 			++count;
 		}
 	}
 
 	std::erase_if(stagingStaticProxies_,
-		[](const std::pair<KtSceneRenderableProxy*, int32_t>& pair)
+		[](const std::pair<const Proxy*, int32_t>& pair)
 		{
 			return pair.second == 0;
 		}
 	);
 }
 
-void KtSceneRenderer::UpdateDynamicProxies(const uint32_t frameIndex)
+void KtSceneRenderer::UpdateStagingDynamicProxies(const uint32_t frameIndex)
 {
 	if (stagingDynamicProxies_.empty())
 	{
@@ -217,38 +255,45 @@ void KtSceneRenderer::UpdateDynamicProxies(const uint32_t frameIndex)
 		}
 
 		isDynamicCommandBufferDirty_[frameIndex] = true;
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics.KtSceneRenderer::UpdateDynamicProxies()", "dirty dynamic command buffer frame %u", frameIndex);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics.KtSceneRenderer::UpdateStagingDynamicProxies()", "dirty dynamic command buffer frame %u", frameIndex);
 
 		if (count > 0)
 		{
 			dynamicProxies_[frameIndex].Add(proxy);
+			proxy->index_[frameIndex] = dynamicProxies_[frameIndex].LastIndex();
 			--count;
 		}
 		else if (count < 0)
 		{
-			dynamicProxies_[frameIndex].Remove(proxy);
+			const size_t index{ proxy->index_[frameIndex] };
+			if (dynamicProxies_[frameIndex].RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+			{
+				dynamicProxies_[frameIndex][index]->index_[frameIndex] = index;
+			}
 			++count;
 		}
 	}
 
 	std::erase_if(stagingDynamicProxies_,
-		[](const std::pair<KtSceneRenderableProxy*, int32_t>& pair)
+		[](const std::pair<const Proxy*, int32_t>& pair)
 		{
 			return pair.second == 0;
 		}
 	);
 }
 
-void KtSceneRenderer::SortProxies(ProxiesPool& proxies)
+void KtSceneRenderer::SortProxies(ProxiesPool& proxies, const uint32_t frameIndex)
 {
 	std::sort(proxies.begin(), proxies.end(),
-		[](const KtSceneRenderableProxy* a, const KtSceneRenderableProxy* b)
+		[frameIndex](const Proxy* a, const Proxy* b)
 		{
-			if (a->shader != b->shader)
+			const auto& aFrameData{ a->frameDatas_[frameIndex] };
+			const auto& bFrameData{ b->frameDatas_[frameIndex] };
+			if (aFrameData.shader != bFrameData.shader)
 			{
-				return a->shader < b->shader;
+				return aFrameData.shader < bFrameData.shader;
 			}
-			return a->renderable < b->renderable;
+			return aFrameData.renderable < bFrameData.renderable;
 		}
 	);
 }
@@ -260,21 +305,27 @@ void KtSceneRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t fram
 	// that only records once per frame in flight at every change
 	stats_[frameIndex] = {};
 
-	if (isStaticCommandBufferDirty_[frameIndex] ||
-		isDynamicCommandBufferDirty_[frameIndex] ||
-		GetIsDynamicProxiesDirty(frameIndex))
+	if (isStaticCommandBufferDirty_[frameIndex] || isDynamicCommandBufferDirty_[frameIndex])
 	{
-		const KtSceneCuller culler(KT_SCENE_CULLER_FIELD_ALL);
-		auto culledStaticProxies = culler.ComputeCulling(staticProxies_[frameIndex]);
-		auto culledDynamicProxies = culler.ComputeCulling(dynamicProxies_[frameIndex]);
-		SortProxies(culledStaticProxies);
-		SortProxies(culledDynamicProxies);
+		//const KtSceneCuller culler(KT_SCENE_CULLER_FIELD_ALL);
+		//ProxiesPool culledStaticProxies{ culler.ComputeCulling(staticProxies_[frameIndex]) };
+		//ProxiesPool culledDynamicProxies{ culler.ComputeCulling(dynamicProxies_[frameIndex]) };
+		//SortProxies(culledStaticProxies);
+		//SortProxies(culledDynamicProxies);
+		//
+		//ProxiesPool sortedGlobalProxies{ culledStaticProxies };
+		//sortedGlobalProxies.Merge(culledDynamicProxies);
 
-		ProxiesPool sortedGlobalProxies = culledStaticProxies;
-		sortedGlobalProxies.Merge(culledDynamicProxies);
+		sortedStaticProxies_[frameIndex] = staticProxies_[frameIndex];
+		sortedDynamicProxies_[frameIndex] = dynamicProxies_[frameIndex];
+
+		SortProxies(sortedStaticProxies_[frameIndex], frameIndex);
+		SortProxies(sortedDynamicProxies_[frameIndex], frameIndex);
+
+		ProxiesPool sortedGlobalProxies{ sortedStaticProxies_[frameIndex] };
+		sortedGlobalProxies.Append(sortedDynamicProxies_[frameIndex]);
 
 		UpdateDescriptorSetObjectBuffers(sortedGlobalProxies, frameIndex);
-		MarkDynamicProxiesNotDirty(frameIndex);
 		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics.KtSceneRenderer::CmdDraw()", "update descriptor sets frame %u", frameIndex);
 	}
 
@@ -302,17 +353,23 @@ void KtSceneRenderer::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t fram
 	CmdExecuteCommandBuffers(commandBuffer, frameIndex);
 }
 
+USceneProxy* KtSceneRenderer::CreateProxy() const
+{
+	return new USceneProxy{};
+}
+
 void KtSceneRenderer::UpdateDescriptorSetObjectBuffers(const ProxiesPool& proxies, const uint32_t frameIndex) const
 {
 	std::unordered_map<KtShader*, std::vector<KtSceneObjectData>> shaderObjectBufferDatas{};
-	for (const auto* proxy : proxies)
+	for (const Proxy* proxy : proxies)
 	{
-		shaderObjectBufferDatas[proxy->shader].push_back(proxy->objectData);
+		const auto& frameData{ proxy->frameDatas_[frameIndex] };
+		shaderObjectBufferDatas[frameData.shader].push_back(frameData.objectData);
 	}
 
 	for (const auto& [shader, objectBufferDatas] : shaderObjectBufferDatas)
 	{
-		if (auto* binding = shader->GetDescriptorSetLayoutBinding("objectBuffer"))
+		if (auto* binding{ shader->GetDescriptorSetLayoutBinding("objectBuffer") })
 		{
 			shader->UpdateDescriptorSetLayoutBindingBufferMemberCount(*binding, objectBufferDatas.size(), frameIndex);
 			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, objectBufferDatas.data(), frameIndex);
@@ -323,14 +380,15 @@ void KtSceneRenderer::UpdateDescriptorSetObjectBuffers(const ProxiesPool& proxie
 void KtSceneRenderer::UpdateDescriptorSetUniformBuffers(const ProxiesPool& proxies, const uint32_t frameIndex) const
 {
 	std::unordered_set<KtShader*> shaders{};
-	for (const auto* proxy : proxies)
+	for (const Proxy* proxy : proxies)
 	{
-		shaders.insert(proxy->shader);
+		const auto& frameData{ proxy->frameDatas_[frameIndex] };
+		shaders.insert(frameData.shader);
 	}
 
 	for (auto* shader : shaders)
 	{
-		if (auto* binding = shader->GetDescriptorSetLayoutBinding("cameraData"))
+		if (auto* binding{ shader->GetDescriptorSetLayoutBinding("cameraData") })
 		{
 			shader->UpdateDescriptorSetLayoutBindingBuffer(*binding, &uniformDatas_[frameIndex], frameIndex);
 		}
@@ -349,23 +407,25 @@ void KtSceneRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const Proxie
 	const KtShader* currentShader{ nullptr };
 	const KtSceneRenderable* currentRenderable{ nullptr };
 
-	for (size_t i = 0; i < proxies.size();)
+	for (size_t i{ 0 }; i < proxies.size();)
 	{
-		const KtSceneRenderableProxy* proxy{ proxies[i] };
-		const KtShader* shader{ proxy->shader };
-		const KtSceneRenderable* renderable{ proxy->renderable };
-		const KtScissor scissor{ proxy->scissor };
+		const auto& proxyFrameData{ proxies[i]->frameDatas_[frameIndex] };
+		const KtShader* shader{ proxyFrameData.shader };
+		const KtSceneRenderable* renderable{ proxyFrameData.renderable };
+		const KtScissor scissor{ proxyFrameData.scissor };
 
 		// Find the extent of the current batch
 		size_t instanceCount{ 1 };
-		while (i + instanceCount < proxies.size())
+		for (; i + instanceCount < proxies.size(); ++instanceCount)
 		{
-			const auto* next = proxies[i + instanceCount];
-			if (next->shader != shader || next->renderable != renderable || next->scissor.extent != scissor.extent || next->scissor.offset != scissor.offset)
+			const auto& nextFrameData{ proxies[i + instanceCount]->frameDatas_[frameIndex] };
+			if (nextFrameData.shader != shader || 
+				nextFrameData.renderable != renderable || 
+				nextFrameData.scissor.extent != scissor.extent || 
+				nextFrameData.scissor.offset != scissor.offset)
 			{
 				break;
 			}
-			++instanceCount;
 		}
 
 		// Bind new state if necessary
@@ -407,22 +467,4 @@ void KtSceneRenderer::CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, co
 	};
 
 	vkCmdExecuteCommands(commandBuffer, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
-}
-
-bool KtSceneRenderer::GetIsDynamicProxiesDirty(const uint32_t frameIndex) const
-{
-	return std::any_of(dynamicProxies_[frameIndex].begin(), dynamicProxies_[frameIndex].end(),
-		[frameIndex](const KtSceneRenderableProxy* proxy) 
-		{
-			return proxy->isDirty[frameIndex].load(std::memory_order_acquire); 
-		}
-	);
-}
-
-void KtSceneRenderer::MarkDynamicProxiesNotDirty(const uint32_t frameIndex)
-{
-	for (auto* proxy : dynamicProxies_[frameIndex])
-	{
-		proxy->isDirty[frameIndex].store(false, std::memory_order_release);
-	}
 }
