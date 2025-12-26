@@ -674,7 +674,7 @@ void KtRenderer::RecreateSwapChain()
 	}
 
 	interfaceRenderer_.MarkCommandBuffersDirty();
-	sceneRenderer_.MarkCommandBuffersDirty();
+	sceneRenderer_.MarkObjectBuffersDirty();
 }
 
 VkExtent2D KtRenderer::SwapChainExtent() const

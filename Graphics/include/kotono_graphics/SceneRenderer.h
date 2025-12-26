@@ -14,13 +14,15 @@ class KtSceneRenderer final
 private:
 	using Proxy = USceneProxy;
 	using ProxiesPool = KtPool<Proxy*>;
+	using StagingProxiesMap = std::unordered_map<Proxy*, int32_t>;
 
 public:
 	void Init();
 	void Update(const uint32_t frameIndex);
 	void Cleanup();
 
-	void MarkCommandBuffersDirty();
+	void MarkUniformBuffersDirty();
+	void MarkObjectBuffersDirty();
 
 	void SetUniformData(const KtSceneUniformData& uniformData);
 
@@ -32,41 +34,49 @@ public:
 	Proxy* CreateProxy() const;
 
 private:
-	KtFramesInFlightArray<KtRendererFrameStats> stats_;
+	struct FrameData
+	{
+		struct ObjectBufferData
+		{
+			ProxiesPool proxies;
+			ProxiesPool sortedProxies;
+			VkCommandBuffer commandBuffer;
+			bool isDirty;
+		};
 
+		struct UniformBufferData
+		{
+			KtSceneUniformData uniformData;
+			bool isDirty;
+		};
+
+		KtRendererFrameStats stats;
+
+		UniformBufferData uniformBuffer;
+
+		ObjectBufferData staticBuffer;
+		ObjectBufferData dynamicBuffer;
+
+		std::unordered_map<const KtShader*, uint32_t> instanceIndices;
+	};
+
+	// Those are only accessed from the game thread
 	std::pair<KtSceneUniformData, uint32_t> stagingUniformData_;
-	KtFramesInFlightArray<KtSceneUniformData> uniformDatas_;
-	KtFramesInFlightArray<bool> isUniformBufferDirty_;
+	StagingProxiesMap stagingStaticProxies_;
+	StagingProxiesMap stagingDynamicProxies_;
 
-	std::unordered_map<Proxy*, int32_t> stagingStaticProxies_;
-	std::unordered_map<Proxy*, int32_t> stagingDynamicProxies_;
-	KtFramesInFlightArray<ProxiesPool> staticProxies_;
-	KtFramesInFlightArray<ProxiesPool> dynamicProxies_;
-	KtFramesInFlightArray<ProxiesPool> sortedStaticProxies_;
-	KtFramesInFlightArray<ProxiesPool> sortedDynamicProxies_;
+	// Those are updated by the game thread then accessed from the render thread
+	KtFramesInFlightArray<FrameData> frameDatas_;
 
-	KtFramesInFlightArray<VkCommandBuffer> staticCommandBuffers_;
-	KtFramesInFlightArray<VkCommandBuffer> dynamicCommandBuffers_;
-	KtFramesInFlightArray<bool> isStaticCommandBufferDirty_;
-	KtFramesInFlightArray<bool> isDynamicCommandBufferDirty_;
-
-	KtFramesInFlightArray<std::unordered_map<const KtShader*, uint32_t>> instanceIndices_;
-
-	void CreateStaticCommandBuffers();
-	void CreateStaticCommandBuffer(const uint32_t frameIndex);
-	void CreateDynamicCommandBuffers();
-	void CreateDynamicCommandBuffer(const uint32_t frameIndex);
-	void RecordStaticCommandBuffer(const uint32_t frameIndex);
-	void RecordDynamicCommandBuffer(const uint32_t frameIndex);
+	void CreateCommandBuffers();
+	void CreateCommandBuffer(FrameData::ObjectBufferData& objectBuffer, const uint32_t frameIndex);
+	void RecordCommandBuffer(const FrameData::ObjectBufferData& objectBuffer, const uint32_t frameIndex);
 	void BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
 	void EndCommandBuffer(VkCommandBuffer commandBuffer);
 
 	void UpdateUniformData(const uint32_t frameIndex);
-
-	void UpdateStaticProxies(const uint32_t frameIndex);
-	void UpdateDynamicProxies(const uint32_t frameIndex);
-	void UpdateStagingStaticProxies(const uint32_t frameIndex);
-	void UpdateStagingDynamicProxies(const uint32_t frameIndex);
+	void UpdateProxies(FrameData::ObjectBufferData& objectBuffer, const uint32_t frameIndex);
+	void UpdateStagingProxies(StagingProxiesMap& stagingProxies, FrameData::ObjectBufferData& objectBuffer, const uint32_t frameIndex);
 	void UpdateDescriptorSetObjectBuffers(const ProxiesPool& proxies, const uint32_t frameIndex) const;
 	void UpdateDescriptorSetUniformBuffers(const ProxiesPool& proxies, const uint32_t frameIndex) const;
 
@@ -75,4 +85,3 @@ private:
 
 	void SortProxies(ProxiesPool& proxies, const uint32_t frameIndex);
 };
-
