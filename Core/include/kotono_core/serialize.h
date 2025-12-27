@@ -104,5 +104,5 @@ UPtr<KObject> deserialize_kobject(const nlohmann::json& json);
 template <std::derived_from<KObject> T>
 void deserialize(const nlohmann::json& json, UPtr<T>& v)
 {
-	v = deserialize_kobject(json);
+	v = TryCast<T>(deserialize_kobject(json));
 }

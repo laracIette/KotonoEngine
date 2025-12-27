@@ -19,7 +19,7 @@ WWidget* WTestBox::Build()
                     : new WColor({ KtColor::Red().WithValue(0.1f) }),
                 new WButton({
                     .onDown = [this]() {
-                        if (UPtr selectedObject{ ObjectManager.GetSelectedObject() })
+                        if (UPtr selectedObject{ TryCast<TSceneObject>(ObjectManager.GetSelectedObject()) })
                         {
                             SetState([selectedObject]() {
                                 if (UPtr scene{ Game.GetOpenedScene() })

@@ -26,12 +26,13 @@ class UPtrOwner final : public UPtrOwnerBase
 {
 	using Child = UPtr<T>;
 	friend Child;
+	friend UPtr<const T>;
 
 public:
 	using PointerType = T;
 
 public:
-	UPtrOwner() {}
+	UPtrOwner() = default;
 	
 	~UPtrOwner()
 	{
@@ -59,14 +60,18 @@ private:
 template <class T>
 class UPtr final
 {
-	using Owner = UPtrOwner<T>;
+private:
+	template <typename U> 
+	friend class UPtr;
+
+	using Owner = UPtrOwner<std::remove_const_t<T>>;
 	friend Owner;
 
 public:
 	using PointerType = T;
 
 public:
-	UPtr() {}
+	UPtr() = default;
 
 	UPtr(Owner* owner)
 	{
@@ -78,16 +83,11 @@ public:
 		SetOwner(other.owner_);
 	}
 
-	template <DerivedFrom<PointerType> Derived>
-	UPtr(const UPtr<Derived>& other)
+	template <typename From>
+		requires std::is_convertible_v<From*, T*>
+	UPtr(const UPtr<From>& other)
 	{
-		SetOwner(reinterpret_cast<Owner*>(other.GetOwner())); // GetOwner() because different type
-	}
-
-	template <BaseOf<PointerType> Base>
-	UPtr(const UPtr<Base>& other)
-	{
-		SetOwner(reinterpret_cast<Owner*>(other.GetOwner()));
+		SetOwner(reinterpret_cast<Owner*>(other.owner_));
 	}
 
 	~UPtr()
@@ -95,17 +95,11 @@ public:
 		SetOwner(nullptr);
 	}
 
-	template <DerivedFrom<PointerType> Derived>
-	UPtr& operator=(const UPtr<Derived>& other)
+	template <typename From>
+		requires std::is_convertible_v<From*, T*>
+	UPtr& operator=(const UPtr<From>& other)
 	{
-		SetOwner(reinterpret_cast<Owner*>(other.GetOwner())); 
-		return *this;
-	}
-
-	template <BaseOf<PointerType> Base>
-	UPtr& operator=(const UPtr<Base>& other)
-	{
-		SetOwner(reinterpret_cast<Owner*>(other.GetOwner()));
+		SetOwner(reinterpret_cast<Owner*>(other.owner_));
 		return *this;
 	}
 
@@ -119,20 +113,16 @@ public:
 		return *this;
 	}
 
-	constexpr Owner* GetOwner() const noexcept
-	{
-		return owner_;
-	}
-
 	constexpr bool operator==(const UPtr& other) const noexcept
 	{
 		return owner_ == other.owner_;
 	}
 
-	template <DerivedFrom<PointerType> Derived>
-	constexpr bool operator==(const UPtr<Derived>& other) const noexcept
+	template <typename From>
+		requires std::is_convertible_v<From*, T*>
+	constexpr bool operator==(const UPtr<From>& other) const noexcept
 	{
-		return owner_ == reinterpret_cast<Owner*>(other.GetOwner());
+		return owner_ == reinterpret_cast<Owner*>(other.owner_);
 	}
 
 	constexpr bool operator==(PointerType* ptr) const noexcept
@@ -160,6 +150,11 @@ public:
 		return owner_ && owner_->pointer_;
 	}
 
+	constexpr Owner* GetOwner() const noexcept
+	{
+		return owner_;
+	}
+
 private:
 	Owner* owner_{ nullptr };
 	size_t index_{ 0 };
@@ -183,7 +178,7 @@ private:
 		
 		if (owner_)
 		{
-			owner_->children_.Add(this);
+			owner_->children_.Add(reinterpret_cast<UPtr<std::remove_const_t<T>>*>(this));
 			index_ = owner_->children_.LastIndex();
 		}
 	}
@@ -191,11 +186,11 @@ private:
 
 template <typename Derived, typename Base>
 	requires std::is_base_of_v<Base, Derived>
-UPtr<Derived> TryCast(const UPtr<Base>& ptr)
+inline UPtr<Derived> TryCast(const UPtr<Base>& ptr)
 {
 	if (ptr && dynamic_cast<Derived*>(ptr.Get()))
 	{
-		return ptr;
+		return reinterpret_cast<UPtrOwner<Derived>*>(ptr.GetOwner());
 	}
 	return nullptr;
 }
