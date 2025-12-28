@@ -36,13 +36,13 @@ KtSceneCuller::ProxiesPool KtSceneCuller::ComputeNullCulling(const ProxiesPool& 
 			continue;
 		}
 
-		if (!proxy->frameDatas_[frameIndex].shader)
+		if (!proxy->frameDatas_[frameIndex].data.shader)
 		{
 			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "GraphicsKtSceneCuller::ComputeNullCulling()", "shader is nullptr");
 			continue;
 		}
 
-		if (!proxy->frameDatas_[frameIndex].renderable)
+		if (!proxy->frameDatas_[frameIndex].data.renderable)
 		{
 			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "GraphicsKtSceneCuller::ComputeNullCulling()", "renderable is nullptr");
 			continue;
@@ -61,7 +61,7 @@ KtSceneCuller::ProxiesPool KtSceneCuller::ComputeDistanceCulling(const ProxiesPo
 	for (Proxy* proxy : proxies)
 	{
 		const glm::vec3 cameraPosition{ 0.0f, 0.0f, 0.0f };
-		const glm::vec3 objectPosition{ glm::vec3(proxy->frameDatas_[frameIndex].objectData.modelMatrix[3]) };
+		const glm::vec3 objectPosition{ glm::vec3(proxy->frameDatas_[frameIndex].data.objectData.modelMatrix[3]) };
 		const float distance{ glm::distance(cameraPosition, objectPosition) };
 		static constexpr float maxDistance{ 10000.0f };
 		if (distance > maxDistance)

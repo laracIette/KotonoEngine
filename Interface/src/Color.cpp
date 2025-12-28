@@ -18,17 +18,17 @@ void WColor::DisplayInternal(DisplaySettings displaySettings)
 	Renderer.InterfaceRenderer().RegisterProxy(colorProxy_);
 
 	colorProxy_->ScheduleUpdate(
-		[this, displaySettings](UInterfaceProxy::FrameData& frameData)
+		[this, displaySettings](UInterfaceProxy::Data& data)
 		{
 			static const auto shaderPath{ KtPath::Graphics() / "shaders" / "flatColor2D.ktshader" };
 			static const auto imagePath{ KtPath::Graphics() / "assets" / "textures" / "white_texture.jpg" };
 
-			frameData.shader = ShaderManager.Get(shaderPath);
-			frameData.renderable = ImageTextureManager.Get(imagePath);
-			frameData.layer = displaySettings.layer;
-			frameData.objectData.modelMatrix = ModelMatrix();
-			frameData.objectData.color = colorSettings_.color;
-			frameData.scissor = displaySettings.scissor;
+			data.shader = ShaderManager.Get(shaderPath);
+			data.renderable = ImageTextureManager.Get(imagePath);
+			data.layer = displaySettings.layer;
+			data.objectData.modelMatrix = ModelMatrix();
+			data.objectData.color = colorSettings_.color;
+			data.scissor = displaySettings.scissor;
 		}
 	);
 }

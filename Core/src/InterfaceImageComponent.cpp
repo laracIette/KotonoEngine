@@ -85,15 +85,15 @@ void KInterfaceImageComponent::Spawn()
 void KInterfaceImageComponent::CreateImageTextureProxy()
 {
 	imageTextureProxy_->ScheduleUpdate(
-		[this](UInterfaceProxy::FrameData& frameData)
+		[this](UInterfaceProxy::Data& data)
 		{
-			frameData.shader = GetShader();
-			frameData.renderable = GetImageTexture();;
-			frameData.layer = GetLayer();
-			frameData.objectData.modelMatrix = ModelMatrix();
-			frameData.objectData.color = GetColor();
-			frameData.scissor.offset = WindowViewport.GetOffset();
-			frameData.scissor.extent = WindowViewport.GetExtent();
+			data.shader = GetShader();
+			data.renderable = GetImageTexture();;
+			data.layer = GetLayer();
+			data.objectData.modelMatrix = ModelMatrix();
+			data.objectData.color = GetColor();
+			data.scissor.offset = WindowViewport.GetOffset();
+			data.scissor.extent = WindowViewport.GetExtent();
 		}
 	);
 }
@@ -101,9 +101,9 @@ void KInterfaceImageComponent::CreateImageTextureProxy()
 void KInterfaceImageComponent::MarkImageTextureProxyRectDirty()
 {
 	imageTextureProxy_->ScheduleUpdate(
-		[this](UInterfaceProxy::FrameData& frameData)
+		[this](UInterfaceProxy::Data& data)
 		{
-			frameData.objectData.modelMatrix = ModelMatrix();
+			data.objectData.modelMatrix = ModelMatrix();
 		}
 	);
 }
@@ -111,9 +111,9 @@ void KInterfaceImageComponent::MarkImageTextureProxyRectDirty()
 void KInterfaceImageComponent::MarkImageTextureProxyShaderDirty()
 {
 	imageTextureProxy_->ScheduleUpdate(
-		[this](UInterfaceProxy::FrameData& frameData)
+		[this](UInterfaceProxy::Data& data)
 		{
-			frameData.shader = GetShader();
+			data.shader = GetShader();
 		}
 	);
 }
@@ -121,9 +121,9 @@ void KInterfaceImageComponent::MarkImageTextureProxyShaderDirty()
 void KInterfaceImageComponent::MarkImageTextureProxyImageTextureDirty()
 {
 	imageTextureProxy_->ScheduleUpdate(
-		[this](UInterfaceProxy::FrameData& frameData)
+		[this](UInterfaceProxy::Data& data)
 		{
-			frameData.renderable = GetImageTexture();
+			data.renderable = GetImageTexture();
 		}
 	);
 }
@@ -131,9 +131,9 @@ void KInterfaceImageComponent::MarkImageTextureProxyImageTextureDirty()
 void KInterfaceImageComponent::MarkImageTextureProxyLayerDirty()
 {
 	imageTextureProxy_->ScheduleUpdate(
-		[this](UInterfaceProxy::FrameData& frameData)
+		[this](UInterfaceProxy::Data& data)
 		{
-			frameData.layer = GetLayer();
+			data.layer = GetLayer();
 		}
 	);
 }

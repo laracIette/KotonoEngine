@@ -135,14 +135,14 @@ public:
 		return owner_->pointer_;
 	}
 
-	constexpr PointerType* operator->() noexcept
+	constexpr PointerType* operator->() const noexcept
 	{
-		return owner_->pointer_;
+		return Get();
 	}
 
-	constexpr const PointerType* operator->() const noexcept
+	constexpr PointerType& operator*() const noexcept
 	{
-		return owner_->pointer_;
+		return *Get();
 	}
 
 	constexpr operator bool() const noexcept
@@ -190,7 +190,7 @@ inline UPtr<Derived> TryCast(const UPtr<Base>& ptr)
 {
 	if (ptr && dynamic_cast<Derived*>(ptr.Get()))
 	{
-		return reinterpret_cast<UPtrOwner<Derived>*>(ptr.GetOwner());
+		return reinterpret_cast<UPtrOwner<std::remove_const_t<Derived>>*>(ptr.GetOwner());
 	}
 	return nullptr;
 }

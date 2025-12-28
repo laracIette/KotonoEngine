@@ -24,13 +24,13 @@ KtInterfaceCuller::ProxiesPool KtInterfaceCuller::ComputeNullCulling(const Proxi
 			continue;
 		}
 
-		if (!proxy->frameDatas_[frameIndex].shader)
+		if (!proxy->frameDatas_[frameIndex].data.shader)
 		{
 			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "Graphics.KtInterfaceCuller::ComputeNullCulling()", "shader is nullptr");
 			continue;
 		}
 
-		if (!proxy->frameDatas_[frameIndex].renderable)
+		if (!proxy->frameDatas_[frameIndex].data.renderable)
 		{
 			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_NULLPTR, "Graphics.KtInterfaceCuller::ComputeNullCulling()", "renderable is nullptr");
 			continue;

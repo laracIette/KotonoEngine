@@ -41,18 +41,18 @@ void KInterfaceBoxComponent::Spawn()
 void KInterfaceBoxComponent::CreateBoxProxy()
 {
     boxProxy_->ScheduleUpdate(
-        [this](UInterfaceProxy::FrameData& frameData)
+        [this](UInterfaceProxy::Data& data)
         {
             const auto shaderPath{ KtPath::Graphics() / "shaders" / "flatColor2D.ktshader" };
             const auto texturePath{ KtPath::Graphics() / "assets" / "textures" / "white_texture.jpg" };
 
-            frameData.shader = ShaderManager.Get(shaderPath);
-            frameData.renderable = ImageTextureManager.Get(texturePath);
-            frameData.layer = GetLayer();
-            frameData.objectData.modelMatrix = ModelMatrix();
-            frameData.objectData.color = GetColor();
-            frameData.scissor.offset = WindowViewport.GetOffset();
-            frameData.scissor.extent = WindowViewport.GetExtent();
+            data.shader = ShaderManager.Get(shaderPath);
+            data.renderable = ImageTextureManager.Get(texturePath);
+            data.layer = GetLayer();
+            data.objectData.modelMatrix = ModelMatrix();
+            data.objectData.color = GetColor();
+            data.scissor.offset = WindowViewport.GetOffset();
+            data.scissor.extent = WindowViewport.GetExtent();
         }
     );
 }
@@ -60,9 +60,9 @@ void KInterfaceBoxComponent::CreateBoxProxy()
 void KInterfaceBoxComponent::MarkBoxProxyColorDirty()
 {
     boxProxy_->ScheduleUpdate(
-        [this](UInterfaceProxy::FrameData& frameData)
+        [this](UInterfaceProxy::Data& data)
         {
-            frameData.objectData.color = GetColor();
+            data.objectData.color = GetColor();
         }
     );
 }
@@ -70,9 +70,9 @@ void KInterfaceBoxComponent::MarkBoxProxyColorDirty()
 void KInterfaceBoxComponent::MarkBoxProxyRectDirty()
 {
     boxProxy_->ScheduleUpdate(
-        [this](UInterfaceProxy::FrameData& frameData)
+        [this](UInterfaceProxy::Data& data)
         {
-            frameData.objectData.modelMatrix = ModelMatrix();
+            data.objectData.modelMatrix = ModelMatrix();
         }
     );
 }

@@ -101,9 +101,9 @@ void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinate
 	}
 }
 
-void TSceneObject::AddComponent(UPtr<KSceneComponent> component)
+void TSceneObject::AddComponent(const UPtr<KSceneComponent>& component)
 {
-	if (sceneComponents_.Empty())
+	if (sceneComponents_.empty())
 	{
 		rootComponent_ = component;
 	}

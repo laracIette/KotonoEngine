@@ -151,7 +151,7 @@ public:
 		return static_cast<int64_t>(data_.size()) - 1;
 	}
 
-	constexpr bool Empty() const noexcept
+	constexpr bool empty() const noexcept
 	{
 		return data_.empty();
 	}

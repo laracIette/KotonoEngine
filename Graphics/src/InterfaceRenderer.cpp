@@ -266,24 +266,24 @@ void KtInterfaceRenderer::UpdateStagingProxies(const uint32_t frameIndex)
 
 		if (count > 0)
 		{
-			if (!proxy->poolDatas_[frameIndex].isRegistered)
+			if (!proxy->frameDatas_[frameIndex].poolData.isRegistered)
 			{
-				proxy->poolDatas_[frameIndex].isRegistered = true;
+				proxy->frameDatas_[frameIndex].poolData.isRegistered = true;
 				frameDatas_[frameIndex].objectBuffer.proxies.Add(proxy);
-				proxy->poolDatas_[frameIndex].index = frameDatas_[frameIndex].objectBuffer.proxies.LastIndex();
+				proxy->frameDatas_[frameIndex].poolData.index = frameDatas_[frameIndex].objectBuffer.proxies.LastIndex();
 			}
-			
+
 			--count;
 		}
 		else if (count < 0)
 		{
-			if (proxy->poolDatas_[frameIndex].isRegistered)
+			if (proxy->frameDatas_[frameIndex].poolData.isRegistered)
 			{
-				proxy->poolDatas_[frameIndex].isRegistered = false;
-				const size_t index{ proxy->poolDatas_[frameIndex].index };
+				proxy->frameDatas_[frameIndex].poolData.isRegistered = false;
+				const size_t index{ proxy->frameDatas_[frameIndex].poolData.index };
 				if (frameDatas_[frameIndex].objectBuffer.proxies.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 				{
-					frameDatas_[frameIndex].objectBuffer.proxies[index]->poolDatas_[frameIndex].index = index;
+					frameDatas_[frameIndex].objectBuffer.proxies[index]->frameDatas_[frameIndex].poolData.index = index;
 				}
 			}
 
@@ -313,17 +313,17 @@ void KtInterfaceRenderer::UpdateDescriptorSets(const ProxiesPool& proxies, const
 	for (const auto* proxy : proxies)
 	{
 		auto& frameData{ proxy->frameDatas_[frameIndex] };
-		auto& shaderData{ shaderDatas[frameData.shader] };
+		auto& shaderData{ shaderDatas[frameData.data.shader] };
 
-		shaderData.objectBufferDatas.push_back(frameData.objectData);
+		shaderData.objectBufferDatas.push_back(frameData.data.objectData);
 
-		const auto it{ std::find(shaderData.renderables.begin(), shaderData.renderables.end(), frameData.renderable) };
+		const auto it{ std::find(shaderData.renderables.begin(), shaderData.renderables.end(), frameData.data.renderable) };
 
 		size_t index;
 		if (it == shaderData.renderables.end())
 		{
 			index = shaderData.renderables.size();
-			shaderData.renderables.push_back(frameData.renderable);
+			shaderData.renderables.push_back(frameData.data.renderable);
 		}
 		else
 		{
@@ -388,15 +388,15 @@ void KtInterfaceRenderer::SortProxies(ProxiesPool& proxies, const uint32_t frame
 		{
 			const auto& aFrameData{ a->frameDatas_[frameIndex] };
 			const auto& bFrameData{ b->frameDatas_[frameIndex] };
-			if (aFrameData.layer != bFrameData.layer)
+			if (aFrameData.data.layer != bFrameData.data.layer)
 			{
-				return aFrameData.layer < bFrameData.layer;
+				return aFrameData.data.layer < bFrameData.data.layer;
 			}
-			if (aFrameData.shader != bFrameData.shader)
+			if (aFrameData.data.shader != bFrameData.data.shader)
 			{
-				return aFrameData.shader < bFrameData.shader;
+				return aFrameData.data.shader < bFrameData.data.shader;
 			}
-			return aFrameData.renderable < bFrameData.renderable;
+			return aFrameData.data.renderable < bFrameData.data.renderable;
 		}
 	);
 }
@@ -413,17 +413,17 @@ void KtInterfaceRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const Pr
 	for (size_t i{ 0 }; i < proxies.size();)
 	{
 		const auto& frameData{ proxies[i]->frameDatas_[frameIndex] };
-		const KtShader* shader{ frameData.shader };
-		const int32_t layer{ frameData.layer };
-		const KtScissor scissor{ frameData.scissor };
+		const KtShader* shader{ frameData.data.shader };
+		const int32_t layer{ frameData.data.layer };
+		const KtScissor scissor{ frameData.data.scissor };
 
 		size_t instanceCount{ 1 };
 		for (; i + instanceCount < proxies.size(); ++instanceCount)
 		{
 			const auto& nextFrameData{ proxies[i + instanceCount]->frameDatas_[frameIndex] };
-			if (nextFrameData.shader != shader ||
-				nextFrameData.scissor.extent != scissor.extent || 
-				nextFrameData.scissor.offset != scissor.offset)
+			if (nextFrameData.data.shader != shader ||
+				nextFrameData.data.scissor.extent != scissor.extent || 
+				nextFrameData.data.scissor.offset != scissor.offset)
 			{
 				break;
 			}

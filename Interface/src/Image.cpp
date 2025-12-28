@@ -19,15 +19,15 @@ void WImage::DisplayInternal(DisplaySettings displaySettings)
 	Renderer.InterfaceRenderer().RegisterProxy(imageProxy_);
 
 	imageProxy_->ScheduleUpdate(
-		[this, displaySettings](UInterfaceProxy::FrameData& frameData)
+		[this, displaySettings](UInterfaceProxy::Data& data)
 		{
 			static const auto shaderPath{ KtPath::Graphics() / "shaders"/ "shader2D.ktshader" };
 
-			frameData.shader = ShaderManager.Get(shaderPath);
-			frameData.renderable = ImageTextureManager.Get(imageSettings_.path);
-			frameData.layer = displaySettings.layer;
-			frameData.objectData.modelMatrix = ModelMatrix();
-			frameData.scissor = displaySettings.scissor;
+			data.shader = ShaderManager.Get(shaderPath);
+			data.renderable = ImageTextureManager.Get(imageSettings_.path);
+			data.layer = displaySettings.layer;
+			data.objectData.modelMatrix = ModelMatrix();
+			data.scissor = displaySettings.scissor;
 		}
 	);
 }

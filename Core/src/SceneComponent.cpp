@@ -353,12 +353,12 @@ void KSceneComponent::Scale(const glm::vec3& scale)
     SetRelativeScale(GetRelativeScale() * scale);
 }
 
-glm::vec3 KSceneComponent::GetDirection(const UPtr<KSceneComponent>& target) const
+glm::vec3 KSceneComponent::GetDirection(const UPtr<const KSceneComponent>& target) const
 {
     return target->GetWorldPosition() - GetWorldPosition();
 }
 
-float KSceneComponent::GetDistance(const UPtr<KSceneComponent>& other) const
+float KSceneComponent::GetDistance(const UPtr<const KSceneComponent>& other) const
 {
     return glm::distance(GetWorldPosition(), other->GetWorldPosition());
 }

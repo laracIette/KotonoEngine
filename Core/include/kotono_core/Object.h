@@ -1,5 +1,4 @@
 #pragma once
-#include "base_class.h"
 #include "generated/Object.generated.h"
 #include "Guid.h"
 #include "serialize.h"

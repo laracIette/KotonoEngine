@@ -255,24 +255,24 @@ void KtSceneRenderer::UpdateStagingProxies(StagingProxiesMap& stagingProxies, Fr
 
 		if (count > 0)
 		{
-			if (!proxy->poolDatas_[frameIndex].isRegistered)
+			if (!proxy->frameDatas_[frameIndex].poolData.isRegistered)
 			{
-				proxy->poolDatas_[frameIndex].isRegistered = true;
+				proxy->frameDatas_[frameIndex].poolData.isRegistered = true;
 				objectBuffer.proxies.Add(proxy);
-				proxy->poolDatas_[frameIndex].index = objectBuffer.proxies.LastIndex();
+				proxy->frameDatas_[frameIndex].poolData.index = objectBuffer.proxies.LastIndex();
 			}
 
 			--count;
 		}
 		else if (count < 0)
 		{
-			if (proxy->poolDatas_[frameIndex].isRegistered)
+			if (proxy->frameDatas_[frameIndex].poolData.isRegistered)
 			{
-				proxy->poolDatas_[frameIndex].isRegistered = false;
-				const size_t index{ proxy->poolDatas_[frameIndex].index };
+				proxy->frameDatas_[frameIndex].poolData.isRegistered = false;
+				const size_t index{ proxy->frameDatas_[frameIndex].poolData.index };
 				if (objectBuffer.proxies.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 				{
-					objectBuffer.proxies[index]->poolDatas_[frameIndex].index = index;
+					objectBuffer.proxies[index]->frameDatas_[frameIndex].poolData.index = index;
 				}
 			}
 
@@ -294,7 +294,7 @@ void KtSceneRenderer::UpdateDescriptorSetObjectBuffers(const ProxiesPool& proxie
 	for (const Proxy* proxy : proxies)
 	{
 		const auto& frameData{ proxy->frameDatas_[frameIndex] };
-		shaderObjectBufferDatas[frameData.shader].push_back(frameData.objectData);
+		shaderObjectBufferDatas[frameData.data.shader].push_back(frameData.data.objectData);
 	}
 
 	for (const auto& [shader, objectBufferDatas] : shaderObjectBufferDatas)
@@ -313,7 +313,7 @@ void KtSceneRenderer::UpdateDescriptorSetUniformBuffers(const ProxiesPool& proxi
 	for (const Proxy* proxy : proxies)
 	{
 		const auto& frameData{ proxy->frameDatas_[frameIndex] };
-		shaders.insert(frameData.shader);
+		shaders.insert(frameData.data.shader);
 	}
 
 	for (auto* shader : shaders)
@@ -351,18 +351,18 @@ void KtSceneRenderer::SortProxies(ProxiesPool& proxies, const uint32_t frameInde
 		{
 			const auto& aFrameData{ a->frameDatas_[frameIndex] };
 			const auto& bFrameData{ b->frameDatas_[frameIndex] };
-			if (aFrameData.shader != bFrameData.shader)
+			if (aFrameData.data.shader != bFrameData.data.shader)
 			{
-				return aFrameData.shader < bFrameData.shader;
+				return aFrameData.data.shader < bFrameData.data.shader;
 			}
-			return aFrameData.renderable < bFrameData.renderable;
+			return aFrameData.data.renderable < bFrameData.data.renderable;
 		}
 	);
 }
 
 void KtSceneRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex)
 {
-	if (proxies.Empty())
+	if (proxies.empty())
 	{
 		return;
 	}
@@ -375,19 +375,19 @@ void KtSceneRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const Proxie
 	for (size_t i{ 0 }; i < proxies.size();)
 	{
 		const auto& frameData{ proxies[i]->frameDatas_[frameIndex] };
-		const KtShader* shader{ frameData.shader };
-		const KtSceneRenderable* renderable{ frameData.renderable };
-		const KtScissor scissor{ frameData.scissor };
+		const KtShader* shader{ frameData.data.shader };
+		const KtSceneRenderable* renderable{ frameData.data.renderable };
+		const KtScissor scissor{ frameData.data.scissor };
 
 		// Find the extent of the current batch
 		size_t instanceCount{ 1 };
 		for (; i + instanceCount < proxies.size(); ++instanceCount)
 		{
 			const auto& nextFrameData{ proxies[i + instanceCount]->frameDatas_[frameIndex] };
-			if (nextFrameData.shader != shader || 
-				nextFrameData.renderable != renderable || 
-				nextFrameData.scissor.extent != scissor.extent || 
-				nextFrameData.scissor.offset != scissor.offset)
+			if (nextFrameData.data.shader != shader || 
+				nextFrameData.data.renderable != renderable || 
+				nextFrameData.data.scissor.extent != scissor.extent || 
+				nextFrameData.data.scissor.offset != scissor.offset)
 			{
 				break;
 			}

@@ -74,8 +74,8 @@ public:
 	void Rotate(const glm::quat& rotation);
 	void Scale(const glm::vec3& scale);
 
-	glm::vec3 GetDirection(const UPtr<KSceneComponent>& target) const;
-	float GetDistance(const UPtr<KSceneComponent>& other) const;
+	glm::vec3 GetDirection(const UPtr<const KSceneComponent>& target) const;
+	float GetDistance(const UPtr<const KSceneComponent>& other) const;
 
 	void Deserialize() override;
 

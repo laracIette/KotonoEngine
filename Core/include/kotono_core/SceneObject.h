@@ -41,7 +41,7 @@ public:
 		);
 	}
 
-	void AddComponent(UPtr<KSceneComponent> component);
+	void AddComponent(const UPtr<KSceneComponent>& component);
 	void RemoveComponent(const UPtr<KSceneComponent>& component);
 
 	void Deserialize() override;

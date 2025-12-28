@@ -7,14 +7,14 @@ void UInterfaceProxy::ScheduleUpdate(const UpdateFunction& function)
 
 void UInterfaceProxy::ApplyPendingUpdates(const uint32_t frameIndex)
 {
-	if (pendingUpdates_.Empty())
+	if (pendingUpdates_.empty())
 	{
 		return;
 	}
 
 	for (auto& updateData : pendingUpdates_)
 	{
-		updateData.function(frameDatas_[frameIndex]);
+		updateData.function(frameDatas_[frameIndex].data);
 		--updateData.count;
 	}
 
@@ -28,5 +28,5 @@ void UInterfaceProxy::ApplyPendingUpdates(const uint32_t frameIndex)
 
 bool UInterfaceProxy::IsDirty() const
 {
-	return !pendingUpdates_.Empty();
+	return !pendingUpdates_.empty();
 }

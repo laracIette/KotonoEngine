@@ -115,13 +115,13 @@ void KSceneMeshComponent::SetMobility(const EMobility mobility)
 void KSceneMeshComponent::CreateModelProxy()
 {
     modelProxy_->ScheduleUpdate(
-        [this](USceneProxy::FrameData& frameData)
+        [this](USceneProxy::Data& data)
         {
-            frameData.shader = shader_;
-            frameData.renderable = model_;
-            frameData.objectData.modelMatrix = ModelMatrix();
-            frameData.scissor.offset = GetOwner()->GetViewport()->GetOffset();
-            frameData.scissor.extent = GetOwner()->GetViewport()->GetExtent();
+            data.shader = shader_;
+            data.renderable = model_;
+            data.objectData.modelMatrix = ModelMatrix();
+            data.scissor.offset = GetOwner()->GetViewport()->GetOffset();
+            data.scissor.extent = GetOwner()->GetViewport()->GetExtent();
         }
     );
 }
@@ -129,9 +129,9 @@ void KSceneMeshComponent::CreateModelProxy()
 void KSceneMeshComponent::MarkModelProxyTransformDirty()
 {
     modelProxy_->ScheduleUpdate(
-        [this](USceneProxy::FrameData& frameData)
+        [this](USceneProxy::Data& data)
         {
-            frameData.objectData.modelMatrix = ModelMatrix();
+            data.objectData.modelMatrix = ModelMatrix();
         }
     );
 	KT_LOG(ELogImportanceLevel::Medium, "Core.KSceneMeshComponent::MarkModelProxyTransformDirty()", "%s", GetName().c_str());
@@ -140,10 +140,10 @@ void KSceneMeshComponent::MarkModelProxyTransformDirty()
 void KSceneMeshComponent::MarkModelProxyScissorDirty()
 {
     modelProxy_->ScheduleUpdate(
-        [this](USceneProxy::FrameData& frameData)
+        [this](USceneProxy::Data& data)
         {
-            frameData.scissor.offset = GetOwner()->GetViewport()->GetOffset();
-            frameData.scissor.extent = GetOwner()->GetViewport()->GetExtent();
+            data.scissor.offset = GetOwner()->GetViewport()->GetOffset();
+            data.scissor.extent = GetOwner()->GetViewport()->GetExtent();
         }
     );
 }

@@ -346,41 +346,46 @@ void KtContext::CreateLogicalDevice()
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 	const std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
-	float queuePriority = 1.0f;
+	const float queuePriority = 1.0f;
 	for (uint32_t queueFamily : uniqueQueueFamilies)
 	{
-		VkDeviceQueueCreateInfo queueCreateInfo{};
-		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-		queueCreateInfo.queueFamilyIndex = queueFamily;
-		queueCreateInfo.queueCount = 1;
-		queueCreateInfo.pQueuePriorities = &queuePriority;
+		const VkDeviceQueueCreateInfo queueCreateInfo{
+			.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+			.queueFamilyIndex = queueFamily,
+			.queueCount = 1,
+			.pQueuePriorities = &queuePriority,
+		};
 		queueCreateInfos.push_back(queueCreateInfo);
 	}
 
-	VkPhysicalDeviceFeatures deviceFeatures{};
-	deviceFeatures.samplerAnisotropy = VK_TRUE;
-	deviceFeatures.sampleRateShading = VK_TRUE; // enable sample shading feature for the device
-	deviceFeatures.fillModeNonSolid = VK_TRUE; // enable wireframe
+	const VkPhysicalDeviceFeatures deviceFeatures{
+		.sampleRateShading = VK_TRUE, // enable sample shading feature for the device
+		.fillModeNonSolid = VK_TRUE, // enable wireframe
+		.samplerAnisotropy = VK_TRUE,
+	};
 
 	// Enable shader draw parameters
-	VkPhysicalDeviceShaderDrawParametersFeatures shaderDrawParametersFeatures{};
-	shaderDrawParametersFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETERS_FEATURES;
-	shaderDrawParametersFeatures.pNext = nullptr; // No further extensions
-	shaderDrawParametersFeatures.shaderDrawParameters = VK_TRUE;
+	VkPhysicalDeviceShaderDrawParametersFeatures shaderDrawParametersFeatures{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETERS_FEATURES,
+		.pNext = nullptr, // No further extensions
+		.shaderDrawParameters = VK_TRUE,
+	};
 
-	VkPhysicalDeviceDescriptorIndexingFeatures indexingFeatures{};
-	indexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
-	indexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
-	indexingFeatures.runtimeDescriptorArray = VK_TRUE;
-	indexingFeatures.descriptorBindingVariableDescriptorCount = VK_TRUE;
-	indexingFeatures.descriptorBindingPartiallyBound = VK_TRUE;
-	indexingFeatures.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
-	indexingFeatures.pNext = &shaderDrawParametersFeatures;
+	VkPhysicalDeviceDescriptorIndexingFeatures indexingFeatures{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
+		.pNext = &shaderDrawParametersFeatures,
+		.shaderSampledImageArrayNonUniformIndexing = VK_TRUE,
+		.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE,
+		.descriptorBindingPartiallyBound = VK_TRUE,
+		.descriptorBindingVariableDescriptorCount = VK_TRUE,
+		.runtimeDescriptorArray = VK_TRUE,
+	};
 
-	VkPhysicalDeviceFeatures2 deviceFeatures2{};
-	deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-	deviceFeatures2.features = deviceFeatures;
-	deviceFeatures2.pNext = &indexingFeatures;
+	const VkPhysicalDeviceFeatures2 deviceFeatures2{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+		.pNext = &indexingFeatures,
+		.features = deviceFeatures,
+	};
 
 	VkDeviceCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

@@ -1,13 +1,12 @@
 #pragma once
-#include <vma/vk_mem_alloc.h>
-#include <vulkan/vulkan_core.h>
 #include "frames_in_flight.h"
-#include <vector>
-#include <span>
 #include "InterfaceRenderer.h"
 #include "SceneRenderer.h"
+#include <span>
 #include <thread>
-#include <mutex>
+#include <vector>
+#include <vma/vk_mem_alloc.h>
+#include <vulkan/vulkan_core.h>
 
 class KtRenderer final
 {
@@ -32,24 +31,37 @@ public:
 	VkCommandPool& GetCommandPool(const uint32_t frameIndex);
 
 private:
+	struct SwapChainData
+	{
+		VkImage image;
+		VkImageView imageView;
+		VkFramebuffer framebuffer;
+	};
+
+	struct FrameData
+	{
+		VkCommandPool commandPool;
+		VkCommandBuffer commandBuffer;
+		VkSemaphore imageAvailableSemaphore;
+		VkSemaphore renderFinishedSemaphore;
+		VkFence inFlightFence;
+		uint32_t imageIndex;
+	};
+
 	KtInterfaceRenderer interfaceRenderer_;
 	KtSceneRenderer sceneRenderer_;
 
+	std::vector<SwapChainData> swapChainDatas_;
 	VkSwapchainKHR swapChain_;
-	std::vector<VkImage> swapChainImages_;
 	VkFormat swapChainImageFormat_;
 	VkExtent2D swapChainExtent_;
-	std::vector<VkImageView> swapChainImageViews_;
-	std::vector<VkFramebuffer> swapChainFramebuffers_;
 
 	VkRenderPass renderPass_;
 
-	KtFramesInFlightArray<VkCommandPool> commandPools_;
-	KtFramesInFlightArray<VkCommandBuffer> commandBuffers_;
+	KtFramesInFlightArray<FrameData> frameDatas_;
 
 	std::thread renderThread_;
 	std::thread rhiThread_;
-	std::mutex renderMutex_;
 
 	VkImage colorImage_;
 	VmaAllocation colorImageAllocation_;
@@ -58,11 +70,6 @@ private:
 	VkImage depthImage_;
 	VmaAllocation depthImageAllocation_;
 	VkImageView depthImageView_;
-
-	KtFramesInFlightArray<VkSemaphore> imageAvailableSemaphores_;
-	KtFramesInFlightArray<VkSemaphore> renderFinishedSemaphores_;
-	KtFramesInFlightArray<VkFence> inFlightFences_;
-	KtFramesInFlightArray<uint32_t> imageIndices_;
 
 	uint32_t frameCount_;
 

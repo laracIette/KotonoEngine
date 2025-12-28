@@ -32,7 +32,7 @@ public:
 
 	void SetCanUpdate(const bool canUpdate);
 	void SetViewport(KtWindowViewport* viewport);
-	void SetParent(UPtr<RInterfaceObject> parent, const ECoordinateSpace keepRect);
+	void SetParent(const UPtr<RInterfaceObject>& parent, const ECoordinateSpace keepRect);
 
 	/// Returns true if any component is hovered
 	bool IsHovered() const;
@@ -45,7 +45,7 @@ public:
 		);
 	}
 
-	void AddComponent(UPtr<KInterfaceComponent> component);
+	void AddComponent(const UPtr<KInterfaceComponent>& component);
 	void RemoveComponent(const UPtr<KInterfaceComponent>& component);
 
 	virtual void Spawn();

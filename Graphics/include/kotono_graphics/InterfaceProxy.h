@@ -13,7 +13,7 @@ private:
 	friend class KtInterfaceRenderer;
 
 public:
-	struct FrameData
+	struct Data
 	{
 		KtShader* shader;
 		KtInterfaceRenderable* renderable;
@@ -22,19 +22,25 @@ public:
 		KtScissor scissor;
 	};
 
-	using UpdateFunction = std::function<void(FrameData&)>;
+	using UpdateFunction = std::function<void(Data&)>;
 
+private:
 	struct UpdateData
 	{
 		UpdateFunction function;
 		uint32_t count;
 	};
 
-private:
 	struct PoolData
 	{
 		bool isRegistered;
 		size_t index;
+	};
+
+	struct FrameData
+	{
+		Data data;
+		PoolData poolData;
 	};
 
 public:
@@ -47,6 +53,5 @@ private:
 
 private:
 	KtFramesInFlightArray<FrameData> frameDatas_;
-	KtFramesInFlightArray<PoolData> poolDatas_;
 	KtPool<UpdateData> pendingUpdates_;
 };

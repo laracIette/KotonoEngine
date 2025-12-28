@@ -491,7 +491,7 @@ bool KInterfaceComponent::IsHovered() const
     return GetIsOverlapping(worldPosition);
 }
 
-void KInterfaceComponent::AddChildren(UPtr<KInterfaceComponent> interfaceComponent)
+void KInterfaceComponent::AddChildren(const UPtr<KInterfaceComponent>& interfaceComponent)
 {
     if (!interfaceComponent)
     {
@@ -527,18 +527,18 @@ void KInterfaceComponent::Spawn()
 void KInterfaceComponent::CreateBoundsProxy()
 {
     boundsProxy_->ScheduleUpdate(
-        [this](UInterfaceProxy::FrameData& frameData)
+        [this](UInterfaceProxy::Data& data)
         {
             const auto shaderPath{ KtPath::Graphics() / "shaders" / "flatColor2D.ktshader" };
             const auto texturePath{ KtPath::Graphics() / "assets" / "textures" / "white_texture.jpg" };
 
-            frameData.shader = ShaderManager.Get(shaderPath);
-            frameData.renderable = ImageTextureManager.Get(texturePath);
-            frameData.layer = GetLayer();
-            frameData.objectData.modelMatrix = ModelMatrix();
-            frameData.objectData.color = { 1.0f, 1.0f, 1.0f, 0.01f };
-            frameData.scissor.offset = WindowViewport.GetOffset();
-            frameData.scissor.extent = WindowViewport.GetExtent();
+            data.shader = ShaderManager.Get(shaderPath);
+            data.renderable = ImageTextureManager.Get(texturePath);
+            data.layer = GetLayer();
+            data.objectData.modelMatrix = ModelMatrix();
+            data.objectData.color = { 1.0f, 1.0f, 1.0f, 0.01f };
+            data.scissor.offset = WindowViewport.GetOffset();
+            data.scissor.extent = WindowViewport.GetExtent();
         }
     );
 }
@@ -546,9 +546,9 @@ void KInterfaceComponent::CreateBoundsProxy()
 void KInterfaceComponent::MarkBoundsProxyRectDirty()
 {
     boundsProxy_->ScheduleUpdate(
-        [this](UInterfaceProxy::FrameData& frameData)
+        [this](UInterfaceProxy::Data& data)
         {
-            frameData.objectData.modelMatrix = ModelMatrix();
+            data.objectData.modelMatrix = ModelMatrix();
         }
     );
 }

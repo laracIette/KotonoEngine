@@ -64,7 +64,7 @@ void RInterfaceObject::SetViewport(KtWindowViewport* viewport)
 	viewport_ = viewport;
 }
 
-void RInterfaceObject::SetParent(UPtr<RInterfaceObject> parent, const ECoordinateSpace keepRect)
+void RInterfaceObject::SetParent(const UPtr<RInterfaceObject>& parent, const ECoordinateSpace keepRect)
 {
 	if (!parent && !parent_)
 	{
@@ -113,9 +113,9 @@ bool RInterfaceObject::IsHovered() const
 	);
 }
 
-void RInterfaceObject::AddComponent(UPtr<KInterfaceComponent> component)
+void RInterfaceObject::AddComponent(const UPtr<KInterfaceComponent>& component)
 {
-	if (interfaceComponents_.Empty())
+	if (interfaceComponents_.empty())
 	{
 		rootComponent_ = component;
 	}
