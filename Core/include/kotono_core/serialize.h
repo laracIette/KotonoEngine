@@ -20,7 +20,7 @@ struct UGuid;
 struct UTransform;
 struct URect;
 class KtShader;
-class KtImageTexture;
+class KtTexture;
 class KtModel;
 class KObject;
 
@@ -55,7 +55,7 @@ void serialize(nlohmann::json& json, const UTransform& v);
 void serialize(nlohmann::json& json, const URect& v);
 
 void serialize(nlohmann::json& json, const KtShader* v);
-void serialize(nlohmann::json& json, const KtImageTexture* v);
+void serialize(nlohmann::json& json, const KtTexture* v);
 void serialize(nlohmann::json& json, const KtModel* v);
 
 void serialize_kobject(nlohmann::json& json, const UPtr<KObject>& v);
@@ -97,7 +97,7 @@ void deserialize(const nlohmann::json& json, UTransform& v);
 void deserialize(const nlohmann::json& json, URect& v);
 
 void deserialize(const nlohmann::json& json, KtShader*& v);
-void deserialize(const nlohmann::json& json, KtImageTexture*& v);
+void deserialize(const nlohmann::json& json, KtTexture*& v);
 void deserialize(const nlohmann::json& json, KtModel*& v);
 
 UPtr<KObject> deserialize_kobject(const nlohmann::json& json);

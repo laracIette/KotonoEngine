@@ -4,7 +4,7 @@
 #include "InterfaceObject.h"
 #include "ObjectManager.h"
 #include <kotono_common/Path.h>
-#include <kotono_graphics/ImageTextureManager.h>
+#include <kotono_graphics/TextureManager.h>
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/ShaderManager.h>
 
@@ -12,8 +12,8 @@ KInterface::KInterface(UPtrOwnerBase* ptrOwner) :
 	Base(ptrOwner)
 {
 	auto* shader2D{ ShaderManager.Get(KtPath::Graphics() / "shaders" / "shader2D.ktshader") };
-	auto* imageTexture1{ ImageTextureManager.Get(KtPath::Graphics() / "assets" / "models" / "viking_room.png") };
-	auto* imageTexture2{ ImageTextureManager.Get(KtPath::Graphics() / "assets" / "textures" / "default_texture.jpg") };
+	auto* texture1{ TextureManager.Get(KtPath::Graphics() / "assets" / "models" / "viking_room.png") };
+	auto* texture2{ TextureManager.Get(KtPath::Graphics() / "assets" / "textures" / "default_texture.jpg") };
 
 	UPtr image1{ ObjectManager.Create<RInterfaceObject>() };
 	UPtr image2{ ObjectManager.Create<RInterfaceObject>() };
@@ -27,14 +27,14 @@ KInterface::KInterface(UPtrOwnerBase* ptrOwner) :
 
 	imageComponent1->SetOwner(image1);
 	imageComponent1->SetShader(shader2D);
-	imageComponent1->SetImageTexture(imageTexture1);
+	imageComponent1->SetTexture(texture1);
 	imageComponent1->SetParent(rootComponent1, ECoordinateSpace::Relative);
 	imageComponent1->SetScreenSize({ 1024.0f, 1024.0f });
 	imageComponent1->SetRelativeScale({ 0.25f, 0.25f });
 
 	imageComponent2->SetOwner(image2);
 	imageComponent2->SetShader(shader2D);
-	imageComponent2->SetImageTexture(imageTexture2);
+	imageComponent2->SetTexture(texture2);
 	imageComponent2->SetParent(rootComponent2, ECoordinateSpace::Relative);
 	imageComponent2->SetScreenSize({ 1024.0f, 1024.0f });
 	imageComponent2->SetRelativeScale({ 0.1f, 0.1f });

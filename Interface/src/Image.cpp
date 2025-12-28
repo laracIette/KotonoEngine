@@ -1,8 +1,8 @@
 #include "Image.h"
 #include <kotono_common/log.h>
 #include <kotono_common/Path.h>
-#include <kotono_graphics/ImageTexture.h>
-#include <kotono_graphics/ImageTextureManager.h>
+#include <kotono_graphics/Texture.h>
+#include <kotono_graphics/TextureManager.h>
 #include <kotono_graphics/InterfaceProxy.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/ShaderManager.h>
@@ -24,7 +24,7 @@ void WImage::DisplayInternal(DisplaySettings displaySettings)
 			static const auto shaderPath{ KtPath::Graphics() / "shaders"/ "shader2D.ktshader" };
 
 			data.shader = ShaderManager.Get(shaderPath);
-			data.renderable = ImageTextureManager.Get(imageSettings_.path);
+			data.renderable = TextureManager.Get(imageSettings_.path);
 			data.layer = displaySettings.layer;
 			data.objectData.modelMatrix = ModelMatrix();
 			data.scissor = displaySettings.scissor;

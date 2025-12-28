@@ -1,29 +1,29 @@
-#include "ImageTexture.h"
+#include "Texture.h"
 #include <stbimage/stb_image.h>
 #include <kotono_platform/Context.h>
 #include <kotono_common/log.h>
 
-KtImageTexture::KtImageTexture(const std::filesystem::path& path) :
+KtTexture::KtTexture(const std::filesystem::path& path) :
 	path_(path)
 {
 }
 
-const std::filesystem::path& KtImageTexture::Path() const
+const std::filesystem::path& KtTexture::Path() const
 {
 	return path_;
 }
 
-const glm::uvec2& KtImageTexture::GetSize() const
+const glm::uvec2& KtTexture::GetSize() const
 {
 	return size_;
 }
 
-const VkDescriptorImageInfo& KtImageTexture::GetDescriptorImageInfo() const
+const VkDescriptorImageInfo& KtTexture::GetDescriptorImageInfo() const
 {
 	return imageInfo_;
 }
 
-void KtImageTexture::Init()
+void KtTexture::Init()
 {
 	CreateTextureImage();
 	CreateTextureImageView();
@@ -34,15 +34,15 @@ void KtImageTexture::Init()
 	imageInfo_.sampler = sampler_;
 }
 
-void KtImageTexture::Cleanup() const
+void KtTexture::Cleanup() const
 {
 	vkDestroySampler(Context.GetDevice(), sampler_, nullptr);
 	vkDestroyImageView(Context.GetDevice(), imageView_, nullptr);
 	vmaDestroyImage(Context.GetAllocator(), image_, allocation_);
-	KT_LOG(ELogImportanceLevel::Low, "Graphics.KtImageTexture::Cleanup()", "cleaned up %s", Path().string().c_str());
+	KT_LOG(ELogImportanceLevel::Low, "Graphics.KtTexture::Cleanup()", "cleaned up %s", Path().string().c_str());
 }
 
-void KtImageTexture::CreateTextureImage()
+void KtTexture::CreateTextureImage()
 {
 	int texWidth, texHeight, texChannels;
 	stbi_uc* pixels = stbi_load(path_.string().c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
@@ -99,19 +99,19 @@ void KtImageTexture::CreateTextureImage()
 		static_cast<uint32_t>(texHeight)
 	);
 
-	Context.GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtImageTexture::DestroyStagingBuffer));
+	Context.GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtTexture::DestroyStagingBuffer));
 
 	Context.GenerateMipmaps(image_, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels_);
 
 	size_ = glm::uvec2(static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
 }
 
-void KtImageTexture::CreateTextureImageView()
+void KtTexture::CreateTextureImageView()
 {
 	imageView_ = Context.CreateImageView(image_, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels_);
 }
 
-void KtImageTexture::CreateTextureSampler()
+void KtTexture::CreateTextureSampler()
 {
 	VkSamplerCreateInfo samplerInfo{};
 	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -140,7 +140,7 @@ void KtImageTexture::CreateTextureSampler()
 	}
 }
 
-void KtImageTexture::DestroyStagingBuffer()
+void KtTexture::DestroyStagingBuffer()
 {
 	vmaDestroyBuffer(Context.GetAllocator(), stagingBuffer_.Buffer, stagingBuffer_.Allocation);
 }

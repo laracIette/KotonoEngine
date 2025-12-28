@@ -4,8 +4,8 @@
 #include <kotono_graphics/Color.h>
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/ShaderManager.h>
-#include <kotono_graphics/ImageTexture.h>
-#include <kotono_graphics/ImageTextureManager.h>
+#include <kotono_graphics/Texture.h>
+#include <kotono_graphics/TextureManager.h>
 #include <kotono_graphics/Model.h>
 #include <kotono_graphics/ModelManager.h>
 #include <filesystem>
@@ -160,7 +160,7 @@ void serialize(nlohmann::json& json, const KtShader* v)
     serialize(json, v->Path());
 }
 
-void serialize(nlohmann::json& json, const KtImageTexture* v)
+void serialize(nlohmann::json& json, const KtTexture* v)
 {
     if (!v)
     {
@@ -338,10 +338,10 @@ void deserialize(const nlohmann::json& json, KtShader*& v)
     v = ShaderManager.Get(path);
 }
 
-void deserialize(const nlohmann::json& json, KtImageTexture*& v)
+void deserialize(const nlohmann::json& json, KtTexture*& v)
 {
     const std::filesystem::path path(json.get<std::string>());
-    v = ImageTextureManager.Get(path);
+    v = TextureManager.Get(path);
 }
 
 void deserialize(const nlohmann::json& json, KtModel*& v)

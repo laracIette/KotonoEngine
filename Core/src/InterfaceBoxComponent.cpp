@@ -1,11 +1,11 @@
 #include "InterfaceBoxComponent.h"
 #include "InterfaceObject.h"
 #include <kotono_graphics/InterfaceProxy.h>
-#include <kotono_graphics/ImageTexture.h>
+#include <kotono_graphics/Texture.h>
 #include <kotono_common/Path.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/ShaderManager.h>
-#include <kotono_graphics/ImageTextureManager.h>
+#include <kotono_graphics/TextureManager.h>
 #include <kotono_platform/WindowViewport.h>
 
 KInterfaceBoxComponent::KInterfaceBoxComponent(UPtrOwnerBase* ptrOwner) :
@@ -47,7 +47,7 @@ void KInterfaceBoxComponent::CreateBoxProxy()
             const auto texturePath{ KtPath::Graphics() / "assets" / "textures" / "white_texture.jpg" };
 
             data.shader = ShaderManager.Get(shaderPath);
-            data.renderable = ImageTextureManager.Get(texturePath);
+            data.renderable = TextureManager.Get(texturePath);
             data.layer = GetLayer();
             data.objectData.modelMatrix = ModelMatrix();
             data.objectData.color = GetColor();

@@ -5,10 +5,10 @@
 #include <kotono_platform/AllocatedBuffer.h>
 #include "InterfaceRenderable.h"
 #include <glm/vec2.hpp>
-class KtImageTexture final : public KtInterfaceRenderable
+class KtTexture final : public KtInterfaceRenderable
 {
 public:
-    KtImageTexture(const std::filesystem::path& path);
+    KtTexture(const std::filesystem::path& path);
 
     void Init();
     void Cleanup() const;

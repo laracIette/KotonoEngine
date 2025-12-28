@@ -1,6 +1,6 @@
 #include "Font.h"
-#include "ImageTextureManager.h"
-#include "ImageTexture.h"
+#include "TextureManager.h"
+#include "Texture.h"
 #include <kotono_common/Path.h>
 #include <unordered_map>
 
@@ -86,14 +86,14 @@ std::vector<std::filesystem::path> KtFont::GetTextPaths(const std::string_view t
     return result;
 }
 
-std::vector<KtImageTexture*> KtFont::GetTextTextures(const std::string_view text) const
+std::vector<KtTexture*> KtFont::GetTextTextures(const std::string_view text) const
 {
-    std::vector<KtImageTexture*> result;
+    std::vector<KtTexture*> result;
     result.reserve(text.size());
 
     for (const auto& path : GetTextPaths(text))
     {
-        result.push_back(ImageTextureManager.Get(path));
+        result.push_back(TextureManager.Get(path));
     }
 
     return result;

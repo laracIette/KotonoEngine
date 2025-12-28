@@ -2,8 +2,8 @@
 #include "InterfaceObject.h"
 #include <kotono_common/log.h>
 #include <kotono_common/Path.h>
-#include <kotono_graphics/ImageTexture.h>
-#include <kotono_graphics/ImageTextureManager.h>
+#include <kotono_graphics/Texture.h>
+#include <kotono_graphics/TextureManager.h>
 #include <kotono_graphics/InterfaceProxy.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/Shader.h>
@@ -533,7 +533,7 @@ void KInterfaceComponent::CreateBoundsProxy()
             const auto texturePath{ KtPath::Graphics() / "assets" / "textures" / "white_texture.jpg" };
 
             data.shader = ShaderManager.Get(shaderPath);
-            data.renderable = ImageTextureManager.Get(texturePath);
+            data.renderable = TextureManager.Get(texturePath);
             data.layer = GetLayer();
             data.objectData.modelMatrix = ModelMatrix();
             data.objectData.color = { 1.0f, 1.0f, 1.0f, 0.01f };

@@ -4,7 +4,7 @@
 #include "ObjectManager.h"
 #include "TimeManager.h"
 #include <kotono_audio/AudioManager.h>
-#include <kotono_graphics/ImageTextureManager.h>
+#include <kotono_graphics/TextureManager.h>
 #include <kotono_graphics/ModelManager.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/ShaderManager.h>
@@ -39,7 +39,7 @@ void SCore::Cleanup()
 {
     ::ObjectManager.Cleanup();
     ::AudioManager.Cleanup();
-    ::ImageTextureManager.Cleanup();
+    ::TextureManager.Cleanup();
     ::ShaderManager.Cleanup();
     ::ModelManager.Cleanup();
     ::Renderer.Cleanup();

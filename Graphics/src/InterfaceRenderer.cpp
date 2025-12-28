@@ -1,5 +1,5 @@
 #include "InterfaceRenderer.h"
-#include "ImageTexture.h"
+#include "Texture.h"
 #include "InterfaceCuller.h"
 #include "InterfaceProxy.h"
 #include "Renderer.h"
@@ -353,9 +353,9 @@ void KtInterfaceRenderer::UpdateDescriptorSets(const ProxiesPool& proxies, const
 			imageInfos.reserve(shaderData.renderables.size());
 			for (const auto* renderable : shaderData.renderables)
 			{
-				// static_cast is safe because 'textures' expects only KtImageTexture
-				const auto* asImageTexture{ static_cast<const KtImageTexture*>(renderable) };
-				imageInfos.push_back(asImageTexture->GetDescriptorImageInfo());
+				// static_cast is safe because 'textures' expects only KtTexture
+				const auto* asTexture{ static_cast<const KtTexture*>(renderable) };
+				imageInfos.push_back(asTexture->GetDescriptorImageInfo());
 			}
 			shader->UpdateDescriptorSetLayoutBindingImageSampler(*binding, imageInfos, frameIndex);
 		}

@@ -1,8 +1,8 @@
 ﻿#include "Shader.h"
 #include <kotono_platform/vk_utils.h>
 #include <kotono_platform/Context.h>
-#include "ImageTextureManager.h"
-#include "ImageTexture.h"
+#include "TextureManager.h"
+#include "Texture.h"
 #include <kotono_common/Path.h>
 #include <kotono_io/File.h>
 #include <spirv-reflect/spirv_reflect.h>
@@ -525,9 +525,9 @@ void KtShader::CreateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutB
 	}
 
 	static const auto path{ KtPath::Graphics() / "assets" / "models" / "viking_room.png" };
-	static const auto* imageTexture{ ImageTextureManager.Get(path) };
+	static const auto* texture{ TextureManager.Get(path) };
 
-	UpdateDescriptorSetLayoutBindingImageSampler(descriptorSetLayoutBindingData, { imageTexture->GetDescriptorImageInfo() }, imageIndex);
+	UpdateDescriptorSetLayoutBindingImageSampler(descriptorSetLayoutBindingData, { texture->GetDescriptorImageInfo() }, imageIndex);
 }
 
 void KtShader::DebugLogDescriptorSetLayoutData() const

@@ -3,7 +3,7 @@
 #include <kotono_common/Path.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/Shader.h>
-#include <kotono_graphics/ImageTexture.h>
+#include <kotono_graphics/Texture.h>
 #include <kotono_graphics/InterfaceProxy.h>
 #include <kotono_platform/WindowViewport.h>
 #include "InterfaceObject.h"
@@ -21,15 +21,15 @@ KInterfaceImageComponent::KInterfaceImageComponent(UPtrOwnerBase* ptrOwner) :
 		WireframeShader->SetName("2D Wireframe Shader");
 	}
 
-	imageTextureProxy_ = Renderer.InterfaceRenderer().CreateProxy();
+	textureProxy_ = Renderer.InterfaceRenderer().CreateProxy();
 }
 
 void KInterfaceImageComponent::Cleanup()
 {
 	Base::Cleanup();
 
-	Renderer.InterfaceRenderer().UnregisterProxy(imageTextureProxy_);
-	Renderer.InterfaceRenderer().DeleteProxy(imageTextureProxy_);
+	Renderer.InterfaceRenderer().UnregisterProxy(textureProxy_);
+	Renderer.InterfaceRenderer().DeleteProxy(textureProxy_);
 }
 
 void KInterfaceImageComponent::Init()
@@ -42,9 +42,9 @@ KtShader* KInterfaceImageComponent::GetShader() const
 	return shader_;
 }
 
-KtImageTexture* KInterfaceImageComponent::GetImageTexture() const
+KtTexture* KInterfaceImageComponent::GetTexture() const
 {
-	return imageTexture_;
+	return texture_;
 }
 
 KtEvent<>& KInterfaceImageComponent::GetEventShaderUpdated()
@@ -52,9 +52,9 @@ KtEvent<>& KInterfaceImageComponent::GetEventShaderUpdated()
 	return eventShaderUpdated_;
 }
 
-KtEvent<>& KInterfaceImageComponent::GetEventImageTextureUpdated()
+KtEvent<>& KInterfaceImageComponent::GetEventTextureUpdated()
 {
-	return eventImageTextureUpdated_;
+	return eventTextureUpdated_;
 }
 
 void KInterfaceImageComponent::SetShader(KtShader* shader)
@@ -63,32 +63,32 @@ void KInterfaceImageComponent::SetShader(KtShader* shader)
 	eventShaderUpdated_.Broadcast();
 }
 
-void KInterfaceImageComponent::SetImageTexture(KtImageTexture* imageTexture)
+void KInterfaceImageComponent::SetTexture(KtTexture* texture)
 {
-	imageTexture_ = imageTexture;
-	eventImageTextureUpdated_.Broadcast();
+	texture_ = texture;
+	eventTextureUpdated_.Broadcast();
 }
 
 void KInterfaceImageComponent::Spawn()
 {
 	Base::Spawn();
 
-	Renderer.InterfaceRenderer().RegisterProxy(imageTextureProxy_);
-	CreateImageTextureProxy();
+	Renderer.InterfaceRenderer().RegisterProxy(textureProxy_);
+	CreateTextureProxy();
 
-	EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyRectDirty));
-	GetEventShaderUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyShaderDirty));
-	GetEventImageTextureUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyImageTextureDirty));
-	EventLayerUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkImageTextureProxyLayerDirty));
+	EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkTextureProxyRectDirty));
+	GetEventShaderUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkTextureProxyShaderDirty));
+	GetEventTextureUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkTextureProxyTextureDirty));
+	EventLayerUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkTextureProxyLayerDirty));
 }
 
-void KInterfaceImageComponent::CreateImageTextureProxy()
+void KInterfaceImageComponent::CreateTextureProxy()
 {
-	imageTextureProxy_->ScheduleUpdate(
+	textureProxy_->ScheduleUpdate(
 		[this](UInterfaceProxy::Data& data)
 		{
 			data.shader = GetShader();
-			data.renderable = GetImageTexture();;
+			data.renderable = GetTexture();;
 			data.layer = GetLayer();
 			data.objectData.modelMatrix = ModelMatrix();
 			data.objectData.color = GetColor();
@@ -98,9 +98,9 @@ void KInterfaceImageComponent::CreateImageTextureProxy()
 	);
 }
 
-void KInterfaceImageComponent::MarkImageTextureProxyRectDirty()
+void KInterfaceImageComponent::MarkTextureProxyRectDirty()
 {
-	imageTextureProxy_->ScheduleUpdate(
+	textureProxy_->ScheduleUpdate(
 		[this](UInterfaceProxy::Data& data)
 		{
 			data.objectData.modelMatrix = ModelMatrix();
@@ -108,9 +108,9 @@ void KInterfaceImageComponent::MarkImageTextureProxyRectDirty()
 	);
 }
 
-void KInterfaceImageComponent::MarkImageTextureProxyShaderDirty()
+void KInterfaceImageComponent::MarkTextureProxyShaderDirty()
 {
-	imageTextureProxy_->ScheduleUpdate(
+	textureProxy_->ScheduleUpdate(
 		[this](UInterfaceProxy::Data& data)
 		{
 			data.shader = GetShader();
@@ -118,19 +118,19 @@ void KInterfaceImageComponent::MarkImageTextureProxyShaderDirty()
 	);
 }
 
-void KInterfaceImageComponent::MarkImageTextureProxyImageTextureDirty()
+void KInterfaceImageComponent::MarkTextureProxyTextureDirty()
 {
-	imageTextureProxy_->ScheduleUpdate(
+	textureProxy_->ScheduleUpdate(
 		[this](UInterfaceProxy::Data& data)
 		{
-			data.renderable = GetImageTexture();
+			data.renderable = GetTexture();
 		}
 	);
 }
 
-void KInterfaceImageComponent::MarkImageTextureProxyLayerDirty()
+void KInterfaceImageComponent::MarkTextureProxyLayerDirty()
 {
-	imageTextureProxy_->ScheduleUpdate(
+	textureProxy_->ScheduleUpdate(
 		[this](UInterfaceProxy::Data& data)
 		{
 			data.layer = GetLayer();

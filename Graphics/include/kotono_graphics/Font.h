@@ -2,7 +2,7 @@
 #include <filesystem>
 #include <vector>
 
-class KtImageTexture;
+class KtTexture;
 
 class KtFont final
 {
@@ -17,7 +17,7 @@ public:
 	void SetSpacing(const float spacing);
 
 	std::vector<std::filesystem::path> GetTextPaths(const std::string_view text) const;
-	std::vector<KtImageTexture*> GetTextTextures(const std::string_view text) const;
+	std::vector<KtTexture*> GetTextTextures(const std::string_view text) const;
 
 private:
 	const std::filesystem::path path_;

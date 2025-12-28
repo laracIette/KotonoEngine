@@ -3,7 +3,7 @@
 #include "InterfaceComponent.h"
 
 class KtShader;
-class KtImageTexture;
+class KtTexture;
 class UInterfaceProxy;
 
 class KInterfaceImageComponent : public KInterfaceComponent
@@ -20,28 +20,28 @@ protected:
 
 public:
 	KtShader* GetShader() const;
-	KtImageTexture* GetImageTexture() const;
+	KtTexture* GetTexture() const;
 
 	KtEvent<>& GetEventShaderUpdated();
-	KtEvent<>& GetEventImageTextureUpdated();
+	KtEvent<>& GetEventTextureUpdated();
 
 	void SetShader(KtShader* shader);
-	void SetImageTexture(KtImageTexture* imageTexture);
+	void SetTexture(KtTexture* texture);
 
 	void Spawn() override;
 
 private:
-	void CreateImageTextureProxy();
-	void MarkImageTextureProxyRectDirty();
-	void MarkImageTextureProxyShaderDirty();
-	void MarkImageTextureProxyImageTextureDirty();
-	void MarkImageTextureProxyLayerDirty();
+	void CreateTextureProxy();
+	void MarkTextureProxyRectDirty();
+	void MarkTextureProxyShaderDirty();
+	void MarkTextureProxyTextureDirty();
+	void MarkTextureProxyLayerDirty();
 
 private:
 	KtShader* shader_;
-	KtImageTexture* imageTexture_;
-	UInterfaceProxy* imageTextureProxy_;
+	KtTexture* texture_;
+	UInterfaceProxy* textureProxy_;
 	KtEvent<> eventShaderUpdated_;
-	KtEvent<> eventImageTextureUpdated_;
+	KtEvent<> eventTextureUpdated_;
 };
 

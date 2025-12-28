@@ -63,8 +63,8 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/Color.h"
     "include/kotono_graphics/Font.h"
     "include/kotono_graphics/frames_in_flight.h"
-    "include/kotono_graphics/ImageTexture.h"
-    "include/kotono_graphics/ImageTextureManager.h"
+    "include/kotono_graphics/Texture.h"
+    "include/kotono_graphics/TextureManager.h"
     "include/kotono_graphics/InterfaceCuller.h"
     "include/kotono_graphics/InterfaceObjectData.h"
     "include/kotono_graphics/InterfaceProxy.h"
@@ -93,8 +93,8 @@ set(KGRAPHICS_HEADERS
 )
 set(KGRAPHICS_SOURCES
     "src/Font.cpp"
-    "src/ImageTexture.cpp"
-    "src/ImageTextureManager.cpp"
+    "src/Texture.cpp"
+    "src/TextureManager.cpp"
     "src/implementations.cpp"
     "src/InterfaceCuller.cpp"
     "src/InterfaceProxy.cpp"
