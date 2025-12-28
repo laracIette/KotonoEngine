@@ -32,6 +32,7 @@ set(KEDITOR_HEADERS
     "include/kotono_editor/VisualizationField.h"
     "include/kotono_editor/Visualizer.h"
     "include/kotono_editor/VisualizerWindow.h"
+    "include/kotono_editor/VisualizerWindowItem.h"
 )
 set(KEDITOR_SOURCES
     "src/Camera.cpp"
@@ -47,6 +48,7 @@ set(KEDITOR_SOURCES
     "src/UpdateTimeText.cpp"
     "src/Visualizer.cpp"
     "src/VisualizerWindow.cpp"
+    "src/VisualizerWindowItem.cpp"
 )
 
 target_sources(KotonoEditor

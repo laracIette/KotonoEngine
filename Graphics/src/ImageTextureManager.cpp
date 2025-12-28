@@ -13,17 +13,13 @@ void KtImageTextureManager::Cleanup()
 
 KtImageTexture* KtImageTextureManager::Get(const std::filesystem::path& path)
 {
-    const auto it = imageTextures_.find(path);
-    if (it != imageTextures_.end())
-    {
-        return it->second;
-    }
-    return Create(path);
+    const auto it{ imageTextures_.find(path) };
+    return it != imageTextures_.end() ? it->second : Create(path);
 }
 
 KtImageTexture* KtImageTextureManager::Create(const std::filesystem::path& path)
 {
-    auto* imageTexture = new KtImageTexture(path);
+    auto* imageTexture{ new KtImageTexture(path) };
     imageTexture->Init();
     imageTextures_[path] = imageTexture;
     return imageTexture;

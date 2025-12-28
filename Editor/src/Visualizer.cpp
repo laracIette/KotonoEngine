@@ -14,21 +14,11 @@ void SVisualizer::Init()
 
 bool SVisualizer::GetIsFieldVisible(const EVisualizationField field) const
 {
-	const auto it{ _fieldVisibilities.find(field) };
-	if (it != _fieldVisibilities.end())
-	{
-		return it->second;
-	}
-	return false; 
+	const auto it{ fieldVisibilities_.find(field) };
+	return it != fieldVisibilities_.end() ? it->second : false;
 }
 
 void SVisualizer::SetIsFieldVisible(const EVisualizationField field, const bool isVisible)
 {
-	_fieldVisibilities[field] = isVisible;
-	eventsVisibilityChanged_[field].Broadcast(isVisible);
-}
-
-KtEvent<bool>& SVisualizer::EventVisibilityChanged(const EVisualizationField field)
-{
-	return eventsVisibilityChanged_[field];
+	fieldVisibilities_[field] = isVisible;
 }

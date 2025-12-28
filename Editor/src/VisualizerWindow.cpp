@@ -1,6 +1,5 @@
 #include "VisualizerWindow.h"
-#include "Visualizer.h"
-#include <kotono_common/log.h>
+#include "VisualizerWindowItem.h"
 #include <kotono_interface/widgets.h>
 
 WWidget* WVisualizerWindow::Build()
@@ -31,14 +30,14 @@ WWidget* WVisualizerWindow::Build()
                                 .spacing = 5.0f,
                                 .children = [this]() {
                                     return WidgetVector{
-                                        BuildVisualizationFieldWidget(EVisualizationField::SceneObject, "Scene Object"),
-                                        BuildVisualizationFieldWidget(EVisualizationField::SceneObjectBounds, "Scene Object Bounds"),
-                                        BuildVisualizationFieldWidget(EVisualizationField::SceneObjectCollider, "Scene Object Collider"),
-                                        BuildVisualizationFieldWidget(EVisualizationField::SceneObjectWireframe, "Scene Object Wireframe"),
-                                        BuildVisualizationFieldWidget(EVisualizationField::InterfaceObject, "Interface Object"),
-                                        BuildVisualizationFieldWidget(EVisualizationField::InterfaceObjectBounds, "Interface Object Bounds"),
-                                        BuildVisualizationFieldWidget(EVisualizationField::InterfaceObjectCollider, "Interface Object Collider"),
-                                        BuildVisualizationFieldWidget(EVisualizationField::InterfaceObjectWireframe, "Interface Object Wireframe"),
+                                        new WVisualizerWindowItem(EVisualizationField::SceneObject, "Scene Object"),
+                                        new WVisualizerWindowItem(EVisualizationField::SceneObjectBounds, "Scene Object Bounds"),
+                                        new WVisualizerWindowItem(EVisualizationField::SceneObjectCollider, "Scene Object Collider"),
+                                        new WVisualizerWindowItem(EVisualizationField::SceneObjectWireframe, "Scene Object Wireframe"),
+                                        new WVisualizerWindowItem(EVisualizationField::InterfaceObject, "Interface Object"),
+                                        new WVisualizerWindowItem(EVisualizationField::InterfaceObjectBounds, "Interface Object Bounds"),
+                                        new WVisualizerWindowItem(EVisualizationField::InterfaceObjectCollider, "Interface Object Collider"),
+                                        new WVisualizerWindowItem(EVisualizationField::InterfaceObjectWireframe, "Interface Object Wireframe"),
                                     };
                                 },
                             }),
@@ -47,36 +46,5 @@ WWidget* WVisualizerWindow::Build()
                 }),
             },
         }),
-    });
-}
-
-WWidget* WVisualizerWindow::BuildVisualizationFieldWidget(const EVisualizationField field, const std::string& name)
-{
-    const bool isFieldVisible{ Visualizer.GetIsFieldVisible(field) };
-    return new WRow({
-        .children = {
-            new WBox({
-                .size = { 25.0f, 25.0f },
-                .child = new WStack({
-                    .children = {
-                        isFieldVisible 
-                            ? new WColor({ KtColor::Green() }) 
-                            : new WColor({ KtColor::Red() }),
-                        new WButton({
-                            .onPress = [this, field, isFieldVisible]() {
-                                SetState([field, isFieldVisible]() {
-                                    Visualizer.SetIsFieldVisible(field, !isFieldVisible);
-                                });
-                            },
-                        }),
-                    },
-                }),
-            }),
-            new WText({ 
-                .text = name,
-                .fontSize = { 20.0f, 25.0f },
-                .spacing = -8.0f,
-            }),
-        },
     });
 }

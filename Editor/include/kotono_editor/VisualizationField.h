@@ -1,5 +1,6 @@
 #pragma once
-enum class EVisualizationField : char
+#include <cstdint>
+enum class EVisualizationField : uint8_t
 {
 	SceneObject,
 	SceneObjectBounds,
