@@ -1,5 +1,6 @@
 #define GENERATED_KSCENEMESHCOMPONENT() \
 	private: \
+		using Self = KSceneMeshComponent; \
 		using Base = KSceneComponent; \
 		using Base::Base; \
 	public: \

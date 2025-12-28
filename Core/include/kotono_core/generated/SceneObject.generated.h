@@ -1,5 +1,6 @@
 #define GENERATED_TSCENEOBJECT() \
 	private: \
+		using Self = TSceneObject; \
 		using Base = KObject; \
 		using Base::Base; \
 	public: \

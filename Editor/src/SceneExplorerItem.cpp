@@ -18,8 +18,8 @@ WWidget* WSceneExplorerItem::Build()
 		.child = new WStack({
 			.children = {
 				sceneObject_ && (ObjectManager.GetSelectedObject() == sceneObject_)
-					? new WColor({ KtColor::Black().WithAlpha(0.2f) })
-					: new WColor({ KtColor::Transparent() }),
+					? new WColor({ UColor::Black().WithAlpha(0.2f) })
+					: new WColor({ UColor::Transparent() }),
 				new WButton({
 					.onPress = [this]() {
 						SetState([this]() {

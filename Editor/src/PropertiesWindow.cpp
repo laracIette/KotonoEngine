@@ -17,7 +17,7 @@ WWidget* WPropertiesWindow::Build()
     {
         return new WStack({
             .children = {
-                new WColor({ KtColor::Blue().WithAlpha(0.5f) }),
+                new WColor({ UColor::Blue().WithAlpha(0.5f) }),
                 new WPadding({
                     .padding = WPadding::Padding::All(8.0f),
                     .child = new WList({
@@ -32,7 +32,7 @@ WWidget* WPropertiesWindow::Build()
                                         }),
                                         new WBox({
                                             .size = { 400.0f, 60.0f },
-                                            .child = new WColor({ KtColor::Black().WithAlpha(0.5f) }),
+                                            .child = new WColor({ UColor::Black().WithAlpha(0.5f) }),
                                         }),
                                     },
                                 }),
@@ -89,7 +89,7 @@ WWidget* WPropertiesWindow::Slider(const std::string& label, const ValueChangedF
         .size = { 250.0f, 25.0f },
         .child = new WStack({
             .children = {
-                new WColor({ KtColor::White().WithValue(0.5f) }),
+                new WColor({ UColor::White().WithValue(0.5f) }),
                 new WText({
                     .text = label,
                     .fontSize = { 20.0f, 25.0f },

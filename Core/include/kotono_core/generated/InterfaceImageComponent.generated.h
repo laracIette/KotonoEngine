@@ -1,5 +1,6 @@
 #define GENERATED_KINTERFACEIMAGECOMPONENT() \
 	private: \
+		using Self = KInterfaceImageComponent; \
 		using Base = KInterfaceComponent; \
 		using Base::Base; \
 	public: \

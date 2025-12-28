@@ -1,7 +1,7 @@
 #pragma once
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
-struct KtColor final
+struct UColor final
 {
 	struct RGB { float r, g, b; };
 	struct HSV { float h, s, v; };
@@ -15,35 +15,35 @@ struct KtColor final
 	};
 	float a;
 
-	constexpr KtColor() :
+	constexpr UColor() :
 		r(0.0f), g(0.0f), b(0.0f), a(1.0f)
 	{}
 
-	constexpr KtColor(float red, float green, float blue, float alpha) :
+	constexpr UColor(float red, float green, float blue, float alpha) :
 		r(red), g(green), b(blue), a(alpha)
 	{}
 
-	constexpr KtColor(float red, float green, float blue) :
+	constexpr UColor(float red, float green, float blue) :
 		r(red), g(green), b(blue), a(1.0f)
 	{}
 
-	constexpr KtColor WithRed(float red)     const noexcept { return { red, g, b, a }; }
-	constexpr KtColor WithGreen(float green) const noexcept { return { r, green, b, a }; }
-	constexpr KtColor WithBlue(float blue)   const noexcept { return { r, g, blue, a }; }
-	constexpr KtColor WithAlpha(float alpha) const noexcept { return { r, g, b, alpha }; }
-	constexpr KtColor WithValue(float value) const noexcept { return { r * value, g * value, b * value, a }; }
+	constexpr UColor WithRed(float red)     const noexcept { return { red, g, b, a }; }
+	constexpr UColor WithGreen(float green) const noexcept { return { r, green, b, a }; }
+	constexpr UColor WithBlue(float blue)   const noexcept { return { r, g, blue, a }; }
+	constexpr UColor WithAlpha(float alpha) const noexcept { return { r, g, b, alpha }; }
+	constexpr UColor WithValue(float value) const noexcept { return { r * value, g * value, b * value, a }; }
 
-	static consteval KtColor Black()       noexcept { return { 0.0f, 0.0f, 0.0f, 1.0f }; }
-	static consteval KtColor Blue()        noexcept { return { 0.0f, 0.0f, 1.0f, 1.0f }; }
-	static consteval KtColor Cyan()        noexcept { return { 0.0f, 1.0f, 1.0f, 1.0f }; }
-	static consteval KtColor Green()       noexcept { return { 0.0f, 1.0f, 0.0f, 1.0f }; }
-	static consteval KtColor Magenta()     noexcept { return { 1.0f, 0.0f, 1.0f, 1.0f }; }
-	static consteval KtColor Red()         noexcept { return { 1.0f, 0.0f, 0.0f, 1.0f }; }
-	static consteval KtColor Transparent() noexcept { return { 0.0f, 0.0f, 0.0f, 0.0f }; }
-	static consteval KtColor White()       noexcept { return { 1.0f, 1.0f, 1.0f, 1.0f }; }
-	static consteval KtColor Yellow()      noexcept { return { 1.0f, 1.0f, 0.0f, 1.0f }; }
+	static consteval UColor Black()       noexcept { return { 0.0f, 0.0f, 0.0f, 1.0f }; }
+	static consteval UColor Blue()        noexcept { return { 0.0f, 0.0f, 1.0f, 1.0f }; }
+	static consteval UColor Cyan()        noexcept { return { 0.0f, 1.0f, 1.0f, 1.0f }; }
+	static consteval UColor Green()       noexcept { return { 0.0f, 1.0f, 0.0f, 1.0f }; }
+	static consteval UColor Magenta()     noexcept { return { 1.0f, 0.0f, 1.0f, 1.0f }; }
+	static consteval UColor Red()         noexcept { return { 1.0f, 0.0f, 0.0f, 1.0f }; }
+	static consteval UColor Transparent() noexcept { return { 0.0f, 0.0f, 0.0f, 0.0f }; }
+	static consteval UColor White()       noexcept { return { 1.0f, 1.0f, 1.0f, 1.0f }; }
+	static consteval UColor Yellow()      noexcept { return { 1.0f, 1.0f, 0.0f, 1.0f }; }
 	
-	static constexpr KtColor Mix(const KtColor& left, const KtColor& right) noexcept
+	static constexpr UColor Mix(const UColor& left, const UColor& right) noexcept
 	{
 		return (left + right) / 2.0f;
 	}
@@ -121,7 +121,7 @@ struct KtColor final
 		return hsl;
 	}
 
-	static constexpr KtColor FromHex(uint32_t hex) noexcept
+	static constexpr UColor FromHex(uint32_t hex) noexcept
 	{
 		return {
 			((hex >> 24) & 0xFF) / 255.0f,
@@ -131,7 +131,7 @@ struct KtColor final
 		};
 	}
 
-	static constexpr KtColor FromHSV(HSV hsv) noexcept
+	static constexpr UColor FromHSV(HSV hsv) noexcept
 	{
 		const float h = hsv.h / 60.0f;
 		const float s = hsv.s / 100.0f;
@@ -158,7 +158,7 @@ struct KtColor final
 		return { rgb.r, rgb.g, rgb.b, 1.0f };
 	}
 
-	static constexpr KtColor FromHSL(HSL hsl) noexcept
+	static constexpr UColor FromHSL(HSL hsl) noexcept
 	{
 		auto absf = [](float v) constexpr noexcept { return v < 0 ? -v : v; };
 		auto modf = [](float x, float y) constexpr noexcept { return x - y * static_cast<int>(x / y); };
@@ -196,52 +196,52 @@ struct KtColor final
 		return { r, g, b, a };
 	}
 
-	constexpr KtColor operator+(const KtColor& other) const noexcept
+	constexpr UColor operator+(const UColor& other) const noexcept
 	{
 		return { r + other.r, g + other.g, b + other.b, a };
 	}
 
-	constexpr KtColor operator+(float f) const noexcept
+	constexpr UColor operator+(float f) const noexcept
 	{
 		return { r + f, g + f, b + f, a };
 	}
 
-	constexpr KtColor operator-(const KtColor& other) const noexcept
+	constexpr UColor operator-(const UColor& other) const noexcept
 	{
 		return { r - other.r, g - other.g, b - other.b, a };
 	}
 
-	constexpr KtColor operator-(float f) const noexcept
+	constexpr UColor operator-(float f) const noexcept
 	{
 		return { r - f, g - f, b - f, a };
 	}
 
-	constexpr KtColor operator*(const KtColor& other) const noexcept
+	constexpr UColor operator*(const UColor& other) const noexcept
 	{
 		return { r * other.r, g * other.g, b * other.b, a };
 	}
 
-	constexpr KtColor operator*(float f) const noexcept
+	constexpr UColor operator*(float f) const noexcept
 	{
 		return { r * f, g * f, b * f, a };
 	}
 
-	constexpr KtColor operator/(const KtColor& other) const noexcept
+	constexpr UColor operator/(const UColor& other) const noexcept
 	{
 		return { r / other.r, g / other.g, b / other.b, a };
 	}
 
-	constexpr KtColor operator/(float f) const noexcept
+	constexpr UColor operator/(float f) const noexcept
 	{
 		return { r / f, g / f, b / f, a };
 	}
 
-	constexpr bool operator==(const KtColor& other) const noexcept
+	constexpr bool operator==(const UColor& other) const noexcept
 	{
 		return r == other.r && g == other.g && b == other.b && a == other.a;
 	}
 
-	constexpr bool operator!=(const KtColor& other) const noexcept
+	constexpr bool operator!=(const UColor& other) const noexcept
 	{
 		return r != other.r || g != other.g || b != other.b || a != other.a;
 	}

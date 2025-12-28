@@ -15,8 +15,8 @@ WWidget* WTestBox::Build()
         .child = new WStack({
             .children = {
                 ObjectManager.GetSelectedObject()
-					? new WColor({ KtColor::Red() })
-                    : new WColor({ KtColor::Red().WithValue(0.1f) }),
+					? new WColor({ UColor::Red() })
+                    : new WColor({ UColor::Red().WithValue(0.1f) }),
                 new WButton({
                     .onDown = [this]() {
                         if (UPtr selectedObject{ TryCast<TSceneObject>(ObjectManager.GetSelectedObject()) })

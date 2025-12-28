@@ -15,27 +15,23 @@ KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner) :
     Base(ptrOwner),
     visibility_(EVisibility::Visible),
     modelMatrix_([this]() { return TranslationMatrix() * RotationMatrix() * ScaleMatrix(); }),
-    color_(KtColor::White())
+    color_(UColor::White())
 {
-    eventRectUpdated_.AddListener(KtDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
+    eventRectChanged_.AddListener(KtDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
 
-    boundsProxy_ = Renderer.InterfaceRenderer().CreateProxy();
+    //boundsProxy_ = Renderer.InterfaceRenderer().CreateProxy();
 }
 
 void KInterfaceComponent::Cleanup()
 {
-    for (int64_t i{ children_.LastIndex() }; i >= 0; --i)
-    {
-        children_[i]->SetParent(nullptr, ECoordinateSpace::Relative);
-    }
-    children_.Clear();
+    //Renderer.InterfaceRenderer().UnregisterProxy(boundsProxy_);
+    //Renderer.InterfaceRenderer().DeleteProxy(boundsProxy_);
+
+    owner_->GetViewport()->EventExtentChanged()
+        .RemoveListener(KtDelegate(&eventRectChanged_, &KtEvent<>::Broadcast));
 
     SetParent(nullptr, ECoordinateSpace::Relative);
-
-    owner_->RemoveComponent(Ptr());
-
-    Renderer.InterfaceRenderer().UnregisterProxy(boundsProxy_);
-    Renderer.InterfaceRenderer().DeleteProxy(boundsProxy_);
+    SetOwner(nullptr);
 
     Base::Cleanup();
 }
@@ -77,29 +73,24 @@ int32_t KInterfaceComponent::GetLayer() const
 {
     if (parent_)
     {
-        return parent_->GetLayer() + layer_ + 1;
+        return parent_->GetLayer() + rect_.layer + 1;
     }
-    return layer_;
+    return rect_.layer;
 }
 
-KtEvent<>& KInterfaceComponent::EventRectUpdated()
+KtEvent<>& KInterfaceComponent::EventRectChanged()
 {
-    return eventRectUpdated_;
+    return eventRectChanged_;
 }
 
-KtEvent<>& KInterfaceComponent::EventLayerUpdated()
+KtEvent<>& KInterfaceComponent::EventLayerChanged()
 {
-    return eventLayerUpdated_;
+    return eventLayerChanged_;
 }
 
-KtEvent<>& KInterfaceComponent::EventColorUpdated()
+KtEvent<>& KInterfaceComponent::EventColorChanged()
 {
-    return eventColorUpdated_;
-}
-
-const glm::vec2& KInterfaceComponent::GetRelativeSize() const
-{
-    return rect_.size;
+    return eventColorChanged_;
 }
 
 const glm::vec2& KInterfaceComponent::GetRelativePosition() const
@@ -115,11 +106,6 @@ const glm::vec2& KInterfaceComponent::GetRelativeScale() const
 float KInterfaceComponent::GetRelativeRotation(const ERotationUnit unit) const
 {
     return rect_.rotation;
-}
-
-glm::vec2 KInterfaceComponent::GetWorldSize() const
-{
-    return rect_.size * GetWorldScale();
 }
 
 glm::vec2 KInterfaceComponent::GetWorldPosition() const
@@ -149,26 +135,12 @@ float KInterfaceComponent::GetWorldRotation(const ERotationUnit unit) const
     return GetRelativeRotation(unit);
 }
 
-glm::vec2 KInterfaceComponent::GetScreenPosition() const
-{
-    const auto viewportSize = glm::vec2(owner_->GetViewport()->GetExtent());
-    const auto newPosition = (GetWorldPosition() + glm::vec2(1.0f)) * viewportSize / 2.0f;
-    return newPosition;
-}
-
-glm::vec2 KInterfaceComponent::GetScreenSize() const
-{
-    const auto viewportSize = glm::vec2(owner_->GetViewport()->GetExtent());
-    const auto newSize = GetWorldSize() * viewportSize / 2.0f;
-    return newSize;
-}
-
 EAnchor KInterfaceComponent::GetAnchor() const
 {
     return rect_.anchor;
 }
 
-const KtColor& KInterfaceComponent::GetColor() const
+const UColor& KInterfaceComponent::GetColor() const
 {
     return color_;
 }
@@ -214,8 +186,8 @@ void KInterfaceComponent::SetVisibility(const EVisibility visibility, const bool
 
 void KInterfaceComponent::SetLayer(const int32_t layer)
 {
-    layer_ = layer;
-    eventLayerUpdated_.Broadcast();
+    rect_.layer = layer;
+    eventLayerChanged_.Broadcast();
 }
 
 void KInterfaceComponent::SetParent(const UPtr<KInterfaceComponent>& parent, const ECoordinateSpace keepRect)
@@ -227,7 +199,7 @@ void KInterfaceComponent::SetParent(const UPtr<KInterfaceComponent>& parent, con
 
     if (parent_)
     {
-        parent_->EventRectUpdated().RemoveListener(KtDelegate(&eventRectUpdated_, &KtEvent<>::Broadcast));
+        parent_->EventRectChanged().RemoveListener(KtDelegate(&eventRectChanged_, &KtEvent<>::Broadcast));
         parent_->RemoveChildren(Ptr());
     }
 
@@ -236,17 +208,19 @@ void KInterfaceComponent::SetParent(const UPtr<KInterfaceComponent>& parent, con
     case ECoordinateSpace::Relative:
     {
         parent_ = parent;
-        eventRectUpdated_.Broadcast();
+        eventRectChanged_.Broadcast();
         break;
     }
     case ECoordinateSpace::World:
     {
-        const auto size{ GetWorldSize() };
+        //const auto size{ GetWorldSize() };
         const auto position{ GetWorldPosition() };
+        const auto scale{ GetWorldScale() };
         const auto rotation{ GetWorldRotation() };
         parent_ = parent;
-        SetWorldSize(size);
+        //SetWorldSize(size);
         SetWorldPosition(position);
+        SetWorldScale(scale);
         SetWorldRotation(rotation);
         break;
     }
@@ -254,20 +228,9 @@ void KInterfaceComponent::SetParent(const UPtr<KInterfaceComponent>& parent, con
 
     if (parent_)
     {
-        parent_->EventRectUpdated().AddListener(KtDelegate(&eventRectUpdated_, &KtEvent<>::Broadcast));
+        parent_->EventRectChanged().AddListener(KtDelegate(&eventRectChanged_, &KtEvent<>::Broadcast));
         parent_->AddChildren(Ptr());
     }
-}
-
-void KInterfaceComponent::SetRelativeSize(const glm::vec2& relativeSize)
-{
-    if (rect_.size == relativeSize)
-    {
-        return;
-    }
-
-    rect_.size = relativeSize;
-    eventRectUpdated_.Broadcast();
 }
 
 void KInterfaceComponent::SetRelativePosition(const glm::vec2& relativePosition)
@@ -278,7 +241,7 @@ void KInterfaceComponent::SetRelativePosition(const glm::vec2& relativePosition)
     }
 
     rect_.position = relativePosition;
-    eventRectUpdated_.Broadcast();
+    eventRectChanged_.Broadcast();
 }
 
 void KInterfaceComponent::SetRelativeScale(const glm::vec2& relativeScale)
@@ -289,7 +252,7 @@ void KInterfaceComponent::SetRelativeScale(const glm::vec2& relativeScale)
     }
 
     rect_.scale = relativeScale;
-    eventRectUpdated_.Broadcast();
+    eventRectChanged_.Broadcast();
 }
 
 void KInterfaceComponent::SetRelativeRotation(float relativeRotation, const ERotationUnit unit)
@@ -315,18 +278,18 @@ void KInterfaceComponent::SetRelativeRotation(float relativeRotation, const ERot
 
     rect_.position = rotated + GetAnchorRelativePosition();
     rect_.rotation = relativeRotation;
-    eventRectUpdated_.Broadcast();
+    eventRectChanged_.Broadcast();
 }
 
-void KInterfaceComponent::SetWorldSize(const glm::vec2& worldSize)
-{
-    if (parent_)
-    {
-        SetRelativeSize(worldSize / parent_->GetWorldScale());
-        return;
-    }
-    SetRelativeSize(worldSize);
-}
+//void KInterfaceComponent::SetWorldSize(const glm::vec2& worldSize)
+//{
+//    if (parent_)
+//    {
+//        SetRelativeSize(worldSize / parent_->GetWorldScale());
+//        return;
+//    }
+//    SetRelativeSize(worldSize);
+//}
 
 void KInterfaceComponent::SetWorldPosition(const glm::vec2& worldPosition)
 {
@@ -373,20 +336,6 @@ void KInterfaceComponent::Rotate(const float rotation, const ERotationUnit unit)
     SetRelativeRotation(GetRelativeRotation(unit) + rotation, unit);
 }
 
-void KInterfaceComponent::SetScreenPosition(const glm::vec2& screenPosition)
-{
-    const auto viewportSize = glm::vec2(GetOwner()->GetViewport()->GetExtent());
-    const auto newPosition = screenPosition / viewportSize * 2.0f - glm::vec2(1.0f);
-    SetWorldPosition(newPosition);
-}
-
-void KInterfaceComponent::SetScreenSize(const glm::vec2& screenSize)
-{
-    const auto viewportSize = glm::vec2(GetOwner()->GetViewport()->GetExtent());
-    const auto newSize = screenSize / viewportSize * 2.0f;
-    SetWorldSize(newSize);
-}
-
 void KInterfaceComponent::SetAnchor(const EAnchor anchor)
 {
     const auto worldPosition = GetWorldPosition();
@@ -395,30 +344,10 @@ void KInterfaceComponent::SetAnchor(const EAnchor anchor)
 
 }
 
-void KInterfaceComponent::SetColor(const KtColor& color)
+void KInterfaceComponent::SetColor(const UColor& color)
 {
     color_ = color;
-    eventColorUpdated_.Broadcast();
-}
-
-float KInterfaceComponent::GetLeft() const
-{
-    return GetWorldPosition().x - GetWorldSize().x / 2.0f;
-}
-
-float KInterfaceComponent::GetRight() const
-{
-    return GetWorldPosition().x + GetWorldSize().x / 2.0f;
-}
-
-float KInterfaceComponent::GetTop() const
-{
-    return GetWorldPosition().y - GetWorldSize().y / 2.0f;
-}
-
-float KInterfaceComponent::GetBottom() const
-{
-    return GetWorldPosition().y + GetWorldSize().y / 2.0f;
+    eventColorChanged_.Broadcast();
 }
 
 glm::mat4 KInterfaceComponent::TranslationMatrix() const
@@ -433,21 +362,27 @@ glm::mat4 KInterfaceComponent::RotationMatrix() const
 
 glm::mat4 KInterfaceComponent::ScaleMatrix() const
 {
-    const auto viewportSize = glm::vec2(GetOwner()->GetViewport()->GetExtent());
-    const float aspectRatio = GetOwner()->GetViewport()->GetAspectRatio();
-    const float rotation = GetWorldRotation(ERotationUnit::Radians);
+    //const auto viewportSize = glm::vec2(GetOwner()->GetViewport()->GetExtent());
+    //const float aspectRatio = GetOwner()->GetViewport()->GetAspectRatio();
+    //const float rotation = GetWorldRotation(ERotationUnit::Radians);
 
-    // x *= 1 at rot 0
-    // y *= 1 at rot 0
-    // x *= aspectRatio at rot pi/2
-    // y *= 1 / aspectRatio at rot pi/2
+    //// x *= 1 at rot 0
+    //// y *= 1 at rot 0
+    //// x *= aspectRatio at rot pi/2
+    //// y *= 1 / aspectRatio at rot pi/2
 
-    const float value = (cos((rotation + glm::half_pi<float>()) * 2.0f) + 1.0f) / 2.0f;
-    const auto stretchCorrection = glm::vec2(std::lerp(1.0f, aspectRatio, value), std::lerp(1.0f, 1.0f / aspectRatio, value));
+    //const float value = (cos((rotation + glm::half_pi<float>()) * 2.0f) + 1.0f) / 2.0f;
+    //const auto stretchCorrection = glm::vec2(std::lerp(1.0f, aspectRatio, value), std::lerp(1.0f, 1.0f / aspectRatio, value));
 
-    const auto size = GetScreenSize() / viewportSize * 2.0f * stretchCorrection;
+    //const auto size = GetScreenSize() / viewportSize * 2.0f * stretchCorrection;
 
-    return glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.0f));
+    //return glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.0f));
+
+    const auto worldScale{ GetWorldScale() };
+    const auto viewportSize{ glm::vec2(GetOwner()->GetViewport()->GetExtent()) };
+    const auto scale{ worldScale / viewportSize * viewportSize.y };
+ 
+    return glm::scale(glm::identity<glm::mat4>(), glm::vec3(scale, 1.0f));
 }
 
 glm::mat4 KInterfaceComponent::ModelMatrix()
@@ -465,10 +400,10 @@ float KInterfaceComponent::GetDistance(const UPtr<KInterfaceComponent>& other) c
     return glm::distance(GetWorldPosition(), other->GetWorldPosition());
 }
 
-bool KInterfaceComponent::GetIsOverlapping(const glm::vec2& worldPosition, const glm::vec2& worldSize) const
+bool KInterfaceComponent::GetIsOverlapping(const glm::vec2& worldPosition, const glm::vec2& worldScale) const
 {
     const auto distance = glm::abs(GetWorldPosition() - worldPosition);
-    const auto maxDistance = (GetWorldSize() + worldSize) / 2.0f;
+    const auto maxDistance = (GetWorldScale() + worldScale) / 2.0f;
     return distance.x < maxDistance.x
         && distance.y < maxDistance.y;
 }
@@ -480,14 +415,14 @@ bool KInterfaceComponent::GetIsOverlapping(const glm::vec2& worldPosition) const
 
 bool KInterfaceComponent::GetIsOverlapping(const UPtr<KInterfaceComponent>& other) const
 {
-    return GetIsOverlapping(other->GetWorldPosition(), other->GetWorldSize());
+    return GetIsOverlapping(other->GetWorldPosition(), other->GetWorldScale());
 }
 
 bool KInterfaceComponent::IsHovered() const
 {
-    const auto& cursorPosition = Mouse.CursorPosition();
-    const auto viewportSize = glm::vec2(WindowViewport.GetExtent());
-    const auto worldPosition = cursorPosition / viewportSize * 2.0f - glm::vec2(1.0f);
+    const auto& cursorPosition{ Mouse.CursorPosition() };
+    const auto viewportSize{ glm::vec2(WindowViewport.GetExtent()) };
+    const auto worldPosition{ cursorPosition / viewportSize * 2.0f - 1.0f };
     return GetIsOverlapping(worldPosition);
 }
 
@@ -518,40 +453,43 @@ void KInterfaceComponent::RemoveChildren(const UPtr<KInterfaceComponent>& interf
 
 void KInterfaceComponent::Spawn()
 {
-    CreateBoundsProxy();
-    Renderer.InterfaceRenderer().RegisterProxy(boundsProxy_);
+    //CreateBoundsProxy();
+    //Renderer.InterfaceRenderer().RegisterProxy(boundsProxy_);
 
-    EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceComponent::MarkBoundsProxyRectDirty));
+    //eventRectChanged_.AddListener(KtDelegate(this, &Self::MarkBoundsProxyRectDirty));
+
+    owner_->GetViewport()->EventExtentChanged()
+        .AddListener(KtDelegate(&eventRectChanged_, &KtEvent<>::Broadcast));
 }
 
-void KInterfaceComponent::CreateBoundsProxy()
-{
-    boundsProxy_->ScheduleUpdate(
-        [this](UInterfaceProxy::Data& data)
-        {
-            const auto shaderPath{ KtPath::Graphics() / "shaders" / "flatColor2D.ktshader" };
-            const auto texturePath{ KtPath::Graphics() / "assets" / "textures" / "white_texture.jpg" };
+//void KInterfaceComponent::CreateBoundsProxy()
+//{
+//    boundsProxy_->ScheduleUpdate(
+//        [this](UInterfaceProxy::Data& data)
+//        {
+//            static const auto shaderPath{ KtPath::Graphics() / "shaders" / "flatColor2D.ktshader" };
+//            static const auto texturePath{ KtPath::Graphics() / "assets" / "textures" / "white_texture.jpg" };
+//
+//            data.shader = ShaderManager.Get(shaderPath);
+//            data.renderable = TextureManager.Get(texturePath);
+//            data.layer = GetLayer();
+//            data.objectData.modelMatrix = ModelMatrix();
+//            data.objectData.color = { 1.0f, 1.0f, 1.0f, 0.01f };
+//            data.scissor.offset = WindowViewport.GetOffset();
+//            data.scissor.extent = WindowViewport.GetExtent();
+//        }
+//    );
+//}
 
-            data.shader = ShaderManager.Get(shaderPath);
-            data.renderable = TextureManager.Get(texturePath);
-            data.layer = GetLayer();
-            data.objectData.modelMatrix = ModelMatrix();
-            data.objectData.color = { 1.0f, 1.0f, 1.0f, 0.01f };
-            data.scissor.offset = WindowViewport.GetOffset();
-            data.scissor.extent = WindowViewport.GetExtent();
-        }
-    );
-}
-
-void KInterfaceComponent::MarkBoundsProxyRectDirty()
-{
-    boundsProxy_->ScheduleUpdate(
-        [this](UInterfaceProxy::Data& data)
-        {
-            data.objectData.modelMatrix = ModelMatrix();
-        }
-    );
-}
+//void KInterfaceComponent::MarkBoundsProxyRectDirty()
+//{
+//    boundsProxy_->ScheduleUpdate(
+//        [this](UInterfaceProxy::Data& data)
+//        {
+//            data.objectData.modelMatrix = ModelMatrix();
+//        }
+//    );
+//}
 
 glm::vec2 KInterfaceComponent::GetAnchorOffset() const
 {

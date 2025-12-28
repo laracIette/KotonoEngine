@@ -34,8 +34,8 @@ void KInterfaceBoxComponent::Spawn()
     CreateBoxProxy();
     Renderer.InterfaceRenderer().RegisterProxy(boxProxy_);
 
-    EventColorUpdated().AddListener(KtDelegate(this, &KInterfaceBoxComponent::MarkBoxProxyColorDirty));
-    EventRectUpdated().AddListener(KtDelegate(this, &KInterfaceBoxComponent::MarkBoxProxyRectDirty));
+    EventColorChanged().AddListener(KtDelegate(this, &KInterfaceBoxComponent::MarkBoxProxyColorDirty));
+    EventRectChanged().AddListener(KtDelegate(this, &KInterfaceBoxComponent::MarkBoxProxyRectDirty));
 }
 
 void KInterfaceBoxComponent::CreateBoxProxy()
@@ -43,8 +43,8 @@ void KInterfaceBoxComponent::CreateBoxProxy()
     boxProxy_->ScheduleUpdate(
         [this](UInterfaceProxy::Data& data)
         {
-            const auto shaderPath{ KtPath::Graphics() / "shaders" / "flatColor2D.ktshader" };
-            const auto texturePath{ KtPath::Graphics() / "assets" / "textures" / "white_texture.jpg" };
+            static const auto shaderPath{ KtPath::Graphics() / "shaders" / "flatColor2D.ktshader" };
+            static const auto texturePath{ KtPath::Graphics() / "assets" / "textures" / "white_texture.jpg" };
 
             data.shader = ShaderManager.Get(shaderPath);
             data.renderable = TextureManager.Get(texturePath);

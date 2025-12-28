@@ -1,6 +1,6 @@
 #pragma once
-#include <glm/vec2.hpp>
-glm::vec2 px_to_ndc_size(const glm::vec2 px) noexcept;
-glm::vec2 ndc_to_px_size(const glm::vec2 ndc) noexcept;
-glm::vec2 px_to_ndc_pos(const glm::vec2 px) noexcept;
-glm::vec2 ndc_to_px_pos(const glm::vec2 ndc) noexcept; 
+#include <glm/fwd.hpp>
+glm::vec2 px_to_ndc_size(const glm::vec2& px) noexcept;
+glm::vec2 ndc_to_px_size(const glm::vec2& ndc) noexcept;
+glm::vec2 px_to_ndc_pos(const glm::vec2& px) noexcept;
+glm::vec2 ndc_to_px_pos(const glm::vec2& ndc) noexcept; 

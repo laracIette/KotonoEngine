@@ -24,11 +24,11 @@ WWidget* WMainWindow::Build()
 							.children = {
 								new WBox({
 									.size = { 50.0f, 50.0f },
-									.child = new WColor({ KtColor::Green() }),
+									.child = new WColor({ UColor::Green() }),
 								}),
 								new WBox({
 									.size = { 50.0f, 50.0f },
-									.child = new WColor({ KtColor::Green() }),
+									.child = new WColor({ UColor::Green() }),
 								}),
 							},
 						}),
@@ -62,7 +62,7 @@ WWidget* WMainWindow::Build()
 								.size = { 300.0f, 300.0f },
 								.child = new WStack({
 									.children = {
-										new WColor({ KtColor::Red() }),
+										new WColor({ UColor::Red() }),
 										new WList({
 											.spacing = 75.0f,
 											.children = []() {
@@ -102,7 +102,7 @@ WWidget* WMainWindow::Build()
 								.size = { 400.0f, 800.0f },
 								.child = new WStack({
 									.children = {
-										new WColor({ KtColor::Magenta().WithAlpha(0.2f) }),
+										new WColor({ UColor::Magenta().WithAlpha(0.2f) }),
 										new WPadding({
 											.padding = WPadding::Padding::All(8.0f),
 											.child = new WColumn({
@@ -125,15 +125,15 @@ WWidget* WMainWindow::Build()
 					.children = {
 						new WBox({
 							.size = { 100.0f, 50.0f },
-							.child = new WColor({ KtColor::Blue() }),
+							.child = new WColor({ UColor::Blue() }),
 						}),
 						new WBox({
 							.size = { 100.0f, 50.0f },
-							.child = new WColor({ KtColor::Blue() }),
+							.child = new WColor({ UColor::Blue() }),
 						}),
 						new WBox({
 							.size = { 100.0f, 50.0f },
-							.child = new WColor({ KtColor::Blue() }),
+							.child = new WColor({ UColor::Blue() }),
 						}),
 					},
 				}),

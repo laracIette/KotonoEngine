@@ -11,7 +11,7 @@
 #include <kotono_platform/WindowViewport.h>
 
 static constexpr std::array<KtVertex2D, 4> Vertices
-{//                   Position,              KtColor,      TexCoords
+{//                   Position,              UColor,      TexCoords
 	KtVertex2D { {-0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f} }, // Bottom-left
 	KtVertex2D { { 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f} }, // Bottom-right
 	KtVertex2D { { 0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f} }, // Top-right

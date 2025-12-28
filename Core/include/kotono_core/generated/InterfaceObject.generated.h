@@ -1,5 +1,6 @@
 #define GENERATED_RINTERFACEOBJECT() \
 	private: \
+		using Self = RInterfaceObject; \
 		using Base = KObject; \
 		using Base::Base; \
 	public: \

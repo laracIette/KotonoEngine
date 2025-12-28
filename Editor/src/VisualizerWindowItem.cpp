@@ -18,8 +18,8 @@ WWidget* WVisualizerWindowItem::Build()
                 .child = new WStack({
                     .children = {
                         isFieldVisible 
-                            ? new WColor({ KtColor::Green() }) 
-                            : new WColor({ KtColor::Red() }),
+                            ? new WColor({ UColor::Green() }) 
+                            : new WColor({ UColor::Red() }),
                         new WButton({
                             .onPress = [this, isFieldVisible]() {
                                 SetState([this, isFieldVisible]() {

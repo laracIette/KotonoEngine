@@ -122,7 +122,7 @@ void serialize(nlohmann::json& json, const glm::quat& v)
     json["z"] = v.z;
 }
 
-void serialize(nlohmann::json& json, const KtColor& v)
+void serialize(nlohmann::json& json, const UColor& v)
 {
     json["r"] = v.r;
     json["g"] = v.g;
@@ -144,10 +144,11 @@ void serialize(nlohmann::json& json, const UTransform& v)
 
 void serialize(nlohmann::json& json, const URect& v)
 {
-    serialize(json["size"], v.size);
+    //serialize(json["size"], v.size);
     serialize(json["position"], v.position);
     serialize(json["scale"], v.scale);
     json["rotation"] = v.rotation;
+    json["layer"] = v.layer;
     //json["anchor"] = rect.anchor;
 }
 
@@ -299,7 +300,7 @@ void deserialize(const nlohmann::json& json, glm::quat& v)
     v.z = json.at("z");
 }
 
-void deserialize(const nlohmann::json& json, KtColor& v)
+void deserialize(const nlohmann::json& json, UColor& v)
 {
     v.r = json.at("r");
     v.g = json.at("g");
@@ -325,10 +326,11 @@ void deserialize(const nlohmann::json& json, UTransform& v)
 
 void deserialize(const nlohmann::json& json, URect& v)
 {
-    deserialize(json.at("size"), v.size);
+    //deserialize(json.at("size"), v.size);
     deserialize(json.at("position"), v.position);
     deserialize(json.at("scale"), v.scale);
     v.rotation = json.at("rotation");
+    v.layer = json.at("layer");
     //rect.anchor = json.at("anchor");
 }
 

@@ -26,8 +26,8 @@ WWidget* WGameStateButton::Build()
                             },
                         }),
                         GameManager.IsPlaying() 
-                            ? new WColor({ KtColor::White().WithValue(0.5f) })
-                            : new WColor({ KtColor::Green() })
+                            ? new WColor({ UColor::White().WithValue(0.5f) })
+                            : new WColor({ UColor::Green() })
                     },
                 }),
             }),
@@ -47,8 +47,8 @@ WWidget* WGameStateButton::Build()
                             },
                         }),
                         GameManager.IsStopped()
-                            ? new WColor({ KtColor::Red().WithAlpha(0.1f) })
-                            : new WColor({ KtColor::Red() })
+                            ? new WColor({ UColor::Red().WithAlpha(0.1f) })
+                            : new WColor({ UColor::Red() })
                     },
                 }),
             }),

@@ -40,8 +40,14 @@ void KtWindowViewport::SetExtent(const glm::uvec2& extent)
 		return;
 	}
 
+	if (extent == extent_)
+	{
+		return;
+	}
+
     extent_ = extent;
 	aspectRatio_ = static_cast<float>(extent.x) / extent.y;
+	eventExtentChanged_.Broadcast();
 }
 
 void KtWindowViewport::SetOffset(const glm::ivec2& offset)
@@ -78,4 +84,9 @@ void KtWindowViewport::CmdUse(VkCommandBuffer commandBuffer) const
 	vkScissor.extent.width = extent_.x;
 	vkScissor.extent.height = extent_.y;
 	vkCmdSetScissor(commandBuffer, 0, 1, &vkScissor);
+}
+
+KtEvent<>& KtWindowViewport::EventExtentChanged()
+{
+	return eventExtentChanged_;
 }

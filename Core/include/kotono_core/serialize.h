@@ -15,7 +15,7 @@ namespace std
 	}
 }
 
-struct KtColor;
+struct UColor;
 struct UGuid;
 struct UTransform;
 struct URect;
@@ -48,7 +48,7 @@ void serialize(nlohmann::json& json, const glm::uvec2& v);
 void serialize(nlohmann::json& json, const glm::ivec2& v);
 void serialize(nlohmann::json& json, const glm::quat& v);
 
-void serialize(nlohmann::json& json, const KtColor& v);
+void serialize(nlohmann::json& json, const UColor& v);
 
 void serialize(nlohmann::json& json, const UGuid& v);
 void serialize(nlohmann::json& json, const UTransform& v);
@@ -90,7 +90,7 @@ void deserialize(const nlohmann::json& json, glm::uvec2& v);
 void deserialize(const nlohmann::json& json, glm::ivec2& v);
 void deserialize(const nlohmann::json& json, glm::quat& v);
 
-void deserialize(const nlohmann::json& json, KtColor& v);
+void deserialize(const nlohmann::json& json, UColor& v);
 
 void deserialize(const nlohmann::json& json, UGuid& v);
 void deserialize(const nlohmann::json& json, UTransform& v);

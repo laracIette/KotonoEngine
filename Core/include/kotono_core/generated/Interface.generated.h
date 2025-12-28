@@ -1,5 +1,6 @@
 #define GENERATED_KINTERFACE() \
 	private: \
+		using Self = KInterface; \
 		using Base = KObject; \
 		using Base::Base; \
 	public: \

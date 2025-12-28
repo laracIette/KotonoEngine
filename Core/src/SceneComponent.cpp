@@ -3,7 +3,6 @@
 #include <kotono_common/log.h>
 #include <kotono_platform/glm_utils.h>
 #include <stdexcept>
-#include <glm/gtx/string_cast.hpp>
 
 KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner) :
     Base(ptrOwner),
@@ -15,6 +14,7 @@ KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner) :
 
 void KSceneComponent::Cleanup()
 {
+    SetParent(nullptr, ECoordinateSpace::Relative);
 	SetOwner(nullptr);
 
     Base::Cleanup();

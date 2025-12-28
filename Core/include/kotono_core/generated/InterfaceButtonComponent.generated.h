@@ -1,5 +1,6 @@
 #define GENERATED_KINTERFACEBUTTONCOMPONENT() \
 	private: \
+		using Self = KInterfaceButtonComponent; \
 		using Base = KInterfaceComponent; \
 		using Base::Base; \
 	public: \

@@ -19,7 +19,6 @@ class KInterfaceComponent : public KObject
 {
 	GENERATED_KINTERFACECOMPONENT()
 
-
 private:
 	friend class RInterfaceObject;
 
@@ -39,26 +38,21 @@ public:
 	const URect& GetRect() const;
 	EVisibility GetVisibility() const;
 	int32_t GetLayer() const;
-	KtEvent<>& EventRectUpdated();
-	KtEvent<>& EventLayerUpdated();
-	KtEvent<>& EventColorUpdated();
+	KtEvent<>& EventRectChanged();
+	KtEvent<>& EventLayerChanged();
+	KtEvent<>& EventColorChanged();
 
-	const glm::vec2& GetRelativeSize() const;
 	const glm::vec2& GetRelativePosition() const;
 	const glm::vec2& GetRelativeScale() const;
 	float GetRelativeRotation(const ERotationUnit unit = ERotationUnit::Radians) const;
 
-	glm::vec2 GetWorldSize() const;
 	glm::vec2 GetWorldPosition() const;
 	glm::vec2 GetWorldScale() const;
 	float GetWorldRotation(const ERotationUnit unit = ERotationUnit::Radians) const;
 
-	glm::vec2 GetScreenPosition() const;
-	glm::vec2 GetScreenSize() const;
-
 	EAnchor GetAnchor() const;
 
-	const KtColor& GetColor() const;
+	const UColor& GetColor() const;
 
 	void SetOwner(const UPtr<RInterfaceObject>& owner);
 	void SetCanUpdate(const bool canUpdate);
@@ -67,12 +61,10 @@ public:
 
 	void SetParent(const UPtr<KInterfaceComponent>& parent, const ECoordinateSpace keepRect);
 
-	void SetRelativeSize(const glm::vec2& relativeSize);
 	void SetRelativePosition(const glm::vec2& relativePosition);
 	void SetRelativeScale(const glm::vec2& relativeScale);
 	void SetRelativeRotation(float relativeRotation, const ERotationUnit unit = ERotationUnit::Radians);
 
-	void SetWorldSize(const glm::vec2& worldSize);
 	void SetWorldPosition(const glm::vec2& worldPosition);
 	void SetWorldScale(const glm::vec2& worldScale);
 	void SetWorldRotation(const float worldRotation, const ERotationUnit unit = ERotationUnit::Radians);
@@ -81,17 +73,9 @@ public:
 	void Scale(const glm::vec2& scale);
 	void Rotate(const float rotation, const ERotationUnit unit = ERotationUnit::Radians);
 
-	void SetScreenPosition(const glm::vec2& screenPosition);
-	void SetScreenSize(const glm::vec2& screenSize);
-
 	void SetAnchor(const EAnchor anchor);
 
-	void SetColor(const KtColor& color);
-
-	float GetLeft() const;
-	float GetRight() const;
-	float GetTop() const;
-	float GetBottom() const;
+	void SetColor(const UColor& color);
 
 	glm::mat4 TranslationMatrix() const;
 	glm::mat4 RotationMatrix() const;
@@ -100,7 +84,7 @@ public:
 
 	glm::vec2 GetDirection(const UPtr<KInterfaceComponent>& target) const;
 	float GetDistance(const UPtr<KInterfaceComponent>& other) const;
-	bool GetIsOverlapping(const glm::vec2& worldPosition, const glm::vec2& worldSize) const;
+	bool GetIsOverlapping(const glm::vec2& worldPosition, const glm::vec2& worldScale) const;
 	bool GetIsOverlapping(const glm::vec2& worldPosition) const;
 	bool GetIsOverlapping(const UPtr<KInterfaceComponent>& other) const;
 
@@ -112,8 +96,8 @@ public:
 	virtual void Spawn();
 
 private:
-	void CreateBoundsProxy();
-	void MarkBoundsProxyRectDirty();
+	//void CreateBoundsProxy();
+	//void MarkBoundsProxyRectDirty();
 
 	glm::vec2 GetAnchorOffset() const;
 	glm::vec2 GetWorldPositionWithAnchorOffset() const;
@@ -128,13 +112,12 @@ private:
 	size_t childrenIndex_;
 	SERIALIZE URect rect_;
 	SERIALIZE EVisibility visibility_;
-	SERIALIZE int32_t layer_;
-	SERIALIZE KtColor color_;
-	UInterfaceProxy* boundsProxy_;
-	KtEvent<> eventRectUpdated_;
-	KtEvent<> eventLayerUpdated_;
-	KtEvent<> eventColorUpdated_;
-	size_t componentIndex_;
+	SERIALIZE UColor color_;
+	//UInterfaceProxy* boundsProxy_;
+	KtEvent<> eventRectChanged_;
+	KtEvent<> eventLayerChanged_;
+	KtEvent<> eventColorChanged_;
 	KtCached<glm::mat4> modelMatrix_;
+	size_t componentIndex_;
 };
 

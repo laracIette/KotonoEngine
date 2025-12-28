@@ -19,7 +19,7 @@ KSceneMeshComponent::KSceneMeshComponent(UPtrOwnerBase* ptrOwner) :
 {
     if (!WireframeShader)
     {
-        const auto path{ KtPath::Graphics() / "shaders" / "wireframe3D.ktshader" };
+        static const auto path{ KtPath::Graphics() / "shaders" / "wireframe3D.ktshader" };
         WireframeShader = ShaderManager.Get(path);
     }
 

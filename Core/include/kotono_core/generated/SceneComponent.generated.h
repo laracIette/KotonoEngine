@@ -1,5 +1,6 @@
 #define GENERATED_KSCENECOMPONENT() \
 	private: \
+		using Self = KSceneComponent; \
 		using Base = KObject; \
 		using Base::Base; \
 	public: \

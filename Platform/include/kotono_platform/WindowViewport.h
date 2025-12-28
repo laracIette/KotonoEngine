@@ -1,6 +1,7 @@
 #pragma once
 #include <vulkan/vulkan_core.h>
 #include <glm/vec2.hpp>
+#include <kotono_common/Event.h>
 class KtWindowViewport final
 {
 public:
@@ -18,12 +19,16 @@ public:
 
 	void CmdUse(VkCommandBuffer commandBuffer) const;
 
+	KtEvent<>& EventExtentChanged();
+
 private:
 	glm::uvec2 extent_;
 	glm::ivec2 offset_;
 
 	bool isKeepAspectRatio_;
 	float aspectRatio_;
+
+	KtEvent<> eventExtentChanged_;
 };
 
 inline KtWindowViewport WindowViewport;

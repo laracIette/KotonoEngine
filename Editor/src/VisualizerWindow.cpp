@@ -8,7 +8,7 @@ WWidget* WVisualizerWindow::Build()
         .size = { 600.0f, 300.0f },
         .child = new WStack({
             .children = {
-                new WColor({ KtColor::Blue().WithAlpha(0.5f) }),
+                new WColor({ UColor::Blue().WithAlpha(0.5f) }),
                 new WPadding({
                     .padding = WPadding::Padding::All(8.0f),
                     .child = new WColumn({
@@ -22,7 +22,7 @@ WWidget* WVisualizerWindow::Build()
                                     }),
                                     new WBox({
                                         .size = { 400.0f, 60.0f },
-                                        .child = new WColor({ KtColor::Black().WithAlpha(0.5f) }),
+                                        .child = new WColor({ UColor::Black().WithAlpha(0.5f) }),
                                     }),
                                 },
                             }),

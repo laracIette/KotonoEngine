@@ -260,17 +260,21 @@ void Generator::Generate(const std::filesystem::path& header) const
 	const std::string generatedCodeHeader{ isKObject
 		? std::format(
 			"#define GENERATED_{}() \\\n"
+			"\tprivate: \\\n"
+			"\t\tusing Self = {}; \\\n"
 			"\tpublic: \\\n"
 			"\t\tvirtual void SerializeTo(nlohmann::json& json) const; \\\n"
 			"\t\tvirtual void DeserializeFrom(const nlohmann::json& json); \\\n"
 			"\tprivate: \\\n"
 			"\t\tUPtr<{}> Ptr() const;\n",
 			to_upper(classInfo.name),
+			classInfo.name,
 			classInfo.name
 		)
 		: std::format(
 			"#define GENERATED_{}() \\\n"
 			"\tprivate: \\\n"
+			"\t\tusing Self = {}; \\\n"
 			"\t\tusing Base = {}; \\\n"
 			"\t\tusing Base::Base; \\\n"
 			"\tpublic: \\\n"
@@ -279,6 +283,7 @@ void Generator::Generate(const std::filesystem::path& header) const
 			"\tprivate: \\\n"
 			"\t\tUPtr<{}> Ptr() const;\n",
 			to_upper(classInfo.name),
+			classInfo.name,
 			classInfo.baseName,
 			classInfo.name
 		)

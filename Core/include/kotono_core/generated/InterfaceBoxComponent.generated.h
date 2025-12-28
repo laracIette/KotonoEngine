@@ -1,5 +1,6 @@
 #define GENERATED_KINTERFACEBOXCOMPONENT() \
 	private: \
+		using Self = KInterfaceBoxComponent; \
 		using Base = KInterfaceComponent; \
 		using Base::Base; \
 	public: \

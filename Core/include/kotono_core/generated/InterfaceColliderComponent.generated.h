@@ -1,5 +1,6 @@
 #define GENERATED_KINTERFACECOLLIDERCOMPONENT() \
 	private: \
+		using Self = KInterfaceColliderComponent; \
 		using Base = KInterfaceComponent; \
 		using Base::Base; \
 	public: \

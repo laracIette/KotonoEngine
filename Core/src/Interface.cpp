@@ -23,20 +23,23 @@ KInterface::KInterface(UPtrOwnerBase* ptrOwner) :
 	UPtr imageComponent2{ ObjectManager.Create<KInterfaceImageComponent>() };
 
 	rootComponent1->SetOwner(image1);
+	rootComponent1->SetRelativePosition({ 0.0f, 0.5f });
+
 	rootComponent2->SetOwner(image2);
+	rootComponent2->SetRelativePosition({ 0.0f, 0.6f });
 
 	imageComponent1->SetOwner(image1);
 	imageComponent1->SetShader(shader2D);
 	imageComponent1->SetTexture(texture1);
 	imageComponent1->SetParent(rootComponent1, ECoordinateSpace::Relative);
-	imageComponent1->SetScreenSize({ 1024.0f, 1024.0f });
+	//imageComponent1->SetScreenSize({ 1024.0f, 1024.0f });
 	imageComponent1->SetRelativeScale({ 0.25f, 0.25f });
 
 	imageComponent2->SetOwner(image2);
 	imageComponent2->SetShader(shader2D);
 	imageComponent2->SetTexture(texture2);
 	imageComponent2->SetParent(rootComponent2, ECoordinateSpace::Relative);
-	imageComponent2->SetScreenSize({ 1024.0f, 1024.0f });
+	//imageComponent2->SetScreenSize({ 1024.0f, 1024.0f });
 	imageComponent2->SetRelativeScale({ 0.1f, 0.1f });
 
 	image2->SetParent(image1, ECoordinateSpace::World);

@@ -25,7 +25,7 @@ WWidget* WSceneExplorer::Build()
 
 	return new WStack({
 		.children = {
-			new WColor({ KtColor::White().WithValue(0.5f).WithAlpha(0.8f) }),
+			new WColor({ UColor::White().WithValue(0.5f).WithAlpha(0.8f) }),
 			new WPadding({
 				.padding = WPadding::Padding::All(10.0f),
 				.child = new WColumn({
@@ -35,7 +35,7 @@ WWidget* WSceneExplorer::Build()
 							.size = { 80.0f, 40.0f },
 							.child = new WStack({
 								.children = {
-									new WColor({ KtColor::Green() }),
+									new WColor({ UColor::Green() }),
 									new WButton({
 										.onPress = []() {
 											if (UPtr scene{ Game.GetOpenedScene() })
@@ -80,7 +80,7 @@ WWidget* WSceneExplorer::Build()
 							.padding = WPadding::Padding::All(5.0f),
 							.child = new WStack({
 								.children = {
-									new WColor({ KtColor::Black().WithAlpha(0.2f) }),
+									new WColor({ UColor::Black().WithAlpha(0.2f) }),
 									new WPadding({
 										.padding = WPadding::Padding::All(5.0f),
 										.child = new WList({ 

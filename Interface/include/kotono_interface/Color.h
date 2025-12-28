@@ -7,8 +7,8 @@ class WColor : public WWidget
 public:
 	struct ColorSettings
 	{
-		/// default = KtColor::White()
-		KtColor color{ KtColor::White() };
+		/// default = UColor::White()
+		UColor color{ UColor::White() };
 	};
 
 	/// Fill the widget's bounds with a color

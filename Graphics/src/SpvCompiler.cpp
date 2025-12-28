@@ -11,8 +11,8 @@ void KtSpvCompiler::CompileUpdated() const
 {
     KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics.KtSpvCompiler::CompileAll()", "compiling updated spirv shaders");
 
-    const auto path{ KtPath::Graphics() / "shaders" };
-    const auto registryPath{ path / "shaders.ktregistry" };
+    static const auto path{ KtPath::Graphics() / "shaders" };
+    static const auto registryPath{ path / "shaders.ktregistry" };
 
     nlohmann::json json{};
     KtSerializer::Deserialize(json, registryPath);
