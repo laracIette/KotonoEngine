@@ -17,12 +17,17 @@ void KtModel::Init()
 	Load();
 	CreateVertexBuffer();
 	CreateIndexBuffer();
+	CreateIndirectBuffers();
 }
 
-void KtModel::Cleanup() const
+void KtModel::Cleanup()
 {
 	vmaDestroyBuffer(Context.GetAllocator(), indexBuffer_.Buffer, indexBuffer_.Allocation);
 	vmaDestroyBuffer(Context.GetAllocator(), vertexBuffer_.Buffer, vertexBuffer_.Allocation);
+	for (auto& indirectBuffer : indirectBuffers_)
+	{
+		vmaDestroyBuffer(Context.GetAllocator(), indirectBuffer.Buffer, indirectBuffer.Allocation);
+	}
 	KT_LOG(ELogImportanceLevel::Low, "Graphics.KtModel::Cleanup()", "cleaned up %s", Path().string().c_str());
 }
 
@@ -39,9 +44,16 @@ void KtModel::CmdBind(VkCommandBuffer commandBuffer) const
 	vkCmdBindIndexBuffer(commandBuffer, indexBuffer_.Buffer, 0, VK_INDEX_TYPE_UINT32);
 }
 
-void KtModel::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t instanceCount, const uint32_t firstInstance) const
+void KtModel::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex) const
 {
-	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices_.size()), instanceCount, 0, 0, firstInstance);
+	vkCmdDrawIndexedIndirect(commandBuffer, indirectBuffers_[frameIndex].Buffer, 0, 1, sizeof(VkDrawIndexedIndirectCommand));
+}
+
+void KtModel::UpdateIndirectBuffer(const uint32_t firstInstance, const uint32_t instanceCount, const uint32_t frameIndex) const
+{
+	auto* cmd{ static_cast<VkDrawIndexedIndirectCommand*>(indirectBuffers_[frameIndex].AllocationInfo.pMappedData) };
+	cmd->instanceCount = instanceCount;
+	cmd->firstInstance = firstInstance;
 }
 
 void KtModel::Load()
@@ -98,7 +110,7 @@ void KtModel::Load()
 
 void KtModel::CreateVertexBuffer()
 {
-	const VkDeviceSize bufferSize = sizeof(KtVertex3D) * vertices_.size();
+	const VkDeviceSize bufferSize{ sizeof(KtVertex3D) * vertices_.size() };
 
 	Context.CreateBuffer(
 		bufferSize,
@@ -124,7 +136,7 @@ void KtModel::CreateVertexBuffer()
 
 void KtModel::CreateIndexBuffer()
 {
-	const VkDeviceSize bufferSize = sizeof(uint32_t) * indices_.size();
+	const VkDeviceSize bufferSize{ sizeof(uint32_t) * indices_.size() };
 
 	Context.CreateBuffer(
 		bufferSize,
@@ -146,6 +158,37 @@ void KtModel::CreateIndexBuffer()
 
 	Context.CopyBuffer(stagingIndexBuffer_.Buffer, indexBuffer_.Buffer, bufferSize);
 	Context.GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtModel::DestroyStagingIndexBuffer));
+}
+
+void KtModel::CreateIndirectBuffers()
+{
+	for (size_t i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
+	{
+		CreateIndirectBuffer(static_cast<uint32_t>(i));
+	}
+}
+
+void KtModel::CreateIndirectBuffer(const uint32_t frameIndex)
+{
+	const VkDeviceSize bufferSize{ sizeof(VkDrawIndexedIndirectCommand) };
+
+	Context.CreateBuffer(
+		bufferSize,
+		VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+		VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
+		indirectBuffers_[frameIndex]
+	);
+
+	const VkDrawIndexedIndirectCommand cmd{
+		.indexCount = static_cast<uint32_t>(indices_.size()),
+		.instanceCount = 0,
+		.firstIndex = 0,
+		.vertexOffset = 0,
+		.firstInstance = 0,
+	};
+
+	memcpy(indirectBuffers_[frameIndex].AllocationInfo.pMappedData, &cmd, sizeof(cmd));
 }
 
 void KtModel::DestroyStagingVertexBuffer()

@@ -3,11 +3,13 @@
 #include "Mobility.h"
 #include "RendererFrameStats.h"
 #include "SceneUniformData.h"
+#include "Scissor.h"
 #include <kotono_common/Pool.h>
 #include <unordered_map>
 #include <vulkan/vulkan_core.h>
 class USceneProxy;
 class KtShader;
+class KtSceneRenderable;
 class KtSceneRenderer final
 {
 private:
@@ -37,12 +39,22 @@ public:
 	void DeleteProxy(Proxy* proxy);
 
 private:
+	struct DrawBatch
+	{
+		KtShader* shader;
+		KtSceneRenderable* renderable;
+		KtScissor scissor;
+		uint32_t firstInstance;
+		uint32_t instanceCount;
+	};
+
 	struct FrameData
 	{
 		struct ObjectBufferData
 		{
 			ProxiesPool proxies;
 			ProxiesPool sortedProxies;
+			std::vector<DrawBatch> drawBatches;
 			VkCommandBuffer commandBuffer;
 			bool isDirty;
 		};
@@ -63,13 +75,13 @@ private:
 		std::unordered_map<const KtShader*, uint32_t> instanceIndices;
 	};
 
-	// Those are only accessed from the game thread
+	// Those are accessed from one thread
 	std::pair<KtSceneUniformData, uint32_t> stagingUniformData_;
 	StagingProxiesMap stagingStaticProxies_;
 	StagingProxiesMap stagingDynamicProxies_;
 	DeleteProxiesMap deleteProxies_;
 
-	// Those are updated by the game thread then accessed from the render thread
+	// Those are accessed from multiple threads
 	KtFramesInFlightArray<FrameData> frameDatas_;
 
 	void CreateCommandBuffers();
@@ -88,6 +100,9 @@ private:
 
 	void SortProxies(ProxiesPool& proxies, const uint32_t frameIndex);
 
-	void CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex);
+	void CmdDrawProxies(VkCommandBuffer commandBuffer, const std::vector<DrawBatch>& drawBatches, const uint32_t frameIndex);
 	void CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
+
+	std::vector<DrawBatch> GetDrawBatches(const ProxiesPool& proxies, const uint32_t frameIndex);
+	void UpdateIndirectBuffers(const std::vector<DrawBatch>& drawBatches, const uint32_t frameIndex);
 };

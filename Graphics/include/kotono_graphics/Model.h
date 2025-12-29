@@ -1,7 +1,8 @@
 #pragma once
+#include "frames_in_flight.h"
 #include "SceneRenderable.h" 
-#include <filesystem>
 #include "Vertex3D.h"
+#include <filesystem>
 #include <kotono_platform/AllocatedBuffer.h>
 class KtModel final : public KtSceneRenderable
 {
@@ -9,12 +10,14 @@ public:
 	KtModel(const std::filesystem::path& path);
 
 	void Init();
-	void Cleanup() const;
+	void Cleanup();
 
 	const std::filesystem::path& Path() const;
 
 	void CmdBind(VkCommandBuffer commandBuffer) const override;
-	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t instanceCount, const uint32_t firstInstance) const override;
+	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex) const override;
+	
+	void UpdateIndirectBuffer(const uint32_t firstInstance, const uint32_t instanceCount, const uint32_t frameIndex) const override;
 
 private:
 	const std::filesystem::path path_;
@@ -23,12 +26,15 @@ private:
 	std::vector<uint32_t> indices_;
 	KtAllocatedBuffer vertexBuffer_;
 	KtAllocatedBuffer indexBuffer_;
+	KtFramesInFlightArray<KtAllocatedBuffer> indirectBuffers_;
 	KtAllocatedBuffer stagingVertexBuffer_;
 	KtAllocatedBuffer stagingIndexBuffer_;
 
 	void Load();
 	void CreateVertexBuffer();
 	void CreateIndexBuffer();
+	void CreateIndirectBuffers();
+	void CreateIndirectBuffer(const uint32_t frameIndex);
 	void DestroyStagingVertexBuffer();
 	void DestroyStagingIndexBuffer();
 };

@@ -1,5 +1,4 @@
 #pragma once
-
 #include <vulkan/vulkan_core.h>
 
 class KtSceneRenderable
@@ -8,6 +7,8 @@ public:
 	virtual ~KtSceneRenderable() = default;
 
 	virtual void CmdBind(VkCommandBuffer commandBuffer) const = 0;
-	virtual void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t instanceCount, const uint32_t firstInstance) const = 0;
+	virtual void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex) const = 0;
+
+	virtual void UpdateIndirectBuffer(const uint32_t firstInstance, const uint32_t instanceCount, const uint32_t frameIndex) const = 0;
 };
 
