@@ -39,7 +39,6 @@ WWidget* WSceneExplorer::Build()
 										.onPress = []() {
 											if (UPtr scene{ Game.GetOpenedScene() })
 											{
-												const auto graphicsPath{ std::filesystem::path("Graphics") };
 												auto* shader3D{ ShaderManager.Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader3D.ktshader")};
 												auto* model1{ ModelManager.Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.obj") };
 												auto* model2{ ModelManager.Get("${ENGINE_DIRECTORY}/Graphics/assets/models/column.obj") };
