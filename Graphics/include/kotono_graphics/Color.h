@@ -121,7 +121,7 @@ struct UColor final
 		return hsl;
 	}
 
-	static constexpr UColor FromHex(uint32_t hex) noexcept
+	static constexpr UColor FromHex(u32 hex) noexcept
 	{
 		return {
 			((hex >> 24) & 0xFF) / 255.0f,

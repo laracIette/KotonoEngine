@@ -52,7 +52,7 @@ void KtTexture::CreateTextureImage()
 	}
 	const VkDeviceSize imageSize{ static_cast<VkDeviceSize>(texWidth) * texHeight * 4 };
 
-	mipLevels_ = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
+	mipLevels_ = static_cast<u32>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
 
 	if (!pixels)
 	{
@@ -67,7 +67,7 @@ void KtTexture::CreateTextureImage()
 		stagingBuffer_
 	);
 
-	memcpy(stagingBuffer_.AllocationInfo.pMappedData, pixels, static_cast<size_t>(imageSize));
+	memcpy(stagingBuffer_.AllocationInfo.pMappedData, pixels, static_cast<size>(imageSize));
 
 	stbi_image_free(pixels);
 
@@ -95,15 +95,15 @@ void KtTexture::CreateTextureImage()
 	Context.CopyBufferToImage(
 		stagingBuffer_.Buffer,
 		image_,
-		static_cast<uint32_t>(texWidth),
-		static_cast<uint32_t>(texHeight)
+		static_cast<u32>(texWidth),
+		static_cast<u32>(texHeight)
 	);
 
 	Context.GetEventExecuteSingleTimeCommands().AddListener(KtDelegate(this, &KtTexture::DestroyStagingBuffer));
 
 	Context.GenerateMipmaps(image_, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels_);
 
-	size_ = glm::uvec2(static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+	size_ = glm::uvec2(static_cast<u32>(texWidth), static_cast<u32>(texHeight));
 }
 
 void KtTexture::CreateTextureImageView()

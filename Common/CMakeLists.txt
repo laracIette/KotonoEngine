@@ -29,6 +29,7 @@ set(KCOMMON_HEADERS
     "include/kotono_common/Path.h"
     "include/kotono_common/PathManager.h"
     "include/kotono_common/Pool.h"    
+    "include/kotono_common/types.h"    
 )
 set(KCOMMON_SOURCES
     "src/hash_utils.cpp"

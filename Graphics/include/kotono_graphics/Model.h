@@ -15,15 +15,15 @@ public:
 	const UPath& Path() const;
 
 	void CmdBind(VkCommandBuffer commandBuffer) const override;
-	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex) const override;
+	void CmdDraw(VkCommandBuffer commandBuffer, const u32 frameIndex) const override;
 	
-	void UpdateIndirectBuffer(const uint32_t firstInstance, const uint32_t instanceCount, const uint32_t frameIndex) const override;
+	void UpdateIndirectBuffer(const u32 firstInstance, const u32 instanceCount, const u32 frameIndex) const override;
 
 private:
 	const UPath path_;
 
 	std::vector<KtVertex3D> vertices_;
-	std::vector<uint32_t> indices_;
+	std::vector<u32> indices_;
 	KtAllocatedBuffer vertexBuffer_;
 	KtAllocatedBuffer indexBuffer_;
 	KtFramesInFlightArray<KtAllocatedBuffer> indirectBuffers_;
@@ -34,7 +34,7 @@ private:
 	void CreateVertexBuffer();
 	void CreateIndexBuffer();
 	void CreateIndirectBuffers();
-	void CreateIndirectBuffer(const uint32_t frameIndex);
+	void CreateIndirectBuffer(const u32 frameIndex);
 	void DestroyStagingVertexBuffer();
 	void DestroyStagingIndexBuffer();
 };

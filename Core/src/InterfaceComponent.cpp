@@ -71,7 +71,7 @@ EVisibility KInterfaceComponent::GetVisibility() const
     return visibility_;
 }
 
-int32_t KInterfaceComponent::GetLayer() const
+i32 KInterfaceComponent::GetLayer() const
 {
     if (parent_)
     {
@@ -186,7 +186,7 @@ void KInterfaceComponent::SetVisibility(const EVisibility visibility, const bool
     }
 }
 
-void KInterfaceComponent::SetLayer(const int32_t layer)
+void KInterfaceComponent::SetLayer(const i32 layer)
 {
     rect_.layer = layer;
     eventLayerChanged_.Broadcast();
@@ -436,7 +436,7 @@ void KInterfaceComponent::AddChildren(const UPtr<KInterfaceComponent>& interface
     }
 
     children_.Add(interfaceComponent);
-    interfaceComponent->childrenIndex_ = static_cast<size_t>(children_.LastIndex());
+    interfaceComponent->childrenIndex_ = static_cast<size>(children_.LastIndex());
 }
 
 void KInterfaceComponent::RemoveChildren(const UPtr<KInterfaceComponent>& interfaceComponent)
@@ -446,7 +446,7 @@ void KInterfaceComponent::RemoveChildren(const UPtr<KInterfaceComponent>& interf
         return;
     }
 
-    const size_t index{ interfaceComponent->childrenIndex_ };
+    const size index{ interfaceComponent->childrenIndex_ };
     if (children_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
     {
         children_[index]->childrenIndex_ = index;

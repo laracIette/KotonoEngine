@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <filesystem>
+#include "types.h"
 class UPath final
 {
 private:
@@ -29,5 +30,5 @@ private:
 template<>
 struct std::hash<UPath>
 {
-	size_t operator()(const UPath& p) const noexcept;
+	::size operator()(const UPath& p) const noexcept;
 };

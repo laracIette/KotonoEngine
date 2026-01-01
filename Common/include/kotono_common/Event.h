@@ -1,6 +1,7 @@
 #pragma once
 #include "Delegate.h"
 #include "Pool.h"
+#include "types.h"
 
 template<typename... Args>
 class KtEvent final
@@ -27,7 +28,7 @@ public:
     void Broadcast(Args... args)
     {
         // Don't process delegates that are added while the event is broadcasting
-        for (int64_t i{ delegates_.LastIndex()}; i >= 0; --i)
+        for (i64 i{ delegates_.LastIndex()}; i >= 0; --i)
         {
             delegates_[i].Callback(args...);
         }

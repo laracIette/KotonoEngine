@@ -4,6 +4,7 @@
 #include <memory>
 #include <iostream>
 #include "hash_utils.h"
+#include "types.h"
 
 template <typename... Args>
 class KtDelegate final
@@ -60,9 +61,9 @@ private:
 template <typename... Args>
 struct std::hash<KtDelegate<Args...>>
 {
-    size_t operator()(const KtDelegate<Args...>& delegate) const noexcept
+    ::size operator()(const KtDelegate<Args...>& delegate) const noexcept
     {
-        size_t h{ 0 };
+        ::size h{ 0 };
         combine(h, std::hash<void*>{}(delegate.instance_));
         combine(h, std::hash<void*>{}(delegate.functionIdentity_));
         return h;

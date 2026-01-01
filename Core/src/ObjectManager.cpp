@@ -29,7 +29,7 @@ void SObjectManager::Init()
 
 void SObjectManager::Cleanup()
 {
-	for (int64_t i{ objects_.LastIndex() }; i >= 0 && i < objects_.size(); --i)
+	for (i64 i{ objects_.LastIndex() }; i >= 0 && i < objects_.size(); --i)
 	{
 		Delete(objects_[i]);
 	}
@@ -56,7 +56,7 @@ void SObjectManager::Delete(UPtrOwnerBase* ptrOwner)
 
 	object->Cleanup();
 
-	const size_t index{ object->objectIndex_ };
+	const size index{ object->objectIndex_ };
 	if (objects_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 	{
 		auto* swapped{ static_cast<KObject*>(objects_[index]->Get()) };

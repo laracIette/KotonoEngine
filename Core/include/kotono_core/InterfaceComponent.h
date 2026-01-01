@@ -38,7 +38,7 @@ public:
 	bool GetCanUpdate() const;
 	const URect& GetRect() const;
 	EVisibility GetVisibility() const;
-	int32_t GetLayer() const;
+	i32 GetLayer() const;
 	KtEvent<>& EventRectChanged();
 	KtEvent<>& EventLayerChanged();
 	KtEvent<>& EventColorChanged();
@@ -58,7 +58,7 @@ public:
 	void SetOwner(const UPtr<RInterfaceObject>& owner);
 	void SetCanUpdate(const bool canUpdate);
 	void SetVisibility(const EVisibility visibility, const bool propagateToChildren = false);
-	void SetLayer(const int32_t layer);
+	void SetLayer(const i32 layer);
 
 	void SetParent(const UPtr<KInterfaceComponent>& parent, const ECoordinateSpace keepRect);
 
@@ -110,7 +110,7 @@ private:
 	UPtr<RInterfaceObject> owner_;
 	UPtr<KInterfaceComponent> parent_;
 	KtPool<UPtr<KInterfaceComponent>> children_;
-	size_t childrenIndex_;
+	size childrenIndex_;
 	SERIALIZE URect rect_;
 	SERIALIZE EVisibility visibility_;
 	SERIALIZE UColor color_;
@@ -119,6 +119,6 @@ private:
 	KtEvent<> eventLayerChanged_;
 	KtEvent<> eventColorChanged_;
 	KtCached<glm::mat4> modelMatrix_;
-	size_t componentIndex_;
+	size componentIndex_;
 };
 

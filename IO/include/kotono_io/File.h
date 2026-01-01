@@ -1,4 +1,5 @@
 #pragma once
+#include <kotono_common/types.h>
 #include <filesystem>
 #include <span>
 class KtFile final
@@ -21,11 +22,11 @@ public:
 	// Get the content of the file, for text files
 	std::string ReadString() const;
 	// Get the content of the file, for binary files
-	std::vector<uint8_t> ReadBinary() const;
+	std::vector<u8> ReadBinary() const;
 	// Set the content of the file, for text files
 	void WriteString(const std::string_view data) const;
 	// Set the content of the file, for binary files
-	void WriteBinary(const std::span<uint32_t> data) const;
+	void WriteBinary(const std::span<u32> data) const;
 
 private:
 	const std::filesystem::path path_;

@@ -107,7 +107,10 @@ set(KGRAPHICS_SOURCES
     "src/SceneRenderer.cpp"
     "src/Shader.cpp"
     "src/ShaderManager.cpp"
-    "src/SpvCompiler.cpp"
+    "src/SpvCompiler.cpp"  
+    "src/Vertex2D.cpp"
+    "src/Vertex3D.cpp"
+
 )
 
 target_sources(KotonoGraphics

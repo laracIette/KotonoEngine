@@ -39,6 +39,6 @@ private:
 
 	bool isPressed_;
 
-	size_t physicsIndex_;
+	size physicsIndex_;
 };
 

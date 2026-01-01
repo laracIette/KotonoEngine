@@ -29,7 +29,7 @@ void WColumn::DisplayInternal(DisplaySettings displaySettings)
 	{
 		flexHeight -= columnSettings_.spacing * static_cast<float>(columnSettings_.children.size() - 1);
 	}
-	if (const size_t flexCount = GetFlexCount())
+	if (const size flexCount = GetFlexCount())
 	{
 		flexHeight /= static_cast<float>(flexCount);
 	}
@@ -81,7 +81,7 @@ WWidget::DisplaySettings WColumn::GetDisplaySettings(DisplaySettings displaySett
 	return displaySettings;
 }
 
-size_t WColumn::GetFlexCount() const
+size WColumn::GetFlexCount() const
 {
 	return std::count_if(columnSettings_.children.begin(), columnSettings_.children.end(),
 		[](const WWidget* child) { return child && has_flag(child->GetFlex(), EFlex::Vertical); }

@@ -21,6 +21,6 @@ protected:
 	void DisplayInternal(DisplaySettings displaySettings) override;
 
 private:
-	size_t GetFlexCount() const;
+	size GetFlexCount() const;
 };
 

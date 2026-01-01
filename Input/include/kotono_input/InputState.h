@@ -1,6 +1,6 @@
 #pragma once
-#include <cstdint>
-enum class EInputState : uint8_t
+#include <kotono_common/types.h>
+enum class EInputState : u8
 {
 	// Occurs the first frame where the input is down.
 	Pressed,
@@ -10,9 +10,9 @@ enum class EInputState : uint8_t
 	Down
 };
 
-inline constexpr size_t InputStateCount{ 3 };
+inline constexpr size InputStateCount{ 3 };
 
-inline constexpr size_t to_index(const EInputState inputState)
+inline constexpr size to_index(const EInputState inputState)
 {
-	return static_cast<size_t>(inputState);
+	return static_cast<size>(inputState);
 }

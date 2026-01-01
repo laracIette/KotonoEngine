@@ -18,14 +18,14 @@ class KObject;
 class UPath;
 
 void serialize(nlohmann::json& json, const bool v);
-void serialize(nlohmann::json& json, const int8_t v);
-void serialize(nlohmann::json& json, const int16_t v);
-void serialize(nlohmann::json& json, const int32_t v);
-void serialize(nlohmann::json& json, const int64_t v);
-void serialize(nlohmann::json& json, const uint8_t v);
-void serialize(nlohmann::json& json, const uint16_t v);
-void serialize(nlohmann::json& json, const uint32_t v);
-void serialize(nlohmann::json& json, const uint64_t v);
+void serialize(nlohmann::json& json, const i8 v);
+void serialize(nlohmann::json& json, const i16 v);
+void serialize(nlohmann::json& json, const i32 v);
+void serialize(nlohmann::json& json, const i64 v);
+void serialize(nlohmann::json& json, const u8 v);
+void serialize(nlohmann::json& json, const u16 v);
+void serialize(nlohmann::json& json, const u32 v);
+void serialize(nlohmann::json& json, const u64 v);
 void serialize(nlohmann::json& json, const float v);
 void serialize(nlohmann::json& json, const double v);
 
@@ -60,14 +60,14 @@ void serialize(nlohmann::json& json, const UPtr<T>& v)
 
 
 void deserialize(const nlohmann::json& json, bool& v);
-void deserialize(const nlohmann::json& json, int8_t& v);
-void deserialize(const nlohmann::json& json, int16_t& v);
-void deserialize(const nlohmann::json& json, int32_t& v);
-void deserialize(const nlohmann::json& json, int64_t& v);
-void deserialize(const nlohmann::json& json, uint8_t& v);
-void deserialize(const nlohmann::json& json, uint16_t& v);
-void deserialize(const nlohmann::json& json, uint32_t& v);
-void deserialize(const nlohmann::json& json, uint64_t& v);
+void deserialize(const nlohmann::json& json, i8& v);
+void deserialize(const nlohmann::json& json, i16& v);
+void deserialize(const nlohmann::json& json, i32& v);
+void deserialize(const nlohmann::json& json, i64& v);
+void deserialize(const nlohmann::json& json, u8& v);
+void deserialize(const nlohmann::json& json, u16& v);
+void deserialize(const nlohmann::json& json, u32& v);
+void deserialize(const nlohmann::json& json, u64& v);
 void deserialize(const nlohmann::json& json, float& v);
 void deserialize(const nlohmann::json& json, double& v);
 

@@ -1,5 +1,5 @@
 #pragma once
-#include <cstdint>
+#include <kotono_common/types.h>
 template <typename T>
 class KtPool;
 class UInterfaceProxy;
@@ -10,10 +10,10 @@ private:
 	using ProxiesPool = KtPool<Proxy*>;
 
 public:
-	ProxiesPool ComputeCulling(ProxiesPool renderQueueData, const uint32_t frameIndex) const;
+	ProxiesPool ComputeCulling(ProxiesPool renderQueueData, const u32 frameIndex) const;
 
 private:
-	ProxiesPool ComputeNullCulling(const ProxiesPool& renderQueueData, const uint32_t frameIndex) const;
-	ProxiesPool ComputeScreenCulling(const ProxiesPool& renderQueueData, const uint32_t frameIndex) const;
+	ProxiesPool ComputeNullCulling(const ProxiesPool& renderQueueData, const u32 frameIndex) const;
+	ProxiesPool ComputeScreenCulling(const ProxiesPool& renderQueueData, const u32 frameIndex) const;
 };
 

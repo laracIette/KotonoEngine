@@ -68,7 +68,7 @@ std::string KtFile::ReadString() const
     return fileContents.str();
 }
 
-std::vector<uint8_t> KtFile::ReadBinary() const
+std::vector<u8> KtFile::ReadBinary() const
 {
     if (!Exists())
     {
@@ -84,8 +84,8 @@ std::vector<uint8_t> KtFile::ReadBinary() const
         return {};
     }
 
-    const size_t fileSize = static_cast<size_t>(file.tellg());
-    std::vector<uint8_t> buffer(fileSize);
+    const size fileSize = static_cast<size>(file.tellg());
+    std::vector<u8> buffer(fileSize);
 
     file.seekg(0);
     file.read(reinterpret_cast<char*>(buffer.data()), fileSize);
@@ -113,7 +113,7 @@ void KtFile::WriteString(const std::string_view data) const
     file.close();
 }
 
-void KtFile::WriteBinary(const std::span<uint32_t> data) const
+void KtFile::WriteBinary(const std::span<u32> data) const
 {
     // Open file for writing in binary mode
     std::ofstream file(path_, std::ios::out | std::ios::binary | std::ios::trunc);

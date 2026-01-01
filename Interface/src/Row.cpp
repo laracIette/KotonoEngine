@@ -30,7 +30,7 @@ void WRow::DisplayInternal(DisplaySettings displaySettings)
 	{
 		flexWidth -= rowSettings_.spacing * static_cast<float>(rowSettings_.children.size() - 1);
 	}
-	if (const size_t flexCount = GetFlexCount())
+	if (const size flexCount = GetFlexCount())
 	{
 		flexWidth /= static_cast<float>(flexCount);
 	}
@@ -82,7 +82,7 @@ WWidget::DisplaySettings WRow::GetDisplaySettings(DisplaySettings displaySetting
 	return displaySettings;
 }
  
-size_t WRow::GetFlexCount() const
+size WRow::GetFlexCount() const
 {
 	return std::count_if(rowSettings_.children.begin(), rowSettings_.children.end(),
 		[](const WWidget* child) { return child && has_flag(child->GetFlex(), EFlex::Horizontal); }

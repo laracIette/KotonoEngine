@@ -10,11 +10,11 @@ struct KtShaderLayout final
 		struct Binding final
 		{
 			std::string           Name; // todo: maybe const char*
-			uint32_t              Binding;
+			u32              Binding;
 			VkDescriptorType      DescriptorType;
-			uint32_t              DescriptorCount;
+			u32              DescriptorCount;
 			VkShaderStageFlags    ShaderStageFlags;
-			size_t                Size;
+			size                Size;
 		};
 
 		std::vector<Binding>    Bindings;
@@ -22,7 +22,7 @@ struct KtShaderLayout final
 
 	std::vector<VkShaderStageFlagBits>                ShaderStages;
 													  
-	std::map<size_t, DescriptorSetLayout>             DescriptorSetLayouts;
+	std::map<size, DescriptorSetLayout>             DescriptorSetLayouts;
 	 												  
 	std::vector<VkVertexInputBindingDescription>      VertexInputBindingDescriptions;
 	std::vector<VkVertexInputAttributeDescription>    VertexInputAttributeDescriptions;

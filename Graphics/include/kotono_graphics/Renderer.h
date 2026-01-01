@@ -19,7 +19,7 @@ private:
 public:
 	void DrawFrame();
 
-	uint32_t GetGameThreadFrame() const; // todo: make private
+	u32 GetGameThreadFrame() const; // todo: make private
 
 	VkExtent2D SwapChainExtent() const;
 
@@ -27,8 +27,8 @@ public:
 	KtSceneRenderer& SceneRenderer();
 
 	VkRenderPass& RenderPass();
-	VkFramebuffer& GetFramebuffer(const uint32_t frameIndex);
-	VkCommandPool& GetCommandPool(const uint32_t frameIndex);
+	VkFramebuffer& GetFramebuffer(const u32 frameIndex);
+	VkCommandPool& GetCommandPool(const u32 frameIndex);
 
 private:
 	struct SwapChainData
@@ -45,7 +45,7 @@ private:
 		VkSemaphore imageAvailableSemaphore;
 		VkSemaphore renderFinishedSemaphore;
 		VkFence inFlightFence;
-		uint32_t imageIndex;
+		u32 imageIndex;
 	};
 
 	KtInterfaceRenderer interfaceRenderer_;
@@ -71,7 +71,7 @@ private:
 	VmaAllocation depthImageAllocation_;
 	VkImageView depthImageView_;
 
-	uint32_t frameCount_;
+	u32 frameCount_;
 
 	void CreateSwapChain();
 	void CleanupSwapChain();
@@ -90,24 +90,24 @@ private:
 	VkFormat FindDepthFormat() const;
 	bool HasStencilComponent(const VkFormat format) const;
 
-	bool TryAcquireNextImage(const uint32_t frameIndex);
+	bool TryAcquireNextImage(const u32 frameIndex);
 
 	void CreateCommandPools();
-	void CreateCommandPool(const uint32_t frameIndex);
+	void CreateCommandPool(const u32 frameIndex);
 	void CreateCommandBuffers();
-	void CreateCommandBuffer(const uint32_t frameIndex);
-	void RecordCommandBuffer(const uint32_t frameIndex);
-	void SubmitCommandBuffer(const uint32_t frameIndex);
+	void CreateCommandBuffer(const u32 frameIndex);
+	void RecordCommandBuffer(const u32 frameIndex);
+	void SubmitCommandBuffer(const u32 frameIndex);
 
 	void CreateSyncObjects();
 
-	void UpdateRenderers(const uint32_t frameIndex);
-	void CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
+	void UpdateRenderers(const u32 frameIndex);
+	void CmdDrawRenderers(VkCommandBuffer commandBuffer, const u32 frameIndex);
 
 	void JoinThread(std::thread& thread) const;
 
-	uint32_t GetRenderThreadFrame() const;
-	uint32_t GetRHIThreadFrame() const;
+	u32 GetRenderThreadFrame() const;
+	u32 GetRHIThreadFrame() const;
 };
 
 inline KtRenderer Renderer;

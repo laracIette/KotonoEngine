@@ -1,6 +1,6 @@
 #pragma once
-#include <cstdint>
-enum class ELogImportanceLevel : uint8_t
+#include <kotono_common/types.h>
+enum class ELogImportanceLevel : u8
 {
 	None,
 	Low,

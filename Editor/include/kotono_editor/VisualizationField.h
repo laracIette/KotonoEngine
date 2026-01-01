@@ -1,6 +1,6 @@
 #pragma once
-#include <cstdint>
-enum class EVisualizationField : uint8_t
+#include <kotono_common/types.h>
+enum class EVisualizationField : u8
 {
 	SceneObject,
 	SceneObjectBounds,

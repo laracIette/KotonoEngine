@@ -1,6 +1,6 @@
 #pragma once
-#include <cstdint>
-enum class EKey : uint8_t
+#include <kotono_common/types.h>
+enum class EKey : u8
 {
 	Space = 0,
 	Apostrophe,
@@ -126,9 +126,9 @@ enum class EKey : uint8_t
 	Unknown = UINT8_MAX
 };
 
-inline constexpr size_t KeyCount{ 121 };
+inline constexpr size KeyCount{ 121 };
 
-inline constexpr size_t to_index(const EKey key)
+inline constexpr size to_index(const EKey key)
 {
-	return static_cast<size_t>(key);
+	return static_cast<size>(key);
 }

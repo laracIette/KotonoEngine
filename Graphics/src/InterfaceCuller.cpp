@@ -5,14 +5,14 @@
 
 #define KT_LOG_IMPORTANCE_LEVEL_NULLPTR ELogImportanceLevel::High
 
-KtInterfaceCuller::ProxiesPool KtInterfaceCuller::ComputeCulling(ProxiesPool proxies, const uint32_t frameIndex) const
+KtInterfaceCuller::ProxiesPool KtInterfaceCuller::ComputeCulling(ProxiesPool proxies, const u32 frameIndex) const
 {
 	proxies = ComputeNullCulling(proxies, frameIndex);
 	proxies = ComputeScreenCulling(proxies, frameIndex);
 	return proxies;
 }
 
-KtInterfaceCuller::ProxiesPool KtInterfaceCuller::ComputeNullCulling(const ProxiesPool& proxies, const uint32_t frameIndex) const
+KtInterfaceCuller::ProxiesPool KtInterfaceCuller::ComputeNullCulling(const ProxiesPool& proxies, const u32 frameIndex) const
 {
 	ProxiesPool culledData{};
 
@@ -42,7 +42,7 @@ KtInterfaceCuller::ProxiesPool KtInterfaceCuller::ComputeNullCulling(const Proxi
 	return culledData;
 }
 
-KtInterfaceCuller::ProxiesPool KtInterfaceCuller::ComputeScreenCulling(const ProxiesPool& proxies, const uint32_t frameIndex) const
+KtInterfaceCuller::ProxiesPool KtInterfaceCuller::ComputeScreenCulling(const ProxiesPool& proxies, const u32 frameIndex) const
 {
 	ProxiesPool culledData{};
 

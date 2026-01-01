@@ -2,6 +2,7 @@
 #include <vector>
 #include <functional>
 #include <concepts>
+#include "types.h"
 
 enum class KtPoolRemoveResult : char
 {
@@ -54,12 +55,12 @@ public:
 			return KtPoolRemoveResult::ItemNotFound;
 		}
 
-		const size_t index{ static_cast<size_t>(std::distance(data_.begin(), it)) };
+		const ::size index{ static_cast<::size>(std::distance(data_.begin(), it)) };
 		return RemoveAt(index);
 	}
 
 	// Remove the item at the specified index with O(1) complexity
-	constexpr KtPoolRemoveResult RemoveAt(const size_t index) noexcept
+	constexpr KtPoolRemoveResult RemoveAt(const ::size index) noexcept
 	{
 		if (index >= data_.size())
 		{
@@ -80,7 +81,7 @@ public:
 	constexpr void RemoveIf(const ConditionFunction& condition) noexcept
 	{
 		// Have to check backwards to avoid skipping condition checks
-		for (int64_t i{ static_cast<int64_t>(data_.size()) - 1 }; i >= 0; --i)
+		for (i64 i{ static_cast<i64>(data_.size()) - 1 }; i >= 0; --i)
 		{
 			if (condition(data_[i]))
 			{
@@ -94,12 +95,12 @@ public:
 		data_.clear();
 	}
 
-	constexpr void reserve(const size_t size)
+	constexpr void reserve(const ::size size)
 	{
 		data_.reserve(size);
 	}
 
-	constexpr void resize(const size_t size)
+	constexpr void resize(const ::size size)
 	{
 		data_.resize(size);
 	}
@@ -140,15 +141,15 @@ public:
 		return data_.end(); 
 	}
 
-	constexpr size_t size() const noexcept
+	constexpr size size() const noexcept
 	{
 		return data_.size();
 	}
 
 	// Returns -1 if size == 0
-	constexpr int64_t LastIndex() const noexcept
+	constexpr i64 LastIndex() const noexcept
 	{
-		return static_cast<int64_t>(data_.size()) - 1;
+		return static_cast<i64>(data_.size()) - 1;
 	}
 
 	constexpr bool empty() const noexcept
@@ -156,12 +157,12 @@ public:
 		return data_.empty();
 	}
 
-	const ValueType& operator[](const size_t index) const noexcept
+	const ValueType& operator[](const ::size index) const noexcept
 	{
 		return data_[index];
 	}
 
-	ValueType& operator[](const size_t index) noexcept
+	ValueType& operator[](const ::size index) noexcept
 	{
 		return data_[index];
 	}

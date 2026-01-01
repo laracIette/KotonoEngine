@@ -17,9 +17,9 @@ void SKeyboard::Init()
 
 void SKeyboard::Update()
 {
-    for (size_t key{ 0 }; key < KeyCount; ++key)
+    for (size key{ 0 }; key < KeyCount; ++key)
     {
-        for (size_t inputState{ 0 }; inputState < InputStateCount; ++inputState)
+        for (size inputState{ 0 }; inputState < InputStateCount; ++inputState)
         {
             if (keyStates_[key][inputState])
             {
@@ -36,7 +36,7 @@ void SKeyboard::Update()
 
 void SKeyboard::UpdateKey(const EKey key, const int action)
 {
-    const size_t keyIndex{ to_index(key) };
+    const size keyIndex{ to_index(key) };
 
     switch (action)
     {

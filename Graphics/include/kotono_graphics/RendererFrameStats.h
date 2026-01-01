@@ -1,8 +1,8 @@
 #pragma once
-#include <cstdint>
+#include <kotono_common/types.h>
 struct KtRendererFrameStats final
 {
-	uint32_t drawCalls;
-	uint32_t triangles;
+	u32 drawCalls;
+	u32 triangles;
 };
 

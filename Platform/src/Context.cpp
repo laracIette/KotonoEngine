@@ -1,10 +1,10 @@
 #include "Context.h"
-#include "Window.h"
-#include <set>
-#include <array>
-#include <kotono_common/log.h>
 #include "vk_utils.h"
+#include "Window.h"
+#include <array>
 #include <glm/common.hpp>
+#include <kotono_common/log.h>
+#include <set>
 
 static constexpr std::array<const char*, 1> ValidationLayers
 {
@@ -91,13 +91,13 @@ void KtContext::CreateInstance()
 	createInfo.pApplicationInfo = &appInfo;
 
 	auto extensions = GetRequiredExtensions();
-	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
+	createInfo.enabledExtensionCount = static_cast<u32>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
 
 	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
 	if (enableValidationLayers)
 	{
-		createInfo.enabledLayerCount = static_cast<uint32_t>(ValidationLayers.size());
+		createInfo.enabledLayerCount = static_cast<u32>(ValidationLayers.size());
 		createInfo.ppEnabledLayerNames = ValidationLayers.data();
 
 		PopulateDebugMessengerCreateInfo(debugCreateInfo);
@@ -140,7 +140,7 @@ void KtContext::SetupDebugMessenger()
 
 bool KtContext::CheckValidationLayerSupport()
 {
-	uint32_t layerCount;
+	u32 layerCount;
 	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
 	std::vector<VkLayerProperties> availableLayers(layerCount);
@@ -170,7 +170,7 @@ bool KtContext::CheckValidationLayerSupport()
 
 std::vector<const char*> KtContext::GetRequiredExtensions()
 {
-	uint32_t glfwExtensionCount = 0;
+	u32 glfwExtensionCount = 0;
 	const char** glfwExtensions;
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
@@ -186,7 +186,7 @@ std::vector<const char*> KtContext::GetRequiredExtensions()
 
 void KtContext::PickPhysicalDevice()
 {
-	uint32_t deviceCount = 0;
+	u32 deviceCount = 0;
 	vkEnumeratePhysicalDevices(instance_, &deviceCount, nullptr);
 
 	if (deviceCount == 0)
@@ -213,7 +213,7 @@ void KtContext::PickPhysicalDevice()
 
 			VkDeviceSize totalVRAM = 0;
 			// Iterate over memory types and sum the VRAM of the suitable types
-			for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i)
+			for (u32 i = 0; i < memoryProperties.memoryTypeCount; ++i)
 			{
 				const VkMemoryType& memoryType = memoryProperties.memoryTypes[i];
 				// Consider only the VRAM (local memory)
@@ -286,7 +286,7 @@ bool KtContext::IsDeviceSuitable(VkPhysicalDevice device)
 
 bool KtContext::CheckDeviceExtensionSupport(VkPhysicalDevice device)
 {
-	uint32_t extensionCount;
+	u32 extensionCount;
 	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
 	std::vector<VkExtensionProperties> availableExtensions(extensionCount);
@@ -306,13 +306,13 @@ KtQueueFamilyIndices KtContext::FindQueueFamilies(VkPhysicalDevice device) const
 {
 	KtQueueFamilyIndices indices{};
 
-	uint32_t queueFamilyCount = 0;
+	u32 queueFamilyCount{ 0 };
 	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
 
 	std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
 
-	int i = 0;
+	u32 i{ 0 };
 	for (const auto& queueFamily : queueFamilies)
 	{
 		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
@@ -344,10 +344,10 @@ void KtContext::CreateLogicalDevice()
 	const KtQueueFamilyIndices indices = FindQueueFamilies(physicalDevice_);
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-	const std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
+	const std::set<u32> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
 	const float queuePriority = 1.0f;
-	for (uint32_t queueFamily : uniqueQueueFamilies)
+	for (u32 queueFamily : uniqueQueueFamilies)
 	{
 		const VkDeviceQueueCreateInfo queueCreateInfo{
 			.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
@@ -390,17 +390,17 @@ void KtContext::CreateLogicalDevice()
 	VkDeviceCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
-	createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+	createInfo.queueCreateInfoCount = static_cast<u32>(queueCreateInfos.size());
 	createInfo.pQueueCreateInfos = queueCreateInfos.data();
 
 	//createInfo.pEnabledFeatures = &deviceFeatures;
 
-	createInfo.enabledExtensionCount = static_cast<uint32_t>(DeviceExtensions.size());
+	createInfo.enabledExtensionCount = static_cast<u32>(DeviceExtensions.size());
 	createInfo.ppEnabledExtensionNames = DeviceExtensions.data();
 
 	if (enableValidationLayers)
 	{
-		createInfo.enabledLayerCount = static_cast<uint32_t>(ValidationLayers.size());
+		createInfo.enabledLayerCount = static_cast<u32>(ValidationLayers.size());
 		createInfo.ppEnabledLayerNames = ValidationLayers.data();
 	}
 	else
@@ -434,7 +434,7 @@ KtSwapChainSupportDetails KtContext::QuerySwapChainSupport(VkPhysicalDevice devi
 
 	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_, &details.capabilities);
 
-	uint32_t formatCount;
+	u32 formatCount;
 	vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, nullptr);
 
 	if (formatCount != 0)
@@ -443,7 +443,7 @@ KtSwapChainSupportDetails KtContext::QuerySwapChainSupport(VkPhysicalDevice devi
 		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, details.formats.data());
 	}
 
-	uint32_t presentModeCount;
+	u32 presentModeCount;
 	vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, nullptr);
 
 	if (presentModeCount != 0)
@@ -505,7 +505,7 @@ VkPresentModeKHR KtContext::ChooseSwapPresentMode(const std::vector<VkPresentMod
 
 VkExtent2D KtContext::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const
 {
-	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
+	if (capabilities.currentExtent.width != std::numeric_limits<u32>::max())
 	{
 		return capabilities.currentExtent;
 	}
@@ -516,8 +516,8 @@ VkExtent2D KtContext::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilit
 
 		VkExtent2D actualExtent =
 		{
-			static_cast<uint32_t>(width),
-			static_cast<uint32_t>(height)
+			static_cast<u32>(width),
+			static_cast<u32>(height)
 		};
 
 		actualExtent.width = glm::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
@@ -576,13 +576,13 @@ void KtContext::ExecuteSingleTimeCommands()
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-	submitInfo.commandBufferCount = static_cast<uint32_t>(singleTimeCommands_.size());
+	submitInfo.commandBufferCount = static_cast<u32>(singleTimeCommands_.size());
 	submitInfo.pCommandBuffers = singleTimeCommands_.data();
 
 	vkQueueSubmit(graphicsQueue_, 1, &submitInfo, VK_NULL_HANDLE);
 	vkQueueWaitIdle(graphicsQueue_);
 
-	vkFreeCommandBuffers(device_, commandPool_, static_cast<uint32_t>(singleTimeCommands_.size()), singleTimeCommands_.data());
+	vkFreeCommandBuffers(device_, commandPool_, static_cast<u32>(singleTimeCommands_.size()), singleTimeCommands_.data());
 
 	singleTimeCommands_.clear();
 
@@ -663,12 +663,12 @@ void KtContext::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize 
 	EndSingleTimeCommands(commandBuffer);
 }
 
-uint32_t KtContext::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const
+u32 KtContext::FindMemoryType(u32 typeFilter, VkMemoryPropertyFlags properties) const
 {
 	VkPhysicalDeviceMemoryProperties memProperties;
 	vkGetPhysicalDeviceMemoryProperties(physicalDevice_, &memProperties);
 
-	for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
+	for (u32 i = 0; i < memProperties.memoryTypeCount; i++)
 	{
 		if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
 		{
@@ -679,7 +679,7 @@ uint32_t KtContext::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags pr
 	throw std::runtime_error("failed to find suitable memory type!");
 }
 
-void KtContext::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VmaAllocation& imageAllocation) const
+void KtContext::CreateImage(u32 width, u32 height, u32 mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VmaAllocation& imageAllocation) const
 {
 	VkImageCreateInfo imageInfo{};
 	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -742,7 +742,7 @@ bool KtContext::HasStencilComponent(VkFormat format) const
 	return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 }
 
-void KtContext::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels)
+void KtContext::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, u32 mipLevels)
 {
 	VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
 
@@ -817,7 +817,7 @@ void KtContext::TransitionImageLayout(VkImage image, VkFormat format, VkImageLay
 	EndSingleTimeCommands(commandBuffer);
 }
 
-void KtContext::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
+void KtContext::CopyBufferToImage(VkBuffer buffer, VkImage image, u32 width, u32 height)
 {
 	VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
 
@@ -851,7 +851,7 @@ void KtContext::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width
 	EndSingleTimeCommands(commandBuffer);
 }
 
-VkImageView KtContext::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) const
+VkImageView KtContext::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, u32 mipLevels) const
 {
 	VkImageViewCreateInfo viewInfo{};
 	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -873,7 +873,7 @@ VkImageView KtContext::CreateImageView(VkImage image, VkFormat format, VkImageAs
 	return imageView;
 }
 
-void KtContext::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
+void KtContext::GenerateMipmaps(VkImage image, VkFormat imageFormat, i32 texWidth, i32 texHeight, u32 mipLevels)
 {
 	VkFormatProperties formatProperties;
 	vkGetPhysicalDeviceFormatProperties(physicalDevice_, imageFormat, &formatProperties);
@@ -895,10 +895,10 @@ void KtContext::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t tex
 	barrier.subresourceRange.layerCount = 1;
 	barrier.subresourceRange.levelCount = 1;
 
-	int32_t mipWidth = texWidth;
-	int32_t mipHeight = texHeight;
+	i32 mipWidth = texWidth;
+	i32 mipHeight = texHeight;
 
-	for (uint32_t i = 1; i < mipLevels; i++)
+	for (u32 i = 1; i < mipLevels; i++)
 	{
 		barrier.subresourceRange.baseMipLevel = i - 1;
 		barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;

@@ -53,7 +53,7 @@ void KtRenderer::CreateSwapChain()
 	const VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
 	const VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities);
 
-	uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
+	u32 imageCount = swapChainSupport.capabilities.minImageCount + 1;
 	if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount)
 	{
 		imageCount = swapChainSupport.capabilities.maxImageCount;
@@ -73,7 +73,7 @@ void KtRenderer::CreateSwapChain()
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
 	const KtQueueFamilyIndices indices = Context.FindQueueFamilies(Context.GetPhysicalDevice());
-	const std::array<uint32_t, 2> queueFamilyIndices =
+	const std::array<u32, 2> queueFamilyIndices =
 	{
 		indices.graphicsFamily.value(),
 		indices.presentFamily.value()
@@ -82,7 +82,7 @@ void KtRenderer::CreateSwapChain()
 	if (indices.graphicsFamily != indices.presentFamily)
 	{
 		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-		createInfo.queueFamilyIndexCount = static_cast<uint32_t>(queueFamilyIndices.size());
+		createInfo.queueFamilyIndexCount = static_cast<u32>(queueFamilyIndices.size());
 		createInfo.pQueueFamilyIndices = queueFamilyIndices.data();
 	}
 	else
@@ -110,7 +110,7 @@ void KtRenderer::CreateSwapChain()
 	vkGetSwapchainImagesKHR(Context.GetDevice(), swapChain_, &imageCount, swapChainImages.data());
 
 	swapChainDatas_.resize(imageCount);
-	for (size_t i{ 0 }; i < imageCount; ++i)
+	for (size i{ 0 }; i < imageCount; ++i)
 	{
 		swapChainDatas_[i].image = swapChainImages[i];
 	}
@@ -147,7 +147,7 @@ VkPresentModeKHR KtRenderer::ChooseSwapPresentMode(const std::span<VkPresentMode
 
 VkExtent2D KtRenderer::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const
 {
-	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
+	if (capabilities.currentExtent.width != std::numeric_limits<u32>::max())
 	{
 		return capabilities.currentExtent;
 	}
@@ -158,8 +158,8 @@ VkExtent2D KtRenderer::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabili
 
 		VkExtent2D actualExtent =
 		{
-			static_cast<uint32_t>(width),
-			static_cast<uint32_t>(height)
+			static_cast<u32>(width),
+			static_cast<u32>(height)
 		};
 
 		actualExtent.width = glm::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
@@ -245,7 +245,7 @@ void KtRenderer::CreateRenderPass()
 
 	VkRenderPassCreateInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+	renderPassInfo.attachmentCount = static_cast<u32>(attachments.size());
 	renderPassInfo.pAttachments = attachments.data();
 	renderPassInfo.subpassCount = 1;
 	renderPassInfo.pSubpasses = &subpass;
@@ -272,7 +272,7 @@ void KtRenderer::CreateFramebuffers()
 		VkFramebufferCreateInfo framebufferInfo{
 			.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
 			.renderPass = renderPass_,
-			.attachmentCount = static_cast<uint32_t>(attachments.size()),
+			.attachmentCount = static_cast<u32>(attachments.size()),
 			.pAttachments = attachments.data(),
 			.width = swapChainExtent_.width,
 			.height = swapChainExtent_.height,
@@ -377,13 +377,13 @@ bool KtRenderer::HasStencilComponent(const VkFormat format) const
 
 void KtRenderer::CreateCommandPools()
 {
-	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; ++i)
+	for (size i = 0; i < KT_FRAMES_IN_FLIGHT; ++i)
 	{
-		CreateCommandPool(static_cast<uint32_t>(i));
+		CreateCommandPool(static_cast<u32>(i));
 	}
 }
 
-void KtRenderer::CreateCommandPool(const uint32_t frameIndex)
+void KtRenderer::CreateCommandPool(const u32 frameIndex)
 {
 	const KtQueueFamilyIndices queueFamilyIndices = Context.FindQueueFamilies(Context.GetPhysicalDevice());
 
@@ -400,13 +400,13 @@ void KtRenderer::CreateCommandPool(const uint32_t frameIndex)
 
 void KtRenderer::CreateCommandBuffers()
 {
-	for (size_t i = 0; i < KT_FRAMES_IN_FLIGHT; ++i)
+	for (size i = 0; i < KT_FRAMES_IN_FLIGHT; ++i)
 	{
-		CreateCommandBuffer(static_cast<uint32_t>(i));
+		CreateCommandBuffer(static_cast<u32>(i));
 	}
 }
 
-void KtRenderer::CreateCommandBuffer(const uint32_t frameIndex)
+void KtRenderer::CreateCommandBuffer(const u32 frameIndex)
 {
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -442,7 +442,7 @@ void KtRenderer::CreateSyncObjects()
 static constexpr bool IS_MULTI_THREADED{ false };
 void KtRenderer::DrawFrame()
 {
-	const uint32_t frameIndex{ GetGameThreadFrame() };
+	const u32 frameIndex{ GetGameThreadFrame() };
 	UpdateRenderers(frameIndex);
 
 	if constexpr (IS_MULTI_THREADED)
@@ -450,7 +450,7 @@ void KtRenderer::DrawFrame()
 		if (frameCount_ >= 1)
 		{
 			JoinThread(renderThread_);
-			const uint32_t renderThreadFrame{ GetRenderThreadFrame() };
+			const u32 renderThreadFrame{ GetRenderThreadFrame() };
 			renderThread_ = std::thread(&KtRenderer::RecordCommandBuffer, this, renderThreadFrame);
 		}
 
@@ -460,7 +460,7 @@ void KtRenderer::DrawFrame()
 
 			JoinThread(rhiThread_);
 			Context.ExecuteSingleTimeCommands();
-			const uint32_t renderRHIFrame{ GetRHIThreadFrame() };
+			const u32 renderRHIFrame{ GetRHIThreadFrame() };
 			rhiThread_ = std::thread(&KtRenderer::SubmitCommandBuffer, this, renderRHIFrame);
 		}
 	}
@@ -480,13 +480,13 @@ void KtRenderer::DrawFrame()
 	frameCount_++;
 }
 
-void KtRenderer::UpdateRenderers(const uint32_t frameIndex)
+void KtRenderer::UpdateRenderers(const u32 frameIndex)
 {
 	sceneRenderer_.Update(frameIndex);
 	interfaceRenderer_.Update(frameIndex);
 }
 
-void KtRenderer::RecordCommandBuffer(const uint32_t frameIndex)
+void KtRenderer::RecordCommandBuffer(const u32 frameIndex)
 {
 	VkCommandBuffer commandBuffer = frameDatas_[frameIndex].commandBuffer;
 	vkResetCommandBuffer(commandBuffer, 0);
@@ -512,7 +512,7 @@ void KtRenderer::RecordCommandBuffer(const uint32_t frameIndex)
 	clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
 	clearValues[1].depthStencil = { 1.0f, 0 };
 
-	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+	renderPassInfo.clearValueCount = static_cast<u32>(clearValues.size());
 	renderPassInfo.pClearValues = clearValues.data();
 
 	// Begin RenderPass
@@ -529,30 +529,30 @@ void KtRenderer::RecordCommandBuffer(const uint32_t frameIndex)
 	);
 }
 
-VkFramebuffer& KtRenderer::GetFramebuffer(const uint32_t frameIndex)
+VkFramebuffer& KtRenderer::GetFramebuffer(const u32 frameIndex)
 {
 	return swapChainDatas_[frameDatas_[frameIndex].imageIndex].framebuffer;
 }
 
-VkCommandPool& KtRenderer::GetCommandPool(const uint32_t frameIndex)
+VkCommandPool& KtRenderer::GetCommandPool(const u32 frameIndex)
 {
 	return frameDatas_[frameIndex].commandPool;
 }
 
-void KtRenderer::CmdDrawRenderers(VkCommandBuffer commandBuffer, const uint32_t frameIndex)
+void KtRenderer::CmdDrawRenderers(VkCommandBuffer commandBuffer, const u32 frameIndex)
 {
 	sceneRenderer_.CmdDraw(commandBuffer, frameIndex);
 	interfaceRenderer_.CmdDraw(commandBuffer, frameIndex);
 }
 
-void KtRenderer::SubmitCommandBuffer(const uint32_t frameIndex)
+void KtRenderer::SubmitCommandBuffer(const u32 frameIndex)
 {
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
 	const std::array<VkSemaphore, 1> waitSemaphores = { frameDatas_[frameIndex].imageAvailableSemaphore };
 	const std::array<VkPipelineStageFlags, 1> waitStages = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-	submitInfo.waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size());
+	submitInfo.waitSemaphoreCount = static_cast<u32>(waitSemaphores.size());
 	submitInfo.pWaitSemaphores = waitSemaphores.data();
 	submitInfo.pWaitDstStageMask = waitStages.data();
 
@@ -560,7 +560,7 @@ void KtRenderer::SubmitCommandBuffer(const uint32_t frameIndex)
 	submitInfo.pCommandBuffers = &frameDatas_[frameIndex].commandBuffer;
 
 	const std::array<VkSemaphore, 1> signalSemaphores = { frameDatas_[frameIndex].renderFinishedSemaphore };
-	submitInfo.signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size());
+	submitInfo.signalSemaphoreCount = static_cast<u32>(signalSemaphores.size());
 	submitInfo.pSignalSemaphores = signalSemaphores.data();
 
 	VK_CHECK_THROW(
@@ -570,11 +570,11 @@ void KtRenderer::SubmitCommandBuffer(const uint32_t frameIndex)
 
 	VkPresentInfoKHR presentInfo{};
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-	presentInfo.waitSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size());
+	presentInfo.waitSemaphoreCount = static_cast<u32>(signalSemaphores.size());
 	presentInfo.pWaitSemaphores = signalSemaphores.data();
 
 	const std::array<VkSwapchainKHR, 1> swapChains = { swapChain_ };
-	presentInfo.swapchainCount = static_cast<uint32_t>(swapChains.size());
+	presentInfo.swapchainCount = static_cast<u32>(swapChains.size());
 	presentInfo.pSwapchains = swapChains.data();
 	presentInfo.pImageIndices = &frameDatas_[frameIndex].imageIndex;
 	presentInfo.pResults = nullptr; // Optional
@@ -601,7 +601,7 @@ void KtRenderer::SubmitCommandBuffer(const uint32_t frameIndex)
 }
 
 
-bool KtRenderer::TryAcquireNextImage(const uint32_t frameIndex)
+bool KtRenderer::TryAcquireNextImage(const u32 frameIndex)
 {
 	// Wait for current frame to be rendered
 	vkWaitForFences(Context.GetDevice(), 1, &frameDatas_[frameIndex].inFlightFence, VK_TRUE, UINT64_MAX);
@@ -631,22 +631,22 @@ void KtRenderer::JoinThread(std::thread& thread) const
 	}
 }
 
-uint32_t KtRenderer::GetGameThreadFrame() const
+u32 KtRenderer::GetGameThreadFrame() const
 {
 	// Prepare game thread for render thread
-	return frameCount_ % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT);
+	return frameCount_ % static_cast<u32>(KT_FRAMES_IN_FLIGHT);
 }
 
-uint32_t KtRenderer::GetRenderThreadFrame() const
+u32 KtRenderer::GetRenderThreadFrame() const
 {
 	// Prepare render thread for RHI thread
-	return ((frameCount_ + KT_FRAMES_IN_FLIGHT) - 1) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
+	return ((frameCount_ + KT_FRAMES_IN_FLIGHT) - 1) % static_cast<u32>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
 }
 
-uint32_t KtRenderer::GetRHIThreadFrame() const
+u32 KtRenderer::GetRHIThreadFrame() const
 {
 	// Prepare RHI thread for game thread
-	return ((frameCount_ + KT_FRAMES_IN_FLIGHT) - 2) % static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
+	return ((frameCount_ + KT_FRAMES_IN_FLIGHT) - 2) % static_cast<u32>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
 }
 
 void KtRenderer::RecreateSwapChain()

@@ -91,8 +91,8 @@ private:
 	SERIALIZE UTransform transform_;
 	SERIALIZE EVisibility visibility_;
 	SERIALIZE EMobility mobility_;
-	SERIALIZE size_t componentIndex_;
-	SERIALIZE size_t childrenIndex_;
+	SERIALIZE size componentIndex_;
+	SERIALIZE size childrenIndex_;
 	KtEvent<> eventTransformUpdated_; // todo: maybe replace by eventPositionChanged...
 	KtCached<glm::mat4> modelMatrix_;
 };

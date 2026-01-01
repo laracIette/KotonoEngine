@@ -25,5 +25,5 @@ private:
 	float duration_;
 	float current_;
 	KtEvent<> eventCompleted_;
-	size_t index_;
+	size index_;
 };

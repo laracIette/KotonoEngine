@@ -1,6 +1,6 @@
 #pragma once
-#include <cstdint>
-enum class EButton : uint8_t
+#include <kotono_common/types.h>
+enum class EButton : u8
 {
 	Button1 = 0,
 	Button2 = 1,
@@ -16,9 +16,9 @@ enum class EButton : uint8_t
 	Last = Button8
 };
 
-inline constexpr size_t ButtonCount{ 8 };
+inline constexpr size ButtonCount{ 8 };
 
-inline constexpr size_t to_index(const EButton button)
+inline constexpr size to_index(const EButton button)
 {
-	return static_cast<size_t>(button);
+	return static_cast<size>(button);
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <array>
+#include <kotono_common/types.h>
 class UGuid final
 {
 private:
@@ -18,11 +19,11 @@ public:
 	bool operator==(const UGuid& other) const;
 
 private:
-	std::array<uint64_t, 4> data_;
+	std::array<u64, 4> data_;
 };
 
 template<>
 struct std::hash<UGuid>
 {
-	size_t operator()(const UGuid& g) const noexcept;
+	::size operator()(const UGuid& g) const noexcept;
 };

@@ -63,6 +63,6 @@ private:
 	UPtr<KInterfaceComponent> rootComponent_;
 	KtPool<UPtr<RInterfaceObject>> children_;
 	KtPool<UPtr<KInterfaceComponent>> interfaceComponents_;
-	size_t childrenIndex_;
+	size childrenIndex_;
 };
 

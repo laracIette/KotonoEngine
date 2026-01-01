@@ -1,6 +1,6 @@
 #pragma once
-#include <cstdint>
-enum class ETimeContextState : uint8_t
+#include <kotono_common/types.h>
+enum class ETimeContextState : u8
 {
 	Playing,
 	Paused

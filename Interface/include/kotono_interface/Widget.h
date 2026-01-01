@@ -1,10 +1,11 @@
 #pragma once
-#include <functional>
 #include "Flex.h"
-#include <kotono_common/Cached.h>
-#include <kotono_graphics/Scissor.h>
+#include <functional>
 #include <glm/fwd.hpp>
 #include <glm/vec2.hpp>
+#include <kotono_common/Cached.h>
+#include <kotono_common/types.h>
+#include <kotono_graphics/Scissor.h>
 #include <string>
 /// Base class of all widgets
 class WWidget
@@ -20,7 +21,7 @@ public:
 	{
 		glm::vec2 position;
 		glm::vec2 bounds;
-		int32_t layer;
+		i32 layer;
 		KtScissor scissor;
 	};
 

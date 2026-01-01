@@ -1,6 +1,6 @@
 #pragma once
-#include <cstdint>
-enum KtSceneCullerField : uint8_t
+#include <kotono_common/types.h>
+enum KtSceneCullerField : u8
 {
 	KT_SCENE_CULLER_FIELD_NONE = 0x00,
 	KT_SCENE_CULLER_FIELD_NULLPTR = 0x01,

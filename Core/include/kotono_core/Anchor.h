@@ -1,6 +1,6 @@
 #pragma once
-#include <cstdint>
-enum class EAnchor : uint8_t
+#include <kotono_common/types.h>
+enum class EAnchor : u8
 {
     Center = 0x00,
     Top = 0x01,
@@ -15,10 +15,10 @@ enum class EAnchor : uint8_t
 
 inline constexpr EAnchor operator&(EAnchor first, EAnchor second)
 {
-    return static_cast<EAnchor>(static_cast<uint8_t>(first) & static_cast<uint8_t>(second));
+    return static_cast<EAnchor>(static_cast<u8>(first) & static_cast<u8>(second));
 }
 
 inline constexpr EAnchor operator|(EAnchor first, EAnchor second)
 {
-    return static_cast<EAnchor>(static_cast<uint8_t>(first) | static_cast<uint8_t>(second));
+    return static_cast<EAnchor>(static_cast<u8>(first) | static_cast<u8>(second));
 }

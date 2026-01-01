@@ -24,16 +24,16 @@ void KtWindowViewport::SetExtent(const glm::uvec2& extent)
 {
 	if (isKeepAspectRatio_)
 	{
-		uint32_t width{ extent.x };
-		uint32_t height{ extent.y };
+		u32 width{ extent.x };
+		u32 height{ extent.y };
 
 		if (width > height * aspectRatio_)
 		{
-			width = static_cast<uint32_t>(height * aspectRatio_);
+			width = static_cast<u32>(height * aspectRatio_);
 		}
 		else if (height > width / aspectRatio_)
 		{
-			height = static_cast<uint32_t>(width / aspectRatio_);
+			height = static_cast<u32>(width / aspectRatio_);
 		}
 
 		extent_ = { width, height };

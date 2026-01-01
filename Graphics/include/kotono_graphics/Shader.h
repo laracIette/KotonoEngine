@@ -17,11 +17,11 @@ public:
 		std::string                                                  Name;
 		KtFramesInFlightArray<KtAllocatedBuffer>                     Buffers;
 		KtFramesInFlightArray<KtAllocatedBuffer>                     StagingBuffers;
-		KtFramesInFlightArray<size_t>                                MemberCounts;
-		size_t                                                       MemberSize;
+		KtFramesInFlightArray<size>                                MemberCounts;
+		size                                                       MemberSize;
 		VkDescriptorType                                             DescriptorType;
-		uint32_t                                                     Binding;
-		uint32_t                                                     DescriptorCount;
+		u32                                                     Binding;
+		u32                                                     DescriptorCount;
 		VkShaderStageFlags                                           ShaderStageFlags;
 		VkDescriptorBindingFlags                                     BindingFlags;
 		KtFramesInFlightArray<std::vector<VkDescriptorImageInfo>>    ImageInfos;
@@ -44,14 +44,14 @@ public:
 	VkPipelineLayout GetPipelineLayout() const;
 
 	void CmdBind(VkCommandBuffer commandBuffer) const;
-	void CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const uint32_t imageIndex) const;
+	void CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const u32 imageIndex) const;
 
 	DescriptorSetLayoutBindingData* GetDescriptorSetLayoutBinding(const std::string& name);
 	
-	void UpdateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const void* data, const uint32_t imageIndex);
-	void UpdateDescriptorSetLayoutBindingBufferMemberCount(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const size_t memberCount, const uint32_t imageIndex);
+	void UpdateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const void* data, const u32 imageIndex);
+	void UpdateDescriptorSetLayoutBindingBufferMemberCount(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const size memberCount, const u32 imageIndex);
 
-	void UpdateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const std::vector<VkDescriptorImageInfo>& imageInfos, const uint32_t imageIndex);
+	void UpdateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const std::vector<VkDescriptorImageInfo>& imageInfos, const u32 imageIndex);
 
 
 protected:
@@ -67,28 +67,28 @@ protected:
 	std::unordered_map<std::string, DescriptorSetLayoutBindingData*> descriptorSetLayoutBindingDataRegistry_;
 
 	void CreateShaderLayout();
-	void PopulateShaderLayout(const std::span<uint8_t> spirvData, const VkShaderStageFlagBits shaderStage);
+	void PopulateShaderLayout(const std::span<u8> spirvData, const VkShaderStageFlagBits shaderStage);
 
 	void CreateDescriptorSetLayouts();
 	void CreateDescriptorSetLayout(VkDescriptorSetLayout& layout, const std::span<VkDescriptorSetLayoutBinding> layoutBindings, const std::span<VkDescriptorBindingFlags> bindingFlags);
 
-	void CreateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const uint32_t imageIndex);
-	void CreateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const uint32_t imageIndex);
+	void CreateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const u32 imageIndex);
+	void CreateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const u32 imageIndex);
 	
 	void CreateDescriptorSets();
 	void CreateDescriptorSetLayoutBindings();
 
 	void CreateDescriptorPools();
-	void CreateDescriptorPool(const std::span<VkDescriptorPoolSize> poolSizes, const uint32_t setCount);
+	void CreateDescriptorPool(const std::span<VkDescriptorPoolSize> poolSizes, const u32 setCount);
 	
 	void CreateGraphicsPipeline();
-	void CreateShaderModule(VkShaderModule& shaderModule, const std::span<uint8_t> code);
+	void CreateShaderModule(VkShaderModule& shaderModule, const std::span<u8> code);
 
 	void DebugLogDescriptorSetLayoutData() const;
 
 	bool GetIsBufferDescriptorType(const VkDescriptorType descriptorType) const;
 	bool GetIsImageSamplerDescriptorType(const VkDescriptorType descriptorType) const;
 	
-	void UpdateDescriptorSetLayoutBindingBufferDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const uint32_t imageIndex);
-	void UpdateDescriptorSetLayoutBindingImageSamplerDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const uint32_t imageIndex);
+	void UpdateDescriptorSetLayoutBindingBufferDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const u32 imageIndex);
+	void UpdateDescriptorSetLayoutBindingImageSamplerDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const u32 imageIndex);
 };

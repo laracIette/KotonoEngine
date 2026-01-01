@@ -2,10 +2,10 @@
 
 void UInterfaceProxy::ScheduleUpdate(const UpdateFunction& function)
 {
-	pendingUpdates_.Add({ function, static_cast<uint32_t>(KT_FRAMES_IN_FLIGHT) });
+	pendingUpdates_.Add({ function, static_cast<u32>(KT_FRAMES_IN_FLIGHT) });
 }
 
-void UInterfaceProxy::ApplyPendingUpdates(const uint32_t frameIndex)
+void UInterfaceProxy::ApplyPendingUpdates(const u32 frameIndex)
 {
 	if (pendingUpdates_.empty())
 	{

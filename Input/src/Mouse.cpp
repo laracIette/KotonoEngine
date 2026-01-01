@@ -18,9 +18,9 @@ void SMouse::Init()
 
 void SMouse::Update()
 {
-    for (size_t button{ 0 }; button < ButtonCount; ++button)
+    for (size button{ 0 }; button < ButtonCount; ++button)
     {
-        for (size_t inputState{ 0 }; inputState < InputStateCount; ++inputState)
+        for (size inputState{ 0 }; inputState < InputStateCount; ++inputState)
         {
             if (buttonStates_[button][inputState])
             {
@@ -55,7 +55,7 @@ void SMouse::Update()
 
 void SMouse::UpdateButton(const EButton button, const int action)
 {
-	const size_t buttonIndex{ to_index(button) };
+	const size buttonIndex{ to_index(button) };
 
     switch (action)
     {

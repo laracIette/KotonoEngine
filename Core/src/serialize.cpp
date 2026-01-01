@@ -19,42 +19,42 @@ void serialize(nlohmann::json& json, const bool v)
     json = v;
 }
 
-void serialize(nlohmann::json& json, const int8_t v)
+void serialize(nlohmann::json& json, const i8 v)
 {
     json = v;
 }
 
-void serialize(nlohmann::json& json, const int16_t v)
+void serialize(nlohmann::json& json, const i16 v)
 {
     json = v;
 }
 
-void serialize(nlohmann::json& json, const int32_t v)
+void serialize(nlohmann::json& json, const i32 v)
 {
     json = v;
 }
 
-void serialize(nlohmann::json& json, const int64_t v)
+void serialize(nlohmann::json& json, const i64 v)
 {
     json = v;
 }
 
-void serialize(nlohmann::json& json, const uint8_t v)
+void serialize(nlohmann::json& json, const u8 v)
 {
     json = v;
 }
 
-void serialize(nlohmann::json& json, const uint16_t v)
+void serialize(nlohmann::json& json, const u16 v)
 {
     json = v;
 }
 
-void serialize(nlohmann::json& json, const uint32_t v)
+void serialize(nlohmann::json& json, const u32 v)
 {
     json = v;
 }
 
-void serialize(nlohmann::json& json, const uint64_t v)
+void serialize(nlohmann::json& json, const u64 v)
 {
     json = v;
 }
@@ -197,42 +197,42 @@ void deserialize(const nlohmann::json& json, bool& v)
     v = json;
 }
 
-void deserialize(const nlohmann::json& json, int8_t& v)
+void deserialize(const nlohmann::json& json, i8& v)
 {
     v = json;
 }
 
-void deserialize(const nlohmann::json& json, int16_t& v)
+void deserialize(const nlohmann::json& json, i16& v)
 {
     v = json;
 }
 
-void deserialize(const nlohmann::json& json, int32_t& v)
+void deserialize(const nlohmann::json& json, i32& v)
 {
     v = json;
 }
 
-void deserialize(const nlohmann::json& json, int64_t& v)
+void deserialize(const nlohmann::json& json, i64& v)
 {
     v = json;
 }
 
-void deserialize(const nlohmann::json& json, uint8_t& v)
+void deserialize(const nlohmann::json& json, u8& v)
 {
     v = json;
 }
 
-void deserialize(const nlohmann::json& json, uint16_t& v)
+void deserialize(const nlohmann::json& json, u16& v)
 {
     v = json;
 }
 
-void deserialize(const nlohmann::json& json, uint32_t& v)
+void deserialize(const nlohmann::json& json, u32& v)
 {
     v = json;
 }
 
-void deserialize(const nlohmann::json& json, uint64_t& v)
+void deserialize(const nlohmann::json& json, u64& v)
 {
     v = json;
 }

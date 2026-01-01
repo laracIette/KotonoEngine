@@ -55,7 +55,7 @@ void replace(std::string& str, const std::string& from, const std::string& to)
 {
     if (from.empty()) return;
 
-    size_t start_pos{ 0 };
+    size start_pos{ 0 };
     while ((start_pos = str.find(from, start_pos)) != std::string::npos)
     {
         str.replace(start_pos, from.length(), to);
@@ -63,7 +63,7 @@ void replace(std::string& str, const std::string& from, const std::string& to)
     }
 }
 
-size_t std::hash<UPath>::operator()(const UPath& p) const noexcept
+size std::hash<UPath>::operator()(const UPath& p) const noexcept
 {
     return std::hash<std::string>{}(p.source_);
 }

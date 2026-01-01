@@ -35,7 +35,7 @@ private:
     // Width and height of the texture
     glm::uvec2 size_;
     // Number of levels of mipmaps
-    uint32_t mipLevels_;
+    u32 mipLevels_;
 
     KtAllocatedBuffer stagingBuffer_;
 

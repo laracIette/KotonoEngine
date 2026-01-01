@@ -55,5 +55,5 @@ private:
 	SERIALIZE std::string type_;
 	SERIALIZE std::string name_;
 	bool isConstructed_;
-	size_t objectIndex_;
+	size objectIndex_;
 };

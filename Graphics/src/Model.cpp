@@ -40,16 +40,16 @@ void KtModel::CmdBind(VkCommandBuffer commandBuffer) const
 {
 	const std::array<VkBuffer, 1> vertexBuffers = { vertexBuffer_.Buffer };
 	const std::array<VkDeviceSize, 1> offsets = { 0 };
-	vkCmdBindVertexBuffers(commandBuffer, 0, static_cast<uint32_t>(vertexBuffers.size()), vertexBuffers.data(), offsets.data());
+	vkCmdBindVertexBuffers(commandBuffer, 0, static_cast<u32>(vertexBuffers.size()), vertexBuffers.data(), offsets.data());
 	vkCmdBindIndexBuffer(commandBuffer, indexBuffer_.Buffer, 0, VK_INDEX_TYPE_UINT32);
 }
 
-void KtModel::CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex) const
+void KtModel::CmdDraw(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	vkCmdDrawIndexedIndirect(commandBuffer, indirectBuffers_[frameIndex].Buffer, 0, 1, sizeof(VkDrawIndexedIndirectCommand));
 }
 
-void KtModel::UpdateIndirectBuffer(const uint32_t firstInstance, const uint32_t instanceCount, const uint32_t frameIndex) const
+void KtModel::UpdateIndirectBuffer(const u32 firstInstance, const u32 instanceCount, const u32 frameIndex) const
 {
 	auto* cmd{ static_cast<VkDrawIndexedIndirectCommand*>(indirectBuffers_[frameIndex].AllocationInfo.pMappedData) };
 	cmd->instanceCount = instanceCount;
@@ -72,17 +72,17 @@ void KtModel::Load()
 		throw std::runtime_error("Failed to load model: " + path_.ToString());
 	}
 
-	std::unordered_map<KtVertex3D, uint32_t> uniqueVertices{};
+	std::unordered_map<KtVertex3D, u32> uniqueVertices{};
 
-	for (uint32_t m{ 0 }; m < scene->mNumMeshes; ++m)
+	for (u32 m{ 0 }; m < scene->mNumMeshes; ++m)
 	{
 		const aiMesh* mesh{ scene->mMeshes[m] };
 
-		for (uint32_t i{ 0 }; i < mesh->mNumFaces; ++i)
+		for (u32 i{ 0 }; i < mesh->mNumFaces; ++i)
 		{
 			const aiFace& face{ mesh->mFaces[i] };
 
-			for (uint32_t j{ 0 }; j < face.mNumIndices; ++j)
+			for (u32 j{ 0 }; j < face.mNumIndices; ++j)
 			{
 				const aiVector3D pos{ mesh->mVertices[face.mIndices[j]] };
 				const aiVector3D texCoord{ mesh->mTextureCoords[0] 
@@ -98,7 +98,7 @@ void KtModel::Load()
 
 				if (!uniqueVertices.contains(vertex))
 				{
-					uniqueVertices[vertex] = static_cast<uint32_t>(vertices_.size());
+					uniqueVertices[vertex] = static_cast<u32>(vertices_.size());
 					vertices_.push_back(vertex);
 				}
 
@@ -120,7 +120,7 @@ void KtModel::CreateVertexBuffer()
 		stagingVertexBuffer_
 	);
 
-	memcpy(stagingVertexBuffer_.AllocationInfo.pMappedData, vertices_.data(), static_cast<size_t>(bufferSize));
+	memcpy(stagingVertexBuffer_.AllocationInfo.pMappedData, vertices_.data(), static_cast<size>(bufferSize));
 
 	Context.CreateBuffer(
 		bufferSize,
@@ -136,7 +136,7 @@ void KtModel::CreateVertexBuffer()
 
 void KtModel::CreateIndexBuffer()
 {
-	const VkDeviceSize bufferSize{ sizeof(uint32_t) * indices_.size() };
+	const VkDeviceSize bufferSize{ sizeof(u32) * indices_.size() };
 
 	Context.CreateBuffer(
 		bufferSize,
@@ -146,7 +146,7 @@ void KtModel::CreateIndexBuffer()
 		stagingIndexBuffer_
 	);
 
-	memcpy(stagingIndexBuffer_.AllocationInfo.pMappedData, indices_.data(), static_cast<size_t>(bufferSize));
+	memcpy(stagingIndexBuffer_.AllocationInfo.pMappedData, indices_.data(), static_cast<size>(bufferSize));
 
 	Context.CreateBuffer(
 		bufferSize,
@@ -162,13 +162,13 @@ void KtModel::CreateIndexBuffer()
 
 void KtModel::CreateIndirectBuffers()
 {
-	for (size_t i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
+	for (size i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
 	{
-		CreateIndirectBuffer(static_cast<uint32_t>(i));
+		CreateIndirectBuffer(static_cast<u32>(i));
 	}
 }
 
-void KtModel::CreateIndirectBuffer(const uint32_t frameIndex)
+void KtModel::CreateIndirectBuffer(const u32 frameIndex)
 {
 	const VkDeviceSize bufferSize{ sizeof(VkDrawIndexedIndirectCommand) };
 
@@ -181,7 +181,7 @@ void KtModel::CreateIndirectBuffer(const uint32_t frameIndex)
 	);
 
 	const VkDrawIndexedIndirectCommand cmd{
-		.indexCount = static_cast<uint32_t>(indices_.size()),
+		.indexCount = static_cast<u32>(indices_.size()),
 		.instanceCount = 0,
 		.firstIndex = 0,
 		.vertexOffset = 0,

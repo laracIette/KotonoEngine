@@ -11,7 +11,7 @@ TSceneObject::TSceneObject(UPtrOwnerBase* ptrOwner) :
 
 void TSceneObject::Cleanup()
 {
-	for (int64_t i{ sceneComponents_.LastIndex() }; i >= 0 && i < sceneComponents_.size(); --i)
+	for (i64 i{ sceneComponents_.LastIndex() }; i >= 0 && i < sceneComponents_.size(); --i)
 	{
 		sceneComponents_[i]->Delete();
 	}
@@ -80,7 +80,7 @@ void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinate
 
 	if (parent_)
 	{
-		const size_t index{ childrenIndex_ };
+		const size index{ childrenIndex_ };
 		if (parent_->children_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 		{
 			parent_->children_[index]->childrenIndex_ = index;
@@ -117,7 +117,7 @@ void TSceneObject::AddComponent(const UPtr<KSceneComponent>& component)
 
 void TSceneObject::RemoveComponent(const UPtr<KSceneComponent>& component)
 {
-	const size_t index{ component->componentIndex_ };
+	const size index{ component->componentIndex_ };
 	if (sceneComponents_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 	{
 		sceneComponents_[index]->componentIndex_ = index;
@@ -131,7 +131,7 @@ void TSceneObject::RemoveComponent(const UPtr<KSceneComponent>& component)
 		rootComponent_ = nullptr;
 	}
 	
-	for (size_t i{ 1 }; i < sceneComponents_.size(); ++i)
+	for (size i{ 1 }; i < sceneComponents_.size(); ++i)
 	{
 		sceneComponents_[i]->SetParent(rootComponent_, ECoordinateSpace::Relative);
 	}

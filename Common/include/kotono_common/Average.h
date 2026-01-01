@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
-
-template <size_t Size = 64, std::floating_point T = float>
+#include "types.h"
+template <size Size = 64, std::floating_point T = float>
 class KtAverage final
 {
 public:
@@ -20,7 +20,7 @@ public:
 
 private:
 	std::array<T, Size> values_;
-	size_t index_;
+	size index_;
 	T sum_;
 };
 

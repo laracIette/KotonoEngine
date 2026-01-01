@@ -157,7 +157,7 @@ public:
 
 private:
 	Owner* owner_{ nullptr };
-	size_t index_{ 0 };
+	size index_{ 0 };
 
 	void SetOwner(Owner* owner)
 	{

@@ -1,3 +1,3 @@
 #pragma once
-#include <cstdint>
-void combine(size_t& h, const size_t v) noexcept;
+#include "types.h"
+void combine(size& h, const size v) noexcept;

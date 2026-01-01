@@ -61,5 +61,5 @@ private:
 	SERIALIZE UPtr<KSceneComponent> rootComponent_;
 	SERIALIZE KtPool<UPtr<KSceneComponent>> sceneComponents_;
 	SERIALIZE KtPool<UPtr<TSceneObject>> children_;
-	SERIALIZE size_t childrenIndex_;
+	SERIALIZE size childrenIndex_;
 };

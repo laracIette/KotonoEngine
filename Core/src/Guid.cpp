@@ -8,7 +8,7 @@ UGuid::UGuid()
 {
     std::random_device rd;
     std::mt19937_64 gen(rd());
-    std::uniform_int_distribution<uint64_t> dist;
+    std::uniform_int_distribution<u64> dist;
 
     for (auto& part : data_)
     {
@@ -40,14 +40,14 @@ std::string UGuid::ToString() const
     std::string result;
     result.reserve(data_.size() * (16llu + 1) - 1); // 16 hex chars per u64 + (N-1) dashes
 
-    for (size_t i{ 0 }; i < data_.size(); ++i)
+    for (size i{ 0 }; i < data_.size(); ++i)
     {
         if (i != 0)
         {
             result.push_back('-');
         }
 
-        const uint64_t value{ data_[i] };
+        const u64 value{ data_[i] };
         for (int j{ 60 }; j >= 0; j -= 4)
         {  // 16 nibbles (4 bits per hex digit)
             result.push_back(hexDigits[(value >> j) & 0xF]);
@@ -80,7 +80,7 @@ UGuid& UGuid::operator=(const std::string& string)
 
 bool UGuid::operator==(const UGuid& other) const
 {
-    for (size_t i{ 0 }; i < data_.size(); i++)
+    for (size i{ 0 }; i < data_.size(); i++)
     {
         if (data_[i] != other.data_[i])
         {
@@ -90,12 +90,12 @@ bool UGuid::operator==(const UGuid& other) const
     return true;
 }
 
-size_t std::hash<UGuid>::operator()(const UGuid& g) const noexcept
+size std::hash<UGuid>::operator()(const UGuid& g) const noexcept
 {
-    size_t h{ 0 };
-    combine(h, std::hash<uint64_t>{}(g.data_[0]));
-    combine(h, std::hash<uint64_t>{}(g.data_[1]));
-    combine(h, std::hash<uint64_t>{}(g.data_[2]));
-    combine(h, std::hash<uint64_t>{}(g.data_[3]));
+    ::size h{ 0 };
+    combine(h, std::hash<u64>{}(g.data_[0]));
+    combine(h, std::hash<u64>{}(g.data_[1]));
+    combine(h, std::hash<u64>{}(g.data_[2]));
+    combine(h, std::hash<u64>{}(g.data_[3]));
     return h;
 }

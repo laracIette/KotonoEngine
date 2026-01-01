@@ -1,8 +1,8 @@
 #include "SceneCuller.h"
-#include <kotono_common/log.h>
 #include "SceneProxy.h"
-#include <kotono_common/Pool.h>
 #include <kotono_common/bitwise_utils.h>
+#include <kotono_common/log.h>
+#include <kotono_common/Pool.h>
 
 #define KT_LOG_IMPORTANCE_LEVEL_NULLPTR ELogImportanceLevel::High
 
@@ -11,7 +11,7 @@ KtSceneCuller::KtSceneCuller(const KtSceneCullerField field) :
 {
 }
 
-KtSceneCuller::ProxiesPool KtSceneCuller::ComputeCulling(ProxiesPool proxies, const uint32_t frameIndex) const
+KtSceneCuller::ProxiesPool KtSceneCuller::ComputeCulling(ProxiesPool proxies, const u32 frameIndex) const
 {
 	if (has_flag(field_, KT_SCENE_CULLER_FIELD_NULLPTR))
 	{
@@ -24,7 +24,7 @@ KtSceneCuller::ProxiesPool KtSceneCuller::ComputeCulling(ProxiesPool proxies, co
 	return proxies;
 }
 
-KtSceneCuller::ProxiesPool KtSceneCuller::ComputeNullCulling(const ProxiesPool& proxies, const uint32_t frameIndex) const
+KtSceneCuller::ProxiesPool KtSceneCuller::ComputeNullCulling(const ProxiesPool& proxies, const u32 frameIndex) const
 {
 	ProxiesPool culledData{};
 
@@ -54,7 +54,7 @@ KtSceneCuller::ProxiesPool KtSceneCuller::ComputeNullCulling(const ProxiesPool& 
 	return culledData;
 }
 
-KtSceneCuller::ProxiesPool KtSceneCuller::ComputeDistanceCulling(const ProxiesPool& proxies, const uint32_t frameIndex) const
+KtSceneCuller::ProxiesPool KtSceneCuller::ComputeDistanceCulling(const ProxiesPool& proxies, const u32 frameIndex) const
 {
 	ProxiesPool culledData{};
 

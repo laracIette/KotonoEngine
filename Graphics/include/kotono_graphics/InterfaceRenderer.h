@@ -12,12 +12,12 @@ class KtInterfaceRenderer final
 private:
 	using Proxy = UInterfaceProxy;
 	using ProxiesPool = KtPool<Proxy*>;
-	using StagingProxiesMap = std::unordered_map<Proxy*, int32_t>;
-	using DeleteProxiesMap = std::unordered_map<Proxy*, uint32_t>;
+	using StagingProxiesMap = std::unordered_map<Proxy*, i32>;
+	using DeleteProxiesMap = std::unordered_map<Proxy*, u32>;
 
 public:
 	void Init();
-	void Update(const uint32_t frameIndex);
+	void Update(const u32 frameIndex);
 	void Cleanup() const;
 
 	void MarkCommandBuffersDirty();
@@ -28,7 +28,7 @@ public:
 	void RegisterProxy(Proxy* proxy);
 	void UnregisterProxy(Proxy* proxy);
 
-	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
+	void CmdDraw(VkCommandBuffer commandBuffer, const u32 frameIndex);
 
 	Proxy* CreateProxy() const;
 	// Stage deletion of the proxy after KT_FRAMES_IN_FLIGHT frames, 
@@ -47,7 +47,7 @@ private:
 		};
 
 		KtInterfaceUniformData uniformData;
-		std::unordered_map<const KtShader*, uint32_t> instanceIndices;
+		std::unordered_map<const KtShader*, u32> instanceIndices;
 
 		ObjectBufferData objectBuffer;
 	};
@@ -73,19 +73,19 @@ private:
 	void CmdBindIndexBuffer(VkCommandBuffer commandBuffer) const;
 
 	void CreateCommandBuffers();
-	void CreateCommandBuffer(const uint32_t frameIndex);
-	void RecordCommandBuffer(const uint32_t frameIndex);
-	void BeginCommandBuffer(VkCommandBuffer commandBuffer, const uint32_t frameIndex);
+	void CreateCommandBuffer(const u32 frameIndex);
+	void RecordCommandBuffer(const u32 frameIndex);
+	void BeginCommandBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex);
 	void EndCommandBuffer(VkCommandBuffer commandBuffer);
 
-	void UpdateProxies(const uint32_t frameIndex);
-	void UpdateStagingProxies(const uint32_t frameIndex);
-	void UpdateDescriptorSets(const ProxiesPool& renderQueueData, const uint32_t frameIndex);
+	void UpdateProxies(const u32 frameIndex);
+	void UpdateStagingProxies(const u32 frameIndex);
+	void UpdateDescriptorSets(const ProxiesPool& renderQueueData, const u32 frameIndex);
 
 	void DeleteProxies();
 	
-	void SortProxies(ProxiesPool& proxies, const uint32_t frameIndex);
+	void SortProxies(ProxiesPool& proxies, const u32 frameIndex);
 
-	void CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const uint32_t frameIndex);
+	void CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const u32 frameIndex);
 };
 

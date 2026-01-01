@@ -17,7 +17,7 @@ public:
 	{
 		KtShader* shader;
 		KtInterfaceRenderable* renderable;
-		int32_t layer;
+		i32 layer;
 		KtInterfaceObjectData objectData;
 		KtScissor scissor;
 	};
@@ -28,13 +28,13 @@ private:
 	struct UpdateData
 	{
 		UpdateFunction function;
-		uint32_t count;
+		u32 count;
 	};
 
 	struct PoolData
 	{
 		bool isRegistered;
-		size_t index;
+		size index;
 	};
 
 	struct FrameData
@@ -47,7 +47,7 @@ public:
 	void ScheduleUpdate(const UpdateFunction& function);
 
 private:
-	void ApplyPendingUpdates(const uint32_t frameIndex);
+	void ApplyPendingUpdates(const u32 frameIndex);
 
 	bool IsDirty() const;
 

@@ -11,7 +11,7 @@ RInterfaceObject::RInterfaceObject(UPtrOwnerBase* ptrOwner) :
 
 void RInterfaceObject::Cleanup()
 {
-	for (int64_t i{ interfaceComponents_.LastIndex() }; i >= 0 && i < interfaceComponents_.size(); --i)
+	for (i64 i{ interfaceComponents_.LastIndex() }; i >= 0 && i < interfaceComponents_.size(); --i)
 	{
 		interfaceComponents_[i]->Delete();
 	}
@@ -85,7 +85,7 @@ void RInterfaceObject::SetParent(const UPtr<RInterfaceObject>& parent, const ECo
 
 	if (parent_)
 	{
-		const size_t index{ childrenIndex_ };
+		const size index{ childrenIndex_ };
 		if (parent_->children_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 		{
 			parent_->children_[index]->childrenIndex_ = index;
@@ -129,7 +129,7 @@ void RInterfaceObject::AddComponent(const UPtr<KInterfaceComponent>& component)
 
 void RInterfaceObject::RemoveComponent(const UPtr<KInterfaceComponent>& component)
 {
-	const size_t index{ component->componentIndex_ };
+	const size index{ component->componentIndex_ };
 	if (interfaceComponents_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 	{
 		interfaceComponents_[index]->componentIndex_ = index;
@@ -143,7 +143,7 @@ void RInterfaceObject::RemoveComponent(const UPtr<KInterfaceComponent>& componen
 		rootComponent_ = nullptr;
 	}
 
-	for (size_t i{ 1 }; i < interfaceComponents_.size(); ++i)
+	for (size i{ 1 }; i < interfaceComponents_.size(); ++i)
 	{
 		interfaceComponents_[i]->SetParent(rootComponent_, ECoordinateSpace::Relative);
 	}
