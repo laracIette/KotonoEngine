@@ -1,5 +1,5 @@
 #include "ObjectFactory.h"
-#include <kotono_common/Path.h>
+#include <kotono_common/PathManager.h>
 #include <kotono_io/Serializer.h>
 #include <nlohmann/json.hpp>
 #include "ObjectManager.h"
@@ -52,7 +52,7 @@ UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 		}
 	}
 
-	const auto path{ KtPath::Project() / "assets" / "objects" / std::format("{}.kobject", guid.ToString()) };
+	const auto path{ PathManager.Project() / "assets" / "objects" / std::format("{}.kobject", guid.ToString()) };
 
 	// Add to registry
 	nlohmann::json json{};

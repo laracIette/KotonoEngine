@@ -7,7 +7,7 @@
 #include <array>
 #include <kotono_common/log.h>
 
-KtModel::KtModel(const std::filesystem::path& path) :
+KtModel::KtModel(const UPath& path) :
 	path_(path)
 {
 }
@@ -28,10 +28,10 @@ void KtModel::Cleanup()
 	{
 		vmaDestroyBuffer(Context.GetAllocator(), indirectBuffer.Buffer, indirectBuffer.Allocation);
 	}
-	KT_LOG(ELogImportanceLevel::Low, "Graphics.KtModel::Cleanup()", "cleaned up %s", Path().string().c_str());
+	KT_LOG(ELogImportanceLevel::Low, "Graphics.KtModel::Cleanup()", "cleaned up %s", Path().ToString().c_str());
 }
 
-const std::filesystem::path& KtModel::Path() const
+const UPath& KtModel::Path() const
 {
 	return path_;
 }
@@ -59,7 +59,7 @@ void KtModel::UpdateIndirectBuffer(const uint32_t firstInstance, const uint32_t 
 void KtModel::Load()
 {
 	Assimp::Importer importer{};
-	const aiScene* scene = importer.ReadFile(path_.string().c_str(), 
+	const aiScene* scene = importer.ReadFile(path_.ToPath().string().c_str(),
 		aiProcess_Triangulate | 
 		aiProcess_FlipUVs |
 		aiProcess_MakeLeftHanded |
@@ -69,7 +69,7 @@ void KtModel::Load()
 
 	if (!scene || !scene->HasMeshes())
 	{
-		throw std::runtime_error("Failed to load model: " + path_.string());
+		throw std::runtime_error("Failed to load model: " + path_.ToString());
 	}
 
 	std::unordered_map<KtVertex3D, uint32_t> uniqueVertices{};

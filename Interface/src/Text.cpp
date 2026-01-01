@@ -19,7 +19,7 @@ WWidget* WText::Build()
 
 WWidget::DisplaySettings WText::GetDisplaySettings(DisplaySettings displaySettings) const
 {
-	const auto ds = WWidget::GetDisplaySettings(displaySettings);
+	const auto ds{ WWidget::GetDisplaySettings(displaySettings) };
 	return ds;
 }
 
@@ -27,8 +27,7 @@ WWidget::WidgetVector WText::GetCharacters() const
 {
 	WidgetVector result{};
 
-	const auto fontPath{ KtPath::Graphics() / R"(assets\fonts\default)" };
-	const KtFont font(fontPath);
+	const KtFont font("${ENGINE_DIRECTORY}/Graphics/assets/fonts/default");
 
 	const auto characterPaths{ font.GetTextPaths(textSettings_.text) };
 	result.reserve(characterPaths.size());

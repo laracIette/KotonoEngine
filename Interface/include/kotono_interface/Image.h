@@ -1,6 +1,6 @@
 #pragma once
 #include "Widget.h"
-#include <filesystem>
+#include <kotono_common/Path.h>
 class UInterfaceProxy;
 class WImage : public WWidget
 {
@@ -8,7 +8,7 @@ public:
 	struct ImageSettings
 	{
 		/// default = ""
-		std::filesystem::path path{ "" };
+		UPath path{ "" };
 	};
 
 	/// Display an image over the widget's bounds

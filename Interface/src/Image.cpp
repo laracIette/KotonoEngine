@@ -21,9 +21,7 @@ void WImage::DisplayInternal(DisplaySettings displaySettings)
 	imageProxy_->ScheduleUpdate(
 		[this, displaySettings](UInterfaceProxy::Data& data)
 		{
-			static const auto shaderPath{ KtPath::Graphics() / "shaders"/ "shader2D.ktshader" };
-
-			data.shader = ShaderManager.Get(shaderPath);
+			data.shader = ShaderManager.Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader2D.ktshader");
 			data.renderable = TextureManager.Get(imageSettings_.path);
 			data.layer = displaySettings.layer;
 			data.objectData.modelMatrix = ModelMatrix();

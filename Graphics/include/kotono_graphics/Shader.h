@@ -1,12 +1,12 @@
 #pragma once
-#include <vulkan/vulkan.h>
-#include <span>
-#include <filesystem>
-#include <array>
-#include <unordered_map>
 #include "frames_in_flight.h"
-#include <kotono_platform/AllocatedBuffer.h>
 #include "ShaderLayout.h"
+#include <array>
+#include <kotono_common/Path.h>
+#include <kotono_platform/AllocatedBuffer.h>
+#include <span>
+#include <unordered_map>
+#include <vulkan/vulkan.h>
 class KtShader final
 {
 public:	
@@ -33,15 +33,12 @@ public:
 	    std::vector<DescriptorSetLayoutBindingData>    DescriptorSetLayoutBindingDatas;
 	};
 
-	KtShader(const std::filesystem::path& path);
+	KtShader(const UPath& path);
 
 	void Init();
 	void Cleanup();
 
-	const std::filesystem::path& Path() const;
-
-	const std::string& GetName() const;
-	void SetName(const std::string& name);
+	const UPath& Path() const;
 
 	VkPipeline GetGraphicsPipeline() const;
 	VkPipelineLayout GetPipelineLayout() const;
@@ -58,8 +55,7 @@ public:
 
 
 protected:
-	const std::filesystem::path path_;
-	std::string name_;
+	const UPath path_;
 
 	KtShaderLayout shaderLayout_;
 

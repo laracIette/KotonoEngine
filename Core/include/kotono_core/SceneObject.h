@@ -2,6 +2,7 @@
 #include "generated/SceneObject.generated.h"
 #include "CoordinateSpace.h"
 #include "Object.h"
+#include <algorithm>
 #include <kotono_common/Pool.h>
 
 class KtWindowViewport;

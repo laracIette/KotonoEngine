@@ -7,22 +7,15 @@
 
 #define SERIALIZE
 
-namespace std
-{
-	namespace filesystem
-	{
-		class path;
-	}
-}
-
 struct UColor;
-struct UGuid;
+class UGuid;
 struct UTransform;
 struct URect;
 class KtShader;
 class KtTexture;
 class KtModel;
 class KObject;
+class UPath;
 
 void serialize(nlohmann::json& json, const bool v);
 void serialize(nlohmann::json& json, const int8_t v);
@@ -40,7 +33,7 @@ void serialize(nlohmann::json& json, const EVisibility v);
 void serialize(nlohmann::json& json, const EMobility v);
 
 void serialize(nlohmann::json& json, const std::string& v);
-void serialize(nlohmann::json& json, const std::filesystem::path& v);
+void serialize(nlohmann::json& json, const UPath& v);
 
 void serialize(nlohmann::json& json, const glm::vec2& v);
 void serialize(nlohmann::json& json, const glm::vec3& v);
@@ -82,7 +75,7 @@ void deserialize(const nlohmann::json& json, EVisibility& v);
 void deserialize(const nlohmann::json& json, EMobility& v);
 
 void deserialize(const nlohmann::json& json, std::string& v);
-void deserialize(const nlohmann::json& json, std::filesystem::path& v);
+void deserialize(const nlohmann::json& json, UPath& v);
 
 void deserialize(const nlohmann::json& json, glm::vec2& v);
 void deserialize(const nlohmann::json& json, glm::vec3& v);

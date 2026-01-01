@@ -1,13 +1,15 @@
 #include "InterfaceComponent.h"
 #include "InterfaceObject.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <kotono_common/log.h>
-#include <kotono_common/Path.h>
-#include <kotono_graphics/Texture.h>
-#include <kotono_graphics/TextureManager.h>
-#include <kotono_graphics/InterfaceProxy.h>
-#include <kotono_graphics/Renderer.h>
-#include <kotono_graphics/Shader.h>
-#include <kotono_graphics/ShaderManager.h>
+//#include <kotono_common/PathManager.h>
+//#include <kotono_graphics/Texture.h>
+//#include <kotono_graphics/TextureManager.h>
+//#include <kotono_graphics/InterfaceProxy.h>
+//#include <kotono_graphics/Renderer.h>
+//#include <kotono_graphics/Shader.h>
+//#include <kotono_graphics/ShaderManager.h>
 #include <kotono_input/Mouse.h>
 #include <kotono_platform/WindowViewport.h>
 
@@ -467,8 +469,8 @@ void KInterfaceComponent::Spawn()
 //    boundsProxy_->ScheduleUpdate(
 //        [this](UInterfaceProxy::Data& data)
 //        {
-//            static const auto shaderPath{ KtPath::Graphics() / "shaders" / "flatColor2D.ktshader" };
-//            static const auto texturePath{ KtPath::Graphics() / "assets" / "textures" / "white_texture.jpg" };
+//            static const auto shaderPath{ PathManager.Graphics() / "shaders" / "flatColor2D.ktshader" };
+//            static const auto texturePath{ PathManager.Graphics() / "assets" / "textures" / "white_texture.jpg" };
 //
 //            data.shader = ShaderManager.Get(shaderPath);
 //            data.renderable = TextureManager.Get(texturePath);

@@ -1,12 +1,13 @@
 #pragma once
 #include "generated/SceneComponent.generated.h"
+#include "CoordinateSpace.h"
 #include "Object.h"
 #include "Transform.h"
 #include "Visibility.h"
-#include "CoordinateSpace.h"
-#include <kotono_graphics/Mobility.h>
 #include <kotono_common/Cached.h>
+#include <kotono_common/Event.h>
 #include <kotono_common/Pool.h>
+#include <kotono_graphics/Mobility.h>
 
 class TSceneObject;
 

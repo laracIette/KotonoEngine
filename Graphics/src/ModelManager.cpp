@@ -11,13 +11,13 @@ void KtModelManager::Cleanup()
     models_.clear();
 }
 
-KtModel* KtModelManager::Get(const std::filesystem::path& path)
+KtModel* KtModelManager::Get(const UPath& path)
 {
     const auto it{ models_.find(path) };
     return it != models_.end() ? it->second : Create(path);
 }
 
-KtModel* KtModelManager::Create(const std::filesystem::path& path)
+KtModel* KtModelManager::Create(const UPath& path)
 {
     auto* model{ new KtModel(path) };
     model->Init();

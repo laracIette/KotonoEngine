@@ -84,9 +84,9 @@ void serialize(nlohmann::json& json, const std::string& v)
     json = v;
 }
 
-void serialize(nlohmann::json& json, const std::filesystem::path& v)
+void serialize(nlohmann::json& json, const UPath& v)
 {
-    json = v.string();
+    json = v.ToString();
 }
 
 void serialize(nlohmann::json& json, const glm::vec2& v)
@@ -262,7 +262,7 @@ void deserialize(const nlohmann::json& json, std::string& v)
     v = json;
 }
 
-void deserialize(const nlohmann::json& json, std::filesystem::path& v)
+void deserialize(const nlohmann::json& json, UPath& v)
 {
     v = json.get<std::string>();
 }
@@ -336,19 +336,19 @@ void deserialize(const nlohmann::json& json, URect& v)
 
 void deserialize(const nlohmann::json& json, KtShader*& v)
 {
-    const std::filesystem::path path(json.get<std::string>());
+    const UPath path(json.get<std::string>());
     v = ShaderManager.Get(path);
 }
 
 void deserialize(const nlohmann::json& json, KtTexture*& v)
 {
-    const std::filesystem::path path(json.get<std::string>());
+    const UPath path(json.get<std::string>());
     v = TextureManager.Get(path);
 }
 
 void deserialize(const nlohmann::json& json, KtModel*& v)
 {
-    const std::filesystem::path path(json.get<std::string>());
+    const UPath path(json.get<std::string>());
     v = ModelManager.Get(path);
 }
 

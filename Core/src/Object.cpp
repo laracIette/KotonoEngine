@@ -30,9 +30,9 @@ bool KObject::IsConstructed() const
     return isConstructed_;
 }
 
-const std::filesystem::path KObject::Path() const
+UPath KObject::Path() const
 {
-    return KtPath::Project() / "assets" / "objects" / std::format("{}.kobject", guid_.ToString());
+    return "${PROJECT_DIRECTORY}/assets/objects/" + guid_.ToString() + ".kobject";
 }
 
 const std::string& KObject::GetName() const

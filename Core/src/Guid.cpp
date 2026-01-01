@@ -2,6 +2,7 @@
 #include <random>
 #include <sstream>
 #include <iomanip>
+#include <kotono_common/hash_utils.h>
 
 UGuid::UGuid()
 {
@@ -33,7 +34,7 @@ UGuid::UGuid(const std::string& string)
     }
 }
 
-UGuid::operator std::string() const
+std::string UGuid::ToString() const
 {
     static constexpr const char hexDigits[]{ "0123456789abcdef" };
     std::string result;
@@ -56,6 +57,11 @@ UGuid::operator std::string() const
     return result;
 }
 
+UGuid::operator std::string() const
+{
+    return ToString();
+}
+
 UGuid& UGuid::operator=(const std::string& string)
 {
     std::istringstream iss(string);
@@ -69,22 +75,27 @@ UGuid& UGuid::operator=(const std::string& string)
         }
     }
 
-	return *this;
+    return *this;
 }
 
 bool UGuid::operator==(const UGuid& other) const
 {
     for (size_t i{ 0 }; i < data_.size(); i++)
-	{
-		if (data_[i] != other.data_[i])
-		{
-			return false;
-		}
-	}
-	return true;
+    {
+        if (data_[i] != other.data_[i])
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
-std::string UGuid::ToString() const
+size_t std::hash<UGuid>::operator()(const UGuid& g) const noexcept
 {
-    return static_cast<std::string>(*this);
+    size_t h{ 0 };
+    combine(h, std::hash<uint64_t>{}(g.data_[0]));
+    combine(h, std::hash<uint64_t>{}(g.data_[1]));
+    combine(h, std::hash<uint64_t>{}(g.data_[2]));
+    combine(h, std::hash<uint64_t>{}(g.data_[3]));
+    return h;
 }

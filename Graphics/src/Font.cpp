@@ -1,7 +1,7 @@
 #include "Font.h"
 #include "TextureManager.h"
 #include "Texture.h"
-#include <kotono_common/Path.h>
+#include <kotono_common/PathManager.h>
 #include <unordered_map>
 
 static const std::unordered_map<char, const char*> CHARACTER_NAMES =
@@ -29,12 +29,12 @@ static const std::unordered_map<char, const char*> CHARACTER_NAMES =
     {' ', "space"}
 };
 
-KtFont::KtFont(const std::filesystem::path& path) :
+KtFont::KtFont(const UPath& path) :
     path_(path)
 {
 }
 
-const std::filesystem::path& KtFont::Path() const
+const UPath& KtFont::Path() const
 {
     return path_;
 }
@@ -59,15 +59,15 @@ void KtFont::SetSpacing(const float spacing)
     spacing_ = spacing;
 }
 
-std::vector<std::filesystem::path> KtFont::GetTextPaths(const std::string_view text) const
+std::vector<UPath> KtFont::GetTextPaths(const std::string_view text) const
 {
-    std::vector<std::filesystem::path> result{};
+    std::vector<UPath> result{};
     result.reserve(text.size());
 
     for (const auto character : text)
     {
         // default texture
-        auto characterPath = KtPath::Graphics() / R"(assets\textures\white_texture.jpg)";
+        UPath characterPath("${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg");
 
         const auto it{ CHARACTER_NAMES.find(character) };
         if (it != CHARACTER_NAMES.end())

@@ -2,7 +2,6 @@
 #include "InterfaceObject.h"
 #include <kotono_graphics/InterfaceProxy.h>
 #include <kotono_graphics/Texture.h>
-#include <kotono_common/Path.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/ShaderManager.h>
 #include <kotono_graphics/TextureManager.h>
@@ -43,11 +42,8 @@ void KInterfaceBoxComponent::CreateBoxProxy()
     boxProxy_->ScheduleUpdate(
         [this](UInterfaceProxy::Data& data)
         {
-            static const auto shaderPath{ KtPath::Graphics() / "shaders" / "flatColor2D.ktshader" };
-            static const auto texturePath{ KtPath::Graphics() / "assets" / "textures" / "white_texture.jpg" };
-
-            data.shader = ShaderManager.Get(shaderPath);
-            data.renderable = TextureManager.Get(texturePath);
+            data.shader = ShaderManager.Get("${ENGINE_DIRECTORY}/Graphics/shaders/flatColor2D.ktshader");
+            data.renderable = TextureManager.Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg");
             data.layer = GetLayer();
             data.objectData.modelMatrix = ModelMatrix();
             data.objectData.color = GetColor();

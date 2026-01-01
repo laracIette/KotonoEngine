@@ -1,26 +1,27 @@
 #pragma once
 #include <filesystem>
 #include <vector>
+#include <kotono_common/Path.h>
 
 class KtTexture;
 
 class KtFont final
 {
 public:
-	KtFont(const std::filesystem::path& path);
+	KtFont(const UPath& path);
 
-	const std::filesystem::path& Path() const;
+	const UPath& Path() const;
 	float GetSize() const;
 	float GetSpacing() const;
 
 	void SetSize(const float size);
 	void SetSpacing(const float spacing);
 
-	std::vector<std::filesystem::path> GetTextPaths(const std::string_view text) const;
+	std::vector<UPath> GetTextPaths(const std::string_view text) const;
 	std::vector<KtTexture*> GetTextTextures(const std::string_view text) const;
 
 private:
-	const std::filesystem::path path_;
+	const UPath path_;
 	// todo: unused yet, for sdf
 	float size_;
 	float spacing_;

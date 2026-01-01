@@ -18,13 +18,13 @@ void KtShaderManager::Cleanup()
     shaders_.clear();
 }
 
-KtShader* KtShaderManager::Get(const std::filesystem::path& path)
+KtShader* KtShaderManager::Get(const UPath& path)
 {
     const auto it{ shaders_.find(path) };
     return it != shaders_.end() ? it->second : Create(path);
 }
 
-KtShader* KtShaderManager::Create(const std::filesystem::path& path)
+KtShader* KtShaderManager::Create(const UPath& path)
 {
     auto* shader{ new KtShader(path) };
     shader->Init();

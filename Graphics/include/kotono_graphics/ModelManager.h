@@ -1,6 +1,6 @@
 #pragma once
 #include <unordered_map>
-#include <filesystem>
+#include <kotono_common/Path.h>
 
 class KtModel;
 
@@ -12,12 +12,13 @@ private:
 	void Cleanup();
 
 public:
-	KtModel* Get(const std::filesystem::path& path);
+	KtModel* Get(const UPath& path);
 
 private:
-	std::unordered_map<std::filesystem::path, KtModel*> models_;
+	KtModel* Create(const UPath& path);
 
-	KtModel* Create(const std::filesystem::path& path);
+private:
+	std::unordered_map<UPath, KtModel*> models_;
 };
 
 inline KtModelManager ModelManager;

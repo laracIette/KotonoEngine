@@ -1,26 +1,26 @@
 #pragma once
-#include <vulkan/vulkan_core.h>
-#include <filesystem>
-#include <vma/vk_mem_alloc.h>
-#include <kotono_platform/AllocatedBuffer.h>
 #include "InterfaceRenderable.h"
 #include <glm/vec2.hpp>
+#include <kotono_common/Path.h>
+#include <kotono_platform/AllocatedBuffer.h>
+#include <vma/vk_mem_alloc.h>
+#include <vulkan/vulkan_core.h>
 class KtTexture final : public KtInterfaceRenderable
 {
 public:
-    KtTexture(const std::filesystem::path& path);
+    KtTexture(const UPath& path);
 
     void Init();
     void Cleanup() const;
 
-    const std::filesystem::path& Path() const;
+    const UPath& Path() const;
     const glm::uvec2& GetSize() const;
 
     const VkDescriptorImageInfo& GetDescriptorImageInfo() const;
 
 private:
     // File path of the texture
-    const std::filesystem::path path_;
+    const UPath path_;
 
     // Vulkan image handle
     VkImage image_;

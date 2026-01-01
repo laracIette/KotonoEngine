@@ -3,7 +3,6 @@
 #include <kotono_platform/Context.h>
 #include "TextureManager.h"
 #include "Texture.h"
-#include <kotono_common/Path.h>
 #include <kotono_io/File.h>
 #include <spirv-reflect/spirv_reflect.h>
 #include <nlohmann/json.hpp>
@@ -21,14 +20,14 @@ static constexpr VkDescriptorBindingFlags BINDLESS_TEXTURE_FLAGS{
 	VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
 };
 
-KtShader::KtShader(const std::filesystem::path& path) :
+KtShader::KtShader(const UPath& path) :
 	path_(path)
 {
 }
 
 void KtShader::Init()
 {
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics.KtShader::Init()", "initializing shader %s", path_.string().c_str());
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics.KtShader::Init()", "initializing shader %s", path_.ToString().c_str());
 	CreateShaderLayout();
 	CreateDescriptorSetLayouts();
 	DebugLogDescriptorSetLayoutData();
@@ -36,12 +35,12 @@ void KtShader::Init()
 	CreateDescriptorSets();
 	CreateDescriptorSetLayoutBindings();
 	CreateGraphicsPipeline();
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics.KtShader::Init()", "initialized shader %s", path_.string().c_str());
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics.KtShader::Init()", "initialized shader %s", path_.ToString().c_str());
 }
 
 void KtShader::Cleanup()
 {
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics.KtShader::Cleanup()", "cleaning up shader %s", name_.c_str());
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics.KtShader::Cleanup()", "cleaning up shader %s", path_.ToString().c_str());
 
 	vkDestroyPipeline(Context.GetDevice(), graphicsPipeline_, nullptr);
 	vkDestroyPipelineLayout(Context.GetDevice(), pipelineLayout_, nullptr);
@@ -62,22 +61,12 @@ void KtShader::Cleanup()
 
 	vkDestroyDescriptorPool(Context.GetDevice(), descriptorPool_, nullptr);
 
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics.KtShader::Cleanup()", "cleaned up shader %s", name_.c_str());
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics.KtShader::Cleanup()", "cleaned up shader %s", path_.ToString().c_str());
 }
 
-const std::filesystem::path& KtShader::Path() const
+const UPath& KtShader::Path() const
 {
 	return path_;
-}
-
-const std::string& KtShader::GetName() const
-{
-	return name_;
-}
-
-void KtShader::SetName(const std::string& name)
-{
-	name_ = name;
 }
 
 VkPipeline KtShader::GetGraphicsPipeline() const
@@ -292,8 +281,8 @@ void KtShader::CreateGraphicsPipeline()
 	KtSerializer::Deserialize(json, path_);
 	for (const auto& shader : json["shaders"])
 	{
-		const auto path{ KtPath::Graphics() / "shaders" / shader["path"] };
-		std::vector<uint8_t> shaderCode = KtFile(path).ReadBinary();
+		const auto path{ UPath("${ENGINE_DIRECTORY}/Graphics/shaders").ToPath() / shader["path"]};
+		std::vector<uint8_t> shaderCode{ KtFile(path).ReadBinary() };
 
 		VkShaderModule shaderModule;
 		CreateShaderModule(shaderModule, shaderCode);
@@ -524,8 +513,7 @@ void KtShader::CreateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutB
 		return;
 	}
 
-	static const auto path{ KtPath::Graphics() / "assets" / "models" / "viking_room.png" };
-	static const auto* texture{ TextureManager.Get(path) };
+	static const auto* texture{ TextureManager.Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png") };
 
 	UpdateDescriptorSetLayoutBindingImageSampler(descriptorSetLayoutBindingData, { texture->GetDescriptorImageInfo() }, imageIndex);
 }
@@ -716,7 +704,7 @@ void KtShader::CreateShaderLayout()
 	KtSerializer::Deserialize(json, path_);
 	for (const auto& shader : json["shaders"])
 	{
-		const auto path{ KtPath::Graphics() / "shaders" / shader["path"] };
+		const auto path{ UPath("${ENGINE_DIRECTORY}/Graphics/shaders").ToPath() / shader["path"] };
 		std::vector<uint8_t> shaderCode{ KtFile(path).ReadBinary() };
 		PopulateShaderLayout(shaderCode, shader["shaderStage"]);
 	}

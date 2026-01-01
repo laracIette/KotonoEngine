@@ -2,17 +2,17 @@
 #include "frames_in_flight.h"
 #include "SceneRenderable.h" 
 #include "Vertex3D.h"
-#include <filesystem>
+#include <kotono_common/Path.h>
 #include <kotono_platform/AllocatedBuffer.h>
 class KtModel final : public KtSceneRenderable
 {
 public:
-	KtModel(const std::filesystem::path& path);
+	KtModel(const UPath& path);
 
 	void Init();
 	void Cleanup();
 
-	const std::filesystem::path& Path() const;
+	const UPath& Path() const;
 
 	void CmdBind(VkCommandBuffer commandBuffer) const override;
 	void CmdDraw(VkCommandBuffer commandBuffer, const uint32_t frameIndex) const override;
@@ -20,7 +20,7 @@ public:
 	void UpdateIndirectBuffer(const uint32_t firstInstance, const uint32_t instanceCount, const uint32_t frameIndex) const override;
 
 private:
-	const std::filesystem::path path_;
+	const UPath path_;
 
 	std::vector<KtVertex3D> vertices_;
 	std::vector<uint32_t> indices_;

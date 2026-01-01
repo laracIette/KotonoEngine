@@ -128,7 +128,7 @@ enum class EKey : uint8_t
 
 inline constexpr size_t KeyCount{ 121 };
 
-constexpr size_t to_index(const EKey key)
+inline constexpr size_t to_index(const EKey key)
 {
 	return static_cast<size_t>(key);
 }

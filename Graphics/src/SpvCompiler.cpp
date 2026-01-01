@@ -11,13 +11,13 @@ void KtSpvCompiler::CompileUpdated() const
 {
     KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics.KtSpvCompiler::CompileAll()", "compiling updated spirv shaders");
 
-    static const auto path{ KtPath::Graphics() / "shaders" };
-    static const auto registryPath{ path / "shaders.ktregistry" };
+    static const UPath path("${ENGINE_DIRECTORY}/Graphics/shaders");
+    static const UPath registryPath{ path / "shaders.ktregistry" };
 
     nlohmann::json json{};
     KtSerializer::Deserialize(json, registryPath);
 
-    for (const auto& directory : { "vert", "frag" })
+    for (const auto* directory : { "vert", "frag" })
     {
         for (const auto& entry : std::filesystem::directory_iterator(path / directory))
         {
@@ -27,12 +27,12 @@ void KtSpvCompiler::CompileUpdated() const
                 continue;
             }
 
-            const auto entryPath = std::format("{}/{}", directory, entry.path().filename().string());
+            const auto entryPath{ std::format("{}/{}", directory, entry.path().filename().string()) };
 
-            const auto ftime = entry.last_write_time();
-            const auto formattedTime = std::format("{0:%F}-{0:%T}", ftime);
+            const auto ftime{ entry.last_write_time() };
+            const auto formattedTime{ std::format("{0:%F}-{0:%T}", ftime) };
 
-            bool isInList = false;
+            bool isInList{ false };
             for (auto& shader : json["shaders"])
             {
                 if (shader["path"] != entryPath)
@@ -70,8 +70,8 @@ void KtSpvCompiler::CompileAll() const
 {
     KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics.KtSpvCompiler::CompileAll()", "compiling all spirv shaders");
 
-    const auto path = KtPath::Graphics() / "shaders";
-    for (const auto& directory : { "vert", "frag" })
+    const UPath path("${ENGINE_DIRECTORY}/Graphics/shaders");
+    for (const auto* directory : { "vert", "frag" })
     {
         for (const auto& entry : std::filesystem::directory_iterator(path / directory))
         {

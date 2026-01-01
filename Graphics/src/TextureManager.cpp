@@ -11,13 +11,13 @@ void KtTextureManager::Cleanup()
     textures_.clear();
 }
 
-KtTexture* KtTextureManager::Get(const std::filesystem::path& path)
+KtTexture* KtTextureManager::Get(const UPath& path)
 {
     const auto it{ textures_.find(path) };
     return it != textures_.end() ? it->second : Create(path);
 }
 
-KtTexture* KtTextureManager::Create(const std::filesystem::path& path)
+KtTexture* KtTextureManager::Create(const UPath& path)
 {
     auto* texture{ new KtTexture(path) };
     texture->Init();

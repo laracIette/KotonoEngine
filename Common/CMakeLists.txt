@@ -27,11 +27,13 @@ set(KCOMMON_HEADERS
     "include/kotono_common/log.h"
     "include/kotono_common/LogImportanceLevel.h"
     "include/kotono_common/Path.h"
+    "include/kotono_common/PathManager.h"
     "include/kotono_common/Pool.h"    
 )
 set(KCOMMON_SOURCES
     "src/hash_utils.cpp"
     "src/Path.cpp"
+    "src/PathManager.cpp"
 )
 
 target_sources(KotonoCommon

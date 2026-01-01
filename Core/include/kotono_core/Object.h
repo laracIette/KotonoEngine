@@ -1,12 +1,12 @@
 #pragma once
 #include "generated/Object.generated.h"
 #include "Guid.h"
-#include "serialize.h"
-#include <filesystem>
-#include <kotono_common/Event.h>
 #include "Ptr.h"
+#include "serialize.h"
 #include <nlohmann/json_fwd.hpp>
 #include <string>
+
+class UPath;
 
 class KObject
 {
@@ -25,7 +25,7 @@ protected:
 public:
 	const UGuid& Guid() const;
 	const std::type_info& Type() const;
-	const std::filesystem::path Path() const;
+	UPath Path() const;
 	bool IsConstructed() const;
 	const std::string& GetName() const;
 	std::string TypeName() const;

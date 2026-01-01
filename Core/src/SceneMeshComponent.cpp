@@ -3,7 +3,7 @@
 #include "Task.h"
 #include "TimeManager.h"
 #include <kotono_common/log.h>
-#include <kotono_common/Path.h>
+#include <kotono_common/PathManager.h>
 #include <kotono_graphics/Model.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/Shader.h>
@@ -19,8 +19,7 @@ KSceneMeshComponent::KSceneMeshComponent(UPtrOwnerBase* ptrOwner) :
 {
     if (!WireframeShader)
     {
-        static const auto path{ KtPath::Graphics() / "shaders" / "wireframe3D.ktshader" };
-        WireframeShader = ShaderManager.Get(path);
+        WireframeShader = ShaderManager.Get("${ENGINE_DIRECTORY}/Graphics/shaders/wireframe3D.ktshader");
     }
 
     modelProxy_ = Renderer.SceneRenderer().CreateProxy();

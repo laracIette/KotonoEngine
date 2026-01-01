@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <filesystem>
+#include <kotono_common/Path.h>
 
 class KtShader;
 
@@ -13,12 +14,13 @@ private:
 	void Cleanup();
 
 public:
-	KtShader* Get(const std::filesystem::path& path);
+	KtShader* Get(const UPath& path);
 
 private:
-	std::unordered_map<std::filesystem::path, KtShader*> shaders_;
+	KtShader* Create(const UPath& path);
 
-	KtShader* Create(const std::filesystem::path& path);
+private:
+	std::unordered_map<UPath, KtShader*> shaders_;
 };
 
 inline KtShaderManager ShaderManager;

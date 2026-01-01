@@ -11,9 +11,9 @@
 KInterface::KInterface(UPtrOwnerBase* ptrOwner) : 
 	Base(ptrOwner)
 {
-	auto* shader2D{ ShaderManager.Get(KtPath::Graphics() / "shaders" / "shader2D.ktshader") };
-	auto* texture1{ TextureManager.Get(KtPath::Graphics() / "assets" / "models" / "viking_room.png") };
-	auto* texture2{ TextureManager.Get(KtPath::Graphics() / "assets" / "textures" / "default_texture.jpg") };
+	auto* shader2D{ ShaderManager.Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader2D.ktshader") };
+	auto* texture1{ TextureManager.Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png") };
+	auto* texture2{ TextureManager.Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/default_texture.jpg") };
 
 	UPtr image1{ ObjectManager.Create<RInterfaceObject>() };
 	UPtr image2{ ObjectManager.Create<RInterfaceObject>() };

@@ -1,6 +1,7 @@
 #pragma once
 #include "generated/Scene.generated.h"
 #include "Object.h"
+#include <kotono_common/Event.h>
 #include <kotono_common/Pool.h>
 
 class TSceneObject;

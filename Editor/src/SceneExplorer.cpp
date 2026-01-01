@@ -1,7 +1,6 @@
 #include "SceneExplorer.h"
 #include "SceneExplorerItem.h"
 #include "GameManager.h"
-#include <kotono_common/Path.h>
 #include <kotono_core/Game.h>
 #include <kotono_core/ObjectManager.h>
 #include <kotono_core/Scene.h>
@@ -40,9 +39,10 @@ WWidget* WSceneExplorer::Build()
 										.onPress = []() {
 											if (UPtr scene{ Game.GetOpenedScene() })
 											{
-												auto* shader3D{ ShaderManager.Get(KtPath::Graphics() / "shaders" / "shader3D.ktshader") };													
-												auto* model1{ ModelManager.Get(KtPath::Graphics() / "assets" / "models" / "viking_room.obj") };
-												auto* model2{ ModelManager.Get(KtPath::Graphics() / "assets" / "models" / "column.obj") };
+												const auto graphicsPath{ std::filesystem::path("Graphics") };
+												auto* shader3D{ ShaderManager.Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader3D.ktshader")};
+												auto* model1{ ModelManager.Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.obj") };
+												auto* model2{ ModelManager.Get("${ENGINE_DIRECTORY}/Graphics/assets/models/column.obj") };
 													
 												UPtr mesh{ ObjectManager.Create<TSceneObject>() };
 												UPtr rootComponent{ ObjectManager.Create<KSceneComponent>() };

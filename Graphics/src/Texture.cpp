@@ -3,12 +3,12 @@
 #include <kotono_platform/Context.h>
 #include <kotono_common/log.h>
 
-KtTexture::KtTexture(const std::filesystem::path& path) :
+KtTexture::KtTexture(const UPath& path) :
 	path_(path)
 {
 }
 
-const std::filesystem::path& KtTexture::Path() const
+const UPath& KtTexture::Path() const
 {
 	return path_;
 }
@@ -39,18 +39,18 @@ void KtTexture::Cleanup() const
 	vkDestroySampler(Context.GetDevice(), sampler_, nullptr);
 	vkDestroyImageView(Context.GetDevice(), imageView_, nullptr);
 	vmaDestroyImage(Context.GetAllocator(), image_, allocation_);
-	KT_LOG(ELogImportanceLevel::Low, "Graphics.KtTexture::Cleanup()", "cleaned up %s", Path().string().c_str());
+	KT_LOG(ELogImportanceLevel::Low, "Graphics.KtTexture::Cleanup()", "cleaned up %s", Path().ToString().c_str());
 }
 
 void KtTexture::CreateTextureImage()
 {
 	int texWidth, texHeight, texChannels;
-	stbi_uc* pixels = stbi_load(path_.string().c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+	stbi_uc* pixels{ stbi_load(path_.ToPath().string().c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha) };
 	if (texWidth == 0 || texHeight == 0)
 	{
 		throw std::runtime_error("Texture has zero width or height!");
 	}
-	VkDeviceSize imageSize = static_cast<VkDeviceSize>(texWidth) * texHeight * 4;
+	const VkDeviceSize imageSize{ static_cast<VkDeviceSize>(texWidth) * texHeight * 4 };
 
 	mipLevels_ = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
 

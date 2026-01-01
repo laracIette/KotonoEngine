@@ -18,7 +18,7 @@ enum class EButton : uint8_t
 
 inline constexpr size_t ButtonCount{ 8 };
 
-constexpr size_t to_index(const EButton button)
+inline constexpr size_t to_index(const EButton button)
 {
 	return static_cast<size_t>(button);
 }

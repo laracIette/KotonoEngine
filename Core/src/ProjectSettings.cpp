@@ -1,7 +1,7 @@
 #include "ProjectSettings.h"
-#include <kotono_common/Path.h>
+#include <kotono_common/PathManager.h>
 
 std::filesystem::path SProjectSettings::Path()
 {
-	return KtPath::Project() / "projectSettings.json";
+	return PathManager.Project() / "projectSettings.json";
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <filesystem>
+#include <kotono_common/Path.h>
 
 class KtTexture;
 
@@ -12,12 +13,13 @@ private:
 	void Cleanup(); 
 
 public:
-	KtTexture* Get(const std::filesystem::path& path);
+	KtTexture* Get(const UPath& path);
 
 private:
-	std::unordered_map<std::filesystem::path, KtTexture*> textures_;
+	KtTexture* Create(const UPath& path);
 
-	KtTexture* Create(const std::filesystem::path& path);
+private:
+	std::unordered_map<UPath, KtTexture*> textures_;
 };
 
 inline KtTextureManager TextureManager;
