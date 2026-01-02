@@ -14,8 +14,9 @@ endif()
 
 # --- Add all modules (subprojects) ---
 add_subdirectory(Common)
-add_subdirectory(Generator)
 add_subdirectory(IO)
+add_subdirectory(Reflection)
+add_subdirectory(Generator)
 add_subdirectory(Audio)
 add_subdirectory(Timing)
 add_subdirectory(Platform)

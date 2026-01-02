@@ -30,14 +30,11 @@ target_sources(KotonoGenerator
     PRIVATE ${KGENERATOR_SOURCES}
 )
 
-set(THIRD_PARTY_DIR "${ENGINE_PATH}/ThirdParty")
-
 # Include directories
 target_include_directories(KotonoGenerator
-    PRIVATE "${THIRD_PARTY_DIR}/nlohmann/include"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_generator"
 )
 
 # Link libs
-target_link_libraries(KotonoGenerator PRIVATE KotonoCommon)
+target_link_libraries(KotonoGenerator PRIVATE KotonoReflection)
