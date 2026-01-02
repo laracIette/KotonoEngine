@@ -67,26 +67,28 @@ void KtInterfaceRenderer::UnregisterProxy(Proxy* proxy)
 
 void KtInterfaceRenderer::CmdDraw(VkCommandBuffer commandBuffer, const u32 frameIndex)
 {
+	auto& frameData{ frameDatas_[frameIndex] };
+
 	KT_LOG(ELogImportanceLevel::Low, "Graphics.KtInterfaceRenderer::CmdDraw()", 
-		"%llu proxies", frameDatas_[frameIndex].objectBuffer.proxies.size());
+		"%llu proxies", frameData.objectBuffer.proxies.size());
 
-	if (frameDatas_[frameIndex].objectBuffer.isDirty)
+	if (frameData.objectBuffer.isDirty)
 	{
-		frameDatas_[frameIndex].objectBuffer.isDirty = false;
-
-		frameDatas_[frameIndex].instanceIndices.clear();
+		frameData.objectBuffer.isDirty = false;
+		frameData.instanceIndices.clear();
 
 		//const KtInterfaceCuller culler{};
-		//frameDatas_[frameIndex].sortedProxies = culler.ComputeCulling(frameDatas_[frameIndex].proxies, frameIndex);
+		//frameData.sortedProxies = culler.ComputeCulling(frameData.proxies, frameIndex);
 
-		frameDatas_[frameIndex].objectBuffer.sortedProxies = frameDatas_[frameIndex].objectBuffer.proxies;
-		SortProxies(frameDatas_[frameIndex].objectBuffer.sortedProxies, frameIndex);
-		UpdateDescriptorSets(frameDatas_[frameIndex].objectBuffer.sortedProxies, frameIndex);
-
+		frameData.objectBuffer.sortedProxies = frameData.objectBuffer.proxies;
+		SortProxies(frameData.objectBuffer.sortedProxies, frameIndex);
+		UpdateDescriptorSets(frameData.objectBuffer.sortedProxies, frameIndex);
+		
+		UpdateDrawBatches(frameData.objectBuffer, frameIndex);
 		RecordCommandBuffer(frameIndex);
 	}
 
-	vkCmdExecuteCommands(commandBuffer, 1, &frameDatas_[frameIndex].objectBuffer.commandBuffer);
+	vkCmdExecuteCommands(commandBuffer, 1, &frameData.objectBuffer.commandBuffer);
 }
 
 UInterfaceProxy* KtInterfaceRenderer::CreateProxy() const
@@ -200,7 +202,7 @@ void KtInterfaceRenderer::RecordCommandBuffer(const u32 frameIndex)
 {
 	VkCommandBuffer commandBuffer{ frameDatas_[frameIndex].objectBuffer.commandBuffer };
 	BeginCommandBuffer(commandBuffer, frameIndex);
-	CmdDrawProxies(commandBuffer, frameDatas_[frameIndex].objectBuffer.sortedProxies, frameIndex);
+	CmdDrawProxies(commandBuffer, frameDatas_[frameIndex].objectBuffer.drawBatches, frameIndex);
 	EndCommandBuffer(commandBuffer);
 }
 
@@ -401,52 +403,79 @@ void KtInterfaceRenderer::SortProxies(ProxiesPool& proxies, const u32 frameIndex
 	);
 }
 
-void KtInterfaceRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const u32 frameIndex)
+void KtInterfaceRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const std::vector<DrawBatch>& drawBatches, const u32 frameIndex)
 {
-	const KtShader* currentShader{ nullptr };
+	if (drawBatches.empty())
+	{
+		return;
+	}
 
 	WindowViewport.CmdUse(commandBuffer);
-
 	CmdBindVertexBuffer(commandBuffer);
 	CmdBindIndexBuffer(commandBuffer);
+
+	const KtShader* currentShader{ nullptr };
+	KtScissor currentScissor{};
+
+	for (auto& drawBatch : drawBatches)
+	{
+		if (currentShader != drawBatch.shader)
+		{
+			currentShader = drawBatch.shader;
+			currentShader->CmdBind(commandBuffer);
+			currentShader->CmdBindDescriptorSets(commandBuffer, frameIndex);
+		}
+
+		if (currentScissor != drawBatch.scissor)
+		{
+			currentScissor = drawBatch.scissor;
+			const auto offset{ drawBatch.scissor.offset };
+			const auto extent{ drawBatch.scissor.extent };
+			const VkRect2D vkScissor{
+				.offset = { offset.x, offset.y },
+				.extent = { extent.x, extent.y },
+			};
+			vkCmdSetScissor(commandBuffer, 0, 1, &vkScissor);
+		}
+
+		vkCmdDrawIndexed(commandBuffer, static_cast<u32>(Indices.size()), drawBatch.instanceCount, 0, 0, drawBatch.firstInstance);
+	}
+}
+
+void KtInterfaceRenderer::UpdateDrawBatches(FrameData::ObjectBufferData& objectBuffer, const u32 frameIndex)
+{
+	const auto& proxies{ objectBuffer.sortedProxies };
+
+	objectBuffer.drawBatches.clear();
+	objectBuffer.drawBatches.reserve(proxies.size());
 
 	for (size i{ 0 }; i < proxies.size();)
 	{
 		const auto& frameData{ proxies[i]->frameDatas_[frameIndex] };
-		const KtShader* shader{ frameData.data.shader };
-		const i32 layer{ frameData.data.layer };
-		const KtScissor scissor{ frameData.data.scissor };
+		KtShader* shader{ frameData.data.shader };
+		KtScissor scissor{ frameData.data.scissor };
 
+		// Find the extent of the current batch
 		size instanceCount{ 1 };
 		for (; i + instanceCount < proxies.size(); ++instanceCount)
 		{
 			const auto& nextFrameData{ proxies[i + instanceCount]->frameDatas_[frameIndex] };
 			if (nextFrameData.data.shader != shader ||
-				nextFrameData.data.scissor.extent != scissor.extent || 
-				nextFrameData.data.scissor.offset != scissor.offset)
+				nextFrameData.data.scissor != scissor)
 			{
 				break;
 			}
 		}
 
-		if (currentShader != shader)
-		{
-			currentShader = shader;
-			currentShader->CmdBind(commandBuffer);
-			currentShader->CmdBindDescriptorSets(commandBuffer, frameIndex);
-		}
-
-		const auto offset{ scissor.offset };
-		const auto extent{ scissor.extent };
-		const VkRect2D vkScissor{
-			.offset = { offset.x, offset.y },
-			.extent = { extent.x, extent.y },
+		const DrawBatch batch{
+			.shader = shader,
+			.scissor = scissor,
+			.firstInstance = frameDatas_[frameIndex].instanceIndices[shader],
+			.instanceCount = static_cast<u32>(instanceCount),
 		};
-		vkCmdSetScissor(commandBuffer, 0, 1, &vkScissor);
+		objectBuffer.drawBatches.push_back(batch);
 
-		vkCmdDrawIndexed(commandBuffer, static_cast<u32>(Indices.size()), static_cast<u32>(instanceCount), 0, 0, frameDatas_[frameIndex].instanceIndices[shader]);
 		frameDatas_[frameIndex].instanceIndices[shader] += static_cast<u32>(instanceCount);
-
 		i += instanceCount;
 	}
 }

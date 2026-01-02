@@ -98,11 +98,11 @@ private:
 
 	void DeleteProxies();
 
-	void SortProxies(ProxiesPool& proxies, const u32 frameIndex);
+	void SortProxies(FrameData::ObjectBufferData& objectBuffer, const u32 frameIndex);
 
 	void CmdDrawProxies(VkCommandBuffer commandBuffer, const std::vector<DrawBatch>& drawBatches, const u32 frameIndex);
 	void CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, const u32 frameIndex);
 
-	std::vector<DrawBatch> GetDrawBatches(const ProxiesPool& proxies, const u32 frameIndex);
-	void UpdateIndirectBuffers(const std::vector<DrawBatch>& drawBatches, const u32 frameIndex);
+	void UpdateDrawBatches(FrameData::ObjectBufferData& objectBuffer, const u32 frameIndex);
+	void UpdateIndirectBuffers(const FrameData::ObjectBufferData& objectBuffer, const u32 frameIndex);
 };

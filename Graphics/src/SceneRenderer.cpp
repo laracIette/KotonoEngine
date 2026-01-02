@@ -90,48 +90,42 @@ void KtSceneRenderer::CmdDraw(VkCommandBuffer commandBuffer, const u32 frameInde
 	KT_LOG(ELogImportanceLevel::Low, "Graphics.KtSceneRenderer::CmdDraw()",
 		"%llu dynamic proxies", frameData.dynamicBuffer.proxies.size());
 
-	if (frameData.staticBuffer.isDirty || frameData.dynamicBuffer.isDirty)
+	if (frameData.staticBuffer.isDirty || frameData.dynamicBuffer.isDirty) [[unlikely]]
 	{
 		frameData.instanceIndices.clear();
 		frameData.stats = {};
 
-		frameData.staticBuffer.sortedProxies = frameData.staticBuffer.proxies;
-		frameData.dynamicBuffer.sortedProxies = frameData.dynamicBuffer.proxies;
-
-		SortProxies(frameData.staticBuffer.sortedProxies, frameIndex);
-		SortProxies(frameData.dynamicBuffer.sortedProxies, frameIndex);
+		SortProxies(frameData.staticBuffer, frameIndex);
+		SortProxies(frameData.dynamicBuffer, frameIndex);
 
 		ProxiesPool sortedGlobalProxies{ frameData.staticBuffer.sortedProxies };
 		sortedGlobalProxies.Append(frameData.dynamicBuffer.sortedProxies);
 
 		UpdateDescriptorSetObjectBuffers(sortedGlobalProxies, frameIndex);
 		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics.KtSceneRenderer::CmdDraw()", "update descriptor sets frame %u", frameIndex);
-
-		frameData.staticBuffer.drawBatches = GetDrawBatches(frameData.staticBuffer.sortedProxies, frameIndex);
-		frameData.dynamicBuffer.drawBatches = GetDrawBatches(frameData.dynamicBuffer.sortedProxies, frameIndex);
-		UpdateIndirectBuffers(frameData.staticBuffer.drawBatches, frameIndex);
-		UpdateIndirectBuffers(frameData.dynamicBuffer.drawBatches, frameIndex);
 	}
 
-	if (frameData.uniformBuffer.isDirty)
+	if (frameData.uniformBuffer.isDirty) 
 	{
 		frameData.uniformBuffer.isDirty = false;
 		KT_LOG(ELogImportanceLevel::Low, "Graphics.KtSceneRenderer::CmdDraw()", "update uniform");
-		UpdateDescriptorSetUniformBuffers(frameData.staticBuffer.proxies, frameIndex);
-		UpdateDescriptorSetUniformBuffers(frameData.dynamicBuffer.proxies, frameIndex);
+		UpdateDescriptorSetUniformBuffers(frameData.staticBuffer.sortedProxies, frameIndex);
+		UpdateDescriptorSetUniformBuffers(frameData.dynamicBuffer.sortedProxies, frameIndex);
 	}
 
-	if (frameData.staticBuffer.isDirty)
+	if (frameData.staticBuffer.isDirty) [[unlikely]]
 	{
 		frameData.staticBuffer.isDirty = false;
+		UpdateDrawBatches(frameData.staticBuffer, frameIndex);
 		RecordCommandBuffer(frameData.staticBuffer, frameIndex);
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics.KtSceneRenderer::CmdDraw()", "update static command buffer frame %u", frameIndex);
+		UpdateIndirectBuffers(frameData.staticBuffer, frameIndex);
 	}
-	if (frameData.dynamicBuffer.isDirty)
+	if (frameData.dynamicBuffer.isDirty) [[unlikely]]
 	{
 		frameData.dynamicBuffer.isDirty = false;
+		UpdateDrawBatches(frameData.dynamicBuffer, frameIndex);
 		RecordCommandBuffer(frameData.dynamicBuffer, frameIndex);
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics.KtSceneRenderer::CmdDraw()", "update dynamic command buffer frame %u", frameIndex);
+		UpdateIndirectBuffers(frameData.dynamicBuffer, frameIndex);
 	}
 
 	CmdExecuteCommandBuffers(commandBuffer, frameIndex);
@@ -340,9 +334,11 @@ void KtSceneRenderer::DeleteProxies()
 	);
 }
 
-void KtSceneRenderer::SortProxies(ProxiesPool& proxies, const u32 frameIndex)
+void KtSceneRenderer::SortProxies(FrameData::ObjectBufferData& objectBuffer, const u32 frameIndex)
 {
-	std::sort(proxies.begin(), proxies.end(),
+	objectBuffer.sortedProxies = objectBuffer.proxies;
+
+	std::sort(objectBuffer.sortedProxies.begin(), objectBuffer.sortedProxies.end(),
 		[frameIndex](const Proxy* a, const Proxy* b)
 		{
 			const auto& aFrameData{ a->frameDatas_[frameIndex] };
@@ -367,11 +363,10 @@ void KtSceneRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const std::v
 
 	const KtShader* currentShader{ nullptr };
 	const KtSceneRenderable* currentRenderable{ nullptr };
-	const KtScissor currentScissor{};
+	KtScissor currentScissor{};
 
 	for (auto& drawBatch : drawBatches)
 	{
-		// Bind new state if necessary
 		if (currentShader != drawBatch.shader)
 		{
 			currentShader = drawBatch.shader;
@@ -387,6 +382,7 @@ void KtSceneRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const std::v
 
 		if (currentScissor != drawBatch.scissor)
 		{
+			currentScissor = drawBatch.scissor;
 			const auto offset{ drawBatch.scissor.offset };
 			const auto extent{ drawBatch.scissor.extent };
 			const VkRect2D vkScissor{
@@ -411,9 +407,12 @@ void KtSceneRenderer::CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, co
 	vkCmdExecuteCommands(commandBuffer, static_cast<u32>(commandBuffers.size()), commandBuffers.data());
 }
 
-std::vector<KtSceneRenderer::DrawBatch> KtSceneRenderer::GetDrawBatches(const ProxiesPool& proxies, const u32 frameIndex)
+void KtSceneRenderer::UpdateDrawBatches(FrameData::ObjectBufferData& objectBuffer, const u32 frameIndex)
 {
-	std::vector<DrawBatch> result{};
+	const auto& proxies{ objectBuffer.sortedProxies };
+
+	objectBuffer.drawBatches.clear();
+	objectBuffer.drawBatches.reserve(proxies.size());
 
 	for (size i{ 0 }; i < proxies.size();)
 	{
@@ -442,18 +441,16 @@ std::vector<KtSceneRenderer::DrawBatch> KtSceneRenderer::GetDrawBatches(const Pr
 			.firstInstance = frameDatas_[frameIndex].instanceIndices[shader],
 			.instanceCount = static_cast<u32>(instanceCount),
 		};
-		result.push_back(batch);
+		objectBuffer.drawBatches.push_back(batch);
 
 		frameDatas_[frameIndex].instanceIndices[shader] += static_cast<u32>(instanceCount);
 		i += instanceCount;
 	}
-
-	return result;
 }
 
-void KtSceneRenderer::UpdateIndirectBuffers(const std::vector<DrawBatch>& drawBatches, const u32 frameIndex)
+void KtSceneRenderer::UpdateIndirectBuffers(const FrameData::ObjectBufferData& objectBuffer, const u32 frameIndex)
 {
-	for (auto& drawBatch : drawBatches)
+	for (auto& drawBatch : objectBuffer.drawBatches)
 	{
 		drawBatch.renderable->UpdateIndirectBuffer(drawBatch.firstInstance, drawBatch.instanceCount, frameIndex);
 	}

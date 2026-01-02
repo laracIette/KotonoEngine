@@ -1,6 +1,7 @@
 #pragma once
 #include "InterfaceUniformData.h"
 #include "frames_in_flight.h"
+#include "Scissor.h"
 #include <kotono_platform/AllocatedBuffer.h>
 #include <kotono_common/Pool.h>
 #include <vulkan/vulkan_core.h>
@@ -36,12 +37,21 @@ public:
 	void DeleteProxy(Proxy* proxy);
 
 private:
+	struct DrawBatch
+	{
+		KtShader* shader;
+		KtScissor scissor;
+		u32 firstInstance;
+		u32 instanceCount;
+	};
+
 	struct FrameData
 	{
 		struct ObjectBufferData
 		{
 			ProxiesPool proxies;
 			ProxiesPool sortedProxies;
+			std::vector<DrawBatch> drawBatches;
 			VkCommandBuffer commandBuffer;
 			bool isDirty;
 		};
@@ -86,6 +96,7 @@ private:
 	
 	void SortProxies(ProxiesPool& proxies, const u32 frameIndex);
 
-	void CmdDrawProxies(VkCommandBuffer commandBuffer, const ProxiesPool& proxies, const u32 frameIndex);
+	void CmdDrawProxies(VkCommandBuffer commandBuffer, const std::vector<DrawBatch>& drawBatches, const u32 frameIndex);
+	void UpdateDrawBatches(FrameData::ObjectBufferData& objectBuffer, const u32 frameIndex);
 };
 
