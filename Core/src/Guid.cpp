@@ -1,60 +1,64 @@
 #include "Guid.h"
+#include <format>
+#include <kotono_common/hash_utils.h>
 #include <random>
 #include <sstream>
-#include <iomanip>
-#include <kotono_common/hash_utils.h>
 
 UGuid::UGuid()
 {
-    std::random_device rd;
-    std::mt19937_64 gen(rd());
-    std::uniform_int_distribution<u64> dist;
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    static std::uniform_int_distribution<u32> dist(0, 255);
 
-    for (auto& part : data_)
-    {
-        part = dist(gen);
+    for (u8& byte : bytes_) 
+    { 
+        byte = static_cast<u8>(dist(gen)); 
     }
 
-    // Set the version bits (4 bits for GUID v4)
-    data_[0] &= 0xFFFFFFFFFFFFFF0F; // Clear version bits
-    data_[0] |= 0x0000000000000040; // Set version 4 (random GUID)
+    // Version 4: Set the 7th byte's high nibble to 4
+    bytes_[6] = (bytes_[6] & 0x0F) | 0x40;
+
+    // Variant 1 (RFC 4122): Set the 9th byte's high two bits to 10
+    bytes_[8] = (bytes_[8] & 0x3F) | 0x80;
 }
 
 UGuid::UGuid(const std::string& string)
 {
-    std::istringstream iss(string);
-    char dash;
-    for (auto& part : data_)
+    if (string.length() < 36)
     {
-        if (iss >> std::hex >> part)
-        {
-            // Skip the dash characters
-            iss >> dash;
-        }
+        return;
     }
+
+    // Helper to parse a specific hex range into bytes
+    auto parse_hex = [&](size str_pos, size num_bytes, size array_offset)
+        {
+            for (size i{ 0 }; i < num_bytes; ++i)
+            {
+                std::from_chars(
+                    string.data() + str_pos + (i * 2),
+                    string.data() + str_pos + (i * 2) + 2,
+                    bytes_[array_offset + i], 16
+                );
+            }
+        };
+
+    parse_hex(0, 4, 0);   
+    parse_hex(9, 2, 4);   
+    parse_hex(14, 2, 6);  
+    parse_hex(19, 2, 8);  
+    parse_hex(24, 6, 10); 
 }
 
 std::string UGuid::ToString() const
 {
-    static constexpr const char hexDigits[]{ "0123456789abcdef" };
-    std::string result;
-    result.reserve(data_.size() * (16llu + 1) - 1); // 16 hex chars per u64 + (N-1) dashes
-
-    for (size i{ 0 }; i < data_.size(); ++i)
-    {
-        if (i != 0)
-        {
-            result.push_back('-');
-        }
-
-        const u64 value{ data_[i] };
-        for (int j{ 60 }; j >= 0; j -= 4)
-        {  // 16 nibbles (4 bits per hex digit)
-            result.push_back(hexDigits[(value >> j) & 0xF]);
-        }
-    }
-
-    return result;
+    return std::format(
+        "{:02x}{:02x}{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
+        bytes_[0],  bytes_[1],  bytes_[2],  bytes_[3],
+        bytes_[4],  bytes_[5],
+        bytes_[6],  bytes_[7],
+        bytes_[8],  bytes_[9],
+        bytes_[10], bytes_[11], bytes_[12], bytes_[13], bytes_[14], bytes_[15]
+    );
 }
 
 UGuid::operator std::string() const
@@ -64,38 +68,45 @@ UGuid::operator std::string() const
 
 UGuid& UGuid::operator=(const std::string& string)
 {
-    std::istringstream iss(string);
-    char dash;
-    for (auto& part : data_)
+    if (string.length() < 36)
     {
-        if (iss >> std::hex >> part)
-        {
-            // Skip the dash characters
-            iss >> dash;
-        }
+        return *this;
     }
+
+    // Helper to parse a specific hex range into bytes
+    auto parse_hex = [&](size str_pos, size num_bytes, size array_offset)
+        {
+            for (size i{ 0 }; i < num_bytes; ++i)
+            {
+                // Each byte is 2 hex chars
+                std::from_chars(
+                    string.data() + str_pos + (i * 2),
+                    string.data() + str_pos + (i * 2) + 2,
+                    bytes_[array_offset + i], 16
+                );
+            }
+        };
+
+    // Parse according to 8-4-4-4-12 structure
+    parse_hex(0, 4, 0);   // First 8 chars -> bytes 0-3
+    parse_hex(9, 2, 4);   // Next 4 chars  -> bytes 4-5
+    parse_hex(14, 2, 6);  // Next 4 chars  -> bytes 6-7
+    parse_hex(19, 2, 8);  // Next 4 chars  -> bytes 8-9
+    parse_hex(24, 6, 10); // Last 12 chars -> bytes 10-15
 
     return *this;
 }
 
-bool UGuid::operator==(const UGuid& other) const
+bool UGuid::operator==(const UGuid& other) const noexcept
 {
-    for (size i{ 0 }; i < data_.size(); i++)
-    {
-        if (data_[i] != other.data_[i])
-        {
-            return false;
-        }
-    }
-    return true;
+    auto [a_low, a_high] { std::bit_cast<std::array<u64, 2>>(bytes_) };
+    auto [b_low, b_high] { std::bit_cast<std::array<u64, 2>>(other.bytes_) };
+
+    return (a_low == b_low) && (a_high == b_high);
 }
 
 size std::hash<UGuid>::operator()(const UGuid& g) const noexcept
 {
-    ::size h{ 0 };
-    combine(h, std::hash<u64>{}(g.data_[0]));
-    combine(h, std::hash<u64>{}(g.data_[1]));
-    combine(h, std::hash<u64>{}(g.data_[2]));
-    combine(h, std::hash<u64>{}(g.data_[3]));
-    return h;
+    auto [low, high] { std::bit_cast<std::array<u64, 2>>(g.bytes_) };
+    return static_cast<::size>(low ^ high);
 }

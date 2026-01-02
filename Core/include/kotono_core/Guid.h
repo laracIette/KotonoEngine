@@ -16,10 +16,10 @@ public:
 	operator std::string() const;
 	UGuid& operator=(const std::string& string);
 
-	bool operator==(const UGuid& other) const;
+	bool operator==(const UGuid& other) const noexcept;
 
 private:
-	std::array<u64, 4> data_;
+	std::array<u8, 16> bytes_;
 };
 
 template<>
