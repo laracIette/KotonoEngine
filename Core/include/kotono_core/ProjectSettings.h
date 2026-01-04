@@ -10,7 +10,7 @@ public:
 	static T Get(const std::string& name)
 	{
 		nlohmann::json json{};
-		KtSerializer::Deserialize(json, Path());
+		USerializer::Deserialize(json, Path());
 
 		return json.at(nlohmann::json::json_pointer(name)).get<T>();
 	}
@@ -18,9 +18,9 @@ public:
 	static void Set(const std::string& name, const auto& value)
 	{
 		nlohmann::json json{};
-		KtSerializer::Deserialize(json, Path());
+		USerializer::Deserialize(json, Path());
 
 		json.at(nlohmann::json::json_pointer(name)) = value;
-		KtSerializer::Serialize(json, Path());
+		USerializer::Serialize(json, Path());
 	}
 };

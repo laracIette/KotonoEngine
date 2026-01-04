@@ -30,7 +30,7 @@ WWidget* WSceneExplorerItem::Build()
 				new WText({
 					.text = sceneObject_ ? sceneObject_->GetName() : "",
 					.fontSize = { 20.0f, 24.0f },
-					.spacing = -3.0f,
+					.spacing = -6.0f,
 				}),
 			},
 		}),

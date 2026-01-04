@@ -14,6 +14,9 @@ public:
 
 	WidgetVector GetWidgetTree() override;
 
+protected:
+	size GetValidChildrenCount() const;
+
 private:
 	WidgetVector children_;
 };

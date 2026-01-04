@@ -56,7 +56,7 @@ UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 
 	// Add to registry
 	nlohmann::json json{};
-	KtSerializer::Deserialize(json, path);
+	USerializer::Deserialize(json, path);
 
 	const auto it{ json.find("type_") };
 	if (it == json.end())

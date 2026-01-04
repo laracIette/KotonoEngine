@@ -72,9 +72,9 @@ WWidget::DisplaySettings WColumn::GetDisplaySettings(DisplaySettings displaySett
 		}
 	}
 
-	if (!columnSettings_.children.empty())
+	if (GetValidChildrenCount() > 1)
 	{
-		size.y += columnSettings_.spacing * static_cast<float>(columnSettings_.children.size() - 1);
+		size.y += columnSettings_.spacing * static_cast<float>(GetValidChildrenCount() - 1);
 	}
 
 	displaySettings.bounds = glm::min(size, displaySettings.bounds);

@@ -1,4 +1,5 @@
 #include "ChildrenOwnerWidget.h"
+#include <algorithm>
 
 WChildrenOwnerWidget::WChildrenOwnerWidget(const WidgetVector& children) :
 	children_(children)
@@ -68,4 +69,11 @@ WWidget::WidgetVector WChildrenOwnerWidget::GetWidgetTree()
 	}
 
 	return result;
+}
+
+size WChildrenOwnerWidget::GetValidChildrenCount() const
+{
+	return std::count_if(children_.begin(), children_.end(),
+		[](const WWidget* child) { return child != nullptr; }
+	);
 }

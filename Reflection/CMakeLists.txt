@@ -36,6 +36,6 @@ target_include_directories(KotonoReflection
 )
 
 # Link libs
-target_link_libraries(KotonoReflection PUBLIC
+target_link_libraries(KotonoReflection PUBLIC 
     KotonoIO
 )

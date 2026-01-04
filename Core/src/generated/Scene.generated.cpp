@@ -7,21 +7,13 @@
 void KScene::SerializeTo(nlohmann::json& json) const
 {
 	Base::SerializeTo(json);
-	json["sceneObjects_"] = nlohmann::json::array({});
-	for (size i{ 0 }; i < sceneObjects_.size(); ++i)
-	{
-		serialize(json["sceneObjects_"][i], sceneObjects_[i]);
-	}
+	serialize(json["sceneObjects_"], sceneObjects_);
 }
 
 void KScene::DeserializeFrom(const nlohmann::json& json)
 {
 	Base::DeserializeFrom(json);
-	sceneObjects_.resize(json.at("sceneObjects_").size()); 
-	for (size i{ 0 }; i < sceneObjects_.size(); ++i)
-	{
-		deserialize(json.at("sceneObjects_")[i], sceneObjects_[i]);
-	}
+	deserialize(json.at("sceneObjects_"), sceneObjects_);
 }
 
 UPtr<KScene> KScene::Ptr() const

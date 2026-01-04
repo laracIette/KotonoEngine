@@ -1,27 +1,24 @@
 #pragma once
+#include <kotono_common/Path.h>
 #include <vector>
-#include <functional>
-#include <filesystem>
-class KtFile;
-class KtFileExplorer final
+class UFile;
+class UFileExplorer final
 {
-private:
-	using ConditionnalFunction = std::function<bool(const std::filesystem::path)>;
-
 public:
-	KtFileExplorer();
+	UFileExplorer();
+	UFileExplorer(const UPath& path);
 
-	const std::filesystem::path& GetDirectoryPath() const;
-	void SetDirectoryPath(const std::filesystem::path& directoryPath);
+	const UPath& GetDirectoryPath() const;
+	void SetDirectoryPath(const UPath& directoryPath);
 
 	// Get the directories paths in the current directory.
-	std::vector<std::filesystem::path> GetDirectories() const;
+	std::vector<UPath> GetDirectories() const;
 	// Get the files whose name contains name.
-	std::vector<KtFile> Find(const std::string& name) const;
-	// Get the files that match the condition.
-	std::vector<KtFile> GetFiles(const ConditionnalFunction& condition) const;
+	std::vector<UFile> Find(const std::string& name) const;
+	// Get all the files in the directory.
+	std::vector<UFile> GetFiles(const bool isRecursive = false) const;
 
 private:
-	std::filesystem::path directoryPath_;
+	UPath directoryPath_;
 };
 

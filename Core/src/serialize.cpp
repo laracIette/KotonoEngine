@@ -1,18 +1,17 @@
 #include "serialize.h"
-#include <nlohmann/json.hpp>
+#include "Object.h"
+#include "ObjectFactory.h"
+#include "Rect.h"
+#include "Transform.h"
 #include <glm/glm.hpp>
 #include <kotono_graphics/Color.h>
+#include <kotono_graphics/Model.h>
+#include <kotono_graphics/ModelManager.h>
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/ShaderManager.h>
 #include <kotono_graphics/Texture.h>
 #include <kotono_graphics/TextureManager.h>
-#include <kotono_graphics/Model.h>
-#include <kotono_graphics/ModelManager.h>
-#include <filesystem>
-#include "Object.h"
-#include "Transform.h"
-#include "Rect.h"
-#include "ObjectFactory.h"
+#include <nlohmann/json.hpp>
 
 void serialize(nlohmann::json& json, const bool v)
 {
@@ -192,6 +191,16 @@ void serialize_kobject(nlohmann::json& json, const UPtr<KObject>& v)
     }
 }
 
+void make_array(nlohmann::json& json)
+{
+    json = nlohmann::json::array({});
+}
+
+nlohmann::json& get_next(nlohmann::json& json)
+{
+	return json.emplace_back();
+}
+
 void deserialize(const nlohmann::json& json, bool& v)
 {
     v = json;
@@ -357,4 +366,14 @@ UPtr<KObject> deserialize_kobject(const nlohmann::json& json)
     UGuid guid{};
     deserialize(json, guid);
     return ObjectFactory.Get(guid);
+}
+
+size get_size(const nlohmann::json& json)
+{
+    return json.size();
+}
+
+const nlohmann::json& get_at(const nlohmann::json& json, size index)
+{
+    return json.at(index);
 }

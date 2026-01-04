@@ -26,7 +26,8 @@ static const std::unordered_map<char, const char*> CHARACTER_NAMES =
     {'/', "fslash"}, {'\\', "bslash"}, 
     {'!', "exclamation"}, {'?', "question"}, 
     {'+', "plus"}, {'-', "minus"}, 
-    {' ', "space"}
+	{' ', "space"}, {'_', "underscore"},
+	{'<', "lesser"}, {'>', "greater"},
 };
 
 KtFont::KtFont(const UPath& path) :

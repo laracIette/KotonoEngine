@@ -1,7 +1,7 @@
 #pragma once
 #include <nlohmann/json_fwd.hpp>
 #include <filesystem>
-class KtSerializer final
+class USerializer final
 {
 public:
 	static void Serialize(const nlohmann::json& json, const std::filesystem::path& path);

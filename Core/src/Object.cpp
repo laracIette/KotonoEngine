@@ -49,7 +49,7 @@ std::string KObject::TypeName() const
 nlohmann::json KObject::ReadJson() const
 {
     nlohmann::json json{};
-    KtSerializer::Deserialize(json, Path());
+    USerializer::Deserialize(json, Path());
     return json;
 }
 
@@ -72,7 +72,7 @@ void KObject::Delete() const
 
 void KObject::Serialize() const
 {
-    KtSerializer::Serialize(WriteJson(), Path());
+    USerializer::Serialize(WriteJson(), Path());
 }
 
 void KObject::Deserialize()

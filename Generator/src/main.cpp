@@ -1,7 +1,12 @@
+#include <kotono_common/PathManager.h>
+#include <kotono_reflection/Reflector.h>
 #include "Generator.h"
+
+std::filesystem::path SPathManager::projectPath_{ "" };
 
 int main()
 {
-	Generator().GenerateUpdated();
+	Reflector.Reflect();
+	Generator.GenerateUpdated();
 	return 0;
 }

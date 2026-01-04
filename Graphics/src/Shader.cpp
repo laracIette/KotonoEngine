@@ -278,11 +278,11 @@ void KtShader::CreateGraphicsPipeline()
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
 
 	nlohmann::json json{};
-	KtSerializer::Deserialize(json, path_);
+	USerializer::Deserialize(json, path_);
 	for (const auto& shader : json["shaders"])
 	{
 		const auto path{ UPath("${ENGINE_DIRECTORY}/Graphics/shaders").ToPath() / shader["path"]};
-		std::vector<u8> shaderCode{ KtFile(path).ReadBinary() };
+		std::vector<u8> shaderCode{ UFile(path).ReadBinary() };
 
 		VkShaderModule shaderModule;
 		CreateShaderModule(shaderModule, shaderCode);
@@ -701,11 +701,11 @@ void KtShader::CreateDescriptorPools()
 void KtShader::CreateShaderLayout()
 {
 	nlohmann::json json{};
-	KtSerializer::Deserialize(json, path_);
+	USerializer::Deserialize(json, path_);
 	for (const auto& shader : json["shaders"])
 	{
 		const auto path{ UPath("${ENGINE_DIRECTORY}/Graphics/shaders").ToPath() / shader["path"] };
-		std::vector<u8> shaderCode{ KtFile(path).ReadBinary() };
+		std::vector<u8> shaderCode{ UFile(path).ReadBinary() };
 		PopulateShaderLayout(shaderCode, shader["shaderStage"]);
 	}
 }

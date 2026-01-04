@@ -6,47 +6,52 @@
 
 #define KT_LOG_IMPORTANCE_LEVEL_FILE ELogImportanceLevel::High
 
-KtFile::KtFile(const std::filesystem::path& path) :
+UFile::UFile(const std::filesystem::path& path) :
     path_(path)
 {
 }
 
-bool KtFile::Exists() const
+bool UFile::Exists() const
 {
     return std::filesystem::exists(path_);
 }
 
-const std::filesystem::path& KtFile::Path() const
+const std::filesystem::path& UFile::Path() const
 {
     return path_;
 }
 
-std::filesystem::path KtFile::GetDirectory() const
+std::filesystem::path UFile::Directory() const
 {
     return path_.parent_path();
 }
 
-std::string KtFile::GetName() const
+std::string UFile::Name() const
 {
     return path_.filename().string();
 }
 
-std::string KtFile::GetExtension() const
+std::string UFile::Extension() const
 {
     return path_.extension().string();
 }
 
-std::string KtFile::GetStem() const
+std::string UFile::Stem() const
 {
     return path_.stem().string();
 }
 
-std::string KtFile::ReadString() const
+std::chrono::file_clock::time_point UFile::LastWriteTime() const
+{
+	return std::filesystem::last_write_time(path_);
+}
+
+std::string UFile::ReadString() const
 {
     // Check if path exists.
     if (!Exists())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.KtFile::ReadString()", "Failed to find a file at %s", path_.string().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.UFile::ReadString()", "Failed to find a file at %s", path_.string().c_str());
         return "";
     }
 
@@ -55,7 +60,7 @@ std::string KtFile::ReadString() const
 
     if (!file.is_open())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.KtFile::ReadString()", "Failed to open the file at %s", path_.string().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.UFile::ReadString()", "Failed to open the file at %s", path_.string().c_str());
         return "";
     }
 
@@ -68,11 +73,11 @@ std::string KtFile::ReadString() const
     return fileContents.str();
 }
 
-std::vector<u8> KtFile::ReadBinary() const
+std::vector<u8> UFile::ReadBinary() const
 {
     if (!Exists())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.KtFile::ReadBinary()", "Failed to find a file at %s", path_.string().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.UFile::ReadBinary()", "Failed to find a file at %s", path_.string().c_str());
         return {};
     }
 
@@ -80,7 +85,7 @@ std::vector<u8> KtFile::ReadBinary() const
 
     if (!file.is_open())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.KtFile::ReadBinary()", "Failed to open the file at %s", path_.string().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.UFile::ReadBinary()", "Failed to open the file at %s", path_.string().c_str());
         return {};
     }
 
@@ -95,14 +100,14 @@ std::vector<u8> KtFile::ReadBinary() const
     return buffer;
 }
 
-void KtFile::WriteString(const std::string_view data) const
+void UFile::WriteString(const std::string_view data) const
 {
     // Open file for writing
     std::ofstream file(path_, std::ios::out | std::ios::trunc);
 
     if (!file.is_open())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.KtFile::WriteString()", "Failed to open the file at %s", path_.string().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.UFile::WriteString()", "Failed to open the file at %s", path_.string().c_str());
         return;
     }
 
@@ -113,14 +118,14 @@ void KtFile::WriteString(const std::string_view data) const
     file.close();
 }
 
-void KtFile::WriteBinary(const std::span<u32> data) const
+void UFile::WriteBinary(const std::span<u32> data) const
 {
     // Open file for writing in binary mode
     std::ofstream file(path_, std::ios::out | std::ios::binary | std::ios::trunc);
 
     if (!file.is_open())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.KtFile::WriteBinary()", "Failed to open the file at %s", path_.string().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.UFile::WriteBinary()", "Failed to open the file at %s", path_.string().c_str());
         return;
     }
 

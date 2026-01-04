@@ -1,20 +1,16 @@
 #pragma once
-#include <filesystem>
+#include <optional>
 #include <string>
-class Generator final
+#include <vector>
+struct UReflectionResult;
+class SGenerator final
 {
-	struct VariableInfo
-	{
-		std::string name;
-		bool isIterable;
-	};
-
 	struct ClassInfo
 	{
 		std::string name;
-		std::string baseName;
-		std::vector<VariableInfo> variables;
-		std::vector<std::string> fwdClasses;
+		std::optional<std::string> base;
+		std::vector<std::string> variables;
+		std::vector<std::string> headers;
 	};
 
 public:
@@ -22,14 +18,9 @@ public:
 	void GenerateUpdated() const;
 
 private:
-	ClassInfo GetClassInfo(const std::string& content) const;
-	std::string GetClassName(const std::string& content) const;
-	std::string GetBaseClassName(const std::string& content) const;
-	std::vector<VariableInfo> GetClassVariables(const std::string& content) const;
-	std::vector<std::string> GetForwardDeclaredClasses(const std::string& content) const;
-	std::string GetObjectClassHeader(const std::string& className) const;
-
-	bool IsObjectClass(const std::string& className) const;
-
-	void Generate(const std::filesystem::path& header) const;
+	void Generate(const UReflectionResult& reflectionResult) const;
+	
+	ClassInfo GetClassInfo(const UReflectionResult& reflectionResult) const;
 };
+
+inline SGenerator Generator;

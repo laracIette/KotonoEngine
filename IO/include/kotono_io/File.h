@@ -2,23 +2,26 @@
 #include <kotono_common/types.h>
 #include <filesystem>
 #include <span>
-class KtFile final
+#include <chrono>
+class UFile final
 {
 public:
-	explicit KtFile(const std::filesystem::path& path);
+	explicit UFile(const std::filesystem::path& path);
 
 	// Get whether the file exists
 	bool Exists() const;
 	// Get the path to the file
 	const std::filesystem::path& Path() const;
 	// Get the path to the directory of the file
-	std::filesystem::path GetDirectory() const;
+	std::filesystem::path Directory() const;
 	// Get the name of the file with extension
-	std::string GetName() const;
+	std::string Name() const;
 	// Get the extension of the file
-	std::string GetExtension() const;
+	std::string Extension() const;
 	// Get the name of the file without extension
-	std::string GetStem() const;
+	std::string Stem() const;
+	// Get the last write time of the file
+	std::chrono::file_clock::time_point LastWriteTime() const;
 	// Get the content of the file, for text files
 	std::string ReadString() const;
 	// Get the content of the file, for binary files
