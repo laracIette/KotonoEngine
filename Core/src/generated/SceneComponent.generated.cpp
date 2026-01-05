@@ -5,6 +5,7 @@
 #include "SceneObject.h"
 #include "SceneObject.h"
 
+
 void KSceneComponent::SerializeTo(nlohmann::json& json) const
 {
 	Base::SerializeTo(json);
@@ -14,6 +15,7 @@ void KSceneComponent::SerializeTo(nlohmann::json& json) const
 	serialize(json["mobility_"], mobility_);
 	serialize(json["componentIndex_"], componentIndex_);
 	serialize(json["childrenIndex_"], childrenIndex_);
+
 }
 
 void KSceneComponent::DeserializeFrom(const nlohmann::json& json)
@@ -25,6 +27,22 @@ void KSceneComponent::DeserializeFrom(const nlohmann::json& json)
 	deserialize(json.at("mobility_"), mobility_);
 	deserialize(json.at("componentIndex_"), componentIndex_);
 	deserialize(json.at("childrenIndex_"), childrenIndex_);
+
+}
+
+std::vector<UVariableInfo> KSceneComponent::GetMemberVariables() const
+{
+	auto result{ Base::GetMemberVariables() };
+	result.insert(result.end(), {
+		{ "KtPool<UPtr<KSceneComponent>>", offsetof(Self, children_) },
+		{ "UTransform", offsetof(Self, transform_) },
+		{ "EVisibility", offsetof(Self, visibility_) },
+		{ "EMobility", offsetof(Self, mobility_) },
+		{ "size", offsetof(Self, componentIndex_) },
+		{ "size", offsetof(Self, childrenIndex_) },
+
+	});
+	return result;
 }
 
 UPtr<KSceneComponent> KSceneComponent::Ptr() const

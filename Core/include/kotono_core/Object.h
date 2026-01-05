@@ -3,6 +3,7 @@
 #include "Guid.h"
 #include "Ptr.h"
 #include "serialize.h"
+#include "VariableInfo.h"
 #include <nlohmann/json_fwd.hpp>
 #include <string>
 

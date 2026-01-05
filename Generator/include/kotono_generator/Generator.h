@@ -7,9 +7,15 @@ class SGenerator final
 {
 	struct ClassInfo
 	{
+		struct VariableInfo
+		{
+			std::string type;
+			std::string name;
+		};
+
 		std::string name;
 		std::optional<std::string> base;
-		std::vector<std::string> variables;
+		std::vector<VariableInfo> variables;
 		std::vector<std::string> headers;
 	};
 

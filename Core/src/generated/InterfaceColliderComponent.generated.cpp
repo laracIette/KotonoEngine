@@ -3,14 +3,26 @@
 #include "serialize.h"
 #include <nlohmann/json.hpp>
 
+
 void KInterfaceColliderComponent::SerializeTo(nlohmann::json& json) const
 {
 	Base::SerializeTo(json);
+
 }
 
 void KInterfaceColliderComponent::DeserializeFrom(const nlohmann::json& json)
 {
 	Base::DeserializeFrom(json);
+
+}
+
+std::vector<UVariableInfo> KInterfaceColliderComponent::GetMemberVariables() const
+{
+	auto result{ Base::GetMemberVariables() };
+	result.insert(result.end(), {
+
+	});
+	return result;
 }
 
 UPtr<KInterfaceColliderComponent> KInterfaceColliderComponent::Ptr() const

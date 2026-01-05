@@ -48,6 +48,7 @@ set(KCORE_HEADERS
     "include/kotono_core/TimeManager.h"
     "include/kotono_core/Timer.h"
     "include/kotono_core/Transform.h"
+    "include/kotono_core/VariableInfo.h"
     "include/kotono_core/Visibility.h"
 )
 set(KCORE_SOURCES

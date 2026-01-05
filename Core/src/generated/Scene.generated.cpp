@@ -4,16 +4,29 @@
 #include <nlohmann/json.hpp>
 #include "SceneObject.h"
 
+
 void KScene::SerializeTo(nlohmann::json& json) const
 {
 	Base::SerializeTo(json);
 	serialize(json["sceneObjects_"], sceneObjects_);
+
 }
 
 void KScene::DeserializeFrom(const nlohmann::json& json)
 {
 	Base::DeserializeFrom(json);
 	deserialize(json.at("sceneObjects_"), sceneObjects_);
+
+}
+
+std::vector<UVariableInfo> KScene::GetMemberVariables() const
+{
+	auto result{ Base::GetMemberVariables() };
+	result.insert(result.end(), {
+		{ "KtPool<UPtr<TSceneObject>>", offsetof(Self, sceneObjects_) },
+
+	});
+	return result;
 }
 
 UPtr<KScene> KScene::Ptr() const

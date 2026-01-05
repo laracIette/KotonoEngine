@@ -13,9 +13,11 @@ static const UPath RegistryPath{ CorePath / "objects.ktregistry" };
 
 static std::string to_upper(std::string s)
 {
-	std::ranges::transform(s, s.begin(),
-		[](unsigned char c) { return std::toupper(c); }
-	);
+	std::ranges::transform(s, s.begin(), [](unsigned char c)
+		{
+			return static_cast<char>(std::toupper(c));
+		});
+
 	return s;
 }
 
@@ -76,124 +78,143 @@ void SGenerator::GenerateUpdated() const
 void SGenerator::Generate(const UReflectionResult& reflectionResult) const
 {
 	const auto classInfo{ GetClassInfo(reflectionResult) };
-
 	const std::string generatedCodeHeader{ !classInfo.base.has_value()
 		? std::format(
-			"#define GENERATED_{}() \\\n"
-			"\tprivate: \\\n"
-			"\t\tusing Self = {}; \\\n"
-			"\tpublic: \\\n"
-			"\t\tvirtual void SerializeTo(nlohmann::json& json) const; \\\n"
-			"\t\tvirtual void DeserializeFrom(const nlohmann::json& json); \\\n"
-			"\tprivate: \\\n"
-			"\t\tUPtr<{}> Ptr() const;\n",
+R"(#define GENERATED_{0}() \
+	private: \
+		using Self = {1}; \
+	public: \
+		virtual void SerializeTo(nlohmann::json& json) const; \
+		virtual void DeserializeFrom(const nlohmann::json& json); \
+		virtual std::vector<UVariableInfo> GetMemberVariables() const; \
+	private: \
+		UPtr<{1}> Ptr() const;
+)",
 			to_upper(classInfo.name),
-			classInfo.name,
 			classInfo.name
 		)
 		: std::format(
-			"#define GENERATED_{}() \\\n"
-			"\tprivate: \\\n"
-			"\t\tusing Self = {}; \\\n"
-			"\t\tusing Base = {}; \\\n"
-			"\t\tusing Base::Base; \\\n"
-			"\tpublic: \\\n"
-			"\t\tvoid SerializeTo(nlohmann::json& json) const override; \\\n"
-			"\t\tvoid DeserializeFrom(const nlohmann::json& json) override; \\\n"
-			"\tprivate: \\\n"
-			"\t\tUPtr<{}> Ptr() const;\n",
+R"(#define GENERATED_{0}() \
+	private: \
+		using Self = {1}; \
+		using Base = {2}; \
+		using Base::Base; \
+	public: \
+		void SerializeTo(nlohmann::json& json) const override; \
+		void DeserializeFrom(const nlohmann::json& json) override; \
+		std::vector<UVariableInfo> GetMemberVariables() const override; \
+	private: \
+		UPtr<{1}> Ptr() const;
+)",
 			to_upper(classInfo.name),
 			classInfo.name,
-			classInfo.base.value(),
-			classInfo.name
+			classInfo.base.value()
 		)
 	};
 
 	const auto fileHeader{ CorePath / "include" / "kotono_core" / "generated" / reflectionResult.path.ToPath().filename().replace_extension(".generated.h")};
 	UFile(fileHeader).WriteString(generatedCodeHeader);
 
+	std::ostringstream objectClassHeaders;
+	for (const auto& header : classInfo.headers)
+	{
+		objectClassHeaders << std::format(R"(#include "{0}")", header) << std::endl;
+	}
 
 	std::ostringstream serializeCode;
 	for (const auto& variable : classInfo.variables)
 	{
-		serializeCode << "\tserialize(json[\"" << variable << "\"], " << variable << ");\n";
+		serializeCode << std::format(R"(	serialize(json["{0}"], {0});)", variable.name) << std::endl;
 	}
+
 	std::ostringstream deserializeCode;
 	for (const auto& variable : classInfo.variables)
 	{
-		deserializeCode << "\tdeserialize(json.at(\"" << variable << "\"), " << variable << ");\n";
+		deserializeCode << std::format(R"(	deserialize(json.at("{0}"), {0});)", variable.name) << std::endl;
 	}
 
-	std::ostringstream objectClassHeaders;
-	for (const auto& header : classInfo.headers)
+	std::ostringstream memberVariablesCode;
+	for (const auto& variable : classInfo.variables)
 	{
-		objectClassHeaders << "#include \"" << header << "\"\n";
+		memberVariablesCode << std::format(R"(		{{ "{0}", offsetof(Self, {1}) }},)", variable.type, variable.name) << std::endl;
 	}
 
 	const std::string generatedCodeCPP{ !classInfo.base.has_value()
 		? std::format(
-			"#include \"{}\"\n"
-			"#include \"Ptr.h\"\n"
-			"#include \"serialize.h\"\n"
-			"#include <nlohmann/json.hpp>\n"
-			"{}"
-			"\n"
-			"void {}::SerializeTo(nlohmann::json& json) const\n"
-			"{{\n"
-			"{}"
-			"}}\n"
-			"\n"
-			"void {}::DeserializeFrom(const nlohmann::json& json)\n"
-			"{{\n"
-			"{}"
-			"}}\n"
-			"\n"
-			"UPtr<{}> {}::Ptr() const\n"
-			"{{\n"
-			"\treturn static_cast<UPtrOwner<{}>*>(ptrOwner_);\n"
-			"}}\n",
+R"(#include "{0}"
+#include "Ptr.h"
+#include "serialize.h"
+#include <nlohmann/json.hpp>
+{1}
+
+void {2}::SerializeTo(nlohmann::json& json) const
+{{
+{3}
+}}
+
+void {2}::DeserializeFrom(const nlohmann::json& json)
+{{
+{4}
+}}
+
+std::vector<UVariableInfo> {2}::GetMemberVariables() const
+{{
+	return {{
+{5}
+	}};
+}}
+
+UPtr<{2}> {2}::Ptr() const
+{{
+	return static_cast<UPtrOwner<{2}>*>(ptrOwner_);
+}}
+)",
 			reflectionResult.path.ToPath().filename().string(),
 			objectClassHeaders.str(),
 			classInfo.name,
 			serializeCode.str(),
-			classInfo.name,
 			deserializeCode.str(),
-			classInfo.name,
-			classInfo.name,
-			classInfo.name
+			memberVariablesCode.str()
 		)
 		: std::format(
-			"#include \"{}\"\n"
-			"#include \"Ptr.h\"\n"
-			"#include \"serialize.h\"\n"
-			"#include <nlohmann/json.hpp>\n"
-			"{}"
-			"\n"
-			"void {}::SerializeTo(nlohmann::json& json) const\n"
-			"{{\n"
-			"\tBase::SerializeTo(json);\n"
-			"{}"
-			"}}\n"
-			"\n"
-			"void {}::DeserializeFrom(const nlohmann::json& json)\n"
-			"{{\n"
-			"\tBase::DeserializeFrom(json);\n"
-			"{}"
-			"}}\n"
-			"\n"
-			"UPtr<{}> {}::Ptr() const\n"
-			"{{\n"
-			"\treturn static_cast<UPtrOwner<{}>*>(ptrOwner_);\n"
-			"}}\n",
+R"(#include "{0}"
+#include "Ptr.h"
+#include "serialize.h"
+#include <nlohmann/json.hpp>
+{1}
+
+void {2}::SerializeTo(nlohmann::json& json) const
+{{
+	Base::SerializeTo(json);
+{3}
+}}
+
+void {2}::DeserializeFrom(const nlohmann::json& json)
+{{
+	Base::DeserializeFrom(json);
+{4}
+}}
+
+std::vector<UVariableInfo> {2}::GetMemberVariables() const
+{{
+	auto result{{ Base::GetMemberVariables() }};
+	result.insert(result.end(), {{
+{5}
+	}});
+	return result;
+}}
+
+UPtr<{2}> {2}::Ptr() const
+{{
+	return static_cast<UPtrOwner<{2}>*>(ptrOwner_);
+}}
+)",
 			reflectionResult.path.ToPath().filename().string(),
 			objectClassHeaders.str(),
 			classInfo.name,
 			serializeCode.str(),
-			classInfo.name,
 			deserializeCode.str(),
-			classInfo.name,
-			classInfo.name,
-			classInfo.name
+			memberVariablesCode.str()
 		)
 	};
 
@@ -205,10 +226,10 @@ void SGenerator::Generate(const UReflectionResult& reflectionResult) const
 
 SGenerator::ClassInfo SGenerator::GetClassInfo(const UReflectionResult& reflectionResult) const
 {
-	std::vector<std::string> variables;
+	std::vector<ClassInfo::VariableInfo> variables;
 	std::ranges::copy(
 		reflectionResult.members
-		| std::views::transform(&UReflectionResult::MemberInfo::name),
+		| std::views::transform([](const UReflectionResult::MemberInfo& member) { return ClassInfo::VariableInfo{ member.type, member.name }; }),
 		std::back_inserter(variables)
 	);
 
