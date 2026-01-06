@@ -4,5 +4,6 @@
 struct UVariableInfo final
 {
 	std::string type;
+	std::string name;
 	size offset;
 };

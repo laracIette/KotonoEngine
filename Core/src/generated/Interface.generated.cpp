@@ -23,7 +23,7 @@ std::vector<UVariableInfo> KInterface::GetMemberVariables() const
 {
 	auto result{ Base::GetMemberVariables() };
 	result.insert(result.end(), {
-		{ "KtPool<UPtr<RInterfaceObject>>", offsetof(Self, interfaceObjects_) },
+		{ "KtPool<UPtr<RInterfaceObject>>", "interfaceObjects_", offsetof(Self, interfaceObjects_) },
 
 	});
 	return result;

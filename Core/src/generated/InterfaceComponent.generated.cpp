@@ -28,9 +28,9 @@ std::vector<UVariableInfo> KInterfaceComponent::GetMemberVariables() const
 {
 	auto result{ Base::GetMemberVariables() };
 	result.insert(result.end(), {
-		{ "URect", offsetof(Self, rect_) },
-		{ "EVisibility", offsetof(Self, visibility_) },
-		{ "UColor", offsetof(Self, color_) },
+		{ "URect", "rect_", offsetof(Self, rect_) },
+		{ "EVisibility", "visibility_", offsetof(Self, visibility_) },
+		{ "UColor", "color_", offsetof(Self, color_) },
 
 	});
 	return result;

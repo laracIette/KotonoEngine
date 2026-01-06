@@ -136,7 +136,7 @@ R"(#define GENERATED_{0}() \
 	std::ostringstream memberVariablesCode;
 	for (const auto& variable : classInfo.variables)
 	{
-		memberVariablesCode << std::format(R"(		{{ "{0}", offsetof(Self, {1}) }},)", variable.type, variable.name) << std::endl;
+		memberVariablesCode << std::format(R"(		{{ "{0}", "{1}", offsetof(Self, {1}) }},)", variable.type, variable.name) << std::endl;
 	}
 
 	const std::string generatedCodeCPP{ !classInfo.base.has_value()

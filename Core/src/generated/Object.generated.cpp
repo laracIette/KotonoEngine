@@ -23,9 +23,9 @@ void KObject::DeserializeFrom(const nlohmann::json& json)
 std::vector<UVariableInfo> KObject::GetMemberVariables() const
 {
 	return {
-		{ "UGuid", offsetof(Self, guid_) },
-		{ "std::string", offsetof(Self, type_) },
-		{ "std::string", offsetof(Self, name_) },
+		{ "UGuid", "guid_", offsetof(Self, guid_) },
+		{ "std::string", "type_", offsetof(Self, type_) },
+		{ "std::string", "name_", offsetof(Self, name_) },
 
 	};
 }

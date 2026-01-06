@@ -30,10 +30,10 @@ std::vector<UVariableInfo> TSceneObject::GetMemberVariables() const
 {
 	auto result{ Base::GetMemberVariables() };
 	result.insert(result.end(), {
-		{ "UPtr<KSceneComponent>", offsetof(Self, rootComponent_) },
-		{ "KtPool<UPtr<KSceneComponent>>", offsetof(Self, sceneComponents_) },
-		{ "KtPool<UPtr<TSceneObject>>", offsetof(Self, children_) },
-		{ "size", offsetof(Self, childrenIndex_) },
+		{ "UPtr<KSceneComponent>", "rootComponent_", offsetof(Self, rootComponent_) },
+		{ "KtPool<UPtr<KSceneComponent>>", "sceneComponents_", offsetof(Self, sceneComponents_) },
+		{ "KtPool<UPtr<TSceneObject>>", "children_", offsetof(Self, children_) },
+		{ "size", "childrenIndex_", offsetof(Self, childrenIndex_) },
 
 	});
 	return result;

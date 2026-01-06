@@ -24,8 +24,8 @@ std::vector<UVariableInfo> KSceneMeshComponent::GetMemberVariables() const
 {
 	auto result{ Base::GetMemberVariables() };
 	result.insert(result.end(), {
-		{ "KtShader*", offsetof(Self, shader_) },
-		{ "KtModel*", offsetof(Self, model_) },
+		{ "KtShader*", "shader_", offsetof(Self, shader_) },
+		{ "KtModel*", "model_", offsetof(Self, model_) },
 
 	});
 	return result;

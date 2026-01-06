@@ -34,12 +34,12 @@ std::vector<UVariableInfo> KSceneComponent::GetMemberVariables() const
 {
 	auto result{ Base::GetMemberVariables() };
 	result.insert(result.end(), {
-		{ "KtPool<UPtr<KSceneComponent>>", offsetof(Self, children_) },
-		{ "UTransform", offsetof(Self, transform_) },
-		{ "EVisibility", offsetof(Self, visibility_) },
-		{ "EMobility", offsetof(Self, mobility_) },
-		{ "size", offsetof(Self, componentIndex_) },
-		{ "size", offsetof(Self, childrenIndex_) },
+		{ "KtPool<UPtr<KSceneComponent>>", "children_", offsetof(Self, children_) },
+		{ "UTransform", "transform_", offsetof(Self, transform_) },
+		{ "EVisibility", "visibility_", offsetof(Self, visibility_) },
+		{ "EMobility", "mobility_", offsetof(Self, mobility_) },
+		{ "size", "componentIndex_", offsetof(Self, componentIndex_) },
+		{ "size", "childrenIndex_", offsetof(Self, childrenIndex_) },
 
 	});
 	return result;

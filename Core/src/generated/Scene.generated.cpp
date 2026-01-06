@@ -23,7 +23,7 @@ std::vector<UVariableInfo> KScene::GetMemberVariables() const
 {
 	auto result{ Base::GetMemberVariables() };
 	result.insert(result.end(), {
-		{ "KtPool<UPtr<TSceneObject>>", offsetof(Self, sceneObjects_) },
+		{ "KtPool<UPtr<TSceneObject>>", "sceneObjects_", offsetof(Self, sceneObjects_) },
 
 	});
 	return result;
