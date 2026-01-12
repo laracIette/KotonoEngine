@@ -11,7 +11,7 @@ public:
 	void Cleanup() override;
 
 private:
-	WWidget* BuildMemberWidget(const std::string& type);
+	WWidget* BuildMemberWidget(const std::string& type, void* variablePtr);
 
 private:
 	UPtr<KObject> object_;

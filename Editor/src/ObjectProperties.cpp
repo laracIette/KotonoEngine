@@ -11,9 +11,12 @@ WObjectProperties::WObjectProperties(const UPtr<KObject>& object) :
 WWidget* WObjectProperties::Build()
 {
     const auto variables{ object_->GetMemberVariables() };
+
     WidgetVector result{};
     for (const auto& variable : variables)
     {
+		void* variablePtr{ reinterpret_cast<void*>(reinterpret_cast<std::uintptr_t>(object_.Get()) + variable.offset) };
+
         result.push_back(new WColumn({
             .spacing = 4.0f,
             .children = {
@@ -26,7 +29,7 @@ WWidget* WObjectProperties::Build()
                     .padding = WPadding::Padding::Left(10.0f),
                     .child = BuildMemberWidget(member.type),
         		}),*/
-                BuildMemberWidget(variable.type),
+                BuildMemberWidget(variable.type, variablePtr),
             },
         }));
     }
@@ -42,7 +45,7 @@ void WObjectProperties::Cleanup()
 	WWidget::Cleanup();
 }
 
-WWidget* WObjectProperties::BuildMemberWidget(const std::string& type)
+WWidget* WObjectProperties::BuildMemberWidget(const std::string& type, void* variablePtr)
 {
 	//if (Reflector.IsObjectType(type))
     {
@@ -83,7 +86,7 @@ WWidget* WObjectProperties::BuildMemberWidget(const std::string& type)
 	if (type == "std::string")
     {
         return new WText({
-            .text = "String Editor Placeholder",
+            .text = *static_cast<std::string*>(variablePtr),
             .fontSize = { 18.0f, 22.0f },
             .spacing = -5.0f,
         });
