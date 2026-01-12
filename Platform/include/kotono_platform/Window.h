@@ -18,7 +18,7 @@ public:
 
 	GLFWwindow* GetGLFWWindow() const;
 	const glm::uvec2& GetSize() const;
-	KtEvent<>& GetEventWindowResized();
+	UEvent<>& GetEventWindowResized();
 
 	void SetSize(const glm::uvec2& size);
 
@@ -26,7 +26,7 @@ private:
 	GLFWwindow* window_;
 	bool shouldClose_;
 	glm::uvec2 size_;
-	KtEvent<> eventWindowResized_;
+	UEvent<> eventWindowResized_;
 };
 
 inline KtWindow Window;

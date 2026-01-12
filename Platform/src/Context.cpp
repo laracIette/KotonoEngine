@@ -590,7 +590,7 @@ void KtContext::ExecuteSingleTimeCommands()
 	eventExecuteSingleTimeCommands_.Clear();
 }
 
-KtEvent<>& KtContext::GetEventExecuteSingleTimeCommands()
+UEvent<>& KtContext::GetEventExecuteSingleTimeCommands()
 {
 	return eventExecuteSingleTimeCommands_;
 }

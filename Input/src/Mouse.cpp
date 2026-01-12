@@ -115,7 +115,7 @@ float SMouse::VerticalScrollDelta() const
     return verticalScrollDelta_;
 }
 
-KtEvent<>& SMouse::EventButton(const EButton button, const EInputState inputState)
+UEvent<>& SMouse::EventButton(const EButton button, const EInputState inputState)
 {
     return buttonEvents_[to_index(button)][to_index(inputState)];
 }
@@ -125,17 +125,17 @@ bool SMouse::ButtonState(const EButton button, const EInputState inputState) con
     return buttonStates_[to_index(button)][to_index(inputState)];
 }
 
-KtEvent<glm::vec2>& SMouse::EventMove()
+UEvent<glm::vec2>& SMouse::EventMove()
 {
     return eventMove_;
 }
 
-KtEvent<float>& SMouse::EventHorizontalScroll()
+UEvent<float>& SMouse::EventHorizontalScroll()
 {
     return eventHorizontalScroll_;
 }
 
-KtEvent<float>& SMouse::EventVerticalScroll()
+UEvent<float>& SMouse::EventVerticalScroll()
 {
     return eventVerticalScroll_;
 }

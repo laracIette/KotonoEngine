@@ -5,7 +5,7 @@ struct UTimer
 	bool isPlaying;
 	bool isRepeat;
 	float duration;
-	KtEvent<> eventCompleted;
+	UEvent<> eventCompleted;
 
 	void Update();
 

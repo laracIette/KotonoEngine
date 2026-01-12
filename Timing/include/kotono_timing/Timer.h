@@ -8,7 +8,7 @@ public:
 	bool GetIsPlaying() const;
 	bool GetIsRepeat() const;
 	float GetDuration() const;
-	KtEvent<>& EventCompleted();
+	UEvent<>& EventCompleted();
 
 	void SetIsRepeat(const bool isRepeat);
 	void SetDuration(const float duration);
@@ -24,6 +24,6 @@ private:
 	bool isRepeat_;
 	float duration_;
 	float current_;
-	KtEvent<> eventCompleted_;
+	UEvent<> eventCompleted_;
 	size index_;
 };

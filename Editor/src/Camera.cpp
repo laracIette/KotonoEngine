@@ -16,29 +16,29 @@ void SCamera::Init()
 	speed_ = 1.0f;
 	sensitivity_ = 0.005f;
 
-	eventTransformUpdated_.AddListener(KtDelegate(this, &SCamera::OnEventUpdateTransform));
+	eventTransformUpdated_.AddListener(UDelegate(this, &SCamera::OnEventUpdateTransform));
 	SetPosition(WorldForwardVector * -3.0f + WorldUpVector);
 
-	Keyboard.EventKey(EKey::W, EInputState::Down).AddListener(KtDelegate(this, &SCamera::OnKeyboardWKeyDown));
-	Keyboard.EventKey(EKey::A, EInputState::Down).AddListener(KtDelegate(this, &SCamera::OnKeyboardAKeyDown));
-	Keyboard.EventKey(EKey::S, EInputState::Down).AddListener(KtDelegate(this, &SCamera::OnKeyboardSKeyDown));
-	Keyboard.EventKey(EKey::D, EInputState::Down).AddListener(KtDelegate(this, &SCamera::OnKeyboardDKeyDown));
-	Mouse.EventButton(EButton::Right, EInputState::Pressed).AddListener(KtDelegate(this, &SCamera::OnMouseRightButtonPressed));
-	Mouse.EventButton(EButton::Right, EInputState::Released).AddListener(KtDelegate(this, &SCamera::OnMouseRightButtonReleased));
-	Mouse.EventMove().AddListener(KtDelegate(this, &SCamera::OnMouseMove));
-	Mouse.EventVerticalScroll().AddListener(KtDelegate(this, &SCamera::OnMouseVerticalScroll));
+	Keyboard.EventKey(EKey::W, EInputState::Down).AddListener(UDelegate(this, &SCamera::OnKeyboardWKeyDown));
+	Keyboard.EventKey(EKey::A, EInputState::Down).AddListener(UDelegate(this, &SCamera::OnKeyboardAKeyDown));
+	Keyboard.EventKey(EKey::S, EInputState::Down).AddListener(UDelegate(this, &SCamera::OnKeyboardSKeyDown));
+	Keyboard.EventKey(EKey::D, EInputState::Down).AddListener(UDelegate(this, &SCamera::OnKeyboardDKeyDown));
+	Mouse.EventButton(EButton::Right, EInputState::Pressed).AddListener(UDelegate(this, &SCamera::OnMouseRightButtonPressed));
+	Mouse.EventButton(EButton::Right, EInputState::Released).AddListener(UDelegate(this, &SCamera::OnMouseRightButtonReleased));
+	Mouse.EventMove().AddListener(UDelegate(this, &SCamera::OnMouseMove));
+	Mouse.EventVerticalScroll().AddListener(UDelegate(this, &SCamera::OnMouseVerticalScroll));
 }
 
 void SCamera::Cleanup()
 {
-	Keyboard.EventKey(EKey::W, EInputState::Down).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardWKeyDown));
-	Keyboard.EventKey(EKey::A, EInputState::Down).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardAKeyDown));
-	Keyboard.EventKey(EKey::S, EInputState::Down).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardSKeyDown));
-	Keyboard.EventKey(EKey::D, EInputState::Down).RemoveListener(KtDelegate(this, &SCamera::OnKeyboardDKeyDown));
-	Mouse.EventButton(EButton::Right, EInputState::Pressed).RemoveListener(KtDelegate(this, &SCamera::OnMouseRightButtonPressed));
-	Mouse.EventButton(EButton::Right, EInputState::Released).RemoveListener(KtDelegate(this, &SCamera::OnMouseRightButtonReleased));
-	Mouse.EventMove().RemoveListener(KtDelegate(this, &SCamera::OnMouseMove));
-	Mouse.EventVerticalScroll().RemoveListener(KtDelegate(this, &SCamera::OnMouseVerticalScroll));
+	Keyboard.EventKey(EKey::W, EInputState::Down).RemoveListener(UDelegate(this, &SCamera::OnKeyboardWKeyDown));
+	Keyboard.EventKey(EKey::A, EInputState::Down).RemoveListener(UDelegate(this, &SCamera::OnKeyboardAKeyDown));
+	Keyboard.EventKey(EKey::S, EInputState::Down).RemoveListener(UDelegate(this, &SCamera::OnKeyboardSKeyDown));
+	Keyboard.EventKey(EKey::D, EInputState::Down).RemoveListener(UDelegate(this, &SCamera::OnKeyboardDKeyDown));
+	Mouse.EventButton(EButton::Right, EInputState::Pressed).RemoveListener(UDelegate(this, &SCamera::OnMouseRightButtonPressed));
+	Mouse.EventButton(EButton::Right, EInputState::Released).RemoveListener(UDelegate(this, &SCamera::OnMouseRightButtonReleased));
+	Mouse.EventMove().RemoveListener(UDelegate(this, &SCamera::OnMouseMove));
+	Mouse.EventVerticalScroll().RemoveListener(UDelegate(this, &SCamera::OnMouseVerticalScroll));
 }
 
 glm::vec3 SCamera::RightVector() const

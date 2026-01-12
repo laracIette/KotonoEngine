@@ -14,11 +14,11 @@ public:
 	void Init();
 	void Update();
 
-	KtEvent<>& EventKey(const EKey key, const EInputState inputState);
+	UEvent<>& EventKey(const EKey key, const EInputState inputState);
 	bool KeyState(const EKey key, const EInputState inputState) const;
 
 private:
-	std::array<std::array<KtEvent<>, InputStateCount>, KeyCount> keyEvents_;
+	std::array<std::array<UEvent<>, InputStateCount>, KeyCount> keyEvents_;
 	std::array<std::array<bool, InputStateCount>, KeyCount> keyStates_;
 
 	void UpdateKey(const EKey key, const int action);

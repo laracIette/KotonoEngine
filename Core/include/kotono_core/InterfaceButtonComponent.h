@@ -15,13 +15,13 @@ protected:
 	void Init() override;
 
 public:
-	KtEvent<>& GetEventClicked();
+	UEvent<>& GetEventClicked();
 
 private:
 	void OnColliderReleased();
 
 private:
 	UPtr<KInterfaceColliderComponent> collider_;
-	KtEvent<> eventClicked_;
+	UEvent<> eventClicked_;
 };
 

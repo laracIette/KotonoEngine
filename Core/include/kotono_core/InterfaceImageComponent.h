@@ -22,8 +22,8 @@ public:
 	KtShader* GetShader() const;
 	KtTexture* GetTexture() const;
 
-	KtEvent<>& GetEventShaderUpdated();
-	KtEvent<>& GetEventTextureUpdated();
+	UEvent<>& GetEventShaderUpdated();
+	UEvent<>& GetEventTextureUpdated();
 
 	void SetShader(KtShader* shader);
 	void SetTexture(KtTexture* texture);
@@ -41,7 +41,7 @@ private:
 	KtShader* shader_;
 	KtTexture* texture_;
 	UInterfaceProxy* textureProxy_;
-	KtEvent<> eventShaderUpdated_;
-	KtEvent<> eventTextureUpdated_;
+	UEvent<> eventShaderUpdated_;
+	UEvent<> eventTextureUpdated_;
 };
 

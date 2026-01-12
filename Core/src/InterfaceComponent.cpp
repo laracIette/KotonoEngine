@@ -19,7 +19,7 @@ KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner) :
     modelMatrix_([this]() { return TranslationMatrix() * RotationMatrix() * ScaleMatrix(); }),
     color_(UColor::White())
 {
-    eventRectChanged_.AddListener(KtDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
+    eventRectChanged_.AddListener(UDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
 
     //boundsProxy_ = Renderer.InterfaceRenderer().CreateProxy();
 }
@@ -30,7 +30,7 @@ void KInterfaceComponent::Cleanup()
     //Renderer.InterfaceRenderer().DeleteProxy(boundsProxy_);
 
     owner_->GetViewport()->EventExtentChanged()
-        .RemoveListener(KtDelegate(&eventRectChanged_, &KtEvent<>::Broadcast));
+        .RemoveListener(UDelegate(&eventRectChanged_, &UEvent<>::Broadcast));
 
     SetParent(nullptr, ECoordinateSpace::Relative);
     SetOwner(nullptr);
@@ -80,17 +80,17 @@ i32 KInterfaceComponent::GetLayer() const
     return rect_.layer;
 }
 
-KtEvent<>& KInterfaceComponent::EventRectChanged()
+UEvent<>& KInterfaceComponent::EventRectChanged()
 {
     return eventRectChanged_;
 }
 
-KtEvent<>& KInterfaceComponent::EventLayerChanged()
+UEvent<>& KInterfaceComponent::EventLayerChanged()
 {
     return eventLayerChanged_;
 }
 
-KtEvent<>& KInterfaceComponent::EventColorChanged()
+UEvent<>& KInterfaceComponent::EventColorChanged()
 {
     return eventColorChanged_;
 }
@@ -201,7 +201,7 @@ void KInterfaceComponent::SetParent(const UPtr<KInterfaceComponent>& parent, con
 
     if (parent_)
     {
-        parent_->EventRectChanged().RemoveListener(KtDelegate(&eventRectChanged_, &KtEvent<>::Broadcast));
+        parent_->EventRectChanged().RemoveListener(UDelegate(&eventRectChanged_, &UEvent<>::Broadcast));
         parent_->RemoveChildren(Ptr());
     }
 
@@ -230,7 +230,7 @@ void KInterfaceComponent::SetParent(const UPtr<KInterfaceComponent>& parent, con
 
     if (parent_)
     {
-        parent_->EventRectChanged().AddListener(KtDelegate(&eventRectChanged_, &KtEvent<>::Broadcast));
+        parent_->EventRectChanged().AddListener(UDelegate(&eventRectChanged_, &UEvent<>::Broadcast));
         parent_->AddChildren(Ptr());
     }
 }
@@ -458,10 +458,10 @@ void KInterfaceComponent::Spawn()
     //CreateBoundsProxy();
     //Renderer.InterfaceRenderer().RegisterProxy(boundsProxy_);
 
-    //eventRectChanged_.AddListener(KtDelegate(this, &Self::MarkBoundsProxyRectDirty));
+    //eventRectChanged_.AddListener(UDelegate(this, &Self::MarkBoundsProxyRectDirty));
 
     owner_->GetViewport()->EventExtentChanged()
-        .AddListener(KtDelegate(&eventRectChanged_, &KtEvent<>::Broadcast));
+        .AddListener(UDelegate(&eventRectChanged_, &UEvent<>::Broadcast));
 }
 
 //void KInterfaceComponent::CreateBoundsProxy()

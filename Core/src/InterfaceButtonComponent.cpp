@@ -14,17 +14,17 @@ void KInterfaceButtonComponent::Cleanup()
 {
 	Base::Cleanup();
 
-	collider_->GetEventReleased().RemoveListener(KtDelegate(this, &KInterfaceButtonComponent::OnColliderReleased));
+	collider_->GetEventReleased().RemoveListener(UDelegate(this, &KInterfaceButtonComponent::OnColliderReleased));
 }
 
 void KInterfaceButtonComponent::Init()
 {
 	Base::Init();
 
-	collider_->GetEventReleased().AddListener(KtDelegate(this, &KInterfaceButtonComponent::OnColliderReleased));
+	collider_->GetEventReleased().AddListener(UDelegate(this, &KInterfaceButtonComponent::OnColliderReleased));
 }
 
-KtEvent<>& KInterfaceButtonComponent::GetEventClicked()
+UEvent<>& KInterfaceButtonComponent::GetEventClicked()
 {
 	return eventClicked_;
 }

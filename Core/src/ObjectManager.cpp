@@ -16,14 +16,14 @@
 void SObjectManager::Init()
 {
 	Keyboard.EventKey(EKey::Escape, EInputState::Pressed)
-		.AddListener(KtDelegate(this, &SObjectManager::Quit));
+		.AddListener(UDelegate(this, &SObjectManager::Quit));
 	Mouse.EventButton(EButton::Left, EInputState::Pressed)
-		.AddListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
+		.AddListener(UDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
 
 	auto& logUPSTimer{ TimerManager.GetTimer("log ups timer") };
 	logUPSTimer.SetDuration(1.0f);
 	logUPSTimer.SetIsRepeat(true);
-	logUPSTimer.EventCompleted().AddListener(KtDelegate(this, &SObjectManager::LogUPS));
+	logUPSTimer.EventCompleted().AddListener(UDelegate(this, &SObjectManager::LogUPS));
 	logUPSTimer.Start();
 }
 
@@ -35,9 +35,9 @@ void SObjectManager::Cleanup()
 	}
 
 	Keyboard.EventKey(EKey::Escape, EInputState::Pressed)
-		.RemoveListener(KtDelegate(this, &SObjectManager::Quit));
+		.RemoveListener(UDelegate(this, &SObjectManager::Quit));
 	Mouse.EventButton(EButton::Left, EInputState::Pressed)
-		.RemoveListener(KtDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
+		.RemoveListener(UDelegate(this, &SObjectManager::OnMouseButtonLeftPressed));
 }
 
 void SObjectManager::Register(KObject* object, UPtrOwnerBase* ptrOwner)
@@ -90,7 +90,7 @@ void SObjectManager::SetSelectedObject(const UPtr<KObject>& object)
 	eventSelectedObjectChanged_.Broadcast();
 }
 
-KtEvent<>& SObjectManager::EventSelectedObjectChanged()
+UEvent<>& SObjectManager::EventSelectedObjectChanged()
 {
 	return eventSelectedObjectChanged_;
 }

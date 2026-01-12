@@ -15,11 +15,11 @@ public:
 	EGameState GetState() const;
 	void SetState(const EGameState state);
 
-	KtEvent<EGameState>& EventStateChanged();
+	UEvent<EGameState>& EventStateChanged();
 
 private:
 	EGameState state_;
-	KtEvent<EGameState> eventStateChanged_;
+	UEvent<EGameState> eventStateChanged_;
 };
 
 inline SGameManager GameManager;

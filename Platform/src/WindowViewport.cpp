@@ -86,7 +86,7 @@ void KtWindowViewport::CmdUse(VkCommandBuffer commandBuffer) const
 	vkCmdSetScissor(commandBuffer, 0, 1, &vkScissor);
 }
 
-KtEvent<>& KtWindowViewport::EventExtentChanged()
+UEvent<>& KtWindowViewport::EventExtentChanged()
 {
 	return eventExtentChanged_;
 }

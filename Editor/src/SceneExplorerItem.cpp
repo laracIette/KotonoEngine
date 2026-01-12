@@ -10,7 +10,7 @@ WSceneExplorerItem::WSceneExplorerItem(const UPtr<TSceneObject>& sceneObject)
 
 WWidget* WSceneExplorerItem::Build()
 {
-	ObjectManager.EventSelectedObjectChanged().AddListener(KtDelegate(this, &WSceneExplorerItem::Refresh));
+	ObjectManager.EventSelectedObjectChanged().AddListener(UDelegate(this, &WSceneExplorerItem::Refresh));
 
 	return new WConstraint({
 		.axis = WConstraint::Axis::Vertical,
@@ -39,7 +39,7 @@ WWidget* WSceneExplorerItem::Build()
 
 void WSceneExplorerItem::Cleanup()
 {
-	ObjectManager.EventSelectedObjectChanged().RemoveListener(KtDelegate(this, &WSceneExplorerItem::Refresh));
+	ObjectManager.EventSelectedObjectChanged().RemoveListener(UDelegate(this, &WSceneExplorerItem::Refresh));
 
 	WWidget::Cleanup();
 }

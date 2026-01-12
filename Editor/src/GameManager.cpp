@@ -72,7 +72,7 @@ void SGameManager::SetState(const EGameState state)
     eventStateChanged_.Broadcast(state_);
 }
 
-KtEvent<EGameState>& SGameManager::EventStateChanged()
+UEvent<EGameState>& SGameManager::EventStateChanged()
 {
     return eventStateChanged_;
 }

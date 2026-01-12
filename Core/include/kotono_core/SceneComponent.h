@@ -35,7 +35,7 @@ public:
 	EVisibility GetVisibility() const;
 	EMobility GetMobility() const;
 	bool CanSetTransform() const;
-	KtEvent<>& EventTransformUpdated();
+	UEvent<>& EventTransformUpdated();
 
 	const glm::vec3& GetRelativePosition() const;
 	const glm::quat& GetRelativeRotation() const;
@@ -93,7 +93,7 @@ private:
 	SERIALIZE EMobility mobility_;
 	SERIALIZE size componentIndex_;
 	SERIALIZE size childrenIndex_;
-	KtEvent<> eventTransformUpdated_; // todo: maybe replace by eventPositionChanged...
+	UEvent<> eventTransformUpdated_; // todo: maybe replace by eventPositionChanged...
 	KtCached<glm::mat4> modelMatrix_;
 };
 

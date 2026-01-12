@@ -7,25 +7,25 @@ WButton::WButton(const ButtonSettings& buttonSettings) :
 {
 
 	Mouse.EventButton(EButton::Left, EInputState::Pressed)
-		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonPressed));
+		.AddListener(UDelegate(this, &WButton::OnMouseLeftButtonPressed));
 	Mouse.EventButton(EButton::Left, EInputState::Down)
-		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonDown));
+		.AddListener(UDelegate(this, &WButton::OnMouseLeftButtonDown));
 	Mouse.EventButton(EButton::Left, EInputState::Released)
-		.AddListener(KtDelegate(this, &WButton::OnMouseLeftButtonReleased));
+		.AddListener(UDelegate(this, &WButton::OnMouseLeftButtonReleased));
 	Mouse.EventVerticalScroll()
-		.AddListener(KtDelegate(this, &WButton::OnMouseVerticalScroll));
+		.AddListener(UDelegate(this, &WButton::OnMouseVerticalScroll));
 }
 
 void WButton::Cleanup()
 {
 	Mouse.EventButton(EButton::Left, EInputState::Pressed)
-		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonPressed));
+		.RemoveListener(UDelegate(this, &WButton::OnMouseLeftButtonPressed));
 	Mouse.EventButton(EButton::Left, EInputState::Down)
-		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonDown));
+		.RemoveListener(UDelegate(this, &WButton::OnMouseLeftButtonDown));
 	Mouse.EventButton(EButton::Left, EInputState::Released)
-		.RemoveListener(KtDelegate(this, &WButton::OnMouseLeftButtonReleased));
+		.RemoveListener(UDelegate(this, &WButton::OnMouseLeftButtonReleased));
 	Mouse.EventVerticalScroll()
-		.RemoveListener(KtDelegate(this, &WButton::OnMouseVerticalScroll));
+		.RemoveListener(UDelegate(this, &WButton::OnMouseVerticalScroll));
 
 	WWidget::Cleanup();
 }

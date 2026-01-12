@@ -32,13 +32,13 @@ void KSceneMeshComponent::Cleanup()
     UnregisterModelProxy();
 	Renderer.SceneRenderer().DeleteProxy(modelProxy_);
 
-    EventTransformUpdated().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
-    Window.GetEventWindowResized().RemoveListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyScissorDirty));
+    EventTransformUpdated().RemoveListener(UDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
+    Window.GetEventWindowResized().RemoveListener(UDelegate(this, &KSceneMeshComponent::MarkModelProxyScissorDirty));
 
     Keyboard.EventKey(EKey::N, EInputState::Pressed)
-        .RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
+        .RemoveListener(UDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
     Keyboard.EventKey(EKey::M, EInputState::Pressed)
-        .RemoveListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
+        .RemoveListener(UDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
 
     Base::Cleanup();
 }
@@ -86,15 +86,15 @@ void KSceneMeshComponent::Spawn()
     CreateModelProxy();
     RegisterModelProxy();
 
-    EventTransformUpdated().AddListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
-    Window.GetEventWindowResized().AddListener(KtDelegate(this, &KSceneMeshComponent::MarkModelProxyScissorDirty));
+    EventTransformUpdated().AddListener(UDelegate(this, &KSceneMeshComponent::MarkModelProxyTransformDirty));
+    Window.GetEventWindowResized().AddListener(UDelegate(this, &KSceneMeshComponent::MarkModelProxyScissorDirty));
 
     Keyboard.EventKey(EKey::N, EInputState::Pressed)
-        .AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
+        .AddListener(UDelegate(this, &KSceneMeshComponent::SetMobilityStatic));
     Keyboard.EventKey(EKey::M, EInputState::Pressed)
-        .AddListener(KtDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
+        .AddListener(UDelegate(this, &KSceneMeshComponent::SetMobilityDynamic));
     
-    spinTask_.eventUpdate.AddListener(KtDelegate(this, &KSceneMeshComponent::Spin));
+    spinTask_.eventUpdate.AddListener(UDelegate(this, &KSceneMeshComponent::Spin));
 }
 
 void KSceneMeshComponent::SetVisibility(const EVisibility visibility, const bool propagateToChildren)

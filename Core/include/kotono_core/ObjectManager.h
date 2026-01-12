@@ -33,7 +33,7 @@ public:
 
 	UPtr<KObject>& GetSelectedObject();
 	void SetSelectedObject(const UPtr<KObject>& object);
-	KtEvent<>& EventSelectedObjectChanged();
+	UEvent<>& EventSelectedObjectChanged();
 
 private:
 	void Quit();
@@ -41,7 +41,7 @@ private:
 	KtPool<UPtrOwnerBase*> objects_;
 
 	UPtr<KObject> selectedObject_;
-	KtEvent<> eventSelectedObjectChanged_;
+	UEvent<> eventSelectedObjectChanged_;
 
 	void Register(KObject* object, UPtrOwnerBase* ptrOwner);
 

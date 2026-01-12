@@ -39,9 +39,9 @@ public:
 	const URect& GetRect() const;
 	EVisibility GetVisibility() const;
 	i32 GetLayer() const;
-	KtEvent<>& EventRectChanged();
-	KtEvent<>& EventLayerChanged();
-	KtEvent<>& EventColorChanged();
+	UEvent<>& EventRectChanged();
+	UEvent<>& EventLayerChanged();
+	UEvent<>& EventColorChanged();
 
 	const glm::vec2& GetRelativePosition() const;
 	const glm::vec2& GetRelativeScale() const;
@@ -115,9 +115,9 @@ private:
 	SERIALIZE EVisibility visibility_;
 	SERIALIZE UColor color_;
 	//UInterfaceProxy* boundsProxy_;
-	KtEvent<> eventRectChanged_;
-	KtEvent<> eventLayerChanged_;
-	KtEvent<> eventColorChanged_;
+	UEvent<> eventRectChanged_;
+	UEvent<> eventLayerChanged_;
+	UEvent<> eventColorChanged_;
 	KtCached<glm::mat4> modelMatrix_;
 	size componentIndex_;
 };

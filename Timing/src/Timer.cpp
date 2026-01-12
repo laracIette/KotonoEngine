@@ -41,7 +41,7 @@ float KtTimer::GetDuration() const
     return duration_;
 }
 
-KtEvent<>& KtTimer::EventCompleted()
+UEvent<>& KtTimer::EventCompleted()
 {
     return eventCompleted_;
 }

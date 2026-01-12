@@ -19,7 +19,7 @@ public:
 
 	void CmdUse(VkCommandBuffer commandBuffer) const;
 
-	KtEvent<>& EventExtentChanged();
+	UEvent<>& EventExtentChanged();
 
 private:
 	glm::uvec2 extent_;
@@ -28,7 +28,7 @@ private:
 	bool isKeepAspectRatio_;
 	float aspectRatio_;
 
-	KtEvent<> eventExtentChanged_;
+	UEvent<> eventExtentChanged_;
 };
 
 inline KtWindowViewport WindowViewport;

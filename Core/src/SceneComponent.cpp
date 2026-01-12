@@ -9,7 +9,7 @@ KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner) :
     visibility_(EVisibility::Visible),
     modelMatrix_([this]() { return TranslationMatrix() * RotationMatrix() * ScaleMatrix(); })
 {
-    eventTransformUpdated_.AddListener(KtDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
+    eventTransformUpdated_.AddListener(UDelegate(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty));
 }
 
 void KSceneComponent::Cleanup()
@@ -63,7 +63,7 @@ bool KSceneComponent::CanSetTransform() const
     return mobility_ == EMobility::Dynamic || !IsConstructed();
 }
 
-KtEvent<>& KSceneComponent::EventTransformUpdated()
+UEvent<>& KSceneComponent::EventTransformUpdated()
 {
     return eventTransformUpdated_;
 }
@@ -226,7 +226,7 @@ void KSceneComponent::SetParent(const UPtr<KSceneComponent>& parent, const ECoor
         {
             parent_->children_[index]->childrenIndex_ = index;
         }
-        parent_->EventTransformUpdated().RemoveListener(KtDelegate(&eventTransformUpdated_, &KtEvent<>::Broadcast));
+        parent_->EventTransformUpdated().RemoveListener(UDelegate(&eventTransformUpdated_, &UEvent<>::Broadcast));
     }
 
     switch (keepTransform)
@@ -253,7 +253,7 @@ void KSceneComponent::SetParent(const UPtr<KSceneComponent>& parent, const ECoor
     {
         parent_->children_.Add(Ptr());
         childrenIndex_ = parent_->children_.LastIndex();
-        parent_->EventTransformUpdated().AddListener(KtDelegate(&eventTransformUpdated_, &KtEvent<>::Broadcast));
+        parent_->EventTransformUpdated().AddListener(UDelegate(&eventTransformUpdated_, &UEvent<>::Broadcast));
     }
 }
 
@@ -370,7 +370,7 @@ void KSceneComponent::Deserialize()
     for (auto& sceneComponent : children_)
     {
         sceneComponent->parent_ = Ptr();
-        eventTransformUpdated_.AddListener(KtDelegate(&sceneComponent->EventTransformUpdated(), &KtEvent<>::Broadcast));
+        eventTransformUpdated_.AddListener(UDelegate(&sceneComponent->EventTransformUpdated(), &UEvent<>::Broadcast));
     }
 }
 

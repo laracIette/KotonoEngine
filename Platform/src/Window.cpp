@@ -73,7 +73,7 @@ const glm::uvec2& KtWindow::GetSize() const
     return size_;
 }
 
-KtEvent<>& KtWindow::GetEventWindowResized()
+UEvent<>& KtWindow::GetEventWindowResized()
 {
     return eventWindowResized_;
 }

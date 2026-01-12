@@ -18,11 +18,11 @@ protected:
 	void Init() override;
 
 public:
-	KtEvent<>& GetEventPressed();
-	KtEvent<>& GetEventReleased();
-	KtEvent<>& GetEventDown();
+	UEvent<>& GetEventPressed();
+	UEvent<>& GetEventReleased();
+	UEvent<>& GetEventDown();
 
-	KtEvent<UPtr<KInterfaceColliderComponent>>& GetEventOverlap();
+	UEvent<UPtr<KInterfaceColliderComponent>>& GetEventOverlap();
 
 private:
 	void OnEventMouseLeftButtonPressed();
@@ -31,11 +31,11 @@ private:
 
 private:
 	KtPool<UPtr<KInterfaceColliderComponent>> overlaps_;
-	KtEvent<UPtr<KInterfaceColliderComponent>> eventOverlap_;
+	UEvent<UPtr<KInterfaceColliderComponent>> eventOverlap_;
 
-	KtEvent<> eventPressed_;
-	KtEvent<> eventReleased_;
-	KtEvent<> eventDown_;
+	UEvent<> eventPressed_;
+	UEvent<> eventReleased_;
+	UEvent<> eventDown_;
 
 	bool isPressed_;
 

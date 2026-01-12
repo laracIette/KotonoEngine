@@ -19,7 +19,7 @@ void SEditor::Init()
 
 	CreateWidget();
 
-	Window.GetEventWindowResized().AddListener(KtDelegate(this, &SEditor::RefreshMainWindowWidget));
+	Window.GetEventWindowResized().AddListener(UDelegate(this, &SEditor::RefreshMainWindowWidget));
 }
 
 void SEditor::Update()
@@ -32,7 +32,7 @@ void SEditor::Cleanup()
 
 	Camera.Cleanup();
 
-	Window.GetEventWindowResized().RemoveListener(KtDelegate(this, &SEditor::RefreshMainWindowWidget));
+	Window.GetEventWindowResized().RemoveListener(UDelegate(this, &SEditor::RefreshMainWindowWidget));
 }
 
 void SEditor::CreateWidget()

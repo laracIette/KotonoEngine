@@ -33,7 +33,7 @@ private:
 	float pitch_;
 	float yaw_;
 
-	KtEvent<> eventTransformUpdated_;
+	UEvent<> eventTransformUpdated_;
 
 	void OnKeyboardWKeyDown();
 	void OnKeyboardAKeyDown();

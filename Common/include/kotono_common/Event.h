@@ -4,10 +4,10 @@
 #include "types.h"
 
 template<typename... Args>
-class KtEvent final
+class UEvent final
 {
 private:
-    using Delegate = KtDelegate<Args...>;
+    using Delegate = UDelegate<Args...>;
 
 public:
     void AddListener(const Delegate& delegate)

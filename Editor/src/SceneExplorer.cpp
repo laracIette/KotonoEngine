@@ -15,11 +15,11 @@
 
 WWidget* WSceneExplorer::Build()
 {
-	GameManager.EventStateChanged().AddListener(KtDelegate(this, &WSceneExplorer::OnGameStateChanged));
+	GameManager.EventStateChanged().AddListener(UDelegate(this, &WSceneExplorer::OnGameStateChanged));
 
 	if (UPtr scene{ Game.GetOpenedScene() })
 	{
-		scene->EventSceneObjectsUpdated().AddListener(KtDelegate(this, &WSceneExplorer::Refresh));
+		scene->EventSceneObjectsUpdated().AddListener(UDelegate(this, &WSceneExplorer::Refresh));
 	}
 
 	return new WStack({
@@ -110,10 +110,10 @@ void WSceneExplorer::Cleanup()
 {
 	if (UPtr scene{ Game.GetOpenedScene() })
 	{
-		scene->EventSceneObjectsUpdated().RemoveListener(KtDelegate(this, &WSceneExplorer::Refresh));
+		scene->EventSceneObjectsUpdated().RemoveListener(UDelegate(this, &WSceneExplorer::Refresh));
 	}
 
-	GameManager.EventStateChanged().RemoveListener(KtDelegate(this, &WSceneExplorer::OnGameStateChanged));
+	GameManager.EventStateChanged().RemoveListener(UDelegate(this, &WSceneExplorer::OnGameStateChanged));
 
 	WWidget::Cleanup();
 }

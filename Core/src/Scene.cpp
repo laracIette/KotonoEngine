@@ -60,7 +60,7 @@ const KtPool<UPtr<TSceneObject>>& KScene::SceneObjects() const
 	return sceneObjects_;
 }
 
-KtEvent<>& KScene::EventSceneObjectsUpdated()
+UEvent<>& KScene::EventSceneObjectsUpdated()
 {
 	return eventSceneObjectsUpdated_;
 }

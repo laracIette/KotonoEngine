@@ -15,36 +15,36 @@ void KInterfaceColliderComponent::Cleanup()
 
 	InterfacePhysicsManager.Unregister(this);
 
-	Mouse.EventButton(EButton::Left, EInputState::Pressed).RemoveListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
-	Mouse.EventButton(EButton::Left, EInputState::Released).RemoveListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
-	Mouse.EventButton(EButton::Left, EInputState::Down).RemoveListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
+	Mouse.EventButton(EButton::Left, EInputState::Pressed).RemoveListener(UDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
+	Mouse.EventButton(EButton::Left, EInputState::Released).RemoveListener(UDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
+	Mouse.EventButton(EButton::Left, EInputState::Down).RemoveListener(UDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
 }
 
 void KInterfaceColliderComponent::Init()
 {
 	Base::Init();
 
-	Mouse.EventButton(EButton::Left, EInputState::Pressed).AddListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
-	Mouse.EventButton(EButton::Left, EInputState::Released).AddListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
-	Mouse.EventButton(EButton::Left, EInputState::Down).AddListener(KtDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
+	Mouse.EventButton(EButton::Left, EInputState::Pressed).AddListener(UDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
+	Mouse.EventButton(EButton::Left, EInputState::Released).AddListener(UDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
+	Mouse.EventButton(EButton::Left, EInputState::Down).AddListener(UDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
 }
 
-KtEvent<>& KInterfaceColliderComponent::GetEventPressed()
+UEvent<>& KInterfaceColliderComponent::GetEventPressed()
 {
 	return eventPressed_;
 }
 
-KtEvent<>& KInterfaceColliderComponent::GetEventReleased()
+UEvent<>& KInterfaceColliderComponent::GetEventReleased()
 {
 	return eventReleased_;
 }
 
-KtEvent<>& KInterfaceColliderComponent::GetEventDown()
+UEvent<>& KInterfaceColliderComponent::GetEventDown()
 {
 	return eventDown_;
 }
 
-KtEvent<UPtr<KInterfaceColliderComponent>>& KInterfaceColliderComponent::GetEventOverlap()
+UEvent<UPtr<KInterfaceColliderComponent>>& KInterfaceColliderComponent::GetEventOverlap()
 {
 	return eventOverlap_;
 }

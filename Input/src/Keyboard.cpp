@@ -65,7 +65,7 @@ void SKeyboard::UpdateKey(const EKey key, const int action)
     }
 }
 
-KtEvent<>& SKeyboard::EventKey(const EKey key, const EInputState inputState)
+UEvent<>& SKeyboard::EventKey(const EKey key, const EInputState inputState)
 {
     return keyEvents_[to_index(key)][to_index(inputState)];
 }

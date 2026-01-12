@@ -1,6 +1,6 @@
 #pragma once
 template <typename... Args>
-class KtDelegate;
+class UDelegate;
 class KtStopwatch final
 {
 public:
@@ -10,7 +10,7 @@ public:
     float ElapsedSeconds() const;
 
     template <typename... Args>
-    static float Time(const KtDelegate<Args...>& delegate, Args... args)
+    static float Time(const UDelegate<Args...>& delegate, Args... args)
     {
         KtStopwatch stopwatch{};
         stopwatch.Start();

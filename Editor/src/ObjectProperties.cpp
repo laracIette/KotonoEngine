@@ -1,4 +1,6 @@
 #include "ObjectProperties.h"
+#include "ValueBoxString.h"
+#include "ValueSliderFloat.h"
 #include <kotono_core/Object.h>
 #include <kotono_common/log.h>
 #include <kotono_interface/widgets.h>
@@ -53,11 +55,7 @@ WWidget* WObjectProperties::BuildMemberWidget(const std::string& type, void* var
     }
 	if (type == "float")
     {
-        return new WText({
-            .text = "Float Editor Placeholder",
-            .fontSize = { 18.0f, 22.0f },
-            .spacing = -5.0f,
-        });
+        return new WValueSliderFloat(static_cast<f32*>(variablePtr));
     }
     if (type == "glm::vec2")
     {
@@ -85,11 +83,7 @@ WWidget* WObjectProperties::BuildMemberWidget(const std::string& type, void* var
     }
 	if (type == "std::string")
     {
-        return new WText({
-            .text = *static_cast<std::string*>(variablePtr),
-            .fontSize = { 18.0f, 22.0f },
-            .spacing = -5.0f,
-        });
+        return new WValueBoxString(static_cast<std::string*>(variablePtr));
     }
     return nullptr;
 }

@@ -37,7 +37,7 @@ public:
 	KtSwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
 	
 	void ExecuteSingleTimeCommands();
-	KtEvent<>& GetEventExecuteSingleTimeCommands();
+	UEvent<>& GetEventExecuteSingleTimeCommands();
 
 private:
 	VkInstance instance_;
@@ -55,7 +55,7 @@ private:
 	VkCommandPool commandPool_;
 
 	std::vector<VkCommandBuffer> singleTimeCommands_;
-	KtEvent<> eventExecuteSingleTimeCommands_;
+	UEvent<> eventExecuteSingleTimeCommands_;
 
 	VkSampleCountFlagBits msaaSamples_;
 

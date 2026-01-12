@@ -7,9 +7,9 @@
 #include "types.h"
 
 template <typename... Args>
-class KtDelegate final
+class UDelegate final
 {
-    friend struct std::hash<KtDelegate>;
+    friend struct std::hash<UDelegate>;
 
 private:
     using CallbackFunction = std::function<void(Args...)>;
@@ -17,7 +17,7 @@ private:
 public:
     template <class Tinst, class Tfunc>
         requires std::is_base_of_v<Tfunc, Tinst>
-    KtDelegate(Tinst* instance, void (Tfunc::* function)(Args...))
+    UDelegate(Tinst* instance, void (Tfunc::* function)(Args...))
     {
         instance_ = static_cast<void*>(instance);
         functionIdentity_ = *reinterpret_cast<void**>(&function);
@@ -26,7 +26,7 @@ public:
 
     template <class Tinst, class Tfunc>
         requires std::is_base_of_v<Tfunc, Tinst>
-    KtDelegate(const Tinst* instance, void (Tfunc::* function)(Args...) const)
+    UDelegate(const Tinst* instance, void (Tfunc::* function)(Args...) const)
     {
         instance_ = const_cast<void*>(static_cast<const void*>(instance));
         functionIdentity_ = *reinterpret_cast<void**>(&function);
@@ -46,7 +46,7 @@ public:
         return instance_;
     }
 
-    bool operator==(const KtDelegate& other) const noexcept
+    bool operator==(const UDelegate& other) const noexcept
     {
         return other.instance_ == instance_ && other.functionIdentity_ == functionIdentity_;
     }
@@ -59,9 +59,9 @@ private:
 };
 
 template <typename... Args>
-struct std::hash<KtDelegate<Args...>>
+struct std::hash<UDelegate<Args...>>
 {
-    ::size operator()(const KtDelegate<Args...>& delegate) const noexcept
+    ::size operator()(const UDelegate<Args...>& delegate) const noexcept
     {
         ::size h{ 0 };
         combine(h, std::hash<void*>{}(delegate.instance_));

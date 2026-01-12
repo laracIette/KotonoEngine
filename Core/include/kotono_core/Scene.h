@@ -24,14 +24,14 @@ public:
 
 	const KtPool<UPtr<TSceneObject>>& SceneObjects() const;
 
-	KtEvent<>& EventSceneObjectsUpdated();
+	UEvent<>& EventSceneObjectsUpdated();
 
 private:
 	void Update(const float deltaTime);
 
 private:
 	SERIALIZE KtPool<UPtr<TSceneObject>> sceneObjects_;
-	KtEvent<> eventSceneObjectsUpdated_;
+	UEvent<> eventSceneObjectsUpdated_;
 
 };
 

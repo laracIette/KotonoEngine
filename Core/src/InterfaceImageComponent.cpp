@@ -44,12 +44,12 @@ KtTexture* KInterfaceImageComponent::GetTexture() const
 	return texture_;
 }
 
-KtEvent<>& KInterfaceImageComponent::GetEventShaderUpdated()
+UEvent<>& KInterfaceImageComponent::GetEventShaderUpdated()
 {
 	return eventShaderUpdated_;
 }
 
-KtEvent<>& KInterfaceImageComponent::GetEventTextureUpdated()
+UEvent<>& KInterfaceImageComponent::GetEventTextureUpdated()
 {
 	return eventTextureUpdated_;
 }
@@ -73,10 +73,10 @@ void KInterfaceImageComponent::Spawn()
 	CreateTextureProxy();
 	Renderer.InterfaceRenderer().RegisterProxy(textureProxy_);
 
-	EventRectChanged().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkTextureProxyRectDirty));
-	GetEventShaderUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkTextureProxyShaderDirty));
-	GetEventTextureUpdated().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkTextureProxyTextureDirty));
-	EventLayerChanged().AddListener(KtDelegate(this, &KInterfaceImageComponent::MarkTextureProxyLayerDirty));
+	EventRectChanged().AddListener(UDelegate(this, &KInterfaceImageComponent::MarkTextureProxyRectDirty));
+	GetEventShaderUpdated().AddListener(UDelegate(this, &KInterfaceImageComponent::MarkTextureProxyShaderDirty));
+	GetEventTextureUpdated().AddListener(UDelegate(this, &KInterfaceImageComponent::MarkTextureProxyTextureDirty));
+	EventLayerChanged().AddListener(UDelegate(this, &KInterfaceImageComponent::MarkTextureProxyLayerDirty));
 }
 
 void KInterfaceImageComponent::CreateTextureProxy()

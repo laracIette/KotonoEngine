@@ -23,23 +23,23 @@ public:
 	float HorizontalScrollDelta() const;
 	float VerticalScrollDelta() const;
 
-	KtEvent<>& EventButton(const EButton button, const EInputState inputState);
+	UEvent<>& EventButton(const EButton button, const EInputState inputState);
 	bool ButtonState(const EButton button, const EInputState inputState) const;
-	KtEvent<glm::vec2>& EventMove();
-	KtEvent<float>& EventHorizontalScroll();
-	KtEvent<float>& EventVerticalScroll();
+	UEvent<glm::vec2>& EventMove();
+	UEvent<float>& EventHorizontalScroll();
+	UEvent<float>& EventVerticalScroll();
 
 private:
 	glm::vec2 previousCursorPosition_;
 	glm::vec2 cursorPosition_;
-	KtEvent<glm::vec2> eventMove_;
+	UEvent<glm::vec2> eventMove_;
 
 	float horizontalScrollDelta_;
 	float verticalScrollDelta_;
-	KtEvent<float> eventHorizontalScroll_;
-	KtEvent<float> eventVerticalScroll_;
+	UEvent<float> eventHorizontalScroll_;
+	UEvent<float> eventVerticalScroll_;
 
-	std::array<std::array<KtEvent<>, InputStateCount>, ButtonCount> buttonEvents_;
+	std::array<std::array<UEvent<>, InputStateCount>, ButtonCount> buttonEvents_;
 	std::array<std::array<bool, InputStateCount>, ButtonCount> buttonStates_;
 
 	void UpdateButton(const EButton button, const int action);
