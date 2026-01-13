@@ -132,3 +132,38 @@ inline constexpr size to_index(const EKey key)
 {
 	return static_cast<size>(key);
 }
+
+inline constexpr char keyToChar(const EKey key)
+{
+	switch (key)
+	{
+	case EKey::Space: return ' ';
+	case EKey::A: return 'a';
+	case EKey::B: return 'b';
+	case EKey::C: return 'c';
+	case EKey::D: return 'd';
+	case EKey::E: return 'e';
+	case EKey::F: return 'f';
+	case EKey::G: return 'g';
+	case EKey::H: return 'h';
+	case EKey::I: return 'i';
+	case EKey::J: return 'j';
+	case EKey::K: return 'k';
+	case EKey::L: return 'l';
+	case EKey::M: return 'm';
+	case EKey::N: return 'n';
+	case EKey::O: return 'o';
+	case EKey::P: return 'p';
+	case EKey::Q: return 'q';
+	case EKey::R: return 'r';
+	case EKey::S: return 's';
+	case EKey::T: return 't';
+	case EKey::U: return 'u';
+	case EKey::V: return 'v';
+	case EKey::W: return 'w';
+	case EKey::X: return 'x';
+	case EKey::Y: return 'y';
+	case EKey::Z: return 'z';
+	default: return -1;
+	}
+}

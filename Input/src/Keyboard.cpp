@@ -24,6 +24,7 @@ void SKeyboard::Update()
             if (keyStates_[key][inputState])
             {
                 keyEvents_[key][inputState].Broadcast();
+                eventKey_.Broadcast(static_cast<EKey>(key), static_cast<EInputState>(inputState));
             }
         }
 
@@ -73,6 +74,11 @@ UEvent<>& SKeyboard::EventKey(const EKey key, const EInputState inputState)
 bool SKeyboard::KeyState(const EKey key, const EInputState inputState) const
 {
     return keyStates_[to_index(key)][to_index(inputState)];
+}
+
+UEvent<EKey, EInputState>& SKeyboard::EventKey()
+{
+    return eventKey_;
 }
 
 void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mods)

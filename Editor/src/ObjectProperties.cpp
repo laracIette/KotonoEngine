@@ -53,9 +53,13 @@ WWidget* WObjectProperties::BuildMemberWidget(const std::string& type, void* var
     {
         //return nullptr;
     }
-	if (type == "float")
+	if (type == "f32")
     {
         return new WValueSliderFloat(static_cast<f32*>(variablePtr));
+    }
+    if (type == "std::string")
+    {
+        return new WValueBoxString(static_cast<std::string*>(variablePtr));
     }
     if (type == "glm::vec2")
     {
@@ -80,10 +84,6 @@ WWidget* WObjectProperties::BuildMemberWidget(const std::string& type, void* var
             .fontSize = { 18.0f, 22.0f },
             .spacing = -5.0f,
         });
-    }
-	if (type == "std::string")
-    {
-        return new WValueBoxString(static_cast<std::string*>(variablePtr));
     }
     return nullptr;
 }

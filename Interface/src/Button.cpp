@@ -46,6 +46,10 @@ void WButton::OnMouseLeftButtonPressed()
 {
 	if (!IsMouseHovering())
 	{
+		if (buttonSettings_.onPressOut)
+		{
+			buttonSettings_.onPressOut();
+		}
 		return;
 	}
 

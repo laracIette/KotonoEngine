@@ -17,11 +17,16 @@ public:
 	UEvent<>& EventKey(const EKey key, const EInputState inputState);
 	bool KeyState(const EKey key, const EInputState inputState) const;
 
+	UEvent<EKey, EInputState>& EventKey();
+
+private:
+	void UpdateKey(const EKey key, const int action);
+
 private:
 	std::array<std::array<UEvent<>, InputStateCount>, KeyCount> keyEvents_;
 	std::array<std::array<bool, InputStateCount>, KeyCount> keyStates_;
 
-	void UpdateKey(const EKey key, const int action);
+	UEvent<EKey, EInputState> eventKey_;
 };
 
 inline SKeyboard Keyboard;

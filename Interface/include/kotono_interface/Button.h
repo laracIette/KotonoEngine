@@ -14,6 +14,8 @@ public:
 		std::function<void()> onReleased{};
 		// default = {}
 		std::function<void(float)> onVerticalScroll{};
+		// default = {}
+		std::function<void()> onPressOut{};
 	};
 
 	/// Set the widget's bounds as pressable
