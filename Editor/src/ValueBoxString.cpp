@@ -3,11 +3,11 @@
 #include <kotono_interface/widgets.h>
 #include <kotono_input/Keyboard.h>
 
-static constexpr f32 MIN_HOLD_TIME{ 0.5f };
-static constexpr f32 DELETE_FREQUENCY{ 0.05f };
-
 WWidget* WValueBoxString::Build()
-{
+{ 
+	holdAction_.SetActuationTime(0.5f);
+	holdAction_.SetRepeatTime(0.05f);
+
 	Keyboard.EventKey().AddListener(UDelegate(this, &WValueBoxString::OnKey));
 
 	Keyboard.EventKey(EKey::Backspace, EInputState::Down)
@@ -60,32 +60,17 @@ void WValueBoxString::OnKeyBackspaceDown()
 		return;
 	}
 
-	keyHeldTime_ += TimeManager.Delta();
-
-	if (isKeyHeld_ && keyHeldTime_ > DELETE_FREQUENCY)
+	if (holdAction_.Update(TimeManager.Delta()))
 	{
-		keyHeldTime_ = 0.0f;
-	}
-	else if (keyHeldTime_ > MIN_HOLD_TIME)
-	{
-		isKeyHeld_ = true;
-		keyHeldTime_ = 0.0f;
-	}
-	else if (wasKeyDown_)
-	{
-		return;
-	}
-
-	wasKeyDown_ = true;
-
-	SetState([this]()
-	{
-		std::string& value{ GetValue() };
-		if (!value.empty())
+		SetState([this]()
 		{
-			value.pop_back();
-		}
-	});
+			std::string& value{ GetValue() };
+			if (!value.empty())
+			{
+				value.pop_back();
+			}
+		});
+	}
 }
 
 void WValueBoxString::OnKeyBackspaceReleased()
@@ -95,22 +80,40 @@ void WValueBoxString::OnKeyBackspaceReleased()
 		return;
 	}
 
-	wasKeyDown_ = false;
-	isKeyHeld_ = false;
-	keyHeldTime_ = 0.0f;
+	holdAction_.Reset();
 }
 
-void WValueBoxString::OnKey(const Ekey key, const EInputState inputState)
+void WValueBoxString::OnKey(const EKey key, const EInputState inputState)
 {
+	const char character{ keyToChar(key) };
+
 	if (!isSelected_)
 	{
 		return;
 	}
 
-	const char character{ keyToChar(key) };
-	if (isalpha(character))
+	if (inputState != EInputState::Down)
 	{
-		SetState([this, character]()
+		if (currentWriteCharacter_ == character)
+		{
+			holdAction_.Reset();
+		}
+		return;
+	}
+
+	if (!isalpha(character))
+	{
+		return;
+	}
+
+	if (currentWriteCharacter_ != character)
+	{
+		currentWriteCharacter_ = character;
+	}
+
+	if (holdAction_.Update(TimeManager.Delta()))
+	{
+		SetState([this, character]() 
 		{
 			GetValue().push_back(character);
 		});

@@ -1,6 +1,7 @@
 #pragma once
 #include "ValueBox.h"
-enum class Ekey : u8;
+#include <kotono_input/InputHoldAction.h>
+enum class EKey : u8;
 enum class EInputState : u8;
 class WValueBoxString : public WValueBox<std::string>
 {
@@ -14,11 +15,10 @@ private:
 	void OnKeyBackspaceDown();
 	void OnKeyBackspaceReleased();
 
-	void OnKey(const Ekey key, const EInputState inputState);
+	void OnKey(const EKey key, const EInputState inputState);
 
 private:
 	bool isSelected_;
-	bool wasKeyDown_;
-	bool isKeyHeld_;
-	f32 keyHeldTime_;
+	UInputHoldAction holdAction_;
+	char currentWriteCharacter_;
 };
