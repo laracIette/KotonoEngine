@@ -12,7 +12,7 @@ endif()
 add_library(KotonoInterface STATIC)
 
 # Require C++20
-target_compile_features(KotonoInterface PUBLIC cxx_std_20)
+target_compile_features(KotonoInterface PUBLIC cxx_std_23)
 
 set_target_properties(KotonoInterface PROPERTIES FOLDER "KotonoEngine")
 

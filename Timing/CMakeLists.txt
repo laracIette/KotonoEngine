@@ -12,7 +12,7 @@ endif()
 add_library(KotonoTiming STATIC)
 
 # Require C++20
-target_compile_features(KotonoTiming PUBLIC cxx_std_20)
+target_compile_features(KotonoTiming PUBLIC cxx_std_23)
 
 set_target_properties(KotonoTiming PROPERTIES FOLDER "KotonoEngine")
 

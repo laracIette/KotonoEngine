@@ -45,7 +45,7 @@ set(ASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT OFF CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(assimp)
 
-foreach(assimp_target 
+foreach(assimp_target
     assimp
     UpdateAssimpLibsDebugSymbolsAndDLLs
     zlibstatic
@@ -64,7 +64,7 @@ endif()
 add_library(KotonoGraphics STATIC)
 
 # Require C++20
-target_compile_features(KotonoGraphics PUBLIC cxx_std_20)
+target_compile_features(KotonoGraphics PUBLIC cxx_std_23)
 
 set_target_properties(KotonoGraphics PROPERTIES FOLDER "KotonoEngine")
 
@@ -96,7 +96,7 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/Shader.h"
     "include/kotono_graphics/ShaderLayout.h"
     "include/kotono_graphics/ShaderManager.h"
-    "include/kotono_graphics/SpvCompiler.h"    
+    "include/kotono_graphics/SpvCompiler.h"
     "include/kotono_graphics/Vertex2D.h"
     "include/kotono_graphics/Vertex3D.h"
 )
@@ -112,11 +112,11 @@ set(KGRAPHICS_SOURCES
     "src/ModelManager.cpp"
     "src/Renderer.cpp"
     "src/SceneCuller.cpp"
-    "src/SceneProxy.cpp"    
+    "src/SceneProxy.cpp"
     "src/SceneRenderer.cpp"
     "src/Shader.cpp"
     "src/ShaderManager.cpp"
-    "src/SpvCompiler.cpp"  
+    "src/SpvCompiler.cpp"
     "src/Vertex2D.cpp"
     "src/Vertex3D.cpp"
 

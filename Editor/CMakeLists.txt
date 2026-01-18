@@ -12,7 +12,7 @@ endif()
 add_library(KotonoEditor STATIC)
 
 # Require C++20
-target_compile_features(KotonoEditor PUBLIC cxx_std_20)
+target_compile_features(KotonoEditor PUBLIC cxx_std_23)
 
 set_target_properties(KotonoEditor PROPERTIES FOLDER "KotonoEngine")
 
@@ -25,7 +25,7 @@ set(KEDITOR_HEADERS
     "include/kotono_editor/GameStateButton.h"
     "include/kotono_editor/MainWindow.h"
     "include/kotono_editor/ObjectProperties.h"
-    "include/kotono_editor/PropertiesWindow.h"    
+    "include/kotono_editor/PropertiesWindow.h"
     "include/kotono_editor/SceneExplorer.h"
     "include/kotono_editor/SceneExplorerItem.h"
     "include/kotono_editor/TestBox.h"
@@ -47,7 +47,7 @@ set(KEDITOR_SOURCES
     "src/GameStateButton.cpp"
     "src/MainWindow.cpp"
     "src/ObjectProperties.cpp"
-    "src/PropertiesWindow.cpp"    
+    "src/PropertiesWindow.cpp"
     "src/SceneExplorer.cpp"
     "src/SceneExplorerItem.cpp"
     "src/TestBox.cpp"

@@ -12,7 +12,7 @@ endif()
 add_library(KotonoReflection STATIC)
 
 # Require C++20
-target_compile_features(KotonoReflection PUBLIC cxx_std_20)
+target_compile_features(KotonoReflection PUBLIC cxx_std_23)
 
 set_target_properties(KotonoReflection PROPERTIES FOLDER "KotonoEngine")
 
@@ -36,6 +36,6 @@ target_include_directories(KotonoReflection
 )
 
 # Link libs
-target_link_libraries(KotonoReflection PUBLIC 
+target_link_libraries(KotonoReflection PUBLIC
     KotonoIO
 )

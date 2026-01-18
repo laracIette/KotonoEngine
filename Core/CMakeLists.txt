@@ -12,7 +12,7 @@ endif()
 add_library(KotonoCore STATIC)
 
 # Require C++20
-target_compile_features(KotonoCore PUBLIC cxx_std_20)
+target_compile_features(KotonoCore PUBLIC cxx_std_23)
 
 set_target_properties(KotonoCore PROPERTIES FOLDER "KotonoEngine")
 
@@ -34,7 +34,7 @@ set(KCORE_HEADERS
     "include/kotono_core/Object.h"
     "include/kotono_core/ObjectFactory.h"
     "include/kotono_core/ObjectManager.h"
-    "include/kotono_core/Orientation.h"    
+    "include/kotono_core/Orientation.h"
     "include/kotono_core/ProjectSettings.h"
     "include/kotono_core/Ptr.h"
     "include/kotono_core/Rect.h"

@@ -12,7 +12,7 @@ endif()
 add_library(SPIRVReflect STATIC)
 
 # Require C++20
-target_compile_features(SPIRVReflect PUBLIC cxx_std_20)
+target_compile_features(SPIRVReflect PUBLIC cxx_std_23)
 
 file(GLOB_RECURSE SREFLECT_SOURCES "src/*.c")
 file(GLOB_RECURSE SREFLECT_HEADERS "include/spirv-reflect/*.h")

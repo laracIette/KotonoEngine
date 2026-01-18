@@ -46,12 +46,12 @@ endif()
 
 FetchContent_MakeAvailable(OpenAL)
 
-foreach(al_target 
+foreach(al_target
     OpenAL
-    alsoft.common 
-    alsoft.excommon 
-    alsoft.fmt 
-    alsoft.build_version 
+    alsoft.common
+    alsoft.excommon
+    alsoft.fmt
+    alsoft.build_version
     clang-tidy-check
 )
     if(TARGET ${al_target})
@@ -64,7 +64,7 @@ endforeach()
 add_library(KotonoAudio STATIC)
 
 # Require C++20
-target_compile_features(KotonoAudio PUBLIC cxx_std_20)
+target_compile_features(KotonoAudio PUBLIC cxx_std_23)
 
 set_target_properties(KotonoAudio PROPERTIES FOLDER "KotonoEngine")
 

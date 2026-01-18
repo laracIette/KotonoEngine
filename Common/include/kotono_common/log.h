@@ -5,14 +5,12 @@
 #ifdef _DEBUG
 #include <format>
 #include <iostream>
+#include <print>
 
 template<typename... Args>
 void log_internal(const char* category, const char* funcName, std::format_string<Args...> format, Args&&... args)
 {
-    std::cout 
-        << std::format("[{}.{}()]", category, funcName) << ' '
-        << std::format(format, std::forward<Args>(args)...)
-        << std::endl;
+    std::println("[{}.{}()] {}", category, funcName, std::format(format, std::forward<Args>(args)...));
 }
 
 #define KT_LOG(level, category, format, ...)                     \

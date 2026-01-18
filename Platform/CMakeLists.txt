@@ -29,7 +29,7 @@ set(GLFW_INSTALL        OFF CACHE INTERNAL "")
 
 FetchContent_MakeAvailable(glfw)
 
-foreach(glfw_target 
+foreach(glfw_target
     glfw
     update_mappings
 )
@@ -45,13 +45,13 @@ find_package(Vulkan REQUIRED)
 add_library(KotonoPlatform STATIC)
 
 # Require C++20
-target_compile_features(KotonoPlatform PUBLIC cxx_std_20)
+target_compile_features(KotonoPlatform PUBLIC cxx_std_23)
 
 set_target_properties(KotonoPlatform PROPERTIES FOLDER "KotonoEngine")
 
 set(KPLATFORM_HEADERS
     "include/kotono_platform/AllocatedBuffer.h"
-    "include/kotono_platform/Context.h"    
+    "include/kotono_platform/Context.h"
     "include/kotono_platform/glm_utils.h"
     "include/kotono_platform/QueueFamilyIndices.h"
     "include/kotono_platform/SwapChainSupportDetails.h"
