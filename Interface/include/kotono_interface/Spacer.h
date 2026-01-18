@@ -10,7 +10,7 @@ public:
 	/// Fills the entirety of the available parent space
 	WSpacer(const SpacerSettings& spacerSettings);
 
-	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
+	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 	EFlex GetFlex() const override;
 

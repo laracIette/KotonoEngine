@@ -6,7 +6,7 @@ WExpanded::WExpanded(const ExpandedSettings& expandedSettings) :
 {
 }
 
-void WExpanded::DisplayInternal(DisplaySettings displaySettings)
+void WExpanded::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	if (expandedSettings_.child)
 	{
@@ -14,7 +14,7 @@ void WExpanded::DisplayInternal(DisplaySettings displaySettings)
 	}
 }
 
-WWidget::DisplaySettings WExpanded::GetDisplaySettings(DisplaySettings displaySettings) const
+UWidgetDisplaySettings WExpanded::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	return displaySettings;
 }

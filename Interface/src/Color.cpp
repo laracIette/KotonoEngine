@@ -12,7 +12,7 @@ WColor::WColor(const ColorSettings& colorSettings) :
 {
 }
 
-void WColor::DisplayInternal(DisplaySettings displaySettings)
+void WColor::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	colorProxy_ = Renderer.InterfaceRenderer().CreateProxy();
 	Renderer.InterfaceRenderer().RegisterProxy(colorProxy_);

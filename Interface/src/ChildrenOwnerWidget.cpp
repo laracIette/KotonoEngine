@@ -63,7 +63,7 @@ WWidget::WidgetVector WChildrenOwnerWidget::GetWidgetTree()
 	{
 		if (child)
 		{
-			const auto sub = child->GetWidgetTree();
+			const auto sub{ child->GetWidgetTree() };
 			result.insert(result.end(), sub.begin(), sub.end());
 		}
 	}

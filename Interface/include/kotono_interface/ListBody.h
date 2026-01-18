@@ -13,10 +13,10 @@ public:
 	/// Defines a vertical container for widgets
 	WListBody(const ListBodySettings& listBodySettings);
 
-	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
+	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 protected:
 	ListBodySettings listBodySettings_;
 
-	void DisplayInternal(DisplaySettings displaySettings) override;
+	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 };

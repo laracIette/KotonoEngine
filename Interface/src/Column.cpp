@@ -10,7 +10,7 @@ WColumn::WColumn(const ColumnSettings& columnSettings) :
 {
 }
 
-void WColumn::DisplayInternal(DisplaySettings displaySettings)
+void WColumn::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	// Get non-flex height
 	float nonFlexHeight{ 0.0f };
@@ -58,7 +58,7 @@ void WColumn::DisplayInternal(DisplaySettings displaySettings)
 	}
 }
 
-WWidget::DisplaySettings WColumn::GetDisplaySettings(DisplaySettings displaySettings) const
+UWidgetDisplaySettings WColumn::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
@@ -79,6 +79,23 @@ WWidget::DisplaySettings WColumn::GetDisplaySettings(DisplaySettings displaySett
 
 	displaySettings.bounds = glm::min(size, displaySettings.bounds);
 	return displaySettings;
+}
+
+glm::vec2 WColumn::GetDesiredSize() const
+{
+	glm::vec2 size{};
+
+	for (auto* child : columnSettings_.children)
+	{
+		if (child)
+		{
+			const auto childDesiredSize{ child->GetDesiredSize() };
+			size.x = std::max(size.x, childDesiredSize.x);
+			size.y += childDesiredSize.y;
+		}
+	}
+
+	return size;
 }
 
 size WColumn::GetFlexCount() const

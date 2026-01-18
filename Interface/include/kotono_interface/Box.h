@@ -13,11 +13,14 @@ public:
 	/// Set bounds for the child widget to be contained within
 	WBox(const BoxSettings& boxSettings);
 
-	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
+	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
+
+	EFlex GetFlex() const override;
+	glm::vec2 GetDesiredSize() const override;
 
 protected:
 	BoxSettings boxSettings_;
 
-	void DisplayInternal(DisplaySettings displaySettings) override;
+	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 };
 

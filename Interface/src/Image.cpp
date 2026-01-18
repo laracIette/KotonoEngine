@@ -13,7 +13,7 @@ WImage::WImage(const ImageSettings& imageSettings) :
 {
 }
 
-void WImage::DisplayInternal(DisplaySettings displaySettings)
+void WImage::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	imageProxy_ = Renderer.InterfaceRenderer().CreateProxy();
 	Renderer.InterfaceRenderer().RegisterProxy(imageProxy_);

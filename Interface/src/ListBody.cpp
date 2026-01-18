@@ -8,7 +8,7 @@ WListBody::WListBody(const ListBodySettings& listBodySettings) :
 {
 }
 
-void WListBody::DisplayInternal(DisplaySettings displaySettings)
+void WListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	++displaySettings.layer;
 
@@ -31,7 +31,7 @@ void WListBody::DisplayInternal(DisplaySettings displaySettings)
 	}
 }
 
-WWidget::DisplaySettings WListBody::GetDisplaySettings(DisplaySettings displaySettings) const
+UWidgetDisplaySettings WListBody::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 

@@ -12,11 +12,13 @@ public:
 	/// Display widgets on top of each other
 	WStack(const StackSettings& stackSettings);
 
-	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
+	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
+	
+	glm::vec2 GetDesiredSize() const override;
 
 protected:
 	StackSettings stackSettings_;
 
-	void DisplayInternal(DisplaySettings displaySettings) override;
+	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 };
 

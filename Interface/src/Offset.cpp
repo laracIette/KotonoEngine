@@ -6,7 +6,7 @@ WOffset::WOffset(const OffsetSettings& offsetSettings) :
 {
 }
 
-void WOffset::DisplayInternal(DisplaySettings displaySettings)
+void WOffset::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	++displaySettings.layer;
 
@@ -16,7 +16,7 @@ void WOffset::DisplayInternal(DisplaySettings displaySettings)
 	}
 }
 
-WWidget::DisplaySettings WOffset::GetDisplaySettings(DisplaySettings displaySettings) const
+UWidgetDisplaySettings WOffset::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	displaySettings.position += offsetSettings_.offset;
 	

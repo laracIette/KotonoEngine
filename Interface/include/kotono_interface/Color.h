@@ -20,6 +20,6 @@ protected:
 	ColorSettings colorSettings_;
 	UInterfaceProxy* colorProxy_;
 
-	void DisplayInternal(DisplaySettings displaySettings) override;
+	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 };
 

@@ -13,11 +13,11 @@ public:
 	/// Offset the position of the child widget
 	WOffset(const OffsetSettings& offsetSettings);
 
-	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
+	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 protected:
 	OffsetSettings offsetSettings_;
 
-	void DisplayInternal(DisplaySettings displaySettings) override;
+	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 };
 

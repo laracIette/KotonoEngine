@@ -39,6 +39,7 @@ set(KINTERFACE_HEADERS
     "include/kotono_interface/utils.h"
     "include/kotono_interface/Widget.h"
     "include/kotono_interface/widgets.h"
+    "include/kotono_interface/Wrap.h"
 )
 set(KINTERFACE_SOURCES
     "src/Box.cpp"
@@ -61,6 +62,7 @@ set(KINTERFACE_SOURCES
     "src/Text.cpp"
     "src/utils.cpp"
     "src/Widget.cpp"
+    "src/Wrap.cpp"
 )
 
 target_sources(KotonoInterface

@@ -18,7 +18,7 @@ public:
 
 	WWidget* Build() override;
 
-	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
+	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 protected:
 	TextSettings textSettings_;

@@ -20,6 +20,6 @@ protected:
 	ImageSettings imageSettings_;
 	UInterfaceProxy* imageProxy_;
 
-	void DisplayInternal(DisplaySettings displaySettings) override;
+	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 };
 

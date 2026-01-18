@@ -15,8 +15,7 @@ WWidget* WValueBoxString::Build()
 	Keyboard.EventKey(EKey::Backspace, EInputState::Released)
 		.AddListener(UDelegate(this, &WValueBoxString::OnKeyBackspaceReleased));
 
-	return new WBox({
-		.size = { 300.0f, 26.0f },
+	return new WWrap({
 		.child = new WStack({
 			.children = {
 				new WColor({ UColor::White().WithAlpha(0.15f) }),
@@ -32,7 +31,7 @@ WWidget* WValueBoxString::Build()
 					.padding = WPadding::Padding::All(4.0f),
 					.child = new WText({
 						.text = GetValue(),
-						.fontSize = { 14.0f, 18.0f },
+						.fontSize = { 15.0f, 18.0f },
 						.spacing = -5.0f,
 					}),
 				}),

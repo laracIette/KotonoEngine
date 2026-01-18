@@ -1,23 +1,22 @@
 #pragma once
 #include "ChildOwnerWidget.h"
-class WExpanded : public WChildOwnerWidget
+class WWrap : public WChildOwnerWidget
 {
 public:
-	struct ExpandedSettings
+	struct WrapSettings
 	{
 		WWidget* child{ nullptr };
 	};
 
 	/// Fills the entirety of the available parent space
-	WExpanded(const ExpandedSettings& expandedSettings);
+	WWrap(const WrapSettings& wrapSettings);
 
 	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
-	
+
 	EFlex GetFlex() const override;
 
 protected:
-	ExpandedSettings expandedSettings_;
+	WrapSettings wrapSettings_;
 
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 };
-

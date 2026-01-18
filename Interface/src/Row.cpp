@@ -11,7 +11,7 @@ WRow::WRow(const RowSettings& rowSettings) :
 {
 }
 
-void WRow::DisplayInternal(DisplaySettings displaySettings)
+void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	// Get non-flex width
 	float nonFlexWidth{ 0.0f };
@@ -59,7 +59,7 @@ void WRow::DisplayInternal(DisplaySettings displaySettings)
 	}
 }
 
-WWidget::DisplaySettings WRow::GetDisplaySettings(DisplaySettings displaySettings) const
+UWidgetDisplaySettings WRow::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
@@ -80,6 +80,23 @@ WWidget::DisplaySettings WRow::GetDisplaySettings(DisplaySettings displaySetting
 
 	displaySettings.bounds = glm::min(size, displaySettings.bounds);
 	return displaySettings;
+}
+
+glm::vec2 WRow::GetDesiredSize() const
+{
+	glm::vec2 size{};
+
+	for (auto* child : rowSettings_.children)
+	{
+		if (child)
+		{
+			const auto childDesiredSize{ child->GetDesiredSize() };
+			size.x += childDesiredSize.x;
+			size.y = std::max(size.y, childDesiredSize.y);
+		}
+	}
+
+	return size;
 }
  
 size WRow::GetFlexCount() const

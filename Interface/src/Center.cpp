@@ -6,7 +6,7 @@ WCenter::WCenter(const CenterSettings& centerSettings) :
 {
 }
 
-void WCenter::DisplayInternal(DisplaySettings displaySettings)
+void WCenter::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	++displaySettings.layer;
 
@@ -16,7 +16,7 @@ void WCenter::DisplayInternal(DisplaySettings displaySettings)
 	}
 }
 
-WWidget::DisplaySettings WCenter::GetDisplaySettings(DisplaySettings displaySettings) const
+UWidgetDisplaySettings WCenter::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	switch (centerSettings_.axis)
 	{

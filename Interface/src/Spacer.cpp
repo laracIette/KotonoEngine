@@ -7,7 +7,7 @@ WSpacer::WSpacer(const SpacerSettings& spacerSettings) :
 {
 }
 
-WWidget::DisplaySettings WSpacer::GetDisplaySettings(DisplaySettings displaySettings) const
+UWidgetDisplaySettings WSpacer::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	if (dynamic_cast<const WRow*>(parent_))
 	{

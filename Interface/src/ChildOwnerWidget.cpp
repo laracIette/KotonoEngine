@@ -39,13 +39,22 @@ EFlex WChildOwnerWidget::GetFlex() const
 	return EFlex::None;
 }
 
+glm::vec2 WChildOwnerWidget::GetDesiredSize() const
+{
+	if (child_)
+	{
+		return child_->GetDesiredSize();
+	}
+	return { 0.0f, 0.0f };
+}
+
 WWidget::WidgetVector WChildOwnerWidget::GetWidgetTree()
 {
 	WidgetVector result{ this };
 
 	if (child_)
 	{
-		const auto sub = child_->GetWidgetTree();
+		const auto sub{ child_->GetWidgetTree() };
 		result.insert(result.end(), sub.begin(), sub.end());
 	}
 

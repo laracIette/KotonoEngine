@@ -6,7 +6,7 @@ WConstraint::WConstraint(const ConstraintSettings& constraintSettings) :
 {
 }
 
-void WConstraint::DisplayInternal(DisplaySettings displaySettings)
+void WConstraint::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	++displaySettings.layer;
 
@@ -16,7 +16,7 @@ void WConstraint::DisplayInternal(DisplaySettings displaySettings)
 	}
 }
 
-WWidget::DisplaySettings WConstraint::GetDisplaySettings(DisplaySettings displaySettings) const
+UWidgetDisplaySettings WConstraint::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	switch (constraintSettings_.axis)
 	{
@@ -33,4 +33,24 @@ WWidget::DisplaySettings WConstraint::GetDisplaySettings(DisplaySettings display
 		return constraintSettings_.child->GetDisplaySettings(displaySettings);
 	}
 	return displaySettings;
+}
+
+EFlex WConstraint::GetFlex() const
+{
+	switch (constraintSettings_.axis)
+	{
+	case Axis::Horizontal:	return EFlex::Vertical;
+	case Axis::Vertical:	return EFlex::Horizontal;
+	default:				return EFlex::None;
+	}
+}
+
+glm::vec2 WConstraint::GetDesiredSize() const
+{
+	switch (constraintSettings_.axis)
+	{
+	case Axis::Horizontal:	return { constraintSettings_.size, 0.0f };
+	case Axis::Vertical:	return { 0.0f, constraintSettings_.size };
+	default:				return { 0.0f, 0.0f };
+	}
 }

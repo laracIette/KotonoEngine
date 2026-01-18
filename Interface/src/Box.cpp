@@ -7,7 +7,7 @@ WBox::WBox(const BoxSettings& boxSettings) :
 {
 }
 
-void WBox::DisplayInternal(DisplaySettings displaySettings)
+void WBox::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	++displaySettings.layer;
 
@@ -17,8 +17,18 @@ void WBox::DisplayInternal(DisplaySettings displaySettings)
 	}
 }
 
-WWidget::DisplaySettings WBox::GetDisplaySettings(DisplaySettings displaySettings) const
+UWidgetDisplaySettings WBox::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	displaySettings.bounds = glm::min(boxSettings_.size, displaySettings.bounds);
 	return displaySettings;
+}
+
+EFlex WBox::GetFlex() const
+{
+	return EFlex::None;
+}
+
+glm::vec2 WBox::GetDesiredSize() const
+{
+	return boxSettings_.size;
 }

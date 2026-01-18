@@ -13,12 +13,14 @@ public:
 	/// Defines an horizontal container for widgets
 	WRow(const RowSettings& rowSettings);	
 
-	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
+	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
+
+	glm::vec2 GetDesiredSize() const override;
 
 protected:
 	RowSettings rowSettings_;
 	
-	void DisplayInternal(DisplaySettings displaySettings) override;
+	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 
 private:
 	size GetFlexCount() const;

@@ -17,7 +17,7 @@ WWidget* WText::Build()
 	});
 }
 
-WWidget::DisplaySettings WText::GetDisplaySettings(DisplaySettings displaySettings) const
+UWidgetDisplaySettings WText::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	const auto ds{ WWidget::GetDisplaySettings(displaySettings) };
 	return ds;

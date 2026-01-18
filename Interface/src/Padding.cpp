@@ -7,7 +7,7 @@ WPadding::WPadding(const PaddingSettings& paddingSettings) :
 {
 }
 
-void WPadding::DisplayInternal(DisplaySettings displaySettings)
+void WPadding::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	++displaySettings.layer;
 
@@ -17,7 +17,7 @@ void WPadding::DisplayInternal(DisplaySettings displaySettings)
 	}
 }
 
-WWidget::DisplaySettings WPadding::GetDisplaySettings(DisplaySettings displaySettings) const
+UWidgetDisplaySettings WPadding::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	displaySettings.bounds.x -= paddingSettings_.padding.l;
 	displaySettings.bounds.x -= paddingSettings_.padding.r;
@@ -28,4 +28,17 @@ WWidget::DisplaySettings WPadding::GetDisplaySettings(DisplaySettings displaySet
 	displaySettings.position.y += paddingSettings_.padding.t;
 	
 	return displaySettings;
+}
+
+glm::vec2 WPadding::GetDesiredSize() const
+{
+	if (paddingSettings_.child)
+	{
+		auto childDesiredSize{ paddingSettings_.child->GetDesiredSize() };
+		childDesiredSize.x += paddingSettings_.padding.l + paddingSettings_.padding.r;
+		childDesiredSize.y += paddingSettings_.padding.t + paddingSettings_.padding.b;
+		return childDesiredSize;
+	}
+
+	return { 0.0f, 0.0f };
 }

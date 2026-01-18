@@ -7,7 +7,7 @@ WStack::WStack(const StackSettings& stackSettings) :
 {
 }
 
-void WStack::DisplayInternal(DisplaySettings displaySettings)
+void WStack::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	for (auto* child : stackSettings_.children)
 	{
@@ -19,7 +19,7 @@ void WStack::DisplayInternal(DisplaySettings displaySettings)
 	}
 }
 
-WWidget::DisplaySettings WStack::GetDisplaySettings(DisplaySettings displaySettings) const
+UWidgetDisplaySettings WStack::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	glm::vec2 bounds{ 0.0f, 0.0f };
 
@@ -33,4 +33,20 @@ WWidget::DisplaySettings WStack::GetDisplaySettings(DisplaySettings displaySetti
 	}
 	displaySettings.bounds = glm::min(bounds, displaySettings.bounds);
 	return displaySettings;
+}
+
+glm::vec2 WStack::GetDesiredSize() const
+{
+	glm::vec2 size{ 0.0f, 0.0f };
+
+	for (auto* child : stackSettings_.children)
+	{
+		if (child)
+		{
+			const auto childDesiredSize{ child->GetDesiredSize() };
+			size = glm::max(size, childDesiredSize);
+		}
+	}
+
+	return size;
 }

@@ -34,7 +34,7 @@ void WWidget::Cleanup()
 	}
 }
 
-void WWidget::Display(DisplaySettings displaySettings)
+void WWidget::Display(UWidgetDisplaySettings displaySettings)
 {
 	SetDisplaySettings(displaySettings);
 
@@ -50,7 +50,7 @@ void WWidget::Display(DisplaySettings displaySettings)
 	}
 }
 
-WWidget::DisplaySettings WWidget::GetDisplaySettings(DisplaySettings displaySettings) const
+UWidgetDisplaySettings WWidget::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	const WWidget* build{ cachedBuild_.Value() };
 	if (build && build != this)
@@ -68,7 +68,17 @@ EFlex WWidget::GetFlex() const
 	{
 		return build->GetFlex();
 	}
-	return EFlex::None;
+	return EFlex::All;
+}
+
+glm::vec2 WWidget::GetDesiredSize() const
+{
+	const WWidget* build{ cachedBuild_.Value() };
+	if (build && build != this)
+	{
+		return build->GetDesiredSize();
+	}
+	return { 0.0f, 0.0f };
 }
 
 WWidget::WidgetVector WWidget::GetWidgetTree()
@@ -115,7 +125,7 @@ void WWidget::SetState(const StateFunction& function)
 	Refresh();
 }
 
-void WWidget::SetDisplaySettings(const DisplaySettings& displaySettings)
+void WWidget::SetDisplaySettings(const UWidgetDisplaySettings& displaySettings)
 {
 	displaySettings_ = displaySettings;
 }
@@ -140,7 +150,7 @@ glm::mat4 WWidget::ModelMatrix() const
 	return TranslationMatrix() * RotationMatrix() * ScaleMatrix();
 }
 
-void WWidget::DisplayInternal(DisplaySettings displaySettings)
+void WWidget::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 }
 

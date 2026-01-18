@@ -21,11 +21,14 @@ public:
 	/// Constraints the bounds of the child widget given an axis
 	WConstraint(const ConstraintSettings& constraintSettings);
 
-	DisplaySettings GetDisplaySettings(DisplaySettings displaySettings) const override;
+	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
+
+	EFlex GetFlex() const override;
+	glm::vec2 GetDesiredSize() const override;
 
 protected:
 	ConstraintSettings constraintSettings_;
 
-	void DisplayInternal(DisplaySettings displaySettings) override;
+	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 };
 
