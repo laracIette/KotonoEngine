@@ -15,6 +15,8 @@ public:
 
 	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
+	glm::vec2 GetDesiredSize() const override;
+
 protected:
 	ListBodySettings listBodySettings_;
 

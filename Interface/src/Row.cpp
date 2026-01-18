@@ -78,7 +78,7 @@ UWidgetDisplaySettings WRow::GetDisplaySettings(UWidgetDisplaySettings displaySe
 		size.x += rowSettings_.spacing * static_cast<float>(GetValidChildrenCount() - 1);
 	}
 
-	displaySettings.bounds = glm::min(size, displaySettings.bounds);
+	displaySettings.bounds = glm::min(displaySettings.bounds, size);
 	return displaySettings;
 }
 

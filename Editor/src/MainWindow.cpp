@@ -19,19 +19,6 @@ WWidget* WMainWindow::Build()
 				new WRow({
 					.spacing = 4.0f,
 					.children = {
-						new WRow({
-							.spacing = 5.0f,
-							.children = {
-								new WBox({
-									.size = { 50.0f, 50.0f },
-									.child = new WColor({ UColor::Green() }),
-								}),
-								new WBox({
-									.size = { 50.0f, 50.0f },
-									.child = new WColor({ UColor::Green() }),
-								}),
-							},
-						}),
 						new WSpacer({}),
 						new WColumn({
 							.spacing = 2.0f,

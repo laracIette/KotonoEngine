@@ -77,7 +77,7 @@ UWidgetDisplaySettings WColumn::GetDisplaySettings(UWidgetDisplaySettings displa
 		size.y += columnSettings_.spacing * static_cast<float>(GetValidChildrenCount() - 1);
 	}
 
-	displaySettings.bounds = glm::min(size, displaySettings.bounds);
+	displaySettings.bounds = glm::min(displaySettings.bounds, size);
 	return displaySettings;
 }
 

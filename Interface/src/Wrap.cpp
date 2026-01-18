@@ -1,4 +1,5 @@
 #include "Wrap.h"
+#include <glm/common.hpp>
 
 WWrap::WWrap(const WrapSettings& wrapSettings) :
 	WChildOwnerWidget(wrapSettings.child),
@@ -10,7 +11,8 @@ UWidgetDisplaySettings WWrap::GetDisplaySettings(UWidgetDisplaySettings displayS
 {
 	if (wrapSettings_.child)
 	{
-		displaySettings.bounds = wrapSettings_.child->GetDesiredSize();
+		auto childDesiredSize{ wrapSettings_.child->GetDesiredSize() };
+		displaySettings.bounds = glm::min(displaySettings.bounds, childDesiredSize);
 		return wrapSettings_.child->GetDisplaySettings(displaySettings);
 	}
 

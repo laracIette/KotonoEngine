@@ -14,17 +14,16 @@ WWidget* WVisualizerWindow::Build()
                     .child = new WColumn({
                         .spacing = 10.0f,
                         .children = {
-                            new WStack({
-                                .children = {
-                                    new WText({
-                                        .text = "Visualizer",
-                                        .spacing = -20.0f,
-                                    }),
-                                    new WBox({
-                                        .size = { 400.0f, 60.0f },
-                                        .child = new WColor({ UColor::Black().WithAlpha(0.5f) }),
-                                    }),
-                                },
+                            new WWrap({
+                                .child = new WStack({
+                                    .children = {
+                                        new WColor({ UColor::Black().WithAlpha(0.5f) }),
+                                        new WText({
+                                            .text = "Visualizer",
+                                            .spacing = -20.0f,
+                                        }),
+                                    },
+                                }),
                             }),
                             new WList({
                                 .spacing = 5.0f,

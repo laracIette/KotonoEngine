@@ -53,3 +53,25 @@ UWidgetDisplaySettings WListBody::GetDisplaySettings(UWidgetDisplaySettings disp
 	displaySettings.bounds = glm::min(size, displaySettings.bounds);
 	return displaySettings;
 }
+
+glm::vec2 WListBody::GetDesiredSize() const
+{
+	glm::vec2 size{};
+
+	for (auto* child : listBodySettings_.children)
+	{
+		if (child)
+		{
+			const auto childDesiredSize{ child->GetDesiredSize() };
+			size.x = std::max(size.x, childDesiredSize.x);
+			size.y += childDesiredSize.y;
+		}
+	}
+
+	if (GetValidChildrenCount() > 1)
+	{
+		size.y += listBodySettings_.spacing * static_cast<float>(GetValidChildrenCount() - 1);
+	}
+
+	return size;
+}

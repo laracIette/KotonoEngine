@@ -22,64 +22,65 @@ WWidget* WPropertiesWindow::Build()
 		return nullptr;
     }
   
-    return new WStack({
-        .children = {
-            new WColor({ UColor::Blue().WithAlpha(0.5f) }),
-            new WPadding({
-                .padding = WPadding::Padding::All(8.0f),
-                .child = new WList({
-                    .spacing = 10.0f,
-                    .children = [this, selectedObject]() {
-						return WidgetVector{
-                            new WStack({
-                                .children = {
-                                    new WText({
-                                        .text = "Properties",
-                                        .spacing = -20.0f,
+    return new WWrap({
+        .child = new WStack({
+            .children = {
+                new WColor({ UColor::Blue().WithAlpha(0.5f) }),
+                new WPadding({
+                    .padding = WPadding::Padding::All(8.0f),
+                    .child = new WList({
+                        .spacing = 10.0f,
+                        .children = [this, selectedObject]() {
+						    return WidgetVector{
+                                new WWrap({
+                                    .child = new WStack({
+                                        .children = {
+                                            new WColor({ UColor::Black().WithAlpha(0.5f) }),
+                                            new WText({
+                                                .text = "Properties",
+                                                .spacing = -20.0f,
+                                            }),
+                                        },
                                     }),
-                                    new WBox({
-                                        .size = { 400.0f, 60.0f },
-                                        .child = new WColor({ UColor::Black().WithAlpha(0.5f) }),
-                                    }),
-                                },
-                            }),
+                                }),
 
-                            new WObjectProperties(selectedObject),
+                                new WObjectProperties(selectedObject),
 
-                            Slider("Position X", [selectedObject](const float delta) {
-								if (selectedObject) selectedObject->RootComponent()->Translate({ delta * 0.01f, 0.0f, 0.0f });
-                            }),
-                            Slider("Position Y", [selectedObject](const float delta) {
-                                if (selectedObject) selectedObject->RootComponent()->Translate({ 0.0f, delta * 0.01f, 0.0f });
-                            }),
-                            Slider("Position Z", [selectedObject](const float delta) {
-                                if (selectedObject) selectedObject->RootComponent()->Translate({ 0.0f, 0.0f, delta * 0.01f });
-                            }),
+                                Slider("Position X", [selectedObject](const float delta) {
+								    if (selectedObject) selectedObject->RootComponent()->Translate({ delta * 0.01f, 0.0f, 0.0f });
+                                }),
+                                Slider("Position Y", [selectedObject](const float delta) {
+                                    if (selectedObject) selectedObject->RootComponent()->Translate({ 0.0f, delta * 0.01f, 0.0f });
+                                }),
+                                Slider("Position Z", [selectedObject](const float delta) {
+                                    if (selectedObject) selectedObject->RootComponent()->Translate({ 0.0f, 0.0f, delta * 0.01f });
+                                }),
 
-                            Slider("Scale X", [selectedObject](const float delta) {
-                                if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f + delta * 0.001f, 1.0f, 1.0f });
-                            }),
-                            Slider("Scale Y", [selectedObject](const float delta) {
-                                if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f, 1.0f + delta * 0.001f, 1.0f });
-                            }),
-                            Slider("Scale Z", [selectedObject](const float delta) {
-                                if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f, 1.0f, 1.0f + delta * 0.001f });
-                            }),
+                                Slider("Scale X", [selectedObject](const float delta) {
+                                    if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f + delta * 0.001f, 1.0f, 1.0f });
+                                }),
+                                Slider("Scale Y", [selectedObject](const float delta) {
+                                    if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f, 1.0f + delta * 0.001f, 1.0f });
+                                }),
+                                Slider("Scale Z", [selectedObject](const float delta) {
+                                    if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f, 1.0f, 1.0f + delta * 0.001f });
+                                }),
 
-                            Slider("Rotation Pitch", [selectedObject](const float delta) {
-                                if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldRightVector));
-                            }),
-                            Slider("Rotation Yaw", [selectedObject](const float delta) {
-                                if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldUpVector));
-                            }),
-                            Slider("Rotation Roll", [selectedObject](const float delta) {
-                                if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldForwardVector));
-                            }),
-                        };
-                    },
+                                Slider("Rotation Pitch", [selectedObject](const float delta) {
+                                    if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldRightVector));
+                                }),
+                                Slider("Rotation Yaw", [selectedObject](const float delta) {
+                                    if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldUpVector));
+                                }),
+                                Slider("Rotation Roll", [selectedObject](const float delta) {
+                                    if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldForwardVector));
+                                }),
+                            };
+                        },
+                    }),
                 }),
-            }),
-        },
+            },
+        }),
     });
 }
 

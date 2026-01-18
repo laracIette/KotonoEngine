@@ -12,9 +12,7 @@ WWidget* WSceneExplorerItem::Build()
 {
 	ObjectManager.EventSelectedObjectChanged().AddListener(UDelegate(this, &WSceneExplorerItem::Refresh));
 
-	return new WConstraint({
-		.axis = WConstraint::Axis::Vertical,
-		.size = 30.0f,
+	return new WWrap({
 		.child = new WStack({
 			.children = {
 				sceneObject_ && (ObjectManager.GetSelectedObject() == sceneObject_)

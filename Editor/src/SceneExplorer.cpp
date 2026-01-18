@@ -30,6 +30,7 @@ WWidget* WSceneExplorer::Build()
 				.child = new WColumn({
 					.spacing = 10.0f,
 					.children = {
+						// Create scene object button
 						new WBox({ 
 							.size = { 80.0f, 40.0f },
 							.child = new WStack({
