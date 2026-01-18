@@ -47,7 +47,7 @@ void SObjectManager::Register(KObject* object, UPtrOwnerBase* ptrOwner)
 	object->isConstructed_ = true;
 	object->type_ = object->TypeName();
 	object->SetName(std::format("{}_{}", object->TypeName(), object->Guid().ToString()));
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core.SObjectManager::Register()", "register object %s", object->GetName().c_str());
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core", "register object {}", object->GetName());
 }
 
 void SObjectManager::Delete(UPtrOwnerBase* ptrOwner)
@@ -63,7 +63,7 @@ void SObjectManager::Delete(UPtrOwnerBase* ptrOwner)
 		swapped->objectIndex_ = index;
 	}
 
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core.SObjectManager::Delete()", "delete object %s", object->GetName().c_str());
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core", "delete object {}", object->GetName());
 
 	delete object;
 	delete ptrOwner;
@@ -97,7 +97,7 @@ UEvent<>& SObjectManager::EventSelectedObjectChanged()
 
 void SObjectManager::LogUPS() const
 {
-	KT_LOG(ELogImportanceLevel::High, "Core.SObjectManager::LogUPS()", "%.2f ups", 1.0f / TimeManager.AverageUpdateTime());
+	KT_LOG(ELogImportanceLevel::High, "Core", "{:.2f} ups", 1.0f / TimeManager.AverageUpdateTime());
 }
 
 void SObjectManager::OnMouseButtonLeftPressed()
@@ -126,6 +126,6 @@ void SObjectManager::OnMouseButtonLeftPressed()
 
 	if (selectedObject_)
 	{
-		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Core.SObjectManager::OnMouseButtonLeftPressed()", "selected %s", selectedObject_->GetName().c_str());
+		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Core", "selected {}", selectedObject_->GetName());
 	}
 }

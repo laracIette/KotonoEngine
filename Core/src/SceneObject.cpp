@@ -68,13 +68,13 @@ void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinate
 
 	if (parent == this)
 	{
-		KT_LOG(ELogImportanceLevel::High, "Core.TSceneObject::SetParent()", "couldn't set the parent of %s to itself", GetName().c_str());
+		KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {} to itself", GetName());
 		return;
 	}
 
 	if (parent == parent_)
 	{
-		KT_LOG(ELogImportanceLevel::High, "Core.TSceneObject::SetParent()", "couldn't set the parent of %s to its current parent", GetName().c_str());
+		KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {} to its current parent", GetName());
 		return;
 	}
 

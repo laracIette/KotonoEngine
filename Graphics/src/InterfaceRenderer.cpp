@@ -39,7 +39,7 @@ void KtInterfaceRenderer::Cleanup() const
 {
 	vmaDestroyBuffer(Context.GetAllocator(), indexBuffer_.Buffer, indexBuffer_.Allocation);
 	vmaDestroyBuffer(Context.GetAllocator(), vertexBuffer_.Buffer, vertexBuffer_.Allocation);
-	KT_LOG(ELogImportanceLevel::High, "Graphics.KtInterfaceRenderer::Cleanup()", "cleaned up interface renderer");
+	KT_LOG(ELogImportanceLevel::High, "Graphics", "cleaned up interface renderer");
 }
 
 void KtInterfaceRenderer::MarkCommandBuffersDirty()
@@ -69,8 +69,7 @@ void KtInterfaceRenderer::CmdDraw(VkCommandBuffer commandBuffer, const u32 frame
 {
 	auto& frameData{ frameDatas_[frameIndex] };
 
-	KT_LOG(ELogImportanceLevel::Low, "Graphics.KtInterfaceRenderer::CmdDraw()", 
-		"%llu proxies", frameData.objectBuffer.proxies.size());
+	KT_LOG(ELogImportanceLevel::Low, "Graphics", "{} proxies", frameData.objectBuffer.proxies.size());
 
 	if (frameData.objectBuffer.isDirty)
 	{
@@ -264,7 +263,7 @@ void KtInterfaceRenderer::UpdateStagingProxies(const u32 frameIndex)
 		}
 
 		frameDatas_[frameIndex].objectBuffer.isDirty = true;
-		KT_LOG(ELogImportanceLevel::Medium, "Graphics.KtInterfaceRenderer::UpdateStagingProxies()", "dirty command buffer frame %u", frameIndex);
+		KT_LOG(ELogImportanceLevel::Medium, "Graphics", "dirty command buffer frame {}", frameIndex);
 
 		if (count > 0)
 		{

@@ -133,7 +133,7 @@ void KSceneMeshComponent::MarkModelProxyTransformDirty()
             data.objectData.modelMatrix = ModelMatrix();
         }
     );
-	KT_LOG(ELogImportanceLevel::Medium, "Core.KSceneMeshComponent::MarkModelProxyTransformDirty()", "%s", GetName().c_str());
+	KT_LOG(ELogImportanceLevel::Medium, "Core", "{}", GetName());
 }
 
 void KSceneMeshComponent::MarkModelProxyScissorDirty()
@@ -167,11 +167,11 @@ void KSceneMeshComponent::Spin()
 void KSceneMeshComponent::SetMobilityStatic()
 {
     SetMobility(EMobility::Static);
-    KT_LOG(ELogImportanceLevel::High, "Core.KSceneMeshComponent::SetMobilityStatic()", "%s", GetName().c_str());
+    KT_LOG(ELogImportanceLevel::High, "Core", "{}", GetName());
 }
 
 void KSceneMeshComponent::SetMobilityDynamic()
 {
     SetMobility(EMobility::Dynamic);
-    KT_LOG(ELogImportanceLevel::High, "Core.KSceneMeshComponent::SetMobilityDynamic()", "%s", GetName().c_str());
+    KT_LOG(ELogImportanceLevel::High, "Core", "{}", GetName());
 }

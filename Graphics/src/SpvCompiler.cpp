@@ -9,7 +9,7 @@
 
 void KtSpvCompiler::CompileUpdated() const
 {
-    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics.KtSpvCompiler::CompileAll()", "compiling updated spirv shaders");
+    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "compiling updated spirv shaders");
 
     static const UPath path("${ENGINE_DIRECTORY}/Graphics/shaders");
     static const UPath registryPath{ path / "shaders.ktregistry" };
@@ -63,12 +63,12 @@ void KtSpvCompiler::CompileUpdated() const
 
     USerializer::Serialize(json, registryPath);
 
-    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics.KtSpvCompiler::CompileAll()", "compiled updated spirv shaders");
+    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "compiled updated spirv shaders");
 }
 
 void KtSpvCompiler::CompileAll() const
 {
-    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics.KtSpvCompiler::CompileAll()", "compiling all spirv shaders");
+    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "compiling all spirv shaders");
 
     const UPath path("${ENGINE_DIRECTORY}/Graphics/shaders");
     for (const auto* directory : { "vert", "frag" })
@@ -82,12 +82,12 @@ void KtSpvCompiler::CompileAll() const
         }
     }
 
-    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics.KtSpvCompiler::CompileAll()", "compiled all spirv shaders");
+    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "compiled all spirv shaders");
 }
 
 void KtSpvCompiler::Compile(const std::filesystem::path& path) const
 {
-    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics.KtSpvCompiler::Compile()", "compiling shader %s", path.string().c_str());
+    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "compiling shader {}", path.string());
     // must have vulkan bin in environment variables path
     const auto command{ std::format("glslc \"{}\" -o \"{}\".spv", path.string(), path.string()) };
     std::system(command.c_str());

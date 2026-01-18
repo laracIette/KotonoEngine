@@ -47,7 +47,7 @@ UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 	{
 		if (UPtr object{ registryIt->second })
 		{
-			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Core.SObjectFactory::Get()", "found object %s", object->GetName().c_str());
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Core", "found object {}", object->GetName());
 			return object;
 		}
 	}
@@ -61,21 +61,21 @@ UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 	const auto it{ json.find("type_") };
 	if (it == json.end())
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Core.SObjectFactory::Get()", "missing element type_ in json");
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Core", "missing element type_ in json");
 		return nullptr;
 	}
 
 	const auto type{ it->get<std::string>() };
 	if (UPtr object{ GetFactory(type) })
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Core.SObjectFactory::Get()", "created object %s", object->GetName().c_str());
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Core", "created object {}", object->GetName());
 		object->guid_ = guid;
 		object->Deserialize();
 		registry_[guid] = object;
 		return object;
 	}
 
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Core.SObjectFactory::Get()", "missing value for type %s in object factories", type.c_str());
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Core", "missing value for type {} in object factories", type);
 	return nullptr;
 }
 

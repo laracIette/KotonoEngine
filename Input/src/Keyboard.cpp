@@ -43,7 +43,7 @@ void SKeyboard::UpdateKey(const EKey key, const int action)
     {
     case GLFW_PRESS:
     {
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input.SKeyboard::UpdateKey()", "GLFW_PRESS key %d", key);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input", "GLFW_PRESS key {}", (u8)key);
 
         keyStates_[keyIndex][to_index(EInputState::Released)] = false;
 
@@ -53,7 +53,7 @@ void SKeyboard::UpdateKey(const EKey key, const int action)
     }
     case GLFW_RELEASE:
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input.SKeyboard::UpdateKey()", "GLFW_RELEASE key %d", key);
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input", "GLFW_RELEASE key {}", (u8)key);
 
         keyStates_[keyIndex][to_index(EInputState::Pressed)] = false;
         keyStates_[keyIndex][to_index(EInputState::Down)] = false;

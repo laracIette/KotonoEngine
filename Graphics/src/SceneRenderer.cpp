@@ -85,10 +85,8 @@ void KtSceneRenderer::CmdDraw(VkCommandBuffer commandBuffer, const u32 frameInde
 {
 	auto& frameData{ frameDatas_[frameIndex] };
 
-	KT_LOG(ELogImportanceLevel::Low, "Graphics.KtSceneRenderer::CmdDraw()",
-		"%llu static proxies", frameData.staticBuffer.proxies.size());
-	KT_LOG(ELogImportanceLevel::Low, "Graphics.KtSceneRenderer::CmdDraw()",
-		"%llu dynamic proxies", frameData.dynamicBuffer.proxies.size());
+	KT_LOG(ELogImportanceLevel::Low, "Graphics", "{} static proxies", frameData.staticBuffer.proxies.size());
+	KT_LOG(ELogImportanceLevel::Low, "Graphics", "{} dynamic proxies", frameData.dynamicBuffer.proxies.size());
 
 	if (frameData.staticBuffer.isDirty || frameData.dynamicBuffer.isDirty) [[unlikely]]
 	{
@@ -102,13 +100,13 @@ void KtSceneRenderer::CmdDraw(VkCommandBuffer commandBuffer, const u32 frameInde
 		sortedGlobalProxies.Append(frameData.dynamicBuffer.sortedProxies);
 
 		UpdateDescriptorSetObjectBuffers(sortedGlobalProxies, frameIndex);
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics.KtSceneRenderer::CmdDraw()", "update descriptor sets frame %u", frameIndex);
+		KT_LOG(ELogImportanceLevel::Low, "Graphics", "update descriptor sets frame {}", frameIndex);
 	}
 
 	if (frameData.uniformBuffer.isDirty) 
 	{
 		frameData.uniformBuffer.isDirty = false;
-		KT_LOG(ELogImportanceLevel::Low, "Graphics.KtSceneRenderer::CmdDraw()", "update uniform");
+		KT_LOG(ELogImportanceLevel::Low, "Graphics", "update uniform");
 		UpdateDescriptorSetUniformBuffers(frameData.staticBuffer.sortedProxies, frameIndex);
 		UpdateDescriptorSetUniformBuffers(frameData.dynamicBuffer.sortedProxies, frameIndex);
 	}
@@ -241,7 +239,7 @@ void KtSceneRenderer::UpdateStagingProxies(StagingProxiesMap& stagingProxies, Fr
 		}
 
 		objectBuffer.isDirty = true;
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics.KtSceneRenderer::UpdateStagingProxies()", "dirty command buffer frame %u", frameIndex);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_PROXY, "Graphics", "dirty command buffer frame {}", frameIndex);
 
 		if (count > 0)
 		{

@@ -51,7 +51,7 @@ std::string UFile::ReadString() const
     // Check if path exists.
     if (!Exists())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.UFile::ReadString()", "Failed to find a file at %s", path_.string().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to find a file at {}", path_.string());
         return "";
     }
 
@@ -60,7 +60,7 @@ std::string UFile::ReadString() const
 
     if (!file.is_open())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.UFile::ReadString()", "Failed to open the file at %s", path_.string().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to open the file at {}", path_.string());
         return "";
     }
 
@@ -77,7 +77,7 @@ std::vector<u8> UFile::ReadBinary() const
 {
     if (!Exists())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.UFile::ReadBinary()", "Failed to find a file at %s", path_.string().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to find a file at {}", path_.string());
         return {};
     }
 
@@ -85,7 +85,7 @@ std::vector<u8> UFile::ReadBinary() const
 
     if (!file.is_open())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.UFile::ReadBinary()", "Failed to open the file at %s", path_.string().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to open the file at {}", path_.string());
         return {};
     }
 
@@ -107,7 +107,7 @@ void UFile::WriteString(const std::string_view data) const
 
     if (!file.is_open())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.UFile::WriteString()", "Failed to open the file at %s", path_.string().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to open the file at {}", path_.string());
         return;
     }
 
@@ -125,7 +125,7 @@ void UFile::WriteBinary(const std::span<u32> data) const
 
     if (!file.is_open())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO.UFile::WriteBinary()", "Failed to open the file at %s", path_.string().c_str());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to open the file at {}", path_.string());
         return;
     }
 

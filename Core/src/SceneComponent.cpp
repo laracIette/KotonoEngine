@@ -203,19 +203,19 @@ void KSceneComponent::SetParent(const UPtr<KSceneComponent>& parent, const ECoor
 
     if (parent == this)
     {
-        KT_LOG(ELogImportanceLevel::High, "Core.KSceneComponent::SetParent()", "couldn't set the parent of %s to itself", GetName().c_str());
+        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {} to itself", GetName());
         return;
     }
 
     if (parent == parent_)
     {
-        KT_LOG(ELogImportanceLevel::High, "Core.KSceneComponent::SetParent()", "couldn't set the parent of %s to its current parent", GetName().c_str());
+        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {} to its current parent", GetName());
         return;
     }
 
     if (!CanSetTransform())
     {
-        KT_LOG(ELogImportanceLevel::High, "Core.KSceneComponent::SetParent()", "couldn't set the parent of %s, its mobility is static", GetName().c_str());
+        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {}, its mobility is static", GetName());
         return;
     }
 
@@ -261,7 +261,7 @@ void KSceneComponent::SetRelativePosition(const glm::vec3& relativePosition)
 {
     if (!CanSetTransform())
     {
-        KT_LOG(ELogImportanceLevel::High, "Core.KSceneComponent::SetRelativePosition()", "couldn't set the position of %s, its mobility is static", GetName().c_str());
+        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the position of {}, its mobility is static", GetName());
         return;
     }
 
@@ -278,7 +278,7 @@ void KSceneComponent::SetRelativeRotation(const glm::quat& relativeRotation)
 {
     if (!CanSetTransform())
     {
-        KT_LOG(ELogImportanceLevel::High, "Core.KSceneComponent::SetRelativeRotation()", "couldn't set the rotation of %s, its mobility is static", GetName().c_str());
+        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the rotation of {}, its mobility is static", GetName());
         return;
     }
 
@@ -295,7 +295,7 @@ void KSceneComponent::SetRelativeScale(const glm::vec3& relativeScale)
 {
     if (!CanSetTransform())
     {
-        KT_LOG(ELogImportanceLevel::High, "Core.KSceneComponent::SetRelativeScale()", "couldn't set the scale of %s, its mobility is static", GetName().c_str());
+        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the scale of {}, its mobility is static", GetName());
         return;
     }
 

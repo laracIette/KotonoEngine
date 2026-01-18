@@ -12,19 +12,19 @@ class KtShader final
 public:	
 	struct DescriptorSetLayoutBindingData final
 	{														  
-		VkDescriptorSetLayout                                        DescriptorSetLayout;
-		KtFramesInFlightArray<VkDescriptorSet>                       DescriptorSets;
-		std::string                                                  Name;
-		KtFramesInFlightArray<KtAllocatedBuffer>                     Buffers;
-		KtFramesInFlightArray<KtAllocatedBuffer>                     StagingBuffers;
-		KtFramesInFlightArray<size>                                MemberCounts;
-		size                                                       MemberSize;
-		VkDescriptorType                                             DescriptorType;
-		u32                                                     Binding;
-		u32                                                     DescriptorCount;
-		VkShaderStageFlags                                           ShaderStageFlags;
-		VkDescriptorBindingFlags                                     BindingFlags;
-		KtFramesInFlightArray<std::vector<VkDescriptorImageInfo>>    ImageInfos;
+		VkDescriptorSetLayout										DescriptorSetLayout;
+		KtFramesInFlightArray<VkDescriptorSet>						DescriptorSets;
+		std::string													Name;
+		KtFramesInFlightArray<KtAllocatedBuffer>					Buffers;
+		KtFramesInFlightArray<KtAllocatedBuffer>					StagingBuffers;
+		KtFramesInFlightArray<size>									MemberCounts;
+		size														MemberSize;
+		VkDescriptorType											DescriptorType;
+		u32															Binding;
+		u32															DescriptorCount;
+		VkShaderStageFlags											ShaderStageFlags;
+		VkDescriptorBindingFlags									BindingFlags;
+		KtFramesInFlightArray<std::vector<VkDescriptorImageInfo>>	ImageInfos;
 	};
 	struct DescriptorSetLayoutData final
 	{

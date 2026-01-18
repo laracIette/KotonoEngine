@@ -22,7 +22,7 @@ void KtRenderer::Init()
 
 void KtRenderer::Cleanup()
 {
-	KT_LOG(ELogImportanceLevel::High, "Graphics.KtRenderer::Cleanup()", "cleaning up renderer");
+	KT_LOG(ELogImportanceLevel::High, "Graphics", "cleaning up renderer");
 
 	JoinThread(renderThread_);
 	JoinThread(rhiThread_);
@@ -42,7 +42,7 @@ void KtRenderer::Cleanup()
 
 	vkDestroyRenderPass(Context.GetDevice(), renderPass_, nullptr);
 
-	KT_LOG(ELogImportanceLevel::High, "Graphics.KtRenderer::Cleanup()", "cleaned up renderer");
+	KT_LOG(ELogImportanceLevel::High, "Graphics", "cleaned up renderer");
 }
 
 void KtRenderer::CreateSwapChain()
@@ -59,7 +59,7 @@ void KtRenderer::CreateSwapChain()
 		imageCount = swapChainSupport.capabilities.maxImageCount;
 	}
 
-	KT_LOG(ELogImportanceLevel::High, "Graphics.KtRenderer::CreateSwapChain()", "swap chain image count: %u", imageCount);
+	KT_LOG(ELogImportanceLevel::High, "Graphics", "swap chain image count: {}", imageCount);
 
 	VkSwapchainCreateInfoKHR createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -456,7 +456,7 @@ void KtRenderer::DrawFrame()
 
 		if (frameCount_ >= 2)
 		{
-			KT_LOG(ELogImportanceLevel::High, "Graphics.KtRenderer::DrawFrame()", "frame %u rendered", frameCount_);
+			KT_LOG(ELogImportanceLevel::High, "Graphics", "frame {} rendered", frameCount_);
 
 			JoinThread(rhiThread_);
 			Context.ExecuteSingleTimeCommands();
@@ -468,7 +468,7 @@ void KtRenderer::DrawFrame()
 	{
 		if (!TryAcquireNextImage(frameIndex))
 		{
-			KT_LOG(ELogImportanceLevel::High, "Graphics.KtRenderer::DrawFrame()", "frame %u skipped", frameCount_);
+			KT_LOG(ELogImportanceLevel::High, "Graphics", "frame {} skipped", frameCount_);
 			return;
 		}
 
@@ -594,7 +594,7 @@ void KtRenderer::SubmitCommandBuffer(const u32 frameIndex)
 	{
 		if (!TryAcquireNextImage(frameIndex))
 		{
-			KT_LOG(ELogImportanceLevel::High, "Graphics.KtRenderer::SubmitCommandBuffer()", "frame %u skipped", frameCount_);
+			KT_LOG(ELogImportanceLevel::High, "Graphics", "frame {} skipped", frameCount_);
 			return;
 		}
 	}

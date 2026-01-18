@@ -96,5 +96,5 @@ void framebuffersize_callback_(GLFWwindow* window, int width, int height)
 
     Window.GetEventWindowResized().Broadcast();
 
-    KT_LOG(ELogImportanceLevel::High, "Platform.framebuffersize_callback_()", "window resized: %d x %d", width, height);
+    KT_LOG(ELogImportanceLevel::High, "Platform", "window resized: {} x {}", width, height);
 }

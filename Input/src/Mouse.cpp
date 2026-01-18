@@ -61,7 +61,7 @@ void SMouse::UpdateButton(const EButton button, const int action)
     {
     case GLFW_PRESS:
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_MOUSE, "Input.SMouse::UpdateButton()", "GLFW_PRESS button %d", button);
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_MOUSE, "Input", "GLFW_PRESS button {}", (u8)button);
 
         buttonStates_[buttonIndex][to_index(EInputState::Released)] = false;
 
@@ -71,7 +71,7 @@ void SMouse::UpdateButton(const EButton button, const int action)
     }
     case GLFW_RELEASE:
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_MOUSE, "Input.SMouse::UpdateButton()", "GLFW_RELEASE button %d", button);
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_MOUSE, "Input", "GLFW_RELEASE button {}", (u8)button);
 
         buttonStates_[buttonIndex][to_index(EInputState::Pressed)] = false;
         buttonStates_[buttonIndex][to_index(EInputState::Down)] = false;

@@ -28,7 +28,7 @@ void KtModel::Cleanup()
 	{
 		vmaDestroyBuffer(Context.GetAllocator(), indirectBuffer.Buffer, indirectBuffer.Allocation);
 	}
-	KT_LOG(ELogImportanceLevel::Low, "Graphics.KtModel::Cleanup()", "cleaned up %s", Path().ToString().c_str());
+	KT_LOG(ELogImportanceLevel::Low, "Graphics", "cleaned up {}", Path().ToString());
 }
 
 const UPath& KtModel::Path() const

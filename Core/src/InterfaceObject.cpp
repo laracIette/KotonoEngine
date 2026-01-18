@@ -73,13 +73,13 @@ void RInterfaceObject::SetParent(const UPtr<RInterfaceObject>& parent, const ECo
 
 	if (parent == this)
 	{
-		KT_LOG(ELogImportanceLevel::High, "Core.RInterfaceObject::SetParent()", "couldn't set the parent of '%s' to itself", GetName().c_str());
+		KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {} to itself", GetName());
 		return;
 	}
 
 	if (parent == parent_)
 	{
-		KT_LOG(ELogImportanceLevel::High, "Core.RInterfaceObject::SetParent()", "couldn't set the parent of '%s' to the same", GetName().c_str());
+		KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {} to the same", GetName());
 		return;
 	}
 
