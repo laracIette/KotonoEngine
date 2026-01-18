@@ -73,9 +73,9 @@ UWidgetDisplaySettings WRow::GetDisplaySettings(UWidgetDisplaySettings displaySe
 		}
 	}
 
-	if (!rowSettings_.children.empty())
+	if (GetValidChildrenCount() > 1)
 	{
-		size.x += rowSettings_.spacing * static_cast<float>(rowSettings_.children.size() - 1);
+		size.x += rowSettings_.spacing * static_cast<float>(GetValidChildrenCount() - 1);
 	}
 
 	displaySettings.bounds = glm::min(size, displaySettings.bounds);
@@ -94,6 +94,11 @@ glm::vec2 WRow::GetDesiredSize() const
 			size.x += childDesiredSize.x;
 			size.y = std::max(size.y, childDesiredSize.y);
 		}
+	}
+
+	if (GetValidChildrenCount() > 1)
+	{
+		size.x += rowSettings_.spacing * static_cast<float>(GetValidChildrenCount() - 1);
 	}
 
 	return size;

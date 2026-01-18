@@ -95,6 +95,11 @@ glm::vec2 WColumn::GetDesiredSize() const
 		}
 	}
 
+	if (GetValidChildrenCount() > 1)
+	{
+		size.y += columnSettings_.spacing * static_cast<float>(GetValidChildrenCount() - 1);
+	}
+
 	return size;
 }
 
