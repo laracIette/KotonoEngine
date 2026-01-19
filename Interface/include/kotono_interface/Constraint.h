@@ -3,7 +3,7 @@
 class WConstraint : public WChildOwnerWidget
 {
 public:
-	enum class Axis
+	enum class Axis : u8
 	{
 		Horizontal,
 		Vertical,

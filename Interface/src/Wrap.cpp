@@ -12,7 +12,18 @@ UWidgetDisplaySettings WWrap::GetDisplaySettings(UWidgetDisplaySettings displayS
 	if (wrapSettings_.child)
 	{
 		auto childDesiredSize{ wrapSettings_.child->GetDesiredSize() };
-		displaySettings.bounds = glm::min(displaySettings.bounds, childDesiredSize);
+		switch (wrapSettings_.axis)
+		{
+		case Axis::Horizontal:
+			displaySettings.bounds.x = std::min(displaySettings.bounds.x, childDesiredSize.x);
+			break;
+		case Axis::Vertical:
+			displaySettings.bounds.y = std::min(displaySettings.bounds.y, childDesiredSize.y);
+			break;
+		case Axis::All:
+			displaySettings.bounds = glm::min(displaySettings.bounds, childDesiredSize);
+			break;
+		}
 		return wrapSettings_.child->GetDisplaySettings(displaySettings);
 	}
 
@@ -21,11 +32,19 @@ UWidgetDisplaySettings WWrap::GetDisplaySettings(UWidgetDisplaySettings displayS
 
 EFlex WWrap::GetFlex() const
 {
-	return EFlex::None;
+	switch (wrapSettings_.axis)
+	{
+	case Axis::Horizontal:	return EFlex::Vertical;
+	case Axis::Vertical:	return EFlex::Horizontal;
+	case Axis::All:			return EFlex::None;
+	default:				return EFlex::None;
+	}
 }
 
 void WWrap::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
+	++displaySettings.layer;
+
 	if (wrapSettings_.child)
 	{
 		wrapSettings_.child->Display(displaySettings);

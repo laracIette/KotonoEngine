@@ -8,7 +8,10 @@ WWidget* WValueBoxString::Build()
 	holdAction_.SetActuationTime(0.5f);
 	holdAction_.SetRepeatTime(0.05f);
 
-	Keyboard.EventKey().AddListener(UDelegate(this, &WValueBoxString::OnKey));
+	Keyboard.EventAnyKey(EInputState::Down)
+		.AddListener(UDelegate(this, &WValueBoxString::OnAnyKeyDown));
+	Keyboard.EventAnyKey(EInputState::Released)
+		.AddListener(UDelegate(this, &WValueBoxString::OnAnyKeyReleased));
 
 	Keyboard.EventKey(EKey::Backspace, EInputState::Down)
 		.AddListener(UDelegate(this, &WValueBoxString::OnKeyBackspaceDown));
@@ -16,6 +19,7 @@ WWidget* WValueBoxString::Build()
 		.AddListener(UDelegate(this, &WValueBoxString::OnKeyBackspaceReleased));
 
 	return new WWrap({
+		.axis = WWrap::Axis::Vertical,
 		.child = new WStack({
 			.children = {
 				new WColor({ UColor::White().WithAlpha(0.15f) }),
@@ -42,7 +46,10 @@ WWidget* WValueBoxString::Build()
 
 void WValueBoxString::Cleanup()
 {
-	Keyboard.EventKey().RemoveListener(UDelegate(this, &WValueBoxString::OnKey));
+	Keyboard.EventAnyKey(EInputState::Down)
+		.RemoveListener(UDelegate(this, &WValueBoxString::OnAnyKeyDown));
+	Keyboard.EventAnyKey(EInputState::Released)
+		.RemoveListener(UDelegate(this, &WValueBoxString::OnAnyKeyReleased));
 
 	Keyboard.EventKey(EKey::Backspace, EInputState::Down)
 		.RemoveListener(UDelegate(this, &WValueBoxString::OnKeyBackspaceDown));
@@ -82,21 +89,12 @@ void WValueBoxString::OnKeyBackspaceReleased()
 	holdAction_.Reset();
 }
 
-void WValueBoxString::OnKey(const EKey key, const EInputState inputState)
+void WValueBoxString::OnAnyKeyDown(const EKey key)
 {
 	const char character{ keyToChar(key) };
 
 	if (!isSelected_)
 	{
-		return;
-	}
-
-	if (inputState != EInputState::Down)
-	{
-		if (currentWriteCharacter_ == character)
-		{
-			holdAction_.Reset();
-		}
 		return;
 	}
 
@@ -108,6 +106,7 @@ void WValueBoxString::OnKey(const EKey key, const EInputState inputState)
 	if (currentWriteCharacter_ != character)
 	{
 		currentWriteCharacter_ = character;
+		holdAction_.Reset();
 	}
 
 	if (holdAction_.Update(TimeManager.Delta()))
@@ -117,4 +116,16 @@ void WValueBoxString::OnKey(const EKey key, const EInputState inputState)
 			GetValue().push_back(character);
 		});
 	}
+}
+
+void WValueBoxString::OnAnyKeyReleased(const EKey key)
+{
+	const char character{ keyToChar(key) };
+
+	if (currentWriteCharacter_ != character)
+	{
+		return;
+	}
+
+	holdAction_.Reset();
 }

@@ -15,7 +15,8 @@ private:
 	void OnKeyBackspaceDown();
 	void OnKeyBackspaceReleased();
 
-	void OnKey(const EKey key, const EInputState inputState);
+	void OnAnyKeyDown(const EKey key);
+	void OnAnyKeyReleased(const EKey key);
 
 private:
 	bool isSelected_;
