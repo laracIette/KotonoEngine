@@ -12,11 +12,12 @@ public:
 	void Cleanup() override;
 
 private:
+	void OnKeyBackspacePressed();
 	void OnKeyBackspaceDown();
-	void OnKeyBackspaceReleased();
 
-	void OnAnyKeyDown(const EKey key);
+	void OnAnyKeyPressed(const EKey key);
 	void OnAnyKeyReleased(const EKey key);
+	void OnAnyKeyDown(const EKey key);
 
 private:
 	bool isSelected_;

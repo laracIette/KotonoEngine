@@ -20,7 +20,7 @@ public:
 	UEvent<EKey>& EventAnyKey(const EInputState inputState);
 
 private:
-	void UpdateKey(const EKey key, const int action);
+	void UpdateKey(const EKey key, const i32 action);
 
 private:
 	std::array<std::array<UEvent<>, InputStateCount>, KeyCount> keyEvents_;

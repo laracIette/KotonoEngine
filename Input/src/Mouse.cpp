@@ -32,6 +32,10 @@ void SMouse::Update()
         {
             buttonStates_[button][to_index(EInputState::Pressed)] = false;
         }
+        else if (buttonStates_[button][to_index(EInputState::Released)])
+        {
+            buttonStates_[button][to_index(EInputState::Released)] = false;
+        }
     }
 
     if (cursorPosition_ != previousCursorPosition_)
@@ -64,6 +68,7 @@ void SMouse::UpdateButton(const EButton button, const int action)
         KT_LOG(KT_LOG_IMPORTANCE_LEVEL_MOUSE, "Input", "GLFW_PRESS button {}", (u8)button);
 
         buttonStates_[buttonIndex][to_index(EInputState::Released)] = false;
+        buttonStates_[buttonIndex][to_index(EInputState::Up)] = false;
 
         buttonStates_[buttonIndex][to_index(EInputState::Pressed)] = true;
         buttonStates_[buttonIndex][to_index(EInputState::Down)] = true;
@@ -77,6 +82,7 @@ void SMouse::UpdateButton(const EButton button, const int action)
         buttonStates_[buttonIndex][to_index(EInputState::Down)] = false;
 
         buttonStates_[buttonIndex][to_index(EInputState::Released)] = true;
+        buttonStates_[buttonIndex][to_index(EInputState::Up)] = true;
         break;
     }
     default:

@@ -32,10 +32,14 @@ void SKeyboard::Update()
         {
             keyStates_[key][to_index(EInputState::Pressed)] = false;
         }
+        else if (keyStates_[key][to_index(EInputState::Released)])
+        {
+            keyStates_[key][to_index(EInputState::Released)] = false;
+        }
     }
 }
 
-void SKeyboard::UpdateKey(const EKey key, const int action)
+void SKeyboard::UpdateKey(const EKey key, const i32 action)
 {
     const size keyIndex{ to_index(key) };
 
@@ -46,6 +50,7 @@ void SKeyboard::UpdateKey(const EKey key, const int action)
 		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input", "GLFW_PRESS key {}", (u8)key);
 
         keyStates_[keyIndex][to_index(EInputState::Released)] = false;
+        keyStates_[keyIndex][to_index(EInputState::Up)] = false;
 
         keyStates_[keyIndex][to_index(EInputState::Pressed)] = true;
         keyStates_[keyIndex][to_index(EInputState::Down)] = true;
@@ -59,6 +64,7 @@ void SKeyboard::UpdateKey(const EKey key, const int action)
         keyStates_[keyIndex][to_index(EInputState::Down)] = false;
 
         keyStates_[keyIndex][to_index(EInputState::Released)] = true;
+        keyStates_[keyIndex][to_index(EInputState::Up)] = true;
         break;
     }
     default:

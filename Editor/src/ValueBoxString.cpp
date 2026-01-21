@@ -1,4 +1,5 @@
 #include "ValueBoxString.h"
+#include <kotono_common/log.h>
 #include <kotono_core/TimeManager.h>
 #include <kotono_interface/widgets.h>
 #include <kotono_input/Keyboard.h>
@@ -8,15 +9,17 @@ WWidget* WValueBoxString::Build()
 	holdAction_.SetActuationTime(0.5f);
 	holdAction_.SetRepeatTime(0.05f);
 
-	Keyboard.EventAnyKey(EInputState::Down)
-		.AddListener(UDelegate(this, &WValueBoxString::OnAnyKeyDown));
+	Keyboard.EventAnyKey(EInputState::Pressed)
+		.AddListener(UDelegate(this, &WValueBoxString::OnAnyKeyPressed));
 	Keyboard.EventAnyKey(EInputState::Released)
 		.AddListener(UDelegate(this, &WValueBoxString::OnAnyKeyReleased));
+	Keyboard.EventAnyKey(EInputState::Down)
+		.AddListener(UDelegate(this, &WValueBoxString::OnAnyKeyDown));
 
+	Keyboard.EventKey(EKey::Backspace, EInputState::Pressed)
+		.AddListener(UDelegate(this, &WValueBoxString::OnKeyBackspacePressed)); 
 	Keyboard.EventKey(EKey::Backspace, EInputState::Down)
 		.AddListener(UDelegate(this, &WValueBoxString::OnKeyBackspaceDown));
-	Keyboard.EventKey(EKey::Backspace, EInputState::Released)
-		.AddListener(UDelegate(this, &WValueBoxString::OnKeyBackspaceReleased));
 
 	return new WWrap({
 		.axis = WWrap::Axis::Vertical,
@@ -46,17 +49,29 @@ WWidget* WValueBoxString::Build()
 
 void WValueBoxString::Cleanup()
 {
-	Keyboard.EventAnyKey(EInputState::Down)
-		.RemoveListener(UDelegate(this, &WValueBoxString::OnAnyKeyDown));
+	Keyboard.EventAnyKey(EInputState::Pressed)
+		.RemoveListener(UDelegate(this, &WValueBoxString::OnAnyKeyPressed));
 	Keyboard.EventAnyKey(EInputState::Released)
 		.RemoveListener(UDelegate(this, &WValueBoxString::OnAnyKeyReleased));
+	Keyboard.EventAnyKey(EInputState::Down)
+		.RemoveListener(UDelegate(this, &WValueBoxString::OnAnyKeyDown));
 
+	Keyboard.EventKey(EKey::Backspace, EInputState::Pressed)
+		.RemoveListener(UDelegate(this, &WValueBoxString::OnKeyBackspacePressed));
 	Keyboard.EventKey(EKey::Backspace, EInputState::Down)
 		.RemoveListener(UDelegate(this, &WValueBoxString::OnKeyBackspaceDown));
-	Keyboard.EventKey(EKey::Backspace, EInputState::Released)
-		.RemoveListener(UDelegate(this, &WValueBoxString::OnKeyBackspaceReleased));
 
 	WWidget::Cleanup();
+}
+
+void WValueBoxString::OnKeyBackspacePressed()
+{
+	if (!isSelected_)
+	{
+		return;
+	}
+
+	holdAction_.Reset();
 }
 
 void WValueBoxString::OnKeyBackspaceDown()
@@ -79,14 +94,35 @@ void WValueBoxString::OnKeyBackspaceDown()
 	}
 }
 
-void WValueBoxString::OnKeyBackspaceReleased()
+void WValueBoxString::OnAnyKeyPressed(const EKey key)
 {
 	if (!isSelected_)
 	{
 		return;
 	}
 
-	holdAction_.Reset();
+	const char character{ keyToChar(key) };
+
+	if (currentWriteCharacter_ != character)
+	{
+		currentWriteCharacter_ = character;
+		holdAction_.Reset();
+	}
+}
+
+void WValueBoxString::OnAnyKeyReleased(const EKey key)
+{
+	if (!isSelected_)
+	{
+		return;
+	}
+
+	const char character{ keyToChar(key) };
+
+	if (currentWriteCharacter_ == character)
+	{
+		currentWriteCharacter_ = 0;
+	}
 }
 
 void WValueBoxString::OnAnyKeyDown(const EKey key)
@@ -98,34 +134,21 @@ void WValueBoxString::OnAnyKeyDown(const EKey key)
 		return;
 	}
 
+	if (currentWriteCharacter_ != character)
+	{
+		return;
+	}
+
 	if (!isalpha(character))
 	{
 		return;
 	}
 
-	if (currentWriteCharacter_ != character)
-	{
-		currentWriteCharacter_ = character;
-		holdAction_.Reset();
-	}
-
 	if (holdAction_.Update(TimeManager.Delta()))
 	{
-		SetState([this, character]() 
+		SetState([this, character]()
 		{
 			GetValue().push_back(character);
 		});
 	}
-}
-
-void WValueBoxString::OnAnyKeyReleased(const EKey key)
-{
-	const char character{ keyToChar(key) };
-
-	if (currentWriteCharacter_ != character)
-	{
-		return;
-	}
-
-	holdAction_.Reset();
 }
