@@ -3,16 +3,17 @@
 #include <kotono_input/Keyboard.h>
 #include <kotono_interface/widgets.h>
 
-WInputTextBox::WInputTextBox(const std::string& text) :
-	text_(text),
-	isSelected_(false)
+WInputTextBox::WInputTextBox(const InputTextBoxSettings& inputTextBoxSettings) :
+	inputTextBoxSettings_(inputTextBoxSettings),
+	isSelected_(false),
+	currentWriteCharacter_(0)
 {
 }
 
 WWidget* WInputTextBox::Build()
 {
-	holdAction_.SetActuationTime(0.5f);
-	holdAction_.SetRepeatTime(0.05f);
+	holdAction_.SetActuationTime(inputTextBoxSettings_.actuationTime);
+	holdAction_.SetRepeatTime(inputTextBoxSettings_.repeatTime);
 
 	Keyboard.EventAnyKey(EInputState::Pressed)
 		.AddListener(UDelegate(this, &WInputTextBox::OnAnyKeyPressed));
@@ -26,29 +27,26 @@ WWidget* WInputTextBox::Build()
 	Keyboard.EventKey(EKey::Backspace, EInputState::Down)
 		.AddListener(UDelegate(this, &WInputTextBox::OnKeyBackspaceDown));
 
-	return new WWrap({
-		.axis = WWrap::Axis::Vertical,
-		.child = new WStack({
-			.children = {
-				new WColor({ UColor::White().WithAlpha(0.15f) }),
-				new WButton({
-					.onPress = [this]() {
-						SetState([this]() { isSelected_ = true; });
-					},
-					.onPressOut = [this]() {
-						SetState([this]() { isSelected_ = false; });
-					},
+	return new WStack({
+		.children = {
+			new WColor({ UColor::White().WithAlpha(0.15f) }),
+			new WButton({
+				.onPress = [this]() {
+					SetState([this]() { isSelected_ = true; });
+				},
+				.onPressOut = [this]() {
+					SetState([this]() { isSelected_ = false; });
+				},
+			}),
+			new WPadding({
+				.padding = WPadding::Padding::All(4.0f),
+				.child = new WText({
+					.text = inputTextBoxSettings_.text,
+					.fontSize = { 15.0f, 18.0f },
+					.spacing = -5.0f,
 				}),
-				new WPadding({
-					.padding = WPadding::Padding::All(4.0f),
-					.child = new WText({
-						.text = text_,
-						.fontSize = { 15.0f, 18.0f },
-						.spacing = -5.0f,
-					}),
-				}),
-			},
-		}),
+			}),
+		},
 	});
 }
 
@@ -90,9 +88,13 @@ void WInputTextBox::OnKeyBackspaceDown()
 	{
 		SetState([this]()
 		{
-			if (!text_.empty())
+			if (!inputTextBoxSettings_.text.empty())
 			{
-				text_.pop_back();
+				inputTextBoxSettings_.text.pop_back();
+				if (inputTextBoxSettings_.onTextChanged)
+				{
+					inputTextBoxSettings_.onTextChanged(inputTextBoxSettings_.text);
+				}
 			}
 		});
 	}
@@ -152,7 +154,11 @@ void WInputTextBox::OnAnyKeyDown(const EKey key)
 	{
 		SetState([this, character]()
 		{
-			text_.push_back(character);
+			inputTextBoxSettings_.text.push_back(character);
+			if (inputTextBoxSettings_.onTextChanged)
+			{
+				inputTextBoxSettings_.onTextChanged(inputTextBoxSettings_.text);
+			}
 		});
 	}
 }

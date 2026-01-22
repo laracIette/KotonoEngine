@@ -4,8 +4,22 @@ enum class EKey : u8;
 enum class EInputState : u8;
 class WInputTextBox : public WWidget
 {
+	using TextChangedFunction = std::function<void(const std::string&)>;
+
 public:
-	WInputTextBox(const std::string& text);
+	struct InputTextBoxSettings
+	{
+		/// default = ""
+		std::string text{ "" };
+		/// default = {}
+		TextChangedFunction onTextChanged{};
+		/// default = 0.5f
+		float actuationTime{ 0.5f };
+		/// default = 0.05f
+		float repeatTime{ 0.05f };
+	};
+
+	WInputTextBox(const InputTextBoxSettings& inputTextBoxSettings);
 
 	WWidget* Build() override;
 	void Cleanup() override;
@@ -19,7 +33,7 @@ private:
 	void OnAnyKeyDown(const EKey key);
 
 private:
-	std::string text_;
+	InputTextBoxSettings inputTextBoxSettings_;
 	bool isSelected_;
 	UInputHoldAction holdAction_;
 	char currentWriteCharacter_;

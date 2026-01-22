@@ -11,12 +11,17 @@ public:
 		value_(value) 
 	{}
 
-	T& GetValue() const 
+	T* Get()
+	{
+		return value_;
+	}
+
+	const T& GetValue() const 
 	{ 
 		return *value_;
 	}
 	
-	void SetValue(T& value) 
+	void SetValue(const T& value) 
 	{ 
 		*value_ = value;
 	}

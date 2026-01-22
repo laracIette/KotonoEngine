@@ -6,6 +6,11 @@ WWidget* WValueBoxString::Build()
 { 
 	return new WWrap({
 		.axis = WWrap::Axis::Vertical,
-		.child = new WInputTextBox(GetValue()),
+		.child = new WInputTextBox({
+			.text = GetValue(),
+			.onTextChanged = [this](const std::string& text) { 
+				SetValue(text); 
+			},
+		}),
 	});
 }
