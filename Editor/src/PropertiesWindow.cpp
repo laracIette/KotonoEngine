@@ -46,34 +46,39 @@ WWidget* WPropertiesWindow::Build()
 
                                 new WObjectProperties(selectedObject),
 
-                                Slider("Position X", [selectedObject](const float delta) {
-								    if (selectedObject) selectedObject->RootComponent()->Translate({ delta * 0.01f, 0.0f, 0.0f });
-                                }),
-                                Slider("Position Y", [selectedObject](const float delta) {
-                                    if (selectedObject) selectedObject->RootComponent()->Translate({ 0.0f, delta * 0.01f, 0.0f });
-                                }),
-                                Slider("Position Z", [selectedObject](const float delta) {
-                                    if (selectedObject) selectedObject->RootComponent()->Translate({ 0.0f, 0.0f, delta * 0.01f });
-                                }),
+                                new WColumn({
+                                    .spacing = 10.0f,
+                                    .children = {
+                                        Slider("Position X", [selectedObject](const float delta) {
+								            if (selectedObject) selectedObject->RootComponent()->Translate({ delta * 0.01f, 0.0f, 0.0f });
+                                        }),
+                                        Slider("Position Y", [selectedObject](const float delta) {
+                                            if (selectedObject) selectedObject->RootComponent()->Translate({ 0.0f, delta * 0.01f, 0.0f });
+                                        }),
+                                        Slider("Position Z", [selectedObject](const float delta) {
+                                            if (selectedObject) selectedObject->RootComponent()->Translate({ 0.0f, 0.0f, delta * 0.01f });
+                                        }),
 
-                                Slider("Scale X", [selectedObject](const float delta) {
-                                    if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f + delta * 0.001f, 1.0f, 1.0f });
-                                }),
-                                Slider("Scale Y", [selectedObject](const float delta) {
-                                    if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f, 1.0f + delta * 0.001f, 1.0f });
-                                }),
-                                Slider("Scale Z", [selectedObject](const float delta) {
-                                    if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f, 1.0f, 1.0f + delta * 0.001f });
-                                }),
+                                        Slider("Scale X", [selectedObject](const float delta) {
+                                            if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f + delta * 0.001f, 1.0f, 1.0f });
+                                        }),
+                                        Slider("Scale Y", [selectedObject](const float delta) {
+                                            if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f, 1.0f + delta * 0.001f, 1.0f });
+                                        }),
+                                        Slider("Scale Z", [selectedObject](const float delta) {
+                                            if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f, 1.0f, 1.0f + delta * 0.001f });
+                                        }),
 
-                                Slider("Rotation Pitch", [selectedObject](const float delta) {
-                                    if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldRightVector));
-                                }),
-                                Slider("Rotation Yaw", [selectedObject](const float delta) {
-                                    if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldUpVector));
-                                }),
-                                Slider("Rotation Roll", [selectedObject](const float delta) {
-                                    if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldForwardVector));
+                                        Slider("Rotation Pitch", [selectedObject](const float delta) {
+                                            if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldRightVector));
+                                        }),
+                                        Slider("Rotation Yaw", [selectedObject](const float delta) {
+                                            if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldUpVector));
+                                        }),
+                                        Slider("Rotation Roll", [selectedObject](const float delta) {
+                                            if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldForwardVector));
+                                        }),
+                                    },
                                 }),
                             };
                         },
@@ -93,8 +98,8 @@ void WPropertiesWindow::Cleanup()
 
 WWidget* WPropertiesWindow::Slider(const std::string& label, const ValueChangedFunction& function)
 {
-    return new WBox({
-        .size = { 250.0f, 25.0f },
+    return new WWrap({
+        .axis = WWrap::Axis::Vertical,
         .child = new WStack({
             .children = {
                 new WColor({ UColor::White().WithValue(0.5f) }),

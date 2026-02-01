@@ -29,7 +29,7 @@ void WColumn::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	{
 		flexHeight -= columnSettings_.spacing * static_cast<float>(columnSettings_.children.size() - 1);
 	}
-	if (const size flexCount = GetFlexCount())
+	if (const size flexCount{ GetFlexCount() })
 	{
 		flexHeight /= static_cast<float>(flexCount);
 	}

@@ -11,6 +11,7 @@ WListBody::WListBody(const ListBodySettings& listBodySettings) :
 void WListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	++displaySettings.layer;
+	displaySettings.bounds.y = INFINITY;
 
 	if (parent_)
 	{

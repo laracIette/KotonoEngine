@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <kotono_common/bitwise_utils.h>
 #include <glm/common.hpp>
+#include <ranges>
 
 WRow::WRow(const RowSettings& rowSettings) :
 	WChildrenOwnerWidget(rowSettings.children),
@@ -30,7 +31,7 @@ void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	{
 		flexWidth -= rowSettings_.spacing * static_cast<float>(rowSettings_.children.size() - 1);
 	}
-	if (const size flexCount = GetFlexCount())
+	if (const size flexCount{ GetFlexCount() })
 	{
 		flexWidth /= static_cast<float>(flexCount);
 	}

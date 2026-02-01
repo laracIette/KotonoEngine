@@ -1,31 +1,27 @@
 #pragma once
 #include <kotono_interface/Widget.h>
-template <typename T>
 class WValueBox : public WWidget
 {
 public:
-	using ValueType = T;
+	using ValueToStringFunction = std::function<std::string()>;
+	using StringToValueFunction = std::function<void(const std::string&)>;
 
 public:
-	WValueBox(T* value) : 
-		value_(value) 
-	{}
-
-	T* Get()
+	struct ValueBoxSettings
 	{
-		return value_;
-	}
+		/// default = {}
+		/// REQUIRED
+		ValueToStringFunction valueToString{};
+		/// default = {}
+		/// REQUIRED
+		StringToValueFunction stringToValue{};
+	};
 
-	const T& GetValue() const 
-	{ 
-		return *value_;
-	}
-	
-	void SetValue(const T& value) 
-	{ 
-		*value_ = value;
-	}
+	WValueBox(const ValueBoxSettings& valueBoxSettings);
+
+	WWidget* Build() override;
 
 private:
-	T* value_;
+	//std::string value_;
+	ValueBoxSettings valueBoxSettings_;
 };
