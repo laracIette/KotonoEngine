@@ -2,6 +2,8 @@
 #include <kotono_common/log.h>
 #include "utils.h"
 #include <glm/ext/matrix_transform.hpp>
+#include <kotono_input/Mouse.h>
+#include <kotono_math/math_utils.h>
 
 WWidget::WWidget() :
 	cachedBuild_([this]() { return Build(); })
@@ -104,14 +106,24 @@ void WWidget::Rebuild()
 	Display(displaySettings);
 }
 
-glm::vec2 WWidget::GetPosition() const
+glm::vec2 WWidget::Position() const
 {
 	return displaySettings_.position;
 }
 
-glm::vec2 WWidget::GetSize() const
+glm::vec2 WWidget::Size() const
 {
 	return displaySettings_.bounds;
+}
+
+i32 WWidget::Layer() const
+{
+	return displaySettings_.layer;
+}
+
+bool WWidget::IsMouseHovering() const
+{
+	return is_point_in_rect(Mouse.CursorPosition(), Position(), Size());
 }
 
 void WWidget::SetParent(WWidget* parent)

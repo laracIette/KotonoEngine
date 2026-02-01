@@ -6,14 +6,16 @@ class WButton : public WWidget
 public:
 	struct ButtonSettings
 	{
+		/// Triggers when the mouse left button has been pressed and released while hovering this button
+		/// default = {}
+		std::function<void()> onClick{};
+		/// Triggers when the mouse left button is pressed while the mouse cursor hovers this button
 		/// default = {}
 		std::function<void()> onPress{};
 		/// default = {}
 		std::function<void()> onDown{};
 		/// default = {}
 		std::function<void()> onReleased{};
-		// default = {}
-		std::function<void(float)> onVerticalScroll{};
 		// default = {}
 		std::function<void()> onPressOut{};
 	};
@@ -23,15 +25,15 @@ public:
 
 	void Cleanup() override;
 
+	/// Returns whether the mouse was over the button
+	bool ReceiveMouseLeftButtonPressed();
+	/// Returns whether the mouse was over the button while the button was pressed
+	bool ReceiveMouseLeftButtonReleased();
+
 private:
 	ButtonSettings buttonSettings_;
 	bool isPressed_;
 
-	bool IsMouseHovering() const;
-
-	void OnMouseLeftButtonPressed();
 	void OnMouseLeftButtonDown();
-	void OnMouseLeftButtonReleased();
-	void OnMouseVerticalScroll(const float delta);
 };
 

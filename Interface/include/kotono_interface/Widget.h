@@ -44,8 +44,11 @@ public:
 
 	virtual WidgetVector GetWidgetTree();
 
-	glm::vec2 GetPosition() const;
-	glm::vec2 GetSize() const;
+	glm::vec2 Position() const;
+	glm::vec2 Size() const;
+	i32 Layer() const;
+
+	bool IsMouseHovering() const;
 
 	void SetParent(WWidget* parent);
 

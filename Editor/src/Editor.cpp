@@ -6,11 +6,13 @@
 #include <kotono_platform/WindowViewport.h>
 #include <kotono_timing/Timer.h>
 #include <kotono_timing/TimerManager.h>
+#include <kotono_interface/Interface.h>
 
 void SEditor::Init()
 {
 	Visualizer.Init();
 	Camera.Init();
+	Interface.Init();
 
 	auto& updateTimer{ TimerManager.GetTimer("update time text") };
 	updateTimer.SetDuration(1.0f / 20.0f);

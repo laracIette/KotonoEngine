@@ -1,56 +1,32 @@
 #include "Button.h"
+#include "Interface.h"
 #include <kotono_common/log.h>
 #include <kotono_input/Mouse.h>
 
 WButton::WButton(const ButtonSettings& buttonSettings) :
 	buttonSettings_(buttonSettings)
 {
+	Interface.AddButton(this);
 
-	Mouse.EventButton(EButton::Left, EInputState::Pressed)
-		.AddListener(UDelegate(this, &WButton::OnMouseLeftButtonPressed));
 	Mouse.EventButton(EButton::Left, EInputState::Down)
 		.AddListener(UDelegate(this, &WButton::OnMouseLeftButtonDown));
-	Mouse.EventButton(EButton::Left, EInputState::Released)
-		.AddListener(UDelegate(this, &WButton::OnMouseLeftButtonReleased));
-	Mouse.EventVerticalScroll()
-		.AddListener(UDelegate(this, &WButton::OnMouseVerticalScroll));
 }
 
 void WButton::Cleanup()
 {
-	Mouse.EventButton(EButton::Left, EInputState::Pressed)
-		.RemoveListener(UDelegate(this, &WButton::OnMouseLeftButtonPressed));
+	Interface.RemoveButton(this);
+
 	Mouse.EventButton(EButton::Left, EInputState::Down)
 		.RemoveListener(UDelegate(this, &WButton::OnMouseLeftButtonDown));
-	Mouse.EventButton(EButton::Left, EInputState::Released)
-		.RemoveListener(UDelegate(this, &WButton::OnMouseLeftButtonReleased));
-	Mouse.EventVerticalScroll()
-		.RemoveListener(UDelegate(this, &WButton::OnMouseVerticalScroll));
 
 	WWidget::Cleanup();
 }
 
-bool WButton::IsMouseHovering() const
-{
-	const auto& cursorPos{ Mouse.CursorPosition() };
-	const auto position{ GetPosition() };
-	const auto size{ GetSize() };
-
-	return cursorPos.x >= position.x 
-		&& cursorPos.x <= position.x + size.x 
-		&& cursorPos.y >= position.y 
-		&& cursorPos.y <= position.y + size.y;
-}
-
-void WButton::OnMouseLeftButtonPressed()
+bool WButton::ReceiveMouseLeftButtonPressed()
 {
 	if (!IsMouseHovering())
 	{
-		if (buttonSettings_.onPressOut)
-		{
-			buttonSettings_.onPressOut();
-		}
-		return;
+		return false;
 	}
 
 	isPressed_ = true;
@@ -59,6 +35,29 @@ void WButton::OnMouseLeftButtonPressed()
 	{
 		buttonSettings_.onPress();
 	}
+
+	return true;
+}
+
+bool WButton::ReceiveMouseLeftButtonReleased()
+{
+	if (!IsMouseHovering())
+	{
+		return false;
+	}
+	if (!isPressed_)
+	{
+		return false;
+	}
+
+	isPressed_ = false;
+
+	if (buttonSettings_.onClick)
+	{
+		buttonSettings_.onClick();
+	}
+
+	return true;
 }
 
 void WButton::OnMouseLeftButtonDown()
@@ -71,33 +70,5 @@ void WButton::OnMouseLeftButtonDown()
 	if (buttonSettings_.onDown)
 	{
 		buttonSettings_.onDown();
-	}
-}
-
-void WButton::OnMouseLeftButtonReleased()
-{
-	if (!isPressed_)
-	{
-		return;
-	}
-
-	isPressed_ = false;
-
-	if (buttonSettings_.onReleased)
-	{
-		buttonSettings_.onReleased();
-	}
-}
-
-void WButton::OnMouseVerticalScroll(const float delta)
-{
-	if (!IsMouseHovering())
-	{
-		return;
-	}
-
-	if (buttonSettings_.onVerticalScroll)
-	{
-		buttonSettings_.onVerticalScroll(delta);
 	}
 }

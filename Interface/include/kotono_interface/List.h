@@ -17,6 +17,10 @@ public:
 	WList(const ListSettings& listSettings);
 
 	WWidget* Build() override;
+	void Cleanup() override;
+
+private:
+	void OnMouseVerticalScroll(const float delta);
 
 protected:
 	ListSettings listSettings_;

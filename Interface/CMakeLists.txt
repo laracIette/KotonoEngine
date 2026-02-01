@@ -28,6 +28,7 @@ set(KINTERFACE_HEADERS
     "include/kotono_interface/Expanded.h"
     "include/kotono_interface/Flex.h"
     "include/kotono_interface/Image.h"
+    "include/kotono_interface/Interface.h"
     "include/kotono_interface/List.h"
     "include/kotono_interface/ListBody.h"
     "include/kotono_interface/Offset.h"
@@ -52,6 +53,7 @@ set(KINTERFACE_SOURCES
     "src/Constraint.cpp"
     "src/Expanded.cpp"
     "src/Image.cpp"
+    "src/Interface.cpp"
     "src/List.cpp"
     "src/ListBody.cpp"
     "src/Offset.cpp"
@@ -78,6 +80,7 @@ target_include_directories(KotonoInterface
 
 # Link libs
 target_link_libraries(KotonoInterface PUBLIC
+    KotonoMath
     KotonoInput
     KotonoGraphics
 )

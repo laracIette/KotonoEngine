@@ -122,6 +122,7 @@ target_include_directories(KotonoCore
 
 # Link libs
 target_link_libraries(KotonoCore PUBLIC
+    KotonoMath
     KotonoAudio
     KotonoInput
     KotonoTiming
