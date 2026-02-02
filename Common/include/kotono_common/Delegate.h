@@ -17,44 +17,32 @@ private:
 public:
     template <class Tinst, class Tfunc>
         requires std::is_base_of_v<Tfunc, Tinst>
-    UDelegate(Tinst* instance, void (Tfunc::* function)(Args...))
+    UDelegate(Tinst* instance, void (Tfunc::* function)(Args...), const size hash)
     {
-        instance_ = static_cast<void*>(instance);
-        functionIdentity_ = *reinterpret_cast<void**>(&function);
+        hash_ = hash;
         callbackFunction_ = [instance, function](Args... args) { (instance->*function)(args...); };
     }
 
     template <class Tinst, class Tfunc>
         requires std::is_base_of_v<Tfunc, Tinst>
-    UDelegate(const Tinst* instance, void (Tfunc::* function)(Args...) const)
+    UDelegate(const Tinst* instance, void (Tfunc::* function)(Args...) const, const size hash)
     {
-        instance_ = const_cast<void*>(static_cast<const void*>(instance));
-        functionIdentity_ = *reinterpret_cast<void**>(&function);
+        hash_ = hash;
         callbackFunction_ = [instance, function](Args... args) { (instance->*function)(args...); };
     }
 
     void Callback(Args... args) const
     {
-        if (instance_)
-        {
-            callbackFunction_(args...);
-        }
-    }
-
-    void* GetInstance() const
-    {
-        return instance_;
+        callbackFunction_(args...);
     }
 
     bool operator==(const UDelegate& other) const noexcept
     {
-        return other.instance_ == instance_ && other.functionIdentity_ == functionIdentity_;
+        return other.hash_ == hash_;
     }
 
 private:
-    void* instance_;
-    void* functionIdentity_;
-
+    size hash_;
     CallbackFunction callbackFunction_;
 };
 
@@ -63,9 +51,6 @@ struct std::hash<UDelegate<Args...>>
 {
     ::size operator()(const UDelegate<Args...>& delegate) const noexcept
     {
-        ::size h{ 0 };
-        combine(h, std::hash<void*>{}(delegate.instance_));
-        combine(h, std::hash<void*>{}(delegate.functionIdentity_));
-        return h;
+        return delegate.hash_;
     }
 };

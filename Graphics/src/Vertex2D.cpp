@@ -10,8 +10,8 @@ bool KtVertex2D::operator==(const KtVertex2D& other) const
 size std::hash<KtVertex2D>::operator()(const KtVertex2D& v) const noexcept
 {
     ::size h{ 0 };
-    combine(h, std::hash<glm::vec2>{}(v.position));
-    combine(h, std::hash<glm::vec3>{}(v.color));
-    combine(h, std::hash<glm::vec2>{}(v.texCoord));
+    h = combine(h, std::hash<glm::vec2>{}(v.position));
+    h = combine(h, std::hash<glm::vec3>{}(v.color));
+    h = combine(h, std::hash<glm::vec2>{}(v.texCoord));
     return h;
 }

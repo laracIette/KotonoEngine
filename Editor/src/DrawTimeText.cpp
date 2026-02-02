@@ -6,8 +6,7 @@
 
 WWidget* WDrawTimeText::Build()
 {
-    TimerManager.GetTimer("update time text").EventCompleted()
-        .AddListener(this, &WDrawTimeText::UpdateText);
+    TimerManager.GetTimer("update time text").EventCompleted().AddListener(this, &WDrawTimeText::UpdateText);
 
     return new WText({
         .text = std::format("D {:.8f}s", TimeManager.AverageRenderTime()),
@@ -18,8 +17,7 @@ WWidget* WDrawTimeText::Build()
 
 void WDrawTimeText::Cleanup()
 {
-    TimerManager.GetTimer("update time text").EventCompleted()
-        .RemoveListener(this, &WDrawTimeText::UpdateText);
+    TimerManager.GetTimer("update time text").EventCompleted().RemoveListener(this, &WDrawTimeText::UpdateText);
 
     WWidget::Cleanup();
 }

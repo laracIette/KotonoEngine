@@ -2,9 +2,10 @@
 #include "Delegate.h"
 #include "Pool.h"
 #include "types.h"
+#include "hash_utils.h"
 
-#define AddListener(Inst, Func) _AddListener(UDelegate(Inst, Func))
-#define RemoveListener(Inst, Func) _RemoveListener(UDelegate(Inst, Func))
+#define AddListener(Inst, Func) _AddListener(UDelegate(Inst, Func, combine(hash_ptr(static_cast<void*>(Inst)), ce_hash_str(#Func))))
+#define RemoveListener(Inst, Func) _RemoveListener(UDelegate(Inst, Func, combine(hash_ptr(static_cast<void*>(Inst)), ce_hash_str(#Func))))
 
 template<typename... Args>
 class UEvent final

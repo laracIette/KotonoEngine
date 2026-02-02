@@ -32,7 +32,6 @@ set(KCOMMON_HEADERS
     "include/kotono_common/types.h"
 )
 set(KCOMMON_SOURCES
-    "src/hash_utils.cpp"
     "src/Path.cpp"
     "src/PathManager.cpp"
 )

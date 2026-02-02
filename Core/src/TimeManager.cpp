@@ -40,13 +40,13 @@ void STimeManager::Update()
 
 	if (gameTime_.Update(delta_))
 	{
-		const float gameTime{ KtStopwatch::Time(UDelegate(&Game, &SGame::Update), gameTime_.lastDelta) };
+		const float gameTime{ KtStopwatch::Time([this]() { Game.Update(gameTime_.lastDelta); }) };
 		averageGameTime_.Add(gameTime);
 	}
 
 	if (renderTime_.Update(delta_))
 	{
-		const float renderTime{ KtStopwatch::Time(UDelegate(&Renderer, &KtRenderer::DrawFrame)) };
+		const float renderTime{ KtStopwatch::Time([]() { Renderer.DrawFrame(); }) };
 		averageRenderTime_.Add(renderTime);
 	}
 }

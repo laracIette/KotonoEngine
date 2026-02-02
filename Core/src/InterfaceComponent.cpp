@@ -29,8 +29,7 @@ void KInterfaceComponent::Cleanup()
     //Renderer.InterfaceRenderer().UnregisterProxy(boundsProxy_);
     //Renderer.InterfaceRenderer().DeleteProxy(boundsProxy_);
 
-    owner_->GetViewport()->EventExtentChanged()
-        .RemoveListener(&eventRectChanged_, &UEvent<>::Broadcast);
+    owner_->GetViewport()->EventExtentChanged().RemoveListener(&eventRectChanged_, &UEvent<>::Broadcast);
 
     SetParent(nullptr, ECoordinateSpace::Relative);
     SetOwner(nullptr);
@@ -460,8 +459,7 @@ void KInterfaceComponent::Spawn()
 
     //eventRectChanged_.AddListener(this, &Self::MarkBoundsProxyRectDirty);
 
-    owner_->GetViewport()->EventExtentChanged()
-        .AddListener(&eventRectChanged_, &UEvent<>::Broadcast);
+    owner_->GetViewport()->EventExtentChanged().AddListener(&eventRectChanged_, &UEvent<>::Broadcast);
 }
 
 //void KInterfaceComponent::CreateBoundsProxy()

@@ -1,23 +1,17 @@
 #pragma once
-template <typename... Args>
-class UDelegate;
+#include <functional>
 class KtStopwatch final
 {
+public:
+    using TimeFunction = std::function<void()>;
+
 public:
     void Start();
     void Stop();
 
     float ElapsedSeconds() const;
 
-    template <typename... Args>
-    static float Time(const UDelegate<Args...>& delegate, Args... args)
-    {
-        KtStopwatch stopwatch{};
-        stopwatch.Start();
-        delegate.Callback(args...);
-        stopwatch.Stop();
-        return stopwatch.ElapsedSeconds();
-    }
+    static float Time(const TimeFunction& timeFunction);
 
 private:
     float start_;

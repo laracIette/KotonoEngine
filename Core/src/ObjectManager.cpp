@@ -15,10 +15,8 @@
 
 void SObjectManager::Init()
 {
-	Keyboard.EventKey(EKey::Escape, EInputState::Pressed)
-		.AddListener(this, &SObjectManager::Quit);
-	Mouse.EventButton(EButton::Left, EInputState::Pressed)
-		.AddListener(this, &SObjectManager::OnMouseButtonLeftPressed);
+	Keyboard.EventKey(EKey::Escape, EInputState::Pressed).AddListener(this, &SObjectManager::Quit);
+	Mouse.EventButton(EButton::Left, EInputState::Pressed).AddListener(this, &SObjectManager::OnMouseButtonLeftPressed);
 
 	auto& logUPSTimer{ TimerManager.GetTimer("log ups timer") };
 	logUPSTimer.SetDuration(1.0f);

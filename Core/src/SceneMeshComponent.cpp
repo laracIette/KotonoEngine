@@ -89,10 +89,8 @@ void KSceneMeshComponent::Spawn()
     EventTransformUpdated().AddListener(this, &KSceneMeshComponent::MarkModelProxyTransformDirty);
     Window.GetEventWindowResized().AddListener(this, &KSceneMeshComponent::MarkModelProxyScissorDirty);
 
-    Keyboard.EventKey(EKey::N, EInputState::Pressed)
-        .AddListener(this, &KSceneMeshComponent::SetMobilityStatic);
-    Keyboard.EventKey(EKey::M, EInputState::Pressed)
-        .AddListener(this, &KSceneMeshComponent::SetMobilityDynamic);
+    Keyboard.EventKey(EKey::N, EInputState::Pressed).AddListener(this, &KSceneMeshComponent::SetMobilityStatic);
+    Keyboard.EventKey(EKey::M, EInputState::Pressed).AddListener(this, &KSceneMeshComponent::SetMobilityDynamic);
     
     spinTask_.eventUpdate.AddListener(this, &KSceneMeshComponent::Spin);
 }

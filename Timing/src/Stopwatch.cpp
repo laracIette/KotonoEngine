@@ -15,3 +15,12 @@ float KtStopwatch::ElapsedSeconds() const
 {
     return end_ - start_;
 }
+
+float KtStopwatch::Time(const TimeFunction& timeFunction)
+{
+    KtStopwatch stopwatch{};
+    stopwatch.Start();
+    timeFunction();
+    stopwatch.Stop();
+    return stopwatch.ElapsedSeconds();
+}
