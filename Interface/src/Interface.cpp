@@ -5,10 +5,8 @@
 
 void SInterface::Init()
 {
-	Mouse.EventButton(EButton::Left, EInputState::Pressed)
-		.AddListener(UDelegate(this, &SInterface::OnMouseLeftButtonPressed));
-	Mouse.EventButton(EButton::Left, EInputState::Released)
-		.AddListener(UDelegate(this, &SInterface::OnMouseLeftButtonReleased));
+	Mouse.EventButton(EButton::Left, EInputState::Pressed).AddListener(this, &SInterface::OnMouseLeftButtonPressed);
+	Mouse.EventButton(EButton::Left, EInputState::Released).AddListener(this, &SInterface::OnMouseLeftButtonReleased);
 }
 
 void SInterface::AddButton(WButton* button)

@@ -33,8 +33,8 @@ void KInterfaceBoxComponent::Spawn()
     CreateBoxProxy();
     Renderer.InterfaceRenderer().RegisterProxy(boxProxy_);
 
-    EventColorChanged().AddListener(UDelegate(this, &KInterfaceBoxComponent::MarkBoxProxyColorDirty));
-    EventRectChanged().AddListener(UDelegate(this, &KInterfaceBoxComponent::MarkBoxProxyRectDirty));
+    EventColorChanged().AddListener(this, &KInterfaceBoxComponent::MarkBoxProxyColorDirty);
+    EventRectChanged().AddListener(this, &KInterfaceBoxComponent::MarkBoxProxyRectDirty);
 }
 
 void KInterfaceBoxComponent::CreateBoxProxy()

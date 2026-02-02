@@ -15,17 +15,12 @@ WWidget* WInputTextBox::Build()
 	holdAction_.SetActuationTime(inputTextBoxSettings_.actuationTime);
 	holdAction_.SetRepeatTime(inputTextBoxSettings_.repeatTime);
 
-	Keyboard.EventAnyKey(EInputState::Pressed)
-		.AddListener(UDelegate(this, &WInputTextBox::OnAnyKeyPressed));
-	Keyboard.EventAnyKey(EInputState::Released)
-		.AddListener(UDelegate(this, &WInputTextBox::OnAnyKeyReleased));
-	Keyboard.EventAnyKey(EInputState::Down)
-		.AddListener(UDelegate(this, &WInputTextBox::OnAnyKeyDown));
+	Keyboard.EventAnyKey(EInputState::Pressed).AddListener(this, &WInputTextBox::OnAnyKeyPressed);
+	Keyboard.EventAnyKey(EInputState::Released).AddListener(this, &WInputTextBox::OnAnyKeyReleased);
+	Keyboard.EventAnyKey(EInputState::Down).AddListener(this, &WInputTextBox::OnAnyKeyDown);
 
-	Keyboard.EventKey(EKey::Backspace, EInputState::Pressed)
-		.AddListener(UDelegate(this, &WInputTextBox::OnKeyBackspacePressed));
-	Keyboard.EventKey(EKey::Backspace, EInputState::Down)
-		.AddListener(UDelegate(this, &WInputTextBox::OnKeyBackspaceDown));
+	Keyboard.EventKey(EKey::Backspace, EInputState::Pressed).AddListener(this, &WInputTextBox::OnKeyBackspacePressed);
+	Keyboard.EventKey(EKey::Backspace, EInputState::Down).AddListener(this, &WInputTextBox::OnKeyBackspaceDown);
 
 	return new WStack({
 		.children = {
@@ -54,17 +49,12 @@ WWidget* WInputTextBox::Build()
 
 void WInputTextBox::Cleanup()
 {
-	Keyboard.EventAnyKey(EInputState::Pressed)
-		.RemoveListener(UDelegate(this, &WInputTextBox::OnAnyKeyPressed));
-	Keyboard.EventAnyKey(EInputState::Released)
-		.RemoveListener(UDelegate(this, &WInputTextBox::OnAnyKeyReleased));
-	Keyboard.EventAnyKey(EInputState::Down)
-		.RemoveListener(UDelegate(this, &WInputTextBox::OnAnyKeyDown));
+	Keyboard.EventAnyKey(EInputState::Pressed).RemoveListener(this, &WInputTextBox::OnAnyKeyPressed);
+	Keyboard.EventAnyKey(EInputState::Released).RemoveListener(this, &WInputTextBox::OnAnyKeyReleased);
+	Keyboard.EventAnyKey(EInputState::Down).RemoveListener(this, &WInputTextBox::OnAnyKeyDown);
 
-	Keyboard.EventKey(EKey::Backspace, EInputState::Pressed)
-		.RemoveListener(UDelegate(this, &WInputTextBox::OnKeyBackspacePressed));
-	Keyboard.EventKey(EKey::Backspace, EInputState::Down)
-		.RemoveListener(UDelegate(this, &WInputTextBox::OnKeyBackspaceDown));
+	Keyboard.EventKey(EKey::Backspace, EInputState::Pressed).RemoveListener(this, &WInputTextBox::OnKeyBackspacePressed);
+	Keyboard.EventKey(EKey::Backspace, EInputState::Down).RemoveListener(this, &WInputTextBox::OnKeyBackspaceDown);
 
 	WWidget::Cleanup();
 }

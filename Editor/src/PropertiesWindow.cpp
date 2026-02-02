@@ -13,7 +13,7 @@
 WWidget* WPropertiesWindow::Build()
 {
 
-    ObjectManager.EventSelectedObjectChanged().AddListener(UDelegate(this, &WPropertiesWindow::Refresh));
+    ObjectManager.EventSelectedObjectChanged().AddListener(this, &WPropertiesWindow::Refresh);
 
     UPtr selectedObject{ TryCast<TSceneObject>(ObjectManager.GetSelectedObject()) };
 
@@ -91,7 +91,7 @@ WWidget* WPropertiesWindow::Build()
 
 void WPropertiesWindow::Cleanup()
 {
-    ObjectManager.EventSelectedObjectChanged().RemoveListener(UDelegate(this, &WPropertiesWindow::Refresh));
+    ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &WPropertiesWindow::Refresh);
 
     WWidget::Cleanup();
 }

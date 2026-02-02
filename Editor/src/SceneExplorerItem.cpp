@@ -10,7 +10,7 @@ WSceneExplorerItem::WSceneExplorerItem(const UPtr<TSceneObject>& sceneObject)
 
 WWidget* WSceneExplorerItem::Build()
 {
-	ObjectManager.EventSelectedObjectChanged().AddListener(UDelegate(this, &WSceneExplorerItem::Refresh));
+	ObjectManager.EventSelectedObjectChanged().AddListener(this, &WSceneExplorerItem::Refresh);
 
 	return new WWrap({
 		.child = new WStack({
@@ -37,7 +37,7 @@ WWidget* WSceneExplorerItem::Build()
 
 void WSceneExplorerItem::Cleanup()
 {
-	ObjectManager.EventSelectedObjectChanged().RemoveListener(UDelegate(this, &WSceneExplorerItem::Refresh));
+	ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &WSceneExplorerItem::Refresh);
 
 	WWidget::Cleanup();
 }

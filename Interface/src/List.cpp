@@ -12,7 +12,7 @@ WList::WList(const ListSettings& listSettings) :
 
 WWidget* WList::Build()
 {
-	Mouse.EventVerticalScroll().AddListener(UDelegate(this, &WList::OnMouseVerticalScroll));
+	Mouse.EventVerticalScroll().AddListener(this, &WList::OnMouseVerticalScroll);
 
 	return new WStack({
 		.children = {
@@ -29,7 +29,7 @@ WWidget* WList::Build()
 
 void WList::Cleanup()
 {
-	Mouse.EventVerticalScroll().RemoveListener(UDelegate(this, &WList::OnMouseVerticalScroll));
+	Mouse.EventVerticalScroll().RemoveListener(this, &WList::OnMouseVerticalScroll);
 
 	WWidget::Cleanup();
 }

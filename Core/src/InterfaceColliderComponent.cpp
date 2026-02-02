@@ -15,18 +15,18 @@ void KInterfaceColliderComponent::Cleanup()
 
 	InterfacePhysicsManager.Unregister(this);
 
-	Mouse.EventButton(EButton::Left, EInputState::Pressed).RemoveListener(UDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
-	Mouse.EventButton(EButton::Left, EInputState::Released).RemoveListener(UDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
-	Mouse.EventButton(EButton::Left, EInputState::Down).RemoveListener(UDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
+	Mouse.EventButton(EButton::Left, EInputState::Pressed).RemoveListener(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed);
+	Mouse.EventButton(EButton::Left, EInputState::Released).RemoveListener(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased);
+	Mouse.EventButton(EButton::Left, EInputState::Down).RemoveListener(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown);
 }
 
 void KInterfaceColliderComponent::Init()
 {
 	Base::Init();
 
-	Mouse.EventButton(EButton::Left, EInputState::Pressed).AddListener(UDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed));
-	Mouse.EventButton(EButton::Left, EInputState::Released).AddListener(UDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased));
-	Mouse.EventButton(EButton::Left, EInputState::Down).AddListener(UDelegate(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown));
+	Mouse.EventButton(EButton::Left, EInputState::Pressed).AddListener(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed);
+	Mouse.EventButton(EButton::Left, EInputState::Released).AddListener(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased);
+	Mouse.EventButton(EButton::Left, EInputState::Down).AddListener(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown);
 }
 
 UEvent<>& KInterfaceColliderComponent::GetEventPressed()

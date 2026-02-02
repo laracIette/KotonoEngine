@@ -8,16 +8,14 @@ WButton::WButton(const ButtonSettings& buttonSettings)
 {
 	Interface.AddButton(this);
 
-	Mouse.EventButton(EButton::Left, EInputState::Down)
-		.AddListener(UDelegate(this, &WButton::OnMouseLeftButtonDown));
+	Mouse.EventButton(EButton::Left, EInputState::Down).AddListener(this, &WButton::OnMouseLeftButtonDown);
 }
 
 void WButton::Cleanup()
 {
 	Interface.RemoveButton(this);
 
-	Mouse.EventButton(EButton::Left, EInputState::Down)
-		.RemoveListener(UDelegate(this, &WButton::OnMouseLeftButtonDown));
+	Mouse.EventButton(EButton::Left, EInputState::Down).RemoveListener(this, &WButton::OnMouseLeftButtonDown);
 
 	WWidget::Cleanup();
 }

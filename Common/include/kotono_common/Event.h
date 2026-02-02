@@ -3,6 +3,9 @@
 #include "Pool.h"
 #include "types.h"
 
+#define AddListener(Inst, Func) _AddListener(UDelegate(Inst, Func))
+#define RemoveListener(Inst, Func) _RemoveListener(UDelegate(Inst, Func))
+
 template<typename... Args>
 class UEvent final
 {
@@ -10,17 +13,12 @@ private:
     using Delegate = UDelegate<Args...>;
 
 public:
-    void AddListener(const Delegate& delegate)
-    {
-        delegates_.Add(delegate);
-    }
-
-    void AddListener(Delegate&& delegate)
+    void _AddListener(Delegate&& delegate)
     {
         delegates_.Add(std::move(delegate));
     }
 
-    void RemoveListener(const Delegate& delegate)
+    void _RemoveListener(const Delegate& delegate)
     {
         delegates_.Remove(delegate);
     }

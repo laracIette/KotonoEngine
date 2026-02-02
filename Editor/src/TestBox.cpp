@@ -8,7 +8,7 @@
 
 WWidget* WTestBox::Build()
 {
-	ObjectManager.EventSelectedObjectChanged().AddListener(UDelegate(this, &WTestBox::Refresh));
+	ObjectManager.EventSelectedObjectChanged().AddListener(this, &WTestBox::Refresh);
 
     return new WBox({
         .size = { 100.0f, 100.0f },
@@ -39,7 +39,7 @@ WWidget* WTestBox::Build()
 
 void WTestBox::Cleanup()
 {
-    ObjectManager.EventSelectedObjectChanged().RemoveListener(UDelegate(this, &WTestBox::Refresh));
+    ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &WTestBox::Refresh);
 
 	WWidget::Cleanup();
 }

@@ -10,7 +10,7 @@
 void SGame::Init()
 {
 	Keyboard.EventKey(EKey::S, EInputState::Pressed)
-        .AddListener(UDelegate(this, &SGame::OnKeySPressed));
+        .AddListener(this, &SGame::OnKeySPressed);
 
     OpenStartupInterface();
     OpenStartupScene();

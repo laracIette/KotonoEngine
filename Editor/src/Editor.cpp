@@ -21,7 +21,7 @@ void SEditor::Init()
 
 	CreateWidget();
 
-	Window.GetEventWindowResized().AddListener(UDelegate(this, &SEditor::RefreshMainWindowWidget));
+	Window.GetEventWindowResized().AddListener(this, &SEditor::RefreshMainWindowWidget);
 }
 
 void SEditor::Update()
@@ -34,7 +34,7 @@ void SEditor::Cleanup()
 
 	Camera.Cleanup();
 
-	Window.GetEventWindowResized().RemoveListener(UDelegate(this, &SEditor::RefreshMainWindowWidget));
+	Window.GetEventWindowResized().RemoveListener(this, &SEditor::RefreshMainWindowWidget);
 }
 
 void SEditor::CreateWidget()

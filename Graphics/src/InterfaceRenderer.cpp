@@ -123,7 +123,7 @@ void KtInterfaceRenderer::CreateVertexBuffer()
 	);
 
 	Context.CopyBuffer(stagingVertexBuffer_.Buffer, vertexBuffer_.Buffer, bufferSize);
-	Context.GetEventExecuteSingleTimeCommands().AddListener(UDelegate(this, &KtInterfaceRenderer::DestroyStagingVertexBuffer));
+	Context.GetEventExecuteSingleTimeCommands().AddListener(this, &KtInterfaceRenderer::DestroyStagingVertexBuffer);
 }
 
 void KtInterfaceRenderer::CreateIndexBuffer()
@@ -149,7 +149,7 @@ void KtInterfaceRenderer::CreateIndexBuffer()
 	);
 
 	Context.CopyBuffer(stagingIndexBuffer_.Buffer, indexBuffer_.Buffer, bufferSize);
-	Context.GetEventExecuteSingleTimeCommands().AddListener(UDelegate(this, &KtInterfaceRenderer::DestroyStagingIndexBuffer));
+	Context.GetEventExecuteSingleTimeCommands().AddListener(this, &KtInterfaceRenderer::DestroyStagingIndexBuffer);
 }
 
 void KtInterfaceRenderer::DestroyStagingVertexBuffer() const
