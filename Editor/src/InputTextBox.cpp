@@ -3,10 +3,10 @@
 #include <kotono_input/Keyboard.h>
 #include <kotono_interface/widgets.h>
 
-WInputTextBox::WInputTextBox(const InputTextBoxSettings& inputTextBoxSettings) :
-	inputTextBoxSettings_(inputTextBoxSettings),
-	isSelected_(false),
-	currentWriteCharacter_(0)
+WInputTextBox::WInputTextBox(const InputTextBoxSettings& inputTextBoxSettings) 
+	: inputTextBoxSettings_(inputTextBoxSettings)
+	, isSelected_(false)
+	, currentWriteCharacter_(0)
 {
 }
 
@@ -29,7 +29,9 @@ WWidget* WInputTextBox::Build()
 
 	return new WStack({
 		.children = {
-			new WColor({ UColor::White().WithAlpha(0.15f) }),
+			isSelected_ 
+				? new WColor({ UColor::White().WithAlpha(0.15f) })
+				: new WColor({ UColor::White().WithAlpha(0.05f) }),
 			new WButton({
 				.onPress = [this]() {
 					SetState([this]() { isSelected_ = true; });

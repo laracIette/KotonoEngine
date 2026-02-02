@@ -3,8 +3,8 @@
 #include <kotono_common/log.h>
 #include <kotono_input/Mouse.h>
 
-WButton::WButton(const ButtonSettings& buttonSettings) :
-	buttonSettings_(buttonSettings)
+WButton::WButton(const ButtonSettings& buttonSettings) 
+	: buttonSettings_(buttonSettings)
 {
 	Interface.AddButton(this);
 
@@ -41,10 +41,6 @@ bool WButton::ReceiveMouseLeftButtonPressed()
 
 bool WButton::ReceiveMouseLeftButtonReleased()
 {
-	if (!IsMouseHovering())
-	{
-		return false;
-	}
 	if (!isPressed_)
 	{
 		return false;
@@ -58,6 +54,14 @@ bool WButton::ReceiveMouseLeftButtonReleased()
 	}
 
 	return true;
+}
+
+void WButton::OnMouseLeftButtonPressedNoInteract()
+{
+	if (buttonSettings_.onPressOut)
+	{
+		buttonSettings_.onPressOut();
+	}
 }
 
 void WButton::OnMouseLeftButtonDown()

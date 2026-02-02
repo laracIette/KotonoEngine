@@ -14,9 +14,8 @@ public:
 		std::function<void()> onPress{};
 		/// default = {}
 		std::function<void()> onDown{};
+		/// Triggers when the mouse left button is pressed while the mouse cursor doesn't hover this button
 		/// default = {}
-		std::function<void()> onReleased{};
-		// default = {}
 		std::function<void()> onPressOut{};
 	};
 
@@ -27,8 +26,10 @@ public:
 
 	/// Returns whether the mouse was over the button
 	bool ReceiveMouseLeftButtonPressed();
-	/// Returns whether the mouse was over the button while the button was pressed
+	/// Returns whether the button was pressed
 	bool ReceiveMouseLeftButtonReleased();
+
+	void OnMouseLeftButtonPressedNoInteract();
 
 private:
 	ButtonSettings buttonSettings_;
