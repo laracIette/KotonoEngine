@@ -4,8 +4,8 @@
 #include "types.h"
 #include "hash_utils.h"
 
-#define AddListener(Inst, Func) _AddListener(UDelegate(Inst, Func, combine(hash_ptr(static_cast<void*>(Inst)), ce_hash_str(#Func))))
-#define RemoveListener(Inst, Func) _RemoveListener(UDelegate(Inst, Func, combine(hash_ptr(static_cast<void*>(Inst)), ce_hash_str(#Func))))
+#define AddListener(Inst, Func) _AddListener(_MAKE_DELEGATE(Inst, Func))
+#define RemoveListener(Inst, Func) _RemoveListener(_MAKE_DELEGATE(Inst, Func))
 
 template<typename... Args>
 class UEvent final

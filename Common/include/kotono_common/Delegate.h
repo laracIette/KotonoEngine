@@ -6,6 +6,8 @@
 #include "hash_utils.h"
 #include "types.h"
 
+#define _MAKE_DELEGATE(Inst, Func) UDelegate(Inst, Func, combine(hash_ptr(static_cast<void*>(Inst)), ce_hash_str(#Func)))
+
 template <typename... Args>
 class UDelegate final
 {
