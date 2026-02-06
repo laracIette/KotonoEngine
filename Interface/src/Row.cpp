@@ -62,21 +62,13 @@ void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 
 UWidgetDisplaySettings WRow::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
+	auto rowSizes{ GetRowDisplaySizes(displaySettings) };
+
 	glm::vec2 size{ 0.0f, 0.0f };
-
-	for (auto* child : rowSettings_.children)
+	for (auto& rowSize : rowSizes)
 	{
-		if (child)
-		{
-			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
-			size.x += childSettings.bounds.x;
-			size.y = std::max(size.y, childSettings.bounds.y);
-		}
-	}
-
-	if (GetValidChildrenCount() > 1)
-	{
-		size.x += rowSettings_.spacing * static_cast<float>(GetValidChildrenCount() - 1);
+		size.x = std::max(size.x, rowSize.x);
+		size.y += rowSize.y;
 	}
 
 	displaySettings.bounds = glm::min(displaySettings.bounds, size);
@@ -110,4 +102,33 @@ size WRow::GetFlexCount() const
 	return std::count_if(rowSettings_.children.begin(), rowSettings_.children.end(),
 		[](const WWidget* child) { return child && has_flag(child->GetFlex(), EFlex::Horizontal); }
 	);
+}
+
+std::vector<glm::vec2> WRow::GetRowDisplaySizes(const UWidgetDisplaySettings& displaySettings) const
+{
+	std::vector<glm::vec2> rowSizes{};
+	glm::vec2 rowSize{ 0.0f, 0.0f };
+
+	for (auto* child : rowSettings_.children)
+	{
+		if (child)
+		{
+			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
+			if (rowSettings_.shouldWrap && rowSize.x + childSettings.bounds.x > displaySettings.bounds.x)
+			{
+				rowSizes.push_back(rowSize);
+				rowSize = { 0.0f, 0.0f };
+			}
+			rowSize.x += childSettings.bounds.x;
+			rowSize.y = std::max(rowSize.y, childSettings.bounds.y);
+		}
+	}
+	rowSizes.push_back(rowSize);
+
+	/*if (GetValidChildrenCount() > 1)
+	{
+		size.x += rowSettings_.spacing * static_cast<float>(GetValidChildrenCount() - 1);
+	}*/
+
+	return rowSizes;
 }

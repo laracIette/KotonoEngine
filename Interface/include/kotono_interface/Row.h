@@ -7,6 +7,8 @@ public:
 	{
 		/// default = 0.0f
 		float spacing{ 0.0f };
+		/// default = false
+		bool shouldWrap{ true };
 		WidgetVector children{};
 	};
 
@@ -24,5 +26,7 @@ protected:
 
 private:
 	size GetFlexCount() const;
+
+	std::vector<glm::vec2> GetRowDisplaySizes(const UWidgetDisplaySettings& displaySettings) const;
 };
 
