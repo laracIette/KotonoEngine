@@ -28,7 +28,7 @@ EFlex WBox::GetFlex() const
 	return EFlex::None;
 }
 
-glm::vec2 WBox::GetDesiredSize() const
+glm::vec2 WBox::GetDesiredSize(glm::vec2 bounds) const
 {
 	return boxSettings_.size;
 }

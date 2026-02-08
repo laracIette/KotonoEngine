@@ -81,7 +81,7 @@ UWidgetDisplaySettings WColumn::GetDisplaySettings(UWidgetDisplaySettings displa
 	return displaySettings;
 }
 
-glm::vec2 WColumn::GetDesiredSize() const
+glm::vec2 WColumn::GetDesiredSize(glm::vec2 bounds) const
 {
 	glm::vec2 size{};
 
@@ -89,7 +89,7 @@ glm::vec2 WColumn::GetDesiredSize() const
 	{
 		if (child)
 		{
-			const auto childDesiredSize{ child->GetDesiredSize() };
+			const auto childDesiredSize{ child->GetDesiredSize(bounds) };
 			size.x = std::max(size.x, childDesiredSize.x);
 			size.y += childDesiredSize.y;
 		}

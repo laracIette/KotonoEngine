@@ -7,12 +7,3 @@ enum class EFlex : char
 	All = Horizontal | Vertical,
 };
 
-inline constexpr EFlex operator&(EFlex first, EFlex second)
-{
-	return static_cast<EFlex>(static_cast<char>(first) & static_cast<char>(second));
-}
-
-inline constexpr EFlex operator|(EFlex first, EFlex second)
-{
-	return static_cast<EFlex>(static_cast<char>(first) | static_cast<char>(second));
-}

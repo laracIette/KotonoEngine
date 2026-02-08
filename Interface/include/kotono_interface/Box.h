@@ -16,7 +16,7 @@ public:
 	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 	EFlex GetFlex() const override;
-	glm::vec2 GetDesiredSize() const override;
+	glm::vec2 GetDesiredSize(glm::vec2 bounds) const override;
 
 protected:
 	BoxSettings boxSettings_;

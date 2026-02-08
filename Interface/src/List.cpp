@@ -43,7 +43,7 @@ void WList::OnMouseVerticalScroll(const float delta)
 
 	SetState([this, delta]()
 		{
-			const auto maxOffset{ std::min(Size().y - GetDesiredSize().y, 0.0f) };
+			const auto maxOffset{ std::min(Size().y - GetDesiredSize(Size()).y, 0.0f) };
 			offset_ += delta * 10.0f;
 			offset_ = std::clamp(offset_, maxOffset, 0.0f);
 		}

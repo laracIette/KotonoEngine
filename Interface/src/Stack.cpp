@@ -35,7 +35,7 @@ UWidgetDisplaySettings WStack::GetDisplaySettings(UWidgetDisplaySettings display
 	return displaySettings;
 }
 
-glm::vec2 WStack::GetDesiredSize() const
+glm::vec2 WStack::GetDesiredSize(glm::vec2 bounds) const
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
@@ -43,7 +43,7 @@ glm::vec2 WStack::GetDesiredSize() const
 	{
 		if (child)
 		{
-			const auto childDesiredSize{ child->GetDesiredSize() };
+			const auto childDesiredSize{ child->GetDesiredSize(bounds) };
 			size = glm::max(size, childDesiredSize);
 		}
 	}

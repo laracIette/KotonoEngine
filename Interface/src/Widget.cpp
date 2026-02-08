@@ -73,12 +73,12 @@ EFlex WWidget::GetFlex() const
 	return EFlex::All;
 }
 
-glm::vec2 WWidget::GetDesiredSize() const
+glm::vec2 WWidget::GetDesiredSize(glm::vec2 bounds) const
 {
 	const WWidget* build{ cachedBuild_.Value() };
 	if (build && build != this)
 	{
-		return build->GetDesiredSize();
+		return build->GetDesiredSize(bounds);
 	}
 	return { 0.0f, 0.0f };
 }

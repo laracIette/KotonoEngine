@@ -62,20 +62,28 @@ void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 
 UWidgetDisplaySettings WRow::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
-	auto rowSizes{ GetRowDisplaySizes(displaySettings) };
-
 	glm::vec2 size{ 0.0f, 0.0f };
-	for (auto& rowSize : rowSizes)
+
+	for (auto* child : rowSettings_.children)
 	{
-		size.x = std::max(size.x, rowSize.x);
-		size.y += rowSize.y;
+		if (child)
+		{
+			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
+			size.x += childSettings.bounds.x;
+			size.y = std::max(size.y, childSettings.bounds.y);
+		}
+	}
+
+	if (GetValidChildrenCount() > 1)
+	{
+		size.x += rowSettings_.spacing * static_cast<float>(GetValidChildrenCount() - 1);
 	}
 
 	displaySettings.bounds = glm::min(displaySettings.bounds, size);
 	return displaySettings;
 }
 
-glm::vec2 WRow::GetDesiredSize() const
+glm::vec2 WRow::GetDesiredSize(glm::vec2 bounds) const
 {
 	glm::vec2 size{};
 
@@ -83,7 +91,7 @@ glm::vec2 WRow::GetDesiredSize() const
 	{
 		if (child)
 		{
-			const auto childDesiredSize{ child->GetDesiredSize() };
+			const auto childDesiredSize{ child->GetDesiredSize(bounds) };
 			size.x += childDesiredSize.x;
 			size.y = std::max(size.y, childDesiredSize.y);
 		}
@@ -99,36 +107,7 @@ glm::vec2 WRow::GetDesiredSize() const
  
 size WRow::GetFlexCount() const
 {
-	return std::count_if(rowSettings_.children.begin(), rowSettings_.children.end(),
+	return std::ranges::count_if(rowSettings_.children.begin(), rowSettings_.children.end(),
 		[](const WWidget* child) { return child && has_flag(child->GetFlex(), EFlex::Horizontal); }
 	);
-}
-
-std::vector<glm::vec2> WRow::GetRowDisplaySizes(const UWidgetDisplaySettings& displaySettings) const
-{
-	std::vector<glm::vec2> rowSizes{};
-	glm::vec2 rowSize{ 0.0f, 0.0f };
-
-	for (auto* child : rowSettings_.children)
-	{
-		if (child)
-		{
-			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
-			if (rowSettings_.shouldWrap && rowSize.x + childSettings.bounds.x > displaySettings.bounds.x)
-			{
-				rowSizes.push_back(rowSize);
-				rowSize = { 0.0f, 0.0f };
-			}
-			rowSize.x += childSettings.bounds.x;
-			rowSize.y = std::max(rowSize.y, childSettings.bounds.y);
-		}
-	}
-	rowSizes.push_back(rowSize);
-
-	/*if (GetValidChildrenCount() > 1)
-	{
-		size.x += rowSettings_.spacing * static_cast<float>(GetValidChildrenCount() - 1);
-	}*/
-
-	return rowSizes;
 }

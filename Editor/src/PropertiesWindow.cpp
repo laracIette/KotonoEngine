@@ -99,7 +99,7 @@ void WPropertiesWindow::Cleanup()
 WWidget* WPropertiesWindow::Slider(const std::string& label, const ValueChangedFunction& function)
 {
     return new WWrap({
-        .axis = WWrap::Axis::Vertical,
+        .axis = WWrap::EAxis::Vertical,
         .child = new WStack({
             .children = {
                 new WColor({ UColor::White().WithValue(0.5f) }),

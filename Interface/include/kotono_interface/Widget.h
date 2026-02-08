@@ -40,7 +40,7 @@ public:
 	virtual UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const;
 
 	virtual EFlex GetFlex() const;
-	virtual glm::vec2 GetDesiredSize() const;
+	virtual glm::vec2 GetDesiredSize(glm::vec2 bounds) const;
 
 	virtual WidgetVector GetWidgetTree();
 

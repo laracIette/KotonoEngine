@@ -2,14 +2,8 @@
 #include "InterfaceObject.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <kotono_common/bitwise_utils.h>
 #include <kotono_common/log.h>
-//#include <kotono_common/PathManager.h>
-//#include <kotono_graphics/Texture.h>
-//#include <kotono_graphics/TextureManager.h>
-//#include <kotono_graphics/InterfaceProxy.h>
-//#include <kotono_graphics/Renderer.h>
-//#include <kotono_graphics/Shader.h>
-//#include <kotono_graphics/ShaderManager.h>
 #include <kotono_input/Mouse.h>
 #include <kotono_platform/WindowViewport.h>
 
@@ -20,15 +14,10 @@ KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner) :
     color_(UColor::White())
 {
     eventRectChanged_.AddListener(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty);
-
-    //boundsProxy_ = Renderer.InterfaceRenderer().CreateProxy();
 }
 
 void KInterfaceComponent::Cleanup()
 {
-    //Renderer.InterfaceRenderer().UnregisterProxy(boundsProxy_);
-    //Renderer.InterfaceRenderer().DeleteProxy(boundsProxy_);
-
     owner_->GetViewport()->EventExtentChanged().RemoveListener(&eventRectChanged_, &UEvent<>::Broadcast);
 
     SetParent(nullptr, ECoordinateSpace::Relative);
@@ -282,16 +271,6 @@ void KInterfaceComponent::SetRelativeRotation(float relativeRotation, const ERot
     eventRectChanged_.Broadcast();
 }
 
-//void KInterfaceComponent::SetWorldSize(const glm::vec2& worldSize)
-//{
-//    if (parent_)
-//    {
-//        SetRelativeSize(worldSize / parent_->GetWorldScale());
-//        return;
-//    }
-//    SetRelativeSize(worldSize);
-//}
-
 void KInterfaceComponent::SetWorldPosition(const glm::vec2& worldPosition)
 {
     if (parent_)
@@ -454,54 +433,20 @@ void KInterfaceComponent::RemoveChildren(const UPtr<KInterfaceComponent>& interf
 
 void KInterfaceComponent::Spawn()
 {
-    //CreateBoundsProxy();
-    //Renderer.InterfaceRenderer().RegisterProxy(boundsProxy_);
-
-    //eventRectChanged_.AddListener(this, &Self::MarkBoundsProxyRectDirty);
-
     owner_->GetViewport()->EventExtentChanged().AddListener(&eventRectChanged_, &UEvent<>::Broadcast);
 }
-
-//void KInterfaceComponent::CreateBoundsProxy()
-//{
-//    boundsProxy_->ScheduleUpdate(
-//        [this](UInterfaceProxy::Data& data)
-//        {
-//            static const auto shaderPath{ PathManager.Graphics() / "shaders" / "flatColor2D.ktshader" };
-//            static const auto texturePath{ PathManager.Graphics() / "assets" / "textures" / "white_texture.jpg" };
-//
-//            data.shader = ShaderManager.Get(shaderPath);
-//            data.renderable = TextureManager.Get(texturePath);
-//            data.layer = GetLayer();
-//            data.objectData.modelMatrix = ModelMatrix();
-//            data.objectData.color = { 1.0f, 1.0f, 1.0f, 0.01f };
-//            data.scissor.offset = WindowViewport.GetOffset();
-//            data.scissor.extent = WindowViewport.GetExtent();
-//        }
-//    );
-//}
-
-//void KInterfaceComponent::MarkBoundsProxyRectDirty()
-//{
-//    boundsProxy_->ScheduleUpdate(
-//        [this](UInterfaceProxy::Data& data)
-//        {
-//            data.objectData.modelMatrix = ModelMatrix();
-//        }
-//    );
-//}
 
 glm::vec2 KInterfaceComponent::GetAnchorOffset() const
 {
     return {
-        (GetAnchor() & EAnchor::Left) == EAnchor::Left
+        has_flag(GetAnchor(), EAnchor::Left)
             ? GetRelativeScale().x / 2.0f
-            : (GetAnchor() & EAnchor::Right) == EAnchor::Right
+            : has_flag(GetAnchor(), EAnchor::Right)
                 ? -GetRelativeScale().x / 2.0f
                 : 0.0f,
-        (GetAnchor() & EAnchor::Top) == EAnchor::Top
+        has_flag(GetAnchor(), EAnchor::Top)
             ? GetRelativeScale().y / 2.0f
-            : (GetAnchor() & EAnchor::Bottom) == EAnchor::Bottom
+            : has_flag(GetAnchor(), EAnchor::Bottom)
                 ? -GetRelativeScale().y / 2.0f
                 : 0.0f
     };

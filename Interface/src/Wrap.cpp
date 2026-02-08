@@ -1,5 +1,6 @@
 #include "Wrap.h"
 #include <glm/common.hpp>
+#include <kotono_common/bitwise_utils.h>
 
 WWrap::WWrap(const WrapSettings& wrapSettings) :
 	WChildOwnerWidget(wrapSettings.child),
@@ -11,18 +12,14 @@ UWidgetDisplaySettings WWrap::GetDisplaySettings(UWidgetDisplaySettings displayS
 {
 	if (wrapSettings_.child)
 	{
-		auto childDesiredSize{ wrapSettings_.child->GetDesiredSize() };
-		switch (wrapSettings_.axis)
+		auto childDesiredSize{ wrapSettings_.child->GetDesiredSize(displaySettings.bounds) };
+		if (has_flag(wrapSettings_.axis, EAxis::Horizontal))
 		{
-		case Axis::Horizontal:
 			displaySettings.bounds.x = std::min(displaySettings.bounds.x, childDesiredSize.x);
-			break;
-		case Axis::Vertical:
+		}
+		if (has_flag(wrapSettings_.axis, EAxis::Vertical))
+		{
 			displaySettings.bounds.y = std::min(displaySettings.bounds.y, childDesiredSize.y);
-			break;
-		case Axis::All:
-			displaySettings.bounds = glm::min(displaySettings.bounds, childDesiredSize);
-			break;
 		}
 		return wrapSettings_.child->GetDisplaySettings(displaySettings);
 	}
@@ -34,9 +31,9 @@ EFlex WWrap::GetFlex() const
 {
 	switch (wrapSettings_.axis)
 	{
-	case Axis::Horizontal:	return EFlex::Vertical;
-	case Axis::Vertical:	return EFlex::Horizontal;
-	case Axis::All:			return EFlex::None;
+	case EAxis::Horizontal:	return EFlex::Vertical;
+	case EAxis::Vertical:	return EFlex::Horizontal;
+	case EAxis::All:		return EFlex::None;
 	default:				return EFlex::None;
 	}
 }

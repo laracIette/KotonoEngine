@@ -17,7 +17,7 @@ public:
 
 	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
-	glm::vec2 GetDesiredSize() const override;
+	glm::vec2 GetDesiredSize(glm::vec2 bounds) const override;
 
 protected:
 	RowSettings rowSettings_;
@@ -26,7 +26,5 @@ protected:
 
 private:
 	size GetFlexCount() const;
-
-	std::vector<glm::vec2> GetRowDisplaySizes(const UWidgetDisplaySettings& displaySettings) const;
 };
 

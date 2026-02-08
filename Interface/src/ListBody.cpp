@@ -55,7 +55,7 @@ UWidgetDisplaySettings WListBody::GetDisplaySettings(UWidgetDisplaySettings disp
 	return displaySettings;
 }
 
-glm::vec2 WListBody::GetDesiredSize() const
+glm::vec2 WListBody::GetDesiredSize(glm::vec2 bounds) const
 {
 	glm::vec2 size{};
 
@@ -63,7 +63,7 @@ glm::vec2 WListBody::GetDesiredSize() const
 	{
 		if (child)
 		{
-			const auto childDesiredSize{ child->GetDesiredSize() };
+			const auto childDesiredSize{ child->GetDesiredSize(bounds) };
 			size.x = std::max(size.x, childDesiredSize.x);
 			size.y += childDesiredSize.y;
 		}

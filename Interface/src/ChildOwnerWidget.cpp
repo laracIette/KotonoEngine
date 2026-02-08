@@ -39,11 +39,11 @@ EFlex WChildOwnerWidget::GetFlex() const
 	return EFlex::None;
 }
 
-glm::vec2 WChildOwnerWidget::GetDesiredSize() const
+glm::vec2 WChildOwnerWidget::GetDesiredSize(glm::vec2 bounds) const
 {
 	if (child_)
 	{
-		return child_->GetDesiredSize();
+		return child_->GetDesiredSize(bounds);
 	}
 	return { 0.0f, 0.0f };
 }

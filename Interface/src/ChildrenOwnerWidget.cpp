@@ -1,5 +1,6 @@
 #include "ChildrenOwnerWidget.h"
 #include <algorithm>
+#include <kotono_common/bitwise_utils.h>
 
 WChildrenOwnerWidget::WChildrenOwnerWidget(const WidgetVector& children) :
 	children_(children)
@@ -48,7 +49,7 @@ EFlex WChildrenOwnerWidget::GetFlex() const
 	{
 		if (child)
 		{
-			result = result | child->GetFlex();
+			result = bitwise_or(result, child->GetFlex());
 		}
 	}
 

@@ -45,7 +45,7 @@ EFlex WConstraint::GetFlex() const
 	}
 }
 
-glm::vec2 WConstraint::GetDesiredSize() const
+glm::vec2 WConstraint::GetDesiredSize(glm::vec2 bounds) const
 {
 	switch (constraintSettings_.axis)
 	{

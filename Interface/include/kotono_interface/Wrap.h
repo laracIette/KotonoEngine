@@ -3,7 +3,7 @@
 class WWrap : public WChildOwnerWidget
 {
 public:
-	enum class Axis : u8
+	enum class EAxis : u8
 	{
 		Horizontal = 0x01,
 		Vertical = 0x02,
@@ -12,8 +12,8 @@ public:
 
 	struct WrapSettings
 	{
-		/// default = EFlex::All
-		Axis axis{ Axis::All };
+		/// default = EAxis::All
+		EAxis axis{ EAxis::All };
 		WWidget* child{ nullptr };
 	};
 

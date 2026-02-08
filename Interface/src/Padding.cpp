@@ -30,11 +30,11 @@ UWidgetDisplaySettings WPadding::GetDisplaySettings(UWidgetDisplaySettings displ
 	return displaySettings;
 }
 
-glm::vec2 WPadding::GetDesiredSize() const
+glm::vec2 WPadding::GetDesiredSize(glm::vec2 bounds) const
 {
 	if (paddingSettings_.child)
 	{
-		auto childDesiredSize{ paddingSettings_.child->GetDesiredSize() };
+		auto childDesiredSize{ paddingSettings_.child->GetDesiredSize(bounds) };
 		childDesiredSize.x += paddingSettings_.padding.l + paddingSettings_.padding.r;
 		childDesiredSize.y += paddingSettings_.padding.t + paddingSettings_.padding.b;
 		return childDesiredSize;

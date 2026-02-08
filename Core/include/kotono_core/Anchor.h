@@ -12,13 +12,3 @@ enum class EAnchor : u8
     BottomLeft = Bottom | Left,
     BottomRight = Bottom | Right
 };
-
-inline constexpr EAnchor operator&(EAnchor first, EAnchor second)
-{
-    return static_cast<EAnchor>(static_cast<u8>(first) & static_cast<u8>(second));
-}
-
-inline constexpr EAnchor operator|(EAnchor first, EAnchor second)
-{
-    return static_cast<EAnchor>(static_cast<u8>(first) | static_cast<u8>(second));
-}
