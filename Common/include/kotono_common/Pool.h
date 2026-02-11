@@ -4,7 +4,7 @@
 #include <concepts>
 #include "types.h"
 
-enum class KtPoolRemoveResult : char
+enum class KtPoolRemoveResult : u8
 {
 	IndexOutOfRange,
 	ItemNotFound,
@@ -13,16 +13,17 @@ enum class KtPoolRemoveResult : char
 };
 
 /// <summary>
-/// std::vector wrapper with fast item removal
+/// std::vector wrapper with O(1) item removal
 /// </summary>
 template <typename ValueType>
 class KtPool final
 {
 private:
 	using VectorType = std::vector<ValueType>;
-	using IteratorType = VectorType::iterator;
-	using ConstIteratorType = VectorType::const_iterator;
+	using IteratorType = ValueVectorType::iterator;
+	using ConstIteratorType = ValueVectorType::const_iterator;
 	using ConditionFunction = std::function<bool(const ValueType&)>;
+	using IndexType = ::size;
 
 public:
 	KtPool() : data_() {}
@@ -55,20 +56,20 @@ public:
 			return KtPoolRemoveResult::ItemNotFound;
 		}
 
-		const ::size index{ static_cast<::size>(std::distance(data_.begin(), it)) };
+		const auto index{ static_cast<IndexType>(std::distance(data_.begin(), it)) };
 		return RemoveAt(index);
 	}
 
 	// Remove the item at the specified index with O(1) complexity
-	constexpr KtPoolRemoveResult RemoveAt(const ::size index) noexcept
+	constexpr KtPoolRemoveResult RemoveAt(const IndexType index) noexcept
 	{
-		if (index >= data_.size())
+		if (!IsValidIndex(index))
 		{
 			return KtPoolRemoveResult::IndexOutOfRange;
 		}
 
 		auto result{ KtPoolRemoveResult::ItemRemoved };
-		if (index != data_.size() - 1)
+		if (index != static_cast<IndexType>(LastIndex()))
 		{
 			// Only swap if not last
 			data_[index] = std::move(data_.back()); 
@@ -81,7 +82,7 @@ public:
 	constexpr void RemoveIf(const ConditionFunction& condition) noexcept
 	{
 		// Have to check backwards to avoid skipping condition checks
-		for (i64 i{ static_cast<i64>(data_.size()) - 1 }; i >= 0; --i)
+		for (i64 i{ LastIndex() }; i >= 0; --i)
 		{
 			if (condition(data_[i]))
 			{
@@ -95,12 +96,12 @@ public:
 		data_.clear();
 	}
 
-	constexpr void reserve(const ::size size)
+	constexpr void reserve(const IndexType size)
 	{
 		data_.reserve(size);
 	}
 
-	constexpr void resize(const ::size size)
+	constexpr void resize(const IndexType size)
 	{
 		data_.resize(size);
 	}
@@ -123,12 +124,12 @@ public:
 
 	constexpr IteratorType begin() noexcept
 	{
-		return data_.begin(); 
+		return data_.begin();
 	}
 
 	constexpr IteratorType end() noexcept
-	{ 
-		return data_.end(); 
+	{
+		return data_.end();
 	}
 
 	constexpr ConstIteratorType begin() const noexcept
@@ -137,8 +138,8 @@ public:
 	}
 
 	constexpr ConstIteratorType end() const noexcept
-	{ 
-		return data_.end(); 
+	{
+		return data_.end();
 	}
 
 	constexpr size size() const noexcept
@@ -149,7 +150,12 @@ public:
 	// Returns -1 if size == 0
 	constexpr i64 LastIndex() const noexcept
 	{
-		return static_cast<i64>(data_.size()) - 1;
+		return static_cast<i64>(size()) - 1;
+	}
+
+	constexpr IsValidIndex(const IndexType index) const noexcept
+	{
+		return index >= 0 && index < size();
 	}
 
 	constexpr bool empty() const noexcept
@@ -157,12 +163,12 @@ public:
 		return data_.empty();
 	}
 
-	const ValueType& operator[](const ::size index) const noexcept
+	const ValueType& operator[](const IndexType index) const noexcept
 	{
 		return data_[index];
 	}
 
-	ValueType& operator[](const ::size index) noexcept
+	ValueType& operator[](const IndexType index) noexcept
 	{
 		return data_[index];
 	}
