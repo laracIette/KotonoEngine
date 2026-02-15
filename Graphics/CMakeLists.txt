@@ -131,7 +131,7 @@ set(THIRD_PARTY_DIR "${ENGINE_PATH}/ThirdParty")
 
 # Include directories
 target_include_directories(KotonoGraphics
-    PUBLIC  "${THIRD_PARTY_DIR}/stbimage/include"
+    PRIVATE  "${THIRD_PARTY_DIR}/stbimage/include"
     PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_graphics"
 )
@@ -142,7 +142,7 @@ target_compile_definitions(KotonoGraphics PUBLIC
 )
 
 # Link system + third-party libs
-target_link_libraries(KotonoGraphics PUBLIC
+target_link_libraries(KotonoGraphics PRIVATE
     SPIRVReflect
     assimp::assimp
 )

@@ -20,8 +20,8 @@ class KtPool final
 {
 private:
 	using VectorType = std::vector<ValueType>;
-	using IteratorType = ValueVectorType::iterator;
-	using ConstIteratorType = ValueVectorType::const_iterator;
+	using IteratorType = VectorType::iterator;
+	using ConstIteratorType = VectorType::const_iterator;
 	using ConditionFunction = std::function<bool(const ValueType&)>;
 	using IndexType = ::size;
 
@@ -153,7 +153,7 @@ public:
 		return static_cast<i64>(size()) - 1;
 	}
 
-	constexpr IsValidIndex(const IndexType index) const noexcept
+	constexpr bool IsValidIndex(const IndexType index) const noexcept
 	{
 		return index >= 0 && index < size();
 	}

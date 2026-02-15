@@ -92,7 +92,7 @@ target_compile_definitions(KotonoAudio PUBLIC
 )
 
 # Link system + third-party libs
-target_link_libraries(KotonoAudio PUBLIC
+target_link_libraries(KotonoAudio PRIVATE
     OpenAL::OpenAL
 )
 
