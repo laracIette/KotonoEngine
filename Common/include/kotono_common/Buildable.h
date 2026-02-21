@@ -12,16 +12,13 @@ public:
     KtBuildable(const T& value) : storage_(value) {}
     KtBuildable(ValueFunction&& valueFunction) : storage_(std::move(valueFunction)) {}
 
-    operator T() const
+    constexpr operator T() const
     {
         if (std::holds_alternative<T>(storage_))
         {
             return std::get<T>(storage_);
         }
-        else
-        {
-            return std::get<ValueFunction>(storage_)();
-        }
+        return std::get<ValueFunction>(storage_)();
     }
 
 private:

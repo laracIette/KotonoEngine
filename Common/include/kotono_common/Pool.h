@@ -84,7 +84,7 @@ public:
 		// Have to check backwards to avoid skipping condition checks
 		for (i64 i{ LastIndex() }; i >= 0; --i)
 		{
-			if (condition(data_[i]))
+			if (IsValidIndex(i) && condition(data_[i]))
 			{
 				RemoveAt(i);
 			}

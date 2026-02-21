@@ -1,19 +1,13 @@
 #pragma once
 #include "ChildOwnerWidget.h"
+#include "Axis.h"
 class WCenter : public WChildOwnerWidget
 {
 public:
-	enum class Axis
-	{
-		All,
-		Horizontal,
-		Vertical,
-	};
-
 	struct CenterSettings
 	{
 		/// default  = Axis::All
-		Axis axis{ Axis::All };
+		EAxis axis{ EAxis::All };
 		WWidget* child{ nullptr };
 	};
 

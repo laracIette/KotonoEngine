@@ -12,6 +12,7 @@
 #include "Offset.h"
 #include "Padding.h"
 #include "Row.h"
+#include "Scrollable.h"
 #include "Spacer.h"
 #include "Stack.h"
 #include "Text.h"

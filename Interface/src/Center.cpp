@@ -20,14 +20,14 @@ UWidgetDisplaySettings WCenter::GetDisplaySettings(UWidgetDisplaySettings displa
 {
 	switch (centerSettings_.axis)
 	{
-	case Axis::All:
-		displaySettings.position = (displaySettings.position + displaySettings.bounds) / 2.0f;
-		break;
-	case Axis::Horizontal:
+	case EAxis::Horizontal:
 		displaySettings.position.x = (displaySettings.position.x + displaySettings.bounds.x) / 2.0f;
 		break;
-	case Axis::Vertical:
+	case EAxis::Vertical:
 		displaySettings.position.y = (displaySettings.position.y + displaySettings.bounds.y) / 2.0f;
+		break;
+	case EAxis::All:
+		displaySettings.position = (displaySettings.position + displaySettings.bounds) / 2.0f;
 		break;
 	}
 

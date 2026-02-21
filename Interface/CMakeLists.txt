@@ -17,6 +17,7 @@ target_compile_features(KotonoInterface PUBLIC cxx_std_23)
 set_target_properties(KotonoInterface PROPERTIES FOLDER "KotonoEngine")
 
 set(KINTERFACE_HEADERS
+    "include/kotono_interface/Axis.h"
     "include/kotono_interface/Box.h"
     "include/kotono_interface/Button.h"
     "include/kotono_interface/Center.h"
@@ -34,6 +35,7 @@ set(KINTERFACE_HEADERS
     "include/kotono_interface/Offset.h"
     "include/kotono_interface/Padding.h"
     "include/kotono_interface/Row.h"
+    "include/kotono_interface/Scrollable.h"
     "include/kotono_interface/Spacer.h"
     "include/kotono_interface/Stack.h"
     "include/kotono_interface/Text.h"
@@ -59,6 +61,7 @@ set(KINTERFACE_SOURCES
     "src/Offset.cpp"
     "src/Padding.cpp"
     "src/Row.cpp"
+    "src/Scrollable.cpp"
     "src/Spacer.cpp"
     "src/Stack.cpp"
     "src/Text.cpp"

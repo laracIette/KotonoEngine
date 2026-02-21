@@ -10,20 +10,15 @@ public:
 	{
 		/// default = 0.0f
 		float spacing{ 0.0f };
-		KtBuildable<WidgetVector> children;
+		KtBuildable<WidgetVector> children{};
 	};
 
 	/// Defines a vertical container for widgets
 	WList(const ListSettings& listSettings);
 
 	WWidget* Build() override;
-	void Cleanup() override;
-
-private:
-	void OnMouseVerticalScroll(const float delta);
 
 protected:
 	ListSettings listSettings_;
-	float offset_;
 };
 

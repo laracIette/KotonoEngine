@@ -1,18 +1,13 @@
 #pragma once
 #include "ChildOwnerWidget.h"
+#include "Axis.h"
 class WConstraint : public WChildOwnerWidget
 {
 public:
-	enum class Axis : u8
-	{
-		Horizontal,
-		Vertical,
-	};
-
 	struct ConstraintSettings
 	{
-		/// default = Axis::Horizontal
-		Axis axis{ Axis::Horizontal };
+		/// default = EAxis::Horizontal
+		EAxis axis{ EAxis::Horizontal };
 		/// default = 0.0f
 		float size{ 0.0f };
 		WWidget* child{ nullptr };
