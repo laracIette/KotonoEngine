@@ -15,42 +15,29 @@ struct UColor final
 	};
 	float a;
 
-	constexpr UColor() :
-		r(0.0f), g(0.0f), b(0.0f), a(1.0f)
+	constexpr UColor() 
+		: r(0.0f), g(0.0f), b(0.0f), a(1.0f)
 	{}
 
-	constexpr UColor(float red, float green, float blue, float alpha) :
-		r(red), g(green), b(blue), a(alpha)
+	constexpr UColor(float red, float green, float blue, float alpha) 
+		: r(red), g(green), b(blue), a(alpha)
 	{}
 
-	constexpr UColor(float red, float green, float blue) :
-		r(red), g(green), b(blue), a(1.0f)
+	constexpr UColor(float red, float green, float blue) 
+		: r(red), g(green), b(blue), a(1.0f)
 	{}
 
-	constexpr UColor WithRed(float red)     const noexcept { return { red, g, b, a }; }
+	constexpr UColor WithRed(float red)		const noexcept { return { red, g, b, a }; }
 	constexpr UColor WithGreen(float green) const noexcept { return { r, green, b, a }; }
-	constexpr UColor WithBlue(float blue)   const noexcept { return { r, g, blue, a }; }
+	constexpr UColor WithBlue(float blue)	const noexcept { return { r, g, blue, a }; }
 	constexpr UColor WithAlpha(float alpha) const noexcept { return { r, g, b, alpha }; }
 	constexpr UColor WithValue(float value) const noexcept { return { r * value, g * value, b * value, a }; }
-
-	static consteval UColor Black()       noexcept { return { 0.0f, 0.0f, 0.0f, 1.0f }; }
-	static consteval UColor Blue()        noexcept { return { 0.0f, 0.0f, 1.0f, 1.0f }; }
-	static consteval UColor Cyan()        noexcept { return { 0.0f, 1.0f, 1.0f, 1.0f }; }
-	static consteval UColor Green()       noexcept { return { 0.0f, 1.0f, 0.0f, 1.0f }; }
-	static consteval UColor Magenta()     noexcept { return { 1.0f, 0.0f, 1.0f, 1.0f }; }
-	static consteval UColor Red()         noexcept { return { 1.0f, 0.0f, 0.0f, 1.0f }; }
-	static consteval UColor Transparent() noexcept { return { 0.0f, 0.0f, 0.0f, 0.0f }; }
-	static consteval UColor White()       noexcept { return { 1.0f, 1.0f, 1.0f, 1.0f }; }
-	static consteval UColor Yellow()      noexcept { return { 1.0f, 1.0f, 0.0f, 1.0f }; }
 	
-	static constexpr UColor Mix(const UColor& left, const UColor& right) noexcept
-	{
-		return (left + right) / 2.0f;
-	}
+	static constexpr UColor Mix(const UColor& left, const UColor& right) noexcept { return (left + right) / 2.0f; }
 
-	constexpr bool IsVisible()     const noexcept { return a > 0.0f; }
-	constexpr bool IsOpaque()      const noexcept { return a >= 1.0f; }
-	constexpr bool IsTranslucent() const noexcept { return a < 1.0f; }
+	constexpr bool IsVisible() const noexcept		{ return a > 0.0f; }
+	constexpr bool IsOpaque() const noexcept		{ return a >= 1.0f; }
+	constexpr bool IsTranslucent() const noexcept	{ return a < 1.0f; }
 
 	constexpr HSV GetHSV() const noexcept
 	{
@@ -246,3 +233,16 @@ struct UColor final
 		return r != other.r || g != other.g || b != other.b || a != other.a;
 	}
 };
+
+namespace Colors
+{
+	constexpr inline UColor Black		{ 0.0f, 0.0f, 0.0f, 1.0f };
+	constexpr inline UColor Blue		{ 0.0f, 0.0f, 1.0f, 1.0f };
+	constexpr inline UColor Cyan		{ 0.0f, 1.0f, 1.0f, 1.0f };
+	constexpr inline UColor Green		{ 0.0f, 1.0f, 0.0f, 1.0f };
+	constexpr inline UColor Magenta		{ 1.0f, 0.0f, 1.0f, 1.0f };
+	constexpr inline UColor Red			{ 1.0f, 0.0f, 0.0f, 1.0f };
+	constexpr inline UColor Transparent	{ 0.0f, 0.0f, 0.0f, 0.0f };
+	constexpr inline UColor White		{ 1.0f, 1.0f, 1.0f, 1.0f };
+	constexpr inline UColor Yellow		{ 1.0f, 1.0f, 0.0f, 1.0f };
+}

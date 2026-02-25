@@ -13,21 +13,21 @@ WWidget::WWidget() :
 void WWidget::CacheBuild()
 {
 	cachedBuild_.TryUpdateValue();
-	WWidget* build{ cachedBuild_.Value() };
+	WidgetPtr build{ cachedBuild_.Value() };
 	if (build && build != this)
 	{
 		build->CacheBuild();
 	}
 }
 
-WWidget* WWidget::Build()
+WidgetPtr WWidget::Build()
 {
 	return this;
 }
 
 void WWidget::Cleanup()
 {
-	WWidget* build{ cachedBuild_.Value() };
+	WidgetPtr build{ cachedBuild_.Value() };
 	if (build && build != this)
 	{
 		build->Cleanup();
@@ -40,7 +40,7 @@ void WWidget::Display(UWidgetDisplaySettings displaySettings)
 {
 	SetDisplaySettings(displaySettings);
 
-	WWidget* build{ cachedBuild_.Value() };
+	WidgetPtr build{ cachedBuild_.Value() };
 	if (build && build != this)
 	{
 		build->Display(displaySettings);
@@ -54,7 +54,7 @@ void WWidget::Display(UWidgetDisplaySettings displaySettings)
 
 UWidgetDisplaySettings WWidget::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
-	const WWidget* build{ cachedBuild_.Value() };
+	const WidgetPtr build{ cachedBuild_.Value() };
 	if (build && build != this)
 	{
 		return build->GetDisplaySettings(displaySettings);
@@ -65,7 +65,7 @@ UWidgetDisplaySettings WWidget::GetDisplaySettings(UWidgetDisplaySettings displa
 
 EFlex WWidget::GetFlex() const
 {
-	const WWidget* build{ cachedBuild_.Value() };
+	const WidgetPtr build{ cachedBuild_.Value() };
 	if (build && build != this)
 	{
 		return build->GetFlex();
@@ -75,7 +75,7 @@ EFlex WWidget::GetFlex() const
 
 glm::vec2 WWidget::GetDesiredSize(glm::vec2 bounds) const
 {
-	const WWidget* build{ cachedBuild_.Value() };
+	const WidgetPtr build{ cachedBuild_.Value() };
 	if (build && build != this)
 	{
 		return build->GetDesiredSize(bounds);
@@ -85,7 +85,7 @@ glm::vec2 WWidget::GetDesiredSize(glm::vec2 bounds) const
 
 WWidget::WidgetVector WWidget::GetWidgetTree()
 {
-	WWidget* build{ cachedBuild_.Value() };
+	WidgetPtr build{ cachedBuild_.Value() };
 	if (build && build != this)
 	{
 		return { build };
@@ -96,7 +96,7 @@ WWidget::WidgetVector WWidget::GetWidgetTree()
 void WWidget::Rebuild()
 {
 	auto displaySettings{ displaySettings_ };
-	const WWidget* build{ cachedBuild_.Value() };
+	const WidgetPtr build{ cachedBuild_.Value() };
 	if (build && build != this)
 	{
 		displaySettings = build->displaySettings_;
@@ -126,7 +126,7 @@ bool WWidget::IsMouseHovering() const
 	return is_point_in_rect(Mouse.CursorPosition(), Position(), Size());
 }
 
-void WWidget::SetParent(WWidget* parent)
+void WWidget::SetParent(WidgetPtr parent)
 {
 	parent_ = parent;
 }

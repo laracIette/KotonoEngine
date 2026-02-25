@@ -8,7 +8,7 @@ WVisualizerWindowItem::WVisualizerWindowItem(const EVisualizationField field, co
 {
 }
 
-WWidget* WVisualizerWindowItem::Build()
+WidgetPtr WVisualizerWindowItem::Build()
 {
 	const bool isFieldVisible{ Visualizer.GetIsFieldVisible(field_) };
     return new WRow({
@@ -18,8 +18,8 @@ WWidget* WVisualizerWindowItem::Build()
                 .child = new WStack({
                     .children = {
                         isFieldVisible 
-                            ? new WColor({ UColor::Green() }) 
-                            : new WColor({ UColor::Red() }),
+                            ? new WColor({ Colors::Green }) 
+                            : new WColor({ Colors::Red }),
                         new WButton({
                             .onPress = [this, isFieldVisible]() {
                                 SetState([this, isFieldVisible]() {

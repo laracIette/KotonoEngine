@@ -2,13 +2,13 @@
 #include "VisualizerWindowItem.h"
 #include <kotono_interface/widgets.h>
 
-WWidget* WVisualizerWindow::Build()
+WidgetPtr WVisualizerWindow::Build()
 {
     return new WBox({
         .size = { 600.0f, 300.0f },
         .child = new WStack({
             .children = {
-                new WColor({ UColor::Blue().WithAlpha(0.5f) }),
+                new WColor({ Colors::Blue.WithAlpha(0.5f) }),
                 new WPadding({
                     .padding = WPadding::Padding::All(8.0f),
                     .child = new WColumn({
@@ -17,7 +17,7 @@ WWidget* WVisualizerWindow::Build()
                             new WWrap({
                                 .child = new WStack({
                                     .children = {
-                                        new WColor({ UColor::Black().WithAlpha(0.5f) }),
+                                        new WColor({ Colors::Black.WithAlpha(0.5f) }),
                                         new WText({
                                             .text = "Visualizer",
                                             .spacing = -20.0f,

@@ -24,7 +24,7 @@ WObjectProperties::WObjectProperties(const UPtr<KObject>& object) :
 {
 }
 
-WWidget* WObjectProperties::Build()
+WidgetPtr WObjectProperties::Build()
 {
     const auto variables{ object_->GetMemberVariables() };
 
@@ -63,7 +63,7 @@ void WObjectProperties::Cleanup()
 	WWidget::Cleanup();
 }
 
-WWidget* WObjectProperties::BuildMemberWidget(const std::string& type, void* variablePtr)
+WidgetPtr WObjectProperties::BuildMemberWidget(const std::string& type, void* variablePtr)
 {
 	//if (Reflector.IsObjectType(type))
     {

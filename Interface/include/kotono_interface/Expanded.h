@@ -5,7 +5,7 @@ class WExpanded : public WChildOwnerWidget
 public:
 	struct ExpandedSettings
 	{
-		WWidget* child{ nullptr };
+		WidgetPtr child{ nullptr };
 	};
 
 	/// Fills the entirety of the available parent space

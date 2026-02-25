@@ -1,6 +1,6 @@
 #include "ChildOwnerWidget.h"
 
-WChildOwnerWidget::WChildOwnerWidget(WWidget* child) :
+WChildOwnerWidget::WChildOwnerWidget(WidgetPtr child) :
 	child_(child)
 {
 	if (child_)

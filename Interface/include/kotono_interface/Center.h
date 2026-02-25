@@ -8,7 +8,7 @@ public:
 	{
 		/// default  = Axis::All
 		EAxis axis{ EAxis::All };
-		WWidget* child{ nullptr };
+		WidgetPtr child{ nullptr };
 	};
 
 	/// Center the child widget on an Axis

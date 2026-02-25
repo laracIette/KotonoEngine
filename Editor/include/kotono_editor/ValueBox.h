@@ -19,7 +19,7 @@ public:
 
 	WValueBox(const ValueBoxSettings& valueBoxSettings);
 
-	WWidget* Build() override;
+	WidgetPtr Build() override;
 
 private:
 	//std::string value_;

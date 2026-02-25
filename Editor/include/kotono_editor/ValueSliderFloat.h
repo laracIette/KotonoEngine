@@ -5,5 +5,5 @@ class WValueSliderFloat : public WValueSlider<f32>
 	using WValueSlider::WValueSlider;
 
 public:
-	WWidget* Build() override;
+	WidgetPtr Build() override;
 };

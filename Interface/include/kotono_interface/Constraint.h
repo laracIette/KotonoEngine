@@ -10,7 +10,7 @@ public:
 		EAxis axis{ EAxis::Horizontal };
 		/// default = 0.0f
 		float size{ 0.0f };
-		WWidget* child{ nullptr };
+		WidgetPtr child{ nullptr };
 	};
 
 	/// Constraints the bounds of the child widget given an axis

@@ -7,11 +7,11 @@ class WObjectProperties : public WWidget
 public:
 	WObjectProperties(const UPtr<KObject>& object);
 
-	WWidget* Build() override;
+	WidgetPtr Build() override;
 	void Cleanup() override;
 
 private:
-	WWidget* BuildMemberWidget(const std::string& type, void* variablePtr);
+	WidgetPtr BuildMemberWidget(const std::string& type, void* variablePtr);
 
 private:
 	UPtr<KObject> object_;

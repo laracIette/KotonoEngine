@@ -10,7 +10,7 @@ WInputTextBox::WInputTextBox(const InputTextBoxSettings& inputTextBoxSettings)
 {
 }
 
-WWidget* WInputTextBox::Build()
+WidgetPtr WInputTextBox::Build()
 {
 	holdAction_.SetActuationTime(inputTextBoxSettings_.actuationTime);
 	holdAction_.SetRepeatTime(inputTextBoxSettings_.repeatTime);
@@ -25,8 +25,8 @@ WWidget* WInputTextBox::Build()
 	return new WStack({
 		.children = {
 			isSelected_ 
-				? new WColor({ UColor::White().WithAlpha(0.15f) })
-				: new WColor({ UColor::White().WithAlpha(0.05f) }),
+				? new WColor({ Colors::White.WithAlpha(0.15f) })
+				: new WColor({ Colors::White.WithAlpha(0.05f) }),
 			new WButton({
 				.onPress = [this]() {
 					SetState([this]() { isSelected_ = true; });

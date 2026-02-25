@@ -2,7 +2,7 @@
 #include "GameManager.h"
 #include <kotono_interface/widgets.h>
 
-WWidget* WGameStateButton::Build()
+WidgetPtr WGameStateButton::Build()
 {
     return new WRow({
         .spacing = 5.0f,
@@ -26,8 +26,8 @@ WWidget* WGameStateButton::Build()
                             },
                         }),
                         GameManager.IsPlaying() 
-                            ? new WColor({ UColor::White().WithValue(0.5f) })
-                            : new WColor({ UColor::Green() })
+                            ? new WColor({ Colors::White.WithValue(0.5f) })
+                            : new WColor({ Colors::Green })
                     },
                 }),
             }),
@@ -47,8 +47,8 @@ WWidget* WGameStateButton::Build()
                             },
                         }),
                         GameManager.IsStopped()
-                            ? new WColor({ UColor::Red().WithAlpha(0.1f) })
-                            : new WColor({ UColor::Red() })
+                            ? new WColor({ Colors::Red.WithAlpha(0.1f) })
+                            : new WColor({ Colors::Red })
                     },
                 }),
             }),

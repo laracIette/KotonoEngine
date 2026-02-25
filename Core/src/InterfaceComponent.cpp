@@ -11,7 +11,7 @@ KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner) :
     Base(ptrOwner),
     visibility_(EVisibility::Visible),
     modelMatrix_([this]() { return TranslationMatrix() * RotationMatrix() * ScaleMatrix(); }),
-    color_(UColor::White())
+    color_(Colors::White)
 {
     eventRectChanged_.AddListener(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty);
 }

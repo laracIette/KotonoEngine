@@ -7,7 +7,7 @@ WList::WList(const ListSettings& listSettings)
 {
 }
 
-WWidget* WList::Build()
+WidgetPtr WList::Build()
 {
 	return new WScrollable({
 		.axis = EAxis::Vertical,

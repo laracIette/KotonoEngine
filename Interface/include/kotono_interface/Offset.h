@@ -7,7 +7,7 @@ public:
 	{
 		/// default = { 0.0f, 0.0f }
 		glm::vec2 offset{ 0.0f, 0.0f };
-		WWidget* child{ nullptr };
+		WidgetPtr child{ nullptr };
 	};
 
 	/// Offset the position of the child widget

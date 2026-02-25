@@ -6,7 +6,7 @@
 #include <kotono_core/Scene.h>
 #include <kotono_core/SceneObject.h>
 
-WWidget* WTestBox::Build()
+WidgetPtr WTestBox::Build()
 {
 	ObjectManager.EventSelectedObjectChanged().AddListener(this, &WTestBox::Refresh);
 
@@ -15,8 +15,8 @@ WWidget* WTestBox::Build()
         .child = new WStack({
             .children = {
                 ObjectManager.GetSelectedObject()
-					? new WColor({ UColor::Red() })
-                    : new WColor({ UColor::Red().WithValue(0.1f) }),
+					? new WColor({ Colors::Red })
+                    : new WColor({ Colors::Red.WithValue(0.1f) }),
                 new WButton({
                     .onDown = [this]() {
                         if (UPtr selectedObject{ TryCast<TSceneObject>(ObjectManager.GetSelectedObject()) })

@@ -16,7 +16,7 @@ public:
 	/// Defines a vertical container for widgets
 	WList(const ListSettings& listSettings);
 
-	WWidget* Build() override;
+	WidgetPtr Build() override;
 
 protected:
 	ListSettings listSettings_;

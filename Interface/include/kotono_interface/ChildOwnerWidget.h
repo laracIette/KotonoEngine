@@ -3,7 +3,7 @@
 class WChildOwnerWidget : public WWidget
 {
 public:
-	WChildOwnerWidget(WWidget* child);
+	WChildOwnerWidget(WidgetPtr child);
 
 	void CacheBuild() override final;
 
@@ -15,6 +15,6 @@ public:
 	WidgetVector GetWidgetTree() override;
 
 private:
-	WWidget* child_;
+	WidgetPtr child_;
 };
 

@@ -4,7 +4,7 @@ enum class EGameState : char;
 class WSceneExplorer : public WWidget
 {
 public:
-	WWidget* Build() override;
+	WidgetPtr Build() override;
 	void Cleanup() override;
 
 private:

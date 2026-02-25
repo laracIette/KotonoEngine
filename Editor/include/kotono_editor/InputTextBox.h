@@ -21,7 +21,7 @@ public:
 
 	WInputTextBox(const InputTextBoxSettings& inputTextBoxSettings);
 
-	WWidget* Build() override;
+	WidgetPtr Build() override;
 	void Cleanup() override;
 
 private:

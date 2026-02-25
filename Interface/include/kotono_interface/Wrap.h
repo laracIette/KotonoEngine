@@ -14,7 +14,7 @@ public:
 	{
 		/// default = EAxis::All
 		EAxis axis{ EAxis::All };
-		WWidget* child{ nullptr };
+		WidgetPtr child{ nullptr };
 	};
 
 	/// Fills the entirety of the available parent space

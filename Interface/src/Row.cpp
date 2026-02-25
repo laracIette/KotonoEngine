@@ -108,6 +108,6 @@ glm::vec2 WRow::GetDesiredSize(glm::vec2 bounds) const
 size WRow::GetFlexCount() const
 {
 	return std::ranges::count_if(rowSettings_.children.begin(), rowSettings_.children.end(),
-		[](const WWidget* child) { return child && has_flag(child->GetFlex(), EFlex::Horizontal); }
+		[](const WidgetPtr child) { return child && has_flag(child->GetFlex(), EFlex::Horizontal); }
 	);
 }

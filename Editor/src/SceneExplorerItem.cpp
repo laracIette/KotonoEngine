@@ -8,7 +8,7 @@ WSceneExplorerItem::WSceneExplorerItem(const UPtr<TSceneObject>& sceneObject)
 {
 }
 
-WWidget* WSceneExplorerItem::Build()
+WidgetPtr WSceneExplorerItem::Build()
 {
 	ObjectManager.EventSelectedObjectChanged().AddListener(this, &WSceneExplorerItem::Refresh);
 
@@ -16,8 +16,8 @@ WWidget* WSceneExplorerItem::Build()
 		.child = new WStack({
 			.children = {
 				sceneObject_ && (ObjectManager.GetSelectedObject() == sceneObject_)
-					? new WColor({ UColor::Black().WithAlpha(0.2f) })
-					: new WColor({ UColor::Transparent() }),
+					? new WColor({ Colors::Black.WithAlpha(0.2f) })
+					: new WColor({ Colors::Transparent }),
 				new WButton({
 					.onPress = [this]() {
 						SetState([this]() {

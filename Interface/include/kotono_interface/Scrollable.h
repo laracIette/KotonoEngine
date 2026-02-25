@@ -9,12 +9,12 @@ public:
 	{
 		/// default = EAxis::Vertical
 		EAxis axis{ EAxis::Vertical };
-		KtBuildable<WWidget*> child{};
+		KtBuildable<WidgetPtr> child{};
 	};
 
 	WScrollable(const ScrollableSettings& scrollableSettings);
 
-	WWidget* Build() override;
+	WidgetPtr Build() override;
 	void Cleanup() override;
 
 private:

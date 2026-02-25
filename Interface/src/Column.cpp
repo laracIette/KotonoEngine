@@ -106,6 +106,6 @@ glm::vec2 WColumn::GetDesiredSize(glm::vec2 bounds) const
 size WColumn::GetFlexCount() const
 {
 	return std::count_if(columnSettings_.children.begin(), columnSettings_.children.end(),
-		[](const WWidget* child) { return child && has_flag(child->GetFlex(), EFlex::Vertical); }
+		[](const WidgetPtr child) { return child && has_flag(child->GetFlex(), EFlex::Vertical); }
 	);
 }

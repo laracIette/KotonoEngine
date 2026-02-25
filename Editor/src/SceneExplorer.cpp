@@ -13,7 +13,7 @@
 #include <kotono_graphics/ShaderManager.h>
 #include <kotono_interface/widgets.h>
 
-WWidget* WSceneExplorer::Build()
+WidgetPtr WSceneExplorer::Build()
 {
 	GameManager.EventStateChanged().AddListener(this, &WSceneExplorer::OnGameStateChanged);
 
@@ -24,7 +24,7 @@ WWidget* WSceneExplorer::Build()
 
 	return new WStack({
 		.children = {
-			new WColor({ UColor::White().WithValue(0.5f).WithAlpha(0.8f) }),
+			new WColor({ Colors::White.WithValue(0.5f).WithAlpha(0.8f) }),
 			new WPadding({
 				.padding = WPadding::Padding::All(10.0f),
 				.child = new WColumn({
@@ -35,7 +35,7 @@ WWidget* WSceneExplorer::Build()
 							.size = { 80.0f, 40.0f },
 							.child = new WStack({
 								.children = {
-									new WColor({ UColor::Green() }),
+									new WColor({ Colors::Green }),
 									new WButton({
 										.onPress = []() {
 											if (UPtr scene{ Game.GetOpenedScene() })
@@ -80,7 +80,7 @@ WWidget* WSceneExplorer::Build()
 							.padding = WPadding::Padding::All(5.0f),
 							.child = new WStack({
 								.children = {
-									new WColor({ UColor::Black().WithAlpha(0.2f) }),
+									new WColor({ Colors::Black.WithAlpha(0.2f) }),
 									new WPadding({
 										.padding = WPadding::Padding::All(5.0f),
 										.child = new WList({ 

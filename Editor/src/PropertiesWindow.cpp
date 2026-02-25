@@ -10,7 +10,7 @@
 #include <kotono_interface/widgets.h>
 #include <kotono_platform/glm_utils.h>
 
-WWidget* WPropertiesWindow::Build()
+WidgetPtr WPropertiesWindow::Build()
 {
 
     ObjectManager.EventSelectedObjectChanged().AddListener(this, &WPropertiesWindow::Refresh);
@@ -25,7 +25,7 @@ WWidget* WPropertiesWindow::Build()
     return new WWrap({
         .child = new WStack({
             .children = {
-                new WColor({ UColor::Blue().WithAlpha(0.5f) }),
+                new WColor({ Colors::Blue.WithAlpha(0.5f) }),
                 new WPadding({
                     .padding = WPadding::Padding::All(8.0f),
                     .child = new WList({
@@ -35,7 +35,7 @@ WWidget* WPropertiesWindow::Build()
                                 new WWrap({
                                     .child = new WStack({
                                         .children = {
-                                            new WColor({ UColor::Black().WithAlpha(0.5f) }),
+                                            new WColor({ Colors::Black.WithAlpha(0.5f) }),
                                             new WText({
                                                 .text = "Properties",
                                                 .spacing = -20.0f,
@@ -96,13 +96,13 @@ void WPropertiesWindow::Cleanup()
     WWidget::Cleanup();
 }
 
-WWidget* WPropertiesWindow::Slider(const std::string& label, const ValueChangedFunction& function)
+WidgetPtr WPropertiesWindow::Slider(const std::string& label, const ValueChangedFunction& function)
 {
     return new WWrap({
         .axis = WWrap::EAxis::Vertical,
         .child = new WStack({
             .children = {
-                new WColor({ UColor::White().WithValue(0.5f) }),
+                new WColor({ Colors::White.WithValue(0.5f) }),
                 new WText({
                     .text = label,
                     .fontSize = { 20.0f, 25.0f },

@@ -7,7 +7,7 @@ public:
 	{
 		/// default = { 0.0f, 0.0f }
 		glm::vec2 size{ 0.0f, 0.0f };
-		WWidget* child{ nullptr };
+		WidgetPtr child{ nullptr };
 	};
 
 	/// Set bounds for the child widget to be contained within

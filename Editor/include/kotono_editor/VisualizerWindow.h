@@ -4,6 +4,6 @@
 class WVisualizerWindow : public WWidget
 {
 public:
-	WWidget* Build() override;
+	WidgetPtr Build() override;
 };
 

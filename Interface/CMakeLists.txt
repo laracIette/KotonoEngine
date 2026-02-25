@@ -39,6 +39,7 @@ set(KINTERFACE_HEADERS
     "include/kotono_interface/Text.h"
     "include/kotono_interface/utils.h"
     "include/kotono_interface/Widget.h"
+    "include/kotono_interface/widget_fwd.h"
     "include/kotono_interface/widgets.h"
     "include/kotono_interface/Wrap.h"
 )

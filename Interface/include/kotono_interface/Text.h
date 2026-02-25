@@ -16,7 +16,7 @@ public:
 	/// Display a text
 	WText(const TextSettings& textSettings);
 
-	WWidget* Build() override;
+	WidgetPtr Build() override;
 
 	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 

@@ -8,7 +8,7 @@ WValueBox::WValueBox(const ValueBoxSettings& valueBoxSettings)
 {
 }
 
-WWidget* WValueBox::Build()
+WidgetPtr WValueBox::Build()
 {
 	return new WWrap({
 		.axis = WWrap::EAxis::Vertical,

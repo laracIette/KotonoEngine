@@ -3,6 +3,6 @@
 class WGameStateButton : public WWidget
 {
 public:
-	WWidget* Build() override;
+	WidgetPtr Build() override;
 };
 

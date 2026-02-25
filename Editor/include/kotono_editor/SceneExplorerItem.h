@@ -6,7 +6,7 @@ class WSceneExplorerItem : public WWidget
 public:
 	WSceneExplorerItem(const UPtr<TSceneObject>& sceneObject);
 	
-	WWidget* Build() override;
+	WidgetPtr Build() override;
 	void Cleanup() override;
 
 private:

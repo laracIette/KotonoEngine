@@ -4,7 +4,7 @@
 #include <kotono_core/TimeManager.h>
 #include <kotono_interface/widgets.h>
 
-WWidget* WUpdateTimeText::Build()
+WidgetPtr WUpdateTimeText::Build()
 {
     TimerManager.GetTimer("update time text").EventCompleted().AddListener(this, &WUpdateTimeText::UpdateText);
 

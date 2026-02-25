@@ -26,7 +26,7 @@ public:
 	{
 		/// default = Padding::Zero()
 		Padding padding{ 0.0f, 0.0f, 0.0f, 0.0f };
-		WWidget* child{ nullptr };
+		WidgetPtr child{ nullptr };
 	};
 
 	/// Shrink the bounds of the child widget

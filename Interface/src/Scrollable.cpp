@@ -9,7 +9,7 @@ WScrollable::WScrollable(const ScrollableSettings& scrollableSettings)
 {
 }
 
-WWidget* WScrollable::Build()
+WidgetPtr WScrollable::Build()
 {
 	switch (scrollableSettings_.axis)
 	{

@@ -75,6 +75,6 @@ WWidget::WidgetVector WChildrenOwnerWidget::GetWidgetTree()
 size WChildrenOwnerWidget::GetValidChildrenCount() const
 {
 	return std::count_if(children_.begin(), children_.end(),
-		[](const WWidget* child) { return child != nullptr; }
+		[](const WidgetPtr child) { return child != nullptr; }
 	);
 }

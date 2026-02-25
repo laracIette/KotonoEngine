@@ -9,7 +9,7 @@ WText::WText(const TextSettings& textSettings) :
 {
 }
 
-WWidget* WText::Build()
+WidgetPtr WText::Build()
 {
 	return new WRow({
 		.spacing = textSettings_.spacing,

@@ -1,5 +1,6 @@
 #pragma once
 #include "Flex.h"
+#include "widget_fwd.h"
 #include <functional>
 #include <glm/fwd.hpp>
 #include <glm/vec2.hpp>
@@ -7,6 +8,7 @@
 #include <kotono_common/types.h>
 #include <kotono_graphics/Scissor.h>
 #include <string>
+#include <vector>
 
 struct UWidgetDisplaySettings
 {
@@ -21,9 +23,7 @@ class WWidget
 {
 public:
 	using StateFunction = std::function<void()>;
-	using WidgetVector = std::vector<WWidget*>;
-	using WidgetBuilder = std::function<WWidget*()>;
-	using WidgetVectorBuilder = std::function<WidgetVector()>;
+	using WidgetVector = std::vector<WidgetPtr>;
 
 public:
 	WWidget();
@@ -31,7 +31,7 @@ public:
 
 	virtual void CacheBuild();
 
-	virtual WWidget* Build();
+	virtual WidgetPtr Build();
 
 	virtual void Cleanup();
 
@@ -50,10 +50,10 @@ public:
 
 	bool IsMouseHovering() const;
 
-	void SetParent(WWidget* parent);
+	void SetParent(WidgetPtr parent);
 
 protected:
-	WWidget* parent_;
+	WidgetPtr parent_;
 	UWidgetDisplaySettings displaySettings_;
 
 	void SetState(const StateFunction& function);
@@ -69,7 +69,7 @@ protected:
 	void Refresh();
 
 private:
-	KtCached<WWidget*> cachedBuild_;
+	KtCached<WidgetPtr> cachedBuild_;
 
 	void Rebuild();
 };
