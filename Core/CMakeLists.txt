@@ -4,8 +4,6 @@ project(KotonoCore LANGUAGES C CXX)
 if (MSVC)
     # Enable SDL security checks
     add_compile_options(/sdl)
-    # Enable multi-core compilation
-    add_compile_options(/MP)
 endif()
 
 # Static library

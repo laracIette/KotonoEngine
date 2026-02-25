@@ -8,7 +8,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # --- Enable multithreaded compilation on MSVC ---
 if (MSVC)
-    add_compile_options(/MP)
     add_compile_options(/sdl)
 endif()
 
