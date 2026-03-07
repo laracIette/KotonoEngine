@@ -56,7 +56,7 @@ EFlex WChildrenOwnerWidget::GetFlex() const
 	return result;
 }
 
-WWidget::WidgetVector WChildrenOwnerWidget::GetWidgetTree()
+WidgetVector WChildrenOwnerWidget::GetWidgetTree()
 {
 	WidgetVector result{ this };
 

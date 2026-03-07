@@ -83,7 +83,7 @@ glm::vec2 WWidget::GetDesiredSize(glm::vec2 bounds) const
 	return { 0.0f, 0.0f };
 }
 
-WWidget::WidgetVector WWidget::GetWidgetTree()
+WidgetVector WWidget::GetWidgetTree()
 {
 	WidgetPtr build{ cachedBuild_.Value() };
 	if (build && build != this)

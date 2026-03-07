@@ -7,6 +7,7 @@
 #include "Column.h"
 #include "Constraint.h"
 #include "Expanded.h"
+#include "HorizontalWrapList.h"
 #include "Image.h"
 #include "List.h"
 #include "Offset.h"

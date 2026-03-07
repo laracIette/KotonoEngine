@@ -23,7 +23,7 @@ UWidgetDisplaySettings WText::GetDisplaySettings(UWidgetDisplaySettings displayS
 	return ds;
 }
 
-WWidget::WidgetVector WText::GetCharacters() const
+WidgetVector WText::GetCharacters() const
 {
 	WidgetVector result{};
 

@@ -11,7 +11,7 @@ WValueBox::WValueBox(const ValueBoxSettings& valueBoxSettings)
 WidgetPtr WValueBox::Build()
 {
 	return new WWrap({
-		.axis = WWrap::EAxis::Vertical,
+		.axis = EAxis::Vertical,
 		.child = new WInputTextBox({
 			.text = valueBoxSettings_.valueToString(),
 			.onTextChanged = valueBoxSettings_.stringToValue,

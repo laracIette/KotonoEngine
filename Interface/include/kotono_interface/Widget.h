@@ -1,4 +1,5 @@
 #pragma once
+#include "Axis.h"
 #include "Flex.h"
 #include "widget_fwd.h"
 #include <functional>
@@ -18,12 +19,13 @@ struct UWidgetDisplaySettings
 	KtScissor scissor;
 };
 
+using WidgetVector = std::vector<WidgetPtr>;
+
 /// Base class of all widgets
 class WWidget
 {
-public:
+protected:
 	using StateFunction = std::function<void()>;
-	using WidgetVector = std::vector<WidgetPtr>;
 
 public:
 	WWidget();
@@ -53,9 +55,6 @@ public:
 	void SetParent(WidgetPtr parent);
 
 protected:
-	WidgetPtr parent_;
-	UWidgetDisplaySettings displaySettings_;
-
 	void SetState(const StateFunction& function);
 	void SetDisplaySettings(const UWidgetDisplaySettings& displaySettings);
 
@@ -69,8 +68,13 @@ protected:
 	void Refresh();
 
 private:
-	KtCached<WidgetPtr> cachedBuild_;
-
 	void Rebuild();
+
+protected:
+	WidgetPtr parent_;
+	UWidgetDisplaySettings displaySettings_;
+
+private:
+	KtCached<WidgetPtr> cachedBuild_;
 };
 

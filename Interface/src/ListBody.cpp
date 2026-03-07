@@ -11,11 +11,10 @@ WListBody::WListBody(const ListBodySettings& listBodySettings) :
 void WListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	++displaySettings.layer;
-	displaySettings.bounds.y = INFINITY;
 
 	if (parent_)
 	{
-		const auto* asList = static_cast<WList*>(parent_);
+		const auto* asList{ static_cast<WList*>(parent_) };
 		displaySettings.scissor.offset = asList->displaySettings_.position;
 		displaySettings.scissor.extent = asList->displaySettings_.bounds;
 	}
@@ -34,6 +33,8 @@ void WListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
 
 UWidgetDisplaySettings WListBody::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
+	displaySettings.bounds.y = INFINITY;
+
 	glm::vec2 size{ 0.0f, 0.0f };
 
 	for (auto* child : listBodySettings_.children)

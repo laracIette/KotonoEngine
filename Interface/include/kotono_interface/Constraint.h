@@ -1,6 +1,5 @@
 #pragma once
 #include "ChildOwnerWidget.h"
-#include "Axis.h"
 class WConstraint : public WChildOwnerWidget
 {
 public:

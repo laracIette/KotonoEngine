@@ -48,11 +48,12 @@ void WColumn::DisplayInternal(UWidgetDisplaySettings displaySettings)
 			}
 
 			child->Display(settings);
+			const auto childSettings{ child->GetDisplaySettings(settings) };
 
-			displaySettings.position.y += child->GetDisplaySettings(settings).bounds.y;
+			displaySettings.position.y += childSettings.bounds.y;
 			displaySettings.position.y += columnSettings_.spacing;
 
-			displaySettings.bounds.y -= child->GetDisplaySettings(settings).bounds.y;
+			displaySettings.bounds.y -= childSettings.bounds.y;
 			displaySettings.bounds.y -= columnSettings_.spacing;
 		}
 	}

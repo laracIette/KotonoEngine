@@ -3,13 +3,6 @@
 class WWrap : public WChildOwnerWidget
 {
 public:
-	enum class EAxis : u8
-	{
-		Horizontal = 0x01,
-		Vertical = 0x02,
-		All = Horizontal | Vertical
-	};
-
 	struct WrapSettings
 	{
 		/// default = EAxis::All

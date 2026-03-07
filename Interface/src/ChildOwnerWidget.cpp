@@ -48,7 +48,7 @@ glm::vec2 WChildOwnerWidget::GetDesiredSize(glm::vec2 bounds) const
 	return { 0.0f, 0.0f };
 }
 
-WWidget::WidgetVector WChildOwnerWidget::GetWidgetTree()
+WidgetVector WChildOwnerWidget::GetWidgetTree()
 {
 	WidgetVector result{ this };
 

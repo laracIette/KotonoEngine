@@ -5,7 +5,7 @@
 WidgetPtr WVisualizerWindow::Build()
 {
     return new WBox({
-        .size = { 600.0f, 300.0f },
+        .size = { 400.0f, 300.0f },
         .child = new WStack({
             .children = {
                 new WColor({ Colors::Blue.WithAlpha(0.5f) }),

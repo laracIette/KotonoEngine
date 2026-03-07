@@ -14,6 +14,7 @@ target_compile_features(KotonoEditor PUBLIC cxx_std_23)
 set_target_properties(KotonoEditor PROPERTIES FOLDER "KotonoEngine")
 
 set(KEDITOR_HEADERS
+    "include/kotono_editor/AssetExplorer.h"
     "include/kotono_editor/Camera.h"
     "include/kotono_editor/DrawTimeText.h"
     "include/kotono_editor/Editor.h"
@@ -37,6 +38,7 @@ set(KEDITOR_HEADERS
     "include/kotono_editor/VisualizerWindowItem.h"
 )
 set(KEDITOR_SOURCES
+    "src/AssetExplorer.cpp"
     "src/Camera.cpp"
     "src/DrawTimeText.cpp"
     "src/Editor.cpp"

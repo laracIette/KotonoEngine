@@ -1,13 +1,14 @@
 #include "MainWindow.h"
-#include <kotono_interface/widgets.h>
-#include <kotono_core/Timer.h>
-#include "UpdateTimeText.h"
+#include "AssetExplorer.h"
 #include "DrawTimeText.h"
-#include "TestBox.h"
-#include "VisualizerWindow.h"
-#include "PropertiesWindow.h"
 #include "GameStateButton.h"
+#include "PropertiesWindow.h"
 #include "SceneExplorer.h"
+#include "TestBox.h"
+#include "UpdateTimeText.h"
+#include "VisualizerWindow.h"
+#include <kotono_core/Timer.h>
+#include <kotono_interface/widgets.h>
 
 WidgetPtr WMainWindow::Build()
 {
@@ -40,13 +41,23 @@ WidgetPtr WMainWindow::Build()
 					.child = new WRow({
 						.spacing = 10.0f,
 						.children = {
-							new WBox({ 
-								.size = { 300.0f, 500.0f },
-								.child = new WSceneExplorer(),
+							new WColumn({
+								.spacing = 10.0f,
+								.children = {
+									new WConstraint({
+										.axis = EAxis::Horizontal,
+										.size = 300.0f,
+										.child = new WSceneExplorer(),
+									}),
+									new WConstraint({
+										.axis = EAxis::Vertical,
+										.size = 96.0f,
+										.child = new WAssetExplorer(),
+									}),
+								},
 							}),
-							new WExpanded({}),
-							new WBox({
-								.size = { 400.0f, 800.0f },
+							new WWrap({
+								.axis = EAxis::Horizontal,
 								.child = new WStack({
 									.children = {
 										new WColor({ Colors::Magenta.WithAlpha(0.2f) }),

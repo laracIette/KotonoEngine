@@ -50,11 +50,12 @@ void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 			}
 
 			child->Display(settings);
+			const auto childSettings{ child->GetDisplaySettings(settings) };
 
-			displaySettings.position.x += child->GetDisplaySettings(settings).bounds.x;
+			displaySettings.position.x += childSettings.bounds.x;
 			displaySettings.position.x += rowSettings_.spacing;
 
-			displaySettings.bounds.x -= child->GetDisplaySettings(settings).bounds.x;
+			displaySettings.bounds.x -= childSettings.bounds.x;
 			displaySettings.bounds.x -= rowSettings_.spacing;
 		}
 	}
