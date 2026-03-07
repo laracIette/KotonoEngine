@@ -49,9 +49,8 @@ WidgetPtr WMainWindow::Build()
 										.size = 300.0f,
 										.child = new WSceneExplorer(),
 									}),
-									new WConstraint({
-										.axis = EAxis::Vertical,
-										.size = 96.0f,
+									new WBox({
+										.size = { 144.0f, 96.0f },
 										.child = new WAssetExplorer(),
 									}),
 								},

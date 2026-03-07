@@ -22,7 +22,7 @@ UWidgetDisplaySettings WHorizontalWrapListBody::GetDisplaySettings(UWidgetDispla
 		size.x = std::max(size.x, rowSize.x);
 		size.y += rowSize.y;
 	}
-
+	
 	displaySettings.bounds = glm::min(displaySettings.bounds, size);
 	return displaySettings;
 }
@@ -55,16 +55,15 @@ void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySett
 	const auto baseDisplaySettings{ displaySettings };
 
 	glm::vec2 rowSize{ 0.0f, 0.0f };
-	bool isFirstItemInRow{ true };
+	auto isRowEmpty{ [&rowSize]() { return rowSize == glm::vec2{ 0.0f, 0.0f }; } };
 
 	for (auto* child : horizontalWrapListBodySettings_.children)
 	{
 		if (child)
 		{
-			child->Display(displaySettings);
-			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
+			const auto childDesiredSize{ child->GetDesiredSize(displaySettings.bounds) };
 
-			if (!isFirstItemInRow && childSettings.bounds.x > displaySettings.bounds.x)
+			if (!isRowEmpty() && childDesiredSize.x > displaySettings.bounds.x)
 			{
 				displaySettings.position.x = baseDisplaySettings.position.x;
 				displaySettings.position.y += rowSize.y;
@@ -73,16 +72,16 @@ void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySett
 				displaySettings.bounds.y -= rowSize.y; // useless because bounds.y can only be INF, but here for consistency
 
 				rowSize = { 0.0f, 0.0f };
-				isFirstItemInRow = true;
 			}
+
+			child->Display(displaySettings);
+			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
 
 			rowSize.x += childSettings.bounds.x;
 			rowSize.y = std::max(rowSize.y, childSettings.bounds.y);
 
 			displaySettings.position.x += childSettings.bounds.x;
 			displaySettings.bounds.x -= childSettings.bounds.x;
-
-			isFirstItemInRow = false;
 		}
 	}
 }
@@ -92,40 +91,33 @@ std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDisplaySizes(const UWidget
 	std::vector<glm::vec2> rowSizes{};
 	glm::vec2 rowSize{ 0.0f, 0.0f };
 
-	bool isFirstItemInRow{ true };
+	auto isRowEmpty{ [&rowSize]() { return rowSize == glm::vec2{ 0.0f, 0.0f }; } };
 
-	auto newDisplaySettings{ displaySettings };
+	auto newDisplayBounds{ displaySettings.bounds };
 
 	for (auto* child : horizontalWrapListBodySettings_.children)
 	{
 		if (child)
 		{
-			const auto childSettings{ child->GetDisplaySettings(newDisplaySettings) };
-			if (!isFirstItemInRow && childSettings.bounds.x > newDisplaySettings.bounds.x)
+			const auto childDesiredSize{ child->GetDesiredSize(newDisplayBounds) };
+			if (!isRowEmpty() && childDesiredSize.x > newDisplayBounds.x)
 			{
 				rowSizes.push_back(rowSize);
 
-				newDisplaySettings.position.x = displaySettings.position.x;
-				newDisplaySettings.position.y += rowSize.y;
-
-				newDisplaySettings.bounds.x = displaySettings.bounds.x;
-				newDisplaySettings.bounds.y -= rowSize.y; // useless because bounds.y can only be INF, but here for consistency
+				newDisplayBounds.x = displaySettings.bounds.x;
+				newDisplayBounds.y -= rowSize.y; // useless because bounds.y can only be INF, but here for consistency
 
 				rowSize = { 0.0f, 0.0f };
-				isFirstItemInRow = true;
 			}
 
-			rowSize.x += childSettings.bounds.x;
-			rowSize.y = std::max(rowSize.y, childSettings.bounds.y);
+			rowSize.x += childDesiredSize.x;
+			rowSize.y = std::max(rowSize.y, childDesiredSize.y);
 
-			newDisplaySettings.position.x += childSettings.bounds.x;
-			newDisplaySettings.bounds.x -= childSettings.bounds.x;
-
-			isFirstItemInRow = false;
+			newDisplayBounds.x -= childDesiredSize.x;
 		}
 	}
 
-	if (!isFirstItemInRow)
+	if (!isRowEmpty())
 	{
 		rowSizes.push_back(rowSize);
 	}
@@ -138,27 +130,25 @@ std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDesiredSizes(const glm::ve
 	std::vector<glm::vec2> rowSizes{};
 	glm::vec2 rowSize{ 0.0f, 0.0f };
 
-	bool isFirstItemInRow{ true };
+	auto isRowEmpty{ [&rowSize]() { return rowSize == glm::vec2{ 0.0f, 0.0f }; } };
 
 	for (auto* child : horizontalWrapListBodySettings_.children)
 	{
 		if (child)
 		{
 			const auto childDesiredSize{ child->GetDesiredSize(bounds) };
-			if (!isFirstItemInRow && rowSize.x + childDesiredSize.x > bounds.x)
+			if (!isRowEmpty() && rowSize.x + childDesiredSize.x > bounds.x)
 			{
 				rowSizes.push_back(rowSize);
 				rowSize = { 0.0f, 0.0f };
-				isFirstItemInRow = true;
 			}
 
 			rowSize.x += childDesiredSize.x;
 			rowSize.y = std::max(rowSize.y, childDesiredSize.y);
-			isFirstItemInRow = false;
 		}
 	}
 
-	if (!isFirstItemInRow)
+	if (!isRowEmpty())
 	{
 		rowSizes.push_back(rowSize);
 	}
