@@ -14,13 +14,18 @@ UWidgetDisplaySettings WHorizontalWrapListBody::GetDisplaySettings(UWidgetDispla
 {
 	displaySettings.bounds.y = INFINITY;
 
-	auto rowSizes{ GetRowDisplaySizes(displaySettings) };
-
+	const auto rowSizes{ GetRowDisplaySizes(displaySettings) };
 	glm::vec2 size{ 0.0f, 0.0f };
+
 	for (const auto& rowSize : rowSizes)
 	{
 		size.x = std::max(size.x, rowSize.x);
 		size.y += rowSize.y;
+	}
+
+	if (rowSizes.size())
+	{
+		size.y += horizontalWrapListBodySettings_.rowSpacing * static_cast<float>(rowSizes.size() - 1);
 	}
 	
 	displaySettings.bounds = glm::min(displaySettings.bounds, size);
@@ -29,13 +34,18 @@ UWidgetDisplaySettings WHorizontalWrapListBody::GetDisplaySettings(UWidgetDispla
 
 glm::vec2 WHorizontalWrapListBody::GetDesiredSize(glm::vec2 bounds) const
 {
+	const auto rowSizes{ GetRowDesiredSizes(bounds) };
 	glm::vec2 size{ 0.0f, 0.0f };
 
-	const auto rowSizes{ GetRowDesiredSizes(bounds) };
 	for (const auto& rowSize : rowSizes)
 	{
 		size.x = std::max(size.x, rowSize.x);
 		size.y += rowSize.y;
+	}
+	
+	if (rowSizes.size())
+	{
+		size.y += horizontalWrapListBodySettings_.rowSpacing * static_cast<float>(rowSizes.size() - 1);
 	}
 
 	return size;
@@ -63,13 +73,13 @@ void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySett
 		{
 			const auto childDesiredSize{ child->GetDesiredSize(displaySettings.bounds) };
 
-			if (!isRowEmpty() && childDesiredSize.x > displaySettings.bounds.x)
+			if (!isRowEmpty() && childDesiredSize.x >= displaySettings.bounds.x)
 			{
 				displaySettings.position.x = baseDisplaySettings.position.x;
-				displaySettings.position.y += rowSize.y;
+				displaySettings.position.y += rowSize.y + horizontalWrapListBodySettings_.rowSpacing;
 
 				displaySettings.bounds.x = baseDisplaySettings.bounds.x;
-				displaySettings.bounds.y -= rowSize.y; // useless because bounds.y can only be INF, but here for consistency
+				displaySettings.bounds.y -= rowSize.y + horizontalWrapListBodySettings_.rowSpacing; // useless because bounds.y can only be INF, but here for consistency
 
 				rowSize = { 0.0f, 0.0f };
 			}
@@ -77,11 +87,11 @@ void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySett
 			child->Display(displaySettings);
 			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
 
-			rowSize.x += childSettings.bounds.x;
+			rowSize.x += childSettings.bounds.x + horizontalWrapListBodySettings_.itemSpacing;
 			rowSize.y = std::max(rowSize.y, childSettings.bounds.y);
 
-			displaySettings.position.x += childSettings.bounds.x;
-			displaySettings.bounds.x -= childSettings.bounds.x;
+			displaySettings.position.x += childSettings.bounds.x + horizontalWrapListBodySettings_.itemSpacing;
+			displaySettings.bounds.x -= childSettings.bounds.x + horizontalWrapListBodySettings_.itemSpacing;
 		}
 	}
 }
@@ -100,14 +110,28 @@ std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDisplaySizes(const UWidget
 		if (child)
 		{
 			const auto childDesiredSize{ child->GetDesiredSize(newDisplayBounds) };
-			if (!isRowEmpty() && childDesiredSize.x > newDisplayBounds.x)
+
+			if (!isRowEmpty())
 			{
-				rowSizes.push_back(rowSize);
+				// Try to insert an item spacing
+				if (childDesiredSize.x + horizontalWrapListBodySettings_.itemSpacing < newDisplayBounds.x)
+				{
+					rowSize.x += horizontalWrapListBodySettings_.itemSpacing;
+				}
 
-				newDisplayBounds.x = displaySettings.bounds.x;
-				newDisplayBounds.y -= rowSize.y; // useless because bounds.y can only be INF, but here for consistency
+				// Always substract the item spacing from the bounds
+				newDisplayBounds.x -= horizontalWrapListBodySettings_.itemSpacing;
+				
+				// Submit the row if the child doesn't fit
+				if (childDesiredSize.x >= newDisplayBounds.x)
+				{
+					rowSizes.push_back(rowSize);
 
-				rowSize = { 0.0f, 0.0f };
+					newDisplayBounds.x = displaySettings.bounds.x;
+					newDisplayBounds.y -= rowSize.y + horizontalWrapListBodySettings_.rowSpacing; // useless because bounds.y can only be INF, but here for consistency
+
+					rowSize = { 0.0f, 0.0f };
+				}
 			}
 
 			rowSize.x += childDesiredSize.x;
@@ -117,6 +141,7 @@ std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDisplaySizes(const UWidget
 		}
 	}
 
+	// Add the last computed row if necessary
 	if (!isRowEmpty())
 	{
 		rowSizes.push_back(rowSize);
@@ -137,10 +162,19 @@ std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDesiredSizes(const glm::ve
 		if (child)
 		{
 			const auto childDesiredSize{ child->GetDesiredSize(bounds) };
-			if (!isRowEmpty() && rowSize.x + childDesiredSize.x > bounds.x)
+
+			if (!isRowEmpty())
 			{
-				rowSizes.push_back(rowSize);
-				rowSize = { 0.0f, 0.0f };
+				if (rowSize.x + childDesiredSize.x + horizontalWrapListBodySettings_.itemSpacing < bounds.x)
+				{
+					rowSize.x += horizontalWrapListBodySettings_.itemSpacing;
+				}
+
+				if (rowSize.x + childDesiredSize.x + horizontalWrapListBodySettings_.itemSpacing >= bounds.x)
+				{
+					rowSizes.push_back(rowSize);
+					rowSize = { 0.0f, 0.0f };
+				}
 			}
 
 			rowSize.x += childDesiredSize.x;

@@ -77,23 +77,6 @@ WidgetPtr WMainWindow::Build()
 						},
 					}),
 				}),
-				new WRow({
-					.spacing = 15.0f,
-					.children = {
-						new WBox({
-							.size = { 100.0f, 50.0f },
-							.child = new WColor({ Colors::Blue }),
-						}),
-						new WBox({
-							.size = { 100.0f, 50.0f },
-							.child = new WColor({ Colors::Blue }),
-						}),
-						new WBox({
-							.size = { 100.0f, 50.0f },
-							.child = new WColor({ Colors::Blue }),
-						}),
-					},
-				}),
 			},
 		}),
 	});

@@ -9,6 +9,8 @@ WidgetPtr WAssetExplorer::Build()
 			new WPadding({
 				.padding = WPadding::Padding::All(8.0f),
 				.child = new WHorizontalWrapList({
+					.itemSpacing = 10.0f,
+					.rowSpacing = 10.0f,
 					.children = []() {
 						return WidgetVector{
 							new WBox({
