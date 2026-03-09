@@ -11,6 +11,8 @@ public:
 		glm::vec2 fontSize{ 50.0f, 60.0f };
 		/// default = 0.0f
 		float spacing{ 0.0f };
+		/// default = false
+		bool shouldWrap{ false };
 	};
 
 	/// Display a text

@@ -29,9 +29,9 @@ bool WButton::ReceiveMouseLeftButtonPressed()
 
 	isPressed_ = true;
 
-	if (buttonSettings_.onPress)
+	if (buttonSettings_.onPressed)
 	{
-		buttonSettings_.onPress();
+		buttonSettings_.onPressed();
 	}
 
 	return true;
@@ -46,9 +46,9 @@ bool WButton::ReceiveMouseLeftButtonReleased()
 
 	isPressed_ = false;
 
-	if (buttonSettings_.onClick)
+	if (buttonSettings_.onClicked)
 	{
-		buttonSettings_.onClick();
+		buttonSettings_.onClicked();
 	}
 
 	return true;

@@ -7,15 +7,20 @@
 #include <kotono_graphics/ShaderManager.h>
 #include <kotono_graphics/TextureManager.h>
 
-WColor::WColor(const ColorSettings& colorSettings) :
-	colorSettings_(colorSettings)
+WColor::WColor(const ColorSettings& colorSettings) 
+	: colorSettings_(colorSettings)
+	, isProxyRegistered_(false)
 {
 }
 
 void WColor::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
-	colorProxy_ = Renderer.InterfaceRenderer().CreateProxy();
-	Renderer.InterfaceRenderer().RegisterProxy(colorProxy_);
+	if (!isProxyRegistered_)
+	{
+		isProxyRegistered_ = true;
+		colorProxy_ = Renderer.InterfaceRenderer().CreateProxy();
+		Renderer.InterfaceRenderer().RegisterProxy(colorProxy_);
+	}
 
 	colorProxy_->ScheduleUpdate(
 		[this, displaySettings](UInterfaceProxy::Data& data)
@@ -32,8 +37,12 @@ void WColor::DisplayInternal(UWidgetDisplaySettings displaySettings)
 
 void WColor::Cleanup()
 {
-	Renderer.InterfaceRenderer().UnregisterProxy(colorProxy_);
-	Renderer.InterfaceRenderer().DeleteProxy(colorProxy_);
+	if (isProxyRegistered_)
+	{
+		isProxyRegistered_ = false;
+		Renderer.InterfaceRenderer().UnregisterProxy(colorProxy_);
+		Renderer.InterfaceRenderer().DeleteProxy(colorProxy_);
+	}
 
 	WWidget::Cleanup();
 }

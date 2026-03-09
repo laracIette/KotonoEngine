@@ -8,10 +8,10 @@ public:
 	{
 		/// Triggers when the mouse left button has been pressed and released while hovering this button
 		/// default = {}
-		std::function<void()> onClick{};
+		std::function<void()> onClicked{};
 		/// Triggers when the mouse left button is pressed while the mouse cursor hovers this button
 		/// default = {}
-		std::function<void()> onPress{};
+		std::function<void()> onPressed{};
 		/// default = {}
 		std::function<void()> onDown{};
 		/// Triggers when the mouse left button is pressed while the mouse cursor doesn't hover this button

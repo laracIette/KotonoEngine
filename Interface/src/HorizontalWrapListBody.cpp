@@ -1,8 +1,7 @@
 #include "HorizontalWrapListBody.h"
 #include "HorizontalWrapList.h"
 #include <glm/common.hpp>
-
-// todo: add spacings
+#include <kotono_math/math_utils.h>
 
 WHorizontalWrapListBody::WHorizontalWrapListBody(const HorizontalWrapListBodySettings& horizontalWrapListBodySettings)
 	: WChildrenOwnerWidget(horizontalWrapListBodySettings.children)
@@ -58,8 +57,20 @@ void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySett
 	if (parent_)
 	{
 		const auto* asList{ static_cast<WHorizontalWrapList*>(parent_) };
-		displaySettings.scissor.offset = asList->displaySettings_.position;
-		displaySettings.scissor.extent = asList->displaySettings_.bounds;
+
+		glm::vec2 newScissorOffset;
+		glm::vec2 newScissorExtent;
+		compute_intersect(
+			displaySettings_.scissor.offset,
+			displaySettings_.scissor.extent,
+			asList->displaySettings_.position,
+			asList->displaySettings_.bounds,
+			newScissorOffset,
+			newScissorExtent
+
+		);
+		displaySettings.scissor.offset = newScissorOffset;
+		displaySettings.scissor.extent = newScissorExtent;
 	}
 
 	const auto baseDisplaySettings{ displaySettings };

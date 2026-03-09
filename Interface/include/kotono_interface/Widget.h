@@ -50,6 +50,7 @@ public:
 	glm::vec2 Size() const;
 	i32 Layer() const;
 
+	bool IsRenderable() const;
 	bool IsMouseHovering() const;
 
 	void SetParent(WidgetPtr parent);

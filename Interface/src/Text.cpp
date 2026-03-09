@@ -11,10 +11,21 @@ WText::WText(const TextSettings& textSettings) :
 
 WidgetPtr WText::Build()
 {
-	return new WRow({
-		.spacing = textSettings_.spacing,
-		.children = GetCharacters(),
-	});
+	if (textSettings_.shouldWrap)
+	{
+		return new WHorizontalWrapList({
+			.itemSpacing = textSettings_.spacing,
+			.rowSpacing = 0.0f,
+			.children = [this]() { return GetCharacters(); },
+		});
+	}
+	else
+	{
+		return new WRow({
+			.spacing = textSettings_.spacing,
+			.children = GetCharacters(),
+		});
+	}
 }
 
 UWidgetDisplaySettings WText::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const

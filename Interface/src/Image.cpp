@@ -8,15 +8,20 @@
 #include <kotono_graphics/ShaderManager.h>
 #include <kotono_platform/WindowViewport.h>
 
-WImage::WImage(const ImageSettings& imageSettings) : 
-	imageSettings_(imageSettings)
+WImage::WImage(const ImageSettings& imageSettings) 
+	: imageSettings_(imageSettings)
+	, isProxyRegistered_(false)
 {
 }
 
 void WImage::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
-	imageProxy_ = Renderer.InterfaceRenderer().CreateProxy();
-	Renderer.InterfaceRenderer().RegisterProxy(imageProxy_);
+	if (!isProxyRegistered_)
+	{
+		isProxyRegistered_ = true;
+		imageProxy_ = Renderer.InterfaceRenderer().CreateProxy();
+		Renderer.InterfaceRenderer().RegisterProxy(imageProxy_);
+	}
 
 	imageProxy_->ScheduleUpdate(
 		[this, displaySettings](UInterfaceProxy::Data& data)
@@ -32,8 +37,12 @@ void WImage::DisplayInternal(UWidgetDisplaySettings displaySettings)
 
 void WImage::Cleanup()
 {
-	Renderer.InterfaceRenderer().UnregisterProxy(imageProxy_);
-	Renderer.InterfaceRenderer().DeleteProxy(imageProxy_);
+	if (isProxyRegistered_)
+	{
+		isProxyRegistered_ = false;
+		Renderer.InterfaceRenderer().UnregisterProxy(imageProxy_);
+		Renderer.InterfaceRenderer().DeleteProxy(imageProxy_);
+	}
 
 	WWidget::Cleanup();
 }

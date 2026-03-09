@@ -45,7 +45,7 @@ void WWidget::Display(UWidgetDisplaySettings displaySettings)
 	{
 		build->Display(displaySettings);
 	}
-	else
+	else if (IsRenderable())
 	{
 		displaySettings = GetDisplaySettings(displaySettings);
 		DisplayInternal(displaySettings);
@@ -119,6 +119,11 @@ glm::vec2 WWidget::Size() const
 i32 WWidget::Layer() const
 {
 	return displaySettings_.layer;
+}
+
+bool WWidget::IsRenderable() const
+{
+	return is_overlapping(Position(), Size(), displaySettings_.scissor.offset, displaySettings_.scissor.extent);
 }
 
 bool WWidget::IsMouseHovering() const

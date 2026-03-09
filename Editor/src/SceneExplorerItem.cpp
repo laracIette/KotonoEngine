@@ -19,7 +19,7 @@ WidgetPtr WSceneExplorerItem::Build()
 					? new WColor({ Colors::Black.WithAlpha(0.2f) })
 					: new WColor({ Colors::Transparent }),
 				new WButton({
-					.onPress = [this]() {
+					.onPressed = [this]() {
 						SetState([this]() {
 							ObjectManager.SetSelectedObject(sceneObject_);
 						});

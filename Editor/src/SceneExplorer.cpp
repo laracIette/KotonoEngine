@@ -37,7 +37,7 @@ WidgetPtr WSceneExplorer::Build()
 								.children = {
 									new WColor({ Colors::Green }),
 									new WButton({
-										.onPress = []() {
+										.onPressed = []() {
 											if (UPtr scene{ Game.GetOpenedScene() })
 											{
 												auto* shader3D{ ShaderManager.Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader3D.ktshader")};

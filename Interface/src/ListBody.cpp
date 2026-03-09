@@ -1,6 +1,7 @@
 #include "ListBody.h"
 #include "List.h"
 #include <glm/common.hpp>
+#include <kotono_math/math_utils.h>
 
 WListBody::WListBody(const ListBodySettings& listBodySettings) :
 	WChildrenOwnerWidget(listBodySettings.children),
@@ -15,8 +16,20 @@ void WListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	if (parent_)
 	{
 		const auto* asList{ static_cast<WList*>(parent_) };
-		displaySettings.scissor.offset = asList->displaySettings_.position;
-		displaySettings.scissor.extent = asList->displaySettings_.bounds;
+
+		glm::vec2 newScissorOffset;
+		glm::vec2 newScissorExtent;
+		compute_intersect(
+			displaySettings_.scissor.offset,
+			displaySettings_.scissor.extent,
+			asList->displaySettings_.position,
+			asList->displaySettings_.bounds,
+			newScissorOffset,
+			newScissorExtent
+
+		);
+		displaySettings.scissor.offset = newScissorOffset;
+		displaySettings.scissor.extent = newScissorExtent;
 	}
 
 	for (auto* child : listBodySettings_.children)

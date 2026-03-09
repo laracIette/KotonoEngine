@@ -12,7 +12,7 @@ WidgetPtr WGameStateButton::Build()
                 .child = new WStack({
                     .children = {
                         new WButton({
-                            .onPress = [this]() {
+                            .onPressed = [this]() {
                                 SetState([]() {
                                     if (GameManager.IsPlaying())
                                     {
@@ -36,7 +36,7 @@ WidgetPtr WGameStateButton::Build()
                 .child = new WStack({
                     .children = {
                         new WButton({
-                            .onPress = [this]() {
+                            .onPressed = [this]() {
                                 if (GameManager.IsStopped())
                                 {
                                     return;

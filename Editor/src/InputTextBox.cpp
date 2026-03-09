@@ -28,7 +28,7 @@ WidgetPtr WInputTextBox::Build()
 				? new WColor({ Colors::White.WithAlpha(0.15f) })
 				: new WColor({ Colors::White.WithAlpha(0.05f) }),
 			new WButton({
-				.onPress = [this]() {
+				.onPressed = [this]() {
 					SetState([this]() { isSelected_ = true; });
 				},
 				.onPressOut = [this]() {

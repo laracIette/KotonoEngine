@@ -21,5 +21,8 @@ protected:
 	UInterfaceProxy* colorProxy_;
 
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
+
+private:
+	bool isProxyRegistered_;
 };
 

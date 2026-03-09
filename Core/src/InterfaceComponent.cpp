@@ -382,10 +382,9 @@ float KInterfaceComponent::GetDistance(const UPtr<KInterfaceComponent>& other) c
 
 bool KInterfaceComponent::GetIsOverlapping(const glm::vec2& worldPosition, const glm::vec2& worldScale) const
 {
-    const auto distance = glm::abs(GetWorldPosition() - worldPosition);
-    const auto maxDistance = (GetWorldScale() + worldScale) / 2.0f;
-    return distance.x < maxDistance.x
-        && distance.y < maxDistance.y;
+    const auto distance{ glm::abs(GetWorldPosition() - worldPosition) };
+    const auto maxDistance{ (GetWorldScale() + worldScale) / 2.0f };
+    return glm::all(glm::lessThanEqual(distance, maxDistance));
 }
 
 bool KInterfaceComponent::GetIsOverlapping(const glm::vec2& worldPosition) const

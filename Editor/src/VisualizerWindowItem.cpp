@@ -21,7 +21,7 @@ WidgetPtr WVisualizerWindowItem::Build()
                             ? new WColor({ Colors::Green }) 
                             : new WColor({ Colors::Red }),
                         new WButton({
-                            .onPress = [this, isFieldVisible]() {
+                            .onPressed = [this, isFieldVisible]() {
                                 SetState([this, isFieldVisible]() {
                                     Visualizer.SetIsFieldVisible(field_, !isFieldVisible);
                                 });
