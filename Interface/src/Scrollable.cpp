@@ -7,21 +7,12 @@ WScrollable::WScrollable(const ScrollableSettings& scrollableSettings)
 	: scrollableSettings_(scrollableSettings)
 	, offset_(0.0f)
 {
+	assert(scrollableSettings_.axis != EAxis::All);
 }
 
 WidgetPtr WScrollable::Build()
 {
-	switch (scrollableSettings_.axis)
-	{
-	case EAxis::Horizontal:
-		Mouse.EventHorizontalScroll().AddListener(this, &WScrollable::Scroll);
-		break;
-	case EAxis::Vertical:
-		Mouse.EventVerticalScroll().AddListener(this, &WScrollable::Scroll);
-		break;
-	default:
-		break;
-	}
+	GetScrollEvent().AddListener(this, &WScrollable::Scroll);
 
 	const glm::vec2 offset(
 		has_flag(scrollableSettings_.axis, EAxis::Horizontal) ? offset_ : 0.0f,
@@ -36,17 +27,7 @@ WidgetPtr WScrollable::Build()
 
 void WScrollable::Cleanup()
 {
-	switch (scrollableSettings_.axis)
-	{
-	case EAxis::Horizontal:
-		Mouse.EventHorizontalScroll().RemoveListener(this, &WScrollable::Scroll);
-		break;
-	case EAxis::Vertical:
-		Mouse.EventVerticalScroll().RemoveListener(this, &WScrollable::Scroll);
-		break;
-	default:
-		break;
-	}
+	GetScrollEvent().RemoveListener(this, &WScrollable::Scroll);
 
 	WWidget::Cleanup();
 }
@@ -65,4 +46,16 @@ void WScrollable::Scroll(const float delta)
 			offset_ = std::clamp(offset_, maxOffset, 0.0f);
 		}
 	);
+}
+
+UEvent<float>& WScrollable::GetScrollEvent() const
+{
+	if (scrollableSettings_.axis == EAxis::Horizontal)
+	{
+		return Mouse.EventHorizontalScroll();
+	}
+	else
+	{
+		return Mouse.EventVerticalScroll();
+	}
 }

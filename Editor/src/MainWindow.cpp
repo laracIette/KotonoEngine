@@ -54,6 +54,10 @@ WidgetPtr WMainWindow::Build()
 										.size = 200.0f,
 										.child = new WAssetExplorer(),
 									}),
+									new WBox({
+										.size = { 340.0f, 200.0f },
+										.child = new WAssetExplorer(),
+									}),
 								},
 							}),
 							new WWrap({

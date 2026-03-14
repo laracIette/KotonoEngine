@@ -12,7 +12,7 @@ void SReflector::Reflect()
 		const auto content{ file.ReadString() };
 
 		const UReflectionResult reflectionResult{
-			.path = file.Path().string(),
+			.path = file.Path(),
 			.type = GetTypeInfo(content),
 			.members = GetMemberInfos(content),
 			.fwdClasses = GetForwardDeclarations(content),

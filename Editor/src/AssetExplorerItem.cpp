@@ -22,8 +22,8 @@ WidgetPtr WAssetExplorerItem::Build()
                 new WCenter({
                     .axis = EAxis::All,
                     .child = new WText({
-                        .text = path_.ToString(),
-                        .fontSize = { 10.0f, 12.0f },
+                        .text = path_.Name(),
+                        .fontSize = { 16.0f, 20.0f },
                         .spacing = -4.0f,
                         .shouldWrap = true,
                     }),

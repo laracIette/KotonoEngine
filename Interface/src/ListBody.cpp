@@ -13,7 +13,7 @@ void WListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	++displaySettings.layer;
 
-	if (parent_)
+	if (parent_) // todo: move to scrollable ?
 	{
 		const auto* asList{ static_cast<WList*>(parent_) };
 

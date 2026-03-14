@@ -54,7 +54,7 @@ void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySett
 {
 	++displaySettings.layer;
 
-	if (parent_)
+	if (parent_) // todo: move to scrollable ?
 	{
 		const auto* asList{ static_cast<WHorizontalWrapList*>(parent_) };
 
@@ -84,7 +84,7 @@ void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySett
 		{
 			const auto childDesiredSize{ child->GetDesiredSize(displaySettings.bounds) };
 
-			if (!isRowEmpty() && childDesiredSize.x >= displaySettings.bounds.x)
+			if (!isRowEmpty() && childDesiredSize.x > displaySettings.bounds.x)
 			{
 				displaySettings.position.x = baseDisplaySettings.position.x;
 				displaySettings.position.y += rowSize.y + horizontalWrapListBodySettings_.rowSpacing;
@@ -124,17 +124,16 @@ std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDisplaySizes(const UWidget
 
 			if (!isRowEmpty())
 			{
+				const auto requiredSize{ childDesiredSize.x + horizontalWrapListBodySettings_.itemSpacing };
+
 				// Try to insert an item spacing
-				if (childDesiredSize.x + horizontalWrapListBodySettings_.itemSpacing < newDisplayBounds.x)
+				if (requiredSize <= newDisplayBounds.x)
 				{
 					rowSize.x += horizontalWrapListBodySettings_.itemSpacing;
+					newDisplayBounds.x -= horizontalWrapListBodySettings_.itemSpacing;
 				}
-
-				// Always substract the item spacing from the bounds
-				newDisplayBounds.x -= horizontalWrapListBodySettings_.itemSpacing;
-				
 				// Submit the row if the child doesn't fit
-				if (childDesiredSize.x >= newDisplayBounds.x)
+				else
 				{
 					rowSizes.push_back(rowSize);
 
@@ -176,12 +175,13 @@ std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDesiredSizes(const glm::ve
 
 			if (!isRowEmpty())
 			{
-				if (rowSize.x + childDesiredSize.x + horizontalWrapListBodySettings_.itemSpacing < bounds.x)
+				const auto requiredSize{ childDesiredSize.x + horizontalWrapListBodySettings_.itemSpacing };
+
+				if (rowSize.x + requiredSize <= bounds.x)
 				{
 					rowSize.x += horizontalWrapListBodySettings_.itemSpacing;
 				}
-
-				if (rowSize.x + childDesiredSize.x + horizontalWrapListBodySettings_.itemSpacing >= bounds.x)
+				else
 				{
 					rowSizes.push_back(rowSize);
 					rowSize = { 0.0f, 0.0f };

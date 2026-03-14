@@ -17,23 +17,28 @@ WidgetPtr WAssetExplorer::Build()
 			new WColor({ Colors::White.WithAlpha(0.1f) }),
 			new WPadding({
 				.padding = WPadding::Padding::All(8.0f),
-				.child = new WHorizontalWrapList({
-					.itemSpacing = 10.0f,
-					.rowSpacing = 10.0f,
-					.children = [directories, files]() {
-						WidgetVector result{};
+				.child = new WStack({
+					.children = {
+						new WColor({ Colors::White.WithAlpha(0.1f) }),
+						new WHorizontalWrapList({
+							.itemSpacing = 10.0f,
+							.rowSpacing = 10.0f,
+							.children = [directories, files]() {
+								WidgetVector result{};
 
-						for (const auto& directory : directories)
-						{
-							result.push_back(new WAssetExplorerItem(directory));
-						}
+								for (const auto& directory : directories)
+								{
+									result.push_back(new WAssetExplorerItem(directory));
+								}
 
-						for (const auto& file : files)
-						{
-							result.push_back(new WAssetExplorerItem(file.Path().string()));
-						}
+								for (const auto& file : files)
+								{
+									result.push_back(new WAssetExplorerItem(file.Path()));
+								}
 
-						return result;
+								return result;
+							},
+						}),
 					},
 				}),
 			}),

@@ -112,7 +112,7 @@ R"(#define GENERATED_{0}() \
 		)
 	};
 
-	const auto fileHeader{ CorePath / "include" / "kotono_core" / "generated" / reflectionResult.path.ToPath().filename().replace_extension(".generated.h")};
+	const UPath fileHeader{ CorePath / "include" / "kotono_core" / "generated" / UPath(reflectionResult.path.ToPath().filename().replace_extension(".generated.h")) };
 	UFile(fileHeader).WriteString(generatedCodeHeader);
 
 	std::ostringstream objectClassHeaders;
@@ -218,7 +218,7 @@ UPtr<{2}> {2}::Ptr() const
 		)
 	};
 
-	const auto fileCPP{ CorePath / "src" / "generated" / reflectionResult.path.ToPath().filename().replace_extension(".generated.cpp") };
+	const UPath fileCPP{ CorePath / "src" / "generated" / UPath(reflectionResult.path.ToPath().filename().replace_extension(".generated.cpp")) };
 	UFile(fileCPP).WriteString(generatedCodeCPP);
 
 	std::cout << "Generated " << reflectionResult.path.ToString() << std::endl;

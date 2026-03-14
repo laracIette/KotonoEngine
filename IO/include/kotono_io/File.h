@@ -1,4 +1,5 @@
 #pragma once
+#include <kotono_common/Path.h>
 #include <kotono_common/types.h>
 #include <filesystem>
 #include <span>
@@ -6,12 +7,13 @@
 class UFile final
 {
 public:
-	explicit UFile(const std::filesystem::path& path);
+	UFile(const UPath& path);
+	UFile(UPath&& path);
 
 	// Get whether the file exists
 	bool Exists() const;
 	// Get the path to the file
-	const std::filesystem::path& Path() const;
+	const UPath& Path() const;
 	// Get the path to the directory of the file
 	std::filesystem::path Directory() const;
 	// Get the name of the file with extension
@@ -32,6 +34,6 @@ public:
 	void WriteBinary(const std::span<u32> data) const;
 
 private:
-	const std::filesystem::path path_;
+	const UPath path_;
 };
 

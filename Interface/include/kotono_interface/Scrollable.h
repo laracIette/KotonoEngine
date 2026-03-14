@@ -1,6 +1,7 @@
 #pragma once
 #include "Widget.h"
 #include <kotono_common/Buildable.h>
+#include <kotono_common/Event.h>
 class WScrollable : public WWidget
 {
 public:
@@ -18,6 +19,8 @@ public:
 
 private:
 	void Scroll(const float delta);
+
+	UEvent<float>& GetScrollEvent() const;
 
 private:
 	ScrollableSettings scrollableSettings_;

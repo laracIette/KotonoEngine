@@ -12,6 +12,12 @@ public:
 	UPath(const std::string& source);
 	UPath(std::string&& source);
 	UPath(const char* source);
+	UPath(const std::filesystem::path& source);
+
+	std::filesystem::path Directory() const;
+	std::string Name() const;
+	std::string Extension() const;
+	std::string Stem() const;
 
 	std::string ToString() const;
 	std::filesystem::path ToPath() const;
