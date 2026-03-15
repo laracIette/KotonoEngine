@@ -48,6 +48,11 @@ std::string UPath::Stem() const
     return ToPath().stem().string();
 }
 
+bool UPath::IsFile() const
+{
+    return std::filesystem::is_regular_file(ToPath());
+}
+
 std::string UPath::ToString() const
 {
     return source_;

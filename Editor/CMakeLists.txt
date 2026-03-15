@@ -15,6 +15,8 @@ set_target_properties(KotonoEditor PROPERTIES FOLDER "KotonoEngine")
 
 set(KEDITOR_HEADERS
     "include/kotono_editor/AssetExplorer.h"
+    "include/kotono_editor/AssetExplorerDirectory.h"
+    "include/kotono_editor/AssetExplorerFile.h"
     "include/kotono_editor/AssetExplorerItem.h"
     "include/kotono_editor/Camera.h"
     "include/kotono_editor/DrawTimeText.h"
@@ -40,6 +42,8 @@ set(KEDITOR_HEADERS
 )
 set(KEDITOR_SOURCES
     "src/AssetExplorer.cpp"
+    "src/AssetExplorerDirectory.cpp"
+    "src/AssetExplorerFile.cpp"
     "src/AssetExplorerItem.cpp"
     "src/Camera.cpp"
     "src/DrawTimeText.cpp"

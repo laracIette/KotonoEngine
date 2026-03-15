@@ -4,10 +4,16 @@
 class WAssetExplorerItem : public WWidget
 {
 public:
-	WAssetExplorerItem(const UPath& path);
+	using OnClickedFunc = std::function<void(const UPath&)>;
+
+public:
+	WAssetExplorerItem(const UPath& path, const OnClickedFunc& onClicked);
 
 	WidgetPtr Build() override;
 
-private:
+protected:
 	const UPath path_;
+
+private:
+	const OnClickedFunc onClicked_;
 };

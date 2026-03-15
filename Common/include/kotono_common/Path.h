@@ -18,6 +18,7 @@ public:
 	std::string Name() const;
 	std::string Extension() const;
 	std::string Stem() const;
+	bool IsFile() const;
 
 	std::string ToString() const;
 	std::filesystem::path ToPath() const;

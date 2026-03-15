@@ -13,6 +13,8 @@ enum class EButton : u8
 	Left = Button1,
 	Right = Button2,
 	Middle = Button3,
+	Previous = Button4,
+	Next = Button5,
 	Last = Button8
 };
 
