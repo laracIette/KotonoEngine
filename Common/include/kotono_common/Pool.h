@@ -50,13 +50,12 @@ public:
 	// Remove the specified item with O(n) complexity
 	constexpr KtPoolRemoveResult Remove(const ValueType& value)
 	{
-		const auto it{ std::find(data_.begin(), data_.end(), value) };
-		if (it == data_.end())
+		const i64 index{ FindIndex(value) };
+		if (index == -1)
 		{
 			return KtPoolRemoveResult::ItemNotFound;
 		}
 
-		const auto index{ static_cast<IndexType>(std::distance(data_.begin(), it)) };
 		return RemoveAt(index);
 	}
 
@@ -82,9 +81,9 @@ public:
 	constexpr void RemoveIf(const ConditionFunction& condition) noexcept
 	{
 		// Have to check backwards to avoid skipping condition checks
-		for (i64 i{ LastIndex() }; i >= 0; --i)
+		for (i64 i{ LastIndex() }; IsValidIndex(i); --i)
 		{
-			if (IsValidIndex(i) && condition(data_[i]))
+			if (condition(data_[i]))
 			{
 				RemoveAt(i);
 			}
@@ -94,6 +93,22 @@ public:
 	constexpr void Clear() noexcept
 	{
 		data_.clear();
+	}
+
+	constexpr ConstIteratorType Find(const ValueType& value) const
+	{
+		return std::find(data_.begin(), data_.end(), value);
+	}
+
+	constexpr i64 FindIndex(const ValueType& value) const
+	{
+		const auto it{ Find(value) };
+		if (it == end())
+		{
+			return -1;
+		}
+
+		return static_cast<IndexType>(std::distance(data_.begin(), it));
 	}
 
 	constexpr void reserve(const IndexType size)

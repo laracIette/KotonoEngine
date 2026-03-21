@@ -3,5 +3,5 @@
 class WAssetExplorerDirectory : public WAssetExplorerItem
 {
 public:
-	WAssetExplorerDirectory(const UPath& path, const OnClickedFunc& onClicked);
+	WAssetExplorerDirectory(const UPath& path, const OnClickedFunc& onDoubleClicked);
 };

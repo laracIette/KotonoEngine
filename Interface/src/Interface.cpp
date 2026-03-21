@@ -11,21 +11,38 @@ void SInterface::Init()
 
 void SInterface::AddButton(WButton* button)
 {
-	buttons_.push_back(button);
+	buttons_.Add(button);
 }
 
 void SInterface::RemoveButton(WButton* button)
 {
-	std::erase(buttons_, button);
+	removes_.insert(button);
+}
+
+void SInterface::RemoveButtons()
+{
+	if (!removes_.empty())
+	{
+		buttons_.RemoveIf([this](WButton* button) { return removes_.contains(button); });
+		removes_.clear();
+	}
 }
 
 void SInterface::OnMouseLeftButtonPressed()
 {
-	std::ranges::sort(buttons_, std::ranges::greater{}, &WButton::Layer);
+	RemoveButtons();
+
+	auto buttons{ buttons_ };
+	std::ranges::sort(buttons, std::ranges::greater{}, &WButton::Layer);
+
 	bool hasInteracted{ false };
-	for (size i{ 0 }; i < buttons_.size(); ++i) // issue with deletion / additions prob
+	for (auto* button : buttons)
 	{
-		auto* button{ buttons_[i] };
+		if (removes_.contains(button))
+		{
+			continue;
+		}
+
 		if (!hasInteracted && button->ReceiveMouseLeftButtonPressed())
 		{
 			hasInteracted = true;
@@ -39,10 +56,18 @@ void SInterface::OnMouseLeftButtonPressed()
 
 void SInterface::OnMouseLeftButtonReleased()
 {
-	std::ranges::sort(buttons_, std::ranges::greater{}, &WButton::Layer);
-	for (size i{ 0 }; i < buttons_.size(); ++i)
+	RemoveButtons();
+
+	auto buttons{ buttons_ };
+	std::ranges::sort(buttons, std::ranges::greater{}, &WButton::Layer);
+
+	for (auto* button : buttons)
 	{
-		auto* button{ buttons_[i] };
+		if (removes_.contains(button))
+		{
+			continue;
+		}
+
 		if (button->ReceiveMouseLeftButtonReleased())
 		{
 			break;

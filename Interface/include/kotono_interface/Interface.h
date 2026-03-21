@@ -1,5 +1,6 @@
 #pragma once
-#include <vector>
+#include <kotono_common/Pool.h>
+#include <unordered_set>
 class WButton;
 class SInterface final
 {
@@ -10,11 +11,14 @@ public:
 	void RemoveButton(WButton* button);
 
 private:
+	void RemoveButtons();
+
 	void OnMouseLeftButtonPressed();
 	void OnMouseLeftButtonReleased();
 
 private:
-	std::vector<WButton*> buttons_;
+	KtPool<WButton*> buttons_;
+	std::unordered_set<WButton*> removes_;
 };
 
 inline SInterface Interface;

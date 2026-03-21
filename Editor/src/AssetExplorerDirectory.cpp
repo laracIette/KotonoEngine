@@ -1,6 +1,6 @@
 #include "AssetExplorerDirectory.h"
 
-WAssetExplorerDirectory::WAssetExplorerDirectory(const UPath& path, const OnClickedFunc& onClicked)
-	: WAssetExplorerItem(path, onClicked)
+WAssetExplorerDirectory::WAssetExplorerDirectory(const UPath& path, const OnClickedFunc& onDoubleClicked)
+	: WAssetExplorerItem(path, onDoubleClicked)
 {
 }

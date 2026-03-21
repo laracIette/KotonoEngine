@@ -4,10 +4,8 @@
 #include "GameStateButton.h"
 #include "PropertiesWindow.h"
 #include "SceneExplorer.h"
-#include "TestBox.h"
 #include "UpdateTimeText.h"
 #include "VisualizerWindow.h"
-#include <kotono_core/Timer.h>
 #include <kotono_interface/widgets.h>
 
 WidgetPtr WMainWindow::Build()
@@ -66,7 +64,6 @@ WidgetPtr WMainWindow::Build()
 											.child = new WColumn({
 												.spacing = 4.0f,
 												.children = {
-													new WTestBox(),
 													new WVisualizerWindow(),
 													new WPropertiesWindow(),
 												},

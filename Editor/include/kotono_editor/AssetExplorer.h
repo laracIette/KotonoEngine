@@ -10,8 +10,14 @@ public:
 	void Cleanup() override;
 
 private:
-	void OnMousePreviousPressed();
-	void OnMouseNextPressed();
+	void Push(const UPath& path);
+
+	void NavigatePrevious();
+	void NavigateNext();
+
+	void OnMousePreviousButtonPressed();
+	void OnMouseNextButtonPressed();
+
 
 private:
 	UPath path_;
