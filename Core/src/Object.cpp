@@ -3,16 +3,26 @@
 #include <kotono_common/Path.h>
 #include <kotono_io/Serializer.h>
 #include <nlohmann/json.hpp>
+#include <kotono_common/log.h>
 
-KObject::KObject(UPtrOwnerBase* ptrOwner) :
-    ptrOwner_(ptrOwner),
-    name_(guid_)
+KObject::KObject(UPtrOwnerBase* ptrOwner) 
+    : ptrOwner_(ptrOwner)
+    , name_(guid_)
+    , isConstructed_(false)
 {
     ptrOwner_->Set(this);
 }
 
 void KObject::Cleanup() 
 {
+    for (const auto& function : unregisterDelegates_)
+    {
+        if (function)
+        {
+            function();
+        }
+    }
+    unregisterDelegates_.clear();
 }
 
 const UGuid& KObject::Guid() const

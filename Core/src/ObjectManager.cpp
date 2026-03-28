@@ -32,10 +32,8 @@ void SObjectManager::Cleanup()
 		Delete(objects_[i]);
 	}
 
-	Keyboard.EventKey(EKey::Escape, EInputState::Pressed)
-		.RemoveListener(this, &SObjectManager::Quit);
-	Mouse.EventButton(EButton::Left, EInputState::Pressed)
-		.RemoveListener(this, &SObjectManager::OnMouseButtonLeftPressed);
+	Keyboard.EventKey(EKey::Escape, EInputState::Pressed).RemoveListener(this, &SObjectManager::Quit);
+	Mouse.EventButton(EButton::Left, EInputState::Pressed).RemoveListener(this, &SObjectManager::OnMouseButtonLeftPressed);
 }
 
 void SObjectManager::Register(KObject* object, UPtrOwnerBase* ptrOwner)

@@ -7,19 +7,19 @@
 #include <kotono_input/Mouse.h>
 #include <kotono_platform/WindowViewport.h>
 
-KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner) :
-    Base(ptrOwner),
-    visibility_(EVisibility::Visible),
-    modelMatrix_([this]() { return TranslationMatrix() * RotationMatrix() * ScaleMatrix(); }),
-    color_(Colors::White)
+KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner) 
+    : Base(ptrOwner)
+    , visibility_(EVisibility::Visible)
+    , canUpdate_(true)
+    , isInit_(false)
+    , modelMatrix_([this]() { return TranslationMatrix() * RotationMatrix() * ScaleMatrix(); })
+    , color_(Colors::White)
 {
     eventRectChanged_.AddListener(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty);
 }
 
 void KInterfaceComponent::Cleanup()
 {
-    owner_->GetViewport()->EventExtentChanged().RemoveListener(&eventRectChanged_, &UEvent<>::Broadcast);
-
     SetParent(nullptr, ECoordinateSpace::Relative);
     SetOwner(nullptr);
 
@@ -432,7 +432,7 @@ void KInterfaceComponent::RemoveChildren(const UPtr<KInterfaceComponent>& interf
 
 void KInterfaceComponent::Spawn()
 {
-    owner_->GetViewport()->EventExtentChanged().AddListener(&eventRectChanged_, &UEvent<>::Broadcast);
+    RegisterDelegate(owner_, owner_->GetViewport()->EventExtentChanged(), &eventRectChanged_, &UEvent<>::Broadcast);
 }
 
 glm::vec2 KInterfaceComponent::GetAnchorOffset() const

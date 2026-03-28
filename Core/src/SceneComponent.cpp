@@ -4,10 +4,13 @@
 #include <kotono_platform/glm_utils.h>
 #include <stdexcept>
 
-KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner) :
-    Base(ptrOwner),
-    visibility_(EVisibility::Visible),
-    modelMatrix_([this]() { return TranslationMatrix() * RotationMatrix() * ScaleMatrix(); })
+KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner) 
+    : Base(ptrOwner)
+    , visibility_(EVisibility::Visible)
+    , canUpdate_(true)
+    , isInit_(false)
+    , mobility_(EMobility::Dynamic)
+    , modelMatrix_([this]() { return TranslationMatrix() * RotationMatrix() * ScaleMatrix(); })
 {
     eventTransformUpdated_.AddListener(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty);
 }

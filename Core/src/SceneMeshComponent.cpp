@@ -14,8 +14,10 @@
 
 static KtShader* WireframeShader = nullptr;
 
-KSceneMeshComponent::KSceneMeshComponent(UPtrOwnerBase* ptrOwner) :
-    Base(ptrOwner)
+KSceneMeshComponent::KSceneMeshComponent(UPtrOwnerBase* ptrOwner) 
+    : Base(ptrOwner)
+    , model_(nullptr)
+    , shader_(nullptr)
 {
     if (!WireframeShader)
     {
@@ -31,14 +33,6 @@ void KSceneMeshComponent::Cleanup()
 {
     UnregisterModelProxy();
 	Renderer.SceneRenderer().DeleteProxy(modelProxy_);
-
-    EventTransformUpdated().RemoveListener(this, &KSceneMeshComponent::MarkModelProxyTransformDirty);
-    Window.GetEventWindowResized().RemoveListener(this, &KSceneMeshComponent::MarkModelProxyScissorDirty);
-
-    Keyboard.EventKey(EKey::N, EInputState::Pressed)
-        .RemoveListener(this, &KSceneMeshComponent::SetMobilityStatic);
-    Keyboard.EventKey(EKey::M, EInputState::Pressed)
-        .RemoveListener(this, &KSceneMeshComponent::SetMobilityDynamic);
 
     Base::Cleanup();
 }
@@ -87,10 +81,11 @@ void KSceneMeshComponent::Spawn()
     RegisterModelProxy();
 
     EventTransformUpdated().AddListener(this, &KSceneMeshComponent::MarkModelProxyTransformDirty);
-    Window.GetEventWindowResized().AddListener(this, &KSceneMeshComponent::MarkModelProxyScissorDirty);
+    
+    RegisterDelegate(&Window, Window.GetEventWindowResized(), this, &KSceneMeshComponent::MarkModelProxyScissorDirty);
 
-    Keyboard.EventKey(EKey::N, EInputState::Pressed).AddListener(this, &KSceneMeshComponent::SetMobilityStatic);
-    Keyboard.EventKey(EKey::M, EInputState::Pressed).AddListener(this, &KSceneMeshComponent::SetMobilityDynamic);
+    RegisterDelegate(&Keyboard, Keyboard.EventKey(EKey::N, EInputState::Pressed), this, &KSceneMeshComponent::SetMobilityStatic);
+    RegisterDelegate(&Keyboard, Keyboard.EventKey(EKey::M, EInputState::Pressed), this, &KSceneMeshComponent::SetMobilityDynamic);
     
     spinTask_.eventUpdate.AddListener(this, &KSceneMeshComponent::Spin);
 }

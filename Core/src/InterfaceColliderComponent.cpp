@@ -3,30 +3,28 @@
 #include <kotono_input/Mouse.h>
 #include <kotono_platform/WindowViewport.h>
 
-KInterfaceColliderComponent::KInterfaceColliderComponent(UPtrOwnerBase* ptrOwner) :
-	Base(ptrOwner)
+KInterfaceColliderComponent::KInterfaceColliderComponent(UPtrOwnerBase* ptrOwner) 
+	: Base(ptrOwner)
+	, isPressed_(false)
 {
-	InterfacePhysicsManager.Register(this);
 }
 
 void KInterfaceColliderComponent::Cleanup()
 {
-	Base::Cleanup();
-
 	InterfacePhysicsManager.Unregister(this);
 
-	Mouse.EventButton(EButton::Left, EInputState::Pressed).RemoveListener(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed);
-	Mouse.EventButton(EButton::Left, EInputState::Released).RemoveListener(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased);
-	Mouse.EventButton(EButton::Left, EInputState::Down).RemoveListener(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown);
+	Base::Cleanup();
 }
 
 void KInterfaceColliderComponent::Init()
 {
 	Base::Init();
 
-	Mouse.EventButton(EButton::Left, EInputState::Pressed).AddListener(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed);
-	Mouse.EventButton(EButton::Left, EInputState::Released).AddListener(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased);
-	Mouse.EventButton(EButton::Left, EInputState::Down).AddListener(this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown);
+	InterfacePhysicsManager.Register(this);
+
+	RegisterDelegate(&Mouse, Mouse.EventButton(EButton::Left, EInputState::Pressed), this, &KInterfaceColliderComponent::OnEventMouseLeftButtonPressed);
+	RegisterDelegate(&Mouse, Mouse.EventButton(EButton::Left, EInputState::Released), this, &KInterfaceColliderComponent::OnEventMouseLeftButtonReleased);
+	RegisterDelegate(&Mouse, Mouse.EventButton(EButton::Left, EInputState::Down), this, &KInterfaceColliderComponent::OnEventMouseLeftButtonDown);
 }
 
 UEvent<>& KInterfaceColliderComponent::GetEventPressed()

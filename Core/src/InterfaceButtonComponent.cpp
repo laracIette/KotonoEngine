@@ -3,8 +3,8 @@
 #include "InterfaceObject.h"
 #include "ObjectManager.h"
 
-KInterfaceButtonComponent::KInterfaceButtonComponent(UPtrOwnerBase* ptrOwner) :
-	Base(ptrOwner)
+KInterfaceButtonComponent::KInterfaceButtonComponent(UPtrOwnerBase* ptrOwner) 
+	: Base(ptrOwner)
 {
 	collider_ = ObjectManager.Create<KInterfaceColliderComponent>();
 	collider_->SetOwner(GetOwner());
@@ -13,8 +13,6 @@ KInterfaceButtonComponent::KInterfaceButtonComponent(UPtrOwnerBase* ptrOwner) :
 void KInterfaceButtonComponent::Cleanup()
 {
 	Base::Cleanup();
-
-	collider_->GetEventReleased().RemoveListener(this, &KInterfaceButtonComponent::OnColliderReleased);
 }
 
 void KInterfaceButtonComponent::Init()
@@ -22,6 +20,7 @@ void KInterfaceButtonComponent::Init()
 	Base::Init();
 
 	collider_->GetEventReleased().AddListener(this, &KInterfaceButtonComponent::OnColliderReleased);
+	RegisterDelegate(collider_, collider_->GetEventReleased(), this, &KInterfaceButtonComponent::OnColliderReleased);
 }
 
 UEvent<>& KInterfaceButtonComponent::GetEventClicked()
