@@ -120,8 +120,6 @@ void SObjectManager::OnMouseButtonLeftPressed()
 		selectedObject_ = selectedComponent->GetOwner();
 	}
 
-	if (selectedObject_)
-	{
-		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Core", "selected {}", selectedObject_->GetName());
-	}
+	
+	//KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Core", "selected {}", selectedObject_ ? selectedObject_->GetName() : "None");
 }

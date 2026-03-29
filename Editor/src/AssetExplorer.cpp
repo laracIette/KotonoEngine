@@ -5,8 +5,6 @@
 #include <kotono_io/File.h>
 #include <kotono_io/FileExplorer.h>
 #include <kotono_input/Mouse.h>
-#include <ranges>
-#include <algorithm>
 
 WAssetExplorer::WAssetExplorer()
 	: path_("${ENGINE_DIRECTORY}")
