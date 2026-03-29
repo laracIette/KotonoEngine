@@ -1,18 +1,23 @@
 #include "Reflector.h"
 #include <kotono_common/Path.h>
 #include <kotono_io/File.h>
-#include <kotono_io/FileExplorer.h>
+#include <kotono_io/Serializer.h>
+#include <nlohmann/json.hpp>
 #include <regex>
 
 void SReflector::Reflect()
 {
-	const auto files{ UFileExplorer("${ENGINE_DIRECTORY}/Core/include/kotono_core").GetFiles() };
-	for (const auto& file : files)
+	nlohmann::json json{};
+	const UPath includePath{ "${ENGINE_DIRECTORY}/Reflection/include.ktregistry" };
+	USerializer::Deserialize(json, includePath);
+
+	for (const auto& file : json.at("files"))
 	{
-		const auto content{ file.ReadString() };
+		const UPath filePath{ file };
+		const auto content{ UFile(filePath).ReadString() };
 
 		const UReflectionResult reflectionResult{
-			.path = file.Path(),
+			.path = filePath,
 			.type = GetTypeInfo(content),
 			.members = GetMemberInfos(content),
 			.fwdClasses = GetForwardDeclarations(content),

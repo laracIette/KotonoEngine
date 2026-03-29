@@ -25,6 +25,8 @@ public:
 
 private:
 	void Generate(const UReflectionResult& reflectionResult) const;
+	void GenerateHeader(const UReflectionResult& reflectionResult) const;
+	void GenerateSource(const UReflectionResult& reflectionResult) const;
 	
 	ClassInfo GetClassInfo(const UReflectionResult& reflectionResult) const;
 };

@@ -1,10 +1,11 @@
 #pragma once
+#include <kotono_common/Path.h>
 #include <kotono_io/Serializer.h>
 #include <nlohmann/json.hpp>
 class SProjectSettings final
 {
 public:
-	static std::filesystem::path Path();
+	static UPath Path();
 
 	template <typename T>
 	static T Get(const std::string& name)

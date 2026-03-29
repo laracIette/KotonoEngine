@@ -2,35 +2,37 @@
 #include <iostream>
 #include <kotono_common/Path.h>
 #include <kotono_io/File.h>
-#include <kotono_io/FileExplorer.h>
 #include <kotono_io/Serializer.h>
 #include <kotono_reflection/Reflector.h>
 #include <nlohmann/json.hpp>
+#include <print>
 #include <ranges>
 
-static const UPath CorePath{ "${ENGINE_DIRECTORY}/Core" };
-static const UPath RegistryPath{ CorePath / "objects.ktregistry" };
+static const UPath RegistryPath{ "${ENGINE_DIRECTORY}/Generator/generated.ktregistry" };
 
 static std::string to_upper(std::string s)
 {
-	std::ranges::transform(s, s.begin(), [](unsigned char c)
+	std::ranges::transform(
+		s, s.begin(), [](unsigned char c)
 		{
 			return static_cast<char>(std::toupper(c));
-		});
+		}
+	);
 
 	return s;
 }
 
 void SGenerator::GenerateAll() const
 {
-	std::cout << "Clearing registry..." << std::endl;
+	std::println("Clearing registry...");
+
 	USerializer::Serialize(nlohmann::json::object(), RegistryPath);
 	GenerateUpdated();
 }
 
 void SGenerator::GenerateUpdated() const
 {
-	std::cout << "Generating..." << std::endl;
+	std::println("Generating...");
 
 	nlohmann::json json{};
 	USerializer::Deserialize(json, RegistryPath);
@@ -77,8 +79,17 @@ void SGenerator::GenerateUpdated() const
 
 void SGenerator::Generate(const UReflectionResult& reflectionResult) const
 {
+	GenerateHeader(reflectionResult);
+	GenerateSource(reflectionResult);
+
+	std::println("Generated {0}", reflectionResult.path.ToString());
+}
+
+void SGenerator::GenerateHeader(const UReflectionResult& reflectionResult) const
+{
 	const auto classInfo{ GetClassInfo(reflectionResult) };
-	const std::string generatedCodeHeader{ !classInfo.base.has_value()
+
+	const std::string generatedCode{ !classInfo.base.has_value()
 		? std::format(
 R"(#define GENERATED_{0}() \
 	private: \
@@ -112,8 +123,14 @@ R"(#define GENERATED_{0}() \
 		)
 	};
 
-	const UPath fileHeader{ CorePath / "include" / "kotono_core" / "generated" / UPath(reflectionResult.path.ToPath().filename().replace_extension(".generated.h")) };
-	UFile(fileHeader).WriteString(generatedCodeHeader);
+	const UPath fileDirectory{ reflectionResult.path.Directory() };
+	const UPath fileName{ reflectionResult.path.ToPath().filename().replace_extension(".generated.h") };
+	UFile(fileDirectory / "generated" / fileName).WriteString(generatedCode);
+}
+
+void SGenerator::GenerateSource(const UReflectionResult & reflectionResult) const
+{
+	const auto classInfo{ GetClassInfo(reflectionResult) };
 
 	std::ostringstream objectClassHeaders;
 	for (const auto& header : classInfo.headers)
@@ -139,7 +156,7 @@ R"(#define GENERATED_{0}() \
 		memberVariablesCode << std::format(R"(		{{ "{0}", "{1}", offsetof(Self, {1}) }},)", variable.type, variable.name) << std::endl;
 	}
 
-	const std::string generatedCodeCPP{ !classInfo.base.has_value()
+	const std::string generatedCode{ !classInfo.base.has_value()
 		? std::format(
 R"(#include "{0}"
 #include "Ptr.h"
@@ -218,10 +235,9 @@ UPtr<{2}> {2}::Ptr() const
 		)
 	};
 
-	const UPath fileCPP{ CorePath / "src" / "generated" / UPath(reflectionResult.path.ToPath().filename().replace_extension(".generated.cpp")) };
-	UFile(fileCPP).WriteString(generatedCodeCPP);
-
-	std::cout << "Generated " << reflectionResult.path.ToString() << std::endl;
+	const UPath fileDirectory{ reflectionResult.path.Directory().Directory().Directory() / "src" };
+	const UPath fileName{ reflectionResult.path.ToPath().filename().replace_extension(".generated.cpp") };
+	UFile(fileDirectory / "generated" / fileName).WriteString(generatedCode);
 }
 
 SGenerator::ClassInfo SGenerator::GetClassInfo(const UReflectionResult& reflectionResult) const

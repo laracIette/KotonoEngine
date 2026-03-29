@@ -1,9 +1,4 @@
 #include "ObjectFactory.h"
-#include <kotono_common/PathManager.h>
-#include <kotono_io/Serializer.h>
-#include <nlohmann/json.hpp>
-#include "ObjectManager.h"
-#include <kotono_common/log.h>
 #include "Interface.h"
 #include "InterfaceBoxComponent.h"
 #include "InterfaceButtonComponent.h"
@@ -12,17 +7,22 @@
 #include "InterfaceImageComponent.h"
 #include "InterfaceObject.h"
 #include "Object.h"
+#include "ObjectManager.h"
 #include "Scene.h"
 #include "SceneComponent.h"
 #include "SceneMeshComponent.h"
 #include "SceneObject.h"
+#include <kotono_common/log.h>
+#include <kotono_common/Path.h>
+#include <kotono_io/Serializer.h>
+#include <nlohmann/json.hpp>
 
 #define OBJECT_FACTORY(Type) { #Type, []() { return ObjectManager.Create<Type>(); } }
 
 #define KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY ELogImportanceLevel::High
 
-SObjectFactory::SObjectFactory() :
-    objectFactories_({
+SObjectFactory::SObjectFactory() 
+	: objectFactories_({
         OBJECT_FACTORY(KInterface),
         OBJECT_FACTORY(KInterfaceBoxComponent),
         OBJECT_FACTORY(KInterfaceButtonComponent),
@@ -52,7 +52,7 @@ UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 		}
 	}
 
-	const auto path{ PathManager.Project() / "assets" / "objects" / std::format("{}.kobject", guid.ToString()) };
+	const UPath path{ UPath("${PROJECT_DIRECTORY}/assets/objects") / std::format("{}.kobject", guid.ToString())};
 
 	// Add to registry
 	nlohmann::json json{};

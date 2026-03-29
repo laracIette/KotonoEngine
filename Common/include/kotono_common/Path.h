@@ -14,10 +14,11 @@ public:
 	UPath(const char* source);
 	UPath(const std::filesystem::path& source);
 
-	std::filesystem::path Directory() const;
+	UPath Directory() const;
 	std::string Name() const;
 	std::string Extension() const;
 	std::string Stem() const;
+	bool IsEmpty() const;
 	bool IsFile() const;
 
 	std::string ToString() const;
