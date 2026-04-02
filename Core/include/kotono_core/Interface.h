@@ -14,9 +14,7 @@ private:
 
 public:
 	KInterface(UPtrOwnerBase* ptrOwner);
-
-protected:
-	void Cleanup() override;
+	~KInterface() override;
 
 public:
 	void SpawnInterfaceObjects();

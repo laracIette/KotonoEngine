@@ -3,13 +3,13 @@
 #include <kotono_common/log.h>
 #include <kotono_platform/WindowViewport.h>
 
-RInterfaceObject::RInterfaceObject(UPtrOwnerBase* ptrOwner) :
-	Base(ptrOwner)
+RInterfaceObject::RInterfaceObject(UPtrOwnerBase* ptrOwner) 
+	: Base(ptrOwner)
 {
 	viewport_ = &WindowViewport;
 }
 
-void RInterfaceObject::Cleanup()
+RInterfaceObject::~RInterfaceObject()
 {
 	for (i64 i{ interfaceComponents_.LastIndex() }; i >= 0 && i < interfaceComponents_.size(); --i)
 	{
@@ -17,8 +17,6 @@ void RInterfaceObject::Cleanup()
 	}
 
 	SetParent(nullptr, ECoordinateSpace::Relative);
-
-	Base::Cleanup();
 }
 
 void RInterfaceObject::Init()

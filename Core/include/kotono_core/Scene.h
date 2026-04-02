@@ -13,8 +13,8 @@ class KScene : public KObject
 private:
 	friend class SGame;
 
-protected:
-	void Cleanup() override;
+public:
+	~KScene() override;
 
 public:
 	void Add(const UPtr<TSceneObject>& sceneObject);
@@ -32,6 +32,4 @@ private:
 private:
 	SERIALIZE KtPool<UPtr<TSceneObject>> sceneObjects_;
 	UEvent<> eventSceneObjectsUpdated_;
-
 };
-

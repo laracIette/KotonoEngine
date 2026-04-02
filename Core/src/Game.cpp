@@ -27,6 +27,18 @@ void SGame::Update(const float deltaTime)
     }
 }
 
+void SGame::Cleanup()
+{
+    if (interface_)
+    {
+        interface_->Delete();
+    }
+    if (scene_)
+    {
+        scene_->Delete();
+    }
+}
+
 void SGame::OpenInterface(const UPtr<KInterface>& interface)
 {
     interface_ = interface;
@@ -39,7 +51,7 @@ void SGame::OpenScene(const UPtr<KScene>& scene)
 
 void SGame::OpenStartupInterface()
 {
-    interface_ = ObjectManager.Create<KInterface>();
+    interface_ = Create<KInterface>();
     interface_->SpawnInterfaceObjects();
 }
 

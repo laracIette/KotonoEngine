@@ -10,8 +10,8 @@
 
 static constinit KtShader* WireframeShader{ nullptr };
 
-KInterfaceImageComponent::KInterfaceImageComponent(UPtrOwnerBase* ptrOwner) :
-	Base(ptrOwner)
+KInterfaceImageComponent::KInterfaceImageComponent(UPtrOwnerBase* ptrOwner) 
+	: Base(ptrOwner)
 {
 	if (!WireframeShader)
 	{
@@ -21,10 +21,8 @@ KInterfaceImageComponent::KInterfaceImageComponent(UPtrOwnerBase* ptrOwner) :
 	textureProxy_ = Renderer.InterfaceRenderer().CreateProxy();
 }
 
-void KInterfaceImageComponent::Cleanup()
+KInterfaceImageComponent::~KInterfaceImageComponent()
 {
-	Base::Cleanup();
-
 	Renderer.InterfaceRenderer().UnregisterProxy(textureProxy_);
 	Renderer.InterfaceRenderer().DeleteProxy(textureProxy_);
 }

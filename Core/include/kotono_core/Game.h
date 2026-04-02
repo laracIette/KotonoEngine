@@ -11,6 +11,7 @@ class SGame final
 private:
 	void Init();
 	void Update(const float deltaTime);
+	void Cleanup();
 
 public:
 	void OpenInterface(const UPtr<KInterface>& interface);

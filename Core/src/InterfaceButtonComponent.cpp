@@ -6,13 +6,8 @@
 KInterfaceButtonComponent::KInterfaceButtonComponent(UPtrOwnerBase* ptrOwner) 
 	: Base(ptrOwner)
 {
-	collider_ = ObjectManager.Create<KInterfaceColliderComponent>();
+	collider_ = Create<KInterfaceColliderComponent>();
 	collider_->SetOwner(GetOwner());
-}
-
-void KInterfaceButtonComponent::Cleanup()
-{
-	Base::Cleanup();
 }
 
 void KInterfaceButtonComponent::Init()

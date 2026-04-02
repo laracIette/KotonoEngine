@@ -173,6 +173,11 @@ public:
 		return index >= 0 && index < size();
 	}
 
+	constexpr bool IsValidIndex(const i64 index) const noexcept
+	{
+		return index >= 0 && index < size();
+	}
+
 	constexpr bool empty() const noexcept
 	{
 		return data_.empty();

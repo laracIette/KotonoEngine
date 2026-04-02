@@ -3,7 +3,10 @@
 #include <kotono_common/Path.h>
 #include <kotono_io/Serializer.h>
 #include <nlohmann/json.hpp>
-#include <kotono_common/log.h>
+
+#if defined(_DEBUG)
+std::unordered_set<UPtr<KObject>> KObject::debugRegistry_{};
+#endif 
 
 KObject::KObject(UPtrOwnerBase* ptrOwner) 
     : ptrOwner_(ptrOwner)
@@ -11,9 +14,13 @@ KObject::KObject(UPtrOwnerBase* ptrOwner)
     , isConstructed_(false)
 {
     ptrOwner_->Set(this);
+
+#if defined(_DEBUG)
+    debugRegistry_.insert(Ptr());
+#endif
 }
 
-void KObject::Cleanup() 
+KObject::~KObject()
 {
     for (const auto& function : unregisterDelegates_)
     {
@@ -22,7 +29,22 @@ void KObject::Cleanup()
             function();
         }
     }
-    unregisterDelegates_.clear();
+
+#if defined(_DEBUG)
+    debugRegistry_.erase(Ptr());
+#endif
+
+    delete ptrOwner_;
+}
+
+void KObject::OnConstructed()
+{
+    if (!isConstructed_)
+    {
+        isConstructed_ = true;
+        type_ = TypeName();
+        SetName(std::format("{0}_{1}", TypeName(), Guid().ToString()));
+    }
 }
 
 const UGuid& KObject::Guid() const
@@ -75,9 +97,9 @@ void KObject::SetName(const std::string& name)
     name_ = name;
 }
 
-void KObject::Delete() const
+void KObject::Delete()
 {
-    ObjectManager.Delete(ptrOwner_);
+    delete this;
 }
 
 void KObject::Serialize() const
@@ -94,3 +116,13 @@ std::string KObject::ToString() const
 {
     return name_;
 }
+
+#if defined(_DEBUG)
+void KObject::CheckDebugRegistry()
+{
+    if (!debugRegistry_.empty())
+    {
+        throw "KObject::DebugRegistry must be empty when quitting the application.";
+    }
+}
+#endif

@@ -8,19 +8,19 @@
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/ShaderManager.h>
 
-KInterface::KInterface(UPtrOwnerBase* ptrOwner) : 
-	Base(ptrOwner)
+KInterface::KInterface(UPtrOwnerBase* ptrOwner) 
+	: Base(ptrOwner)
 {
 	auto* shader2D{ ShaderManager.Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader2D.ktshader") };
 	auto* texture1{ TextureManager.Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png") };
 	auto* texture2{ TextureManager.Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/default_texture.jpg") };
 
-	UPtr image1{ ObjectManager.Create<RInterfaceObject>() };
-	UPtr image2{ ObjectManager.Create<RInterfaceObject>() };
-	UPtr rootComponent1{ ObjectManager.Create<KInterfaceComponent>() };
-	UPtr rootComponent2{ ObjectManager.Create<KInterfaceComponent>() };
-	UPtr imageComponent1{ ObjectManager.Create<KInterfaceImageComponent>() };
-	UPtr imageComponent2{ ObjectManager.Create<KInterfaceImageComponent>() };
+	UPtr image1{ Create<RInterfaceObject>() };
+	UPtr image2{ Create<RInterfaceObject>() };
+	UPtr rootComponent1{ Create<KInterfaceComponent>() };
+	UPtr rootComponent2{ Create<KInterfaceComponent>() };
+	UPtr imageComponent1{ Create<KInterfaceImageComponent>() };
+	UPtr imageComponent2{ Create<KInterfaceImageComponent>() };
 
 	rootComponent1->SetOwner(image1);
 	rootComponent1->SetRelativePosition({ 0.0f, 0.5f });
@@ -47,7 +47,7 @@ KInterface::KInterface(UPtrOwnerBase* ptrOwner) :
 	interfaceObjects_.Append({ image1, image2 });
 }
 
-void KInterface::Cleanup()
+KInterface::~KInterface()
 {
 	for (const auto& interfaceObject : interfaceObjects_)
 	{
@@ -56,9 +56,6 @@ void KInterface::Cleanup()
 			interfaceObject->Delete();
 		}
 	}
-	interfaceObjects_.Clear();
-
-	Base::Cleanup();
 }
 
 void KInterface::SpawnInterfaceObjects()

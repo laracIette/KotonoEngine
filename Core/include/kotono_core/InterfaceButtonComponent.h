@@ -10,8 +10,6 @@ public:
 	KInterfaceButtonComponent(UPtrOwnerBase* ptrOwner);
 
 protected:
-	void Cleanup() override;
-
 	void Init() override;
 
 public:

@@ -17,13 +17,14 @@ class UPtrOwnerBase
 public:
 	virtual ~UPtrOwnerBase() = default;
 
-	virtual void Set(void* pointer) = 0;
-	virtual void* Get() const = 0;
+	virtual void Set(void* pointer) noexcept = 0;
+	virtual void* Get() const noexcept = 0;
 };
 
 template <class T>
 class UPtrOwner final : public UPtrOwnerBase
 {
+private:
 	using Child = UPtr<T>;
 	friend Child;
 	friend UPtr<const T>;
@@ -32,9 +33,9 @@ public:
 	using PointerType = T;
 
 public:
-	UPtrOwner() = default;
+	UPtrOwner() : pointer_(nullptr), children_() {}
 	
-	~UPtrOwner()
+	~UPtrOwner() override
 	{
 		for (Child* child : children_)
 		{
@@ -42,19 +43,19 @@ public:
 		}
 	}
 
-	void Set(void* pointer) override
+	void Set(void* pointer) noexcept override
 	{
 		pointer_ = static_cast<PointerType*>(pointer);
 	}
 
-	void* Get() const override
+	void* Get() const noexcept override
 	{
 		return pointer_;
 	}
 
 private:
-	PointerType* pointer_{ nullptr };
-	KtPool<Child*> children_{};
+	PointerType* pointer_;
+	KtPool<Child*> children_;
 };
 
 template <class T>
@@ -64,28 +65,31 @@ private:
 	template <typename U> 
 	friend class UPtr;
 
-	using Owner = UPtrOwner<std::remove_const_t<T>>;
+	using RemoveConstT = std::remove_const_t<T>;
+	using Owner = UPtrOwner<RemoveConstT>;
 	friend Owner;
+
+	friend std::hash<UPtr<T>>;
 
 public:
 	using PointerType = T;
 
 public:
-	UPtr() = default;
+	UPtr() : owner_(nullptr), index_(0) {}
 
-	UPtr(Owner* owner)
+	UPtr(Owner* owner) : UPtr()
 	{
 		SetOwner(owner);
 	}
 	
-	UPtr(const UPtr& other)
+	UPtr(const UPtr& other) : UPtr()
 	{
 		SetOwner(other.owner_);
 	}
 
 	template <typename From>
 		requires std::is_convertible_v<From*, T*>
-	UPtr(const UPtr<From>& other)
+	UPtr(const UPtr<From>& other) : UPtr()
 	{
 		SetOwner(reinterpret_cast<Owner*>(other.owner_));
 	}
@@ -156,9 +160,6 @@ public:
 	}
 
 private:
-	Owner* owner_{ nullptr };
-	size index_{ 0 };
-
 	void SetOwner(Owner* owner)
 	{
 		if (owner == owner_)
@@ -178,10 +179,14 @@ private:
 		
 		if (owner_)
 		{
-			owner_->children_.Add(reinterpret_cast<UPtr<std::remove_const_t<T>>*>(this));
+			owner_->children_.Add(reinterpret_cast<UPtr<RemoveConstT>*>(this));
 			index_ = owner_->children_.LastIndex();
 		}
 	}
+
+private:
+	Owner* owner_;
+	size index_;
 };
 
 template <typename Derived, typename Base>
@@ -194,3 +199,12 @@ inline UPtr<Derived> TryCast(const UPtr<Base>& ptr)
 	}
 	return nullptr;
 }
+
+template <typename T>
+struct std::hash<UPtr<T>>
+{
+	::size operator()(const UPtr<T>& ptr) const noexcept
+	{
+		return std::hash<void*>{}(ptr.owner_);
+	}
+};

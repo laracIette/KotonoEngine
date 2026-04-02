@@ -11,10 +11,9 @@ class KInterfaceColliderComponent : public KInterfaceComponent
 
 public:
 	KInterfaceColliderComponent(UPtrOwnerBase* ptrOwner);
+	~KInterfaceColliderComponent() override;
 
 protected:
-	void Cleanup() override;
-
 	void Init() override;
 
 public:

@@ -9,16 +9,14 @@ TSceneObject::TSceneObject(UPtrOwnerBase* ptrOwner) :
 	viewport_ = &WindowViewport;
 }
 
-void TSceneObject::Cleanup()
+TSceneObject::~TSceneObject()
 {
-	for (i64 i{ sceneComponents_.LastIndex() }; i >= 0 && i < sceneComponents_.size(); --i)
+	for (i64 i{ sceneComponents_.LastIndex() }; sceneComponents_.IsValidIndex(i); --i)
 	{
 		sceneComponents_[i]->Delete();
 	}
 
 	SetParent(nullptr, ECoordinateSpace::Relative);
-
-	Base::Cleanup();
 }
 
 void TSceneObject::Init()

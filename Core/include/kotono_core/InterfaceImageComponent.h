@@ -12,10 +12,9 @@ class KInterfaceImageComponent : public KInterfaceComponent
 
 public:
 	KInterfaceImageComponent(UPtrOwnerBase* ptrOwner);
+	~KInterfaceImageComponent() override;
 
 protected:
-	void Cleanup() override;
-
 	void Init() override;
 
 public:

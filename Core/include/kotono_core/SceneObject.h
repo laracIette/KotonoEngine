@@ -17,10 +17,9 @@ private:
 
 public:
 	TSceneObject(UPtrOwnerBase* ptrOwner);
+	~TSceneObject() override;
 
 protected:
-	void Cleanup() override;
-
 	virtual void Init();
 	virtual void Update(const float deltaTime);
 

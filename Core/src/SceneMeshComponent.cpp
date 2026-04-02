@@ -29,12 +29,10 @@ KSceneMeshComponent::KSceneMeshComponent(UPtrOwnerBase* ptrOwner)
     spinTask_.duration = 5.0f;
 }
 
-void KSceneMeshComponent::Cleanup()
+KSceneMeshComponent::~KSceneMeshComponent()
 {
     UnregisterModelProxy();
-	Renderer.SceneRenderer().DeleteProxy(modelProxy_);
-
-    Base::Cleanup();
+    Renderer.SceneRenderer().DeleteProxy(modelProxy_);
 }
 
 void KSceneMeshComponent::Init()

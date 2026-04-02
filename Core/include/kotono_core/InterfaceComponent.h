@@ -25,10 +25,9 @@ private:
 
 public:
 	KInterfaceComponent(UPtrOwnerBase* ptrOwner);
+	~KInterfaceComponent() override;
 
 protected:
-	void Cleanup() override;
-
 	virtual void Init();
 	virtual void Update(const float deltaTime);
 

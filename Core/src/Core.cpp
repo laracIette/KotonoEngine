@@ -1,6 +1,7 @@
 #include "Core.h"
 #include "Game.h"
 #include "InterfacePhysicsManager.h"
+#include "Object.h"
 #include "ObjectManager.h"
 #include "TimeManager.h"
 #include <kotono_audio/AudioManager.h>
@@ -37,7 +38,12 @@ void SCore::Update()
 
 void SCore::Cleanup()
 {
-    ::ObjectManager.Cleanup();
+    ::Game.Cleanup();
+#if defined(_DEBUG)
+    KObject::CheckDebugRegistry();
+#endif
+
+    ::ObjectManager.Cleanup(); // todo: remove that prob
     ::AudioManager.Cleanup();
     ::TextureManager.Cleanup();
     ::ShaderManager.Cleanup();

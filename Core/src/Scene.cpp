@@ -1,7 +1,7 @@
 #include "Scene.h"
 #include "SceneObject.h"
 
-void KScene::Cleanup()
+KScene::~KScene()
 {
 	for (const auto& sceneObject : sceneObjects_)
 	{
@@ -10,9 +10,6 @@ void KScene::Cleanup()
 			sceneObject->Delete();
 		}
 	}
-	sceneObjects_.Clear();
-
-	Base::Cleanup();
 }
 
 void KScene::Update(const float deltaTime)

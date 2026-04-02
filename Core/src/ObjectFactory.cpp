@@ -17,9 +17,9 @@
 #include <kotono_io/Serializer.h>
 #include <nlohmann/json.hpp>
 
-#define OBJECT_FACTORY(Type) { #Type, []() { return ObjectManager.Create<Type>(); } }
+#define OBJECT_FACTORY(Type) { #Type, []() { return Create<Type>(); } }
 
-#define KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY ELogImportanceLevel::High
+#define KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY ELogImportanceLevel::Medium
 
 SObjectFactory::SObjectFactory() 
 	: objectFactories_({

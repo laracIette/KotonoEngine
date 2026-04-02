@@ -13,10 +13,9 @@ class KSceneMeshComponent : public KSceneComponent
 
 public:
 	KSceneMeshComponent(UPtrOwnerBase* ptrOwner);
+	~KSceneMeshComponent() override;
 
 protected:
-	void Cleanup() override;
-
 	void Init() override;
 	void Update(const float deltaTime) override;
 

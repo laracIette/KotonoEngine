@@ -1,11 +1,9 @@
 #pragma once
 #include "Guid.h"
-#include <kotono_common/Average.h>
 #include <kotono_common/Event.h>
-#include <kotono_common/Pool.h>
 #include "Ptr.h"
 #include <type_traits>
-#include <unordered_map>
+#include <unordered_set>
 
 class KObject;
 
@@ -19,18 +17,6 @@ private:
 	void Cleanup();
 
 public:
-	template <std::derived_from<KObject> T> 
-	UPtr<T> Create()
-	{
-		auto* ptrOwner{ new UPtrOwner<T>() };
-		auto* object{ new T(ptrOwner) };
-		UPtr<T> ptr{ ptrOwner };
-		Register(object, ptrOwner);
-		return ptr;
-	}
-
-	void Delete(UPtrOwnerBase* ptrOwner);
-
 	UPtr<KObject>& GetSelectedObject();
 	void SetSelectedObject(const UPtr<KObject>& object);
 	UEvent<>& EventSelectedObjectChanged();
@@ -38,16 +24,11 @@ public:
 private:
 	void Quit();
 
-	KtPool<UPtrOwnerBase*> objects_;
-
-	UPtr<KObject> selectedObject_;
-	UEvent<> eventSelectedObjectChanged_;
-
-	void Register(KObject* object, UPtrOwnerBase* ptrOwner);
-
 	void LogUPS() const;
 
-	void OnMouseButtonLeftPressed();
+private:
+	UPtr<KObject> selectedObject_;
+	UEvent<> eventSelectedObjectChanged_;
 };
 
 inline SObjectManager ObjectManager;

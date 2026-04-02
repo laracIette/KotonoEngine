@@ -20,10 +20,9 @@ private:
 
 public:
 	KSceneComponent(UPtrOwnerBase* ptrOwner);
+	~KSceneComponent() override;
 
 protected:
-	void Cleanup() override;
-
 	virtual void Init();
 	virtual void Update(const float deltaTime);
 

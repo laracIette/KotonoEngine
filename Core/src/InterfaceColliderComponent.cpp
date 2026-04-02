@@ -9,11 +9,9 @@ KInterfaceColliderComponent::KInterfaceColliderComponent(UPtrOwnerBase* ptrOwner
 {
 }
 
-void KInterfaceColliderComponent::Cleanup()
+KInterfaceColliderComponent::~KInterfaceColliderComponent()
 {
 	InterfacePhysicsManager.Unregister(this);
-
-	Base::Cleanup();
 }
 
 void KInterfaceColliderComponent::Init()

@@ -15,12 +15,10 @@ KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner)
     eventTransformUpdated_.AddListener(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty);
 }
 
-void KSceneComponent::Cleanup()
+KSceneComponent::~KSceneComponent()
 {
     SetParent(nullptr, ECoordinateSpace::Relative);
-	SetOwner(nullptr);
-
-    Base::Cleanup();
+    SetOwner(nullptr);
 }
 
 void KSceneComponent::Init()

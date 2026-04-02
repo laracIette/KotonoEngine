@@ -7,10 +7,9 @@ class KInterfaceBoxComponent : public KInterfaceComponent
 
 public:
 	KInterfaceBoxComponent(UPtrOwnerBase* ptrOwner);
+	~KInterfaceBoxComponent() override;
 	
 protected:
-	void Cleanup() override;
-
 	void Init() override;
 
 public:

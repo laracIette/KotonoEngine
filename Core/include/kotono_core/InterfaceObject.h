@@ -17,10 +17,9 @@ private:
 
 public:
 	RInterfaceObject(UPtrOwnerBase* ptrOwner);
+	~RInterfaceObject() override;
 
 protected:
-	void Cleanup() override;
-
 	virtual void Init();
 	virtual void Update(const float deltaTime);
 

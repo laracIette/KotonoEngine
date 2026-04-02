@@ -18,12 +18,10 @@ KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner)
     eventRectChanged_.AddListener(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty);
 }
 
-void KInterfaceComponent::Cleanup()
+KInterfaceComponent::~KInterfaceComponent()
 {
     SetParent(nullptr, ECoordinateSpace::Relative);
     SetOwner(nullptr);
-
-    Base::Cleanup();
 }
 
 void KInterfaceComponent::Init()

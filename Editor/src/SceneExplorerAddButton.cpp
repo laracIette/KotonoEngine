@@ -24,10 +24,10 @@ WidgetPtr WSceneExplorerAddButton::Build()
 						auto* model1{ ModelManager.Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.obj") };
 						auto* model2{ ModelManager.Get("${ENGINE_DIRECTORY}/Graphics/assets/models/column.obj") };
 													
-						UPtr mesh{ ObjectManager.Create<TSceneObject>() };
-						UPtr rootComponent{ ObjectManager.Create<KSceneComponent>() };
-						UPtr meshComponent1{ ObjectManager.Create<KSceneMeshComponent>() };
-						UPtr meshComponent2{ ObjectManager.Create<KSceneMeshComponent>() };
+						UPtr mesh{ Create<TSceneObject>() };
+						UPtr rootComponent{ Create<KSceneComponent>() };
+						UPtr meshComponent1{ Create<KSceneMeshComponent>() };
+						UPtr meshComponent2{ Create<KSceneMeshComponent>() };
 													
 						rootComponent->SetOwner(mesh);
 						rootComponent->SetRelativePosition(glm::vec3(0.0f));

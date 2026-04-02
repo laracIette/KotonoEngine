@@ -5,11 +5,13 @@
 #include "serialize.h"
 #include "VariableInfo.h"
 #include <kotono_common/Event.h>
+#include <kotono_common/log.h>
 #include <nlohmann/json_fwd.hpp>
 #include <string>
+#include <unordered_set>
 
 #define RegisterDelegate(Owner, Event, Instance, Function)				\
-static_assert((#Owner != "Ptr()" && #Owner != "this->Ptr()") && "Please use the event's AddListener when registering and event owned by this object.");\
+static_assert(std::string_view(#Owner) != std::string_view("Ptr()") && std::string_view(#Owner) != std::string_view("this->Ptr()"), "Please use the event's AddListener when registering an event owned by this object.");	\
 Event._AddListener(_MAKE_DELEGATE(Instance, Function));					\
 unregisterDelegates_.push_back(											\
 	[=]()																\
@@ -27,16 +29,16 @@ class KObject
 {
 	GENERATED_KOBJECT()
 
-	friend class SObjectManager;
 	friend class SObjectFactory;
+
+	template <typename T>
+	friend UPtr<T> Create();
 
 public:
 	KObject(UPtrOwnerBase* ptrOwner);
-	virtual ~KObject() = default;
+	virtual ~KObject();
 
-protected:
-	/// This only occurs right before the object gets destructed
-	virtual void Cleanup();
+	void OnConstructed();
 
 public:
 	const UGuid& Guid() const;
@@ -53,8 +55,8 @@ public:
 
 	void SetName(const std::string& name);
 
-	/// Delete the object immediately
-	void Delete() const;
+	/// Cleanup and delete the object immediately
+	void Delete();
 
 	/// Serialize and write to the object's path
 	virtual void Serialize() const;
@@ -90,5 +92,22 @@ private:
 	SERIALIZE std::string type_;
 	SERIALIZE std::string name_;
 	bool isConstructed_;
-	size objectIndex_;
+
+#if defined(_DEBUG)
+public:
+	static void CheckDebugRegistry();
+
+private:
+	static std::unordered_set<UPtr<KObject>> debugRegistry_;
+#endif
 };
+
+template <std::derived_from<KObject> T>
+UPtr<T> Create()
+{
+	auto* ptrOwner{ new UPtrOwner<T>() };
+	auto* object{ new T(ptrOwner) };
+	object->OnConstructed();
+	UPtr<T> ptr{ ptrOwner };
+	return ptr;
+}

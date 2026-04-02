@@ -1,12 +1,8 @@
 #include "ObjectManager.h"
-#include "InterfaceComponent.h"
-#include "InterfaceObject.h"
 #include "Object.h"
 #include "TimeManager.h"
 #include <kotono_common/log.h>
 #include <kotono_input/Keyboard.h>
-#include <kotono_input/Mouse.h>
-#include <kotono_io/Serializer.h>
 #include <kotono_platform/Window.h>
 #include <kotono_timing/Timer.h>
 #include <kotono_timing/TimerManager.h>
@@ -16,7 +12,6 @@
 void SObjectManager::Init()
 {
 	Keyboard.EventKey(EKey::Escape, EInputState::Pressed).AddListener(this, &SObjectManager::Quit);
-	Mouse.EventButton(EButton::Left, EInputState::Pressed).AddListener(this, &SObjectManager::OnMouseButtonLeftPressed);
 
 	auto& logUPSTimer{ TimerManager.GetTimer("log ups timer") };
 	logUPSTimer.SetDuration(1.0f);
@@ -27,42 +22,7 @@ void SObjectManager::Init()
 
 void SObjectManager::Cleanup()
 {
-	for (i64 i{ objects_.LastIndex() }; i >= 0 && i < objects_.size(); --i)
-	{
-		Delete(objects_[i]);
-	}
-
 	Keyboard.EventKey(EKey::Escape, EInputState::Pressed).RemoveListener(this, &SObjectManager::Quit);
-	Mouse.EventButton(EButton::Left, EInputState::Pressed).RemoveListener(this, &SObjectManager::OnMouseButtonLeftPressed);
-}
-
-void SObjectManager::Register(KObject* object, UPtrOwnerBase* ptrOwner)
-{
-	objects_.Add(ptrOwner);
-	object->objectIndex_ = objects_.LastIndex();
-	object->isConstructed_ = true;
-	object->type_ = object->TypeName();
-	object->SetName(std::format("{}_{}", object->TypeName(), object->Guid().ToString()));
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core", "register object {}", object->GetName());
-}
-
-void SObjectManager::Delete(UPtrOwnerBase* ptrOwner)
-{
-	auto* object{ static_cast<KObject*>(ptrOwner->Get()) };
-
-	object->Cleanup();
-
-	const size index{ object->objectIndex_ };
-	if (objects_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
-	{
-		auto* swapped{ static_cast<KObject*>(objects_[index]->Get()) };
-		swapped->objectIndex_ = index;
-	}
-
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT, "Core", "delete object {}", object->GetName());
-
-	delete object;
-	delete ptrOwner;
 }
 
 void SObjectManager::Quit()
@@ -94,32 +54,4 @@ UEvent<>& SObjectManager::EventSelectedObjectChanged()
 void SObjectManager::LogUPS() const
 {
 	KT_LOG(ELogImportanceLevel::High, "Core", "{:.2f} ups", 1.0f / TimeManager.AverageUpdateTime());
-}
-
-void SObjectManager::OnMouseButtonLeftPressed()
-{
-	KInterfaceComponent* selectedComponent{ nullptr };
-	for (const auto& ptr : objects_)
-	{
-		auto* object{ static_cast<KObject*>(ptr->Get()) };
-		if (auto* asInterfaceComponent = dynamic_cast<KInterfaceComponent*>(object))
-		{
-			if (!asInterfaceComponent->IsHovered())
-			{
-				continue;
-			}
-			if (!selectedComponent || asInterfaceComponent->GetLayer() > selectedComponent->GetLayer())
-			{
-				selectedComponent = asInterfaceComponent;
-			}
-		}
-	}
-
-	if (selectedComponent)
-	{
-		selectedObject_ = selectedComponent->GetOwner();
-	}
-
-	
-	//KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Core", "selected {}", selectedObject_ ? selectedObject_->GetName() : "None");
 }
