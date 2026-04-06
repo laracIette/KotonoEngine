@@ -1,15 +1,15 @@
 ﻿#include "Shader.h"
-#include <kotono_platform/vk_utils.h>
-#include <kotono_platform/Context.h>
-#include "TextureManager.h"
-#include "Texture.h"
-#include <kotono_io/File.h>
-#include <spirv-reflect/spirv_reflect.h>
-#include <nlohmann/json.hpp>
-#include <kotono_io/Serializer.h>
-#include <kotono_common/log.h>
 #include "Renderer.h"
 #include "ShaderManager.h"
+#include "Texture.h"
+#include <kotono_common/AssetManager.h>
+#include <kotono_common/log.h>
+#include <kotono_io/File.h>
+#include <kotono_io/Serializer.h>
+#include <kotono_platform/Context.h>
+#include <kotono_platform/vk_utils.h>
+#include <nlohmann/json.hpp>
+#include <spirv-reflect/spirv_reflect.h>
 
 #define KT_LOG_IMPORTANCE_LEVEL_SHADER ELogImportanceLevel::Medium
 
@@ -514,7 +514,7 @@ void KtShader::CreateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutB
 		return;
 	}
 
-	static const auto* texture{ TextureManager.Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png") };
+	static const auto* texture{ UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png") };
 
 	UpdateDescriptorSetLayoutBindingImageSampler(descriptorSetLayoutBindingData, { texture->GetDescriptorImageInfo() }, imageIndex);
 }

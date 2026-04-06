@@ -70,8 +70,6 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/Color.h"
     "include/kotono_graphics/Font.h"
     "include/kotono_graphics/frames_in_flight.h"
-    "include/kotono_graphics/Texture.h"
-    "include/kotono_graphics/TextureManager.h"
     "include/kotono_graphics/InterfaceCuller.h"
     "include/kotono_graphics/InterfaceObjectData.h"
     "include/kotono_graphics/InterfaceProxy.h"
@@ -94,14 +92,13 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/ShaderLayout.h"
     "include/kotono_graphics/ShaderManager.h"
     "include/kotono_graphics/SpvCompiler.h"
+    "include/kotono_graphics/Texture.h"
     "include/kotono_graphics/Vertex2D.h"
     "include/kotono_graphics/Vertex3D.h"
     "include/kotono_graphics/Visibility.h"
 )
 set(KGRAPHICS_SOURCES
     "src/Font.cpp"
-    "src/Texture.cpp"
-    "src/TextureManager.cpp"
     "src/implementations.cpp"
     "src/InterfaceCuller.cpp"
     "src/InterfaceProxy.cpp"
@@ -114,6 +111,7 @@ set(KGRAPHICS_SOURCES
     "src/Shader.cpp"
     "src/ShaderManager.cpp"
     "src/SpvCompiler.cpp"
+    "src/Texture.cpp"
     "src/Vertex2D.cpp"
     "src/Vertex3D.cpp"
 

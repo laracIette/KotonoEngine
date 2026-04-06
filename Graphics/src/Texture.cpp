@@ -1,13 +1,28 @@
 #include "Texture.h"
-#include <stbimage/stb_image.h>
-#include <kotono_platform/Context.h>
+#include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
+#include <kotono_platform/Context.h>
 #include <nlohmann/json.hpp>
-#include "TextureManager.h"
+#include <stbimage/stb_image.h>
 
-KtTexture::KtTexture(const UPath& path) :
-	path_(path)
+KtTexture::KtTexture(const UPath& path) 
+	: path_(path)
 {
+	CreateTextureImage();
+	CreateTextureImageView();
+	CreateTextureSampler();
+
+	imageInfo_.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	imageInfo_.imageView = imageView_;
+	imageInfo_.sampler = sampler_;
+}
+
+KtTexture::~KtTexture()
+{
+	vkDestroySampler(Context.GetDevice(), sampler_, nullptr);
+	vkDestroyImageView(Context.GetDevice(), imageView_, nullptr);
+	vmaDestroyImage(Context.GetAllocator(), image_, allocation_);
+	KT_LOG(ELogImportanceLevel::Low, "Graphics", "cleaned up {}", Path().ToString());
 }
 
 const UPath& KtTexture::Path() const
@@ -27,21 +42,12 @@ const VkDescriptorImageInfo& KtTexture::GetDescriptorImageInfo() const
 
 void KtTexture::Init()
 {
-	CreateTextureImage();
-	CreateTextureImageView();
-	CreateTextureSampler();
-
-	imageInfo_.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	imageInfo_.imageView = imageView_;
-	imageInfo_.sampler = sampler_;
+	
 }
 
 void KtTexture::Cleanup() const
 {
-	vkDestroySampler(Context.GetDevice(), sampler_, nullptr);
-	vkDestroyImageView(Context.GetDevice(), imageView_, nullptr);
-	vmaDestroyImage(Context.GetAllocator(), image_, allocation_);
-	KT_LOG(ELogImportanceLevel::Low, "Graphics", "cleaned up {}", Path().ToString());
+
 }
 
 void KtTexture::CreateTextureImage()
@@ -158,5 +164,5 @@ void USerialize<KtTexture>::operator()(nlohmann::json& json, const KtTexture* v)
 void UDeserialize<KtTexture>::operator()(const nlohmann::json& json, KtTexture*& v) const
 {
 	const UPath path(json.get<std::string>());
-	v = TextureManager.Get(path);
+	v = UAssetManager<KtTexture>::Get(path);
 }

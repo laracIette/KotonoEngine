@@ -1,11 +1,11 @@
 #include "Color.h"
-#include <kotono_platform/WindowViewport.h>
-#include <kotono_graphics/InterfaceProxy.h>
-#include <kotono_graphics/Texture.h>
+#include <kotono_common/AssetManager.h>
 #include <kotono_common/Path.h>
+#include <kotono_graphics/InterfaceProxy.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/ShaderManager.h>
-#include <kotono_graphics/TextureManager.h>
+#include <kotono_graphics/Texture.h>
+#include <kotono_platform/WindowViewport.h>
 
 WColor::WColor(const ColorSettings& colorSettings) 
 	: colorSettings_(colorSettings)
@@ -26,7 +26,7 @@ void WColor::DisplayInternal(UWidgetDisplaySettings displaySettings)
 		[this, displaySettings](UInterfaceProxy::Data& data)
 		{
 			data.shader = ShaderManager.Get("${ENGINE_DIRECTORY}/Graphics/shaders/flatColor2D.ktshader");
-			data.renderable = TextureManager.Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg");
+			data.renderable = UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg");
 			data.layer = displaySettings.layer;
 			data.objectData.modelMatrix = ModelMatrix();
 			data.objectData.color = colorSettings_.color;

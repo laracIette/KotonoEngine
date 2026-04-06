@@ -10,6 +10,7 @@ class KtTexture final : public KtInterfaceRenderable
 {
 public:
     KtTexture(const UPath& path);
+    ~KtTexture();
 
     void Init();
     void Cleanup() const;

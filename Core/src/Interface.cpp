@@ -2,18 +2,19 @@
 #include "InterfaceComponent.h"
 #include "InterfaceImageComponent.h"
 #include "InterfaceObject.h"
+#include <kotono_common/AssetManager.h>
 #include <kotono_common/Path.h>
-#include <kotono_graphics/TextureManager.h>
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/ShaderManager.h>
+#include <kotono_graphics/Texture.h>
 #include <kotono_object/ObjectManager.h>
 
 KInterface::KInterface(UPtrOwnerBase* ptrOwner) 
 	: Base(ptrOwner)
 {
 	auto* shader2D{ ShaderManager.Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader2D.ktshader") };
-	auto* texture1{ TextureManager.Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png") };
-	auto* texture2{ TextureManager.Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/default_texture.jpg") };
+	auto* texture1{ UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png") };
+	auto* texture2{ UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/default_texture.jpg") };
 
 	UPtr image1{ Create<RInterfaceObject>() };
 	UPtr image2{ Create<RInterfaceObject>() };
