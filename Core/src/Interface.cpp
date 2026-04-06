@@ -84,3 +84,5 @@ void KInterface::Update(const float deltaTime)
 		interfaceObject->UpdateInterfaceComponents(deltaTime);
 	}
 }
+
+#include "generated/Interface.generated.inl"

@@ -29,19 +29,9 @@ set(KOBJECT_SOURCES
     "src/ObjectManager.cpp"
 )
 
-set(KOBJECT_GENERATED_HEADERS
-    "include/kotono_object/generated/Object.generated.h"
-)
-set(KOBJECT_GENERATED_SOURCES
-    "src/generated/Object.generated.cpp"
-
-)
-
 target_sources(KotonoObject
     PRIVATE ${KOBJECT_HEADERS}
     PRIVATE ${KOBJECT_SOURCES}
-    PRIVATE ${KOBJECT_GENERATED_HEADERS}
-    PRIVATE ${KOBJECT_GENERATED_SOURCES}
 )
 
 # Include directories

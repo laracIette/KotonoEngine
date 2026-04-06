@@ -61,3 +61,5 @@ UEvent<>& KScene::EventSceneObjectsUpdated()
 {
 	return eventSceneObjectsUpdated_;
 }
+
+#include "generated/Scene.generated.inl"

@@ -65,38 +65,9 @@ set(KCORE_SOURCES
     "src/Timer.cpp"
 )
 
-set(KCORE_GENERATED_HEADERS
-    "include/kotono_core/generated/Interface.generated.h"
-    "include/kotono_core/generated/InterfaceBoxComponent.generated.h"
-    "include/kotono_core/generated/InterfaceButtonComponent.generated.h"
-    "include/kotono_core/generated/InterfaceColliderComponent.generated.h"
-    "include/kotono_core/generated/InterfaceComponent.generated.h"
-    "include/kotono_core/generated/InterfaceImageComponent.generated.h"
-    "include/kotono_core/generated/InterfaceObject.generated.h"
-    "include/kotono_core/generated/Scene.generated.h"
-    "include/kotono_core/generated/SceneComponent.generated.h"
-    "include/kotono_core/generated/SceneMeshComponent.generated.h"
-    "include/kotono_core/generated/SceneObject.generated.h"
-)
-set(KCORE_GENERATED_SOURCES
-    "src/generated/Interface.generated.cpp"
-    "src/generated/InterfaceBoxComponent.generated.cpp"
-    "src/generated/InterfaceButtonComponent.generated.cpp"
-    "src/generated/InterfaceColliderComponent.generated.cpp"
-    "src/generated/InterfaceComponent.generated.cpp"
-    "src/generated/InterfaceImageComponent.generated.cpp"
-    "src/generated/InterfaceObject.generated.cpp"
-    "src/generated/Scene.generated.cpp"
-    "src/generated/SceneComponent.generated.cpp"
-    "src/generated/SceneMeshComponent.generated.cpp"
-    "src/generated/SceneObject.generated.cpp"
-)
-
 target_sources(KotonoCore
     PRIVATE ${KCORE_HEADERS}
     PRIVATE ${KCORE_SOURCES}
-    PRIVATE ${KCORE_GENERATED_HEADERS}
-    PRIVATE ${KCORE_GENERATED_SOURCES}
 )
 
 # Include directories

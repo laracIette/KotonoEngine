@@ -90,3 +90,5 @@ void KInterfaceColliderComponent::OnEventMouseLeftButtonDown()
 
 	eventDown_.Broadcast();
 }
+
+#include "generated/InterfaceColliderComponent.generated.inl"

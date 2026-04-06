@@ -177,3 +177,5 @@ void RInterfaceObject::UpdateInterfaceComponents(const float deltaTime)
 		}
 	}
 }
+
+#include "generated/InterfaceObject.generated.inl"

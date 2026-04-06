@@ -180,3 +180,5 @@ void TSceneObject::UpdateSceneComponents(const float deltaTime)
 		}
 	}
 }
+
+#include "generated/SceneObject.generated.inl"

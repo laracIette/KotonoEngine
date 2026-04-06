@@ -132,3 +132,5 @@ void KInterfaceImageComponent::MarkTextureProxyLayerDirty()
 		}
 	);
 }
+
+#include "generated/InterfaceImageComponent.generated.inl"

@@ -163,3 +163,5 @@ void KSceneMeshComponent::SetMobilityDynamic()
     SetMobility(EMobility::Dynamic);
     KT_LOG(ELogImportanceLevel::High, "Core", "{}", GetName());
 }
+
+#include "generated/SceneMeshComponent.generated.inl"

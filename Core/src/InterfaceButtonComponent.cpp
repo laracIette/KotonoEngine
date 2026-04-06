@@ -27,3 +27,5 @@ void KInterfaceButtonComponent::OnColliderReleased()
 {
 	eventClicked_.Broadcast();
 }
+
+#include "generated/InterfaceButtonComponent.generated.inl"

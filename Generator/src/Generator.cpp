@@ -42,7 +42,7 @@ void SGenerator::GenerateUpdated() const
 	{
 		const UFile file(reflectionResult.path);
 
-		const auto entryPath{ file.Name() };
+		const auto entryPath{ reflectionResult.path.ToString() };
 		const auto ftime{ file.LastWriteTime() };
 		const auto formattedTime{ std::format("{0:%F}-{0:%T}", ftime) };
 
@@ -134,22 +134,16 @@ void SGenerator::GenerateSource(const UReflectionResult & reflectionResult) cons
 {
 	const auto classInfo{ GetClassInfo(reflectionResult) };
 
-	std::ostringstream objectClassHeaders;
-	for (const auto& header : classInfo.headers)
-	{
-		objectClassHeaders << std::format(R"(#include "{0}")", header) << std::endl;
-	}
-
 	std::ostringstream serializeCode;
 	for (const auto& variable : classInfo.variables)
 	{
-		serializeCode << std::format(R"(	USerialize<std::remove_reference_t<std::remove_pointer_t<decltype({0})>>>{{}}(get(json, "{0}"), {0});)", variable.name) << std::endl;
+		serializeCode << std::format(R"(	USerialize<decltype({0})>{{}}(get(json, "{0}"), {0});)", variable.name) << std::endl;
 	}
 
 	std::ostringstream deserializeCode;
 	for (const auto& variable : classInfo.variables)
 	{
-		deserializeCode << std::format(R"(	UDeserialize<std::remove_reference_t<std::remove_pointer_t<decltype({0})>>>{{}}(get(json, "{0}"), {0});)", variable.name) << std::endl;
+		deserializeCode << std::format(R"(	UDeserialize<decltype({0})>{{}}(get(json, "{0}"), {0});)", variable.name) << std::endl;
 	}
 
 	std::ostringstream memberVariablesCode;
@@ -160,76 +154,64 @@ void SGenerator::GenerateSource(const UReflectionResult & reflectionResult) cons
 
 	const std::string generatedCode{ !classInfo.base.has_value()
 		? std::format(
-R"(#include "{0}"
-#include <type_traits>
+R"(UAutoRegister {0}::register_("{0}", []() {{ return Create<{0}>(); }});
+
+void {0}::SerializeTo(nlohmann::json& json) const
+{{
 {1}
-
-UAutoRegister {2}::register_("{2}", []() {{ return Create<{2}>(); }});
-
-void {2}::SerializeTo(nlohmann::json& json) const
-{{
-{3}
 }}
 
-void {2}::DeserializeFrom(const nlohmann::json& json)
+void {0}::DeserializeFrom(const nlohmann::json& json)
 {{
-{4}
+{2}
 }}
 
-std::vector<UVariableInfo> {2}::GetMemberVariables() const
+std::vector<UVariableInfo> {0}::GetMemberVariables() const
 {{
 	return {{
-{5}
+{3}
 	}};
 }}
 
-UPtr<{2}> {2}::Ptr() const
+UPtr<{0}> {0}::Ptr() const
 {{
-	return static_cast<UPtrOwner<{2}>*>(ptrOwner_);
+	return static_cast<UPtrOwner<{0}>*>(ptrOwner_);
 }}
 )",
-			reflectionResult.path.ToPath().filename().string(),
-			objectClassHeaders.str(),
 			classInfo.name,
 			serializeCode.str(),
 			deserializeCode.str(),
 			memberVariablesCode.str()
 		)
 		: std::format(
-R"(#include "{0}"
-#include <type_traits>
-{1}
+R"(UAutoRegister {0}::register_("{0}", []() {{ return Create<{0}>(); }});
 
-UAutoRegister {2}::register_("{2}", []() {{ return Create<{2}>(); }});
-
-void {2}::SerializeTo(nlohmann::json& json) const
+void {0}::SerializeTo(nlohmann::json& json) const
 {{
 	Base::SerializeTo(json);
-{3}
+{1}
 }}
 
-void {2}::DeserializeFrom(const nlohmann::json& json)
+void {0}::DeserializeFrom(const nlohmann::json& json)
 {{
 	Base::DeserializeFrom(json);
-{4}
+{2}
 }}
 
-std::vector<UVariableInfo> {2}::GetMemberVariables() const
+std::vector<UVariableInfo> {0}::GetMemberVariables() const
 {{
 	auto result{{ Base::GetMemberVariables() }};
 	result.insert(result.end(), {{
-{5}
+{3}
 	}});
 	return result;
 }}
 
-UPtr<{2}> {2}::Ptr() const
+UPtr<{0}> {0}::Ptr() const
 {{
-	return static_cast<UPtrOwner<{2}>*>(ptrOwner_);
+	return static_cast<UPtrOwner<{0}>*>(ptrOwner_);
 }}
 )",
-			reflectionResult.path.ToPath().filename().string(),
-			objectClassHeaders.str(),
 			classInfo.name,
 			serializeCode.str(),
 			deserializeCode.str(),
@@ -238,7 +220,7 @@ UPtr<{2}> {2}::Ptr() const
 	};
 
 	const UPath fileDirectory{ reflectionResult.path.Directory().Directory().Directory() / "src" };
-	const UPath fileName{ reflectionResult.path.ToPath().filename().replace_extension(".generated.cpp") };
+	const UPath fileName{ reflectionResult.path.ToPath().filename().replace_extension(".generated.inl") };
 	UFile(fileDirectory / "generated" / fileName).WriteString(generatedCode);
 }
 

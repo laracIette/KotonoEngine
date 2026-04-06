@@ -378,3 +378,5 @@ void KSceneComponent::Deserialize()
 void KSceneComponent::Spawn()
 {
 }
+
+#include "generated/SceneComponent.generated.inl"

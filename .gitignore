@@ -406,6 +406,6 @@ FodyWeavers.xsd
 
 *.spv
 *.generated.h
-*.generated.cpp
+*.generated.inl
 Generator/generated.ktregistry
 Graphics/shaders/shaders.ktregistry

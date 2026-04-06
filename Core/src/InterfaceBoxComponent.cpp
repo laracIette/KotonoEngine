@@ -70,3 +70,5 @@ void KInterfaceBoxComponent::MarkBoxProxyRectDirty()
         }
     );
 }
+
+#include "generated/InterfaceBoxComponent.generated.inl"

@@ -462,3 +462,5 @@ glm::vec2 KInterfaceComponent::GetAnchorRelativePosition() const
 {
     return GetRelativePosition() - GetAnchorOffset();
 }
+
+#include "generated/InterfaceComponent.generated.inl"
