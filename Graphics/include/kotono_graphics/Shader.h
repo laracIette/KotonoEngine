@@ -35,9 +35,7 @@ public:
 	};
 
 	KtShader(const UPath& path);
-
-	void Init();
-	void Cleanup();
+	~KtShader();
 
 	const UPath& Path() const;
 

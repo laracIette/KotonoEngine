@@ -2,12 +2,11 @@
 #include "SceneObject.h"
 #include "Task.h"
 #include "TimeManager.h"
+#include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
-#include <kotono_common/PathManager.h>
 #include <kotono_graphics/Model.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/Shader.h>
-#include <kotono_graphics/ShaderManager.h>
 #include <kotono_input/Keyboard.h>
 #include <kotono_platform/Window.h>
 #include <kotono_platform/WindowViewport.h>
@@ -21,7 +20,7 @@ KSceneMeshComponent::KSceneMeshComponent(UPtrOwnerBase* ptrOwner)
 {
     if (!WireframeShader)
     {
-        WireframeShader = ShaderManager.Get("${ENGINE_DIRECTORY}/Graphics/shaders/wireframe3D.ktshader");
+        WireframeShader = UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/wireframe3D.ktshader");
     }
 
     modelProxy_ = Renderer.SceneRenderer().CreateProxy();

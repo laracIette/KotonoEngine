@@ -1,11 +1,11 @@
 #include "InterfaceImageComponent.h"
-#include <kotono_graphics/ShaderManager.h>
+#include "InterfaceObject.h"
+#include <kotono_common/AssetManager.h>
+#include <kotono_graphics/InterfaceProxy.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/Texture.h>
-#include <kotono_graphics/InterfaceProxy.h>
 #include <kotono_platform/WindowViewport.h>
-#include "InterfaceObject.h"
 #include <kotono_common/log.h>
 
 static constinit KtShader* WireframeShader{ nullptr };
@@ -15,7 +15,7 @@ KInterfaceImageComponent::KInterfaceImageComponent(UPtrOwnerBase* ptrOwner)
 {
 	if (!WireframeShader)
 	{
-		WireframeShader = ShaderManager.Get("${ENGINE_DIRECTORY}/Graphics/shaders/wireframe2D.ktshader");
+		WireframeShader = UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/wireframe2D.ktshader");
 	}
 
 	textureProxy_ = Renderer.InterfaceRenderer().CreateProxy();

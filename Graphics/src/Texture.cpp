@@ -40,16 +40,6 @@ const VkDescriptorImageInfo& KtTexture::GetDescriptorImageInfo() const
 	return imageInfo_;
 }
 
-void KtTexture::Init()
-{
-	
-}
-
-void KtTexture::Cleanup() const
-{
-
-}
-
 void KtTexture::CreateTextureImage()
 {
 	int texWidth, texHeight, texChannels;

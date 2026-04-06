@@ -1,6 +1,5 @@
 ﻿#include "Shader.h"
 #include "Renderer.h"
-#include "ShaderManager.h"
 #include "Texture.h"
 #include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
@@ -21,12 +20,8 @@ static constexpr VkDescriptorBindingFlags BINDLESS_TEXTURE_FLAGS{
 	VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
 };
 
-KtShader::KtShader(const UPath& path) :
-	path_(path)
-{
-}
-
-void KtShader::Init()
+KtShader::KtShader(const UPath& path) 
+	: path_(path)
 {
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "initializing shader {}", path_.ToString());
 	CreateShaderLayout();
@@ -39,7 +34,7 @@ void KtShader::Init()
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "initialized shader {}", path_.ToString());
 }
 
-void KtShader::Cleanup()
+KtShader::~KtShader()
 {
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "cleaning up shader {}", path_.ToString());
 
@@ -847,5 +842,5 @@ void USerialize<KtShader>::operator()(nlohmann::json& json, const KtShader* v) c
 void UDeserialize<KtShader>::operator()(const nlohmann::json& json, KtShader*& v) const
 {
 	const UPath path(json.get<std::string>());
-	v = ShaderManager.Get(path);
+	v = UAssetManager<KtShader>::Get(path);
 }

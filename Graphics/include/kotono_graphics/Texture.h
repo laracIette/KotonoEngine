@@ -12,10 +12,8 @@ public:
     KtTexture(const UPath& path);
     ~KtTexture();
 
-    void Init();
-    void Cleanup() const;
-
     const UPath& Path() const;
+
     const glm::uvec2& GetSize() const;
 
     const VkDescriptorImageInfo& GetDescriptorImageInfo() const;

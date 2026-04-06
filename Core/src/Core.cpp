@@ -6,7 +6,8 @@
 #include <kotono_common/AssetManager.h>
 #include <kotono_graphics/Model.h>
 #include <kotono_graphics/Renderer.h>
-#include <kotono_graphics/ShaderManager.h>
+#include <kotono_graphics/Shader.h>
+#include <kotono_graphics/SpvCompiler.h>
 #include <kotono_graphics/Texture.h>
 #include <kotono_input/Keyboard.h>
 #include <kotono_input/Mouse.h>
@@ -18,10 +19,11 @@
 
 void SCore::Init()
 {
+    KtSpvCompiler{}.CompileUpdated();
+
     Window.Init();
     Context.Init();
     Renderer.Init();
-    ShaderManager.Init();
     AudioManager.Init();
     Keyboard.Init();
     Mouse.Init();
@@ -55,7 +57,7 @@ void SCore::Cleanup()
     ObjectManager.Cleanup(); // todo: remove that prob
     AudioManager.Cleanup();
     UAssetManager<KtTexture>::Cleanup();
-    ShaderManager.Cleanup();
+    UAssetManager<KtShader>::Cleanup();
     UAssetManager<KtModel>::Cleanup();
     Renderer.Cleanup();
     Context.Cleanup();
