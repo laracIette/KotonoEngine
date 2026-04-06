@@ -13,7 +13,7 @@ private:
 	friend class SGame;
 
 public:
-	KInterface(UPtrOwnerBase* ptrOwner);
+	KInterface(UPtrOwner* ptrOwner);
 	~KInterface() override;
 
 public:

@@ -7,7 +7,7 @@
 #include <kotono_graphics/Texture.h>
 #include <kotono_platform/WindowViewport.h>
 
-KInterfaceBoxComponent::KInterfaceBoxComponent(UPtrOwnerBase* ptrOwner) 
+KInterfaceBoxComponent::KInterfaceBoxComponent(UPtrOwner* ptrOwner) 
     : Base(ptrOwner)
 {
     boxProxy_ = Renderer.InterfaceRenderer().CreateProxy();

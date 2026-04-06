@@ -3,73 +3,57 @@
 #include <type_traits>
 #include <concepts>
 
-template <typename T, typename Derived>
-concept BaseOf = std::is_base_of_v<T, Derived>;
-
-template <typename T, typename Base>
-concept DerivedFrom = std::is_base_of_v<Base, T>;
-
-template <class T>
-class UPtr;
-
-class UPtrOwnerBase
+class UPtrBase
 {
 public:
-	virtual ~UPtrOwnerBase() = default;
-
-	virtual void Set(void* pointer) noexcept = 0;
-	virtual void* Get() const noexcept = 0;
+	virtual ~UPtrBase() = default;
+	virtual void Invalidate() noexcept = 0;
 };
 
-template <class T>
-class UPtrOwner final : public UPtrOwnerBase
+class UPtrOwner final
 {
-private:
-	using Child = UPtr<T>;
-	friend Child;
-	friend UPtr<const T>;
-
-public:
-	using PointerType = T;
+	template <typename T>
+	friend class UPtr;
 
 public:
 	UPtrOwner() : pointer_(nullptr), children_() {}
-	
-	~UPtrOwner() override
+
+	~UPtrOwner()
 	{
-		for (Child* child : children_)
+		for (UPtrBase* child : children_)
 		{
-			child->owner_ = nullptr;
+			child->Invalidate();
 		}
 	}
 
-	void Set(void* pointer) noexcept override
+	constexpr void Set(void* pointer) noexcept
 	{
-		pointer_ = static_cast<PointerType*>(pointer);
+		pointer_ = pointer;
 	}
 
-	void* Get() const noexcept override
+	constexpr void* Get() const noexcept
 	{
 		return pointer_;
 	}
 
 private:
-	PointerType* pointer_;
-	KtPool<Child*> children_;
+	void* pointer_;
+	KtPool<UPtrBase*> children_;
 };
 
 template <class T>
-class UPtr final
+class UPtr final : public UPtrBase
 {
 private:
 	template <typename U> 
 	friend class UPtr;
 
-	using RemoveConstT = std::remove_const_t<T>;
-	using Owner = UPtrOwner<RemoveConstT>;
-	friend Owner;
+	using Owner = UPtrOwner;
+	friend class Owner;
 
-	friend std::hash<UPtr<T>>;
+	friend std::hash<UPtr>;
+
+	using RemoveConstT = std::remove_const_t<T>;
 
 public:
 	using PointerType = T;
@@ -91,19 +75,24 @@ public:
 		requires std::is_convertible_v<From*, T*>
 	UPtr(const UPtr<From>& other) : UPtr()
 	{
-		SetOwner(reinterpret_cast<Owner*>(other.owner_));
+		SetOwner(other.owner_);
 	}
 
-	~UPtr()
+	~UPtr() override
 	{
 		SetOwner(nullptr);
+	}
+
+	void Invalidate() noexcept override
+	{
+		owner_ = nullptr;
 	}
 
 	template <typename From>
 		requires std::is_convertible_v<From*, T*>
 	UPtr& operator=(const UPtr<From>& other)
 	{
-		SetOwner(reinterpret_cast<Owner*>(other.owner_));
+		SetOwner(other.owner_);
 		return *this;
 	}
 
@@ -125,17 +114,17 @@ public:
 		requires std::is_convertible_v<From*, T*>
 	constexpr bool operator==(const UPtr<From>& other) const noexcept
 	{
-		return owner_ == reinterpret_cast<Owner*>(other.owner_);
+		return owner_ == other.owner_;
 	}
 
 	constexpr bool operator==(PointerType* ptr) const noexcept
 	{
-		return (!owner_ && !ptr) || (owner_ && owner_->pointer_ == ptr);
+		return (!owner_ && !ptr) || (owner_ && owner_->Get() == ptr);
 	}
 
 	constexpr PointerType* Get() const noexcept
 	{
-		return owner_->pointer_;
+		return static_cast<PointerType*>(owner_->Get());
 	}
 
 	constexpr PointerType* operator->() const noexcept
@@ -150,7 +139,7 @@ public:
 
 	constexpr operator bool() const noexcept
 	{
-		return owner_ && owner_->pointer_;
+		return owner_ && owner_->Get();
 	}
 
 	constexpr Owner* GetOwner() const noexcept
@@ -170,7 +159,7 @@ private:
 		{
 			if (owner_->children_.RemoveAt(index_) == KtPoolRemoveResult::ItemSwappedAndRemoved)
 			{
-				owner_->children_[index_]->index_ = index_;
+				static_cast<UPtr*>(owner_->children_[index_])->index_ = index_;
 			}
 		}
 
@@ -178,7 +167,7 @@ private:
 		
 		if (owner_)
 		{
-			owner_->children_.Add(reinterpret_cast<UPtr<RemoveConstT>*>(this));
+			owner_->children_.Add(this);
 			index_ = owner_->children_.LastIndex();
 		}
 	}
@@ -194,7 +183,7 @@ inline UPtr<Derived> TryCast(const UPtr<Base>& ptr)
 {
 	if (ptr && dynamic_cast<Derived*>(ptr.Get()))
 	{
-		return reinterpret_cast<UPtrOwner<std::remove_const_t<Derived>>*>(ptr.GetOwner());
+		return UPtr<Derived>(ptr.GetOwner());
 	}
 	return nullptr;
 }

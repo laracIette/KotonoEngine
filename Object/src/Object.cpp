@@ -9,7 +9,7 @@
 std::unordered_set<UPtr<KObject>> KObject::debugRegistry_{};
 #endif 
 
-KObject::KObject(UPtrOwnerBase* ptrOwner) 
+KObject::KObject(UPtrOwner* ptrOwner) 
     : ptrOwner_(ptrOwner)
     , name_(guid_)
     , isConstructed_(false)

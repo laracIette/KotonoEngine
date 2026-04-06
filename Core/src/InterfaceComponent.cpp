@@ -7,7 +7,7 @@
 #include <kotono_input/Mouse.h>
 #include <kotono_platform/WindowViewport.h>
 
-KInterfaceComponent::KInterfaceComponent(UPtrOwnerBase* ptrOwner) 
+KInterfaceComponent::KInterfaceComponent(UPtrOwner* ptrOwner) 
     : Base(ptrOwner)
     , visibility_(EVisibility::Visible)
     , canUpdate_(true)

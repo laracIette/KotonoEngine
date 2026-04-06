@@ -37,7 +37,7 @@ class KObject
 	friend UPtr<T> Create();
 
 public:
-	KObject(UPtrOwnerBase* ptrOwner);
+	KObject(UPtrOwner* ptrOwner);
 	virtual ~KObject();
 
 	void OnConstructed();
@@ -88,7 +88,7 @@ protected:
 	}
 
 protected:
-	UPtrOwnerBase* const ptrOwner_;
+	UPtrOwner* const ptrOwner_;
 
 	std::vector<std::function<void()>> unregisterDelegates_;
 
@@ -110,7 +110,7 @@ private:
 template <std::derived_from<KObject> T>
 UPtr<T> Create()
 {
-	auto* ptrOwner{ new UPtrOwner<T>() };
+	auto* ptrOwner{ new UPtrOwner() };
 	auto* object{ new T(ptrOwner) };
 	object->OnConstructed();
 	UPtr<T> ptr{ ptrOwner };

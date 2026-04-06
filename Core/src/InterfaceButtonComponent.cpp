@@ -3,7 +3,7 @@
 #include "InterfaceObject.h"
 #include <kotono_object/ObjectManager.h>
 
-KInterfaceButtonComponent::KInterfaceButtonComponent(UPtrOwnerBase* ptrOwner) 
+KInterfaceButtonComponent::KInterfaceButtonComponent(UPtrOwner* ptrOwner) 
 	: Base(ptrOwner)
 {
 	collider_ = Create<KInterfaceColliderComponent>();

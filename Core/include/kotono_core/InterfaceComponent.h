@@ -24,7 +24,7 @@ private:
 	friend class RInterfaceObject;
 
 public:
-	KInterfaceComponent(UPtrOwnerBase* ptrOwner);
+	KInterfaceComponent(UPtrOwner* ptrOwner);
 	~KInterfaceComponent() override;
 
 protected:

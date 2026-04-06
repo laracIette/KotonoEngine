@@ -13,7 +13,7 @@
 
 static UAsset<KtShader> WireframeShader;
 
-KSceneMeshComponent::KSceneMeshComponent(UPtrOwnerBase* ptrOwner) 
+KSceneMeshComponent::KSceneMeshComponent(UPtrOwner* ptrOwner) 
     : Base(ptrOwner)
 {
     if (!WireframeShader)

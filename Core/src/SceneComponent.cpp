@@ -4,7 +4,7 @@
 #include <kotono_platform/glm_utils.h>
 #include <stdexcept>
 
-KSceneComponent::KSceneComponent(UPtrOwnerBase* ptrOwner) 
+KSceneComponent::KSceneComponent(UPtrOwner* ptrOwner) 
     : Base(ptrOwner)
     , visibility_(EVisibility::Visible)
     , canUpdate_(true)

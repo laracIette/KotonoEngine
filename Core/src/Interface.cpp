@@ -7,7 +7,7 @@
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/Texture.h>
 
-KInterface::KInterface(UPtrOwnerBase* ptrOwner) 
+KInterface::KInterface(UPtrOwner* ptrOwner) 
 	: Base(ptrOwner)
 {
 	UAsset shader{ UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader2D.ktshader") };
