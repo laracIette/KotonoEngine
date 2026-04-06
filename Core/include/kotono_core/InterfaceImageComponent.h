@@ -11,7 +11,7 @@ class KInterfaceImageComponent : public KInterfaceComponent
 	GENERATED_KINTERFACEIMAGECOMPONENT()
 
 public:
-	KInterfaceImageComponent(UPtrOwner* ptrOwner);
+	KInterfaceImageComponent();
 	~KInterfaceImageComponent() override;
 
 protected:

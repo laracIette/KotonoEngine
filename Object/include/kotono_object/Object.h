@@ -33,11 +33,8 @@ class KObject
 
 	friend class SObjectFactory;
 
-	template <typename T>
-	friend UPtr<T> Create();
-
 public:
-	KObject(UPtrOwner* ptrOwner);
+	KObject();
 	virtual ~KObject();
 
 	void OnConstructed();
@@ -110,11 +107,9 @@ private:
 template <std::derived_from<KObject> T>
 UPtr<T> Create()
 {
-	auto* ptrOwner{ new UPtrOwner() };
-	auto* object{ new T(ptrOwner) };
+	T* object{ new T() };
 	object->OnConstructed();
-	UPtr<T> ptr{ ptrOwner };
-	return ptr;
+	return object->Ptr();
 }
 
 template <std::derived_from<KObject> T>

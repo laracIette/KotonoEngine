@@ -16,7 +16,7 @@ private:
 	friend class KScene;
 
 public:
-	TSceneObject(UPtrOwner* ptrOwner);
+	TSceneObject();
 	~TSceneObject() override;
 
 protected:

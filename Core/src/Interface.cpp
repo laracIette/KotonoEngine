@@ -7,8 +7,7 @@
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/Texture.h>
 
-KInterface::KInterface(UPtrOwner* ptrOwner) 
-	: Base(ptrOwner)
+KInterface::KInterface()
 {
 	UAsset shader{ UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader2D.ktshader") };
 	UAsset texture1{ UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png") };

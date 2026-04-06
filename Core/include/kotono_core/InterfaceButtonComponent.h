@@ -7,7 +7,7 @@ class KInterfaceButtonComponent : public KInterfaceComponent
 	GENERATED_KINTERFACEBUTTONCOMPONENT()
 
 public:
-	KInterfaceButtonComponent(UPtrOwner* ptrOwner);
+	KInterfaceButtonComponent();
 
 protected:
 	void Init() override;

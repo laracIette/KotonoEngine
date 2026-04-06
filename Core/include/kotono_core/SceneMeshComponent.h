@@ -12,7 +12,7 @@ class KSceneMeshComponent : public KSceneComponent
 	GENERATED_KSCENEMESHCOMPONENT()
 
 public:
-	KSceneMeshComponent(UPtrOwner* ptrOwner);
+	KSceneMeshComponent();
 	~KSceneMeshComponent() override;
 
 protected:

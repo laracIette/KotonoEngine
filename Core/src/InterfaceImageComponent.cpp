@@ -10,8 +10,7 @@
 
 static UAsset<KtShader> WireframeShader;
 
-KInterfaceImageComponent::KInterfaceImageComponent(UPtrOwner* ptrOwner) 
-	: Base(ptrOwner)
+KInterfaceImageComponent::KInterfaceImageComponent() 
 {
 	if (!WireframeShader)
 	{

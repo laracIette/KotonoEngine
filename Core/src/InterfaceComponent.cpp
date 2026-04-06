@@ -7,9 +7,8 @@
 #include <kotono_input/Mouse.h>
 #include <kotono_platform/WindowViewport.h>
 
-KInterfaceComponent::KInterfaceComponent(UPtrOwner* ptrOwner) 
-    : Base(ptrOwner)
-    , visibility_(EVisibility::Visible)
+KInterfaceComponent::KInterfaceComponent() 
+    : visibility_(EVisibility::Visible)
     , canUpdate_(true)
     , isInit_(false)
     , modelMatrix_([this]() { return TranslationMatrix() * RotationMatrix() * ScaleMatrix(); })

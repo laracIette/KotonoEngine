@@ -6,7 +6,7 @@ class KInterfaceBoxComponent : public KInterfaceComponent
 	GENERATED_KINTERFACEBOXCOMPONENT()
 
 public:
-	KInterfaceBoxComponent(UPtrOwner* ptrOwner);
+	KInterfaceBoxComponent();
 	~KInterfaceBoxComponent() override;
 	
 protected:

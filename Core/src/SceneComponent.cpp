@@ -4,9 +4,8 @@
 #include <kotono_platform/glm_utils.h>
 #include <stdexcept>
 
-KSceneComponent::KSceneComponent(UPtrOwner* ptrOwner) 
-    : Base(ptrOwner)
-    , visibility_(EVisibility::Visible)
+KSceneComponent::KSceneComponent() 
+    : visibility_(EVisibility::Visible)
     , canUpdate_(true)
     , isInit_(false)
     , mobility_(EMobility::Dynamic)

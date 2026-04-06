@@ -3,8 +3,7 @@
 #include <kotono_platform/WindowViewport.h>
 #include "SceneComponent.h"
 
-TSceneObject::TSceneObject(UPtrOwner* ptrOwner) :
-	Base(ptrOwner)
+TSceneObject::TSceneObject()
 {
 	viewport_ = &WindowViewport;
 }

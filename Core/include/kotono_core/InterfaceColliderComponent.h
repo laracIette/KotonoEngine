@@ -10,7 +10,7 @@ class KInterfaceColliderComponent : public KInterfaceComponent
 	friend class SInterfacePhysicsManager;
 
 public:
-	KInterfaceColliderComponent(UPtrOwner* ptrOwner);
+	KInterfaceColliderComponent();
 	~KInterfaceColliderComponent() override;
 
 protected:

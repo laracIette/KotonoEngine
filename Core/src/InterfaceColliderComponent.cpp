@@ -3,9 +3,8 @@
 #include <kotono_input/Mouse.h>
 #include <kotono_platform/WindowViewport.h>
 
-KInterfaceColliderComponent::KInterfaceColliderComponent(UPtrOwner* ptrOwner) 
-	: Base(ptrOwner)
-	, isPressed_(false)
+KInterfaceColliderComponent::KInterfaceColliderComponent() 
+	: isPressed_(false)
 {
 }
 

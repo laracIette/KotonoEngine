@@ -99,7 +99,6 @@ R"(#define GENERATED_{0}() \
 		virtual void SerializeTo(nlohmann::json& json) const; \
 		virtual void DeserializeFrom(const nlohmann::json& json); \
 		virtual std::vector<UVariableInfo> GetMemberVariables() const; \
-	private: \
 		UPtr<{1}> Ptr() const;
 )",
 			to_upper(classInfo.name),
@@ -116,7 +115,6 @@ R"(#define GENERATED_{0}() \
 		void SerializeTo(nlohmann::json& json) const override; \
 		void DeserializeFrom(const nlohmann::json& json) override; \
 		std::vector<UVariableInfo> GetMemberVariables() const override; \
-	private: \
 		UPtr<{1}> Ptr() const;
 )",
 			to_upper(classInfo.name),

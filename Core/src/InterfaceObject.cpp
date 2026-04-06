@@ -3,8 +3,7 @@
 #include <kotono_common/log.h>
 #include <kotono_platform/WindowViewport.h>
 
-RInterfaceObject::RInterfaceObject(UPtrOwner* ptrOwner) 
-	: Base(ptrOwner)
+RInterfaceObject::RInterfaceObject() 
 {
 	viewport_ = &WindowViewport;
 }
