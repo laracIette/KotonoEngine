@@ -15,6 +15,7 @@ target_compile_features(KotonoCommon PUBLIC cxx_std_23)
 set_target_properties(KotonoCommon PROPERTIES FOLDER "KotonoEngine")
 
 set(KCOMMON_HEADERS
+    "include/kotono_common/Asset.h"
     "include/kotono_common/AssetManager.h"
     "include/kotono_common/Average.h"
     "include/kotono_common/bitwise_utils.h"

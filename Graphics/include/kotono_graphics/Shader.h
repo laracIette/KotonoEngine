@@ -7,7 +7,6 @@
 #include <span>
 #include <unordered_map>
 #include <vulkan/vulkan.h>
-#include <kotono_io/serialize_base.h>
 class KtShader final
 {
 public:	
@@ -90,16 +89,4 @@ private:
 	VkDescriptorPool descriptorPool_;
 	std::vector<DescriptorSetLayoutData> descriptorSetLayoutDatas_;
 	std::unordered_map<std::string, DescriptorSetLayoutBindingData*> descriptorSetLayoutBindingDataRegistry_;
-};
-
-template <>
-struct USerialize<KtShader>
-{
-	void operator()(nlohmann::json& json, const KtShader* v) const;
-};
-
-template <>
-struct UDeserialize<KtShader>
-{
-	void operator()(const nlohmann::json& json, KtShader*& v) const;
 };

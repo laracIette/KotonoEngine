@@ -509,7 +509,7 @@ void KtShader::CreateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutB
 		return;
 	}
 
-	static const auto* texture{ UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png") };
+	static const UAsset texture{ UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png") };
 
 	UpdateDescriptorSetLayoutBindingImageSampler(descriptorSetLayoutBindingData, { texture->GetDescriptorImageInfo() }, imageIndex);
 }
@@ -829,18 +829,4 @@ void KtShader::PopulateShaderLayout(const std::span<u8> spirvData, const VkShade
 		shaderLayout_.VertexInputBindingDescriptions.push_back(vertexInputBindingDescription);
 	}
 	spvReflectDestroyShaderModule(&module);
-}
-
-void USerialize<KtShader>::operator()(nlohmann::json& json, const KtShader* v) const
-{
-	if (v)
-	{
-		USerialize<std::string>{}(json, v->Path());
-	}
-}
-
-void UDeserialize<KtShader>::operator()(const nlohmann::json& json, KtShader*& v) const
-{
-	const UPath path(json.get<std::string>());
-	v = UAssetManager<KtShader>::Get(path);
 }

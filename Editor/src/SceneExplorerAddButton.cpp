@@ -19,10 +19,10 @@ WidgetPtr WSceneExplorerAddButton::Build()
 				.onPressed = []() {
 					if (UPtr scene{ Game.GetOpenedScene() })
 					{
-						auto* shader{ UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader3D.ktshader")};
-						auto* model1{ UAssetManager<KtModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.obj") };
-						auto* model2{ UAssetManager<KtModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/column.obj") };
-													
+						UAsset shader{ UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader3D.ktshader") };
+						UAsset model1{ UAssetManager<KtModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.obj") };
+						UAsset model2{ UAssetManager<KtModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/column.obj") };
+
 						UPtr mesh{ Create<TSceneObject>() };
 						UPtr rootComponent{ Create<KSceneComponent>() };
 						UPtr meshComponent1{ Create<KSceneMeshComponent>() };

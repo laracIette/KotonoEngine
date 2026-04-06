@@ -20,11 +20,11 @@ protected:
 	void Update(const float deltaTime) override;
 
 public:
-	KtShader* GetShader() const;
-	KtModel* GetModel() const;
+	UAsset<KtShader> GetShader() const;
+	UAsset<KtModel> GetModel() const;
 
-	void SetShader(KtShader* shader);
-	void SetModel(KtModel* model); 
+	void SetShader(UAsset<KtShader> shader);
+	void SetModel(UAsset<KtModel> model);
 
 	void SetVisibility(const EVisibility visibility, const bool propagateToChildren = false) override;
 	void SetMobility(const EMobility mobility) override;
@@ -46,8 +46,8 @@ private:
 	void SetMobilityDynamic();
 
 private:
-	SERIALIZE KtShader* shader_;
-	SERIALIZE KtModel* model_;
+	SERIALIZE UAsset<KtShader> shader_;
+	SERIALIZE UAsset<KtModel> model_;
 	UTask spinTask_;
 	USceneProxy* modelProxy_;
 };

@@ -16,7 +16,6 @@ set_target_properties(KotonoCore PROPERTIES FOLDER "KotonoEngine")
 
 set(KCORE_HEADERS
     "include/kotono_core/Anchor.h"
-    "include/kotono_core/Asset.h"
     "include/kotono_core/CoordinateSpace.h"
     "include/kotono_core/Core.h"
     "include/kotono_core/Game.h"

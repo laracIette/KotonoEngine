@@ -24,8 +24,8 @@ void WColor::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	colorProxy_->ScheduleUpdate(
 		[this, displaySettings](UInterfaceProxy::Data& data)
 		{
-			data.shader = UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/flatColor2D.ktshader");
-			data.renderable = UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg");
+			data.shader = UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/flatColor2D.ktshader").Get();
+			data.renderable = UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg").Get();
 			data.layer = displaySettings.layer;
 			data.objectData.modelMatrix = ModelMatrix();
 			data.objectData.color = colorSettings_.color;

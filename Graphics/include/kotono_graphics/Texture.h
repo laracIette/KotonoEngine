@@ -5,7 +5,6 @@
 #include <kotono_platform/AllocatedBuffer.h>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
-#include <kotono_io/serialize_base.h>
 class KtTexture final : public KtInterfaceRenderable
 {
 public:
@@ -23,7 +22,7 @@ private:
     void CreateTextureImageView();
     void CreateTextureSampler();
 
-    void DestroyStagingBuffer();
+    void DestroyStagingBuffer() const;
 
 private:
     // File path of the texture
@@ -47,16 +46,4 @@ private:
     KtAllocatedBuffer stagingBuffer_;
 
     VkDescriptorImageInfo imageInfo_;
-};
-
-template <>
-struct USerialize<KtTexture>
-{
-    void operator()(nlohmann::json& json, const KtTexture* v) const;
-};
-
-template <>
-struct UDeserialize<KtTexture>
-{
-    void operator()(const nlohmann::json& json, KtTexture*& v) const;
 };

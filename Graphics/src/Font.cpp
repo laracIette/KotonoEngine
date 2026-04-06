@@ -1,7 +1,6 @@
 #include "Font.h"
 #include "Texture.h"
 #include <kotono_common/AssetManager.h>
-#include <kotono_common/PathManager.h>
 #include <unordered_map>
 
 static const std::unordered_map<char, const char*> CHARACTER_NAMES =
@@ -87,9 +86,9 @@ std::vector<UPath> KtFont::GetTextPaths(const std::string_view text) const
     return result;
 }
 
-std::vector<KtTexture*> KtFont::GetTextTextures(const std::string_view text) const
+std::vector<UAsset<KtTexture>> KtFont::GetTextTextures(const std::string_view text) const
 {
-    std::vector<KtTexture*> result;
+    std::vector<UAsset<KtTexture>> result;
     result.reserve(text.size());
 
     for (const auto& path : GetTextPaths(text))

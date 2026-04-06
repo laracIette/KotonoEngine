@@ -25,8 +25,8 @@ void WImage::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	imageProxy_->ScheduleUpdate(
 		[this, displaySettings](UInterfaceProxy::Data& data)
 		{
-			data.shader = UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader2D.ktshader");
-			data.renderable = UAssetManager<KtTexture>::Get(imageSettings_.path);
+			data.shader = UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader2D.ktshader").Get();
+			data.renderable = UAssetManager<KtTexture>::Get(imageSettings_.path).Get();
 			data.layer = displaySettings.layer;
 			data.objectData.modelMatrix = ModelMatrix();
 			data.scissor = displaySettings.scissor;

@@ -109,11 +109,10 @@ public:
 
 	UPtr& operator=(const UPtr& other)
 	{
-		if (this == &other)
+		if (this != &other)
 		{
-			return *this;
+			SetOwner(other.owner_);
 		}
-		SetOwner(other.owner_);
 		return *this;
 	}
 

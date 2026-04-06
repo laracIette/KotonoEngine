@@ -18,14 +18,14 @@ protected:
 	void Init() override;
 
 public:
-	KtShader* GetShader() const;
-	KtTexture* GetTexture() const;
+	UAsset<KtShader> GetShader() const;
+	UAsset<KtTexture> GetTexture() const;
 
 	UEvent<>& GetEventShaderUpdated();
 	UEvent<>& GetEventTextureUpdated();
 
-	void SetShader(KtShader* shader);
-	void SetTexture(KtTexture* texture);
+	void SetShader(UAsset<KtShader> shader);
+	void SetTexture(UAsset<KtTexture> texture);
 
 	void Spawn() override;
 
@@ -37,8 +37,8 @@ private:
 	void MarkTextureProxyLayerDirty();
 
 private:
-	KtShader* shader_;
-	KtTexture* texture_;
+	UAsset<KtShader> shader_;
+	UAsset<KtTexture> texture_;
 	UInterfaceProxy* textureProxy_;
 	UEvent<> eventShaderUpdated_;
 	UEvent<> eventTextureUpdated_;

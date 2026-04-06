@@ -1,13 +1,11 @@
 #include "Model.h"
+#include <array>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <kotono_common/log.h>
 #include <kotono_platform/Context.h>
 #include <unordered_map>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-#include <array>
-#include <kotono_common/log.h>
-#include <nlohmann/json.hpp>
-#include <kotono_common/AssetManager.h>
 
 KtModel::KtModel(const UPath& path) 
 	: path_(path)
@@ -197,18 +195,4 @@ void KtModel::DestroyStagingVertexBuffer() const
 void KtModel::DestroyStagingIndexBuffer() const
 {
 	vmaDestroyBuffer(Context.GetAllocator(), stagingIndexBuffer_.Buffer, stagingIndexBuffer_.Allocation);
-}
-
-void USerialize<KtModel>::operator()(nlohmann::json& json, const KtModel* v) const
-{
-	if (v)
-	{
-		USerialize<std::string>{}(json, v->Path());
-	}
-}
-
-void UDeserialize<KtModel>::operator()(const nlohmann::json& json, KtModel*& v) const
-{
-	const UPath path(json.get<std::string>());
-	v = UAssetManager<KtModel>::Get(path);
 }

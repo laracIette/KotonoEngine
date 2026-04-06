@@ -4,7 +4,7 @@
 #include "Vertex3D.h"
 #include <kotono_common/Path.h>
 #include <kotono_platform/AllocatedBuffer.h>
-#include <kotono_io/serialize_base.h>
+
 class KtModel final : public KtSceneRenderable
 {
 public:
@@ -37,16 +37,4 @@ private:
 	KtFramesInFlightArray<KtAllocatedBuffer> indirectBuffers_;
 	KtAllocatedBuffer stagingVertexBuffer_;
 	KtAllocatedBuffer stagingIndexBuffer_;
-};
-
-template <>
-struct USerialize<KtModel>
-{
-	void operator()(nlohmann::json& json, const KtModel* v) const;
-};
-
-template <>
-struct UDeserialize<KtModel>
-{
-	void operator()(const nlohmann::json& json, KtModel*& v) const;
 };

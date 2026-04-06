@@ -1,5 +1,7 @@
 #pragma once
 #include <nlohmann/json_fwd.hpp>
+#include <kotono_common/Asset.h>
+#include <kotono_common/AssetManager.h>
 #include <kotono_common/types.h>
 #include <type_traits>
 #include <ranges>
@@ -127,6 +129,18 @@ struct USerialize<T>
 };
 
 template <typename T>
+struct USerialize<UAsset<T>>
+{
+	void operator()(nlohmann::json& json, const UAsset<T>& v) const
+	{
+		if (v)
+		{
+			USerialize<UPath>{}(json, v.Path());
+		}
+	}
+};
+
+template <typename T>
 struct UDeserialize
 {};
 
@@ -233,5 +247,16 @@ struct UDeserialize<T>
 		{
 			UDeserialize<item_t>{}(get_at(json, i), v[i]);
 		}
+	}
+}; 
+
+template <typename T>
+struct UDeserialize<UAsset<T>>
+{
+	void operator()(const nlohmann::json& json, UAsset<T>& v) const
+	{
+		UPath path{};
+		UDeserialize<UPath>{}(json, path);
+		v = UAssetManager<T>::Get(path);
 	}
 };

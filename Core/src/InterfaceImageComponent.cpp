@@ -8,7 +8,7 @@
 #include <kotono_platform/WindowViewport.h>
 #include <kotono_common/log.h>
 
-static constinit KtShader* WireframeShader{ nullptr };
+static UAsset<KtShader> WireframeShader;
 
 KInterfaceImageComponent::KInterfaceImageComponent(UPtrOwnerBase* ptrOwner) 
 	: Base(ptrOwner)
@@ -32,12 +32,12 @@ void KInterfaceImageComponent::Init()
 	Base::Init();
 }
 
-KtShader* KInterfaceImageComponent::GetShader() const
+UAsset<KtShader> KInterfaceImageComponent::GetShader() const
 {
 	return shader_;
 }
 
-KtTexture* KInterfaceImageComponent::GetTexture() const
+UAsset<KtTexture> KInterfaceImageComponent::GetTexture() const
 {
 	return texture_;
 }
@@ -52,13 +52,13 @@ UEvent<>& KInterfaceImageComponent::GetEventTextureUpdated()
 	return eventTextureUpdated_;
 }
 
-void KInterfaceImageComponent::SetShader(KtShader* shader)
+void KInterfaceImageComponent::SetShader(UAsset<KtShader> shader)
 {
 	shader_ = shader;
 	eventShaderUpdated_.Broadcast();
 }
 
-void KInterfaceImageComponent::SetTexture(KtTexture* texture)
+void KInterfaceImageComponent::SetTexture(UAsset<KtTexture> texture)
 {
 	texture_ = texture;
 	eventTextureUpdated_.Broadcast();
@@ -82,8 +82,8 @@ void KInterfaceImageComponent::CreateTextureProxy()
 	textureProxy_->ScheduleUpdate(
 		[this](UInterfaceProxy::Data& data)
 		{
-			data.shader = GetShader();
-			data.renderable = GetTexture();;
+			data.shader = GetShader().Get();
+			data.renderable = GetTexture().Get();
 			data.layer = GetLayer();
 			data.objectData.modelMatrix = ModelMatrix();
 			data.objectData.color = GetColor();
@@ -108,7 +108,7 @@ void KInterfaceImageComponent::MarkTextureProxyShaderDirty()
 	textureProxy_->ScheduleUpdate(
 		[this](UInterfaceProxy::Data& data)
 		{
-			data.shader = GetShader();
+			data.shader = GetShader().Get();
 		}
 	);
 }
@@ -118,7 +118,7 @@ void KInterfaceImageComponent::MarkTextureProxyTextureDirty()
 	textureProxy_->ScheduleUpdate(
 		[this](UInterfaceProxy::Data& data)
 		{
-			data.renderable = GetTexture();
+			data.renderable = GetTexture().Get();
 		}
 	);
 }

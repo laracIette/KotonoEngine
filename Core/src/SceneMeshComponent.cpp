@@ -11,12 +11,10 @@
 #include <kotono_platform/Window.h>
 #include <kotono_platform/WindowViewport.h>
 
-static KtShader* WireframeShader = nullptr;
+static UAsset<KtShader> WireframeShader;
 
 KSceneMeshComponent::KSceneMeshComponent(UPtrOwnerBase* ptrOwner) 
     : Base(ptrOwner)
-    , model_(nullptr)
-    , shader_(nullptr)
 {
     if (!WireframeShader)
     {
@@ -50,22 +48,22 @@ void KSceneMeshComponent::Update(const float deltaTime)
     spinTask_.Update(deltaTime);
 }
 
-KtShader* KSceneMeshComponent::GetShader() const
+UAsset<KtShader> KSceneMeshComponent::GetShader() const
 {
     return shader_;
 }
 
-KtModel* KSceneMeshComponent::GetModel() const
+UAsset<KtModel> KSceneMeshComponent::GetModel() const
 {
     return model_;
 }
 
-void KSceneMeshComponent::SetShader(KtShader* shader)
+void KSceneMeshComponent::SetShader(UAsset<KtShader> shader)
 {
     shader_ = shader;
 }
 
-void KSceneMeshComponent::SetModel(KtModel* model)
+void KSceneMeshComponent::SetModel(UAsset<KtModel> model)
 {
     model_ = model;
 }
@@ -106,8 +104,8 @@ void KSceneMeshComponent::CreateModelProxy()
     modelProxy_->ScheduleUpdate(
         [this](USceneProxy::Data& data)
         {
-            data.shader = shader_;
-            data.renderable = model_;
+            data.shader = shader_.Get();
+            data.renderable = model_.Get();
             data.objectData.modelMatrix = ModelMatrix();
             data.scissor.offset = GetOwner()->GetViewport()->GetOffset();
             data.scissor.extent = GetOwner()->GetViewport()->GetExtent();

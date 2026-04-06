@@ -4,6 +4,7 @@
 #include "ObjectFactory.h"
 #include "Ptr.h"
 #include "VariableInfo.h"
+#include <kotono_common/Asset.h>
 #include <kotono_common/Event.h>
 #include <kotono_common/log.h>
 #include <kotono_io/serialize_base.h>

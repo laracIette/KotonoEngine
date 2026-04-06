@@ -10,9 +10,9 @@
 KInterface::KInterface(UPtrOwnerBase* ptrOwner) 
 	: Base(ptrOwner)
 {
-	auto* shader{ UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader2D.ktshader") };
-	auto* texture1{ UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png") };
-	auto* texture2{ UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/default_texture.jpg") };
+	UAsset shader{ UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader2D.ktshader") };
+	UAsset texture1{ UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png") };
+	UAsset texture2{ UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/default_texture.jpg") };
 
 	UPtr image1{ Create<RInterfaceObject>() };
 	UPtr image2{ Create<RInterfaceObject>() };
