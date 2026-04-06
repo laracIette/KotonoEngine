@@ -19,7 +19,6 @@ set(KCORE_HEADERS
     "include/kotono_core/CoordinateSpace.h"
     "include/kotono_core/Core.h"
     "include/kotono_core/Game.h"
-    "include/kotono_core/Guid.h"
     "include/kotono_core/Interface.h"
     "include/kotono_core/InterfaceBoxComponent.h"
     "include/kotono_core/InterfaceButtonComponent.h"
@@ -29,30 +28,23 @@ set(KCORE_HEADERS
     "include/kotono_core/InterfaceObject.h"
     "include/kotono_core/InterfacePhysicsManager.h"
     "include/kotono_core/math_utils.h"
-    "include/kotono_core/Object.h"
-    "include/kotono_core/ObjectFactory.h"
-    "include/kotono_core/ObjectManager.h"
     "include/kotono_core/Orientation.h"
     "include/kotono_core/ProjectSettings.h"
-    "include/kotono_core/Ptr.h"
     "include/kotono_core/Rect.h"
     "include/kotono_core/RotationUnit.h"
     "include/kotono_core/Scene.h"
     "include/kotono_core/SceneComponent.h"
     "include/kotono_core/SceneMeshComponent.h"
     "include/kotono_core/SceneObject.h"
-    "include/kotono_core/serialize.h"
+    "include/kotono_core/serialize_glm.h"
     "include/kotono_core/Task.h"
     "include/kotono_core/TimeManager.h"
     "include/kotono_core/Timer.h"
     "include/kotono_core/Transform.h"
-    "include/kotono_core/VariableInfo.h"
-    "include/kotono_core/Visibility.h"
 )
 set(KCORE_SOURCES
     "src/Core.cpp"
     "src/Game.cpp"
-    "src/Guid.cpp"
     "src/Interface.cpp"
     "src/InterfaceBoxComponent.cpp"
     "src/InterfaceButtonComponent.cpp"
@@ -62,15 +54,12 @@ set(KCORE_SOURCES
     "src/InterfaceObject.cpp"
     "src/InterfacePhysicsManager.cpp"
     "src/math_utils.cpp"
-    "src/Object.cpp"
-    "src/ObjectFactory.cpp"
-    "src/ObjectManager.cpp"
     "src/ProjectSettings.cpp"
     "src/Scene.cpp"
     "src/SceneComponent.cpp"
     "src/SceneMeshComponent.cpp"
     "src/SceneObject.cpp"
-    "src/serialize.cpp"
+    "src/serialize_glm.cpp"
     "src/Task.cpp"
     "src/TimeManager.cpp"
     "src/Timer.cpp"
@@ -84,7 +73,6 @@ set(KCORE_GENERATED_HEADERS
     "include/kotono_core/generated/InterfaceComponent.generated.h"
     "include/kotono_core/generated/InterfaceImageComponent.generated.h"
     "include/kotono_core/generated/InterfaceObject.generated.h"
-    "include/kotono_core/generated/Object.generated.h"
     "include/kotono_core/generated/Scene.generated.h"
     "include/kotono_core/generated/SceneComponent.generated.h"
     "include/kotono_core/generated/SceneMeshComponent.generated.h"
@@ -98,7 +86,6 @@ set(KCORE_GENERATED_SOURCES
     "src/generated/InterfaceComponent.generated.cpp"
     "src/generated/InterfaceImageComponent.generated.cpp"
     "src/generated/InterfaceObject.generated.cpp"
-    "src/generated/Object.generated.cpp"
     "src/generated/Scene.generated.cpp"
     "src/generated/SceneComponent.generated.cpp"
     "src/generated/SceneMeshComponent.generated.cpp"
@@ -120,20 +107,5 @@ target_include_directories(KotonoCore
 
 # Link libs
 target_link_libraries(KotonoCore PUBLIC
-    KotonoMath
-    KotonoAudio
-    KotonoInput
-    KotonoTiming
-    KotonoGraphics
+    KotonoObject
 )
-
-add_custom_target(RunKotonoGenerator
-    COMMAND $<TARGET_FILE:KotonoGenerator>
-    WORKING_DIRECTORY $<TARGET_FILE_DIR:KotonoGenerator>
-    DEPENDS KotonoGenerator
-    COMMENT "Running KotonoGenerator..."
-)
-
-set_target_properties(RunKotonoGenerator PROPERTIES FOLDER "KotonoEngine/UtilityTargets")
-
-add_dependencies(KotonoCore RunKotonoGenerator)

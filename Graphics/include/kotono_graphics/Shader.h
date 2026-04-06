@@ -7,6 +7,7 @@
 #include <span>
 #include <unordered_map>
 #include <vulkan/vulkan.h>
+#include <kotono_io/serialize_base.h>
 class KtShader final
 {
 public:	
@@ -53,19 +54,7 @@ public:
 
 	void UpdateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const std::vector<VkDescriptorImageInfo>& imageInfos, const u32 imageIndex);
 
-
-protected:
-	const UPath path_;
-
-	KtShaderLayout shaderLayout_;
-
-	VkPipelineLayout pipelineLayout_;
-	VkPipeline graphicsPipeline_;
-
-	VkDescriptorPool descriptorPool_;
-	std::vector<DescriptorSetLayoutData> descriptorSetLayoutDatas_;
-	std::unordered_map<std::string, DescriptorSetLayoutBindingData*> descriptorSetLayoutBindingDataRegistry_;
-
+private:
 	void CreateShaderLayout();
 	void PopulateShaderLayout(const std::span<u8> spirvData, const VkShaderStageFlagBits shaderStage);
 
@@ -91,4 +80,28 @@ protected:
 	
 	void UpdateDescriptorSetLayoutBindingBufferDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const u32 imageIndex);
 	void UpdateDescriptorSetLayoutBindingImageSamplerDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const u32 imageIndex);
+
+private:
+	const UPath path_;
+
+	KtShaderLayout shaderLayout_;
+
+	VkPipelineLayout pipelineLayout_;
+	VkPipeline graphicsPipeline_;
+
+	VkDescriptorPool descriptorPool_;
+	std::vector<DescriptorSetLayoutData> descriptorSetLayoutDatas_;
+	std::unordered_map<std::string, DescriptorSetLayoutBindingData*> descriptorSetLayoutBindingDataRegistry_;
+};
+
+template <>
+struct USerialize<KtShader>
+{
+	void operator()(nlohmann::json& json, const KtShader* v) const;
+};
+
+template <>
+struct UDeserialize<KtShader>
+{
+	void operator()(const nlohmann::json& json, KtShader*& v) const;
 };

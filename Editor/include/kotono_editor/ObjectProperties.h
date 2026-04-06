@@ -1,6 +1,6 @@
 #pragma once
 #include <kotono_interface/Widget.h>
-#include <kotono_core/Ptr.h>
+#include <kotono_object/Ptr.h>
 class KObject;
 class WObjectProperties : public WWidget
 {

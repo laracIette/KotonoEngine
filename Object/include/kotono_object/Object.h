@@ -2,13 +2,14 @@
 #include "generated/Object.generated.h"
 #include "Guid.h"
 #include "Ptr.h"
-#include "serialize.h"
 #include "VariableInfo.h"
 #include <kotono_common/Event.h>
 #include <kotono_common/log.h>
+#include <kotono_io/serialize_base.h>
 #include <nlohmann/json_fwd.hpp>
 #include <string>
 #include <unordered_set>
+#include "ObjectFactory.h"
 
 #define RegisterDelegate(Owner, Event, Instance, Function)				\
 static_assert(std::string_view(#Owner) != std::string_view("Ptr()") && std::string_view(#Owner) != std::string_view("this->Ptr()"), "Please use the event's AddListener when registering an event owned by this object.");	\
@@ -65,6 +66,9 @@ public:
 
 	virtual std::string ToString() const;
 
+public:
+	static UPtr<KObject> Deserialize(const nlohmann::json& json);
+
 protected:
 	template <typename TObj, typename ...Args>
 	void _RegisterDelegate(const UPtr<TObj>& owner, UEvent<Args...>& event, const std::function<UDelegate<Args...>()>& makeDelegateFunc)
@@ -111,3 +115,25 @@ UPtr<T> Create()
 	UPtr<T> ptr{ ptrOwner };
 	return ptr;
 }
+
+template <std::derived_from<KObject> T>
+struct USerialize<UPtr<T>>
+{
+	void operator()(nlohmann::json& json, const UPtr<T>& v) const
+	{
+		if (v)
+		{
+			USerialize<UGuid>{}(json, v->Guid());
+			v->Serialize();
+		}
+	}
+};
+
+template <std::derived_from<KObject> T>
+struct UDeserialize<UPtr<T>>
+{
+	void operator()(const nlohmann::json& json, UPtr<T>& v) const
+	{
+		v = TryCast<T>(KObject::Deserialize(json));
+	}
+};

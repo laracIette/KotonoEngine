@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/Interface.generated.h"
-#include "Object.h"
+#include <kotono_object/Object.h>
 #include <kotono_common/Pool.h>
 
 class RInterfaceObject;

@@ -32,7 +32,7 @@ foreach(glfw_target
     update_mappings
 )
     if(TARGET ${glfw_target})
-        set_target_properties(${glfw_target} PROPERTIES FOLDER "ThirdParty/GLFW3")
+        set_target_properties(${glfw_target} PROPERTIES FOLDER "KotonoEngine/ThirdParty/GLFW3")
     endif()
 endforeach()
 ##############

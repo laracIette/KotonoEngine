@@ -2,6 +2,7 @@
 #include <string>
 #include <array>
 #include <kotono_common/types.h>
+#include <kotono_io/serialize_base.h>
 class UGuid final
 {
 private:
@@ -26,4 +27,16 @@ template<>
 struct std::hash<UGuid>
 {
 	::size operator()(const UGuid& g) const noexcept;
+};
+
+template <>
+struct USerialize<UGuid>
+{
+	void operator()(nlohmann::json& json, const UGuid& v) const;
+};
+
+template <>
+struct UDeserialize<UGuid>
+{
+	void operator()(const nlohmann::json& json, UGuid& v) const;
 };

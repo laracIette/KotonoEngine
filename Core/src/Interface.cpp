@@ -2,11 +2,11 @@
 #include "InterfaceComponent.h"
 #include "InterfaceImageComponent.h"
 #include "InterfaceObject.h"
-#include "ObjectManager.h"
 #include <kotono_common/Path.h>
 #include <kotono_graphics/TextureManager.h>
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/ShaderManager.h>
+#include <kotono_object/ObjectManager.h>
 
 KInterface::KInterface(UPtrOwnerBase* ptrOwner) 
 	: Base(ptrOwner)

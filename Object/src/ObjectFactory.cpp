@@ -1,43 +1,12 @@
 #include "ObjectFactory.h"
-#include "Interface.h"
-#include "InterfaceBoxComponent.h"
-#include "InterfaceButtonComponent.h"
-#include "InterfaceColliderComponent.h"
-#include "InterfaceComponent.h"
-#include "InterfaceImageComponent.h"
-#include "InterfaceObject.h"
 #include "Object.h"
 #include "ObjectManager.h"
-#include "Scene.h"
-#include "SceneComponent.h"
-#include "SceneMeshComponent.h"
-#include "SceneObject.h"
 #include <kotono_common/log.h>
 #include <kotono_common/Path.h>
 #include <kotono_io/Serializer.h>
 #include <nlohmann/json.hpp>
 
-#define OBJECT_FACTORY(Type) { #Type, []() { return Create<Type>(); } }
-
 #define KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY ELogImportanceLevel::Medium
-
-SObjectFactory::SObjectFactory() 
-	: objectFactories_({
-        OBJECT_FACTORY(KInterface),
-        OBJECT_FACTORY(KInterfaceBoxComponent),
-        OBJECT_FACTORY(KInterfaceButtonComponent),
-        OBJECT_FACTORY(KInterfaceColliderComponent),
-        OBJECT_FACTORY(KInterfaceComponent),
-        OBJECT_FACTORY(KInterfaceImageComponent),
-        OBJECT_FACTORY(RInterfaceObject),
-        OBJECT_FACTORY(KObject),
-        OBJECT_FACTORY(KScene),
-        OBJECT_FACTORY(KSceneComponent),
-        OBJECT_FACTORY(KSceneMeshComponent),
-        OBJECT_FACTORY(TSceneObject),
-    })
-{
-}
 
 UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 {
@@ -79,6 +48,11 @@ UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 	return nullptr;
 }
 
+void SObjectFactory::_Register(const std::string_view className, const ObjectFactoryFunc& function)
+{
+	objectFactories_[className] = function;
+}
+
 UPtr<KObject> SObjectFactory::GetFactory(const std::string_view typeName) const
 {
     const auto it{ objectFactories_.find(typeName) };
@@ -87,4 +61,9 @@ UPtr<KObject> SObjectFactory::GetFactory(const std::string_view typeName) const
         return it->second();
     }
     return nullptr;
+}
+
+UAutoRegister::UAutoRegister(const std::string_view className, const SObjectFactory::ObjectFactoryFunc& creator)
+{
+	ObjectFactory._Register(className, creator);
 }

@@ -1,9 +1,9 @@
 #pragma once
 #include "generated/SceneComponent.generated.h"
+#include <kotono_object/Object.h>
 #include "CoordinateSpace.h"
-#include "Object.h"
 #include "Transform.h"
-#include "Visibility.h"
+#include <kotono_graphics/Visibility.h>
 #include <kotono_common/Cached.h>
 #include <kotono_common/Event.h>
 #include <kotono_common/Pool.h>

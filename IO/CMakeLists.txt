@@ -17,11 +17,13 @@ set_target_properties(KotonoIO PROPERTIES FOLDER "KotonoEngine")
 set(KIO_HEADERS
     "include/kotono_io/File.h"
     "include/kotono_io/FileExplorer.h"
+    "include/kotono_io/serialize_base.h"
     "include/kotono_io/Serializer.h"
 )
 set(KIO_SOURCES
     "src/File.cpp"
     "src/FileExplorer.cpp"
+    "src/serialize_base.cpp"
     "src/Serializer.cpp"
 )
 

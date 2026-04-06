@@ -6,6 +6,8 @@
 #include <assimp/postprocess.h>
 #include <array>
 #include <kotono_common/log.h>
+#include <nlohmann/json.hpp>
+#include "ModelManager.h"
 
 KtModel::KtModel(const UPath& path) :
 	path_(path)
@@ -199,4 +201,18 @@ void KtModel::DestroyStagingVertexBuffer()
 void KtModel::DestroyStagingIndexBuffer()
 {
 	vmaDestroyBuffer(Context.GetAllocator(), stagingIndexBuffer_.Buffer, stagingIndexBuffer_.Allocation);
+}
+
+void USerialize<KtModel>::operator()(nlohmann::json& json, const KtModel* v) const
+{
+	if (v)
+	{
+		USerialize<std::string>{}(json, v->Path());
+	}
+}
+
+void UDeserialize<KtModel>::operator()(const nlohmann::json& json, KtModel*& v) const
+{
+	const UPath path(json.get<std::string>());
+	v = ModelManager.Get(path);
 }

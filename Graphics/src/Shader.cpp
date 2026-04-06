@@ -9,6 +9,7 @@
 #include <kotono_io/Serializer.h>
 #include <kotono_common/log.h>
 #include "Renderer.h"
+#include "ShaderManager.h"
 
 #define KT_LOG_IMPORTANCE_LEVEL_SHADER ELogImportanceLevel::Medium
 
@@ -833,4 +834,18 @@ void KtShader::PopulateShaderLayout(const std::span<u8> spirvData, const VkShade
 		shaderLayout_.VertexInputBindingDescriptions.push_back(vertexInputBindingDescription);
 	}
 	spvReflectDestroyShaderModule(&module);
+}
+
+void USerialize<KtShader>::operator()(nlohmann::json& json, const KtShader* v) const
+{
+	if (v)
+	{
+		USerialize<std::string>{}(json, v->Path());
+	}
+}
+
+void UDeserialize<KtShader>::operator()(const nlohmann::json& json, KtShader*& v) const
+{
+	const UPath path(json.get<std::string>());
+	v = ShaderManager.Get(path);
 }

@@ -53,7 +53,7 @@ foreach(al_target
     clang-tidy-check
 )
     if(TARGET ${al_target})
-        set_target_properties(${al_target} PROPERTIES FOLDER "ThirdParty/OpenAL")
+        set_target_properties(${al_target} PROPERTIES FOLDER "KotonoEngine/ThirdParty/OpenAL")
     endif()
 endforeach()
 ################

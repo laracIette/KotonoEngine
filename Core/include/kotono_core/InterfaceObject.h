@@ -1,7 +1,7 @@
 #pragma once
 #include "generated/InterfaceObject.generated.h"
+#include <kotono_object/Object.h>
 #include "CoordinateSpace.h"
-#include "Object.h"
 #include <algorithm>
 #include <kotono_common/Pool.h>
 

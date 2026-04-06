@@ -1,6 +1,5 @@
 #include "SceneExplorerAddButton.h"
 #include <kotono_core/Game.h>
-#include <kotono_core/ObjectManager.h>
 #include <kotono_core/Scene.h>
 #include <kotono_core/SceneComponent.h>
 #include <kotono_core/SceneMeshComponent.h>
@@ -10,6 +9,7 @@
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/ShaderManager.h>
 #include <kotono_interface/widgets.h>
+#include <kotono_object/ObjectManager.h>
 
 WidgetPtr WSceneExplorerAddButton::Build()
 {

@@ -3,11 +3,11 @@
 #include <kotono_common/log.h>
 #include <kotono_core/InterfaceComponent.h>
 #include <kotono_core/InterfaceObject.h>
-#include <kotono_core/ObjectManager.h>
 #include <kotono_core/SceneComponent.h>
 #include <kotono_core/SceneObject.h>
 #include <kotono_input/Mouse.h>
 #include <kotono_interface/widgets.h>
+#include <kotono_object/ObjectManager.h>
 #include <kotono_platform/glm_utils.h>
 
 WidgetPtr WPropertiesWindow::Build()

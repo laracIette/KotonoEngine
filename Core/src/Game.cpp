@@ -1,11 +1,11 @@
 #include "Game.h"
 #include "Interface.h"
-#include "ObjectFactory.h"
-#include "ObjectManager.h"
 #include "ProjectSettings.h"
 #include "Scene.h"
 #include <kotono_common/log.h>
 #include <kotono_input/Keyboard.h>
+#include <kotono_object/ObjectFactory.h>
+#include <kotono_object/ObjectManager.h>
 
 void SGame::Init()
 {

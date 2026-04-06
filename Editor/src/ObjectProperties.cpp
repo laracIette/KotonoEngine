@@ -1,9 +1,9 @@
 #include "ObjectProperties.h"
 #include "ValueBox.h"
 #include "ValueSliderFloat.h"
-#include <kotono_core/Object.h>
 #include <kotono_common/log.h>
 #include <kotono_interface/widgets.h>
+#include <kotono_object/Object.h>
 #include <glm/gtx/string_cast.hpp>
 
 template<typename T>

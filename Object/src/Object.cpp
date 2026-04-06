@@ -1,4 +1,5 @@
 #include "Object.h"
+#include "ObjectFactory.h"
 #include "ObjectManager.h"
 #include <kotono_common/Path.h>
 #include <kotono_io/Serializer.h>
@@ -115,6 +116,13 @@ void KObject::Deserialize()
 std::string KObject::ToString() const
 {
     return name_;
+}
+
+UPtr<KObject> KObject::Deserialize(const nlohmann::json& json)
+{
+    UGuid guid{};
+    UDeserialize<UGuid>{}(json, guid);
+    return ObjectFactory.Get(guid);
 }
 
 #if defined(_DEBUG)

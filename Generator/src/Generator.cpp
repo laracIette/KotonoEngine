@@ -82,7 +82,7 @@ void SGenerator::Generate(const UReflectionResult& reflectionResult) const
 	GenerateHeader(reflectionResult);
 	GenerateSource(reflectionResult);
 
-	std::println("Generated {0}", reflectionResult.path.ToString());
+	std::println("Generated {0}", reflectionResult.path.ToPath().string());
 }
 
 void SGenerator::GenerateHeader(const UReflectionResult& reflectionResult) const
@@ -93,6 +93,7 @@ void SGenerator::GenerateHeader(const UReflectionResult& reflectionResult) const
 		? std::format(
 R"(#define GENERATED_{0}() \
 	private: \
+		static UAutoRegister register_; \
 		using Self = {1}; \
 	public: \
 		virtual void SerializeTo(nlohmann::json& json) const; \
@@ -107,6 +108,7 @@ R"(#define GENERATED_{0}() \
 		: std::format(
 R"(#define GENERATED_{0}() \
 	private: \
+		static UAutoRegister register_; \
 		using Self = {1}; \
 		using Base = {2}; \
 		using Base::Base; \
@@ -141,13 +143,13 @@ void SGenerator::GenerateSource(const UReflectionResult & reflectionResult) cons
 	std::ostringstream serializeCode;
 	for (const auto& variable : classInfo.variables)
 	{
-		serializeCode << std::format(R"(	serialize(json["{0}"], {0});)", variable.name) << std::endl;
+		serializeCode << std::format(R"(	USerialize<std::remove_reference_t<std::remove_pointer_t<decltype({0})>>>{{}}(get(json, "{0}"), {0});)", variable.name) << std::endl;
 	}
 
 	std::ostringstream deserializeCode;
 	for (const auto& variable : classInfo.variables)
 	{
-		deserializeCode << std::format(R"(	deserialize(json.at("{0}"), {0});)", variable.name) << std::endl;
+		deserializeCode << std::format(R"(	UDeserialize<std::remove_reference_t<std::remove_pointer_t<decltype({0})>>>{{}}(get(json, "{0}"), {0});)", variable.name) << std::endl;
 	}
 
 	std::ostringstream memberVariablesCode;
@@ -159,10 +161,10 @@ void SGenerator::GenerateSource(const UReflectionResult & reflectionResult) cons
 	const std::string generatedCode{ !classInfo.base.has_value()
 		? std::format(
 R"(#include "{0}"
-#include "Ptr.h"
-#include "serialize.h"
-#include <nlohmann/json.hpp>
+#include <type_traits>
 {1}
+
+UAutoRegister {2}::register_("{2}", []() {{ return Create<{2}>(); }});
 
 void {2}::SerializeTo(nlohmann::json& json) const
 {{
@@ -195,10 +197,10 @@ UPtr<{2}> {2}::Ptr() const
 		)
 		: std::format(
 R"(#include "{0}"
-#include "Ptr.h"
-#include "serialize.h"
-#include <nlohmann/json.hpp>
+#include <type_traits>
 {1}
+
+UAutoRegister {2}::register_("{2}", []() {{ return Create<{2}>(); }});
 
 void {2}::SerializeTo(nlohmann::json& json) const
 {{

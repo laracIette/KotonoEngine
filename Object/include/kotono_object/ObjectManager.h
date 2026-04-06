@@ -24,8 +24,6 @@ public:
 private:
 	void Quit();
 
-	void LogUPS() const;
-
 private:
 	UPtr<KObject> selectedObject_;
 	UEvent<> eventSelectedObjectChanged_;

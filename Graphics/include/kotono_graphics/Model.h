@@ -4,6 +4,7 @@
 #include "Vertex3D.h"
 #include <kotono_common/Path.h>
 #include <kotono_platform/AllocatedBuffer.h>
+#include <kotono_io/serialize_base.h>
 class KtModel final : public KtSceneRenderable
 {
 public:
@@ -20,6 +21,15 @@ public:
 	void UpdateIndirectBuffer(const u32 firstInstance, const u32 instanceCount, const u32 frameIndex) const override;
 
 private:
+	void Load();
+	void CreateVertexBuffer();
+	void CreateIndexBuffer();
+	void CreateIndirectBuffers();
+	void CreateIndirectBuffer(const u32 frameIndex);
+	void DestroyStagingVertexBuffer();
+	void DestroyStagingIndexBuffer();
+
+private:
 	const UPath path_;
 
 	std::vector<KtVertex3D> vertices_;
@@ -29,13 +39,16 @@ private:
 	KtFramesInFlightArray<KtAllocatedBuffer> indirectBuffers_;
 	KtAllocatedBuffer stagingVertexBuffer_;
 	KtAllocatedBuffer stagingIndexBuffer_;
-
-	void Load();
-	void CreateVertexBuffer();
-	void CreateIndexBuffer();
-	void CreateIndirectBuffers();
-	void CreateIndirectBuffer(const u32 frameIndex);
-	void DestroyStagingVertexBuffer();
-	void DestroyStagingIndexBuffer();
 };
 
+template <>
+struct USerialize<KtModel>
+{
+	void operator()(nlohmann::json& json, const KtModel* v) const;
+};
+
+template <>
+struct UDeserialize<KtModel>
+{
+	void operator()(const nlohmann::json& json, KtModel*& v) const;
+};

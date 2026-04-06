@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+#include <kotono_io/serialize_base.h>
 struct UColor final
 {
 	struct RGB { float r, g, b; };
@@ -246,3 +247,27 @@ namespace Colors
 	constexpr inline UColor White		{ 1.0f, 1.0f, 1.0f, 1.0f };
 	constexpr inline UColor Yellow		{ 1.0f, 1.0f, 0.0f, 1.0f };
 }
+
+template <>
+struct USerialize<UColor>
+{
+	void operator()(nlohmann::json& json, const UColor& v) const
+	{
+		USerialize<float>{}(get(json, "r"), v.r);
+		USerialize<float>{}(get(json, "g"), v.g);
+		USerialize<float>{}(get(json, "b"), v.b);
+		USerialize<float>{}(get(json, "a"), v.a);
+	}
+};
+
+template <>
+struct UDeserialize<UColor>
+{
+	void operator()(const nlohmann::json& json, UColor& v) const
+	{
+		UDeserialize<float>{}(get(json, "r"), v.r);
+		UDeserialize<float>{}(get(json, "g"), v.g);
+		UDeserialize<float>{}(get(json, "b"), v.b);
+		UDeserialize<float>{}(get(json, "a"), v.a);
+	}
+};

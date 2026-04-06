@@ -1,7 +1,7 @@
 #include "SceneExplorerItem.h"
-#include <kotono_core/ObjectManager.h>
 #include <kotono_core/SceneObject.h>
 #include <kotono_interface/widgets.h>
+#include <kotono_object/ObjectManager.h>
 
 WSceneExplorerItem::WSceneExplorerItem(const UPtr<TSceneObject>& sceneObject)
 	: sceneObject_(sceneObject)

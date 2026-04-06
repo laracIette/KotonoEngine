@@ -1,6 +1,7 @@
 #include "Guid.h"
 #include <format>
 #include <kotono_common/hash_utils.h>
+#include <nlohmann/json.hpp>
 #include <random>
 #include <sstream>
 
@@ -109,4 +110,18 @@ size std::hash<UGuid>::operator()(const UGuid& g) const noexcept
 {
     auto [low, high] { std::bit_cast<std::array<u64, 2>>(g.bytes_) };
     return static_cast<::size>(low ^ high);
+}
+
+void USerialize<UGuid>::operator()(nlohmann::json& json, const UGuid& v) const
+{
+    USerialize<std::string>{}(json, v.ToString());
+}
+
+void UDeserialize<UGuid>::operator()(const nlohmann::json& json, UGuid& v) const
+{
+    const auto string{ json.get<std::string>() };
+    if (!string.empty())
+    {
+        v = json;
+    }
 }

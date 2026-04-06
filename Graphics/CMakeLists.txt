@@ -49,13 +49,13 @@ foreach(assimp_target
     zlibstatic
 )
     if(TARGET ${assimp_target})
-        set_target_properties(${assimp_target} PROPERTIES FOLDER "ThirdParty/assimp")
+        set_target_properties(${assimp_target} PROPERTIES FOLDER "KotonoEngine/ThirdParty/assimp")
     endif()
 endforeach()
 ################
 
 if(TARGET SPIRVReflect)
-    set_target_properties(SPIRVReflect PROPERTIES FOLDER "ThirdParty")
+    set_target_properties(SPIRVReflect PROPERTIES FOLDER "KotonoEngine/ThirdParty")
 endif()
 
 # Static library
@@ -97,6 +97,7 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/SpvCompiler.h"
     "include/kotono_graphics/Vertex2D.h"
     "include/kotono_graphics/Vertex3D.h"
+    "include/kotono_graphics/Visibility.h"
 )
 set(KGRAPHICS_SOURCES
     "src/Font.cpp"

@@ -86,7 +86,5 @@ target_include_directories(KotonoInterface
 
 # Link libs
 target_link_libraries(KotonoInterface PUBLIC
-    KotonoMath
-    KotonoInput
-    KotonoGraphics
+    KotonoObject
 )

@@ -1,7 +1,7 @@
 #include "InterfaceButtonComponent.h"
 #include "InterfaceColliderComponent.h"
 #include "InterfaceObject.h"
-#include "ObjectManager.h"
+#include <kotono_object/ObjectManager.h>
 
 KInterfaceButtonComponent::KInterfaceButtonComponent(UPtrOwnerBase* ptrOwner) 
 	: Base(ptrOwner)

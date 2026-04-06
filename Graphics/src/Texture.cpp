@@ -2,6 +2,8 @@
 #include <stbimage/stb_image.h>
 #include <kotono_platform/Context.h>
 #include <kotono_common/log.h>
+#include <nlohmann/json.hpp>
+#include "TextureManager.h"
 
 KtTexture::KtTexture(const UPath& path) :
 	path_(path)
@@ -143,4 +145,18 @@ void KtTexture::CreateTextureSampler()
 void KtTexture::DestroyStagingBuffer()
 {
 	vmaDestroyBuffer(Context.GetAllocator(), stagingBuffer_.Buffer, stagingBuffer_.Allocation);
+}
+
+void USerialize<KtTexture>::operator()(nlohmann::json& json, const KtTexture* v) const
+{
+	if (v)
+	{
+		USerialize<std::string>{}(json, v->Path());
+	}
+}
+
+void UDeserialize<KtTexture>::operator()(const nlohmann::json& json, KtTexture*& v) const
+{
+	const UPath path(json.get<std::string>());
+	v = TextureManager.Get(path);
 }
