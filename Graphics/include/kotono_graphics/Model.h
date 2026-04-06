@@ -9,9 +9,7 @@ class KtModel final : public KtSceneRenderable
 {
 public:
 	KtModel(const UPath& path);
-
-	void Init();
-	void Cleanup();
+	~KtModel();
 
 	const UPath& Path() const;
 
@@ -26,8 +24,8 @@ private:
 	void CreateIndexBuffer();
 	void CreateIndirectBuffers();
 	void CreateIndirectBuffer(const u32 frameIndex);
-	void DestroyStagingVertexBuffer();
-	void DestroyStagingIndexBuffer();
+	void DestroyStagingVertexBuffer() const;
+	void DestroyStagingIndexBuffer() const;
 
 private:
 	const UPath path_;

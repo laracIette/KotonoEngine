@@ -7,14 +7,10 @@
 #include <array>
 #include <kotono_common/log.h>
 #include <nlohmann/json.hpp>
-#include "ModelManager.h"
+#include <kotono_common/AssetManager.h>
 
-KtModel::KtModel(const UPath& path) :
-	path_(path)
-{
-}
-
-void KtModel::Init()
+KtModel::KtModel(const UPath& path) 
+	: path_(path)
 {
 	Load();
 	CreateVertexBuffer();
@@ -22,7 +18,7 @@ void KtModel::Init()
 	CreateIndirectBuffers();
 }
 
-void KtModel::Cleanup()
+KtModel::~KtModel()
 {
 	vmaDestroyBuffer(Context.GetAllocator(), indexBuffer_.Buffer, indexBuffer_.Allocation);
 	vmaDestroyBuffer(Context.GetAllocator(), vertexBuffer_.Buffer, vertexBuffer_.Allocation);
@@ -193,12 +189,12 @@ void KtModel::CreateIndirectBuffer(const u32 frameIndex)
 	memcpy(indirectBuffers_[frameIndex].AllocationInfo.pMappedData, &cmd, sizeof(cmd));
 }
 
-void KtModel::DestroyStagingVertexBuffer()
+void KtModel::DestroyStagingVertexBuffer() const
 {
 	vmaDestroyBuffer(Context.GetAllocator(), stagingVertexBuffer_.Buffer, stagingVertexBuffer_.Allocation);
 }
 
-void KtModel::DestroyStagingIndexBuffer()
+void KtModel::DestroyStagingIndexBuffer() const
 {
 	vmaDestroyBuffer(Context.GetAllocator(), stagingIndexBuffer_.Buffer, stagingIndexBuffer_.Allocation);
 }
@@ -214,5 +210,5 @@ void USerialize<KtModel>::operator()(nlohmann::json& json, const KtModel* v) con
 void UDeserialize<KtModel>::operator()(const nlohmann::json& json, KtModel*& v) const
 {
 	const UPath path(json.get<std::string>());
-	v = ModelManager.Get(path);
+	v = UAssetManager<KtModel>::Get(path);
 }

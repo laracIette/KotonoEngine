@@ -1,6 +1,7 @@
 #pragma once
 #include "generated/Object.generated.h"
 #include "Guid.h"
+#include "ObjectFactory.h"
 #include "Ptr.h"
 #include "VariableInfo.h"
 #include <kotono_common/Event.h>
@@ -9,7 +10,6 @@
 #include <nlohmann/json_fwd.hpp>
 #include <string>
 #include <unordered_set>
-#include "ObjectFactory.h"
 
 #define RegisterDelegate(Owner, Event, Instance, Function)				\
 static_assert(std::string_view(#Owner) != std::string_view("Ptr()") && std::string_view(#Owner) != std::string_view("this->Ptr()"), "Please use the event's AddListener when registering an event owned by this object.");	\

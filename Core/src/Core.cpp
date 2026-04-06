@@ -3,8 +3,8 @@
 #include "InterfacePhysicsManager.h"
 #include "TimeManager.h"
 #include <kotono_audio/AudioManager.h>
+#include <kotono_common/AssetManager.h>
 #include <kotono_graphics/TextureManager.h>
-#include <kotono_graphics/ModelManager.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/ShaderManager.h>
 #include <kotono_input/Keyboard.h>
@@ -14,6 +14,7 @@
 #include <kotono_platform/Context.h>
 #include <kotono_platform/Window.h>
 #include <kotono_timing/TimerManager.h>
+#include <kotono_graphics/Model.h>
 
 void SCore::Init()
 {
@@ -54,7 +55,8 @@ void SCore::Cleanup()
     AudioManager.Cleanup();
     TextureManager.Cleanup();
     ShaderManager.Cleanup();
-    ModelManager.Cleanup();
+    //ModelManager.Cleanup();
+    UAssetManager<KtModel>::Cleanup();
     Renderer.Cleanup();
     Context.Cleanup();
     Window.Cleanup();
