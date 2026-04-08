@@ -20,16 +20,21 @@ void SReflector::Reflect()
 			.path = filePath,
 			.type = GetTypeInfo(content),
 			.members = GetMemberInfos(content),
-			.fwdClasses = GetForwardDeclarations(content),
 		};
 
-		reflectionResults_.push_back(reflectionResult);
+		allResults_.push_back(reflectionResult);
 	}
+
+	reflectionResults_ = allResults_;
 
 	std::erase_if(reflectionResults_, 
 		[this](const UReflectionResult& reflectionResult)
 		{
-			return !IsObjectType(reflectionResult.type);
+			if (reflectionResult.type.isTemplate || !IsObjectType(reflectionResult.type))
+			{
+				return true;
+			}
+			return reflectionResult.type.isTemplate || !IsObjectType(reflectionResult.type);
 		}
 	);
 }
@@ -39,42 +44,30 @@ const std::vector<UReflectionResult>& SReflector::GetReflectionResults() const
 	return reflectionResults_;
 }
 
-std::optional<UReflectionResult> SReflector::GetReflectionResult(const std::string& typeName) const
-{
-	const auto it{ std::find_if(reflectionResults_.begin(), reflectionResults_.end(),
-		[typeName](const UReflectionResult& reflectionResult)
-		{
-			return reflectionResult.type.name == typeName;
-		}
-	) };
-
-	if (it == reflectionResults_.end())
-	{
-		return std::nullopt;
-	}
-
-	return *it;
-}
-
 UReflectionResult::TypeInfo SReflector::GetTypeInfo(const std::string& content) const
 {
-	const std::regex pattern(R"((?:class|struct)\s+([a-zA-Z_]\w*)\s*(?::\s*(?:public|protected|private)?\s*([a-zA-Z_]\w*))?\s*\{)");
+	const std::regex pattern(R"((template\s*<[^;\{]*>\s+)?(?:class)\s+([a-zA-Z_]\w*)\s*(?:final)?\s*(?::\s*(?:public|protected|private)?\s*([a-zA-Z_]\w*)\s*(?:<[^\{]*>)?\s*)?\{)");
 	
+	bool isTemplate{ false };
 	std::string name{ "" };
 	std::optional<std::string> base{ std::nullopt };
 
 	std::smatch match;
-
 	if (std::regex_search(content, match, pattern))
 	{
-		name = match[1].str();
+		isTemplate = match[1].matched;
 		if (match[2].matched)
 		{
-			base = match[2].str();
+			name = match[2].str();
+		}
+		if (match[3].matched)
+		{
+			base = match[3].str();
 		}
 	}
 
 	return {
+		.isTemplate = isTemplate,
 		.name = name,
 		.base = base,
 	};
@@ -100,20 +93,6 @@ std::vector<UReflectionResult::MemberInfo> SReflector::GetMemberInfos(const std:
 	return result;
 }
 
-std::vector<std::string> SReflector::GetForwardDeclarations(const std::string& content) const
-{
-	std::vector<std::string> result{};
-
-	const std::regex fwdRegex(R"(\bclass\s+(?:\w+\s+)*([A-Za-z_]\w*)\s*;)");
-
-	for (std::sregex_iterator it(content.begin(), content.end(), fwdRegex), end; it != end; ++it)
-	{
-		result.push_back((*it)[1]);
-	}
-
-	return result;
-}
-
 bool SReflector::IsObjectType(const UReflectionResult::TypeInfo& type) const
 {
 	if (type.name == "KObject")
@@ -126,31 +105,14 @@ bool SReflector::IsObjectType(const UReflectionResult::TypeInfo& type) const
 		return false;
 	}
 
-	const auto it{ std::find_if(reflectionResults_.begin(), reflectionResults_.end(),
+	const auto it{ std::find_if(allResults_.begin(), allResults_.end(),
 		[type](const UReflectionResult& reflectionResult)
 		{
 			return reflectionResult.type.name == type.base;
 		}
 	) };
 
-	if (it == reflectionResults_.end())
-	{
-		return false;
-	}
-
-	return IsObjectType(it->type);
-}
-
-bool SReflector::IsObjectType(const std::string& type) const
-{
-	const auto it{ std::find_if(reflectionResults_.begin(), reflectionResults_.end(),
-		[type](const UReflectionResult& reflectionResult)
-		{
-			return reflectionResult.type.name == type;
-		}
-	) };
-
-	if (it == reflectionResults_.end())
+	if (it == allResults_.end())
 	{
 		return false;
 	}

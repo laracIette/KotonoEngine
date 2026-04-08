@@ -16,7 +16,6 @@ class SGenerator final
 		std::string name;
 		std::optional<std::string> base;
 		std::vector<VariableInfo> variables;
-		std::vector<std::string> headers;
 	};
 
 public:

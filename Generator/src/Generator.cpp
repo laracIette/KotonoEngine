@@ -231,18 +231,9 @@ SGenerator::ClassInfo SGenerator::GetClassInfo(const UReflectionResult& reflecti
 		std::back_inserter(variables)
 	);
 
-	std::vector<std::string> headers;
-	std::ranges::copy(
-		reflectionResult.fwdClasses
-		| std::views::filter([](const std::string& name) { return Reflector.IsObjectType(name); })
-		| std::views::transform([](const std::string& name) { return std::format("{}.h", name.substr(1)); }),
-		std::back_inserter(headers)
-	);
-
 	return {
 		.name = reflectionResult.type.name,
 		.base = reflectionResult.type.base,
 		.variables = variables,
-		.headers = headers,
 	};
 }

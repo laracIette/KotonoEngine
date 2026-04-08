@@ -7,6 +7,7 @@ struct UReflectionResult final
 {
 	struct TypeInfo
 	{
+		bool isTemplate;
 		std::string name;
 		std::optional<std::string> base;
 	};
@@ -20,5 +21,4 @@ struct UReflectionResult final
 	UPath path;
 	TypeInfo type;
 	std::vector<MemberInfo> members;
-	std::vector<std::string> fwdClasses;
 };
