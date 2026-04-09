@@ -1,23 +1,23 @@
 #pragma once
-#include "ChildOwnerWidget.h"
-class WOffset : public WChildOwnerWidget
+#include "generated/Offset.generated.h"
+#include "ChildOwner.h"
+/// Offset the position of the child widget
+class WOffset final : public WChildOwner
 {
-public:
-	struct OffsetSettings
-	{
-		/// default = { 0.0f, 0.0f }
-		glm::vec2 offset{ 0.0f, 0.0f };
-		WidgetPtr child{ nullptr };
-	};
+	GENERATED_WOFFSET()
 
-	/// Offset the position of the child widget
-	WOffset(const OffsetSettings& offsetSettings);
-
+public:	
 	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
-protected:
-	OffsetSettings offsetSettings_;
+public:	
+	const glm::vec2& GetOffset() const;
 
+	void SetOffset(const glm::vec2& offset);
+
+protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
+
+private:
+	glm::vec2 offset_;
 };
 

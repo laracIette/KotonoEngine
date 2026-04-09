@@ -47,3 +47,5 @@ WidgetPtr WVisualizerWindow::Build()
         }),
     });
 }
+
+#include "generated/VisualizerWindow.generated.inl"

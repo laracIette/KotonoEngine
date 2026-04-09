@@ -2,9 +2,9 @@
 #include "Visualizer.h"
 #include <kotono_interface/widgets.h>
 
-WVisualizerWindowItem::WVisualizerWindowItem(const EVisualizationField field, const std::string& name) :
-	field_(field),
-	name_(name)
+WVisualizerWindowItem::WVisualizerWindowItem(const EVisualizationField field, const std::string& name) 
+    : field_(field)
+    , name_(name)
 {
 }
 
@@ -38,3 +38,5 @@ WidgetPtr WVisualizerWindowItem::Build()
         },
     });
 }
+
+#include "generated/VisualizerWindowItem.generated.inl"

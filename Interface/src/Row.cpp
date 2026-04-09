@@ -7,7 +7,7 @@
 #include <ranges>
 
 WRow::WRow(const RowSettings& rowSettings) :
-	WChildrenOwnerWidget(rowSettings.children),
+	WChildrenOwner(rowSettings.children),
 	rowSettings_(rowSettings)
 {
 }
@@ -112,3 +112,5 @@ size WRow::GetFlexCount() const
 		[](const WidgetPtr child) { return child && has_flag(child->GetFlex(), EFlex::Horizontal); }
 	);
 }
+
+#include "generated/Row.generated.inl"

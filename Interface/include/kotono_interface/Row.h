@@ -1,7 +1,10 @@
 #pragma once
-#include "ChildrenOwnerWidget.h"
-class WRow : public WChildrenOwnerWidget
+#include "generated/Row.generated.h"
+#include "ChildrenOwner.h"
+class WRow : public WChildrenOwner
 {
+	GENERATED_WROW()
+
 public:
 	struct RowSettings
 	{

@@ -1,20 +1,14 @@
 #pragma once
+#include "generated/Spacer.generated.h"
 #include "Widget.h"
-class WSpacer : public WWidget
+/// Fills the entirety of the available parent space
+class WSpacer final : public WWidget
 {
+	GENERATED_WSPACER()
+
 public:
-	struct SpacerSettings
-	{
-	};
-
-	/// Fills the entirety of the available parent space
-	WSpacer(const SpacerSettings& spacerSettings);
-
 	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 	EFlex GetFlex() const override;
-
-private:
-	SpacerSettings spacerSettings_;
 };
 

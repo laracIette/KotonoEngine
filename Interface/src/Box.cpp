@@ -1,25 +1,9 @@
 #include "Box.h"
 #include <glm/common.hpp>
 
-WBox::WBox(const BoxSettings& boxSettings) :
-	WChildOwnerWidget(boxSettings.child),
-	boxSettings_(boxSettings)
-{
-}
-
-void WBox::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
-	++displaySettings.layer;
-
-	if (boxSettings_.child)
-	{
-		boxSettings_.child->Display(displaySettings);
-	}
-}
-
 UWidgetDisplaySettings WBox::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
-	displaySettings.bounds = glm::min(boxSettings_.size, displaySettings.bounds);
+	displaySettings.bounds = glm::min(size_, displaySettings.bounds);
 	return displaySettings;
 }
 
@@ -30,5 +14,27 @@ EFlex WBox::GetFlex() const
 
 glm::vec2 WBox::GetDesiredSize(glm::vec2 bounds) const
 {
-	return boxSettings_.size;
+	return size_;
 }
+
+const glm::vec2& WBox::GetSize() const
+{
+	return size_;
+}
+
+void WBox::SetSize(const glm::vec2& size)
+{
+	size_ = size;
+}
+
+void WBox::DisplayInternal(UWidgetDisplaySettings displaySettings)
+{
+	++displaySettings.layer;
+
+	if (child_)
+	{
+		child_->Display(displaySettings);
+	}
+}
+
+#include "generated/Box.generated.inl"

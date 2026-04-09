@@ -1,8 +1,11 @@
 #pragma once
+#include "generated/AssetExplorer.generated.h"
 #include <kotono_interface/Widget.h>
 #include <kotono_common/Path.h>
 class WAssetExplorer : public WWidget
 {
+	GENERATED_WASSETEXPLORER()
+
 public:
 	WAssetExplorer();
 

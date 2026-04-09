@@ -7,17 +7,32 @@
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/Texture.h>
 
-WImage::WImage(const ImageSettings& imageSettings) 
-	: imageSettings_(imageSettings)
-	, isProxyRegistered_(false)
+void WImage::Cleanup()
 {
+	if (imageProxy_)
+	{
+		Renderer.InterfaceRenderer().UnregisterProxy(imageProxy_);
+		Renderer.InterfaceRenderer().DeleteProxy(imageProxy_);
+		imageProxy_ = nullptr;
+	}
+
+	Base::Cleanup();
+}
+
+const UPath& WImage::GetPath() const
+{
+	return path_;
+}
+
+void WImage::SetPath(const UPath& path)
+{
+	path_ = path;
 }
 
 void WImage::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
-	if (!isProxyRegistered_)
+	if (!imageProxy_)
 	{
-		isProxyRegistered_ = true;
 		imageProxy_ = Renderer.InterfaceRenderer().CreateProxy();
 		Renderer.InterfaceRenderer().RegisterProxy(imageProxy_);
 	}
@@ -26,7 +41,7 @@ void WImage::DisplayInternal(UWidgetDisplaySettings displaySettings)
 		[this, displaySettings](UInterfaceProxy::Data& data)
 		{
 			data.shader = UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader2D.ktshader").Get();
-			data.renderable = UAssetManager<KtTexture>::Get(imageSettings_.path).Get();
+			data.renderable = UAssetManager<KtTexture>::Get(path_).Get();
 			data.layer = displaySettings.layer;
 			data.objectData.modelMatrix = ModelMatrix();
 			data.scissor = displaySettings.scissor;
@@ -34,15 +49,4 @@ void WImage::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	);
 }
 
-void WImage::Cleanup()
-{
-	if (isProxyRegistered_)
-	{
-		isProxyRegistered_ = false;
-		Renderer.InterfaceRenderer().UnregisterProxy(imageProxy_);
-		Renderer.InterfaceRenderer().DeleteProxy(imageProxy_);
-	}
-
-	WWidget::Cleanup();
-}
-
+#include "generated/Image.generated.inl"

@@ -1,8 +1,11 @@
 #pragma once
+#include "generated/List.generated.h"
 #include "Widget.h"
 #include <kotono_common/Buildable.h>
 class WList : public WWidget
 {
+	GENERATED_WLIST()
+
 	friend class WListBody;
 
 public:

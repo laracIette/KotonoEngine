@@ -1,24 +1,23 @@
 #pragma once
-#include "ChildOwnerWidget.h"
-class WWrap : public WChildOwnerWidget
+#include "generated/Wrap.generated.h"
+#include "ChildOwner.h"
+/// Fills the entirety of the available parent space
+class WWrap final : public WChildOwner
 {
+	GENERATED_WWRAP()
+
 public:
-	struct WrapSettings
-	{
-		/// default = EAxis::All
-		EAxis axis{ EAxis::All };
-		WidgetPtr child{ nullptr };
-	};
-
-	/// Fills the entirety of the available parent space
-	WWrap(const WrapSettings& wrapSettings);
-
 	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 	EFlex GetFlex() const override;
 
+public:
+	EAxis GetAxis() const;
+
+	void SetAxis(const EAxis axis);
+
 protected:
-	WrapSettings wrapSettings_;
+	EAxis axis_;
 
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 };

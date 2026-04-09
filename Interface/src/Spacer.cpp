@@ -1,34 +1,29 @@
 #include "Spacer.h"
-#include "Row.h"
-#include "Column.h"
-
-WSpacer::WSpacer(const SpacerSettings& spacerSettings) :
-	spacerSettings_(spacerSettings)
-{
-}
+#include <kotono_common/bitwise_utils.h>
 
 UWidgetDisplaySettings WSpacer::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
-	if (dynamic_cast<const WRow*>(parent_))
+	if (parent_)
 	{
-		displaySettings.bounds.y = 0.0f;
-	}
-	else if (dynamic_cast<const WColumn*>(parent_))
-	{
-		displaySettings.bounds.x = 0.0f;
+		if (has_flag(parent_->GetFlex(), EFlex::Horizontal)) // todo: check if works
+		{
+			displaySettings.bounds.y = 0.0f;
+		}
+		if (has_flag(parent_->GetFlex(), EFlex::Vertical))
+		{
+			displaySettings.bounds.x = 0.0f;
+		}
 	}
 	return displaySettings;
 }
 
 EFlex WSpacer::GetFlex() const
 {
-	if (dynamic_cast<const WRow*>(parent_))
+	if (parent_)
 	{
-		return EFlex::Horizontal;
-	}
-	if (dynamic_cast<const WColumn*>(parent_))
-	{
-		return EFlex::Vertical;
+		return parent_->GetFlex();
 	}
 	return EFlex::None;
 }
+
+#include "generated/Spacer.generated.inl"

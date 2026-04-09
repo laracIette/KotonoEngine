@@ -1,29 +1,13 @@
 #include "Center.h"
 
-WCenter::WCenter(const CenterSettings& centerSettings) :
-	WChildOwnerWidget(centerSettings.child),
-	centerSettings_(centerSettings)
-{
-}
-
-void WCenter::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
-	++displaySettings.layer;
-
-	if (centerSettings_.child)
-	{
-		centerSettings_.child->Display(displaySettings);
-	}
-}
-
 UWidgetDisplaySettings WCenter::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 
-	if (centerSettings_.child)
+	if (child_)
 	{
-		const auto childSettings{ centerSettings_.child->GetDisplaySettings(displaySettings) };
+		const auto childSettings{ child_->GetDisplaySettings(displaySettings) };
 
-		switch (centerSettings_.axis)
+		switch (axis_)
 		{
 		case EAxis::Horizontal:
 			displaySettings.position.x = displaySettings.position.x + (displaySettings.bounds.x - childSettings.bounds.x) / 2.0f;
@@ -39,3 +23,25 @@ UWidgetDisplaySettings WCenter::GetDisplaySettings(UWidgetDisplaySettings displa
 
 	return displaySettings;
 }
+
+EAxis WCenter::GetAxis() const
+{
+	return axis_;
+}
+
+void WCenter::SetAxis(const EAxis axis)
+{
+	axis_ = axis;
+}
+
+void WCenter::DisplayInternal(UWidgetDisplaySettings displaySettings)
+{
+	++displaySettings.layer;
+
+	if (child_)
+	{
+		child_->Display(displaySettings);
+	}
+}
+
+#include "generated/Center.generated.inl"

@@ -21,3 +21,5 @@ WAssetExplorerFile::WAssetExplorerFile(const UPath& path)
     )
 {
 }
+
+#include "generated/AssetExplorerFile.generated.inl"

@@ -93,7 +93,7 @@ void WPropertiesWindow::Cleanup()
 {
     ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &WPropertiesWindow::Refresh);
 
-    WWidget::Cleanup();
+    Base::Cleanup();
 }
 
 WidgetPtr WPropertiesWindow::Slider(const std::string& label, const ValueChangedFunction& function)
@@ -121,3 +121,5 @@ WidgetPtr WPropertiesWindow::Slider(const std::string& label, const ValueChanged
         }),
     });
 }
+
+#include "generated/PropertiesWindow.generated.inl"

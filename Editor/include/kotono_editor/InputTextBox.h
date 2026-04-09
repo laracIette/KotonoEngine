@@ -1,9 +1,13 @@
+#pragma once
+#include "generated/InputTextBox.generated.h"
 #include <kotono_interface/Widget.h>
 #include <kotono_input/InputHoldAction.h>
 enum class EKey : u8;
 enum class EInputState : u8;
 class WInputTextBox : public WWidget
 {
+	GENERATED_WINPUTTEXTBOX()
+
 	using TextChangedFunction = std::function<void(const std::string&)>;
 
 public:

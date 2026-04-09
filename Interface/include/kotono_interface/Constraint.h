@@ -1,28 +1,29 @@
 #pragma once
-#include "ChildOwnerWidget.h"
-class WConstraint : public WChildOwnerWidget
+#include "generated/Constraint.generated.h"
+#include "ChildOwner.h"
+/// Constraints the bounds of the child widget given an axis
+class WConstraint final : public WChildOwner
 {
+	GENERATED_WCONSTRAINT()
+
 public:
-	struct ConstraintSettings
-	{
-		/// default = EAxis::Horizontal
-		EAxis axis{ EAxis::Horizontal };
-		/// default = 0.0f
-		float size{ 0.0f };
-		WidgetPtr child{ nullptr };
-	};
-
-	/// Constraints the bounds of the child widget given an axis
-	WConstraint(const ConstraintSettings& constraintSettings);
-
 	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 	EFlex GetFlex() const override;
 	glm::vec2 GetDesiredSize(glm::vec2 bounds) const override;
 
-protected:
-	ConstraintSettings constraintSettings_;
+public:
+	EAxis GetAxis() const;
+	float GetSize() const;
 
+	void SetAxis(const EAxis axis);
+	void SetSize(const float size);
+
+protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
+
+private:
+	EAxis axis_;
+	float size_;
 };
 

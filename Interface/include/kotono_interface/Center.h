@@ -1,23 +1,23 @@
 #pragma once
-#include "ChildOwnerWidget.h"
-class WCenter : public WChildOwnerWidget
+#include "generated/Center.generated.h"
+#include "ChildOwner.h"
+/// Center the child widget on an Axis
+class WCenter final : public WChildOwner
 {
+	GENERATED_WCENTER()
+
 public:
-	struct CenterSettings
-	{
-		/// default  = Axis::All
-		EAxis axis{ EAxis::All };
-		WidgetPtr child{ nullptr };
-	};
-
-	/// Center the child widget on an Axis
-	WCenter(const CenterSettings& centerSettings);
-
 	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
-protected:
-	CenterSettings centerSettings_;
+public:
+	EAxis GetAxis() const;
 
+	void SetAxis(const EAxis axis);
+
+protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
+
+private:
+	EAxis axis_;
 };
 

@@ -1,23 +1,19 @@
 #include "Button.h"
 #include "Interface.h"
-#include <kotono_common/log.h>
 #include <kotono_input/Mouse.h>
 
-WButton::WButton(const ButtonSettings& buttonSettings) 
-	: buttonSettings_(buttonSettings)
+WButton::WButton()
 {
-	Interface.AddButton(this);
+	Interface.AddButton(Ptr());
 
 	Mouse.EventButton(EButton::Left, EInputState::Down).AddListener(this, &WButton::OnMouseLeftButtonDown);
 }
 
-void WButton::Cleanup()
+WButton::~WButton()
 {
-	Interface.RemoveButton(this);
+	Interface.RemoveButton(Ptr());
 
 	Mouse.EventButton(EButton::Left, EInputState::Down).RemoveListener(this, &WButton::OnMouseLeftButtonDown);
-
-	WWidget::Cleanup();
 }
 
 bool WButton::ReceiveMouseLeftButtonPressed()
@@ -29,9 +25,9 @@ bool WButton::ReceiveMouseLeftButtonPressed()
 
 	isPressed_ = true;
 
-	if (buttonSettings_.onPressed)
+	if (onPressed_)
 	{
-		buttonSettings_.onPressed();
+		onPressed_();
 	}
 
 	return true;
@@ -46,9 +42,9 @@ bool WButton::ReceiveMouseLeftButtonReleased()
 
 	isPressed_ = false;
 
-	if (buttonSettings_.onClicked)
+	if (onClicked_)
 	{
-		buttonSettings_.onClicked();
+		onClicked_();
 	}
 
 	return true;
@@ -56,10 +52,50 @@ bool WButton::ReceiveMouseLeftButtonReleased()
 
 void WButton::OnMouseLeftButtonPressedNoInteract()
 {
-	if (buttonSettings_.onPressOut)
+	if (onPressOut_)
 	{
-		buttonSettings_.onPressOut();
+		onPressOut_();
 	}
+}
+
+const VoidCallback& WButton::GetOnClicked() const
+{
+	return onClicked_;
+}
+
+const VoidCallback& WButton::GetOnPressed() const
+{
+	return onPressed_;
+}
+
+const VoidCallback& WButton::GetOnDown() const
+{
+	return onDown_;
+}
+
+const VoidCallback& WButton::GetOnPressOut() const
+{
+	return onPressOut_;
+}
+
+void WButton::SetOnClicked(const VoidCallback& function)
+{
+	onClicked_ = function;
+}
+
+void WButton::SetOnPressed(const VoidCallback& function)
+{
+	onPressed_ = function;
+}
+
+void WButton::SetOnDown(const VoidCallback& function)
+{
+	onDown_ = function;
+}
+
+void WButton::SetOnPressOut(const VoidCallback& function)
+{
+	onPressOut_ = function;
 }
 
 void WButton::OnMouseLeftButtonDown()
@@ -69,8 +105,10 @@ void WButton::OnMouseLeftButtonDown()
 		return;
 	}
 
-	if (buttonSettings_.onDown)
+	if (onDown_)
 	{
-		buttonSettings_.onDown();
+		onDown_();
 	}
 }
+
+#include "generated/Button.generated.inl"

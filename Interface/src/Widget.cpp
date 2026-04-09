@@ -5,8 +5,8 @@
 #include <kotono_input/Mouse.h>
 #include <kotono_math/math_utils.h>
 
-WWidget::WWidget() :
-	cachedBuild_([this]() { return Build(); })
+WWidget::WWidget() 
+	: cachedBuild_([this]() { return Build(); })
 {
 }
 
@@ -14,7 +14,7 @@ void WWidget::CacheBuild()
 {
 	cachedBuild_.TryUpdateValue();
 	WidgetPtr build{ cachedBuild_.Value() };
-	if (build && build != this)
+	if (build && build != Ptr())
 	{
 		build->CacheBuild();
 	}
@@ -22,17 +22,16 @@ void WWidget::CacheBuild()
 
 WidgetPtr WWidget::Build()
 {
-	return this;
+	return Ptr();
 }
 
 void WWidget::Cleanup()
 {
 	WidgetPtr build{ cachedBuild_.Value() };
-	if (build && build != this)
+	if (build && build != Ptr())
 	{
 		build->Cleanup();
-		delete build;
-		cachedBuild_ = nullptr;
+		build->Delete();
 	}
 }
 
@@ -41,7 +40,7 @@ void WWidget::Display(UWidgetDisplaySettings displaySettings)
 	SetDisplaySettings(displaySettings);
 
 	WidgetPtr build{ cachedBuild_.Value() };
-	if (build && build != this)
+	if (build && build != Ptr())
 	{
 		build->Display(displaySettings);
 	}
@@ -55,7 +54,7 @@ void WWidget::Display(UWidgetDisplaySettings displaySettings)
 UWidgetDisplaySettings WWidget::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	const WidgetPtr build{ cachedBuild_.Value() };
-	if (build && build != this)
+	if (build && build != Ptr())
 	{
 		return build->GetDisplaySettings(displaySettings);
 	}
@@ -66,7 +65,7 @@ UWidgetDisplaySettings WWidget::GetDisplaySettings(UWidgetDisplaySettings displa
 EFlex WWidget::GetFlex() const
 {
 	const WidgetPtr build{ cachedBuild_.Value() };
-	if (build && build != this)
+	if (build && build != Ptr())
 	{
 		return build->GetFlex();
 	}
@@ -76,7 +75,7 @@ EFlex WWidget::GetFlex() const
 glm::vec2 WWidget::GetDesiredSize(glm::vec2 bounds) const
 {
 	const WidgetPtr build{ cachedBuild_.Value() };
-	if (build && build != this)
+	if (build && build != Ptr())
 	{
 		return build->GetDesiredSize(bounds);
 	}
@@ -86,18 +85,18 @@ glm::vec2 WWidget::GetDesiredSize(glm::vec2 bounds) const
 WidgetVector WWidget::GetWidgetTree()
 {
 	WidgetPtr build{ cachedBuild_.Value() };
-	if (build && build != this)
+	if (build && build != Ptr())
 	{
 		return { build };
 	}
-	return { this };
+	return { Ptr() };
 }
 
 void WWidget::Rebuild()
 {
 	auto displaySettings{ displaySettings_ };
 	const WidgetPtr build{ cachedBuild_.Value() };
-	if (build && build != this)
+	if (build && build != Ptr())
 	{
 		displaySettings = build->displaySettings_;
 	}
@@ -176,3 +175,5 @@ void WWidget::Refresh()
 	cachedBuild_.MarkDirty();
 	Rebuild();
 }
+
+#include "generated/Widget.generated.inl"

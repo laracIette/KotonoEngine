@@ -1,5 +1,5 @@
 #pragma once
-#include <kotono_interface/widget_fwd.h>
+#include <kotono_interface/Widget.h>
 class SEditor final
 {
 public:

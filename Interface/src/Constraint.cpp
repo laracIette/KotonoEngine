@@ -1,43 +1,27 @@
 #include "Constraint.h"
 
-WConstraint::WConstraint(const ConstraintSettings& constraintSettings) :
-	WChildOwnerWidget(constraintSettings.child),
-	constraintSettings_(constraintSettings)
-{
-}
-
-void WConstraint::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
-	++displaySettings.layer;
-
-	if (constraintSettings_.child)
-	{
-		constraintSettings_.child->Display(displaySettings);
-	}
-}
-
 UWidgetDisplaySettings WConstraint::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
-	switch (constraintSettings_.axis)
+	switch (axis_)
 	{
 	case EAxis::Horizontal:
-		displaySettings.bounds.x = std::min(constraintSettings_.size, displaySettings.bounds.x);
+		displaySettings.bounds.x = std::min(size_, displaySettings.bounds.x);
 		break;
 	case EAxis::Vertical:
-		displaySettings.bounds.y = std::min(constraintSettings_.size, displaySettings.bounds.y);
+		displaySettings.bounds.y = std::min(size_, displaySettings.bounds.y);
 		break;
 	}
 
-	if (constraintSettings_.child)
+	if (child_)
 	{
-		return constraintSettings_.child->GetDisplaySettings(displaySettings);
+		return child_->GetDisplaySettings(displaySettings);
 	}
 	return displaySettings;
 }
 
 EFlex WConstraint::GetFlex() const
 {
-	switch (constraintSettings_.axis)
+	switch (axis_)
 	{
 	case EAxis::Horizontal:	return EFlex::Vertical;
 	case EAxis::Vertical:	return EFlex::Horizontal;
@@ -47,10 +31,42 @@ EFlex WConstraint::GetFlex() const
 
 glm::vec2 WConstraint::GetDesiredSize(glm::vec2 bounds) const
 {
-	switch (constraintSettings_.axis)
+	switch (axis_)
 	{
-	case EAxis::Horizontal:	return { constraintSettings_.size, 0.0f };
-	case EAxis::Vertical:	return { 0.0f, constraintSettings_.size };
+	case EAxis::Horizontal:	return { size_, 0.0f };
+	case EAxis::Vertical:	return { 0.0f, size_ };
 	default:				return { 0.0f, 0.0f };
 	}
 }
+
+EAxis WConstraint::GetAxis() const
+{
+	return axis_;
+}
+
+float WConstraint::GetSize() const
+{
+	return size_;
+}
+
+void WConstraint::SetAxis(const EAxis axis)
+{
+	axis_ = axis;
+}
+
+void WConstraint::SetSize(const float size)
+{
+	size_ = size;
+}
+
+void WConstraint::DisplayInternal(UWidgetDisplaySettings displaySettings)
+{
+	++displaySettings.layer;
+
+	if (child_)
+	{
+		child_->Display(displaySettings);
+	}
+}
+
+#include "generated/Constraint.generated.inl"

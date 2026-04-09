@@ -1,7 +1,10 @@
 #pragma once
+#include "generated/PropertiesWindow.generated.h"
 #include <kotono_interface\Widget.h>
 class WPropertiesWindow : public WWidget
 {
+	GENERATED_WPROPERTIESWINDOW()
+
 	using ValueChangedFunction = std::function<void(float)>;
 
 public:

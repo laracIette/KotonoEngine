@@ -1,7 +1,10 @@
 #pragma once
-#include "ChildrenOwnerWidget.h"
-class WHorizontalWrapListBody : public WChildrenOwnerWidget 
+#include "generated/HorizontalWrapListBody.generated.h"
+#include "ChildrenOwner.h"
+class WHorizontalWrapListBody : public WChildrenOwner 
 {
+	GENERATED_WHORIZONTALWRAPLISTBODY()
+
 public:
 	struct HorizontalWrapListBodySettings
 	{

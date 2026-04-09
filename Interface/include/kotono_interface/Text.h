@@ -1,31 +1,34 @@
 #pragma once
+#include "generated/Text.generated.h"
 #include "Widget.h"
-class WText : public WWidget
+/// Display a text
+class WText final : public WWidget
 {
+	GENERATED_WTEXT()
+
 public:
-	struct TextSettings
-	{
-		/// default = ""
-		std::string text{ "" };
-		/// default = { 50.0f, 60.0f }
-		glm::vec2 fontSize{ 50.0f, 60.0f };
-		/// default = 0.0f
-		float spacing{ 0.0f };
-		/// default = false
-		bool shouldWrap{ false };
-	};
-
-	/// Display a text
-	WText(const TextSettings& textSettings);
-
 	WidgetPtr Build() override;
 
 	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
-protected:
-	TextSettings textSettings_;
+public:
+	const std::string& GetText() const;
+	const glm::vec2& GetFontSize() const;
+	float GetSpacing() const;
+	bool GetShouldWrap() const;
+
+	void SetText(const std::string& text);
+	void SetFontSize(const glm::vec2& fontSize);
+	void SetSpacing(const float spacing);
+	void SetShouldWrap(const bool shouldWrap);
 
 private:
 	WidgetVector GetCharacters() const;
+
+private:
+	std::string text_;
+	glm::vec2 fontSize_;
+	float spacing_;
+	bool shouldWrap_;
 };
 

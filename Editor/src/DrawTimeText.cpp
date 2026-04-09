@@ -19,10 +19,12 @@ void WDrawTimeText::Cleanup()
 {
     TimerManager.GetTimer("update time text").EventCompleted().RemoveListener(this, &WDrawTimeText::UpdateText);
 
-    WWidget::Cleanup();
+    Base::Cleanup();
 }
 
 void WDrawTimeText::UpdateText()
 {
     SetState([]() {});
 }
+
+#include "generated/DrawTimeText.generated.inl"

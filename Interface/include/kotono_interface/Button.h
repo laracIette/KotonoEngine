@@ -1,30 +1,16 @@
 #pragma once
+#include "generated/Button.generated.h"
 #include "Widget.h"
-#include <functional>
-class WButton : public WWidget
+/// Set the widget's bounds as pressable
+class WButton final : public WWidget
 {
+	GENERATED_WBUTTON()
+
 public:
-	struct ButtonSettings
-	{
-		/// Triggers when the mouse left button has been pressed and released while hovering this button
-		/// default = {}
-		std::function<void()> onClicked{};
-		/// Triggers when the mouse left button is pressed while the mouse cursor hovers this button
-		/// default = {}
-		std::function<void()> onPressed{};
-		/// Triggers when the mouse left button is down while the mouse cursor hovers this button
-		/// default = {}
-		std::function<void()> onDown{};
-		/// Triggers when the mouse left button is pressed while the mouse cursor doesn't hover this button
-		/// default = {}
-		std::function<void()> onPressOut{};
-	};
+	WButton();
+	~WButton() override;
 
-	/// Set the widget's bounds as pressable
-	WButton(const ButtonSettings& buttonSettings);
-
-	void Cleanup() override;
-
+public:
 	/// Returns whether the mouse was over the button
 	bool ReceiveMouseLeftButtonPressed();
 	/// Returns whether the button was pressed
@@ -32,10 +18,26 @@ public:
 
 	void OnMouseLeftButtonPressedNoInteract();
 
-private:
-	ButtonSettings buttonSettings_;
-	bool isPressed_;
+public:
+	const VoidCallback& GetOnClicked() const;
+	const VoidCallback& GetOnPressed() const;
+	const VoidCallback& GetOnDown() const;
+	const VoidCallback& GetOnPressOut() const;
 
+	void SetOnClicked(const VoidCallback& function);
+	void SetOnPressed(const VoidCallback& function);
+	void SetOnDown(const VoidCallback& function);
+	void SetOnPressOut(const VoidCallback& function);
+
+private:
 	void OnMouseLeftButtonDown();
+
+private:
+	VoidCallback onClicked_;
+	VoidCallback onPressed_;
+	VoidCallback onDown_;
+	VoidCallback onPressOut_;
+
+	bool isPressed_;
 };
 

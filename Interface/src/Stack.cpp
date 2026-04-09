@@ -2,7 +2,7 @@
 #include <glm/common.hpp>
 
 WStack::WStack(const StackSettings& stackSettings) :
-	WChildrenOwnerWidget(stackSettings.children),
+	WChildrenOwner(stackSettings.children),
 	stackSettings_(stackSettings)
 {
 }
@@ -50,3 +50,5 @@ glm::vec2 WStack::GetDesiredSize(glm::vec2 bounds) const
 
 	return size;
 }
+
+#include "generated/Stack.generated.inl"

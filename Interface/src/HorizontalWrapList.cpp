@@ -22,3 +22,5 @@ WidgetPtr WHorizontalWrapList::Build()
 		},
 	});
 }
+
+#include "generated/HorizontalWrapList.generated.inl"

@@ -29,7 +29,7 @@ void WScrollable::Cleanup()
 {
 	GetScrollEvent().RemoveListener(this, &WScrollable::Scroll);
 
-	WWidget::Cleanup();
+	Base::Cleanup();
 }
 
 void WScrollable::Scroll(const float delta)
@@ -59,3 +59,5 @@ UEvent<float>& WScrollable::GetScrollEvent() const
 		return Mouse.EventVerticalScroll();
 	}
 }
+
+#include "generated/Scrollable.generated.inl"

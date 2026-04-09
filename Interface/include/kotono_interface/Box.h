@@ -1,26 +1,26 @@
 #pragma once
-#include "ChildOwnerWidget.h"
-class WBox : public WChildOwnerWidget
+#include "generated/Box.generated.h"
+#include "ChildOwner.h"
+/// Set bounds for the child widget to be contained within
+class WBox final : public WChildOwner
 {
+	GENERATED_WBOX()
+
 public:
-	struct BoxSettings
-	{
-		/// default = { 0.0f, 0.0f }
-		glm::vec2 size{ 0.0f, 0.0f };
-		WidgetPtr child{ nullptr };
-	};
-
-	/// Set bounds for the child widget to be contained within
-	WBox(const BoxSettings& boxSettings);
-
 	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 	EFlex GetFlex() const override;
 	glm::vec2 GetDesiredSize(glm::vec2 bounds) const override;
 
-protected:
-	BoxSettings boxSettings_;
+public:
+	const glm::vec2& GetSize() const;
 
+	void SetSize(const glm::vec2& size);
+
+protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
+
+private:
+	glm::vec2 size_;
 };
 

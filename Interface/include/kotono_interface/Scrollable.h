@@ -1,9 +1,13 @@
 #pragma once
+#include "generated/Scrollable.generated.h"
 #include "Widget.h"
 #include <kotono_common/Buildable.h>
 #include <kotono_common/Event.h>
+/// Makes the child of this widget scrollable with scissor over the bounds of this widget
 class WScrollable : public WWidget
 {
+	GENERATED_WSCROLLABLE()
+
 public:
 	struct ScrollableSettings
 	{

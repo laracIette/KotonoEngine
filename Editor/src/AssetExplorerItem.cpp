@@ -49,3 +49,5 @@ WidgetPtr WAssetExplorerItem::Build()
         }),
     });
 }
+
+#include "generated/AssetExplorerItem.generated.inl"

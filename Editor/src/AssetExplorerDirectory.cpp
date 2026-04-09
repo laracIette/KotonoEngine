@@ -4,3 +4,5 @@ WAssetExplorerDirectory::WAssetExplorerDirectory(const UPath& path, const OnClic
 	: WAssetExplorerItem(path, onDoubleClicked)
 {
 }
+
+#include "generated/AssetExplorerDirectory.generated.inl"

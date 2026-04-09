@@ -1,7 +1,10 @@
 #pragma once
-#include "ChildrenOwnerWidget.h"
-class WListBody : public WChildrenOwnerWidget
+#include "generated/ListBody.generated.h"
+#include "ChildrenOwner.h"
+class WListBody : public WChildrenOwner
 {
+	GENERATED_WLISTBODY()
+
 public:
 	struct ListBodySettings
 	{

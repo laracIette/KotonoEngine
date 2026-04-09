@@ -39,5 +39,7 @@ void WSceneExplorerItem::Cleanup()
 {
 	ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &WSceneExplorerItem::Refresh);
 
-	WWidget::Cleanup();
+	Base::Cleanup();
 }
+
+#include "generated/SceneExplorerItem.generated.inl"

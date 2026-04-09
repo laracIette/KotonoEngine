@@ -1,8 +1,11 @@
 #pragma once
+#include "generated/SceneExplorerItem.generated.h"
 #include <kotono_interface/Widget.h>
 #include <kotono_core/SceneObject.h>
 class WSceneExplorerItem : public WWidget
 {
+	GENERATED_WSCENEEXPLORERITEM()
+
 public:
 	WSceneExplorerItem(const UPtr<TSceneObject>& sceneObject);
 	

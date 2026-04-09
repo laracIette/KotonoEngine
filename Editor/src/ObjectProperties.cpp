@@ -60,7 +60,7 @@ WidgetPtr WObjectProperties::Build()
 
 void WObjectProperties::Cleanup()
 {
-	WWidget::Cleanup();
+	Base::Cleanup();
 }
 
 WidgetPtr WObjectProperties::BuildMemberWidget(const std::string& type, void* variablePtr)
@@ -123,3 +123,5 @@ WidgetPtr WObjectProperties::BuildMemberWidget(const std::string& type, void* va
     }
     return nullptr;
 }
+
+#include "generated/ObjectProperties.generated.inl"

@@ -17,3 +17,5 @@ WidgetPtr WValueSliderFloat::Build()
 		}),
 	});
 }
+
+#include "generated/ValueSliderFloat.generated.inl"

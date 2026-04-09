@@ -2,26 +2,20 @@
 #include <glm/common.hpp>
 #include <kotono_common/bitwise_utils.h>
 
-WWrap::WWrap(const WrapSettings& wrapSettings) :
-	WChildOwnerWidget(wrapSettings.child),
-	wrapSettings_(wrapSettings)
-{
-}
-
 UWidgetDisplaySettings WWrap::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
-	if (wrapSettings_.child)
+	if (child_)
 	{
-		auto childDesiredSize{ wrapSettings_.child->GetDesiredSize(displaySettings.bounds) };
-		if (has_flag(wrapSettings_.axis, EAxis::Horizontal))
+		auto childDesiredSize{ child_->GetDesiredSize(displaySettings.bounds) };
+		if (has_flag(axis_, EAxis::Horizontal))
 		{
 			displaySettings.bounds.x = std::min(displaySettings.bounds.x, childDesiredSize.x);
 		}
-		if (has_flag(wrapSettings_.axis, EAxis::Vertical))
+		if (has_flag(axis_, EAxis::Vertical))
 		{
 			displaySettings.bounds.y = std::min(displaySettings.bounds.y, childDesiredSize.y);
 		}
-		return wrapSettings_.child->GetDisplaySettings(displaySettings);
+		return child_->GetDisplaySettings(displaySettings);
 	}
 
 	return displaySettings;
@@ -29,7 +23,7 @@ UWidgetDisplaySettings WWrap::GetDisplaySettings(UWidgetDisplaySettings displayS
 
 EFlex WWrap::GetFlex() const
 {
-	switch (wrapSettings_.axis)
+	switch (axis_)
 	{
 	case EAxis::Horizontal:	return EFlex::Vertical;
 	case EAxis::Vertical:	return EFlex::Horizontal;
@@ -38,12 +32,24 @@ EFlex WWrap::GetFlex() const
 	}
 }
 
+EAxis WWrap::GetAxis() const
+{
+	return axis_;
+}
+
+void WWrap::SetAxis(const EAxis axis)
+{
+	axis_ = axis;
+}
+
 void WWrap::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	++displaySettings.layer;
 
-	if (wrapSettings_.child)
+	if (child_)
 	{
-		wrapSettings_.child->Display(displaySettings);
+		child_->Display(displaySettings);
 	}
 }
+
+#include "generated/Wrap.generated.inl"

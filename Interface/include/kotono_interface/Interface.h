@@ -1,24 +1,22 @@
 #pragma once
 #include <kotono_common/Pool.h>
-#include <unordered_set>
+template <typename T>
+class UPtr;
 class WButton;
 class SInterface final
 {
 public:
 	void Init();
 
-	void AddButton(WButton* button);
-	void RemoveButton(WButton* button);
+	void AddButton(const UPtr<WButton>& button);
+	void RemoveButton(const UPtr<WButton>& button);
 
 private:
-	void RemoveButtons();
-
-	void OnMouseLeftButtonPressed();
-	void OnMouseLeftButtonReleased();
+	void OnMouseLeftButtonPressed() const;
+	void OnMouseLeftButtonReleased() const;
 
 private:
-	KtPool<WButton*> buttons_;
-	std::unordered_set<WButton*> removes_;
+	KtPool<UPtr<WButton>> buttons_;
 };
 
 inline SInterface Interface;

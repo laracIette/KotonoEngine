@@ -6,17 +6,32 @@
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/Texture.h>
 
-WColor::WColor(const ColorSettings& colorSettings) 
-	: colorSettings_(colorSettings)
-	, isProxyRegistered_(false)
+void WColor::Cleanup()
 {
+	if (colorProxy_)
+	{
+		Renderer.InterfaceRenderer().UnregisterProxy(colorProxy_);
+		Renderer.InterfaceRenderer().DeleteProxy(colorProxy_);
+		colorProxy_ = nullptr;
+	}
+
+	Base::Cleanup();
+}
+
+const UColor& WColor::GetColor() const
+{
+	return color_;
+}
+
+void WColor::SetColor(const UColor& color)
+{
+	color_ = color;
 }
 
 void WColor::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
-	if (!isProxyRegistered_)
+	if (!colorProxy_)
 	{
-		isProxyRegistered_ = true;
 		colorProxy_ = Renderer.InterfaceRenderer().CreateProxy();
 		Renderer.InterfaceRenderer().RegisterProxy(colorProxy_);
 	}
@@ -28,20 +43,10 @@ void WColor::DisplayInternal(UWidgetDisplaySettings displaySettings)
 			data.renderable = UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg").Get();
 			data.layer = displaySettings.layer;
 			data.objectData.modelMatrix = ModelMatrix();
-			data.objectData.color = colorSettings_.color;
+			data.objectData.color = color_;
 			data.scissor = displaySettings.scissor;
 		}
 	);
 }
 
-void WColor::Cleanup()
-{
-	if (isProxyRegistered_)
-	{
-		isProxyRegistered_ = false;
-		Renderer.InterfaceRenderer().UnregisterProxy(colorProxy_);
-		Renderer.InterfaceRenderer().DeleteProxy(colorProxy_);
-	}
-
-	WWidget::Cleanup();
-}
+#include "generated/Color.generated.inl"

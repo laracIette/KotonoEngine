@@ -18,3 +18,5 @@ WidgetPtr WValueBox::Build()
 		}),
 	});
 }
+
+#include "generated/ValueBox.generated.inl"

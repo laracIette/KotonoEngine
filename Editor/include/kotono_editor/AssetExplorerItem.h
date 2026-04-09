@@ -1,8 +1,11 @@
 #pragma once
+#include "generated/AssetExplorerItem.generated.h"
 #include <kotono_interface/Widget.h>
 #include <kotono_common/Path.h>
 class WAssetExplorerItem : public WWidget
 {
+	GENERATED_WASSETEXPLORERITEM()
+
 public:
 	using OnClickedFunc = std::function<void(const UPath&)>;
 

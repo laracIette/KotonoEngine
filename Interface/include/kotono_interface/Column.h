@@ -1,7 +1,10 @@
 #pragma once
-#include "ChildrenOwnerWidget.h"
-class WColumn : public WChildrenOwnerWidget
+#include "generated/Column.generated.h"
+#include "ChildrenOwner.h"
+class WColumn : public WChildrenOwner
 {
+	GENERATED_WCOLUMN()
+
 public:
 	struct ColumnSettings
 	{

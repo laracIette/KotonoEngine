@@ -1,28 +1,34 @@
 #include "Offset.h"
 
-WOffset::WOffset(const OffsetSettings& offsetSettings) :
-	WChildOwnerWidget(offsetSettings.child),
-	offsetSettings_(offsetSettings)
+UWidgetDisplaySettings WOffset::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
+	displaySettings.position += offset_;
+	
+	if (child_)
+	{
+		return child_->GetDisplaySettings(displaySettings);
+	}
+	return displaySettings;
+}
+
+const glm::vec2& WOffset::GetOffset() const
+{
+	return offset_;
+}
+
+void WOffset::SetOffset(const glm::vec2& offset)
+{
+	offset_ = offset;
 }
 
 void WOffset::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	++displaySettings.layer;
 
-	if (offsetSettings_.child)
+	if (child_)
 	{
-		offsetSettings_.child->Display(displaySettings);
+		child_->Display(displaySettings);
 	}
 }
 
-UWidgetDisplaySettings WOffset::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
-{
-	displaySettings.position += offsetSettings_.offset;
-	
-	if (offsetSettings_.child)
-	{
-		return offsetSettings_.child->GetDisplaySettings(displaySettings);
-	}
-	return displaySettings;
-}
+#include "generated/Offset.generated.inl"

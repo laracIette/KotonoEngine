@@ -109,7 +109,7 @@ void WAssetExplorer::Cleanup()
 	Mouse.EventButton(EButton::Previous, EInputState::Pressed).RemoveListener(this, &WAssetExplorer::OnMousePreviousButtonPressed);
 	Mouse.EventButton(EButton::Next, EInputState::Pressed).RemoveListener(this, &WAssetExplorer::OnMouseNextButtonPressed);
 
-	WWidget::Cleanup();
+	Base::Cleanup();
 }
 
 void WAssetExplorer::Push(const UPath& path)
@@ -148,3 +148,5 @@ void WAssetExplorer::OnMouseNextButtonPressed()
 {
 	NavigateNext();
 }
+
+#include "generated/AssetExplorer.generated.inl"

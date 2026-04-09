@@ -1,28 +1,27 @@
 #pragma once
+#include "generated/Image.generated.h"
 #include "Widget.h"
 #include <kotono_common/Path.h>
 class UInterfaceProxy;
-class WImage : public WWidget
+/// Display an image over the widget's bounds
+class WImage final : public WWidget
 {
+	GENERATED_WIMAGE()
+
 public:
-	struct ImageSettings
-	{
-		/// default = ""
-		UPath path{ "" };
-	};
-
-	/// Display an image over the widget's bounds
-	WImage(const ImageSettings& imageSettings);
-
 	void Cleanup() override;
 
-protected:
-	ImageSettings imageSettings_;
-	UInterfaceProxy* imageProxy_;
+public:
+	const UPath& GetPath() const;
 
+	void SetPath(const UPath& path);
+
+protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 
 private:
-	bool isProxyRegistered_;
+	UPath path_;
+
+	UInterfaceProxy* imageProxy_;
 };
 

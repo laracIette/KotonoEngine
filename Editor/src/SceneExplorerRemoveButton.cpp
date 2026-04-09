@@ -38,5 +38,7 @@ void WSceneExplorerRemoveButton::Cleanup()
 {
     ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &WSceneExplorerRemoveButton::Refresh);
 
-    WWidget::Cleanup();
+    Base::Cleanup();
 }
+
+#include "generated/SceneExplorerRemoveButton.generated.inl"

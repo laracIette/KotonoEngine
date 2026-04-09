@@ -19,10 +19,12 @@ void WUpdateTimeText::Cleanup()
 {
     TimerManager.GetTimer("update time text").EventCompleted().RemoveListener(this, &WUpdateTimeText::UpdateText);
 
-    WWidget::Cleanup();
+    Base::Cleanup();
 }
 
 void WUpdateTimeText::UpdateText()
 {
     SetState([]() {});
 }
+
+#include "generated/UpdateTimeText.generated.inl"

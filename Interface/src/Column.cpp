@@ -5,7 +5,7 @@
 #include <glm/common.hpp>
 
 WColumn::WColumn(const ColumnSettings& columnSettings) : 
-	WChildrenOwnerWidget(columnSettings.children),
+	WChildrenOwner(columnSettings.children),
 	columnSettings_(columnSettings)
 {
 }
@@ -110,3 +110,5 @@ size WColumn::GetFlexCount() const
 		[](const WidgetPtr child) { return child && has_flag(child->GetFlex(), EFlex::Vertical); }
 	);
 }
+
+#include "generated/Column.generated.inl"

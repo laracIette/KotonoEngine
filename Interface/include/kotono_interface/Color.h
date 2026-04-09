@@ -1,28 +1,27 @@
 #pragma once
+#include "generated/Color.generated.h"
 #include "Widget.h"
 #include <kotono_graphics/Color.h>
 class UInterfaceProxy;
-class WColor : public WWidget
+/// Fill the widget's bounds with a color
+class WColor final : public WWidget
 {
+	GENERATED_WCOLOR()
+
 public:
-	struct ColorSettings
-	{
-		/// default = Colors::White
-		UColor color{ Colors::White };
-	};
-
-	/// Fill the widget's bounds with a color
-	WColor(const ColorSettings& colorSettings);
-
 	void Cleanup() override;
 	
-protected:
-	ColorSettings colorSettings_;
-	UInterfaceProxy* colorProxy_;
+public:
+	const UColor& GetColor() const;
 
+	void SetColor(const UColor& color);
+
+protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 
 private:
-	bool isProxyRegistered_;
+	UColor color_;
+
+	UInterfaceProxy* colorProxy_;
 };
 

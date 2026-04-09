@@ -4,7 +4,7 @@
 #include <kotono_math/math_utils.h>
 
 WHorizontalWrapListBody::WHorizontalWrapListBody(const HorizontalWrapListBodySettings& horizontalWrapListBodySettings)
-	: WChildrenOwnerWidget(horizontalWrapListBodySettings.children)
+	: WChildrenOwner(horizontalWrapListBodySettings.children)
 	, horizontalWrapListBodySettings_(horizontalWrapListBodySettings)
 {
 }
@@ -200,3 +200,5 @@ std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDesiredSizes(const glm::ve
 
 	return rowSizes;
 }
+
+#include "generated/HorizontalWrapListBody.generated.inl"

@@ -9,68 +9,51 @@ void SInterface::Init()
 	Mouse.EventButton(EButton::Left, EInputState::Released).AddListener(this, &SInterface::OnMouseLeftButtonReleased);
 }
 
-void SInterface::AddButton(WButton* button)
+void SInterface::AddButton(const UPtr<WButton>& button)
 {
 	buttons_.Add(button);
 }
 
-void SInterface::RemoveButton(WButton* button)
+void SInterface::RemoveButton(const UPtr<WButton>& button)
 {
-	removes_.insert(button);
+	buttons_.Remove(button);
 }
 
-void SInterface::RemoveButtons()
+void SInterface::OnMouseLeftButtonPressed() const
 {
-	if (!removes_.empty())
-	{
-		buttons_.RemoveIf([this](WButton* button) { return removes_.contains(button); });
-		removes_.clear();
-	}
-}
-
-void SInterface::OnMouseLeftButtonPressed()
-{
-	RemoveButtons();
-
 	auto buttons{ buttons_ };
 	std::ranges::sort(buttons, std::ranges::greater{}, &WButton::Layer);
 
 	bool hasInteracted{ false };
-	for (auto* button : buttons)
+	for (auto& button : buttons)
 	{
-		if (removes_.contains(button))
+		if (button)
 		{
-			continue;
-		}
-
-		if (!hasInteracted && button->ReceiveMouseLeftButtonPressed())
-		{
-			hasInteracted = true;
-		}
-		else
-		{
-			button->OnMouseLeftButtonPressedNoInteract();
+			if (!hasInteracted && button->ReceiveMouseLeftButtonPressed())
+			{
+				hasInteracted = true;
+			}
+			else
+			{
+				button->OnMouseLeftButtonPressedNoInteract();
+			}
 		}
 	}
 }
 
-void SInterface::OnMouseLeftButtonReleased()
+void SInterface::OnMouseLeftButtonReleased() const
 {
-	RemoveButtons();
-
 	auto buttons{ buttons_ };
 	std::ranges::sort(buttons, std::ranges::greater{}, &WButton::Layer);
 
-	for (auto* button : buttons)
+	for (auto& button : buttons)
 	{
-		if (removes_.contains(button))
+		if (button)
 		{
-			continue;
-		}
-
-		if (button->ReceiveMouseLeftButtonReleased())
-		{
-			break;
+			if (button->ReceiveMouseLeftButtonReleased())
+			{
+				break;
+			}
 		}
 	}
 }

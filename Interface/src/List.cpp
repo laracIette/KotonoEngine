@@ -19,3 +19,5 @@ WidgetPtr WList::Build()
 		},
 	});
 }
+
+#include "generated/List.generated.inl"

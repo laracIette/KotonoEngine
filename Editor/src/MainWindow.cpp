@@ -79,3 +79,5 @@ WidgetPtr WMainWindow::Build()
 		}),
 	});
 }
+
+#include "generated/MainWindow.generated.inl"

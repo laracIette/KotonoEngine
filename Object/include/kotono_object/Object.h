@@ -4,6 +4,7 @@
 #include "ObjectFactory.h"
 #include "Ptr.h"
 #include "VariableInfo.h"
+#include <functional>
 #include <kotono_common/Asset.h>
 #include <kotono_common/Event.h>
 #include <kotono_common/log.h>
@@ -24,6 +25,8 @@ unregisterDelegates_.push_back(											\
 		}																\
 	}																	\
 )
+
+using VoidCallback = std::function<void()>;
 
 class UPath;
 
@@ -87,7 +90,7 @@ protected:
 protected:
 	UPtrOwner* const ptrOwner_;
 
-	std::vector<std::function<void()>> unregisterDelegates_;
+	std::vector<VoidCallback> unregisterDelegates_;
 
 private:
 	SERIALIZE UGuid guid_;

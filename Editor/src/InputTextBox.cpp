@@ -56,7 +56,7 @@ void WInputTextBox::Cleanup()
 	Keyboard.EventKey(EKey::Backspace, EInputState::Pressed).RemoveListener(this, &WInputTextBox::OnKeyBackspacePressed);
 	Keyboard.EventKey(EKey::Backspace, EInputState::Down).RemoveListener(this, &WInputTextBox::OnKeyBackspaceDown);
 
-	WWidget::Cleanup();
+	Base::Cleanup();
 }
 
 void WInputTextBox::OnKeyBackspacePressed()
@@ -154,3 +154,5 @@ void WInputTextBox::OnAnyKeyDown(const EKey key)
 		});
 	}
 }
+
+#include "generated/InputTextBox.generated.inl"

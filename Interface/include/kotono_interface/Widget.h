@@ -1,7 +1,8 @@
 #pragma once
+#include "generated/Widget.generated.h"
+#include <kotono_object/Object.h>
 #include "Axis.h"
 #include "Flex.h"
-#include "widget_fwd.h"
 #include <functional>
 #include <glm/fwd.hpp>
 #include <glm/vec2.hpp>
@@ -19,17 +20,21 @@ struct UWidgetDisplaySettings
 	KtScissor scissor;
 };
 
+class WWidget;
+using WidgetPtr = UPtr<WWidget>;
 using WidgetVector = std::vector<WidgetPtr>;
+using WidgetPool = KtPool<WidgetPtr>;
 
 /// Base class of all widgets
-class WWidget
+class WWidget : public KObject
 {
+	GENERATED_WWIDGET()
+
 protected:
 	using StateFunction = std::function<void()>;
 
 public:
 	WWidget();
-	virtual ~WWidget() = default;
 
 	virtual void CacheBuild();
 

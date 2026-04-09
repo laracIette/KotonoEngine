@@ -50,3 +50,5 @@ WidgetPtr WSceneExplorerAddButton::Build()
 		},
 	});
 }
+
+#include "generated/SceneExplorerAddButton.generated.inl"

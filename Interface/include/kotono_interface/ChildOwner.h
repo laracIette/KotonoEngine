@@ -1,10 +1,11 @@
 #pragma once
+#include "generated/ChildOwner.generated.h"
 #include "Widget.h"
-class WChildOwnerWidget : public WWidget
+class WChildOwner : public WWidget
 {
-public:
-	WChildOwnerWidget(WidgetPtr child);
+	GENERATED_WCHILDOWNER()
 
+public:
 	void CacheBuild() override final;
 
 	void Cleanup() override;
@@ -14,7 +15,11 @@ public:
 
 	WidgetVector GetWidgetTree() override;
 
-private:
+public:
+	const WidgetPtr& GetChild() const;
+
+	void SetChild(const WidgetPtr& widget);
+
+protected:
 	WidgetPtr child_;
 };
-

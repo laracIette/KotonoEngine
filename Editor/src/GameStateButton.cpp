@@ -63,7 +63,7 @@ void WGameStateButton::Cleanup()
 {
     Keyboard.EventKey(EKey::Space, EInputState::Pressed).RemoveListener(this, &WGameStateButton::OnKeyboardSpaceKeyPressed);
 
-    WWidget::Cleanup();
+    Base::Cleanup();
 }
 
 void WGameStateButton::OnKeyboardSpaceKeyPressed()
@@ -80,3 +80,5 @@ void WGameStateButton::OnKeyboardSpaceKeyPressed()
         }
     });
 }
+
+#include "generated/GameStateButton.generated.inl"

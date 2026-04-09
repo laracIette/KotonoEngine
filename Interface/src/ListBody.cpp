@@ -4,7 +4,7 @@
 #include <kotono_math/math_utils.h>
 
 WListBody::WListBody(const ListBodySettings& listBodySettings) :
-	WChildrenOwnerWidget(listBodySettings.children),
+	WChildrenOwner(listBodySettings.children),
 	listBodySettings_(listBodySettings)
 {
 }
@@ -90,3 +90,5 @@ glm::vec2 WListBody::GetDesiredSize(glm::vec2 bounds) const
 
 	return size;
 }
+
+#include "generated/ListBody.generated.inl"

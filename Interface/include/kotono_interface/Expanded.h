@@ -1,23 +1,17 @@
 #pragma once
-#include "ChildOwnerWidget.h"
-class WExpanded : public WChildOwnerWidget
+#include "generated/Expanded.generated.h"
+#include "ChildOwner.h"
+/// Fills the entirety of the available parent space
+class WExpanded final : public WChildOwner
 {
+	GENERATED_WEXPANDED()
+
 public:
-	struct ExpandedSettings
-	{
-		WidgetPtr child{ nullptr };
-	};
-
-	/// Fills the entirety of the available parent space
-	WExpanded(const ExpandedSettings& expandedSettings);
-
 	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 	
 	EFlex GetFlex() const override;
 
 protected:
-	ExpandedSettings expandedSettings_;
-
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 };
 

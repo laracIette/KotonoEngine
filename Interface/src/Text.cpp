@@ -1,20 +1,13 @@
 #include "Text.h"
 #include "widgets.h"
 #include <kotono_graphics/Font.h>
-#include <kotono_common/Path.h>
-#include <kotono_common/log.h>
-
-WText::WText(const TextSettings& textSettings) :
-	textSettings_(textSettings)
-{
-}
 
 WidgetPtr WText::Build()
 {
-	if (textSettings_.shouldWrap)
+	if (shouldWrap_)
 	{
 		return new WHorizontalWrapList({
-			.itemSpacing = textSettings_.spacing,
+			.itemSpacing = spacing_,
 			.rowSpacing = 0.0f,
 			.children = [this]() { return GetCharacters(); },
 		});
@@ -22,7 +15,7 @@ WidgetPtr WText::Build()
 	else
 	{
 		return new WRow({
-			.spacing = textSettings_.spacing,
+			.spacing = spacing_,
 			.children = GetCharacters(),
 		});
 	}
@@ -30,8 +23,47 @@ WidgetPtr WText::Build()
 
 UWidgetDisplaySettings WText::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
-	const auto ds{ WWidget::GetDisplaySettings(displaySettings) };
-	return ds;
+	return Base::GetDisplaySettings(displaySettings);
+}
+
+const std::string& WText::GetText() const
+{
+	return text_;
+}
+
+const glm::vec2& WText::GetFontSize() const
+{
+	return fontSize_;
+}
+
+float WText::GetSpacing() const
+{
+	return spacing_;
+}
+
+bool WText::GetShouldWrap() const
+{
+	return shouldWrap_;
+}
+
+void WText::SetText(const std::string& text)
+{
+	text_ = text;
+}
+
+void WText::SetFontSize(const glm::vec2& fontSize)
+{
+	fontSize_ = fontSize;
+}
+
+void WText::SetSpacing(const float spacing)
+{
+	spacing_ = spacing;
+}
+
+void WText::SetShouldWrap(const bool shouldWrap)
+{
+	shouldWrap_ = shouldWrap;
 }
 
 WidgetVector WText::GetCharacters() const
@@ -40,13 +72,13 @@ WidgetVector WText::GetCharacters() const
 
 	const KtFont font("${ENGINE_DIRECTORY}/Graphics/assets/fonts/default");
 
-	const auto characterPaths{ font.GetTextPaths(textSettings_.text) };
+	const auto characterPaths{ font.GetTextPaths(text_) };
 	result.reserve(characterPaths.size());
 
 	for (const auto& characterPath : characterPaths)
 	{
 		result.push_back(new WBox({
-			.size = textSettings_.fontSize,
+			.size = fontSize_,
 			.child = new WImage({
 				.path = characterPath,
 			}),
@@ -55,3 +87,5 @@ WidgetVector WText::GetCharacters() const
 
 	return result;
 }
+
+#include "generated/Text.generated.inl"

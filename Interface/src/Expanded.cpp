@@ -1,16 +1,10 @@
 #include "Expanded.h"
 
-WExpanded::WExpanded(const ExpandedSettings& expandedSettings) :
-	WChildOwnerWidget(expandedSettings.child),
-	expandedSettings_(expandedSettings)
-{
-}
-
 void WExpanded::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
-	if (expandedSettings_.child)
+	if (child_)
 	{
-		expandedSettings_.child->Display(displaySettings);
+		child_->Display(displaySettings);
 	}
 }
 
@@ -23,3 +17,5 @@ EFlex WExpanded::GetFlex() const
 {
 	return EFlex::All;
 }
+
+#include "generated/Expanded.generated.inl"

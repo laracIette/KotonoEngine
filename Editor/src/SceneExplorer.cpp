@@ -83,10 +83,12 @@ void WSceneExplorer::Cleanup()
 
 	GameManager.EventStateChanged().RemoveListener(this, &WSceneExplorer::OnGameStateChanged);
 
-	WWidget::Cleanup();
+	Base::Cleanup();
 }
 
 void WSceneExplorer::OnGameStateChanged(const EGameState gameState)
 {
 	Refresh();
 }
+
+#include "generated/SceneExplorer.generated.inl"

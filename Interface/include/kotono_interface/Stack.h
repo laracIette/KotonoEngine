@@ -1,8 +1,11 @@
 #pragma once
-#include "ChildrenOwnerWidget.h"
+#include "generated/Stack.generated.h"
+#include "ChildrenOwner.h"
 #include <vector>
-class WStack : public WChildrenOwnerWidget
+class WStack final : public WChildrenOwner
 {
+	GENERATED_WSTACK()
+
 public:
 	struct StackSettings
 	{
