@@ -7,9 +7,8 @@ public:
 	using ValueType = T;
 
 public:
-	WValueSlider(T* value) : 
-		value_(value) 
-	{}
+	WValueSlider() : value_(nullptr) {}
+	WValueSlider(T* value) : value_(value) {}
 
 	T& GetValue() const 
 	{ 

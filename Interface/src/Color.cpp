@@ -6,16 +6,16 @@
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/Texture.h>
 
-void WColor::Cleanup()
+void WColor::Remove()
 {
+	Base::Remove();
+
 	if (colorProxy_)
 	{
 		Renderer.InterfaceRenderer().UnregisterProxy(colorProxy_);
 		Renderer.InterfaceRenderer().DeleteProxy(colorProxy_);
 		colorProxy_ = nullptr;
 	}
-
-	Base::Cleanup();
 }
 
 const UColor& WColor::GetColor() const

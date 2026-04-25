@@ -3,12 +3,6 @@
 #include <glm/common.hpp>
 #include <kotono_math/math_utils.h>
 
-WHorizontalWrapListBody::WHorizontalWrapListBody(const HorizontalWrapListBodySettings& horizontalWrapListBodySettings)
-	: WChildrenOwner(horizontalWrapListBodySettings.children)
-	, horizontalWrapListBodySettings_(horizontalWrapListBodySettings)
-{
-}
-
 UWidgetDisplaySettings WHorizontalWrapListBody::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	displaySettings.bounds.y = INFINITY;
@@ -24,7 +18,7 @@ UWidgetDisplaySettings WHorizontalWrapListBody::GetDisplaySettings(UWidgetDispla
 
 	if (rowSizes.size())
 	{
-		size.y += horizontalWrapListBodySettings_.rowSpacing * static_cast<float>(rowSizes.size() - 1);
+		size.y += rowSpacing_ * static_cast<float>(rowSizes.size() - 1);
 	}
 	
 	displaySettings.bounds = glm::min(displaySettings.bounds, size);
@@ -44,20 +38,48 @@ glm::vec2 WHorizontalWrapListBody::GetDesiredSize(glm::vec2 bounds) const
 	
 	if (rowSizes.size())
 	{
-		size.y += horizontalWrapListBodySettings_.rowSpacing * static_cast<float>(rowSizes.size() - 1);
+		size.y += rowSpacing_ * static_cast<float>(rowSizes.size() - 1);
 	}
 
 	return size;
+}
+
+const WidgetPool& WHorizontalWrapListBody::GetChildren() const
+{
+	return children_;
+}
+
+float WHorizontalWrapListBody::GetItemSpacing() const
+{
+	return itemSpacing_;
+}
+
+float WHorizontalWrapListBody::GetRowSpacing() const
+{
+	return rowSpacing_;
+}
+
+void WHorizontalWrapListBody::SetChildren(const WidgetPool& children)
+{
+	children_ = children;
+}
+
+void WHorizontalWrapListBody::SetItemSpacing(const float itemSpacing)
+{
+	itemSpacing_ = itemSpacing;
+}
+
+void WHorizontalWrapListBody::SetRowSpacing(const float rowSpacing)
+{
+	rowSpacing_ = rowSpacing;
 }
 
 void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	++displaySettings.layer;
 
-	if (parent_) // todo: move to scrollable ?
+	if (UPtr asList{ TryCast<WHorizontalWrapList>(GetParent()) }) // todo: move to scrollable ?
 	{
-		const auto* asList{ static_cast<WHorizontalWrapList*>(parent_) };
-
 		glm::vec2 newScissorOffset;
 		glm::vec2 newScissorExtent;
 		compute_intersect(
@@ -78,7 +100,7 @@ void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySett
 	glm::vec2 rowSize{ 0.0f, 0.0f };
 	auto isRowEmpty{ [&rowSize]() { return rowSize == glm::vec2{ 0.0f, 0.0f }; } };
 
-	for (auto* child : horizontalWrapListBodySettings_.children)
+	for (auto& child : children_)
 	{
 		if (child)
 		{
@@ -87,10 +109,10 @@ void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySett
 			if (!isRowEmpty() && childDesiredSize.x > displaySettings.bounds.x)
 			{
 				displaySettings.position.x = baseDisplaySettings.position.x;
-				displaySettings.position.y += rowSize.y + horizontalWrapListBodySettings_.rowSpacing;
+				displaySettings.position.y += rowSize.y + rowSpacing_;
 
 				displaySettings.bounds.x = baseDisplaySettings.bounds.x;
-				displaySettings.bounds.y -= rowSize.y + horizontalWrapListBodySettings_.rowSpacing; // useless because bounds.y can only be INF, but here for consistency
+				displaySettings.bounds.y -= rowSize.y + rowSpacing_; // useless because bounds.y can only be INF, but here for consistency
 
 				rowSize = { 0.0f, 0.0f };
 			}
@@ -98,11 +120,11 @@ void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySett
 			child->Display(displaySettings);
 			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
 
-			rowSize.x += childSettings.bounds.x + horizontalWrapListBodySettings_.itemSpacing;
+			rowSize.x += childSettings.bounds.x + itemSpacing_;
 			rowSize.y = std::max(rowSize.y, childSettings.bounds.y);
 
-			displaySettings.position.x += childSettings.bounds.x + horizontalWrapListBodySettings_.itemSpacing;
-			displaySettings.bounds.x -= childSettings.bounds.x + horizontalWrapListBodySettings_.itemSpacing;
+			displaySettings.position.x += childSettings.bounds.x + itemSpacing_;
+			displaySettings.bounds.x -= childSettings.bounds.x + itemSpacing_;
 		}
 	}
 }
@@ -116,7 +138,7 @@ std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDisplaySizes(const UWidget
 
 	auto newDisplayBounds{ displaySettings.bounds };
 
-	for (auto* child : horizontalWrapListBodySettings_.children)
+	for (auto& child : children_)
 	{
 		if (child)
 		{
@@ -124,13 +146,13 @@ std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDisplaySizes(const UWidget
 
 			if (!isRowEmpty())
 			{
-				const auto requiredSize{ childDesiredSize.x + horizontalWrapListBodySettings_.itemSpacing };
+				const auto requiredSize{ childDesiredSize.x + itemSpacing_ };
 
 				// Try to insert an item spacing
 				if (requiredSize <= newDisplayBounds.x)
 				{
-					rowSize.x += horizontalWrapListBodySettings_.itemSpacing;
-					newDisplayBounds.x -= horizontalWrapListBodySettings_.itemSpacing;
+					rowSize.x += itemSpacing_;
+					newDisplayBounds.x -= itemSpacing_;
 				}
 				// Submit the row if the child doesn't fit
 				else
@@ -138,7 +160,7 @@ std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDisplaySizes(const UWidget
 					rowSizes.push_back(rowSize);
 
 					newDisplayBounds.x = displaySettings.bounds.x;
-					newDisplayBounds.y -= rowSize.y + horizontalWrapListBodySettings_.rowSpacing; // useless because bounds.y can only be INF, but here for consistency
+					newDisplayBounds.y -= rowSize.y + rowSpacing_; // useless because bounds.y can only be INF, but here for consistency
 
 					rowSize = { 0.0f, 0.0f };
 				}
@@ -167,7 +189,7 @@ std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDesiredSizes(const glm::ve
 
 	auto isRowEmpty{ [&rowSize]() { return rowSize == glm::vec2{ 0.0f, 0.0f }; } };
 
-	for (auto* child : horizontalWrapListBodySettings_.children)
+	for (auto& child : children_)
 	{
 		if (child)
 		{
@@ -175,11 +197,11 @@ std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDesiredSizes(const glm::ve
 
 			if (!isRowEmpty())
 			{
-				const auto requiredSize{ childDesiredSize.x + horizontalWrapListBodySettings_.itemSpacing };
+				const auto requiredSize{ childDesiredSize.x + itemSpacing_ };
 
 				if (rowSize.x + requiredSize <= bounds.x)
 				{
-					rowSize.x += horizontalWrapListBodySettings_.itemSpacing;
+					rowSize.x += itemSpacing_;
 				}
 				else
 				{

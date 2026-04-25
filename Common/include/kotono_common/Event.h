@@ -24,7 +24,7 @@ public:
         delegates_.Remove(delegate);
     }
 
-    void Broadcast(Args... args)
+    void Broadcast(const Args&... args)
     {
         // Don't process delegates that are added while the event is broadcasting
         for (i64 i{ delegates_.LastIndex() }; delegates_.IsValidIndex(i); --i)

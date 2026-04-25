@@ -1,32 +1,30 @@
 #include "ChildrenOwner.h"
 #include <algorithm>
-#include <kotono_common/bitwise_utils.h>
+#include <ranges>
+#include <kotono_common/bitwise_utils.h>		 
 
-void WChildrenOwner::CacheBuild()
+WChildrenOwner::~WChildrenOwner()
 {
-	Base::CacheBuild();
 	for (auto& child : children_)
 	{
 		if (child)
 		{
-			child->CacheBuild();
+			child->Delete();
 		}
 	}
 }
 
-void WChildrenOwner::Cleanup()
+void WChildrenOwner::Remove()
 {
+	Base::Remove();
+
 	for (auto& child : children_)
 	{
 		if (child)
 		{
-			child->Cleanup();
-			child->Delete();
+			child->Remove();
 		}
 	}
-	children_.Clear();
-
-	Base::Cleanup();
 }
 
 EFlex WChildrenOwner::GetFlex() const
@@ -46,7 +44,7 @@ EFlex WChildrenOwner::GetFlex() const
 
 WidgetVector WChildrenOwner::GetWidgetTree()
 {
-	WidgetVector result{ Ptr() };
+	WidgetVector result{ Base::GetWidgetTree() };
 
 	for (auto& child : children_)
 	{
@@ -67,46 +65,73 @@ const WidgetPool& WChildrenOwner::GetChildren() const
 
 void WChildrenOwner::SetChildren(const WidgetPool& widgets)
 {
-	for (auto& child : children_)
-	{
-		if (child)
+	SetState([this, widgets]() {
+		for (auto& child : children_)
 		{
-			child->SetParent({});
+			if (child)
+			{
+				child->SetParent({});
+			}
 		}
-	}
-	children_ = widgets;
-	for (auto& child : children_)
-	{
-		if (child)
+
+		children_ = widgets;
+
+		for (auto& child : children_)
 		{
-			child->SetParent(Ptr());
+			if (child)
+			{
+				child->SetParent(Ptr());
+			}
 		}
-	}
-}
-
-void WChildrenOwner::AddChild(const WidgetPtr& widget)
-{
-	if (widget)
-	{
-		widget->SetParent(Ptr());
-		children_.Add(widget);
-	}
-}
-
-void WChildrenOwner::RemoveChild(const WidgetPtr& widget)
-{
-	if (widget)
-	{
-		widget->SetParent({});
-		children_.Remove(widget);
-	}
+	});
 }
 
 size WChildrenOwner::GetValidChildrenCount() const
 {
 	return std::count_if(children_.begin(), children_.end(),
-		[](const WidgetPtr& child) { return child != WidgetPtr{}; }
+		[](const WidgetPtr& child) { return child; }
 	);
+}
+
+UChildrenOwnerTree::UChildrenOwnerTree(const UPtr<WChildrenOwner>& widget, const std::vector<UWidgetTree*>& children)
+	: widget_(widget)
+	, children_(children)
+{
+}
+
+UChildrenOwnerTree::~UChildrenOwnerTree()
+{
+	for (const auto* widgetTree : children_)
+	{
+		delete widgetTree;
+	}
+}
+
+WidgetPtr UChildrenOwnerTree::Widget() const
+{
+	return widget_;
+}
+
+void UChildrenOwnerTree::Link() const
+{
+	for (const auto* child : children_)
+	{
+		if (child)
+		{
+			child->Link();
+		}
+	}
+
+	if (widget_)
+	{
+		WidgetPool widgets{};
+		std::ranges::copy(children_
+			| std::views::filter([](const UWidgetTree* child) { return child != nullptr; })
+			| std::views::transform([](const UWidgetTree* child) { return child->Widget(); })
+			, std::back_inserter(widgets)
+		);
+		widget_->SetChildren(widgets);
+	}
 }
 
 #include "generated/ChildrenOwner.generated.inl"

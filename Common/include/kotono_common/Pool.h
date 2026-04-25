@@ -26,6 +26,9 @@ private:
 	using IndexType = ::size;
 
 public:
+	using value_type = ValueType;
+
+public:
 	KtPool() : data_() {}
 
 	KtPool(IteratorType begin, IteratorType end) : data_(begin, end) {}
@@ -34,6 +37,8 @@ public:
 
 	template <std::input_iterator CustomIteratorType>
 	KtPool(CustomIteratorType begin, CustomIteratorType end) : data_(begin, end) {}
+
+	KtPool(std::initializer_list<ValueType> data) : data_(data) {}
 
 	template <typename T>
 		requires std::constructible_from<ValueType, T&&>
@@ -191,6 +196,15 @@ public:
 	ValueType& operator[](const IndexType index) noexcept
 	{
 		return data_[index];
+	}
+
+	void push_back(const value_type& item)
+	{
+		data_.push_back(item);
+	}
+	void push_back(value_type&& item)
+	{
+		data_.push_back(std::move(item));
 	}
 
 private:

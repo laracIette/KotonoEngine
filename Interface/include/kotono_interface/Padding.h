@@ -2,7 +2,7 @@
 #include "generated/Padding.generated.h"
 #include "ChildOwner.h"
 
-struct UPadding
+struct UPadding final
 {
 	float l, t, r, b;
 

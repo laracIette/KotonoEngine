@@ -38,7 +38,7 @@ KObject::~KObject()
     delete ptrOwner_;
 }
 
-void KObject::OnConstructed()
+void KObject::PostConstruct()
 {
     if (!isConstructed_)
     {
@@ -68,11 +68,6 @@ UPath KObject::Path() const
     return "${PROJECT_DIRECTORY}/assets/objects/" + guid_.ToString() + ".kobject";
 }
 
-const std::string& KObject::GetName() const
-{
-    return name_;
-}
-
 std::string KObject::TypeName() const
 {
     std::string_view name{ Type().name() };
@@ -91,11 +86,6 @@ nlohmann::json KObject::WriteJson() const
     nlohmann::json json{};
     SerializeTo(json);
     return json;
-}
-
-void KObject::SetName(const std::string& name)
-{
-    name_ = name;
 }
 
 void KObject::Delete()
@@ -122,15 +112,31 @@ UPtr<KObject> KObject::Deserialize(const nlohmann::json& json)
 {
     UGuid guid{};
     UDeserialize<UGuid>{}(json, guid);
-    return ObjectFactory.Get(guid);
+    return SObjectFactory::Get().Get(guid);
 }
 
-#if defined(_DEBUG)
+#if defined (_DEBUG)
 void KObject::CheckDebugRegistry()
 {
     if (!debugRegistry_.empty())
     {
-        throw "KObject::DebugRegistry must be empty when quitting the application.";
+        for (auto& object : debugRegistry_)
+        {
+            if (object)
+            {
+                KT_LOG(KT_LOG_COMPILE_TIME_LEVEL
+                    , "Object", "{0:48s} : {1:4d} | {2}"
+                    , object->ToString()
+                    , object->sourceLine
+                    , object->sourceFunc
+                );
+            }
+            else
+            {
+                KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Object", "NULL");
+            }
+        }
+        throw "KObject::debugRegistry_ must be empty when quitting the application.";
     }
 }
 #endif

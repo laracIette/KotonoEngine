@@ -7,6 +7,8 @@ class WWrap final : public WChildOwner
 	GENERATED_WWRAP()
 
 public:
+	WWrap();
+
 	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 	EFlex GetFlex() const override;

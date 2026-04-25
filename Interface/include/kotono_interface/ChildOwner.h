@@ -6,9 +6,10 @@ class WChildOwner : public WWidget
 	GENERATED_WCHILDOWNER()
 
 public:
-	void CacheBuild() override final;
+	~WChildOwner() override;
 
-	void Cleanup() override;
+	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Remove() override;
 
 	EFlex GetFlex() const override;
 	glm::vec2 GetDesiredSize(glm::vec2 bounds) const override;
@@ -22,4 +23,18 @@ public:
 
 protected:
 	WidgetPtr child_;
+};
+
+class UChildOwnerTree final : public UWidgetTree
+{
+public:
+	UChildOwnerTree(const UPtr<WChildOwner>& widget, UWidgetTree* child);
+	~UChildOwnerTree() override;
+
+	WidgetPtr Widget() const override;
+	void Link() const override;
+
+private:
+	UPtr<WChildOwner> widget_;
+	UWidgetTree* child_;
 };

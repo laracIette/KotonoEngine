@@ -53,8 +53,6 @@ private:
 
 	friend std::hash<UPtr>;
 
-	using RemoveConstT = std::remove_const_t<T>;
-
 public:
 	using PointerType = T;
 
@@ -72,7 +70,7 @@ public:
 	}
 
 	template <typename From>
-		requires std::is_convertible_v<From*, T*>
+		requires std::is_convertible_v<From*, PointerType*>
 	UPtr(const UPtr<From>& other) : UPtr()
 	{
 		SetOwner(other.owner_);
@@ -89,7 +87,7 @@ public:
 	}
 
 	template <typename From>
-		requires std::is_convertible_v<From*, T*>
+		requires std::is_convertible_v<From*, PointerType*>
 	UPtr& operator=(const UPtr<From>& other)
 	{
 		SetOwner(other.owner_);
@@ -111,7 +109,7 @@ public:
 	}
 
 	template <typename From>
-		requires std::is_convertible_v<From*, T*>
+		requires std::is_convertible_v<From*, PointerType*>
 	constexpr bool operator==(const UPtr<From>& other) const noexcept
 	{
 		return owner_ == other.owner_;

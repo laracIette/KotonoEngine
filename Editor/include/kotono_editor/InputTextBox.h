@@ -11,22 +11,23 @@ class WInputTextBox : public WWidget
 	using TextChangedFunction = std::function<void(const std::string&)>;
 
 public:
-	struct InputTextBoxSettings
-	{
-		/// default = ""
-		std::string text{ "" };
-		/// default = {}
-		TextChangedFunction onTextChanged{};
-		/// default = 0.5f
-		float actuationTime{ 0.5f };
-		/// default = 0.05f
-		float repeatTime{ 0.05f };
-	};
-
-	WInputTextBox(const InputTextBoxSettings& inputTextBoxSettings);
+	WInputTextBox();
 
 	WidgetPtr Build() override;
-	void Cleanup() override;
+
+	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Remove() override;
+
+public:
+	const std::string& GetText() const;
+	const TextChangedFunction& GetOnTextChanged() const;
+	float GetActuationTime() const;
+	float GetRepeatTime() const;
+
+	void SetText(const std::string& text);
+	void SetOnTextChanged(const TextChangedFunction& onTextChanged);
+	void SetActuationTime(const float actuationTime);
+	void SetRepeatTime(const float repeatTime);
 
 private:
 	void OnKeyBackspacePressed();
@@ -37,7 +38,11 @@ private:
 	void OnAnyKeyDown(const EKey key);
 
 private:
-	InputTextBoxSettings inputTextBoxSettings_;
+	std::string text_;
+	TextChangedFunction onTextChanged_;
+	float actuationTime_;
+	float repeatTime_;
+
 	bool isSelected_;
 	UInputHoldAction holdAction_;
 	char currentWriteCharacter_;

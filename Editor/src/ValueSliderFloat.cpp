@@ -3,19 +3,25 @@
 
 WidgetPtr WValueSliderFloat::Build()
 {
-	return new WBox({
-		.size = { 300.0f, 60.0f },
-		.child = new WStack({
-			.children = {
-				new WColor({ Colors::White.WithValue(0.75f) }),
-				new WText({
-					.text = std::to_string(GetValue()),
-					.fontSize = { 42.0f, 50.0f },
-					.spacing = -10.0f,
-				}),
-			},
-		}),
-	});
+	UPtr box{ Create<WBox>{}() };
+	box->SetSize({ 300.0f, 60.0f });
+
+	UPtr bg{ Create<WColor>{}() };
+	bg->SetColor(Colors::White.WithValue(0.75f));
+
+	UPtr text{ Create<WText>{}() };
+	text->SetText(std::to_string(GetValue()));
+	text->SetFontSize({ 42.0f, 50.0f });
+	text->SetSpacing(-10.0f);
+
+	UChildOwnerTree(box,
+		new UChildrenOwnerTree(Create<WStack>{}(), {
+			new UWidgetTreeLeaf(bg),
+			new UWidgetTreeLeaf(text),
+		})
+	).Link();
+
+	return box;
 }
 
 #include "generated/ValueSliderFloat.generated.inl"

@@ -1,25 +1,22 @@
 #pragma once
 #include "generated/Scrollable.generated.h"
-#include "Widget.h"
-#include <kotono_common/Buildable.h>
+#include "ChildOwner.h"
 #include <kotono_common/Event.h>
-/// Makes the child of this widget scrollable with scissor over the bounds of this widget
-class WScrollable : public WWidget
+/// Makes the child of this widget scrollable while cropping the overflowing content
+class WScrollable final : public WChildOwner
 {
 	GENERATED_WSCROLLABLE()
 
 public:
-	struct ScrollableSettings
-	{
-		/// default = EAxis::Vertical
-		EAxis axis{ EAxis::Vertical };
-		KtBuildable<WidgetPtr> child{};
-	};
-
-	WScrollable(const ScrollableSettings& scrollableSettings);
-
 	WidgetPtr Build() override;
-	void Cleanup() override;
+
+	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Remove() override;
+
+public:
+	EAxis GetAxis() const;
+
+	void SetAxis(const EAxis axis);
 
 private:
 	void Scroll(const float delta);
@@ -27,6 +24,7 @@ private:
 	UEvent<float>& GetScrollEvent() const;
 
 private:
-	ScrollableSettings scrollableSettings_;
+	EAxis axis_;
+
 	float offset_;
 };

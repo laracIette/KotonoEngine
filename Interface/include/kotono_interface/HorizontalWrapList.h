@@ -1,28 +1,24 @@
 #pragma once
 #include "generated/HorizontalWrapList.generated.h"
-#include "Widget.h"
-#include <kotono_common/Buildable.h>
-class WHorizontalWrapList : public WWidget
+#include "ChildrenOwner.h"
+/// Defines an horizontal container for widgets that wraps the content to multiple rows
+class WHorizontalWrapList final : public WChildrenOwner
 {
 	GENERATED_WHORIZONTALWRAPLIST()
 
 	friend class WHorizontalWrapListBody;
 
 public:
-	struct HorizontalWrapListSettings
-	{
-		/// default = 0.0f
-		float itemSpacing{ 0.0f };
-		/// default = 0.0f
-		float rowSpacing{ 0.0f };
-		KtBuildable<WidgetVector> children{};
-	};
-
-	/// Defines a vertical container for widgets
-	WHorizontalWrapList(const HorizontalWrapListSettings& horizontalWrapListSettings);
-
 	WidgetPtr Build() override;
 
-protected:
-	HorizontalWrapListSettings horizontalWrapListSettings_;
+public:
+	float GetItemSpacing() const;
+	float GetRowSpacing() const;
+
+	void SetItemSpacing(const float itemSpacing);
+	void SetRowSpacing(const float rowSpacing); 
+
+private:
+	float itemSpacing_;
+	float rowSpacing_;
 };

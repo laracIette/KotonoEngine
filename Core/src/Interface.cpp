@@ -13,12 +13,12 @@ KInterface::KInterface()
 	UAsset texture1{ UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png") };
 	UAsset texture2{ UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/default_texture.jpg") };
 
-	UPtr image1{ Create<RInterfaceObject>() };
-	UPtr image2{ Create<RInterfaceObject>() };
-	UPtr rootComponent1{ Create<KInterfaceComponent>() };
-	UPtr rootComponent2{ Create<KInterfaceComponent>() };
-	UPtr imageComponent1{ Create<KInterfaceImageComponent>() };
-	UPtr imageComponent2{ Create<KInterfaceImageComponent>() };
+	UPtr image1{ Create<RInterfaceObject>{}() };
+	UPtr image2{ Create<RInterfaceObject>{}() };
+	UPtr rootComponent1{ Create<KInterfaceComponent>{}() };
+	UPtr rootComponent2{ Create<KInterfaceComponent>{}() };
+	UPtr imageComponent1{ Create<KInterfaceImageComponent>{}() };
+	UPtr imageComponent2{ Create<KInterfaceImageComponent>{}() };
 
 	rootComponent1->SetOwner(image1);
 	rootComponent1->SetRelativePosition({ 0.0f, 0.5f });

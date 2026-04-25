@@ -3,8 +3,11 @@
 #include <kotono_input/Keyboard.h>
 #include <kotono_interface/widgets.h>
 
-WInputTextBox::WInputTextBox(const InputTextBoxSettings& inputTextBoxSettings) 
-	: inputTextBoxSettings_(inputTextBoxSettings)
+WInputTextBox::WInputTextBox() 
+	: text_("")
+	, onTextChanged_({})
+	, actuationTime_(0.5f)
+	, repeatTime_(0.05f)
 	, isSelected_(false)
 	, currentWriteCharacter_(0)
 {
@@ -12,8 +15,44 @@ WInputTextBox::WInputTextBox(const InputTextBoxSettings& inputTextBoxSettings)
 
 WidgetPtr WInputTextBox::Build()
 {
-	holdAction_.SetActuationTime(inputTextBoxSettings_.actuationTime);
-	holdAction_.SetRepeatTime(inputTextBoxSettings_.repeatTime);
+	UPtr text{ Create<WText>{}() };
+	text->SetText(text_);
+	text->SetFontSize({ 15.0f, 18.0f });
+	text->SetSpacing(-5.0f);
+
+	UPtr textPadding{ Create<WPadding>{}() };
+	textPadding->SetChild(text);
+	textPadding->SetPadding(UPadding::All(4.0f));
+
+
+	UPtr button{ Create<WButton>{}() };
+	button->SetOnPressed([this]() {
+		SetState([this]() { isSelected_ = true; });
+	});
+	button->SetOnPressOut([this]() {
+		SetState([this]() { isSelected_ = true; });
+	});
+
+	
+	UPtr bg{ Create<WColor>{}() };
+	bg->SetColor(isSelected_
+		? Colors::White.WithAlpha(0.15f)
+		: Colors::White.WithAlpha(0.05f)
+	);
+
+
+	UPtr stack{ Create<WStack>{}() };
+	stack->SetChildren({ bg, button, textPadding });
+
+	return stack;
+}
+
+void WInputTextBox::Display(UWidgetDisplaySettings displaySettings)
+{
+	Base::Display(displaySettings);
+
+	holdAction_.SetActuationTime(actuationTime_);
+	holdAction_.SetRepeatTime(repeatTime_);
 
 	Keyboard.EventAnyKey(EInputState::Pressed).AddListener(this, &WInputTextBox::OnAnyKeyPressed);
 	Keyboard.EventAnyKey(EInputState::Released).AddListener(this, &WInputTextBox::OnAnyKeyReleased);
@@ -21,42 +60,58 @@ WidgetPtr WInputTextBox::Build()
 
 	Keyboard.EventKey(EKey::Backspace, EInputState::Pressed).AddListener(this, &WInputTextBox::OnKeyBackspacePressed);
 	Keyboard.EventKey(EKey::Backspace, EInputState::Down).AddListener(this, &WInputTextBox::OnKeyBackspaceDown);
-
-	return new WStack({
-		.children = {
-			isSelected_ 
-				? new WColor({ Colors::White.WithAlpha(0.15f) })
-				: new WColor({ Colors::White.WithAlpha(0.05f) }),
-			new WButton({
-				.onPressed = [this]() {
-					SetState([this]() { isSelected_ = true; });
-				},
-				.onPressOut = [this]() {
-					SetState([this]() { isSelected_ = false; });
-				},
-			}),
-			new WPadding({
-				.padding = WPadding::Padding::All(4.0f),
-				.child = new WText({
-					.text = inputTextBoxSettings_.text,
-					.fontSize = { 15.0f, 18.0f },
-					.spacing = -5.0f,
-				}),
-			}),
-		},
-	});
 }
 
-void WInputTextBox::Cleanup()
+void WInputTextBox::Remove()
 {
+	Base::Remove();
+
 	Keyboard.EventAnyKey(EInputState::Pressed).RemoveListener(this, &WInputTextBox::OnAnyKeyPressed);
 	Keyboard.EventAnyKey(EInputState::Released).RemoveListener(this, &WInputTextBox::OnAnyKeyReleased);
 	Keyboard.EventAnyKey(EInputState::Down).RemoveListener(this, &WInputTextBox::OnAnyKeyDown);
 
 	Keyboard.EventKey(EKey::Backspace, EInputState::Pressed).RemoveListener(this, &WInputTextBox::OnKeyBackspacePressed);
 	Keyboard.EventKey(EKey::Backspace, EInputState::Down).RemoveListener(this, &WInputTextBox::OnKeyBackspaceDown);
+}
 
-	Base::Cleanup();
+const std::string& WInputTextBox::GetText() const
+{
+	return text_;
+}
+
+const WInputTextBox::TextChangedFunction& WInputTextBox::GetOnTextChanged() const
+{
+	return onTextChanged_;
+}
+
+float WInputTextBox::GetActuationTime() const
+{
+	return actuationTime_;
+}
+
+float WInputTextBox::GetRepeatTime() const
+{
+	return repeatTime_;
+}
+
+void WInputTextBox::SetText(const std::string& text)
+{
+	text_ = text;
+}
+
+void WInputTextBox::SetOnTextChanged(const TextChangedFunction& onTextChanged)
+{
+	onTextChanged_ = onTextChanged;
+}
+
+void WInputTextBox::SetActuationTime(const float actuationTime)
+{
+	actuationTime_ = actuationTime;
+}
+
+void WInputTextBox::SetRepeatTime(const float repeatTime)
+{
+	repeatTime_ = repeatTime;
 }
 
 void WInputTextBox::OnKeyBackspacePressed()
@@ -80,12 +135,12 @@ void WInputTextBox::OnKeyBackspaceDown()
 	{
 		SetState([this]()
 		{
-			if (!inputTextBoxSettings_.text.empty())
+			if (!text_.empty())
 			{
-				inputTextBoxSettings_.text.pop_back();
-				if (inputTextBoxSettings_.onTextChanged)
+				text_.pop_back();
+				if (onTextChanged_)
 				{
-					inputTextBoxSettings_.onTextChanged(inputTextBoxSettings_.text);
+					onTextChanged_(text_);
 				}
 			}
 		});
@@ -146,10 +201,10 @@ void WInputTextBox::OnAnyKeyDown(const EKey key)
 	{
 		SetState([this, character]()
 		{
-			inputTextBoxSettings_.text.push_back(character);
-			if (inputTextBoxSettings_.onTextChanged)
+			text_.push_back(character);
+			if (onTextChanged_)
 			{
-				inputTextBoxSettings_.onTextChanged(inputTextBoxSettings_.text);
+				onTextChanged_(text_);
 			}
 		});
 	}

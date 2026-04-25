@@ -1,27 +1,27 @@
 #pragma once
 #include "generated/List.generated.h"
 #include "Widget.h"
-#include <kotono_common/Buildable.h>
-class WList : public WWidget
+class WListBody;
+/// Defines a vertical container for widgets
+class WList final : public WWidget
 {
 	GENERATED_WLIST()
 
 	friend class WListBody;
 
 public:
-	struct ListSettings
-	{
-		/// default = 0.0f
-		float spacing{ 0.0f };
-		KtBuildable<WidgetVector> children{};
-	};
-
-	/// Defines a vertical container for widgets
-	WList(const ListSettings& listSettings);
-
 	WidgetPtr Build() override;
 
-protected:
-	ListSettings listSettings_;
+public:
+	float GetSpacing() const;
+	const WidgetPool& GetChildren() const;
+
+	void SetSpacing(const float spacing);
+	void SetChildren(const WidgetPool& children);
+
+private:
+	float spacing_;
+	WidgetPool children_;
+	UPtr<WListBody> listBody_;
 };
 

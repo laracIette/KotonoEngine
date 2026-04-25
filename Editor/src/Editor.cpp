@@ -30,17 +30,16 @@ void SEditor::Update()
 
 void SEditor::Cleanup()
 {
-	DeleteWidget();
-
 	Camera.Cleanup();
+
+	DeleteWidget();
 
 	Window.GetEventWindowResized().RemoveListener(this, &SEditor::RefreshMainWindowWidget);
 }
 
 void SEditor::CreateWidget()
 {
-	widget_ = new WMainWindow();
-	widget_->CacheBuild();
+	widget_ = Create<WMainWindow>{}();
 	widget_->Display({
 		.position = { 0.0f, 0.0f },
 		.bounds = static_cast<glm::vec2>(WindowViewport.GetExtent()),
@@ -51,12 +50,11 @@ void SEditor::CreateWidget()
 
 void SEditor::DeleteWidget()
 {
-	if (!widget_)
+	if (widget_)
 	{
-		return;
+		widget_->Remove();
+		widget_->Delete();
 	}
-	widget_->Cleanup();
-	delete widget_;
 }
 
 void SEditor::RefreshMainWindowWidget()

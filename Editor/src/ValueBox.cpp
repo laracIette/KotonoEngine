@@ -2,21 +2,20 @@
 #include <kotono_interface/widgets.h>
 #include <InputTextBox.h>
 
-WValueBox::WValueBox(const ValueBoxSettings& valueBoxSettings) 
-	: valueBoxSettings_(valueBoxSettings)
-	//, value_(valueBoxSettings.valueToString())
-{
-}
-
 WidgetPtr WValueBox::Build()
 {
-	return new WWrap({
-		.axis = EAxis::Vertical,
-		.child = new WInputTextBox({
-			.text = valueBoxSettings_.valueToString(),
-			.onTextChanged = valueBoxSettings_.stringToValue,
-		}),
-	});
+	UPtr inputTextBox{ Create<WInputTextBox>{}() };
+	inputTextBox->SetText(valueToString_());
+	inputTextBox->SetOnTextChanged(stringToValue_);
+
+	UPtr wrap{ Create<WWrap>{}() };
+	wrap->SetAxis(EAxis::Vertical);
+
+	UChildOwnerTree(
+		wrap, new UWidgetTreeLeaf(inputTextBox)
+	).Link();
+
+	return wrap;
 }
 
 #include "generated/ValueBox.generated.inl"

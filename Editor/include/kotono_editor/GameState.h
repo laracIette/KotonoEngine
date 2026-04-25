@@ -1,5 +1,6 @@
 #pragma once
-enum class EGameState : char
+#include <kotono_common/types.h>
+enum class EGameState : u8
 {
 	Stopped,
 	Playing,

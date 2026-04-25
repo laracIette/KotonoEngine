@@ -8,10 +8,12 @@
 #include <kotono_common/Asset.h>
 #include <kotono_common/Event.h>
 #include <kotono_common/log.h>
+#include <kotono_common/Property.h>
 #include <kotono_io/serialize_base.h>
 #include <nlohmann/json_fwd.hpp>
 #include <string>
 #include <unordered_set>
+#include <source_location>
 
 #define RegisterDelegate(Owner, Event, Instance, Function)				\
 static_assert(std::string_view(#Owner) != std::string_view("Ptr()") && std::string_view(#Owner) != std::string_view("this->Ptr()"), "Please use the event's AddListener when registering an event owned by this object.");	\
@@ -28,6 +30,19 @@ unregisterDelegates_.push_back(											\
 
 using VoidCallback = std::function<void()>;
 
+#define ReadonlyProperty(Type, Name, PropertyName) private:			\
+	Type Name;														\
+public:																\
+	const Type& Get##PropertyName() const noexcept { return Name; } \
+private:
+
+#define WritableProperty(Type, Name, PropertyName) private:					\
+	Type Name;																\
+public:																		\
+	const Type& Get##PropertyName() const noexcept { return Name; }			\
+	void Set##PropertyName(const Type& value) noexcept { Name = value; }	\
+private:
+
 class UPath;
 
 class KObject
@@ -40,22 +55,19 @@ public:
 	KObject();
 	virtual ~KObject();
 
-	void OnConstructed();
+	virtual void PostConstruct();
 
 public:
 	const UGuid& Guid() const;
 	const std::type_info& Type() const;
 	UPath Path() const;
 	bool IsConstructed() const;
-	const std::string& GetName() const;
 	std::string TypeName() const;
 
 	/// Read json from disk
 	nlohmann::json ReadJson() const;
 	/// Write the object to json
 	nlohmann::json WriteJson() const;
-
-	void SetName(const std::string& name);
 
 	/// Cleanup and delete the object immediately
 	void Delete();
@@ -95,12 +107,17 @@ protected:
 private:
 	SERIALIZE UGuid guid_;
 	SERIALIZE std::string type_;
-	SERIALIZE std::string name_;
+	SERIALIZE WritableProperty(std::string, name_, Name);
 	bool isConstructed_;
 
 #if defined(_DEBUG)
 public:
 	static void CheckDebugRegistry();
+
+public:
+	std::string sourceFile;
+	std::string sourceFunc;
+	u32 sourceLine;
 
 private:
 	static std::unordered_set<UPtr<KObject>> debugRegistry_;
@@ -108,15 +125,39 @@ private:
 };
 
 template <std::derived_from<KObject> T>
-UPtr<T> Create()
+struct Create final
 {
-	T* object{ new T() };
-	object->OnConstructed();
-	return object->Ptr();
-}
+public:
+#if defined (_DEBUG)
+	constexpr Create(const std::source_location& loc = std::source_location::current()) 
+		: loc_{ loc } 
+	{
+	}
+#endif
+
+	template <typename ...Args>
+	UPtr<T> operator()(Args&&... args) const
+	{
+		T* object{ new T(std::forward<Args>(args)...) };
+		object->PostConstruct();
+
+#	if defined (_DEBUG)
+		object->sourceFile = loc_.file_name();
+		object->sourceFunc = loc_.function_name();
+		object->sourceLine = loc_.line();
+#	endif
+
+		return object->Ptr();
+	}
+
+private:
+#if defined (_DEBUG)
+	const std::source_location loc_;
+#endif
+};
 
 template <std::derived_from<KObject> T>
-struct USerialize<UPtr<T>>
+struct USerialize<UPtr<T>> final
 {
 	void operator()(nlohmann::json& json, const UPtr<T>& v) const
 	{
@@ -129,7 +170,7 @@ struct USerialize<UPtr<T>>
 };
 
 template <std::derived_from<KObject> T>
-struct UDeserialize<UPtr<T>>
+struct UDeserialize<UPtr<T>> final
 {
 	void operator()(const nlohmann::json& json, UPtr<T>& v) const
 	{

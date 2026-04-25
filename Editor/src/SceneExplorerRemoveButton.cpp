@@ -8,37 +8,45 @@
 
 WidgetPtr WSceneExplorerRemoveButton::Build()
 {
-    ObjectManager.EventSelectedObjectChanged().AddListener(this, &WSceneExplorerRemoveButton::Refresh);
+    UPtr color{ Create<WColor>{}() };
+    color->SetColor(ObjectManager.GetSelectedObject()
+        ? Colors::Red 
+        : Colors::Red.WithValue(0.1f)
+    );
 
-    return new WStack({
-        .children = {
-            ObjectManager.GetSelectedObject()
-				? new WColor({ Colors::Red })
-                : new WColor({ Colors::Red.WithValue(0.1f) }),
-            new WButton({
-                .onDown = [this]() {
-                    if (UPtr selectedObject{ TryCast<TSceneObject>(ObjectManager.GetSelectedObject()) })
-                    {
-                        SetState([selectedObject]() {
-                            if (UPtr scene{ Game.GetOpenedScene() })
-                            {
-                                scene->Remove(selectedObject);
-                            }
-                            ObjectManager.SetSelectedObject(nullptr);
-                            selectedObject->Delete();
-                        });
-                    }
-                },
-            }),
-        },
+    UPtr button{ Create<WButton>{}() };
+    button->SetOnDown([this]() {
+        if (UPtr selectedObject{ TryCast<TSceneObject>(ObjectManager.GetSelectedObject()) })
+        {
+            SetState([selectedObject]() {
+                if (UPtr scene{ Game.GetOpenedScene() })
+                {
+                    scene->Remove(selectedObject);
+                }
+                ObjectManager.SetSelectedObject(nullptr);
+                selectedObject->Delete();
+            });
+        }
     });
+
+    UPtr stack{ Create<WStack>{}() };
+    stack->SetChildren({ color, button });
+
+    return stack;
 }
 
-void WSceneExplorerRemoveButton::Cleanup()
+void WSceneExplorerRemoveButton::Display(UWidgetDisplaySettings displaySettings)
 {
-    ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &WSceneExplorerRemoveButton::Refresh);
+    Base::Display(displaySettings);
 
-    Base::Cleanup();
+    ObjectManager.EventSelectedObjectChanged().AddListener(this, &WSceneExplorerRemoveButton::Refresh);
+}
+
+void WSceneExplorerRemoveButton::Remove()
+{
+    Base::Remove();
+
+    ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &WSceneExplorerRemoveButton::Refresh);
 }
 
 #include "generated/SceneExplorerRemoveButton.generated.inl"

@@ -7,6 +7,8 @@ class WSceneExplorerRemoveButton final : public WWidget
 
 public:
 	WidgetPtr Build() override;
-	void Cleanup() override;
+
+	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Remove() override;
 };
 

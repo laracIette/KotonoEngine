@@ -6,24 +6,23 @@ WidgetPtr WText::Build()
 {
 	if (shouldWrap_)
 	{
-		return new WHorizontalWrapList({
-			.itemSpacing = spacing_,
-			.rowSpacing = 0.0f,
-			.children = [this]() { return GetCharacters(); },
-		});
+		UPtr horizontalWrapList{ Create<WHorizontalWrapList>{}() };
+		horizontalWrapList->SetItemSpacing(spacing_);
+		horizontalWrapList->SetRowSpacing(0.0f);
+		horizontalWrapList->SetChildren(GetCharacters());
+		horizontalWrapList->SetName("Text Horizontal Wrap List");
+		textBody_ = horizontalWrapList;
 	}
 	else
 	{
-		return new WRow({
-			.spacing = spacing_,
-			.children = GetCharacters(),
-		});
+		UPtr row{ Create<WRow>{}() };
+		row->SetSpacing(spacing_);
+		row->SetChildren(GetCharacters());
+		row->SetName("Text Row");
+		textBody_ = row;
 	}
-}
 
-UWidgetDisplaySettings WText::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
-{
-	return Base::GetDisplaySettings(displaySettings);
+	return textBody_;
 }
 
 const std::string& WText::GetText() const
@@ -49,16 +48,19 @@ bool WText::GetShouldWrap() const
 void WText::SetText(const std::string& text)
 {
 	text_ = text;
+	UpdateTextBody();
 }
 
 void WText::SetFontSize(const glm::vec2& fontSize)
 {
 	fontSize_ = fontSize;
+	UpdateTextBody();
 }
 
 void WText::SetSpacing(const float spacing)
 {
 	spacing_ = spacing;
+	UpdateTextBody();
 }
 
 void WText::SetShouldWrap(const bool shouldWrap)
@@ -66,9 +68,25 @@ void WText::SetShouldWrap(const bool shouldWrap)
 	shouldWrap_ = shouldWrap;
 }
 
-WidgetVector WText::GetCharacters() const
+void WText::UpdateTextBody() const
 {
-	WidgetVector result{};
+	if (textBody_)
+	{
+		const WidgetPool textBodyChildren{ textBody_->GetChildren() };
+		textBody_->SetChildren(GetCharacters());
+		for (auto& child : textBodyChildren)
+		{
+			if (child)
+			{
+				child->Delete();
+			}
+		}
+	}
+}
+
+WidgetPool WText::GetCharacters() const
+{
+	WidgetPool result{};
 
 	const KtFont font("${ENGINE_DIRECTORY}/Graphics/assets/fonts/default");
 
@@ -77,12 +95,16 @@ WidgetVector WText::GetCharacters() const
 
 	for (const auto& characterPath : characterPaths)
 	{
-		result.push_back(new WBox({
-			.size = fontSize_,
-			.child = new WImage({
-				.path = characterPath,
-			}),
-		}));
+		UPtr image{ Create<WImage>{}() };
+		image->SetPath(characterPath);
+		image->SetName("text image");
+
+		UPtr box{ Create<WBox>{}() };
+		box->SetSize(fontSize_);
+		box->SetChild(image);
+		box->SetName("text box");
+
+		result.Add(box);
 	}
 
 	return result;

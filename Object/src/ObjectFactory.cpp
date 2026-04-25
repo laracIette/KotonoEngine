@@ -8,6 +8,12 @@
 
 #define KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY ELogImportanceLevel::Medium
 
+SObjectFactory& SObjectFactory::Get()
+{
+	static SObjectFactory objectFactory{};
+	return objectFactory;
+}
+
 UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 {
 	// Check if already in registry
@@ -48,7 +54,7 @@ UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 	return nullptr;
 }
 
-void SObjectFactory::_Register(const std::string_view className, const ObjectFactoryFunc& function)
+void SObjectFactory::Register(const std::string_view className, const ObjectFactoryFunc& function)
 {
 	objectFactories_[className] = function;
 }
@@ -65,5 +71,5 @@ UPtr<KObject> SObjectFactory::GetFactory(const std::string_view typeName) const
 
 UAutoRegister::UAutoRegister(const std::string_view className, const SObjectFactory::ObjectFactoryFunc& creator)
 {
-	ObjectFactory._Register(className, creator);
+	SObjectFactory::Get().Register(className, creator);
 }

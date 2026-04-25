@@ -9,7 +9,6 @@ public:
 	WObjectProperties(const UPtr<KObject>& object);
 
 	WidgetPtr Build() override;
-	void Cleanup() override;
 
 private:
 	WidgetPtr BuildMemberWidget(const std::string& type, void* variablePtr);

@@ -28,39 +28,35 @@ WidgetPtr WObjectProperties::Build()
 {
     const auto variables{ object_->GetMemberVariables() };
 
-    WidgetVector result{};
+    std::vector<UWidgetTree*> properties{};
     for (const auto& variable : variables)
     {
         void* variablePtr{ get_member_variable_pointer(object_.Get(), variable.offset) };
 
-        result.push_back(new WColumn({
-            .spacing = 4.0f,
-            .children = {
-                new WText({
-                    .text = variable.name,
-                    .fontSize = { 20.0f, 24.0f },
-                    .spacing = -6.0f,
-                }),
-                /*new WPadding({
-                    .padding = WPadding::Padding::Left(10.0f),
-                    .child = BuildMemberWidget(variable.type, variablePtr),
-        		}),*/
-                BuildMemberWidget(variable.type, variablePtr),
-            },
+        UPtr propertyColumn{ Create<WColumn>{}() };
+        propertyColumn->SetSpacing(4.0f);
+
+        UPtr propertyText{ Create<WText>{}() };
+        propertyText->SetText(variable.name);
+        propertyText->SetFontSize({ 20.0f, 24.0f });
+        propertyText->SetSpacing(-6.0f);
+
+        properties.push_back(new UChildrenOwnerTree(propertyColumn, {
+            new UWidgetTreeLeaf(propertyText),
+            new UWidgetTreeLeaf(BuildMemberWidget(variable.type, variablePtr)),
         }));
     }
 
-    return new WWrap({
-        .child = new WColumn({
-            .spacing = 5.0f,
-            .children = result,
-        }),
-    });
-}
+    UPtr wrap{ Create<WWrap>{}() };
 
-void WObjectProperties::Cleanup()
-{
-	Base::Cleanup();
+    UPtr column{ Create<WColumn>{}() };
+    column->SetSpacing(5.0f);
+
+    UChildOwnerTree(wrap, 
+        new UChildrenOwnerTree(column, properties)
+    ).Link();
+
+    return wrap;
 }
 
 WidgetPtr WObjectProperties::BuildMemberWidget(const std::string& type, void* variablePtr)
@@ -71,55 +67,59 @@ WidgetPtr WObjectProperties::BuildMemberWidget(const std::string& type, void* va
     }
 	if (type == "f32")
     {
-        return new WValueSliderFloat(static_cast<f32*>(variablePtr));
+        return Create<WValueSliderFloat>{}(static_cast<f32*>(variablePtr));
     }
 	if (type == "size")
     {
         auto* sizePtr{ static_cast<size*>(variablePtr) };
-        return new WValueBox({
-            .valueToString = [sizePtr]() {
-                return std::to_string(*sizePtr);
-            },
-            .stringToValue = [sizePtr](const std::string& value) {
-                *sizePtr = from_string<size>(value);
-            },
+
+        UPtr valueBox{ Create<WValueBox>{}() };
+        valueBox->SetValueToString([sizePtr]() { 
+            return std::to_string(*sizePtr); 
         });
+        valueBox->SetStringToValue([sizePtr](const std::string& value) { 
+            *sizePtr = from_string<size>(value); 
+        });
+
+        return valueBox;
     }
     if (type == "std::string")
     {
         auto* stringPtr{ static_cast<std::string*>(variablePtr) };
-        return new WValueBox({
-            .valueToString = [stringPtr]() {
-                return *stringPtr;
-            },
-            .stringToValue = [stringPtr](const std::string& value) {
-                *stringPtr = value;
-            },
+
+        UPtr valueBox{ Create<WValueBox>{}() };
+        valueBox->SetValueToString([stringPtr]() {
+            return *stringPtr;
         });
+        valueBox->SetStringToValue([stringPtr](const std::string& value) {
+            *stringPtr = value;
+        });
+
+        return valueBox;
     }
     if (type == "glm::vec2")
     {
-        return new WText({
-            .text = "Vec2 Editor Placeholder",
-            .fontSize = { 18.0f, 22.0f },
-            .spacing = -5.0f,
-        });
+        UPtr text{ Create<WText>{}() };
+        text->SetText("Vec2 Editor Placeholder");
+        text->SetFontSize({ 18.0f, 22.0f });
+        text->SetSpacing(-5.0f);
+        return text;
     }
     if (type == "glm::vec3")
     {
-        return new WText({
-            .text = "Vec3 Editor Placeholder",
-            .fontSize = { 18.0f, 22.0f },
-            .spacing = -5.0f,
-        });
+        UPtr text{ Create<WText>{}() };
+        text->SetText("Vec3 Editor Placeholder");
+        text->SetFontSize({ 18.0f, 22.0f });
+        text->SetSpacing(-5.0f);
+        return text;
     }
     if (type == "glm::vec4")
     {
-        return new WText({
-            .text = "Vec4 Editor Placeholder",
-            .fontSize = { 18.0f, 22.0f },
-            .spacing = -5.0f,
-        });
+        UPtr text{ Create<WText>{}() };
+        text->SetText("Vec4 Editor Placeholder");
+        text->SetFontSize({ 18.0f, 22.0f });
+        text->SetSpacing(-5.0f);
+        return text;
     }
     return nullptr;
 }

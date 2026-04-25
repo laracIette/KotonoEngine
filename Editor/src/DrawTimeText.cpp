@@ -6,25 +6,32 @@
 
 WidgetPtr WDrawTimeText::Build()
 {
-    TimerManager.GetTimer("update time text").EventCompleted().AddListener(this, &WDrawTimeText::UpdateText);
+    text_ = Create<WText>{}();
+    text_->SetName("Draw Time Text");
+    text_->SetText("Draw Time Text");
+    text_->SetFontSize({ 20.0f, 24.0f });
+    text_->SetSpacing(-6.0f);
 
-    return new WText({
-        .text = std::format("D {:.8f}s", TimeManager.AverageRenderTime()),
-        .fontSize = { 20.0f, 24.0f },
-        .spacing = -6.0f,
-    });
+    return text_;
 }
 
-void WDrawTimeText::Cleanup()
+void WDrawTimeText::Display(UWidgetDisplaySettings displaySettings)
 {
-    TimerManager.GetTimer("update time text").EventCompleted().RemoveListener(this, &WDrawTimeText::UpdateText);
+    Base::Display(displaySettings);
 
-    Base::Cleanup();
+    TimerManager.GetTimer("update time text").EventCompleted().AddListener(this, &Self::UpdateText);
 }
 
-void WDrawTimeText::UpdateText()
+void WDrawTimeText::Remove()
 {
-    SetState([]() {});
+    Base::Remove();
+
+    TimerManager.GetTimer("update time text").EventCompleted().RemoveListener(this, &Self::UpdateText);
+}
+
+void WDrawTimeText::UpdateText() const
+{
+    text_->SetText(std::format("D {:.8f}s", TimeManager.AverageRenderTime()));
 }
 
 #include "generated/DrawTimeText.generated.inl"

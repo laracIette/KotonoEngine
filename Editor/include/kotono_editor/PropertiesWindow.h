@@ -9,7 +9,9 @@ class WPropertiesWindow : public WWidget
 
 public:
 	WidgetPtr Build() override;
-	void Cleanup() override;
+
+	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Remove() override;
 
 private:
 	WidgetPtr Slider(const std::string& label, const ValueChangedFunction& function);

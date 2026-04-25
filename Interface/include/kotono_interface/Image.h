@@ -9,7 +9,8 @@ class WImage final : public WWidget
 	GENERATED_WIMAGE()
 
 public:
-	void Cleanup() override;
+	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Remove() override;
 
 public:
 	const UPath& GetPath() const;

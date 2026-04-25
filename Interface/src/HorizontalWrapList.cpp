@@ -2,25 +2,38 @@
 #include "HorizontalWrapListBody.h"
 #include "widgets.h"
 
-WHorizontalWrapList::WHorizontalWrapList(const HorizontalWrapListSettings& horizontalWrapListSettings)
-	: horizontalWrapListSettings_(horizontalWrapListSettings)
-{
-}
-
 WidgetPtr WHorizontalWrapList::Build()
 {
-	auto vec{ horizontalWrapListSettings_.children.Get() };
+	UPtr horizontalWrapListBody{ Create<WHorizontalWrapListBody>{}() };
+	horizontalWrapListBody->SetItemSpacing(itemSpacing_);
+	horizontalWrapListBody->SetRowSpacing(rowSpacing_);
+	horizontalWrapListBody->SetChildren(children_);
 
-	return new WScrollable({
-		.axis = EAxis::Vertical,
-		.child = [this]() { 
-			return new WHorizontalWrapListBody({
-				.itemSpacing = horizontalWrapListSettings_.itemSpacing,
-				.rowSpacing = horizontalWrapListSettings_.rowSpacing,
-				.children = horizontalWrapListSettings_.children,
-			});
-		},
-	});
+	UPtr scrollable{ Create<WScrollable>{}() };
+	scrollable->SetAxis(EAxis::Vertical);
+	scrollable->SetChild(horizontalWrapListBody);
+
+	return scrollable;
+}
+
+float WHorizontalWrapList::GetItemSpacing() const
+{
+	return itemSpacing_;
+}
+
+float WHorizontalWrapList::GetRowSpacing() const
+{
+	return rowSpacing_;
+}
+
+void WHorizontalWrapList::SetItemSpacing(const float itemSpacing)
+{
+	itemSpacing_ = itemSpacing;
+}
+
+void WHorizontalWrapList::SetRowSpacing(const float rowSpacing)
+{
+	rowSpacing_ = rowSpacing;
 }
 
 #include "generated/HorizontalWrapList.generated.inl"

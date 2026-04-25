@@ -2,6 +2,11 @@
 #include <glm/common.hpp>
 #include <kotono_common/bitwise_utils.h>
 
+WWrap::WWrap()
+	: axis_(EAxis::All)
+{
+}
+
 UWidgetDisplaySettings WWrap::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	if (child_)

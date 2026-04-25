@@ -6,7 +6,6 @@
 #include <functional>
 #include <glm/fwd.hpp>
 #include <glm/vec2.hpp>
-#include <kotono_common/Cached.h>
 #include <kotono_common/types.h>
 #include <kotono_graphics/Scissor.h>
 #include <string>
@@ -31,18 +30,22 @@ class WWidget : public KObject
 	GENERATED_WWIDGET()
 
 protected:
-	using StateFunction = std::function<void()>;
+	using StateFunction = VoidCallback;
 
 public:
 	WWidget();
+	~WWidget() override;
 
-	virtual void CacheBuild();
+	void PostConstruct() override;
 
-	virtual WidgetPtr Build();
+	/// Create the widget tree to display
+	virtual WidgetPtr Build(); // todo: make protected
 
-	virtual void Cleanup();
+	/// Start displaying the widget
+	virtual void Display(UWidgetDisplaySettings displaySettings);
 
-	void Display(UWidgetDisplaySettings displaySettings);
+	/// Stop displaying the widget
+	virtual void Remove();
 
 	virtual UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const;
 
@@ -58,9 +61,9 @@ public:
 	bool IsRenderable() const;
 	bool IsMouseHovering() const;
 
-	void SetParent(WidgetPtr parent);
-
 protected:
+	void CacheBuild();
+
 	void SetState(const StateFunction& function);
 	void SetDisplaySettings(const UWidgetDisplaySettings& displaySettings);
 
@@ -73,14 +76,32 @@ protected:
 
 	void Refresh();
 
-private:
-	void Rebuild();
-
 protected:
-	WidgetPtr parent_;
 	UWidgetDisplaySettings displaySettings_;
 
 private:
-	KtCached<WidgetPtr> cachedBuild_;
+	WritableProperty(WidgetPtr, parent_, Parent);
+	ReadonlyProperty(bool, isDisplayed_, IsDisplayed);
+	WidgetPtr build_;
 };
 
+class UWidgetTree
+{
+public:
+	virtual ~UWidgetTree() = default;
+
+	virtual WidgetPtr Widget() const = 0;
+	virtual void Link() const = 0;
+};
+
+class UWidgetTreeLeaf final : public UWidgetTree
+{
+public:
+	UWidgetTreeLeaf(const WidgetPtr& widget);
+
+	virtual WidgetPtr Widget() const;
+	virtual void Link() const;
+
+private:
+	WidgetPtr widget_;
+};

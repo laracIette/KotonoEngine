@@ -152,7 +152,7 @@ void SGenerator::GenerateSource(const UReflectionResult & reflectionResult) cons
 
 	const std::string generatedCode{ !classInfo.base.has_value()
 		? std::format(
-R"(UAutoRegister {0}::register_("{0}", []() {{ return Create<{0}>(); }});
+R"(UAutoRegister {0}::register_("{0}", []() {{ return Create<{0}>{{}}(); }});
 
 void {0}::SerializeTo(nlohmann::json& json) const
 {{
@@ -182,7 +182,7 @@ UPtr<{0}> {0}::Ptr() const
 			memberVariablesCode.str()
 		)
 		: std::format(
-R"(UAutoRegister {0}::register_("{0}", []() {{ return Create<{0}>(); }});
+R"(UAutoRegister {0}::register_("{0}", []() {{ return Create<{0}>{{}}(); }});
 
 void {0}::SerializeTo(nlohmann::json& json) const
 {{
@@ -227,8 +227,8 @@ SGenerator::ClassInfo SGenerator::GetClassInfo(const UReflectionResult& reflecti
 	std::vector<ClassInfo::VariableInfo> variables;
 	std::ranges::copy(
 		reflectionResult.members
-		| std::views::transform([](const UReflectionResult::MemberInfo& member) { return ClassInfo::VariableInfo{ member.type, member.name }; }),
-		std::back_inserter(variables)
+		| std::views::transform([](const UReflectionResult::MemberInfo& member) { return ClassInfo::VariableInfo{ member.type, member.name }; })
+		, std::back_inserter(variables)
 	);
 
 	return {

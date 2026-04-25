@@ -12,43 +12,45 @@
 
 WidgetPtr WSceneExplorerAddButton::Build()
 {
-    return new WStack({
-		.children = {
-			new WColor({ Colors::Green }),
-			new WButton({
-				.onPressed = []() {
-					if (UPtr scene{ Game.GetOpenedScene() })
-					{
-						UAsset shader{ UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader3D.ktshader") };
-						UAsset model1{ UAssetManager<KtModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.obj") };
-						UAsset model2{ UAssetManager<KtModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/column.obj") };
+	UPtr color{ Create<WColor>{}() };
+	color->SetColor(Colors::Green);
 
-						UPtr mesh{ Create<TSceneObject>() };
-						UPtr rootComponent{ Create<KSceneComponent>() };
-						UPtr meshComponent1{ Create<KSceneMeshComponent>() };
-						UPtr meshComponent2{ Create<KSceneMeshComponent>() };
-													
-						rootComponent->SetOwner(mesh);
-						rootComponent->SetRelativePosition(glm::vec3(0.0f));
-													
-						meshComponent1->SetOwner(mesh);	
-						meshComponent1->SetShader(shader);
-						meshComponent1->SetModel(model1);
-						meshComponent1->SetParent(rootComponent, ECoordinateSpace::Relative);
-													
-						meshComponent2->SetOwner(mesh);	
-						meshComponent2->SetShader(shader);
-						meshComponent2->SetModel(model2);
-						meshComponent2->SetParent(meshComponent1, ECoordinateSpace::Relative);
-						meshComponent2->SetRelativePosition({ 1.0f, 1.0f, 1.0f });
+	UPtr button{ Create<WButton>{}() };
+	button->SetOnPressed([]() {
+		if (UPtr scene{ Game.GetOpenedScene() })
+		{
+			UAsset shader{ UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader3D.ktshader") };
+			UAsset model1{ UAssetManager<KtModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.obj") };
+			UAsset model2{ UAssetManager<KtModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/column.obj") };
 
-						scene->Add(mesh);
-						mesh->Spawn();
-					}
-				},
-			}),
-		},
+			UPtr mesh{ Create<TSceneObject>{}() };
+			UPtr rootComponent{ Create<KSceneComponent>{}() };
+			UPtr meshComponent1{ Create<KSceneMeshComponent>{}() };
+			UPtr meshComponent2{ Create<KSceneMeshComponent>{}() };
+													
+			rootComponent->SetOwner(mesh);
+			rootComponent->SetRelativePosition(glm::vec3(0.0f));
+													
+			meshComponent1->SetOwner(mesh);	
+			meshComponent1->SetShader(shader);
+			meshComponent1->SetModel(model1);
+			meshComponent1->SetParent(rootComponent, ECoordinateSpace::Relative);
+													
+			meshComponent2->SetOwner(mesh);	
+			meshComponent2->SetShader(shader);
+			meshComponent2->SetModel(model2);
+			meshComponent2->SetParent(meshComponent1, ECoordinateSpace::Relative);
+			meshComponent2->SetRelativePosition({ 1.0f, 1.0f, 1.0f });
+
+			scene->Add(mesh);
+			mesh->Spawn();
+		}
 	});
+
+	UPtr stack{ Create<WStack>{}() };
+	stack->SetChildren({ color, button });
+
+	return stack;
 }
 
 #include "generated/SceneExplorerAddButton.generated.inl"

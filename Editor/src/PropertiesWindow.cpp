@@ -12,114 +12,127 @@
 
 WidgetPtr WPropertiesWindow::Build()
 {
-
-    ObjectManager.EventSelectedObjectChanged().AddListener(this, &WPropertiesWindow::Refresh);
-
     UPtr selectedObject{ TryCast<TSceneObject>(ObjectManager.GetSelectedObject()) };
 
     if (!selectedObject)
     {
-		return nullptr;
+        UPtr text{ Create<WText>{}() };
+        text->SetText("No scene object selected");
+        text->SetFontSize({ 16.0f, 20.0f });
+		return text;
     }
-  
-    return new WWrap({
-        .child = new WStack({
-            .children = {
-                new WColor({ Colors::Blue.WithAlpha(0.5f) }),
-                new WPadding({
-                    .padding = WPadding::Padding::All(8.0f),
-                    .child = new WList({
-                        .spacing = 10.0f,
-                        .children = [this, selectedObject]() {
-						    return WidgetVector{
-                                new WWrap({
-                                    .child = new WStack({
-                                        .children = {
-                                            new WColor({ Colors::Black.WithAlpha(0.5f) }),
-                                            new WText({
-                                                .text = "Properties",
-                                                .spacing = -20.0f,
-                                            }),
-                                        },
-                                    }),
-                                }),
 
-                                new WObjectProperties(selectedObject),
+    UPtr sliderColumn{ Create<WColumn>{}() };
+    sliderColumn->SetChildren({
+        Slider("Position X", [selectedObject](const float delta) {
+			if (selectedObject) selectedObject->RootComponent()->Translate({ delta * 0.01f, 0.0f, 0.0f });
+        }),
+        Slider("Position Y", [selectedObject](const float delta) {
+            if (selectedObject) selectedObject->RootComponent()->Translate({ 0.0f, delta * 0.01f, 0.0f });
+        }),
+        Slider("Position Z", [selectedObject](const float delta) {
+            if (selectedObject) selectedObject->RootComponent()->Translate({ 0.0f, 0.0f, delta * 0.01f });
+        }),
 
-                                new WColumn({
-                                    .spacing = 10.0f,
-                                    .children = {
-                                        Slider("Position X", [selectedObject](const float delta) {
-								            if (selectedObject) selectedObject->RootComponent()->Translate({ delta * 0.01f, 0.0f, 0.0f });
-                                        }),
-                                        Slider("Position Y", [selectedObject](const float delta) {
-                                            if (selectedObject) selectedObject->RootComponent()->Translate({ 0.0f, delta * 0.01f, 0.0f });
-                                        }),
-                                        Slider("Position Z", [selectedObject](const float delta) {
-                                            if (selectedObject) selectedObject->RootComponent()->Translate({ 0.0f, 0.0f, delta * 0.01f });
-                                        }),
+        Slider("Scale X", [selectedObject](const float delta) {
+            if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f + delta * 0.001f, 1.0f, 1.0f });
+        }),
+        Slider("Scale Y", [selectedObject](const float delta) {
+            if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f, 1.0f + delta * 0.001f, 1.0f });
+        }),
+        Slider("Scale Z", [selectedObject](const float delta) {
+            if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f, 1.0f, 1.0f + delta * 0.001f });
+        }),
 
-                                        Slider("Scale X", [selectedObject](const float delta) {
-                                            if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f + delta * 0.001f, 1.0f, 1.0f });
-                                        }),
-                                        Slider("Scale Y", [selectedObject](const float delta) {
-                                            if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f, 1.0f + delta * 0.001f, 1.0f });
-                                        }),
-                                        Slider("Scale Z", [selectedObject](const float delta) {
-                                            if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f, 1.0f, 1.0f + delta * 0.001f });
-                                        }),
-
-                                        Slider("Rotation Pitch", [selectedObject](const float delta) {
-                                            if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldRightVector));
-                                        }),
-                                        Slider("Rotation Yaw", [selectedObject](const float delta) {
-                                            if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldUpVector));
-                                        }),
-                                        Slider("Rotation Roll", [selectedObject](const float delta) {
-                                            if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldForwardVector));
-                                        }),
-                                    },
-                                }),
-                            };
-                        },
-                    }),
-                }),
-            },
+        Slider("Rotation Pitch", [selectedObject](const float delta) {
+            if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldRightVector));
+        }),
+        Slider("Rotation Yaw", [selectedObject](const float delta) {
+            if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldUpVector));
+        }),
+        Slider("Rotation Roll", [selectedObject](const float delta) {
+            if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldForwardVector));
         }),
     });
+    sliderColumn->SetSpacing(10.0f);
+
+
+    UPtr propertiesText{ Create<WText>{}() };
+    propertiesText->SetText("Properties");
+    propertiesText->SetSpacing(-20.0f);
+
+    UPtr propertiesTextBg{ Create<WColor>{}() };
+    propertiesTextBg->SetColor(Colors::Black.WithAlpha(0.5f));
+
+    UPtr propertiesTextStack{ Create<WStack>{}() };
+    propertiesTextStack->SetChildren({ propertiesTextBg, propertiesText });
+
+    UPtr propertiesTextWrap{ Create<WWrap>{}() };
+    propertiesTextWrap->SetChild(propertiesTextStack);
+
+
+    UPtr mainList{ Create<WList>{}() };
+    mainList->SetChildren({ propertiesTextWrap, Create<WObjectProperties>{}(selectedObject), sliderColumn});
+    mainList->SetSpacing(10.0f);
+
+    UPtr mainListPadding{ Create<WPadding>{}() };
+    mainListPadding->SetChild(mainList);
+    mainListPadding->SetPadding(UPadding::All(8.0f));
+
+    UPtr mainListBg{ Create<WColor>{}() };
+    mainListBg->SetColor(Colors::Blue.WithAlpha(0.5f));
+
+    UPtr mainStack{ Create<WStack>{}() };
+    mainStack->SetChildren({ mainListBg, mainListPadding });
+
+    UPtr mainWrap{ Create<WWrap>{}() };
+    mainWrap->SetChild(mainStack);
+
+    return mainWrap;
 }
 
-void WPropertiesWindow::Cleanup()
+void WPropertiesWindow::Display(UWidgetDisplaySettings displaySettings)
 {
-    ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &WPropertiesWindow::Refresh);
+    Base::Display(displaySettings);
 
-    Base::Cleanup();
+    ObjectManager.EventSelectedObjectChanged().AddListener(this, &WPropertiesWindow::Refresh);
+}
+
+void WPropertiesWindow::Remove()
+{
+    Base::Remove();
+
+    ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &WPropertiesWindow::Refresh);
 }
 
 WidgetPtr WPropertiesWindow::Slider(const std::string& label, const ValueChangedFunction& function)
 {
-    return new WWrap({
-        .axis = EAxis::Vertical,
-        .child = new WStack({
-            .children = {
-                new WColor({ Colors::White.WithValue(0.5f) }),
-                new WText({
-                    .text = label,
-                    .fontSize = { 20.0f, 25.0f },
-                    .spacing = -8.0f,
-                }),
-                new WButton({
-                    .onDown = [function]() {
-                        const float delta{ Mouse.CursorPositionDelta().x };
-                        if (delta != 0.0f)
-                        {
-                            function(delta);
-                        }
-                    },
-                }),
-            },
-        }),
+    UPtr button{ Create<WButton>{}() };
+    button->SetOnDown([function]() {
+        const float delta{ Mouse.CursorPositionDelta().x };
+        if (delta != 0.0f)
+        {
+            function(delta);
+        }
     });
+
+    UPtr buttonText{ Create<WText>{}() };
+    buttonText->SetText(label);
+    buttonText->SetFontSize({ 20.0f, 25.0f });
+    buttonText->SetSpacing(-8.0f);
+
+    UPtr buttonBg{ Create<WColor>{}() };
+    buttonBg->SetColor(Colors::White.WithValue(0.5f));
+
+
+    UPtr buttonStack{ Create<WStack>{}() };
+    buttonStack->SetChildren({ buttonBg, buttonText, button });
+
+    UPtr buttonWrap{ Create<WWrap>{}() };
+    buttonWrap->SetChild(buttonStack);
+    buttonWrap->SetAxis(EAxis::Vertical);
+
+    return buttonWrap;
 }
 
 #include "generated/PropertiesWindow.generated.inl"

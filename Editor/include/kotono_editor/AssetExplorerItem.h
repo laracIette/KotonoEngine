@@ -22,5 +22,5 @@ private:
 
 	bool isSelected_;
 	float lastClickedTime_;
-	const float doubleClickTreshold_;
+	float doubleClickTreshold_;
 };

@@ -15,101 +15,124 @@ WAssetExplorer::WAssetExplorer()
 
 WidgetPtr WAssetExplorer::Build()
 {
-	Mouse.EventButton(EButton::Previous, EInputState::Pressed).AddListener(this, &WAssetExplorer::OnMousePreviousButtonPressed);
-	Mouse.EventButton(EButton::Next, EInputState::Pressed).AddListener(this, &WAssetExplorer::OnMouseNextButtonPressed);
-
 	const UFileExplorer fileExplorer(path_);
 	const auto directories{ fileExplorer.GetDirectories() };
 	const auto files{ fileExplorer.GetFiles() };
 
-	return new WColumn({
-		.spacing = 4.0f,
-		.children = {
-			new WRow({
-				.spacing = 4.0f,
-				.children = {
-					new WWrap({
-						.child = new WStack({
-							.children = {
-								new WColor({ Colors::White.WithAlpha(0.1f) }),
-								new WText({
-									.text = "Up",
-									.fontSize = { 16.0f, 20.0f },
-								}),
-								new WButton({
-									.onClicked = [this]() { Push(path_.Directory()); },
-								}),
-							},
-						}),
-					}),
-					new WWrap({
-						.child = new WStack({
-							.children = {
-								new WColor({ Colors::White.WithAlpha(0.1f) }),
-								new WText({
-									.text = "Prev",
-									.fontSize = { 16.0f, 20.0f },
-								}),
-								new WButton({
-									.onClicked = [this]() { NavigatePrevious(); },
-								}),
-							},
-						}),
-					}),
-					new WWrap({
-						.child = new WStack({
-							.children = {
-								new WColor({ Colors::White.WithAlpha(0.1f) }),
-								new WText({
-									.text = "Next",
-									.fontSize = { 16.0f, 20.0f },
-								}),
-								new WButton({
-									.onClicked = [this]() { NavigateNext(); },
-								}),
-							},
-						}),
-					}),
-				},
-			}),
-			new WStack({
-				.children = {
-					new WColor({ Colors::White.WithAlpha(0.1f) }),
-					new WPadding({
-						.padding = WPadding::Padding::All(8.0f),
-						.child = new WHorizontalWrapList({
-							.itemSpacing = 10.0f,
-							.rowSpacing = 10.0f,
-							.children = [this, directories, files]() {
-								WidgetVector result{};
+	UPtr mainColumn{ Create<WColumn>{}() };
+	mainColumn->SetSpacing(4.0f);
 
-								for (const auto& directory : directories)
-								{
-									result.push_back(new WAssetExplorerDirectory(directory, [this](const UPath& path) { Push(path); }));
-								}
+	UPtr navigationRow{ Create<WRow>{}() };
+	navigationRow->SetSpacing(4.0f);
 
-								for (const auto& file : files)
-								{
-									result.push_back(new WAssetExplorerFile(file.Path()));
-								}
 
-								return result;
-							},
-						}),
-					}),
-				},
-			}),
-		},
-	});
-		
+	UPtr upBg{ Create<WColor>{}() };
+	upBg->SetColor(Colors::White.WithAlpha(0.1f));
+
+	UPtr upText{ Create<WText>{}() };
+	upText->SetText("Up");
+	upText->SetFontSize({ 16.0f, 20.0f });
+
+	UPtr upButton{ Create<WButton>{}() };
+	upButton->SetOnClicked([this]() { Push(path_.Directory()); });
+
+
+	UPtr previousBg{ Create<WColor>{}() };
+	previousBg->SetColor(Colors::White.WithAlpha(0.1f));
+
+	UPtr previousText{ Create<WText>{}() };
+	previousText->SetText("Prev");
+	previousText->SetFontSize({ 16.0f, 20.0f });
+
+	UPtr previousButton{ Create<WButton>{}() };
+	previousButton->SetOnClicked([this]() { NavigatePrevious(); });
+
+
+	UPtr nextBg{ Create<WColor>{}() };
+	nextBg->SetColor(Colors::White.WithAlpha(0.1f));
+
+	UPtr nextText{ Create<WText>{}() };
+	nextText->SetText("Next");
+	nextText->SetFontSize({ 16.0f, 20.0f });
+
+	UPtr nextButton{ Create<WButton>{}() };
+	nextButton->SetOnClicked([this]() { NavigateNext(); });
+
+
+	UPtr explorerBg{ Create<WColor>{}() };
+	explorerBg->SetColor(Colors::White.WithAlpha(0.1f));
+
+	UPtr explorerPadding{ Create<WPadding>{}() };
+	explorerPadding->SetPadding(UPadding::All(8.0f));
+
+	UPtr explorerHorizontalWrapList{ Create<WHorizontalWrapList>{}() };
+	explorerHorizontalWrapList->SetItemSpacing(10.0f);
+	explorerHorizontalWrapList->SetRowSpacing(10.0f);
+
+
+	std::vector<UWidgetTree*> assets{};
+	for (const auto& directory : directories)
+	{
+		assets.push_back(new UWidgetTreeLeaf(
+			Create<WAssetExplorerDirectory>{}(directory, [this](const UPath& path) { Push(path); })
+		));
+	}
+	for (const auto& file : files)
+	{
+		assets.push_back(new UWidgetTreeLeaf(
+			Create<WAssetExplorerFile>{}(file.Path())
+		));
+	}
+
+	UChildrenOwnerTree(mainColumn, {
+		new UChildrenOwnerTree(navigationRow, {
+			new UChildOwnerTree(Create<WWrap>{}(),
+				new UChildrenOwnerTree(Create<WStack>{}(), {
+					new UWidgetTreeLeaf(upBg),
+					new UWidgetTreeLeaf(upText),
+					new UWidgetTreeLeaf(upButton),
+				})
+			),
+			new UChildOwnerTree(Create<WWrap>{}(),
+				new UChildrenOwnerTree(Create<WStack>{}(), {
+					new UWidgetTreeLeaf(previousBg),
+					new UWidgetTreeLeaf(previousText),
+					new UWidgetTreeLeaf(previousButton),
+				})
+			),
+			new UChildOwnerTree(Create<WWrap>{}(),
+				new UChildrenOwnerTree(Create<WStack>{}(), {
+					new UWidgetTreeLeaf(nextBg),
+					new UWidgetTreeLeaf(nextText),
+					new UWidgetTreeLeaf(nextButton),
+				})
+			),
+		}),
+		new UChildrenOwnerTree(Create<WStack>{}(), {
+			new UWidgetTreeLeaf(explorerBg),
+			new UChildOwnerTree(explorerPadding,
+				new UChildrenOwnerTree(explorerHorizontalWrapList, assets)
+			),
+		}),
+	}).Link();		
+
+	return mainColumn;
 }
 
-void WAssetExplorer::Cleanup()
+void WAssetExplorer::Display(UWidgetDisplaySettings displaySettings)
 {
+	Base::Display(displaySettings);
+
+	Mouse.EventButton(EButton::Previous, EInputState::Pressed).AddListener(this, &WAssetExplorer::OnMousePreviousButtonPressed);
+	Mouse.EventButton(EButton::Next, EInputState::Pressed).AddListener(this, &WAssetExplorer::OnMouseNextButtonPressed);
+}
+
+void WAssetExplorer::Remove()
+{
+	Base::Remove();
+
 	Mouse.EventButton(EButton::Previous, EInputState::Pressed).RemoveListener(this, &WAssetExplorer::OnMousePreviousButtonPressed);
 	Mouse.EventButton(EButton::Next, EInputState::Pressed).RemoveListener(this, &WAssetExplorer::OnMouseNextButtonPressed);
-
-	Base::Cleanup();
 }
 
 void WAssetExplorer::Push(const UPath& path)

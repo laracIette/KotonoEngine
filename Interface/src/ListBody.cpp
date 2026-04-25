@@ -3,20 +3,69 @@
 #include <glm/common.hpp>
 #include <kotono_math/math_utils.h>
 
-WListBody::WListBody(const ListBodySettings& listBodySettings) :
-	WChildrenOwner(listBodySettings.children),
-	listBodySettings_(listBodySettings)
+UWidgetDisplaySettings WListBody::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
+	displaySettings.bounds.y = INFINITY;
+
+	glm::vec2 size{ 0.0f, 0.0f };
+
+	for (auto& child : children_)
+	{
+		if (child)
+		{
+			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
+			size.x = std::max(size.x, childSettings.bounds.x);
+			size.y += childSettings.bounds.y;
+		}
+	}
+
+	if (!children_.empty())
+	{
+		size.y += spacing_ * static_cast<float>(children_.size() - 1);
+	}
+
+	displaySettings.bounds = glm::min(size, displaySettings.bounds);
+	return displaySettings;
+}
+
+glm::vec2 WListBody::GetDesiredSize(glm::vec2 bounds) const
+{
+	glm::vec2 size{};
+
+	for (auto& child : children_)
+	{
+		if (child)
+		{
+			const auto childDesiredSize{ child->GetDesiredSize(bounds) };
+			size.x = std::max(size.x, childDesiredSize.x);
+			size.y += childDesiredSize.y;
+		}
+	}
+
+	if (GetValidChildrenCount() > 1)
+	{
+		size.y += spacing_ * static_cast<float>(GetValidChildrenCount() - 1);
+	}
+
+	return size;
+}
+
+float WListBody::GetSpacing() const
+{
+	return spacing_;
+}
+
+void WListBody::SetSpacing(const float spacing)
+{
+	spacing_ = spacing;
 }
 
 void WListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	++displaySettings.layer;
 
-	if (parent_) // todo: move to scrollable ?
+	if (UPtr asList{ TryCast<WList>(GetParent()) }) // todo: move to scrollable ?
 	{
-		const auto* asList{ static_cast<WList*>(parent_) };
-
 		glm::vec2 newScissorOffset;
 		glm::vec2 newScissorExtent;
 		compute_intersect(
@@ -32,63 +81,16 @@ void WListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
 		displaySettings.scissor.extent = newScissorExtent;
 	}
 
-	for (auto* child : listBodySettings_.children)
+	for (auto& child : children_)
 	{
 		if (child)
 		{
 			child->Display(displaySettings);
 
 			displaySettings.position.y += child->GetDisplaySettings(displaySettings).bounds.y;
-			displaySettings.position.y += listBodySettings_.spacing;
+			displaySettings.position.y += spacing_;
 		}
 	}
-}
-
-UWidgetDisplaySettings WListBody::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
-{
-	displaySettings.bounds.y = INFINITY;
-
-	glm::vec2 size{ 0.0f, 0.0f };
-
-	for (auto* child : listBodySettings_.children)
-	{
-		if (child)
-		{
-			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
-			size.x = std::max(size.x, childSettings.bounds.x);
-			size.y += childSettings.bounds.y;
-		}
-	}
-
-	if (!listBodySettings_.children.empty())
-	{
-		size.y += listBodySettings_.spacing * static_cast<float>(listBodySettings_.children.size() - 1);
-	}
-
-	displaySettings.bounds = glm::min(size, displaySettings.bounds);
-	return displaySettings;
-}
-
-glm::vec2 WListBody::GetDesiredSize(glm::vec2 bounds) const
-{
-	glm::vec2 size{};
-
-	for (auto* child : listBodySettings_.children)
-	{
-		if (child)
-		{
-			const auto childDesiredSize{ child->GetDesiredSize(bounds) };
-			size.x = std::max(size.x, childDesiredSize.x);
-			size.y += childDesiredSize.y;
-		}
-	}
-
-	if (GetValidChildrenCount() > 1)
-	{
-		size.y += listBodySettings_.spacing * static_cast<float>(GetValidChildrenCount() - 1);
-	}
-
-	return size;
 }
 
 #include "generated/ListBody.generated.inl"

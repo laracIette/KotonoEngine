@@ -140,12 +140,18 @@ void TSceneObject::Deserialize()
 
 	for (auto& sceneComponent : sceneComponents_)
 	{
-		sceneComponent->owner_ = Ptr();
+		if (sceneComponent)
+		{
+			sceneComponent->owner_ = Ptr();
+		}
 	}
 
 	for (auto& sceneObject : children_)
 	{
-		sceneObject->parent_ = Ptr();
+		if (sceneObject)
+		{
+			sceneObject->parent_ = Ptr();
+		}
 	}
 }
 
@@ -153,7 +159,10 @@ void TSceneObject::Spawn()
 {
 	for (auto& sceneComponent : sceneComponents_)
 	{
-		sceneComponent->Spawn();
+		if (sceneComponent)
+		{
+			sceneComponent->Spawn();
+		}
 	}
 }
 
@@ -161,7 +170,7 @@ void TSceneObject::InitSceneComponents()
 {
 	for (auto& sceneComponent : sceneComponents_)
 	{
-		if (!sceneComponent->isInit_)
+		if (sceneComponent && !sceneComponent->isInit_)
 		{
 			sceneComponent->Init();
 			sceneComponent->isInit_ = true;

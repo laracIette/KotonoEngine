@@ -1,15 +1,9 @@
 #include "Stack.h"
 #include <glm/common.hpp>
 
-WStack::WStack(const StackSettings& stackSettings) :
-	WChildrenOwner(stackSettings.children),
-	stackSettings_(stackSettings)
-{
-}
-
 void WStack::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
-	for (auto* child : stackSettings_.children)
+	for (auto& child : children_)
 	{
 		if (child)
 		{
@@ -23,7 +17,7 @@ UWidgetDisplaySettings WStack::GetDisplaySettings(UWidgetDisplaySettings display
 {
 	glm::vec2 bounds{ 0.0f, 0.0f };
 
-	for (auto* child : stackSettings_.children)
+	for (auto& child : children_)
 	{
 		if (child)
 		{
@@ -39,7 +33,7 @@ glm::vec2 WStack::GetDesiredSize(glm::vec2 bounds) const
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
-	for (auto* child : stackSettings_.children)
+	for (auto& child : children_)
 	{
 		if (child)
 		{

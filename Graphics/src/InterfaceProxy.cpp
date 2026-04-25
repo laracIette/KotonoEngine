@@ -18,12 +18,7 @@ void UInterfaceProxy::ApplyPendingUpdates(const u32 frameIndex)
 		--updateData.count;
 	}
 
-	pendingUpdates_.RemoveIf(
-		[](const UpdateData& updateData)
-		{
-			return updateData.count == 0;
-		}
-	);
+	pendingUpdates_.RemoveIf([](const UpdateData& updateData) { return updateData.count == 0; });
 }
 
 bool UInterfaceProxy::IsDirty() const

@@ -1,6 +1,7 @@
 #pragma once
 #include "generated/Text.generated.h"
 #include "Widget.h"
+class WChildrenOwner;
 /// Display a text
 class WText final : public WWidget
 {
@@ -8,8 +9,6 @@ class WText final : public WWidget
 
 public:
 	WidgetPtr Build() override;
-
-	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 public:
 	const std::string& GetText() const;
@@ -23,9 +22,12 @@ public:
 	void SetShouldWrap(const bool shouldWrap);
 
 private:
-	WidgetVector GetCharacters() const;
+	void UpdateTextBody() const;
+	WidgetPool GetCharacters() const;
 
 private:
+	UPtr<WChildrenOwner> textBody_;
+
 	std::string text_;
 	glm::vec2 fontSize_;
 	float spacing_;

@@ -10,36 +10,45 @@ WSceneExplorerItem::WSceneExplorerItem(const UPtr<TSceneObject>& sceneObject)
 
 WidgetPtr WSceneExplorerItem::Build()
 {
-	ObjectManager.EventSelectedObjectChanged().AddListener(this, &WSceneExplorerItem::Refresh);
+	UPtr color{ Create<WColor>{}() };
+	color->SetColor(sceneObject_ && (ObjectManager.GetSelectedObject() == sceneObject_)
+		? Colors::Black.WithAlpha(0.2f)
+		: Colors::Transparent
+	);
 
-	return new WWrap({
-		.child = new WStack({
-			.children = {
-				sceneObject_ && (ObjectManager.GetSelectedObject() == sceneObject_)
-					? new WColor({ Colors::Black.WithAlpha(0.2f) })
-					: new WColor({ Colors::Transparent }),
-				new WButton({
-					.onPressed = [this]() {
-						SetState([this]() {
-							ObjectManager.SetSelectedObject(sceneObject_);
-						});
-					},
-				}),
-				new WText({
-					.text = sceneObject_ ? sceneObject_->GetName() : "",
-					.fontSize = { 20.0f, 24.0f },
-					.spacing = -6.0f,
-				}),
-			},
-		}),
+	UPtr button{ Create<WButton>{}() };
+	button->SetOnPressed([this]() {
+		SetState([this]() {
+			ObjectManager.SetSelectedObject(sceneObject_);
+		});
 	});
+
+	UPtr text{ Create<WText>{}() };
+	text->SetText(sceneObject_ ? sceneObject_->GetName() : "");
+	text->SetFontSize({ 20.0f, 24.0f });
+	text->SetSpacing(-6.0f);
+
+	UPtr stack{ Create<WStack>{}() };
+	stack->SetChildren({ color, button, text });
+
+	UPtr wrap{ Create<WWrap>{}() };
+	wrap->SetChild(stack);
+
+	return wrap;
 }
 
-void WSceneExplorerItem::Cleanup()
+void WSceneExplorerItem::Display(UWidgetDisplaySettings displaySettings)
 {
-	ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &WSceneExplorerItem::Refresh);
+	Base::Display(displaySettings);
 
-	Base::Cleanup();
+	ObjectManager.EventSelectedObjectChanged().AddListener(this, &WSceneExplorerItem::Refresh);
+}
+
+void WSceneExplorerItem::Remove()
+{
+	Base::Remove();
+
+	ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &WSceneExplorerItem::Refresh);
 }
 
 #include "generated/SceneExplorerItem.generated.inl"

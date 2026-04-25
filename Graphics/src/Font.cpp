@@ -3,7 +3,7 @@
 #include <kotono_common/AssetManager.h>
 #include <unordered_map>
 
-static const std::unordered_map<char, const char*> CHARACTER_NAMES =
+static const std::unordered_map<char, std::string_view> CHARACTER_NAMES =
 {
     {'a', "a"}, {'A', "ua"}, {'b', "b"}, {'B', "ub"},
     {'c', "c"}, {'C', "uc"}, {'d', "d"}, {'D', "ud"},
@@ -29,8 +29,10 @@ static const std::unordered_map<char, const char*> CHARACTER_NAMES =
 	{'<', "lesser"}, {'>', "greater"},
 };
 
-KtFont::KtFont(const UPath& path) :
-    path_(path)
+KtFont::KtFont(const UPath& path) 
+    : path_{ path }
+    , size_{ 10.0f }
+    , spacing_{ 0.0f }
 {
 }
 

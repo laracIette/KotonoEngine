@@ -13,41 +13,47 @@ WAssetExplorerItem::WAssetExplorerItem(const UPath& path, const OnClickedFunc& o
 
 WidgetPtr WAssetExplorerItem::Build()
 {
-    return new WBox({
-        .size = { 128.0f, 128.0f },
-        .child = new WStack({
-            .children = {
-                isSelected_ 
-                    ? new WColor({ Colors::White.WithValue(0.2f) })
-                    : new WColor({ Colors::White.WithValue(0.1f) }),
-                new WCenter({
-                    .axis = EAxis::All,
-                    .child = new WText({
-                        .text = path_.Name(),
-                        .fontSize = { 16.0f, 20.0f },
-                        .spacing = -4.0f,
-                        .shouldWrap = true,
-                    }),
-                }),
-                new WButton({
-                    .onClicked = [this]() { 
-                        if (isSelected_ && TimeManager.Now() - lastClickedTime_ < doubleClickTreshold_) {
-                            if (onDoubleClicked_) {
-                                onDoubleClicked_(path_);
-                            }
-                        }
-                        else {
-                            SetState([this]() {
-                                lastClickedTime_ = TimeManager.Now();
-                                isSelected_ = true;
-                            });
-                        }
-                    },
-                    .onPressOut = [this]() { SetState([this]() { isSelected_ = false; }); },
-                }),
-            },
-        }),
+    UPtr bg{ Create<WColor>{}() };
+    bg->SetColor(isSelected_ 
+        ? Colors::White.WithValue(0.2f) 
+        : Colors::White.WithValue(0.1f)
+    );
+
+    UPtr text{ Create<WText>{}() };
+    text->SetText(path_.Name());
+    text->SetFontSize({ 16.0f, 20.0f });
+    text->SetSpacing(-4.0f);
+    text->SetShouldWrap(true);
+
+    UPtr textCenter{ Create<WCenter>{}() };
+    textCenter->SetChild(text);
+    textCenter->SetAxis(EAxis::All);
+
+    UPtr button{ Create<WButton>{}() };
+    button->SetOnClicked([this]() { 
+        if (isSelected_ && TimeManager.Now() - lastClickedTime_ < doubleClickTreshold_) {
+            if (onDoubleClicked_) {
+                onDoubleClicked_(path_);
+            }
+        }
+        else {
+            SetState([this]() {
+                lastClickedTime_ = TimeManager.Now();
+                isSelected_ = true;
+            });
+        }
     });
+    button->SetOnPressOut([this]() { SetState([this]() { isSelected_ = false; }); });
+
+
+    UPtr stack{ Create<WStack>{}() };
+    stack->SetChildren({ bg, textCenter, button });
+
+    UPtr box{ Create<WBox>{}() };
+    box->SetChild(stack);
+    box->SetSize({ 128.0f, 128.0f });
+
+    return box;
 }
 
 #include "generated/AssetExplorerItem.generated.inl"

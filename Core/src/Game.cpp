@@ -51,7 +51,7 @@ void SGame::OpenScene(const UPtr<KScene>& scene)
 
 void SGame::OpenStartupInterface()
 {
-    interface_ = Create<KInterface>();
+    interface_ = Create<KInterface>{}();
     interface_->SpawnInterfaceObjects();
 }
 
@@ -62,7 +62,7 @@ void SGame::OpenStartupScene()
         scene_->Delete();
     }
     const auto startupScene{ SProjectSettings::Get<std::string>("/startupScene") };
-    if (scene_ = TryCast<KScene>(ObjectFactory.Get(startupScene)))
+    if (scene_ = TryCast<KScene>(SObjectFactory::Get().Get(startupScene)))
     {
         scene_->SpawnSceneObjects();
     }

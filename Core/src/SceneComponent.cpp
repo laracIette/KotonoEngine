@@ -369,8 +369,11 @@ void KSceneComponent::Deserialize()
 
     for (auto& sceneComponent : children_)
     {
-        sceneComponent->parent_ = Ptr();
-        eventTransformUpdated_.AddListener(&sceneComponent->EventTransformUpdated(), &UEvent<>::Broadcast);
+        if (sceneComponent)
+        {
+            sceneComponent->parent_ = Ptr();
+            eventTransformUpdated_.AddListener(&sceneComponent->EventTransformUpdated(), &UEvent<>::Broadcast);
+        }
     }
 }
 

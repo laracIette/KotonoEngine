@@ -10,7 +10,9 @@ public:
 	WAssetExplorer();
 
 	WidgetPtr Build() override;
-	void Cleanup() override;
+
+	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Remove() override;
 
 private:
 	void Push(const UPath& path);

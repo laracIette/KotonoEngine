@@ -10,7 +10,9 @@ public:
 	WSceneExplorerItem(const UPtr<TSceneObject>& sceneObject);
 	
 	WidgetPtr Build() override;
-	void Cleanup() override;
+
+	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Remove() override;
 
 private:
 	UPtr<TSceneObject> sceneObject_;

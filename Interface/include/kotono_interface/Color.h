@@ -9,7 +9,7 @@ class WColor final : public WWidget
 	GENERATED_WCOLOR()
 
 public:
-	void Cleanup() override;
+	void Remove() override;
 	
 public:
 	const UColor& GetColor() const;

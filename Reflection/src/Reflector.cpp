@@ -77,7 +77,8 @@ std::vector<UReflectionResult::MemberInfo> SReflector::GetMemberInfos(const std:
 {
 	std::vector<UReflectionResult::MemberInfo> result{};
 
-	const std::regex varRegex(R"(SERIALIZE\s*\(?\s*\)?\s*(.+?)\s+([A-Za-z_]\w*)\s*;)");
+	const std::regex varRegex(R"(SERIALIZE\s*(?:\(\s*\))?\s*(?:(?:Writable|Readonly)Property\s*\(\s*)?(.*?)(?:\s*,\s*|\s+)([A-Za-z_]\w*)\s*(?:,\s*[A-Za-z_]\w*\s*\)\s*)?;)");
+	//const std::regex varRegex(R"(SERIALIZE\s*\(?\s*\)?\s*(.+?)\s+([A-Za-z_]\w*)\s*;)");
 
 	for (std::sregex_iterator it(content.begin(), content.end(), varRegex), end; it != end; ++it)
 	{

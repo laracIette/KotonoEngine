@@ -3,33 +3,41 @@
 #include <kotono_common/bitwise_utils.h>
 #include <kotono_input/Mouse.h>
 
-WScrollable::WScrollable(const ScrollableSettings& scrollableSettings)
-	: scrollableSettings_(scrollableSettings)
-	, offset_(0.0f)
-{
-	assert(scrollableSettings_.axis != EAxis::All);
-}
-
 WidgetPtr WScrollable::Build()
 {
-	GetScrollEvent().AddListener(this, &WScrollable::Scroll);
-
-	const glm::vec2 offset(
-		has_flag(scrollableSettings_.axis, EAxis::Horizontal) ? offset_ : 0.0f,
-		has_flag(scrollableSettings_.axis, EAxis::Vertical) ? offset_ : 0.0f
-	);
-
-	return new WOffset({
-		.offset = offset,
-		.child = scrollableSettings_.child,
+	UPtr offset{ Create<WOffset>{}() };
+	offset->SetChild(child_);
+	offset->SetOffset({
+		has_flag(axis_, EAxis::Horizontal) ? offset_ : 0.0f,
+		has_flag(axis_, EAxis::Vertical) ? offset_ : 0.0f
 	});
+
+	return offset;
 }
 
-void WScrollable::Cleanup()
+void WScrollable::Display(UWidgetDisplaySettings displaySettings)
 {
-	GetScrollEvent().RemoveListener(this, &WScrollable::Scroll);
+	Base::Display(displaySettings);
 
-	Base::Cleanup();
+	GetScrollEvent().AddListener(this, &WScrollable::Scroll);
+}
+
+void WScrollable::Remove()
+{
+	Base::Remove();
+
+	GetScrollEvent().RemoveListener(this, &WScrollable::Scroll);
+}
+
+EAxis WScrollable::GetAxis() const
+{
+	return axis_;
+}
+
+void WScrollable::SetAxis(const EAxis axis)
+{
+	assert(axis != EAxis::All);
+	axis_ = axis;
 }
 
 void WScrollable::Scroll(const float delta)
@@ -50,7 +58,7 @@ void WScrollable::Scroll(const float delta)
 
 UEvent<float>& WScrollable::GetScrollEvent() const
 {
-	if (scrollableSettings_.axis == EAxis::Horizontal)
+	if (axis_ == EAxis::Horizontal)
 	{
 		return Mouse.EventHorizontalScroll();
 	}

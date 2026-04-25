@@ -1,23 +1,31 @@
 #include "ChildOwner.h"
 
-void WChildOwner::CacheBuild()
+WChildOwner::~WChildOwner()
 {
-	Base::CacheBuild();
 	if (child_)
 	{
-		child_->CacheBuild();
+		child_->Delete();
 	}
 }
 
-void WChildOwner::Cleanup()
+void WChildOwner::Display(UWidgetDisplaySettings displaySettings)
 {
+	Base::Display(displaySettings);
+
+	//if (child_)
+	{
+		//child_->Display(displaySettings);
+	}
+}
+
+void WChildOwner::Remove()
+{
+	Base::Remove();
+
 	if (child_)
 	{
-		child_->Cleanup();
-		child_->Delete();
+		child_->Remove();
 	}
-
-	Base::Cleanup();
 }
 
 EFlex WChildOwner::GetFlex() const
@@ -40,7 +48,7 @@ glm::vec2 WChildOwner::GetDesiredSize(glm::vec2 bounds) const
 
 WidgetVector WChildOwner::GetWidgetTree()
 {
-	WidgetVector result{ Ptr() };
+	WidgetVector result{ Base::GetWidgetTree() };
 
 	if (child_)
 	{
@@ -62,15 +70,49 @@ void WChildOwner::SetChild(const WidgetPtr& widget)
 	{
 		return;
 	}
+
+	SetState([this, widget]() {
+		if (child_)
+		{
+			child_->SetParent({});
+		}
+
+		child_ = widget;
+
+		if (child_)
+		{
+			child_->SetParent(Ptr());
+		}
+	});
+}
+
+UChildOwnerTree::UChildOwnerTree(const UPtr<WChildOwner>& widget, UWidgetTree* child)
+	: widget_(widget)
+	, child_(child)
+{
+}
+
+UChildOwnerTree::~UChildOwnerTree()
+{
+	delete child_;
+}
+
+WidgetPtr UChildOwnerTree::Widget() const
+{
+	return widget_;
+}
+
+void UChildOwnerTree::Link() const
+{
 	if (child_)
 	{
-		child_->SetParent({});
-	}
-	child_ = widget;
-	if (child_)
-	{
-		child_->SetParent(Ptr());
+		child_->Link();
+		if (widget_)
+		{
+			widget_->SetChild(child_->Widget());
+		}
 	}
 }
 
 #include "generated/ChildOwner.generated.inl"
+

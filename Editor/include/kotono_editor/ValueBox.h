@@ -10,21 +10,9 @@ public:
 	using StringToValueFunction = std::function<void(const std::string&)>;
 
 public:
-	struct ValueBoxSettings
-	{
-		/// default = {}
-		/// REQUIRED
-		ValueToStringFunction valueToString{};
-		/// default = {}
-		/// REQUIRED
-		StringToValueFunction stringToValue{};
-	};
-
-	WValueBox(const ValueBoxSettings& valueBoxSettings);
-
 	WidgetPtr Build() override;
 
 private:
-	//std::string value_;
-	ValueBoxSettings valueBoxSettings_;
+	WritableProperty(ValueToStringFunction, valueToString_, ValueToString);
+	WritableProperty(StringToValueFunction, stringToValue_, StringToValue);
 };

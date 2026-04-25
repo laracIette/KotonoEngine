@@ -5,19 +5,35 @@
 #include <kotono_input/Mouse.h>
 #include <kotono_math/math_utils.h>
 
+#if defined (_DEBUG)
+static constinit u32 Count{ 0 };
+#endif
+
+#define KT_LOG_IMPORTANCE_LEVEL_WIDGET ELogImportanceLevel::Medium
+
 WWidget::WWidget() 
-	: cachedBuild_([this]() { return Build(); })
+	: build_{}
+	, parent_{}
+	, displaySettings_{}
+	, isDisplayed_{ false }
 {
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_WIDGET, "Interface", "{0}", ++Count);
 }
 
-void WWidget::CacheBuild()
+WWidget::~WWidget()
 {
-	cachedBuild_.TryUpdateValue();
-	WidgetPtr build{ cachedBuild_.Value() };
-	if (build && build != Ptr())
+	if (build_ && build_ != Ptr())
 	{
-		build->CacheBuild();
+		build_->Delete();
 	}
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_WIDGET, "Interface", "{0} {1}", --Count, GetName());
+}
+
+void WWidget::PostConstruct()
+{
+	Base::PostConstruct();
+
+	CacheBuild();
 }
 
 WidgetPtr WWidget::Build()
@@ -25,38 +41,41 @@ WidgetPtr WWidget::Build()
 	return Ptr();
 }
 
-void WWidget::Cleanup()
-{
-	WidgetPtr build{ cachedBuild_.Value() };
-	if (build && build != Ptr())
-	{
-		build->Cleanup();
-		build->Delete();
-	}
-}
-
 void WWidget::Display(UWidgetDisplaySettings displaySettings)
 {
+	isDisplayed_ = true;
 	SetDisplaySettings(displaySettings);
 
-	WidgetPtr build{ cachedBuild_.Value() };
-	if (build && build != Ptr())
+	// If build_ is not this, call Display
+	if (build_ && build_ != Ptr())
 	{
-		build->Display(displaySettings);
+		build_->Display(displaySettings);
 	}
-	else if (IsRenderable())
+
+	// If build_ is this, call DisplayInternal
+	if (build_ == Ptr() && IsRenderable())
 	{
+		const auto ds{ displaySettings };
 		displaySettings = GetDisplaySettings(displaySettings);
 		DisplayInternal(displaySettings);
 	}
 }
 
+void WWidget::Remove()
+{
+	isDisplayed_ = false;
+
+	if (build_ && build_ != Ptr())
+	{
+		build_->Remove();
+	}
+}
+
 UWidgetDisplaySettings WWidget::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
-	const WidgetPtr build{ cachedBuild_.Value() };
-	if (build && build != Ptr())
+	if (build_ && build_ != Ptr())
 	{
-		return build->GetDisplaySettings(displaySettings);
+		return build_->GetDisplaySettings(displaySettings);
 	}
 
 	return displaySettings;
@@ -64,45 +83,29 @@ UWidgetDisplaySettings WWidget::GetDisplaySettings(UWidgetDisplaySettings displa
 
 EFlex WWidget::GetFlex() const
 {
-	const WidgetPtr build{ cachedBuild_.Value() };
-	if (build && build != Ptr())
+	if (build_ && build_ != Ptr())
 	{
-		return build->GetFlex();
+		return build_->GetFlex();
 	}
 	return EFlex::All;
 }
 
 glm::vec2 WWidget::GetDesiredSize(glm::vec2 bounds) const
 {
-	const WidgetPtr build{ cachedBuild_.Value() };
-	if (build && build != Ptr())
+	if (build_ && build_ != Ptr())
 	{
-		return build->GetDesiredSize(bounds);
+		return build_->GetDesiredSize(bounds);
 	}
 	return { 0.0f, 0.0f };
 }
 
 WidgetVector WWidget::GetWidgetTree()
 {
-	WidgetPtr build{ cachedBuild_.Value() };
-	if (build && build != Ptr())
+	if (build_ && build_ != Ptr())
 	{
-		return { build };
+		return build_->GetWidgetTree();
 	}
 	return { Ptr() };
-}
-
-void WWidget::Rebuild()
-{
-	auto displaySettings{ displaySettings_ };
-	const WidgetPtr build{ cachedBuild_.Value() };
-	if (build && build != Ptr())
-	{
-		displaySettings = build->displaySettings_;
-	}
-	Cleanup();
-	CacheBuild();
-	Display(displaySettings);
 }
 
 glm::vec2 WWidget::Position() const
@@ -130,15 +133,37 @@ bool WWidget::IsMouseHovering() const
 	return is_point_in_rect(Mouse.CursorPosition(), Position(), Size());
 }
 
-void WWidget::SetParent(WidgetPtr parent)
+void WWidget::CacheBuild()
 {
-	parent_ = parent;
+	build_ = Build();
+	if (build_ && build_ != Ptr())
+	{
+		build_->SetParent(Ptr());
+	}
 }
 
 void WWidget::SetState(const StateFunction& function)
 {
-	function();
-	Refresh();
+	const bool wasDisplayed{ isDisplayed_ };
+	if (wasDisplayed)
+	{
+		Remove();
+	}
+
+	if (function)
+	{
+		function();
+	}
+
+	if (wasDisplayed)
+	{
+		auto displaySettings{ displaySettings_ };
+		if (build_ && build_ != Ptr())
+		{
+			displaySettings = build_->displaySettings_;
+		}
+		Display(displaySettings);
+	}
 }
 
 void WWidget::SetDisplaySettings(const UWidgetDisplaySettings& displaySettings)
@@ -172,8 +197,21 @@ void WWidget::DisplayInternal(UWidgetDisplaySettings displaySettings)
 
 void WWidget::Refresh()
 {
-	cachedBuild_.MarkDirty();
-	Rebuild();
+	SetState({});
+}
+
+UWidgetTreeLeaf::UWidgetTreeLeaf(const WidgetPtr& widget)
+	: widget_(widget)
+{
+}
+
+WidgetPtr UWidgetTreeLeaf::Widget() const
+{
+	return widget_;
+}
+
+void UWidgetTreeLeaf::Link() const
+{
 }
 
 #include "generated/Widget.generated.inl"

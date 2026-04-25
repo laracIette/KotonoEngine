@@ -7,7 +7,9 @@ class WGameStateButton : public WWidget
 
 public:
 	WidgetPtr Build() override;
-	void Cleanup() override;
+
+	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Remove() override;
 
 private:
 	void OnKeyboardSpaceKeyPressed();

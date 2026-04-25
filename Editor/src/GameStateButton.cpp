@@ -5,65 +5,83 @@
 
 WidgetPtr WGameStateButton::Build()
 {
-    Keyboard.EventKey(EKey::Space, EInputState::Pressed).AddListener(this, &WGameStateButton::OnKeyboardSpaceKeyPressed);
+    UPtr mainRow{ Create<WRow>{}() };
+    mainRow->SetSpacing(5.0f);
 
-    return new WRow({
-        .spacing = 5.0f,
-        .children = {
-            new WBox({
-                .size = { 64.0f, 64.0f },
-                .child = new WStack({
-                    .children = {
-                        new WButton({
-                            .onPressed = [this]() {
-                                SetState([]() {
-                                    if (GameManager.IsPlaying())
-                                    {
-                                        GameManager.Pause();
-                                    }
-                                    else
-                                    {
-                                        GameManager.Play();
-                                    }
-                                });
-                            },
-                        }),
-                        GameManager.IsPlaying() 
-                            ? new WColor({ Colors::White.WithValue(0.5f) })
-                            : new WColor({ Colors::Green })
-                    },
-                }),
-            }),
-            new WBox({
-                .size = { 64.0f, 64.0f },
-                .child = new WStack({
-                    .children = {
-                        new WButton({
-                            .onPressed = [this]() {
-                                if (GameManager.IsStopped())
-                                {
-                                    return;
-                                }
-                                SetState([]() {
-                                    GameManager.Stop();
-                                });
-                            },
-                        }),
-                        GameManager.IsStopped()
-                            ? new WColor({ Colors::Red.WithAlpha(0.1f) })
-                            : new WColor({ Colors::Red })
-                    },
-                }),
-            }),
-        },
+    UPtr playPauseBox{ Create<WBox>{}() };
+    playPauseBox->SetSize({ 64.0f, 64.0f });
+
+    UPtr playPauseBg{ Create<WColor>{}() };
+    playPauseBg->SetColor(GameManager.IsPlaying()
+        ? Colors::White.WithValue(0.5f)
+        : Colors::Green
+    );
+
+    UPtr playPauseButton{ Create<WButton>{}() };
+    playPauseButton->SetOnPressed([this]() {
+        SetState([]() {
+            if (GameManager.IsPlaying())
+            {
+                GameManager.Pause();
+            }
+            else
+            {
+                GameManager.Play();
+            }
+        });
     });
+
+
+    UPtr stopBox{ Create<WBox>{}() };
+    stopBox->SetSize({ 64.0f, 64.0f });
+
+    UPtr stopBg{ Create<WColor>{}() };
+    stopBg->SetColor(GameManager.IsStopped()
+        ? Colors::Red.WithAlpha(0.1f)
+        : Colors::Red
+    );
+
+    UPtr stopButton{ Create<WButton>{}() };
+    stopButton->SetOnPressed([this]() {
+        if (GameManager.IsStopped())
+        {
+            return;
+        }
+        SetState([]() {
+            GameManager.Stop();
+        });
+    });
+
+    UChildrenOwnerTree(mainRow, {
+        new UChildOwnerTree(playPauseBox,
+            new UChildrenOwnerTree(Create<WStack>{}(), {
+                new UWidgetTreeLeaf(playPauseBg),
+                new UWidgetTreeLeaf(playPauseButton),
+            })
+        ),
+        new UChildOwnerTree(stopBox,
+            new UChildrenOwnerTree(Create<WStack>{}(), {
+                new UWidgetTreeLeaf(stopBg),
+                new UWidgetTreeLeaf(stopButton),
+            })
+        )
+    }).Link();
+
+    return mainRow;
 }
 
-void WGameStateButton::Cleanup()
+void WGameStateButton::Display(UWidgetDisplaySettings displaySettings)
 {
-    Keyboard.EventKey(EKey::Space, EInputState::Pressed).RemoveListener(this, &WGameStateButton::OnKeyboardSpaceKeyPressed);
+    Base::Display(displaySettings);
 
-    Base::Cleanup();
+    Keyboard.EventKey(EKey::Space, EInputState::Pressed).AddListener(this, &WGameStateButton::OnKeyboardSpaceKeyPressed);
+}
+
+void WGameStateButton::Remove()
+{
+    Base::Remove();
+
+    Keyboard.EventKey(EKey::Space, EInputState::Pressed).RemoveListener(this, &WGameStateButton::OnKeyboardSpaceKeyPressed);
 }
 
 void WGameStateButton::OnKeyboardSpaceKeyPressed()

@@ -6,25 +6,31 @@
 
 WidgetPtr WUpdateTimeText::Build()
 {
-    TimerManager.GetTimer("update time text").EventCompleted().AddListener(this, &WUpdateTimeText::UpdateText);
-
-    return new WText({
-        .text = std::format("U {:.8f}s", TimeManager.AverageUpdateTime()),
-        .fontSize = { 20.0f, 24.0f },
-        .spacing = -6.0f,
-    });
+    text_ = Create<WText>{}();
+    text_->SetName("Update Time Text");
+    text_->SetText("Update Time Text");
+    text_->SetFontSize({ 20.0f, 24.0f });
+    text_->SetSpacing(-6.0f);
+    return text_;
 }
 
-void WUpdateTimeText::Cleanup()
+void WUpdateTimeText::Display(UWidgetDisplaySettings displaySettings)
 {
-    TimerManager.GetTimer("update time text").EventCompleted().RemoveListener(this, &WUpdateTimeText::UpdateText);
+    Base::Display(displaySettings);
 
-    Base::Cleanup();
+    TimerManager.GetTimer("update time text").EventCompleted().AddListener(this, &Self::UpdateText);
 }
 
-void WUpdateTimeText::UpdateText()
+void WUpdateTimeText::Remove()
 {
-    SetState([]() {});
+    Base::Remove();
+
+    TimerManager.GetTimer("update time text").EventCompleted().RemoveListener(this, &Self::UpdateText);
+}
+
+void WUpdateTimeText::UpdateText() const
+{
+    text_->SetText(std::format("U {:.8f}s", TimeManager.AverageUpdateTime()));
 }
 
 #include "generated/UpdateTimeText.generated.inl"

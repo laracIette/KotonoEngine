@@ -49,11 +49,6 @@ void SCore::Update()
 void SCore::Cleanup()
 {
     Game.Cleanup();
-
-#if defined(_DEBUG)
-    KObject::CheckDebugRegistry();
-#endif
-
     ObjectManager.Cleanup(); // todo: remove that prob
     AudioManager.Cleanup();
     UAssetManager<KtTexture>::Cleanup();

@@ -7,8 +7,13 @@ class WSpacer final : public WWidget
 	GENERATED_WSPACER()
 
 public:
+	WSpacer(const EFlex flex);
+
 	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 	EFlex GetFlex() const override;
+
+private:
+	EFlex flex_;
 };
 

@@ -6,17 +6,23 @@
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/Texture.h>
+#include <glm/gtx/string_cast.hpp>
 
-void WImage::Cleanup()
+void WImage::Display(UWidgetDisplaySettings displaySettings)
 {
+	Base::Display(displaySettings);
+}
+
+void WImage::Remove()
+{
+	Base::Remove();
+
 	if (imageProxy_)
 	{
 		Renderer.InterfaceRenderer().UnregisterProxy(imageProxy_);
 		Renderer.InterfaceRenderer().DeleteProxy(imageProxy_);
 		imageProxy_ = nullptr;
 	}
-
-	Base::Cleanup();
 }
 
 const UPath& WImage::GetPath() const
