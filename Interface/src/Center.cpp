@@ -1,11 +1,11 @@
 #include "Center.h"
 
-UWidgetDisplaySettings WCenter::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
+UWidgetDisplaySettings WCenter::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 
 	if (child_)
 	{
-		const auto childSettings{ child_->GetDisplaySettings(displaySettings) };
+		const auto childSettings{ child_->GetContentDisplaySettings(displaySettings) };
 
 		switch (axis_)
 		{
@@ -32,16 +32,6 @@ EAxis WCenter::GetAxis() const
 void WCenter::SetAxis(const EAxis axis)
 {
 	axis_ = axis;
-}
-
-void WCenter::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
-	++displaySettings.layer;
-
-	if (child_)
-	{
-		child_->Display(displaySettings);
-	}
 }
 
 #include "generated/Center.generated.inl"

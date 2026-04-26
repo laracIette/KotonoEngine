@@ -1,13 +1,13 @@
 #pragma once
 #include <kotono_common/types.h>
 template <typename T>
-class KtPool;
+class UPool;
 class UInterfaceProxy;
 class KtInterfaceCuller final
 {
 private:
 	using Proxy = UInterfaceProxy;
-	using ProxiesPool = KtPool<Proxy*>;
+	using ProxiesPool = UPool<Proxy*>;
 
 public:
 	ProxiesPool ComputeCulling(ProxiesPool renderQueueData, const u32 frameIndex) const;

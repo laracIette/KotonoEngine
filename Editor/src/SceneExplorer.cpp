@@ -9,67 +9,71 @@
 
 WidgetPtr WSceneExplorer::Build()
 {
-	UPtr addButtonBox{ Create<WBox>{}() };
-	addButtonBox->SetChild(Create<WSceneExplorerAddButton>{}());
+	UPtr addButtonBox{ UCreate<WBox>{}() };
 	addButtonBox->SetSize({ 80.0f, 40.0f });
 
-	UPtr removeButtonBox{ Create<WBox>{}() };
-	removeButtonBox->SetChild(Create<WSceneExplorerRemoveButton>{}());
+	UPtr removeButtonBox{ UCreate<WBox>{}() };
 	removeButtonBox->SetSize({ 80.0f, 40.0f });
 
-	UPtr buttonRow{ Create<WRow>{}() };
-	buttonRow->SetChildren({ addButtonBox, Create<WSpacer>{}(EFlex::Horizontal), removeButtonBox });
 
-
-	UPtr headerText{ Create<WText>{}() };
+	UPtr headerText{ UCreate<WText>{}() };
 	headerText->SetText("Scene Explorer");
 	headerText->SetFontSize({ 20.0f, 24.0f });
 	headerText->SetSpacing(-5.0f);
 
 
-	UPtr itemListBg{ Create<WColor>{}() };
+	UPtr itemListBg{ UCreate<WColor>{}() };
 	itemListBg->SetColor(Colors::Black.WithAlpha(0.2f));
 
-	UPtr itemList{ Create<WList>{}() };
-	WidgetPool items{};
-	if (UPtr scene{ Game.GetOpenedScene() })
-	{
-		for (auto& sceneObject : scene->SceneObjects())
-		{
-			items.Add(Create<WSceneExplorerItem>{}(sceneObject));
-		}
-	}
-	itemList->SetChildren(items);
+	itemList_ = UCreate<WList>{}();
+	itemList_->SetName("Scene Explorer Item List");
+	PopulateItemList();
 
-	UPtr itemListPadding{ Create<WPadding>{}() };
-	itemListPadding->SetChild(itemList);
+	UPtr itemListPadding{ UCreate<WPadding>{}() };
 	itemListPadding->SetPadding(UPadding::All(5.0f));
 
-	UPtr itemListStack{ Create<WStack>{}() };
-	itemListStack->SetChildren({ itemListBg, itemListPadding });
-
-	UPtr itemListStackPadding{ Create<WPadding>{}() };
-	itemListStackPadding->SetChild(itemListStack);
+	UPtr itemListStackPadding{ UCreate<WPadding>{}() };
 	itemListPadding->SetPadding(UPadding::All(5.0f));
 
 
-	UPtr column{ Create<WColumn>{}() };
-	column->SetChildren({ buttonRow, headerText, itemListStackPadding });
+	UPtr column{ UCreate<WColumn>{}() };
 	column->SetSpacing(10.0f);
 
-	UPtr columnPadding{ Create<WPadding>{}() };
-	columnPadding->SetChild(column);
+	UPtr columnPadding{ UCreate<WPadding>{}() };
 	columnPadding->SetPadding(UPadding::All(10.0f));
 
 
-	UPtr mainStackBg{ Create<WColor>{}() };
+	UPtr mainStackBg{ UCreate<WColor>{}() };
 	mainStackBg->SetColor(Colors::White.WithValue(0.5f).WithAlpha(0.8f));
 
+	const UChildrenOwnerTree widgetTree(UCreate<WStack>{}(), {
+		new UWidgetTreeLeaf(mainStackBg),
+		new UChildOwnerTree(columnPadding, 
+			new UChildrenOwnerTree(column, {
+				new UChildrenOwnerTree(UCreate<WRow>{}(), {
+					new UChildOwnerTree(addButtonBox, 
+						new UWidgetTreeLeaf(UCreate<WSceneExplorerAddButton>{}())
+					),
+					new UWidgetTreeLeaf(UCreate<WSpacer>{}(EFlex::Horizontal)),
+					new UChildOwnerTree(removeButtonBox, 
+						new UWidgetTreeLeaf(UCreate<WSceneExplorerRemoveButton>{}())
+					),
+				}),
+				new UWidgetTreeLeaf(headerText),
+				new UChildOwnerTree(itemListStackPadding, 
+					new UChildrenOwnerTree(UCreate<WStack>{}(), {
+						new UWidgetTreeLeaf(itemListBg),
+						new UChildOwnerTree(itemListPadding, 
+							new UWidgetTreeLeaf(itemList_)
+						),
+					})
+				),
+			})
+		),
+	});
+	widgetTree.Link();
 
-	UPtr mainStack{ Create<WStack>{}() };
-	mainStack->SetChildren({ mainStackBg, columnPadding });
-
-	return mainStack;
+	return widgetTree.Widget();
 }
 
 void WSceneExplorer::Display(UWidgetDisplaySettings displaySettings)
@@ -80,7 +84,7 @@ void WSceneExplorer::Display(UWidgetDisplaySettings displaySettings)
 	
 	if (UPtr scene{ Game.GetOpenedScene() })
 	{
-		scene->EventSceneObjectsUpdated().AddListener(this, &Self::Refresh);
+		scene->EventSceneObjectsUpdated().AddListener(this, &Self::PopulateItemList);
 	}
 }
 
@@ -92,13 +96,31 @@ void WSceneExplorer::Remove()
 	
 	if (UPtr scene{ Game.GetOpenedScene() })
 	{
-		scene->EventSceneObjectsUpdated().RemoveListener(this, &Self::Refresh);
+		scene->EventSceneObjectsUpdated().RemoveListener(this, &Self::PopulateItemList);
 	}
 }
 
 void WSceneExplorer::OnGameStateChanged(const EGameState gameState)
 {
-	Refresh();
+	PopulateItemList();
+}
+
+void WSceneExplorer::PopulateItemList() const
+{
+	if (itemList_)
+	{
+		const UAutoDelete itemListChildren{ itemList_->GetChildren() };
+
+		WidgetPool items{};
+		if (UPtr scene{ Game.GetOpenedScene() })
+		{
+			for (auto& sceneObject : scene->SceneObjects())
+			{
+				items.Add(UCreate<WSceneExplorerItem>{}(sceneObject));
+			}
+		}
+		itemList_->SetChildren(items);
+	}
 }
 
 #include "generated/SceneExplorer.generated.inl"

@@ -9,7 +9,7 @@ class WSpacer final : public WWidget
 public:
 	WSpacer(const EFlex flex);
 
-	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
+	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 	EFlex GetFlex() const override;
 

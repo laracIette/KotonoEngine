@@ -27,7 +27,7 @@ class WPadding final : public WChildOwner
 	GENERATED_WPADDING()
 
 public:
-	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
+	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 	glm::vec2 GetDesiredSize(glm::vec2 bounds) const override;
 
@@ -35,9 +35,6 @@ public:
 	const UPadding& GetPadding() const;
 
 	void SetPadding(const UPadding& padding);
-
-protected:
-	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 
 private:
 	UPadding padding_;

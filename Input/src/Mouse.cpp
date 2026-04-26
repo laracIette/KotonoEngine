@@ -44,16 +44,20 @@ void SMouse::Update()
         previousCursorPosition_ = cursorPosition_;
     }
 
-    if (horizontalScrollDelta_ != 0.0f)
+    if (scrollDelta_ != glm::vec2{ 0.0f, 0.0f })
     {
-        eventHorizontalScroll_.Broadcast(horizontalScrollDelta_);
-        horizontalScrollDelta_ = 0.0f;
-    }
+        eventScroll_.Broadcast(scrollDelta_);
 
-    if (verticalScrollDelta_ != 0.0f)
-    {
-        eventVerticalScroll_.Broadcast(verticalScrollDelta_);
-        verticalScrollDelta_ = 0.0f;
+        if (scrollDelta_.x != 0.0f)
+        {
+            eventHorizontalScroll_.Broadcast(scrollDelta_.x);
+        }
+        if (scrollDelta_.y != 0.0f)
+        {
+            eventVerticalScroll_.Broadcast(scrollDelta_.y);
+        }
+
+        scrollDelta_ = { 0.0f, 0.0f };
     }
 }
 
@@ -113,12 +117,12 @@ glm::vec2 SMouse::CursorPositionDelta() const
 
 float SMouse::HorizontalScrollDelta() const
 {
-    return horizontalScrollDelta_;
+    return scrollDelta_.x;
 }
 
 float SMouse::VerticalScrollDelta() const
 {
-    return verticalScrollDelta_;
+    return scrollDelta_.y;
 }
 
 UEvent<>& SMouse::EventButton(const EButton button, const EInputState inputState)
@@ -134,6 +138,11 @@ bool SMouse::ButtonState(const EButton button, const EInputState inputState) con
 UEvent<glm::vec2>& SMouse::EventMove()
 {
     return eventMove_;
+}
+
+UEvent<glm::vec2>& SMouse::EventScroll()
+{
+    return eventScroll_;
 }
 
 UEvent<float>& SMouse::EventHorizontalScroll()
@@ -158,6 +167,6 @@ void cursorpos_callback_(GLFWwindow* window, double xpos, double ypos)
 
 void scroll_callback_(GLFWwindow* window, double xoffset, double yoffset)
 {
-    Mouse.horizontalScrollDelta_ = static_cast<float>(xoffset);
-    Mouse.verticalScrollDelta_ = static_cast<float>(yoffset);
+    Mouse.scrollDelta_.x += static_cast<float>(xoffset);
+    Mouse.scrollDelta_.y += static_cast<float>(yoffset);
 }

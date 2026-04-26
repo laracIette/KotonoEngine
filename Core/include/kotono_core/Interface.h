@@ -23,6 +23,6 @@ private:
 	void Update(const float deltaTime);
 
 private:
-	SERIALIZE KtPool<UPtr<RInterfaceObject>> interfaceObjects_;
+	SERIALIZE UPool<UPtr<RInterfaceObject>> interfaceObjects_;
 };
 

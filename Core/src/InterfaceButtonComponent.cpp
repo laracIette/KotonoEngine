@@ -5,7 +5,7 @@
 
 KInterfaceButtonComponent::KInterfaceButtonComponent() 
 {
-	collider_ = Create<KInterfaceColliderComponent>{}();
+	collider_ = UCreate<KInterfaceColliderComponent>{}();
 	collider_->SetOwner(GetOwner());
 }
 

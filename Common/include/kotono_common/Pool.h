@@ -16,7 +16,7 @@ enum class KtPoolRemoveResult : u8
 /// std::vector wrapper with O(1) item removal
 /// </summary>
 template <typename ValueType>
-class KtPool final
+class UPool final
 {
 private:
 	using VectorType = std::vector<ValueType>;
@@ -29,16 +29,26 @@ public:
 	using value_type = ValueType;
 
 public:
-	KtPool() : data_() {}
+	UPool() : data_() {}
 
-	KtPool(IteratorType begin, IteratorType end) : data_(begin, end) {}
+	UPool(IteratorType begin, IteratorType end) : data_(begin, end) {}
 
-	KtPool(ConstIteratorType begin, ConstIteratorType end) : data_(begin, end) {}
+	UPool(ConstIteratorType begin, ConstIteratorType end) : data_(begin, end) {}
 
 	template <std::input_iterator CustomIteratorType>
-	KtPool(CustomIteratorType begin, CustomIteratorType end) : data_(begin, end) {}
+	UPool(CustomIteratorType begin, CustomIteratorType end) : data_(begin, end) {}
 
-	KtPool(std::initializer_list<ValueType> data) : data_(data) {}
+	UPool(std::initializer_list<ValueType> data) : data_(data) {}
+	
+	template <typename T>
+		requires std::constructible_from<ValueType, T>
+	UPool(const UPool<T>& pool)
+	{
+		for (auto& item : pool)
+		{
+			data_.push_back(item);
+		}
+	}
 
 	template <typename T>
 		requires std::constructible_from<ValueType, T&&>
@@ -126,7 +136,7 @@ public:
 		data_.resize(size);
 	}
 
-	constexpr void Append(const KtPool& pool)
+	constexpr void Append(const UPool& pool)
 	{
 		data_.insert(end(), pool.begin(), pool.end());
 	}
@@ -136,7 +146,7 @@ public:
 		data_.insert(end(), values.begin(), values.end());
 	}
 
-	constexpr void Merge(KtPool& pool)
+	constexpr void Merge(UPool& pool)
 	{
 		data_.insert(end(), std::make_move_iterator(pool.begin()), std::make_move_iterator(pool.end()));
 		pool.Clear();

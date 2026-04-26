@@ -38,7 +38,7 @@ public:
 
 private:
 	void* pointer_;
-	KtPool<UPtrBase*> children_;
+	UPool<UPtrBase*> children_;
 };
 
 template <class T>

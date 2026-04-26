@@ -13,23 +13,23 @@ WAssetExplorerItem::WAssetExplorerItem(const UPath& path, const OnClickedFunc& o
 
 WidgetPtr WAssetExplorerItem::Build()
 {
-    UPtr bg{ Create<WColor>{}() };
+    UPtr bg{ UCreate<WColor>{}() };
     bg->SetColor(isSelected_ 
         ? Colors::White.WithValue(0.2f) 
         : Colors::White.WithValue(0.1f)
     );
 
-    UPtr text{ Create<WText>{}() };
+    UPtr text{ UCreate<WText>{}() };
     text->SetText(path_.Name());
     text->SetFontSize({ 16.0f, 20.0f });
     text->SetSpacing(-4.0f);
     text->SetShouldWrap(true);
 
-    UPtr textCenter{ Create<WCenter>{}() };
+    UPtr textCenter{ UCreate<WCenter>{}() };
     textCenter->SetChild(text);
     textCenter->SetAxis(EAxis::All);
 
-    UPtr button{ Create<WButton>{}() };
+    UPtr button{ UCreate<WButton>{}() };
     button->SetOnClicked([this]() { 
         if (isSelected_ && TimeManager.Now() - lastClickedTime_ < doubleClickTreshold_) {
             if (onDoubleClicked_) {
@@ -46,10 +46,10 @@ WidgetPtr WAssetExplorerItem::Build()
     button->SetOnPressOut([this]() { SetState([this]() { isSelected_ = false; }); });
 
 
-    UPtr stack{ Create<WStack>{}() };
+    UPtr stack{ UCreate<WStack>{}() };
     stack->SetChildren({ bg, textCenter, button });
 
-    UPtr box{ Create<WBox>{}() };
+    UPtr box{ UCreate<WBox>{}() };
     box->SetChild(stack);
     box->SetSize({ 128.0f, 128.0f });
 

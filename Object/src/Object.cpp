@@ -124,7 +124,7 @@ void KObject::CheckDebugRegistry()
         {
             if (object)
             {
-                KT_LOG(KT_LOG_COMPILE_TIME_LEVEL
+                KT_LOG(ELogImportanceLevel::High
                     , "Object", "{0:48s} : {1:4d} | {2}"
                     , object->ToString()
                     , object->sourceLine
@@ -133,7 +133,7 @@ void KObject::CheckDebugRegistry()
             }
             else
             {
-                KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Object", "NULL");
+                KT_LOG(ELogImportanceLevel::High, "Object", "NULL");
             }
         }
         throw "KObject::debugRegistry_ must be empty when quitting the application.";

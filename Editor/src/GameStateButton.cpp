@@ -5,19 +5,19 @@
 
 WidgetPtr WGameStateButton::Build()
 {
-    UPtr mainRow{ Create<WRow>{}() };
+    UPtr mainRow{ UCreate<WRow>{}() };
     mainRow->SetSpacing(5.0f);
 
-    UPtr playPauseBox{ Create<WBox>{}() };
+    UPtr playPauseBox{ UCreate<WBox>{}() };
     playPauseBox->SetSize({ 64.0f, 64.0f });
 
-    UPtr playPauseBg{ Create<WColor>{}() };
+    UPtr playPauseBg{ UCreate<WColor>{}() };
     playPauseBg->SetColor(GameManager.IsPlaying()
         ? Colors::White.WithValue(0.5f)
         : Colors::Green
     );
 
-    UPtr playPauseButton{ Create<WButton>{}() };
+    UPtr playPauseButton{ UCreate<WButton>{}() };
     playPauseButton->SetOnPressed([this]() {
         SetState([]() {
             if (GameManager.IsPlaying())
@@ -32,16 +32,16 @@ WidgetPtr WGameStateButton::Build()
     });
 
 
-    UPtr stopBox{ Create<WBox>{}() };
+    UPtr stopBox{ UCreate<WBox>{}() };
     stopBox->SetSize({ 64.0f, 64.0f });
 
-    UPtr stopBg{ Create<WColor>{}() };
+    UPtr stopBg{ UCreate<WColor>{}() };
     stopBg->SetColor(GameManager.IsStopped()
         ? Colors::Red.WithAlpha(0.1f)
         : Colors::Red
     );
 
-    UPtr stopButton{ Create<WButton>{}() };
+    UPtr stopButton{ UCreate<WButton>{}() };
     stopButton->SetOnPressed([this]() {
         if (GameManager.IsStopped())
         {
@@ -54,13 +54,13 @@ WidgetPtr WGameStateButton::Build()
 
     UChildrenOwnerTree(mainRow, {
         new UChildOwnerTree(playPauseBox,
-            new UChildrenOwnerTree(Create<WStack>{}(), {
+            new UChildrenOwnerTree(UCreate<WStack>{}(), {
                 new UWidgetTreeLeaf(playPauseBg),
                 new UWidgetTreeLeaf(playPauseButton),
             })
         ),
         new UChildOwnerTree(stopBox,
-            new UChildrenOwnerTree(Create<WStack>{}(), {
+            new UChildrenOwnerTree(UCreate<WStack>{}(), {
                 new UWidgetTreeLeaf(stopBg),
                 new UWidgetTreeLeaf(stopButton),
             })

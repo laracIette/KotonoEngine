@@ -46,7 +46,7 @@ UPtr<KInterfaceComponent>& RInterfaceObject::RootComponent()
 	return rootComponent_;
 }
 
-const KtPool<UPtr<RInterfaceObject>>& RInterfaceObject::GetChildren() const
+const UPool<UPtr<RInterfaceObject>>& RInterfaceObject::GetChildren() const
 {
 	return children_;
 }

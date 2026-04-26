@@ -7,7 +7,7 @@ class WConstraint final : public WChildOwner
 	GENERATED_WCONSTRAINT()
 
 public:
-	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
+	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 	EFlex GetFlex() const override;
 	glm::vec2 GetDesiredSize(glm::vec2 bounds) const override;
@@ -18,9 +18,6 @@ public:
 
 	void SetAxis(const EAxis axis);
 	void SetSize(const float size);
-
-protected:
-	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 
 private:
 	EAxis axis_;

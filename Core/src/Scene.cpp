@@ -52,7 +52,7 @@ void KScene::SpawnSceneObjects()
 	}
 }
 
-const KtPool<UPtr<TSceneObject>>& KScene::SceneObjects() const
+const UPool<UPtr<TSceneObject>>& KScene::SceneObjects() const
 {
 	return sceneObjects_;
 }

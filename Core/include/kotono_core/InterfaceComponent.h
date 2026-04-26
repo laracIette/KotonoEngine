@@ -108,7 +108,7 @@ private:
 	bool canUpdate_;
 	UPtr<RInterfaceObject> owner_;
 	UPtr<KInterfaceComponent> parent_;
-	KtPool<UPtr<KInterfaceComponent>> children_;
+	UPool<UPtr<KInterfaceComponent>> children_;
 	size childrenIndex_;
 	SERIALIZE URect rect_;
 	SERIALIZE EVisibility visibility_;

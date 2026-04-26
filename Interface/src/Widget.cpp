@@ -44,7 +44,7 @@ WidgetPtr WWidget::Build()
 void WWidget::Display(UWidgetDisplaySettings displaySettings)
 {
 	isDisplayed_ = true;
-	SetDisplaySettings(displaySettings);
+	displaySettings_ = displaySettings;
 
 	// If build_ is not this, call Display
 	if (build_ && build_ != Ptr())
@@ -55,8 +55,7 @@ void WWidget::Display(UWidgetDisplaySettings displaySettings)
 	// If build_ is this, call DisplayInternal
 	if (build_ == Ptr() && IsRenderable())
 	{
-		const auto ds{ displaySettings };
-		displaySettings = GetDisplaySettings(displaySettings);
+		displaySettings = GetContentDisplaySettings(displaySettings);
 		DisplayInternal(displaySettings);
 	}
 }
@@ -71,11 +70,11 @@ void WWidget::Remove()
 	}
 }
 
-UWidgetDisplaySettings WWidget::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
+UWidgetDisplaySettings WWidget::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	if (build_ && build_ != Ptr())
 	{
-		return build_->GetDisplaySettings(displaySettings);
+		return build_->GetContentDisplaySettings(displaySettings);
 	}
 
 	return displaySettings;
@@ -164,11 +163,6 @@ void WWidget::SetState(const StateFunction& function)
 		}
 		Display(displaySettings);
 	}
-}
-
-void WWidget::SetDisplaySettings(const UWidgetDisplaySettings& displaySettings)
-{
-	displaySettings_ = displaySettings;
 }
 
 glm::mat4 WWidget::TranslationMatrix() const

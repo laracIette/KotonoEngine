@@ -3,7 +3,7 @@
 #include <glm/common.hpp>
 #include <kotono_math/math_utils.h>
 
-UWidgetDisplaySettings WListBody::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
+UWidgetDisplaySettings WListBody::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	displaySettings.bounds.y = INFINITY;
 
@@ -13,7 +13,7 @@ UWidgetDisplaySettings WListBody::GetDisplaySettings(UWidgetDisplaySettings disp
 	{
 		if (child)
 		{
-			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
+			const auto childSettings{ child->GetContentDisplaySettings(displaySettings) };
 			size.x = std::max(size.x, childSettings.bounds.x);
 			size.y += childSettings.bounds.y;
 		}
@@ -69,10 +69,10 @@ void WListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
 		glm::vec2 newScissorOffset;
 		glm::vec2 newScissorExtent;
 		compute_intersect(
-			displaySettings_.scissor.offset,
-			displaySettings_.scissor.extent,
-			asList->displaySettings_.position,
-			asList->displaySettings_.bounds,
+			GetDisplaySettings().scissor.offset,
+			GetDisplaySettings().scissor.extent,
+			asList->GetDisplaySettings().position,
+			asList->GetDisplaySettings().bounds,
 			newScissorOffset,
 			newScissorExtent
 
@@ -87,7 +87,7 @@ void WListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
 		{
 			child->Display(displaySettings);
 
-			displaySettings.position.y += child->GetDisplaySettings(displaySettings).bounds.y;
+			displaySettings.position.y += child->GetContentDisplaySettings(displaySettings).bounds.y;
 			displaySettings.position.y += spacing_;
 		}
 	}

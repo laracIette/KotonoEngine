@@ -52,5 +52,5 @@ private:
 
 private:
 	KtFramesInFlightArray<FrameData> frameDatas_;
-	KtPool<UpdateData> pendingUpdates_;
+	UPool<UpdateData> pendingUpdates_;
 };

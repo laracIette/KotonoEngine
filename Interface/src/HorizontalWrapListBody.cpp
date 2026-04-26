@@ -3,7 +3,7 @@
 #include <glm/common.hpp>
 #include <kotono_math/math_utils.h>
 
-UWidgetDisplaySettings WHorizontalWrapListBody::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
+UWidgetDisplaySettings WHorizontalWrapListBody::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	displaySettings.bounds.y = INFINITY;
 
@@ -83,10 +83,10 @@ void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySett
 		glm::vec2 newScissorOffset;
 		glm::vec2 newScissorExtent;
 		compute_intersect(
-			displaySettings_.scissor.offset,
-			displaySettings_.scissor.extent,
-			asList->displaySettings_.position,
-			asList->displaySettings_.bounds,
+			GetDisplaySettings().scissor.offset,
+			GetDisplaySettings().scissor.extent,
+			asList->GetDisplaySettings().position,
+			asList->GetDisplaySettings().bounds,
 			newScissorOffset,
 			newScissorExtent
 
@@ -118,7 +118,7 @@ void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySett
 			}
 
 			child->Display(displaySettings);
-			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
+			const auto childSettings{ child->GetContentDisplaySettings(displaySettings) };
 
 			rowSize.x += childSettings.bounds.x + itemSpacing_;
 			rowSize.y = std::max(rowSize.y, childSettings.bounds.y);

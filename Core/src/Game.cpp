@@ -51,7 +51,7 @@ void SGame::OpenScene(const UPtr<KScene>& scene)
 
 void SGame::OpenStartupInterface()
 {
-    interface_ = Create<KInterface>{}();
+    interface_ = UCreate<KInterface>{}();
     interface_->SpawnInterfaceObjects();
 }
 

@@ -4,12 +4,12 @@
 
 WidgetPtr WHorizontalWrapList::Build()
 {
-	UPtr horizontalWrapListBody{ Create<WHorizontalWrapListBody>{}() };
+	UPtr horizontalWrapListBody{ UCreate<WHorizontalWrapListBody>{}() };
 	horizontalWrapListBody->SetItemSpacing(itemSpacing_);
 	horizontalWrapListBody->SetRowSpacing(rowSpacing_);
 	horizontalWrapListBody->SetChildren(children_);
 
-	UPtr scrollable{ Create<WScrollable>{}() };
+	UPtr scrollable{ UCreate<WScrollable>{}() };
 	scrollable->SetAxis(EAxis::Vertical);
 	scrollable->SetChild(horizontalWrapListBody);
 

@@ -4,11 +4,11 @@
 
 WidgetPtr WValueBox::Build()
 {
-	UPtr inputTextBox{ Create<WInputTextBox>{}() };
+	UPtr inputTextBox{ UCreate<WInputTextBox>{}() };
 	inputTextBox->SetText(valueToString_());
 	inputTextBox->SetOnTextChanged(stringToValue_);
 
-	UPtr wrap{ Create<WWrap>{}() };
+	UPtr wrap{ UCreate<WWrap>{}() };
 	wrap->SetAxis(EAxis::Vertical);
 
 	UChildOwnerTree(

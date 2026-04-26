@@ -86,7 +86,7 @@ private:
 	bool canUpdate_;
 	UPtr<TSceneObject> owner_;
 	UPtr<KSceneComponent> parent_;
-	SERIALIZE KtPool<UPtr<KSceneComponent>> children_;
+	SERIALIZE UPool<UPtr<KSceneComponent>> children_;
 	SERIALIZE UTransform transform_;
 	SERIALIZE EVisibility visibility_;
 	SERIALIZE EMobility mobility_;

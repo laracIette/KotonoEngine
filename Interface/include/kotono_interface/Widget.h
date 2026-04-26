@@ -22,7 +22,7 @@ struct UWidgetDisplaySettings
 class WWidget;
 using WidgetPtr = UPtr<WWidget>;
 using WidgetVector = std::vector<WidgetPtr>;
-using WidgetPool = KtPool<WidgetPtr>;
+using WidgetPool = UPool<WidgetPtr>;
 
 /// Base class of all widgets
 class WWidget : public KObject
@@ -47,7 +47,7 @@ public:
 	/// Stop displaying the widget
 	virtual void Remove();
 
-	virtual UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const;
+	virtual UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const;
 
 	virtual EFlex GetFlex() const;
 	virtual glm::vec2 GetDesiredSize(glm::vec2 bounds) const;
@@ -65,7 +65,6 @@ protected:
 	void CacheBuild();
 
 	void SetState(const StateFunction& function);
-	void SetDisplaySettings(const UWidgetDisplaySettings& displaySettings);
 
 	glm::mat4 TranslationMatrix() const;
 	glm::mat4 RotationMatrix() const;
@@ -76,11 +75,9 @@ protected:
 
 	void Refresh();
 
-protected:
-	UWidgetDisplaySettings displaySettings_;
-
 private:
 	WritableProperty(WidgetPtr, parent_, Parent);
+	ReadonlyProperty(UWidgetDisplaySettings, displaySettings_, DisplaySettings);
 	ReadonlyProperty(bool, isDisplayed_, IsDisplayed);
 	WidgetPtr build_;
 };
@@ -99,8 +96,8 @@ class UWidgetTreeLeaf final : public UWidgetTree
 public:
 	UWidgetTreeLeaf(const WidgetPtr& widget);
 
-	virtual WidgetPtr Widget() const;
-	virtual void Link() const;
+	WidgetPtr Widget() const override;
+	void Link() const override;
 
 private:
 	WidgetPtr widget_;

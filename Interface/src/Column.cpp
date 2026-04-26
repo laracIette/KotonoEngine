@@ -3,7 +3,7 @@
 #include <kotono_common/bitwise_utils.h>
 #include <glm/common.hpp>
 
-UWidgetDisplaySettings WColumn::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
+UWidgetDisplaySettings WColumn::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
@@ -11,7 +11,7 @@ UWidgetDisplaySettings WColumn::GetDisplaySettings(UWidgetDisplaySettings displa
 	{
 		if (child)
 		{
-			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
+			const auto childSettings{ child->GetContentDisplaySettings(displaySettings) };
 			size.x = std::max(size.x, childSettings.bounds.x);
 			size.y += childSettings.bounds.y;
 		}
@@ -67,7 +67,7 @@ void WColumn::DisplayInternal(UWidgetDisplaySettings displaySettings)
 		// Check if not vertical flex
 		if (child && !has_flag(child->GetFlex(), EFlex::Vertical))
 		{
-			nonFlexHeight += child->GetDisplaySettings(displaySettings).bounds.y;
+			nonFlexHeight += child->GetContentDisplaySettings(displaySettings).bounds.y;
 		}
 	}
 
@@ -96,7 +96,7 @@ void WColumn::DisplayInternal(UWidgetDisplaySettings displaySettings)
 			}
 
 			child->Display(settings);
-			const auto childSettings{ child->GetDisplaySettings(settings) };
+			const auto childSettings{ child->GetContentDisplaySettings(settings) };
 
 			displaySettings.position.y += childSettings.bounds.y;
 			displaySettings.position.y += spacing_;

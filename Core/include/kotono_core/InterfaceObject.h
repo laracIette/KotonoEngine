@@ -28,7 +28,7 @@ public:
 	KtWindowViewport* GetViewport() const;
 	UPtr<RInterfaceObject>& GetParent();
 	UPtr<KInterfaceComponent>& RootComponent();
-	const KtPool<UPtr<RInterfaceObject>>& GetChildren() const;
+	const UPool<UPtr<RInterfaceObject>>& GetChildren() const;
 
 	void SetCanUpdate(const bool canUpdate);
 	void SetViewport(KtWindowViewport* viewport);
@@ -60,8 +60,8 @@ private:
 	KtWindowViewport* viewport_;
 	UPtr<RInterfaceObject> parent_;
 	UPtr<KInterfaceComponent> rootComponent_;
-	KtPool<UPtr<RInterfaceObject>> children_;
-	KtPool<UPtr<KInterfaceComponent>> interfaceComponents_;
+	UPool<UPtr<RInterfaceObject>> children_;
+	UPool<UPtr<KInterfaceComponent>> interfaceComponents_;
 	size childrenIndex_;
 };
 

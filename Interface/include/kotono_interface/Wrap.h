@@ -9,17 +9,10 @@ class WWrap final : public WChildOwner
 public:
 	WWrap();
 
-	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
+	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 	EFlex GetFlex() const override;
 
-public:
-	EAxis GetAxis() const;
-
-	void SetAxis(const EAxis axis);
-
-protected:
-	EAxis axis_;
-
-	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
+private:
+	WritableProperty(EAxis, axis_, Axis);
 };

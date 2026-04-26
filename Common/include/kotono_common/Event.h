@@ -39,5 +39,5 @@ public:
     }
 
 private:
-    KtPool<Delegate> delegates_;
+    UPool<Delegate> delegates_;
 };

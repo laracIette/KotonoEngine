@@ -12,10 +12,10 @@
 
 WidgetPtr WSceneExplorerAddButton::Build()
 {
-	UPtr color{ Create<WColor>{}() };
+	UPtr color{ UCreate<WColor>{}() };
 	color->SetColor(Colors::Green);
 
-	UPtr button{ Create<WButton>{}() };
+	UPtr button{ UCreate<WButton>{}() };
 	button->SetOnPressed([]() {
 		if (UPtr scene{ Game.GetOpenedScene() })
 		{
@@ -23,10 +23,10 @@ WidgetPtr WSceneExplorerAddButton::Build()
 			UAsset model1{ UAssetManager<KtModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.obj") };
 			UAsset model2{ UAssetManager<KtModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/column.obj") };
 
-			UPtr mesh{ Create<TSceneObject>{}() };
-			UPtr rootComponent{ Create<KSceneComponent>{}() };
-			UPtr meshComponent1{ Create<KSceneMeshComponent>{}() };
-			UPtr meshComponent2{ Create<KSceneMeshComponent>{}() };
+			UPtr mesh{ UCreate<TSceneObject>{}() };
+			UPtr rootComponent{ UCreate<KSceneComponent>{}() };
+			UPtr meshComponent1{ UCreate<KSceneMeshComponent>{}() };
+			UPtr meshComponent2{ UCreate<KSceneMeshComponent>{}() };
 													
 			rootComponent->SetOwner(mesh);
 			rootComponent->SetRelativePosition(glm::vec3(0.0f));
@@ -47,7 +47,7 @@ WidgetPtr WSceneExplorerAddButton::Build()
 		}
 	});
 
-	UPtr stack{ Create<WStack>{}() };
+	UPtr stack{ UCreate<WStack>{}() };
 	stack->SetChildren({ color, button });
 
 	return stack;

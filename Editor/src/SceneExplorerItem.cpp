@@ -10,31 +10,35 @@ WSceneExplorerItem::WSceneExplorerItem(const UPtr<TSceneObject>& sceneObject)
 
 WidgetPtr WSceneExplorerItem::Build()
 {
-	UPtr color{ Create<WColor>{}() };
+	UPtr color{ UCreate<WColor>{}() };
 	color->SetColor(sceneObject_ && (ObjectManager.GetSelectedObject() == sceneObject_)
 		? Colors::Black.WithAlpha(0.2f)
 		: Colors::Transparent
 	);
 
-	UPtr button{ Create<WButton>{}() };
+	UPtr button{ UCreate<WButton>{}() };
 	button->SetOnPressed([this]() {
 		SetState([this]() {
 			ObjectManager.SetSelectedObject(sceneObject_);
 		});
 	});
 
-	UPtr text{ Create<WText>{}() };
+	UPtr text{ UCreate<WText>{}() };
 	text->SetText(sceneObject_ ? sceneObject_->GetName() : "");
 	text->SetFontSize({ 20.0f, 24.0f });
 	text->SetSpacing(-6.0f);
 
-	UPtr stack{ Create<WStack>{}() };
-	stack->SetChildren({ color, button, text });
 
-	UPtr wrap{ Create<WWrap>{}() };
-	wrap->SetChild(stack);
+	const UChildOwnerTree widgetTree{ UCreate<WWrap>{}(),
+		new UChildrenOwnerTree{ UCreate<WStack>{}(), {
+			new UWidgetTreeLeaf{ color },
+			new UWidgetTreeLeaf{ button },
+			new UWidgetTreeLeaf{ text },
+		} }
+	};
+	widgetTree.Link();
 
-	return wrap;
+	return widgetTree.Widget();
 }
 
 void WSceneExplorerItem::Display(UWidgetDisplaySettings displaySettings)

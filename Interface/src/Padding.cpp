@@ -1,6 +1,6 @@
 #include "Padding.h"
 
-UWidgetDisplaySettings WPadding::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
+UWidgetDisplaySettings WPadding::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	displaySettings.bounds.x -= padding_.l;
 	displaySettings.bounds.x -= padding_.r;
@@ -34,16 +34,6 @@ const UPadding& WPadding::GetPadding() const
 void WPadding::SetPadding(const UPadding& padding)
 {
 	padding_ = padding;
-}
-
-void WPadding::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
-	++displaySettings.layer;
-
-	if (child_)
-	{
-		child_->Display(displaySettings);
-	}
 }
 
 #include "generated/Padding.generated.inl"

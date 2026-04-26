@@ -39,7 +39,7 @@ void SEditor::Cleanup()
 
 void SEditor::CreateWidget()
 {
-	widget_ = Create<WMainWindow>{}();
+	widget_ = UCreate<WMainWindow>{}();
 	widget_->Display({
 		.position = { 0.0f, 0.0f },
 		.bounds = static_cast<glm::vec2>(WindowViewport.GetExtent()),

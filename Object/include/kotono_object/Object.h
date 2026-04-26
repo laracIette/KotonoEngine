@@ -11,9 +11,9 @@
 #include <kotono_common/Property.h>
 #include <kotono_io/serialize_base.h>
 #include <nlohmann/json_fwd.hpp>
+#include <source_location>
 #include <string>
 #include <unordered_set>
-#include <source_location>
 
 #define RegisterDelegate(Owner, Event, Instance, Function)				\
 static_assert(std::string_view(#Owner) != std::string_view("Ptr()") && std::string_view(#Owner) != std::string_view("this->Ptr()"), "Please use the event's AddListener when registering an event owned by this object.");	\
@@ -125,11 +125,11 @@ private:
 };
 
 template <std::derived_from<KObject> T>
-struct Create final
+struct UCreate final
 {
 public:
 #if defined (_DEBUG)
-	constexpr Create(const std::source_location& loc = std::source_location::current()) 
+	constexpr UCreate(const std::source_location& loc = std::source_location::current()) 
 		: loc_{ loc } 
 	{
 	}
@@ -176,4 +176,25 @@ struct UDeserialize<UPtr<T>> final
 	{
 		v = TryCast<T>(KObject::Deserialize(json));
 	}
+};
+
+struct UAutoDelete final
+{
+public:
+	template <std::derived_from<KObject> T>
+	UAutoDelete(const UPool<UPtr<T>> pool) : pool_(pool) {}
+
+	~UAutoDelete()
+	{
+		for (auto& object : pool_)
+		{
+			if (object)
+			{
+				object->Delete();
+			}
+		}
+	}
+
+private:
+	UPool<UPtr<KObject>> pool_;
 };

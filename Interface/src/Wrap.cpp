@@ -7,7 +7,7 @@ WWrap::WWrap()
 {
 }
 
-UWidgetDisplaySettings WWrap::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
+UWidgetDisplaySettings WWrap::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	if (child_)
 	{
@@ -20,7 +20,7 @@ UWidgetDisplaySettings WWrap::GetDisplaySettings(UWidgetDisplaySettings displayS
 		{
 			displaySettings.bounds.y = std::min(displaySettings.bounds.y, childDesiredSize.y);
 		}
-		return child_->GetDisplaySettings(displaySettings);
+		return child_->GetContentDisplaySettings(displaySettings);
 	}
 
 	return displaySettings;
@@ -34,26 +34,6 @@ EFlex WWrap::GetFlex() const
 	case EAxis::Vertical:	return EFlex::Horizontal;
 	case EAxis::All:		return EFlex::None;
 	default:				return EFlex::None;
-	}
-}
-
-EAxis WWrap::GetAxis() const
-{
-	return axis_;
-}
-
-void WWrap::SetAxis(const EAxis axis)
-{
-	axis_ = axis;
-}
-
-void WWrap::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
-	++displaySettings.layer;
-
-	if (child_)
-	{
-		child_->Display(displaySettings);
 	}
 }
 

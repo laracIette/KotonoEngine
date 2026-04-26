@@ -6,7 +6,7 @@
 
 WidgetPtr WDrawTimeText::Build()
 {
-    text_ = Create<WText>{}();
+    text_ = UCreate<WText>{}();
     text_->SetName("Draw Time Text");
     text_->SetText("Draw Time Text");
     text_->SetFontSize({ 20.0f, 24.0f });

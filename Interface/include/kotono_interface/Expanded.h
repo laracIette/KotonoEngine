@@ -7,11 +7,8 @@ class WExpanded final : public WChildOwner
 	GENERATED_WEXPANDED()
 
 public:
-	UWidgetDisplaySettings GetDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
+	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 	
 	EFlex GetFlex() const override;
-
-protected:
-	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 };
 

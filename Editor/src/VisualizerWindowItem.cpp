@@ -12,29 +12,29 @@ WidgetPtr WVisualizerWindowItem::Build()
 {
     const bool isFieldVisible{ Visualizer.GetIsFieldVisible(field_) };
 
-    UPtr color{ Create<WColor>{}() };
+    UPtr color{ UCreate<WColor>{}() };
     color->SetColor(isFieldVisible ? Colors::Green : Colors::Red);
 
-    UPtr button{ Create<WButton>{}() };
+    UPtr button{ UCreate<WButton>{}() };
     button->SetOnPressed([this, isFieldVisible]() {
         SetState([this, isFieldVisible]() {
             Visualizer.SetIsFieldVisible(field_, !isFieldVisible);
         });
     });
 
-    UPtr stack{ Create<WStack>{}() };
+    UPtr stack{ UCreate<WStack>{}() };
     stack->SetChildren({ color, button });
 
-    UPtr box{ Create<WBox>{}() };
+    UPtr box{ UCreate<WBox>{}() };
     box->SetChild(stack);
     box->SetSize({ 25.0f, 25.0f });
 
-    UPtr text{ Create<WText>{}() };
+    UPtr text{ UCreate<WText>{}() };
     text->SetText(name_);
     text->SetFontSize({ 20.0f, 25.0f });
     text->SetSpacing(-8.0f);
 
-    UPtr row{ Create<WRow>{}() };
+    UPtr row{ UCreate<WRow>{}() };
     row->SetChildren({ box, text });
 
     return row;

@@ -1,7 +1,7 @@
 #include "Box.h"
 #include <glm/common.hpp>
 
-UWidgetDisplaySettings WBox::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
+UWidgetDisplaySettings WBox::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	displaySettings.bounds = glm::min(size_, displaySettings.bounds);
 	return displaySettings;
@@ -25,16 +25,6 @@ const glm::vec2& WBox::GetSize() const
 void WBox::SetSize(const glm::vec2& size)
 {
 	size_ = size;
-}
-
-void WBox::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
-	++displaySettings.layer;
-
-	if (child_)
-	{
-		child_->Display(displaySettings);
-	}
 }
 
 #include "generated/Box.generated.inl"

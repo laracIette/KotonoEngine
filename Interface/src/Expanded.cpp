@@ -1,14 +1,6 @@
 #include "Expanded.h"
 
-void WExpanded::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
-	if (child_)
-	{
-		child_->Display(displaySettings);
-	}
-}
-
-UWidgetDisplaySettings WExpanded::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
+UWidgetDisplaySettings WExpanded::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	return displaySettings;
 }

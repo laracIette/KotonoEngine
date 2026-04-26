@@ -14,6 +14,13 @@ private:
 	friend struct UAutoRegister;
 
 public:
+	SObjectFactory(const SObjectFactory &) = delete;
+	void operator=(const SObjectFactory &) = delete;
+
+private:
+	SObjectFactory() {}
+
+public:
 	using ObjectFactoryFunc = std::function<UPtr<KObject>()>;
 
 	static SObjectFactory& Get();

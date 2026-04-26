@@ -8,23 +8,15 @@ class WScrollable final : public WChildOwner
 	GENERATED_WSCROLLABLE()
 
 public:
-	WidgetPtr Build() override;
-
 	void Display(UWidgetDisplaySettings displaySettings) override;
 	void Remove() override;
 
-public:
-	EAxis GetAxis() const;
-
-	void SetAxis(const EAxis axis);
+	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 private:
-	void Scroll(const float delta);
-
-	UEvent<float>& GetScrollEvent() const;
+	void Scroll(const glm::vec2 delta);
 
 private:
-	EAxis axis_;
-
-	float offset_;
+	WritableProperty(EAxis, axis_, Axis);
+	glm::vec2 offset_;
 };

@@ -22,7 +22,7 @@ public:
 
 	void SpawnSceneObjects();
 
-	const KtPool<UPtr<TSceneObject>>& SceneObjects() const;
+	const UPool<UPtr<TSceneObject>>& SceneObjects() const;
 
 	UEvent<>& EventSceneObjectsUpdated();
 
@@ -30,6 +30,6 @@ private:
 	void Update(const float deltaTime);
 
 private:
-	SERIALIZE KtPool<UPtr<TSceneObject>> sceneObjects_;
+	SERIALIZE UPool<UPtr<TSceneObject>> sceneObjects_;
 	UEvent<> eventSceneObjectsUpdated_;
 };

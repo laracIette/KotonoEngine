@@ -1,6 +1,6 @@
 #include "Constraint.h"
 
-UWidgetDisplaySettings WConstraint::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
+UWidgetDisplaySettings WConstraint::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	switch (axis_)
 	{
@@ -14,7 +14,7 @@ UWidgetDisplaySettings WConstraint::GetDisplaySettings(UWidgetDisplaySettings di
 
 	if (child_)
 	{
-		return child_->GetDisplaySettings(displaySettings);
+		return child_->GetContentDisplaySettings(displaySettings);
 	}
 	return displaySettings;
 }
@@ -57,16 +57,6 @@ void WConstraint::SetAxis(const EAxis axis)
 void WConstraint::SetSize(const float size)
 {
 	size_ = size;
-}
-
-void WConstraint::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
-	++displaySettings.layer;
-
-	if (child_)
-	{
-		child_->Display(displaySettings);
-	}
 }
 
 #include "generated/Constraint.generated.inl"

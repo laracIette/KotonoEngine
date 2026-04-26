@@ -4,7 +4,7 @@
 #include <glm/common.hpp>
 #include <ranges>
 
-UWidgetDisplaySettings WRow::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
+UWidgetDisplaySettings WRow::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
@@ -12,7 +12,7 @@ UWidgetDisplaySettings WRow::GetDisplaySettings(UWidgetDisplaySettings displaySe
 	{
 		if (child)
 		{
-			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
+			const auto childSettings{ child->GetContentDisplaySettings(displaySettings) };
 			size.x += childSettings.bounds.x;
 			size.y = std::max(size.y, childSettings.bounds.y);
 		}
@@ -68,7 +68,7 @@ void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 		// Check if not horizontal flex
 		if (child && !has_flag(child->GetFlex(), EFlex::Horizontal))
 		{
-			nonFlexWidth += child->GetDisplaySettings(displaySettings).bounds.x;
+			nonFlexWidth += child->GetContentDisplaySettings(displaySettings).bounds.x;
 		}
 	}
 
@@ -97,7 +97,7 @@ void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 			}
 
 			child->Display(settings);
-			const auto childSettings{ child->GetDisplaySettings(settings) };
+			const auto childSettings{ child->GetContentDisplaySettings(settings) };
 
 			displaySettings.position.x += childSettings.bounds.x;
 			displaySettings.position.x += spacing_;

@@ -33,10 +33,10 @@ WidgetPtr WObjectProperties::Build()
     {
         void* variablePtr{ get_member_variable_pointer(object_.Get(), variable.offset) };
 
-        UPtr propertyColumn{ Create<WColumn>{}() };
+        UPtr propertyColumn{ UCreate<WColumn>{}() };
         propertyColumn->SetSpacing(4.0f);
 
-        UPtr propertyText{ Create<WText>{}() };
+        UPtr propertyText{ UCreate<WText>{}() };
         propertyText->SetText(variable.name);
         propertyText->SetFontSize({ 20.0f, 24.0f });
         propertyText->SetSpacing(-6.0f);
@@ -47,9 +47,9 @@ WidgetPtr WObjectProperties::Build()
         }));
     }
 
-    UPtr wrap{ Create<WWrap>{}() };
+    UPtr wrap{ UCreate<WWrap>{}() };
 
-    UPtr column{ Create<WColumn>{}() };
+    UPtr column{ UCreate<WColumn>{}() };
     column->SetSpacing(5.0f);
 
     UChildOwnerTree(wrap, 
@@ -67,13 +67,13 @@ WidgetPtr WObjectProperties::BuildMemberWidget(const std::string& type, void* va
     }
 	if (type == "f32")
     {
-        return Create<WValueSliderFloat>{}(static_cast<f32*>(variablePtr));
+        return UCreate<WValueSliderFloat>{}(static_cast<f32*>(variablePtr));
     }
 	if (type == "size")
     {
         auto* sizePtr{ static_cast<size*>(variablePtr) };
 
-        UPtr valueBox{ Create<WValueBox>{}() };
+        UPtr valueBox{ UCreate<WValueBox>{}() };
         valueBox->SetValueToString([sizePtr]() { 
             return std::to_string(*sizePtr); 
         });
@@ -87,7 +87,7 @@ WidgetPtr WObjectProperties::BuildMemberWidget(const std::string& type, void* va
     {
         auto* stringPtr{ static_cast<std::string*>(variablePtr) };
 
-        UPtr valueBox{ Create<WValueBox>{}() };
+        UPtr valueBox{ UCreate<WValueBox>{}() };
         valueBox->SetValueToString([stringPtr]() {
             return *stringPtr;
         });
@@ -99,7 +99,7 @@ WidgetPtr WObjectProperties::BuildMemberWidget(const std::string& type, void* va
     }
     if (type == "glm::vec2")
     {
-        UPtr text{ Create<WText>{}() };
+        UPtr text{ UCreate<WText>{}() };
         text->SetText("Vec2 Editor Placeholder");
         text->SetFontSize({ 18.0f, 22.0f });
         text->SetSpacing(-5.0f);
@@ -107,7 +107,7 @@ WidgetPtr WObjectProperties::BuildMemberWidget(const std::string& type, void* va
     }
     if (type == "glm::vec3")
     {
-        UPtr text{ Create<WText>{}() };
+        UPtr text{ UCreate<WText>{}() };
         text->SetText("Vec3 Editor Placeholder");
         text->SetFontSize({ 18.0f, 22.0f });
         text->SetSpacing(-5.0f);
@@ -115,7 +115,7 @@ WidgetPtr WObjectProperties::BuildMemberWidget(const std::string& type, void* va
     }
     if (type == "glm::vec4")
     {
-        UPtr text{ Create<WText>{}() };
+        UPtr text{ UCreate<WText>{}() };
         text->SetText("Vec4 Editor Placeholder");
         text->SetFontSize({ 18.0f, 22.0f });
         text->SetSpacing(-5.0f);

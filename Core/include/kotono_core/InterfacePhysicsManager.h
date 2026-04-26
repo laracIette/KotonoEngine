@@ -13,7 +13,7 @@ public:
 	void Unregister(KInterfaceColliderComponent* colliderComponent);
 
 private:
-	KtPool<KInterfaceColliderComponent*> colliderComponents_;
+	UPool<KInterfaceColliderComponent*> colliderComponents_;
 };
 
 inline SInterfacePhysicsManager InterfacePhysicsManager;

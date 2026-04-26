@@ -29,7 +29,7 @@ private:
 	void OnEventMouseLeftButtonDown();
 
 private:
-	KtPool<UPtr<KInterfaceColliderComponent>> overlaps_;
+	UPool<UPtr<KInterfaceColliderComponent>> overlaps_;
 	UEvent<UPtr<KInterfaceColliderComponent>> eventOverlap_;
 
 	UEvent<> eventPressed_;

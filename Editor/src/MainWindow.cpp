@@ -10,78 +10,78 @@
 
 WidgetPtr WMainWindow::Build()
 {
-	UPtr timesColumn{ Create<WColumn>{}() };
+	UPtr timesColumn{ UCreate<WColumn>{}() };
 	timesColumn->SetSpacing(2.0f);
 	timesColumn->SetName("Times Column");
 	
-	UPtr gameStateButton{ Create<WCenter>{}() };
+	UPtr gameStateButton{ UCreate<WCenter>{}() };
 	gameStateButton->SetAxis(EAxis::Horizontal);
 	
-	UPtr sceneExplorerConstraint{ Create<WConstraint>{}() };
+	UPtr sceneExplorerConstraint{ UCreate<WConstraint>{}() };
 	sceneExplorerConstraint->SetAxis(EAxis::Horizontal);
 	sceneExplorerConstraint->SetSize(300.0f);
 	
-	UPtr assetExplorerConstraint{ Create<WConstraint>{}() };
+	UPtr assetExplorerConstraint{ UCreate<WConstraint>{}() };
 	assetExplorerConstraint->SetAxis(EAxis::Vertical);
 	assetExplorerConstraint->SetSize(200.0f);
 	
-	UPtr leftPanelColumn{ Create<WColumn>{}() };
+	UPtr leftPanelColumn{ UCreate<WColumn>{}() };
 	leftPanelColumn->SetSpacing(10.0f);
 	
-	UPtr rightPanelBg{ Create<WColor>{}() };
+	UPtr rightPanelBg{ UCreate<WColor>{}() };
 	rightPanelBg->SetColor(Colors::Magenta.WithAlpha(0.2f));
 	
-	UPtr rightPanelColumn{ Create<WColumn>{}() };
+	UPtr rightPanelColumn{ UCreate<WColumn>{}() };
 	rightPanelColumn->SetSpacing(4.0f);
 	
-	UPtr rightPanelPadding{ Create<WPadding>{}() };
+	UPtr rightPanelPadding{ UCreate<WPadding>{}() };
 	rightPanelPadding->SetPadding(UPadding::All(8.0f));
 	
-	UPtr centerRow{ Create<WRow>{}() };
+	UPtr centerRow{ UCreate<WRow>{}() };
 	centerRow->SetSpacing(10.0f);
 	
-	UPtr mainColumn{ Create<WColumn>{}() };
+	UPtr mainColumn{ UCreate<WColumn>{}() };
 	mainColumn->SetSpacing(5.0f);
 	mainColumn->SetName("Main Window Column");
 	
-	UPtr mainPadding{ Create<WPadding>{}() };
+	UPtr mainPadding{ UCreate<WPadding>{}() };
 	mainPadding->SetPadding(UPadding::All(16.0f));
 	mainPadding->SetName("Main Window Padding");
 
 
 	const auto widgetTree{ UChildOwnerTree(mainPadding,
 		new UChildrenOwnerTree(mainColumn, {
-			new UChildrenOwnerTree(Create<WRow>{}(), {
-				new UWidgetTreeLeaf(Create<WSpacer>{}(EFlex::Horizontal)),
+			new UChildrenOwnerTree(UCreate<WRow>{}(), {
+				new UWidgetTreeLeaf(UCreate<WSpacer>{}(EFlex::Horizontal)),
 				new UChildrenOwnerTree(timesColumn, {
-					new UWidgetTreeLeaf(Create<WUpdateTimeText>{}()),
-					new UWidgetTreeLeaf(Create<WDrawTimeText>{}()),
+					new UWidgetTreeLeaf(UCreate<WUpdateTimeText>{}()),
+					new UWidgetTreeLeaf(UCreate<WDrawTimeText>{}()),
 				}),
 			}),
-			new UChildOwnerTree(Create<WWrap>{}(),
+			new UChildOwnerTree(UCreate<WWrap>{}(),
 				new UChildOwnerTree(gameStateButton,
-					new UChildOwnerTree(Create<WWrap>{}(),
-						new UWidgetTreeLeaf(Create<WGameStateButton>{}())
+					new UChildOwnerTree(UCreate<WWrap>{}(),
+						new UWidgetTreeLeaf(UCreate<WGameStateButton>{}())
 					)
 				)
 			),
-			new UChildOwnerTree(Create<WExpanded>{}(),
+			new UChildOwnerTree(UCreate<WExpanded>{}(),
 				new UChildrenOwnerTree(centerRow, {
 					new UChildrenOwnerTree(leftPanelColumn, {
 						new UChildOwnerTree(sceneExplorerConstraint,
-							new UWidgetTreeLeaf(Create<WSceneExplorer>{}())
+							new UWidgetTreeLeaf(UCreate<WSceneExplorer>{}())
 						),
 						new UChildOwnerTree(assetExplorerConstraint,
-							new UWidgetTreeLeaf(Create<WAssetExplorer>{}())
+							new UWidgetTreeLeaf(UCreate<WAssetExplorer>{}())
 						),
 					}),
-					new UChildOwnerTree(Create<WWrap>{}(),
-						new UChildrenOwnerTree(Create<WStack>{}(), {
+					new UChildOwnerTree(UCreate<WWrap>{}(),
+						new UChildrenOwnerTree(UCreate<WStack>{}(), {
 							new UWidgetTreeLeaf(rightPanelBg),
 							new UChildOwnerTree(rightPanelPadding,
 								new UChildrenOwnerTree(rightPanelColumn, {
-									new UWidgetTreeLeaf(Create<WVisualizerWindow>{}()),
-									new UWidgetTreeLeaf(Create<WPropertiesWindow>{}()),
+									new UWidgetTreeLeaf(UCreate<WVisualizerWindow>{}()),
+									new UWidgetTreeLeaf(UCreate<WPropertiesWindow>{}()),
 								})
 							),
 						})

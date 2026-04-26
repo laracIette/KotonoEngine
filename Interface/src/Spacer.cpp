@@ -6,7 +6,7 @@ WSpacer::WSpacer(const EFlex flex)
 {
 }
 
-UWidgetDisplaySettings WSpacer::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
+UWidgetDisplaySettings WSpacer::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	if (has_flag(flex_, EFlex::Horizontal))
 	{

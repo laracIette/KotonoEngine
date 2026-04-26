@@ -15,17 +15,17 @@ WInputTextBox::WInputTextBox()
 
 WidgetPtr WInputTextBox::Build()
 {
-	UPtr text{ Create<WText>{}() };
+	UPtr text{ UCreate<WText>{}() };
 	text->SetText(text_);
 	text->SetFontSize({ 15.0f, 18.0f });
 	text->SetSpacing(-5.0f);
 
-	UPtr textPadding{ Create<WPadding>{}() };
+	UPtr textPadding{ UCreate<WPadding>{}() };
 	textPadding->SetChild(text);
 	textPadding->SetPadding(UPadding::All(4.0f));
 
 
-	UPtr button{ Create<WButton>{}() };
+	UPtr button{ UCreate<WButton>{}() };
 	button->SetOnPressed([this]() {
 		SetState([this]() { isSelected_ = true; });
 	});
@@ -34,14 +34,14 @@ WidgetPtr WInputTextBox::Build()
 	});
 
 	
-	UPtr bg{ Create<WColor>{}() };
+	UPtr bg{ UCreate<WColor>{}() };
 	bg->SetColor(isSelected_
 		? Colors::White.WithAlpha(0.15f)
 		: Colors::White.WithAlpha(0.05f)
 	);
 
 
-	UPtr stack{ Create<WStack>{}() };
+	UPtr stack{ UCreate<WStack>{}() };
 	stack->SetChildren({ bg, button, textPadding });
 
 	return stack;

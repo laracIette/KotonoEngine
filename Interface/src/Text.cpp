@@ -6,7 +6,7 @@ WidgetPtr WText::Build()
 {
 	if (shouldWrap_)
 	{
-		UPtr horizontalWrapList{ Create<WHorizontalWrapList>{}() };
+		UPtr horizontalWrapList{ UCreate<WHorizontalWrapList>{}() };
 		horizontalWrapList->SetItemSpacing(spacing_);
 		horizontalWrapList->SetRowSpacing(0.0f);
 		horizontalWrapList->SetChildren(GetCharacters());
@@ -15,7 +15,7 @@ WidgetPtr WText::Build()
 	}
 	else
 	{
-		UPtr row{ Create<WRow>{}() };
+		UPtr row{ UCreate<WRow>{}() };
 		row->SetSpacing(spacing_);
 		row->SetChildren(GetCharacters());
 		row->SetName("Text Row");
@@ -72,15 +72,8 @@ void WText::UpdateTextBody() const
 {
 	if (textBody_)
 	{
-		const WidgetPool textBodyChildren{ textBody_->GetChildren() };
+		const UAutoDelete itemListChildren{ textBody_->GetChildren() };
 		textBody_->SetChildren(GetCharacters());
-		for (auto& child : textBodyChildren)
-		{
-			if (child)
-			{
-				child->Delete();
-			}
-		}
 	}
 }
 
@@ -95,11 +88,11 @@ WidgetPool WText::GetCharacters() const
 
 	for (const auto& characterPath : characterPaths)
 	{
-		UPtr image{ Create<WImage>{}() };
+		UPtr image{ UCreate<WImage>{}() };
 		image->SetPath(characterPath);
 		image->SetName("text image");
 
-		UPtr box{ Create<WBox>{}() };
+		UPtr box{ UCreate<WBox>{}() };
 		box->SetSize(fontSize_);
 		box->SetChild(image);
 		box->SetName("text box");

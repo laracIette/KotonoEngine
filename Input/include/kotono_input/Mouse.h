@@ -26,6 +26,7 @@ public:
 	UEvent<>& EventButton(const EButton button, const EInputState inputState);
 	bool ButtonState(const EButton button, const EInputState inputState) const;
 	UEvent<glm::vec2>& EventMove();
+	UEvent<glm::vec2>& EventScroll();
 	UEvent<float>& EventHorizontalScroll();
 	UEvent<float>& EventVerticalScroll();
 
@@ -34,8 +35,8 @@ private:
 	glm::vec2 cursorPosition_;
 	UEvent<glm::vec2> eventMove_;
 
-	float horizontalScrollDelta_;
-	float verticalScrollDelta_;
+	glm::vec2 scrollDelta_;
+	UEvent<glm::vec2> eventScroll_;
 	UEvent<float> eventHorizontalScroll_;
 	UEvent<float> eventVerticalScroll_;
 

@@ -6,7 +6,7 @@
 
 WidgetPtr WUpdateTimeText::Build()
 {
-    text_ = Create<WText>{}();
+    text_ = UCreate<WText>{}();
     text_->SetName("Update Time Text");
     text_->SetText("Update Time Text");
     text_->SetFontSize({ 20.0f, 24.0f });

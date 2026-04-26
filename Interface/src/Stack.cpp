@@ -13,7 +13,7 @@ void WStack::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	}
 }
 
-UWidgetDisplaySettings WStack::GetDisplaySettings(UWidgetDisplaySettings displaySettings) const
+UWidgetDisplaySettings WStack::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	glm::vec2 bounds{ 0.0f, 0.0f };
 
@@ -21,7 +21,7 @@ UWidgetDisplaySettings WStack::GetDisplaySettings(UWidgetDisplaySettings display
 	{
 		if (child)
 		{
-			const auto childSettings{ child->GetDisplaySettings(displaySettings) };
+			const auto childSettings{ child->GetContentDisplaySettings(displaySettings) };
 			bounds = glm::max(bounds, childSettings.bounds);
 		}
 	}

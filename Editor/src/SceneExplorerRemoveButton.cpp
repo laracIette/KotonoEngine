@@ -8,13 +8,13 @@
 
 WidgetPtr WSceneExplorerRemoveButton::Build()
 {
-    UPtr color{ Create<WColor>{}() };
+    UPtr color{ UCreate<WColor>{}() };
     color->SetColor(ObjectManager.GetSelectedObject()
         ? Colors::Red 
         : Colors::Red.WithValue(0.1f)
     );
 
-    UPtr button{ Create<WButton>{}() };
+    UPtr button{ UCreate<WButton>{}() };
     button->SetOnDown([this]() {
         if (UPtr selectedObject{ TryCast<TSceneObject>(ObjectManager.GetSelectedObject()) })
         {
@@ -29,7 +29,7 @@ WidgetPtr WSceneExplorerRemoveButton::Build()
         }
     });
 
-    UPtr stack{ Create<WStack>{}() };
+    UPtr stack{ UCreate<WStack>{}() };
     stack->SetChildren({ color, button });
 
     return stack;

@@ -16,13 +16,13 @@ WidgetPtr WPropertiesWindow::Build()
 
     if (!selectedObject)
     {
-        UPtr text{ Create<WText>{}() };
+        UPtr text{ UCreate<WText>{}() };
         text->SetText("No scene object selected");
         text->SetFontSize({ 16.0f, 20.0f });
 		return text;
     }
 
-    UPtr sliderColumn{ Create<WColumn>{}() };
+    UPtr sliderColumn{ UCreate<WColumn>{}() };
     sliderColumn->SetChildren({
         Slider("Position X", [selectedObject](const float delta) {
 			if (selectedObject) selectedObject->RootComponent()->Translate({ delta * 0.01f, 0.0f, 0.0f });
@@ -57,35 +57,35 @@ WidgetPtr WPropertiesWindow::Build()
     sliderColumn->SetSpacing(10.0f);
 
 
-    UPtr propertiesText{ Create<WText>{}() };
+    UPtr propertiesText{ UCreate<WText>{}() };
     propertiesText->SetText("Properties");
     propertiesText->SetSpacing(-20.0f);
 
-    UPtr propertiesTextBg{ Create<WColor>{}() };
+    UPtr propertiesTextBg{ UCreate<WColor>{}() };
     propertiesTextBg->SetColor(Colors::Black.WithAlpha(0.5f));
 
-    UPtr propertiesTextStack{ Create<WStack>{}() };
+    UPtr propertiesTextStack{ UCreate<WStack>{}() };
     propertiesTextStack->SetChildren({ propertiesTextBg, propertiesText });
 
-    UPtr propertiesTextWrap{ Create<WWrap>{}() };
+    UPtr propertiesTextWrap{ UCreate<WWrap>{}() };
     propertiesTextWrap->SetChild(propertiesTextStack);
 
 
-    UPtr mainList{ Create<WList>{}() };
-    mainList->SetChildren({ propertiesTextWrap, Create<WObjectProperties>{}(selectedObject), sliderColumn});
+    UPtr mainList{ UCreate<WList>{}() };
+    mainList->SetChildren({ propertiesTextWrap, UCreate<WObjectProperties>{}(selectedObject), sliderColumn});
     mainList->SetSpacing(10.0f);
 
-    UPtr mainListPadding{ Create<WPadding>{}() };
+    UPtr mainListPadding{ UCreate<WPadding>{}() };
     mainListPadding->SetChild(mainList);
     mainListPadding->SetPadding(UPadding::All(8.0f));
 
-    UPtr mainListBg{ Create<WColor>{}() };
+    UPtr mainListBg{ UCreate<WColor>{}() };
     mainListBg->SetColor(Colors::Blue.WithAlpha(0.5f));
 
-    UPtr mainStack{ Create<WStack>{}() };
+    UPtr mainStack{ UCreate<WStack>{}() };
     mainStack->SetChildren({ mainListBg, mainListPadding });
 
-    UPtr mainWrap{ Create<WWrap>{}() };
+    UPtr mainWrap{ UCreate<WWrap>{}() };
     mainWrap->SetChild(mainStack);
 
     return mainWrap;
@@ -107,7 +107,7 @@ void WPropertiesWindow::Remove()
 
 WidgetPtr WPropertiesWindow::Slider(const std::string& label, const ValueChangedFunction& function)
 {
-    UPtr button{ Create<WButton>{}() };
+    UPtr button{ UCreate<WButton>{}() };
     button->SetOnDown([function]() {
         const float delta{ Mouse.CursorPositionDelta().x };
         if (delta != 0.0f)
@@ -116,19 +116,19 @@ WidgetPtr WPropertiesWindow::Slider(const std::string& label, const ValueChanged
         }
     });
 
-    UPtr buttonText{ Create<WText>{}() };
+    UPtr buttonText{ UCreate<WText>{}() };
     buttonText->SetText(label);
     buttonText->SetFontSize({ 20.0f, 25.0f });
     buttonText->SetSpacing(-8.0f);
 
-    UPtr buttonBg{ Create<WColor>{}() };
+    UPtr buttonBg{ UCreate<WColor>{}() };
     buttonBg->SetColor(Colors::White.WithValue(0.5f));
 
 
-    UPtr buttonStack{ Create<WStack>{}() };
+    UPtr buttonStack{ UCreate<WStack>{}() };
     buttonStack->SetChildren({ buttonBg, buttonText, button });
 
-    UPtr buttonWrap{ Create<WWrap>{}() };
+    UPtr buttonWrap{ UCreate<WWrap>{}() };
     buttonWrap->SetChild(buttonStack);
     buttonWrap->SetAxis(EAxis::Vertical);
 

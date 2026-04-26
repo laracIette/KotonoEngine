@@ -4,47 +4,47 @@
 
 WidgetPtr WVisualizerWindow::Build()
 {
-    UPtr bgColor{ Create<WColor>{}() };
+    UPtr bgColor{ UCreate<WColor>{}() };
     bgColor->SetColor(Colors::Blue.WithAlpha(0.5f));
 
-    UPtr bgText{ Create<WColor>{}() };
+    UPtr bgText{ UCreate<WColor>{}() };
     bgText->SetColor(Colors::Black.WithAlpha(0.5f));
 
-    UPtr headerText{ Create<WText>{}() };
+    UPtr headerText{ UCreate<WText>{}() };
     headerText->SetText("Visualizer");
     headerText->SetSpacing(-20.0f);
 
-    UPtr textStack{ Create<WStack>{}() };
+    UPtr textStack{ UCreate<WStack>{}() };
     textStack->SetChildren({ bgText, headerText });
 
-    UPtr textWrap{ Create<WWrap>{}() };
+    UPtr textWrap{ UCreate<WWrap>{}() };
     textWrap->SetChild(textStack);
 
-    UPtr itemList{ Create<WList>{}() };
+    UPtr itemList{ UCreate<WList>{}() };
     itemList->SetSpacing(5.0f);
     itemList->SetChildren({
-        Create<WVisualizerWindowItem>{}(EVisualizationField::SceneObject, "Scene Object"),
-        Create<WVisualizerWindowItem>{}(EVisualizationField::SceneObjectBounds, "Scene Object Bounds"),
-        Create<WVisualizerWindowItem>{}(EVisualizationField::SceneObjectCollider, "Scene Object Collider"),
-        Create<WVisualizerWindowItem>{}(EVisualizationField::SceneObjectWireframe, "Scene Object Wireframe"),
-        Create<WVisualizerWindowItem>{}(EVisualizationField::InterfaceObject, "Interface Object"),
-        Create<WVisualizerWindowItem>{}(EVisualizationField::InterfaceObjectBounds, "Interface Object Bounds"),
-        Create<WVisualizerWindowItem>{}(EVisualizationField::InterfaceObjectCollider, "Interface Object Collider"),
-        Create<WVisualizerWindowItem>{}(EVisualizationField::InterfaceObjectWireframe, "Interface Object Wireframe")
+        UCreate<WVisualizerWindowItem>{}(EVisualizationField::SceneObject, "Scene Object"),
+        UCreate<WVisualizerWindowItem>{}(EVisualizationField::SceneObjectBounds, "Scene Object Bounds"),
+        UCreate<WVisualizerWindowItem>{}(EVisualizationField::SceneObjectCollider, "Scene Object Collider"),
+        UCreate<WVisualizerWindowItem>{}(EVisualizationField::SceneObjectWireframe, "Scene Object Wireframe"),
+        UCreate<WVisualizerWindowItem>{}(EVisualizationField::InterfaceObject, "Interface Object"),
+        UCreate<WVisualizerWindowItem>{}(EVisualizationField::InterfaceObjectBounds, "Interface Object Bounds"),
+        UCreate<WVisualizerWindowItem>{}(EVisualizationField::InterfaceObjectCollider, "Interface Object Collider"),
+        UCreate<WVisualizerWindowItem>{}(EVisualizationField::InterfaceObjectWireframe, "Interface Object Wireframe")
     });
 
-    UPtr column{ Create<WColumn>{}() };
+    UPtr column{ UCreate<WColumn>{}() };
     column->SetSpacing(10.0f);
     column->SetChildren({ textWrap, itemList });
 
-    UPtr padding{ Create<WPadding>{}() };
+    UPtr padding{ UCreate<WPadding>{}() };
     padding->SetPadding(UPadding::All(8.0f));
     padding->SetChild(column);
 
-    UPtr mainStack{ Create<WStack>{}() };
+    UPtr mainStack{ UCreate<WStack>{}() };
     mainStack->SetChildren({ bgColor, padding });
 
-    UPtr box{ Create<WBox>{}() };
+    UPtr box{ UCreate<WBox>{}() };
     box->SetChild(mainStack);
     box->SetSize({ 400.0f, 300.0f });
 

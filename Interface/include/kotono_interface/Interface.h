@@ -16,7 +16,7 @@ private:
 	void OnMouseLeftButtonReleased() const;
 
 private:
-	KtPool<UPtr<WButton>> buttons_;
+	UPool<UPtr<WButton>> buttons_;
 };
 
 inline SInterface Interface;

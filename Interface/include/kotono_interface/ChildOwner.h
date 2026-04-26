@@ -8,7 +8,6 @@ class WChildOwner : public WWidget
 public:
 	~WChildOwner() override;
 
-	void Display(UWidgetDisplaySettings displaySettings) override;
 	void Remove() override;
 
 	EFlex GetFlex() const override;
@@ -20,6 +19,9 @@ public:
 	const WidgetPtr& GetChild() const;
 
 	void SetChild(const WidgetPtr& widget);
+
+protected:
+	void DisplayInternal(UWidgetDisplaySettings displaySettings) final;
 
 protected:
 	WidgetPtr child_;

@@ -14,7 +14,7 @@ class KtSceneRenderer final
 {
 private:
 	using Proxy = USceneProxy;
-	using ProxiesPool = KtPool<Proxy*>;
+	using ProxiesPool = UPool<Proxy*>;
 	using StagingProxiesMap = std::unordered_map<Proxy*, i32>;
 	using DeleteProxiesMap = std::unordered_map<Proxy*, u32>;
 

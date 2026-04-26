@@ -8,16 +8,6 @@ WChildOwner::~WChildOwner()
 	}
 }
 
-void WChildOwner::Display(UWidgetDisplaySettings displaySettings)
-{
-	Base::Display(displaySettings);
-
-	//if (child_)
-	{
-		//child_->Display(displaySettings);
-	}
-}
-
 void WChildOwner::Remove()
 {
 	Base::Remove();
@@ -84,6 +74,16 @@ void WChildOwner::SetChild(const WidgetPtr& widget)
 			child_->SetParent(Ptr());
 		}
 	});
+}
+
+void WChildOwner::DisplayInternal(UWidgetDisplaySettings displaySettings)
+{
+	++displaySettings.layer;
+
+	if (child_)
+	{
+		child_->Display(displaySettings);
+	}
 }
 
 UChildOwnerTree::UChildOwnerTree(const UPtr<WChildOwner>& widget, UWidgetTree* child)
