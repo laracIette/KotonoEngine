@@ -14,6 +14,7 @@ public:
 	void Remove() override;
 
 private:
+	void OnSelectedObjectChanged(const UPtr<KObject> object);
 	WidgetPtr Slider(const std::string& label, const ValueChangedFunction& function);
 };
 

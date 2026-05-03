@@ -10,5 +10,8 @@ public:
 
 	void Display(UWidgetDisplaySettings displaySettings) override;
 	void Remove() override;
+
+private:
+	void OnSelectedObjectChanged(const UPtr<KObject> object);
 };
 

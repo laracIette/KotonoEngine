@@ -19,14 +19,14 @@ private:
 public:
 	UPtr<KObject>& GetSelectedObject();
 	void SetSelectedObject(const UPtr<KObject>& object);
-	UEvent<>& EventSelectedObjectChanged();
+	UEvent<UPtr<KObject>>& EventSelectedObjectChanged();
 
 private:
 	void Quit();
 
 private:
 	UPtr<KObject> selectedObject_;
-	UEvent<> eventSelectedObjectChanged_;
+	UEvent<UPtr<KObject>> eventSelectedObjectChanged_;
 };
 
 inline SObjectManager ObjectManager;

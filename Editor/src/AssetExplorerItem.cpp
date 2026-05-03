@@ -56,4 +56,9 @@ WidgetPtr WAssetExplorerItem::Build()
     return box;
 }
 
+void WAssetExplorerItem::Display(UWidgetDisplaySettings displaySettings)
+{
+    Base::Display(displaySettings);
+}
+
 #include "generated/AssetExplorerItem.generated.inl"

@@ -39,14 +39,19 @@ void WSceneExplorerRemoveButton::Display(UWidgetDisplaySettings displaySettings)
 {
     Base::Display(displaySettings);
 
-    ObjectManager.EventSelectedObjectChanged().AddListener(this, &WSceneExplorerRemoveButton::Refresh);
+    ObjectManager.EventSelectedObjectChanged().AddListener(this, &Self::OnSelectedObjectChanged);
 }
 
 void WSceneExplorerRemoveButton::Remove()
 {
     Base::Remove();
 
-    ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &WSceneExplorerRemoveButton::Refresh);
+    ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &Self::OnSelectedObjectChanged);
+}
+
+void WSceneExplorerRemoveButton::OnSelectedObjectChanged(const UPtr<KObject> object)
+{
+    Refresh();
 }
 
 #include "generated/SceneExplorerRemoveButton.generated.inl"

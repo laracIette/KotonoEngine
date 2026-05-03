@@ -32,10 +32,10 @@ void SObjectManager::SetSelectedObject(const UPtr<KObject>& object)
 	}
 
 	selectedObject_ = object;
-	eventSelectedObjectChanged_.Broadcast();
+	eventSelectedObjectChanged_.Broadcast(object);
 }
 
-UEvent<>& SObjectManager::EventSelectedObjectChanged()
+UEvent<UPtr<KObject>>& SObjectManager::EventSelectedObjectChanged()
 {
 	return eventSelectedObjectChanged_;
 }

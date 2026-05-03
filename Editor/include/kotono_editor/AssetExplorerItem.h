@@ -14,6 +14,8 @@ public:
 
 	WidgetPtr Build() override;
 
+	void Display(UWidgetDisplaySettings displaySettings) override;
+
 protected:
 	const UPath path_;
 

@@ -15,10 +15,6 @@ WAssetExplorer::WAssetExplorer()
 
 WidgetPtr WAssetExplorer::Build()
 {
-	const UFileExplorer fileExplorer(path_);
-	const auto directories{ fileExplorer.GetDirectories() };
-	const auto files{ fileExplorer.GetFiles() };
-
 	UPtr mainColumn{ UCreate<WColumn>{}() };
 	mainColumn->SetSpacing(4.0f);
 
@@ -65,24 +61,10 @@ WidgetPtr WAssetExplorer::Build()
 	UPtr explorerPadding{ UCreate<WPadding>{}() };
 	explorerPadding->SetPadding(UPadding::All(8.0f));
 
-	UPtr explorerHorizontalWrapList{ UCreate<WHorizontalWrapList>{}() };
-	explorerHorizontalWrapList->SetItemSpacing(10.0f);
-	explorerHorizontalWrapList->SetRowSpacing(10.0f);
-
-
-	std::vector<UWidgetTree*> assets{};
-	for (const auto& directory : directories)
-	{
-		assets.push_back(new UWidgetTreeLeaf(
-			UCreate<WAssetExplorerDirectory>{}(directory, [this](const UPath& path) { Push(path); })
-		));
-	}
-	for (const auto& file : files)
-	{
-		assets.push_back(new UWidgetTreeLeaf(
-			UCreate<WAssetExplorerFile>{}(file.Path())
-		));
-	}
+	itemList_ = UCreate<WHorizontalWrapList>{}();
+	itemList_->SetItemSpacing(10.0f);
+	itemList_->SetRowSpacing(10.0f);
+	PopulateItemList();
 
 	UChildrenOwnerTree(mainColumn, {
 		new UChildrenOwnerTree(navigationRow, {
@@ -111,7 +93,7 @@ WidgetPtr WAssetExplorer::Build()
 		new UChildrenOwnerTree(UCreate<WStack>{}(), {
 			new UWidgetTreeLeaf(explorerBg),
 			new UChildOwnerTree(explorerPadding,
-				new UChildrenOwnerTree(explorerHorizontalWrapList, assets)
+				new UWidgetTreeLeaf(itemList_)
 			),
 		}),
 	}).Link();		
@@ -137,20 +119,19 @@ void WAssetExplorer::Remove()
 
 void WAssetExplorer::Push(const UPath& path)
 {
-	SetState([this, path]()
-		{
-			path_ = path;
-			++currentPathIndex_;
-			navigatedPaths_.erase(navigatedPaths_.begin() + currentPathIndex_, navigatedPaths_.end());
-			navigatedPaths_.push_back(path);
-		});
+	path_ = path;
+	++currentPathIndex_;
+	navigatedPaths_.erase(navigatedPaths_.begin() + currentPathIndex_, navigatedPaths_.end());
+	navigatedPaths_.push_back(path);
+	PopulateItemList();
 }
 
 void WAssetExplorer::NavigatePrevious()
 {
 	if (!navigatedPaths_.empty() && currentPathIndex_ > 0)
 	{
-		SetState([this]() { path_ = navigatedPaths_[--currentPathIndex_]; });
+		path_ = navigatedPaths_[--currentPathIndex_];
+		PopulateItemList();
 	}
 }
 
@@ -158,7 +139,31 @@ void WAssetExplorer::NavigateNext()
 {
 	if (!navigatedPaths_.empty() && currentPathIndex_ < navigatedPaths_.size() - 1)
 	{
-		SetState([this]() { path_ = navigatedPaths_[++currentPathIndex_]; });
+		path_ = navigatedPaths_[++currentPathIndex_];
+		PopulateItemList();
+	}
+}
+
+void WAssetExplorer::PopulateItemList()
+{
+	if (itemList_)
+	{
+		const UAutoDelete itemListChildren{ itemList_->GetChildren() };
+
+		const UFileExplorer fileExplorer{ path_ };
+		const auto directories{ fileExplorer.GetDirectories() };
+		const auto files{ fileExplorer.GetFiles() };
+
+		WidgetPool assets{};
+		for (const auto& directory : directories)
+		{
+			assets.Add(UCreate<WAssetExplorerDirectory>{}(directory, [this](const UPath& path) { Push(path); }));
+		}
+		for (const auto& file : files)
+		{
+			assets.Add(UCreate<WAssetExplorerFile>{}(file.Path()));
+		}
+		itemList_->SetChildren(assets);
 	}
 }
 

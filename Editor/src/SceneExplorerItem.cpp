@@ -10,11 +10,8 @@ WSceneExplorerItem::WSceneExplorerItem(const UPtr<TSceneObject>& sceneObject)
 
 WidgetPtr WSceneExplorerItem::Build()
 {
-	UPtr color{ UCreate<WColor>{}() };
-	color->SetColor(sceneObject_ && (ObjectManager.GetSelectedObject() == sceneObject_)
-		? Colors::Black.WithAlpha(0.2f)
-		: Colors::Transparent
-	);
+	bg_ = UCreate<WColor>{}();
+	bg_->SetColor(Colors::Transparent);
 
 	UPtr button{ UCreate<WButton>{}() };
 	button->SetOnPressed([this]() {
@@ -31,7 +28,7 @@ WidgetPtr WSceneExplorerItem::Build()
 
 	const UChildOwnerTree widgetTree{ UCreate<WWrap>{}(),
 		new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-			new UWidgetTreeLeaf{ color },
+			new UWidgetTreeLeaf{ bg_ },
 			new UWidgetTreeLeaf{ button },
 			new UWidgetTreeLeaf{ text },
 		} }
@@ -45,14 +42,27 @@ void WSceneExplorerItem::Display(UWidgetDisplaySettings displaySettings)
 {
 	Base::Display(displaySettings);
 
-	ObjectManager.EventSelectedObjectChanged().AddListener(this, &WSceneExplorerItem::Refresh);
+	ObjectManager.EventSelectedObjectChanged().AddListener(this, &Self::OnSelectedObjectChanged);
 }
 
 void WSceneExplorerItem::Remove()
 {
 	Base::Remove();
 
-	ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &WSceneExplorerItem::Refresh);
+	ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &Self::OnSelectedObjectChanged);
+}
+
+void WSceneExplorerItem::OnSelectedObjectChanged(const UPtr<KObject> object)
+{
+	if (bg_)
+	{
+		SetState([this, object]() {
+			bg_->SetColor(object == sceneObject_
+				? Colors::Black.WithAlpha(0.2f)
+				: Colors::Transparent
+			);
+		});
+	}
 }
 
 #include "generated/SceneExplorerItem.generated.inl"

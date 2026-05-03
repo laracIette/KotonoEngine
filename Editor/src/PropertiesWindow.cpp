@@ -95,14 +95,19 @@ void WPropertiesWindow::Display(UWidgetDisplaySettings displaySettings)
 {
     Base::Display(displaySettings);
 
-    ObjectManager.EventSelectedObjectChanged().AddListener(this, &WPropertiesWindow::Refresh);
+    ObjectManager.EventSelectedObjectChanged().AddListener(this, &Self::OnSelectedObjectChanged);
 }
 
 void WPropertiesWindow::Remove()
 {
     Base::Remove();
 
-    ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &WPropertiesWindow::Refresh);
+    ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &Self::OnSelectedObjectChanged);
+}
+
+void WPropertiesWindow::OnSelectedObjectChanged(const UPtr<KObject> object)
+{
+    Refresh();
 }
 
 WidgetPtr WPropertiesWindow::Slider(const std::string& label, const ValueChangedFunction& function)
