@@ -226,7 +226,7 @@ void KSceneComponent::SetParent(const UPtr<KSceneComponent>& parent, const ECoor
         {
             parent_->children_[index]->childrenIndex_ = index;
         }
-        parent_->EventTransformUpdated().RemoveListener(&eventTransformUpdated_, &UEvent<>::Broadcast);
+        parent_->EventTransformUpdated().RemoveListener(&eventTransformUpdated_, &UEvent<>::Broadcast<>);
     }
 
     switch (keepTransform)
@@ -253,7 +253,7 @@ void KSceneComponent::SetParent(const UPtr<KSceneComponent>& parent, const ECoor
     {
         parent_->children_.Add(Ptr());
         childrenIndex_ = parent_->children_.LastIndex();
-        parent_->EventTransformUpdated().AddListener(&eventTransformUpdated_, &UEvent<>::Broadcast);
+        parent_->EventTransformUpdated().AddListener(&eventTransformUpdated_, &UEvent<>::Broadcast<>);
     }
 }
 
@@ -372,7 +372,7 @@ void KSceneComponent::Deserialize()
         if (sceneComponent)
         {
             sceneComponent->parent_ = Ptr();
-            eventTransformUpdated_.AddListener(&sceneComponent->EventTransformUpdated(), &UEvent<>::Broadcast);
+            eventTransformUpdated_.AddListener(&sceneComponent->EventTransformUpdated(), &UEvent<>::Broadcast<>);
         }
     }
 }

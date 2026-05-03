@@ -186,7 +186,7 @@ void KInterfaceComponent::SetParent(const UPtr<KInterfaceComponent>& parent, con
 
     if (parent_)
     {
-        parent_->EventRectChanged().RemoveListener(&eventRectChanged_, &UEvent<>::Broadcast);
+        parent_->EventRectChanged().RemoveListener(&eventRectChanged_, &UEvent<>::Broadcast<>);
         parent_->RemoveChildren(Ptr());
     }
 
@@ -215,7 +215,7 @@ void KInterfaceComponent::SetParent(const UPtr<KInterfaceComponent>& parent, con
 
     if (parent_)
     {
-        parent_->EventRectChanged().AddListener(&eventRectChanged_, &UEvent<>::Broadcast);
+        parent_->EventRectChanged().AddListener(&eventRectChanged_, &UEvent<>::Broadcast<>);
         parent_->AddChildren(Ptr());
     }
 }
@@ -429,7 +429,7 @@ void KInterfaceComponent::RemoveChildren(const UPtr<KInterfaceComponent>& interf
 
 void KInterfaceComponent::Spawn()
 {
-    RegisterDelegate(owner_, owner_->GetViewport()->EventExtentChanged(), &eventRectChanged_, &UEvent<>::Broadcast);
+    RegisterDelegate(owner_, owner_->GetViewport()->EventExtentChanged(), &eventRectChanged_, &UEvent<>::Broadcast<>);
 }
 
 glm::vec2 KInterfaceComponent::GetAnchorOffset() const

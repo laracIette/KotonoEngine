@@ -17,25 +17,27 @@ private:
     using CallbackFunction = std::function<void(Args...)>;
 
 public:
-    template <class Tinst, class Tfunc>
+    template <typename Tinst, typename Tfunc>
         requires std::is_base_of_v<Tfunc, Tinst>
     UDelegate(Tinst* instance, void (Tfunc::* function)(Args...), const size hash)
     {
         hash_ = hash;
-        callbackFunction_ = [instance, function](Args... args) { (instance->*function)(args...); };
+        callbackFunction_ = [instance, function](Args... args) { (instance->*function)(std::move(args)...); };
     }
 
-    template <class Tinst, class Tfunc>
+    template <typename Tinst, typename Tfunc>
         requires std::is_base_of_v<Tfunc, Tinst>
     UDelegate(const Tinst* instance, void (Tfunc::* function)(Args...) const, const size hash)
     {
         hash_ = hash;
-        callbackFunction_ = [instance, function](Args... args) { (instance->*function)(args...); };
+        callbackFunction_ = [instance, function](Args... args) { (instance->*function)(std::move(args)...); };
     }
 
-    void Callback(Args... args) const
+    template <typename... CallArgs>
+        requires (std::is_convertible_v<CallArgs, Args> && ...)
+    void Callback(CallArgs&&... args) const
     {
-        callbackFunction_(args...);
+        callbackFunction_(std::forward<CallArgs>(args)...);
     }
 
     bool operator==(const UDelegate& other) const noexcept

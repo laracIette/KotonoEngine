@@ -24,12 +24,14 @@ public:
         delegates_.Remove(delegate);
     }
 
-    void Broadcast(const Args&... args)
+    template <typename... CallArgs>
+        requires (std::is_convertible_v<CallArgs, Args> && ...)
+    void Broadcast(CallArgs&&... args) const
     {
         // Don't process delegates that are added while the event is broadcasting
         for (i64 i{ delegates_.LastIndex() }; delegates_.IsValidIndex(i); --i)
         {
-            delegates_[i].Callback(args...);
+            delegates_[i].Callback(std::forward<CallArgs>(args)...);
         }
     }
 
