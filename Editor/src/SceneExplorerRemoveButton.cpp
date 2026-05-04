@@ -8,29 +8,28 @@
 
 WidgetPtr WSceneExplorerRemoveButton::Build()
 {
-    UPtr color{ UCreate<WColor>{}() };
-    color->SetColor(ObjectManager.GetSelectedObject()
+    bg_ = UCreate<WColor>{}();
+    bg_->SetColor(ObjectManager.GetSelectedObject()
         ? Colors::Red 
         : Colors::Red.WithValue(0.1f)
     );
 
-    UPtr button{ UCreate<WButton>{}() };
-    button->SetOnDown([this]() {
+    button_ = UCreate<WButton>{}();
+    button_->SetIsEnabled(false);
+    button_->SetOnClicked([]() {
         if (UPtr selectedObject{ TryCast<TSceneObject>(ObjectManager.GetSelectedObject()) })
         {
-            SetState([selectedObject]() {
-                if (UPtr scene{ Game.GetOpenedScene() })
-                {
-                    scene->Remove(selectedObject);
-                }
-                ObjectManager.SetSelectedObject(nullptr);
-                selectedObject->Delete();
-            });
+            if (UPtr scene{ Game.GetOpenedScene() })
+            {
+                scene->Remove(selectedObject);
+            }
+            ObjectManager.SetSelectedObject({});
+            selectedObject->Delete();
         }
     });
 
     UPtr stack{ UCreate<WStack>{}() };
-    stack->SetChildren({ color, button });
+    stack->SetChildren({ bg_, button_ });
 
     return stack;
 }
@@ -49,9 +48,13 @@ void WSceneExplorerRemoveButton::Remove()
     ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &Self::OnSelectedObjectChanged);
 }
 
-void WSceneExplorerRemoveButton::OnSelectedObjectChanged(const UPtr<KObject> object)
+void WSceneExplorerRemoveButton::OnSelectedObjectChanged(const UPtr<KObject> object) const
 {
-    Refresh();
+    bg_->SetColor(object
+        ? Colors::Red
+        : Colors::Red.WithValue(0.1f)
+    );
+    button_->SetIsEnabled(object);
 }
 
 #include "generated/SceneExplorerRemoveButton.generated.inl"

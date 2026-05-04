@@ -25,7 +25,7 @@ const UColor& WColor::GetColor() const
 
 void WColor::SetColor(const UColor& color)
 {
-	color_ = color;
+	SetState([this, color]() { color_ = color; });
 }
 
 void WColor::DisplayInternal(UWidgetDisplaySettings displaySettings)

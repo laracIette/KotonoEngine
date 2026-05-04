@@ -3,6 +3,7 @@
 #include <kotono_input/Mouse.h>
 
 WButton::WButton()
+	: isEnabled_{ true }
 {
 	Interface.AddButton(Ptr());
 
@@ -18,6 +19,11 @@ WButton::~WButton()
 
 bool WButton::ReceiveMouseLeftButtonPressed()
 {
+	if (!isEnabled_)
+	{
+		return false;
+	}
+
 	if (!IsMouseHovering())
 	{
 		return false;
@@ -42,6 +48,11 @@ bool WButton::ReceiveMouseLeftButtonReleased()
 
 	isPressed_ = false;
 
+	if (!IsMouseHovering())
+	{
+		return false;
+	}
+
 	if (onClicked_)
 	{
 		onClicked_();
@@ -52,54 +63,24 @@ bool WButton::ReceiveMouseLeftButtonReleased()
 
 void WButton::OnMouseLeftButtonPressedNoInteract()
 {
+	if (!isEnabled_)
+	{
+		return;
+	}
+
 	if (onPressOut_)
 	{
 		onPressOut_();
 	}
 }
 
-const VoidCallback& WButton::GetOnClicked() const
-{
-	return onClicked_;
-}
-
-const VoidCallback& WButton::GetOnPressed() const
-{
-	return onPressed_;
-}
-
-const VoidCallback& WButton::GetOnDown() const
-{
-	return onDown_;
-}
-
-const VoidCallback& WButton::GetOnPressOut() const
-{
-	return onPressOut_;
-}
-
-void WButton::SetOnClicked(const VoidCallback& function)
-{
-	onClicked_ = function;
-}
-
-void WButton::SetOnPressed(const VoidCallback& function)
-{
-	onPressed_ = function;
-}
-
-void WButton::SetOnDown(const VoidCallback& function)
-{
-	onDown_ = function;
-}
-
-void WButton::SetOnPressOut(const VoidCallback& function)
-{
-	onPressOut_ = function;
-}
-
 void WButton::OnMouseLeftButtonDown()
 {
+	if (!isEnabled_)
+	{
+		return;
+	}
+
 	if (!isPressed_)
 	{
 		return;

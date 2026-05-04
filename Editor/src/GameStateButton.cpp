@@ -3,6 +3,8 @@
 #include <kotono_interface/widgets.h>
 #include <kotono_input/Keyboard.h>
 
+static void SwitchPlayPause();
+
 WidgetPtr WGameStateButton::Build()
 {
     UPtr mainRow{ UCreate<WRow>{}() };
@@ -11,57 +13,43 @@ WidgetPtr WGameStateButton::Build()
     UPtr playPauseBox{ UCreate<WBox>{}() };
     playPauseBox->SetSize({ 64.0f, 64.0f });
 
-    UPtr playPauseBg{ UCreate<WColor>{}() };
-    playPauseBg->SetColor(GameManager.IsPlaying()
+    playPauseBg_ = UCreate<WColor>{}();
+    playPauseBg_->SetColor(GameManager.IsPlaying()
         ? Colors::White.WithValue(0.5f)
         : Colors::Green
     );
 
     UPtr playPauseButton{ UCreate<WButton>{}() };
-    playPauseButton->SetOnPressed([this]() {
-        SetState([]() {
-            if (GameManager.IsPlaying())
-            {
-                GameManager.Pause();
-            }
-            else
-            {
-                GameManager.Play();
-            }
-        });
-    });
+    playPauseButton->SetOnPressed([]() { SwitchPlayPause(); });
 
 
     UPtr stopBox{ UCreate<WBox>{}() };
     stopBox->SetSize({ 64.0f, 64.0f });
 
-    UPtr stopBg{ UCreate<WColor>{}() };
-    stopBg->SetColor(GameManager.IsStopped()
+    stopBg_ = UCreate<WColor>{}();
+    stopBg_->SetColor(GameManager.IsStopped()
         ? Colors::Red.WithAlpha(0.1f)
         : Colors::Red
     );
 
     UPtr stopButton{ UCreate<WButton>{}() };
-    stopButton->SetOnPressed([this]() {
-        if (GameManager.IsStopped())
+    stopButton->SetOnPressed([]() {
+        if (!GameManager.IsStopped())
         {
-            return;
-        }
-        SetState([]() {
             GameManager.Stop();
-        });
+        }
     });
 
     UChildrenOwnerTree(mainRow, {
         new UChildOwnerTree(playPauseBox,
             new UChildrenOwnerTree(UCreate<WStack>{}(), {
-                new UWidgetTreeLeaf(playPauseBg),
+                new UWidgetTreeLeaf(playPauseBg_),
                 new UWidgetTreeLeaf(playPauseButton),
             })
         ),
         new UChildOwnerTree(stopBox,
             new UChildrenOwnerTree(UCreate<WStack>{}(), {
-                new UWidgetTreeLeaf(stopBg),
+                new UWidgetTreeLeaf(stopBg_),
                 new UWidgetTreeLeaf(stopButton),
             })
         )
@@ -75,6 +63,7 @@ void WGameStateButton::Display(UWidgetDisplaySettings displaySettings)
     Base::Display(displaySettings);
 
     Keyboard.EventKey(EKey::Space, EInputState::Pressed).AddListener(this, &WGameStateButton::OnKeyboardSpaceKeyPressed);
+    GameManager.EventStateChanged().AddListener(this, &Self::OnGameStateChanged);
 }
 
 void WGameStateButton::Remove()
@@ -82,21 +71,36 @@ void WGameStateButton::Remove()
     Base::Remove();
 
     Keyboard.EventKey(EKey::Space, EInputState::Pressed).RemoveListener(this, &WGameStateButton::OnKeyboardSpaceKeyPressed);
+    GameManager.EventStateChanged().RemoveListener(this, &Self::OnGameStateChanged);
 }
 
-void WGameStateButton::OnKeyboardSpaceKeyPressed()
+void WGameStateButton::OnKeyboardSpaceKeyPressed() const
 {
-    SetState([]()
+    SwitchPlayPause();
+}
+
+void WGameStateButton::OnGameStateChanged(const EGameState gameState) const
+{
+    playPauseBg_->SetColor(GameManager.IsPlaying()
+        ? Colors::White.WithValue(0.5f)
+        : Colors::Green
+    );
+    stopBg_->SetColor(GameManager.IsStopped()
+        ? Colors::Red.WithAlpha(0.1f)
+        : Colors::Red
+    );
+}
+
+void SwitchPlayPause()
+{
+    if (GameManager.IsPlaying())
     {
-        if (GameManager.IsPlaying())
-        {
-            GameManager.Stop();
-        }
-        else
-        {
-            GameManager.Play();
-        }
-    });
+        GameManager.Stop();
+    }
+    else
+    {
+        GameManager.Play();
+    }
 }
 
 #include "generated/GameStateButton.generated.inl"

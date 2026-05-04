@@ -15,9 +15,7 @@ WidgetPtr WSceneExplorerItem::Build()
 
 	UPtr button{ UCreate<WButton>{}() };
 	button->SetOnPressed([this]() {
-		SetState([this]() {
-			ObjectManager.SetSelectedObject(sceneObject_);
-		});
+		ObjectManager.SetSelectedObject(sceneObject_);
 	});
 
 	UPtr text{ UCreate<WText>{}() };
@@ -56,12 +54,14 @@ void WSceneExplorerItem::OnSelectedObjectChanged(const UPtr<KObject> object)
 {
 	if (bg_)
 	{
-		SetState([this, object]() {
-			bg_->SetColor(object == sceneObject_
-				? Colors::Black.WithAlpha(0.2f)
-				: Colors::Transparent
-			);
-		});
+		if (object == sceneObject_)
+		{
+			KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "", "");
+		}
+		bg_->SetColor(object == sceneObject_
+			? Colors::Black.WithAlpha(0.2f)
+			: Colors::Transparent
+		);
 	}
 }
 

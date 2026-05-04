@@ -18,25 +18,15 @@ public:
 
 	void OnMouseLeftButtonPressedNoInteract();
 
-public:
-	const VoidCallback& GetOnClicked() const;
-	const VoidCallback& GetOnPressed() const;
-	const VoidCallback& GetOnDown() const;
-	const VoidCallback& GetOnPressOut() const;
-
-	void SetOnClicked(const VoidCallback& function);
-	void SetOnPressed(const VoidCallback& function);
-	void SetOnDown(const VoidCallback& function);
-	void SetOnPressOut(const VoidCallback& function);
-
 private:
 	void OnMouseLeftButtonDown();
 
 private:
-	VoidCallback onClicked_;
-	VoidCallback onPressed_;
-	VoidCallback onDown_;
-	VoidCallback onPressOut_;
+	WritableProperty(bool, isEnabled_, IsEnabled);
+	WritableProperty(VoidCallback, onClicked_, OnClicked);
+	WritableProperty(VoidCallback, onPressed_, OnPressed);
+	WritableProperty(VoidCallback, onDown_, OnDown);
+	WritableProperty(VoidCallback, onPressOut_, OnPressOut);
 
 	bool isPressed_;
 };

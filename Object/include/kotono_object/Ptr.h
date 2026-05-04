@@ -181,7 +181,7 @@ inline UPtr<Derived> TryCast(const UPtr<Base>& ptr)
 {
 	if (ptr && dynamic_cast<Derived*>(ptr.Get()))
 	{
-		return UPtr<Derived>(ptr.GetOwner());
+		return UPtr<Derived>{ ptr.GetOwner() };
 	}
 	return nullptr;
 }
