@@ -5,7 +5,7 @@
 WidgetPtr WValueBox::Build()
 {
 	UPtr inputTextBox{ UCreate<WInputTextBox>{}() };
-	inputTextBox->SetText(valueToString_());
+	inputTextBox->SetText(valueToString_ ? valueToString_() : "");
 	inputTextBox->SetOnTextChanged(stringToValue_);
 
 	UPtr wrap{ UCreate<WWrap>{}() };

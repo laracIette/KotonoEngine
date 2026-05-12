@@ -39,24 +39,4 @@ glm::vec2 WConstraint::GetDesiredSize(glm::vec2 bounds) const
 	}
 }
 
-EAxis WConstraint::GetAxis() const
-{
-	return axis_;
-}
-
-float WConstraint::GetSize() const
-{
-	return size_;
-}
-
-void WConstraint::SetAxis(const EAxis axis)
-{
-	axis_ = axis;
-}
-
-void WConstraint::SetSize(const float size)
-{
-	size_ = size;
-}
-
 #include "generated/Constraint.generated.inl"

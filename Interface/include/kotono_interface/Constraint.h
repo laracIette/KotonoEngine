@@ -12,15 +12,8 @@ public:
 	EFlex GetFlex() const override;
 	glm::vec2 GetDesiredSize(glm::vec2 bounds) const override;
 
-public:
-	EAxis GetAxis() const;
-	float GetSize() const;
-
-	void SetAxis(const EAxis axis);
-	void SetSize(const float size);
-
 private:
-	EAxis axis_;
-	float size_;
+	WritableProperty(EAxis, axis_, Axis);
+	WritableProperty(float, size_, Size);
 };
 

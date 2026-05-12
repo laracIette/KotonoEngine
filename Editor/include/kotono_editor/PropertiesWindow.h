@@ -1,6 +1,8 @@
 #pragma once
 #include "generated/PropertiesWindow.generated.h"
 #include <kotono_interface\Widget.h>
+class WList;
+class WObjectProperties;
 class WPropertiesWindow : public WWidget
 {
 	GENERATED_WPROPERTIESWINDOW()
@@ -15,6 +17,9 @@ public:
 
 private:
 	void OnSelectedObjectChanged(const UPtr<KObject> object);
-	WidgetPtr Slider(const std::string& label, const ValueChangedFunction& function);
+
+private:
+	UPtr<WList> mainList_;
+	UPtr<WObjectProperties> objectProperties_;
 };
 

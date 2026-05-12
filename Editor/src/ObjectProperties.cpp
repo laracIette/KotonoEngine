@@ -19,13 +19,21 @@ static void* get_member_variable_pointer(void* object, const size offset) noexce
     return reinterpret_cast<void*>(reinterpret_cast<std::uintptr_t>(object) + offset);
 }
 
-WObjectProperties::WObjectProperties(const UPtr<KObject>& object) :
-	object_(object)
+WObjectProperties::WObjectProperties(const UPtr<KObject>& object) 
+    : object_(object)
 {
 }
 
 WidgetPtr WObjectProperties::Build()
 {
+    if (!object_)
+    {
+        UPtr text{ UCreate<WText>{}() };
+        text->SetText("No object selected");
+        text->SetFontSize({ 16.0f, 20.0f });
+        return text;
+    }
+
     const auto variables{ object_->GetMemberVariables() };
 
     std::vector<UWidgetTree*> properties{};
@@ -47,16 +55,15 @@ WidgetPtr WObjectProperties::Build()
         }));
     }
 
-    UPtr wrap{ UCreate<WWrap>{}() };
-
     UPtr column{ UCreate<WColumn>{}() };
     column->SetSpacing(5.0f);
 
-    UChildOwnerTree(wrap, 
+    const auto widgetTree{ UChildOwnerTree(UCreate<WWrap>{}(),
         new UChildrenOwnerTree(column, properties)
-    ).Link();
+    ) };
+    widgetTree.Link();
 
-    return wrap;
+    return widgetTree.Widget();
 }
 
 WidgetPtr WObjectProperties::BuildMemberWidget(const std::string& type, void* variablePtr)

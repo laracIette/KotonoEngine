@@ -12,51 +12,6 @@
 
 WidgetPtr WPropertiesWindow::Build()
 {
-    UPtr selectedObject{ TryCast<TSceneObject>(ObjectManager.GetSelectedObject()) };
-
-    if (!selectedObject)
-    {
-        UPtr text{ UCreate<WText>{}() };
-        text->SetText("No scene object selected");
-        text->SetFontSize({ 16.0f, 20.0f });
-		return text;
-    }
-
-    UPtr sliderColumn{ UCreate<WColumn>{}() };
-    sliderColumn->SetChildren({
-        Slider("Position X", [selectedObject](const float delta) {
-			if (selectedObject) selectedObject->RootComponent()->Translate({ delta * 0.01f, 0.0f, 0.0f });
-        }),
-        Slider("Position Y", [selectedObject](const float delta) {
-            if (selectedObject) selectedObject->RootComponent()->Translate({ 0.0f, delta * 0.01f, 0.0f });
-        }),
-        Slider("Position Z", [selectedObject](const float delta) {
-            if (selectedObject) selectedObject->RootComponent()->Translate({ 0.0f, 0.0f, delta * 0.01f });
-        }),
-
-        Slider("Scale X", [selectedObject](const float delta) {
-            if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f + delta * 0.001f, 1.0f, 1.0f });
-        }),
-        Slider("Scale Y", [selectedObject](const float delta) {
-            if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f, 1.0f + delta * 0.001f, 1.0f });
-        }),
-        Slider("Scale Z", [selectedObject](const float delta) {
-            if (selectedObject) selectedObject->RootComponent()->Scale({ 1.0f, 1.0f, 1.0f + delta * 0.001f });
-        }),
-
-        Slider("Rotation Pitch", [selectedObject](const float delta) {
-            if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldRightVector));
-        }),
-        Slider("Rotation Yaw", [selectedObject](const float delta) {
-            if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldUpVector));
-        }),
-        Slider("Rotation Roll", [selectedObject](const float delta) {
-            if (selectedObject) selectedObject->RootComponent()->Rotate(glm::angleAxis(delta * 0.001f, WorldForwardVector));
-        }),
-    });
-    sliderColumn->SetSpacing(10.0f);
-
-
     UPtr propertiesText{ UCreate<WText>{}() };
     propertiesText->SetText("Properties");
     propertiesText->SetSpacing(-20.0f);
@@ -71,24 +26,46 @@ WidgetPtr WPropertiesWindow::Build()
     propertiesTextWrap->SetChild(propertiesTextStack);
 
 
-    UPtr mainList{ UCreate<WList>{}() };
-    mainList->SetChildren({ propertiesTextWrap, UCreate<WObjectProperties>{}(selectedObject), sliderColumn});
-    mainList->SetSpacing(10.0f);
+    objectProperties_ = UCreate<WObjectProperties>{}(ObjectManager.GetSelectedObject());
+
+    mainList_ = UCreate<WList>{}();
+    mainList_->SetChildren({ propertiesTextWrap, objectProperties_ });
+    mainList_->SetSpacing(10.0f);
 
     UPtr mainListPadding{ UCreate<WPadding>{}() };
-    mainListPadding->SetChild(mainList);
     mainListPadding->SetPadding(UPadding::All(8.0f));
 
     UPtr mainListBg{ UCreate<WColor>{}() };
     mainListBg->SetColor(Colors::Blue.WithAlpha(0.5f));
 
-    UPtr mainStack{ UCreate<WStack>{}() };
-    mainStack->SetChildren({ mainListBg, mainListPadding });
+    const auto widgetTree{ UChildOwnerTree{ UCreate<WWrap>{}(),
+        new UChildrenOwnerTree{ UCreate<WStack>{}(), {
+            new UWidgetTreeLeaf{ mainListBg },
+            new UChildOwnerTree{ mainListPadding, 
+                new UWidgetTreeLeaf{ mainList_ }
+            },
+        } }
+    } };
+    widgetTree.Link();
 
-    UPtr mainWrap{ UCreate<WWrap>{}() };
-    mainWrap->SetChild(mainStack);
+    return widgetTree.Widget();
 
-    return mainWrap;
+    //const auto widgetTree{ UChildOwnerTree{ UCreate<WWrap>{}(),
+    //    new UChildrenOwnerTree{ UCreate<WStack>{}(), {
+    //        new UWidgetTreeLeaf{ mainListBg },
+    //        new UChildOwnerTree{ mainListPadding,
+    //            new UChildrenOwnerTree{ mainList, {
+    //                new UChildOwnerTree{ UCreate<WWrap>{}(),
+    //                    new UChildrenOwnerTree{ UCreate<WStack>{}(), {
+    //                        new UWidgetTreeLeaf{ propertiesTextBg },
+    //                        new UWidgetTreeLeaf{ propertiesText },
+    //                    } }
+    //                },
+    //                new UWidgetTreeLeaf{ UCreate<WObjectProperties>{}(selectedObject) },
+    //            } }
+    //        },
+    //    } }
+    //} };
 }
 
 void WPropertiesWindow::Display(UWidgetDisplaySettings displaySettings)
@@ -107,37 +84,25 @@ void WPropertiesWindow::Remove()
 
 void WPropertiesWindow::OnSelectedObjectChanged(const UPtr<KObject> object)
 {
-    Refresh();
-}
-
-WidgetPtr WPropertiesWindow::Slider(const std::string& label, const ValueChangedFunction& function)
-{
-    UPtr button{ UCreate<WButton>{}() };
-    button->SetOnDown([function]() {
-        const float delta{ Mouse.CursorPositionDelta().x };
-        if (delta != 0.0f)
+    if (mainList_)
+    {
+        auto children{ mainList_->GetChildren() };
+        if (objectProperties_)
         {
-            function(delta);
+            children.Remove(objectProperties_);
         }
-    });
 
-    UPtr buttonText{ UCreate<WText>{}() };
-    buttonText->SetText(label);
-    buttonText->SetFontSize({ 20.0f, 25.0f });
-    buttonText->SetSpacing(-8.0f);
+        UPtr newObjectProperties{ UCreate<WObjectProperties>{}(object) };
+        children.Add(newObjectProperties);
 
-    UPtr buttonBg{ UCreate<WColor>{}() };
-    buttonBg->SetColor(Colors::White.WithValue(0.5f));
+        mainList_->SetChildren(children);
 
-
-    UPtr buttonStack{ UCreate<WStack>{}() };
-    buttonStack->SetChildren({ buttonBg, buttonText, button });
-
-    UPtr buttonWrap{ UCreate<WWrap>{}() };
-    buttonWrap->SetChild(buttonStack);
-    buttonWrap->SetAxis(EAxis::Vertical);
-
-    return buttonWrap;
+        if (objectProperties_)
+        {
+            objectProperties_->Delete();
+        }
+        objectProperties_ = newObjectProperties;
+    }
 }
 
 #include "generated/PropertiesWindow.generated.inl"

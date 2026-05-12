@@ -7,7 +7,6 @@ class WObjectProperties : public WWidget
 
 public:
 	WObjectProperties(const UPtr<KObject>& object);
-
 	WidgetPtr Build() override;
 
 private:
