@@ -23,6 +23,8 @@ void SCamera::Init()
 	Keyboard.EventKey(EKey::A, EInputState::Down).AddListener(this, &SCamera::OnKeyboardAKeyDown);
 	Keyboard.EventKey(EKey::S, EInputState::Down).AddListener(this, &SCamera::OnKeyboardSKeyDown);
 	Keyboard.EventKey(EKey::D, EInputState::Down).AddListener(this, &SCamera::OnKeyboardDKeyDown);
+	Keyboard.EventKey(EKey::Q, EInputState::Down).AddListener(this, &SCamera::OnKeyboardQKeyDown);
+	Keyboard.EventKey(EKey::E, EInputState::Down).AddListener(this, &SCamera::OnKeyboardEKeyDown);
 	Mouse.EventButton(EButton::Right, EInputState::Pressed).AddListener(this, &SCamera::OnMouseRightButtonPressed);
 	Mouse.EventButton(EButton::Right, EInputState::Released).AddListener(this, &SCamera::OnMouseRightButtonReleased);
 	Mouse.EventMove().AddListener(this, &SCamera::OnMouseMove);
@@ -35,6 +37,8 @@ void SCamera::Cleanup()
 	Keyboard.EventKey(EKey::A, EInputState::Down).RemoveListener(this, &SCamera::OnKeyboardAKeyDown);
 	Keyboard.EventKey(EKey::S, EInputState::Down).RemoveListener(this, &SCamera::OnKeyboardSKeyDown);
 	Keyboard.EventKey(EKey::D, EInputState::Down).RemoveListener(this, &SCamera::OnKeyboardDKeyDown);
+	Keyboard.EventKey(EKey::Q, EInputState::Down).RemoveListener(this, &SCamera::OnKeyboardQKeyDown);
+	Keyboard.EventKey(EKey::E, EInputState::Down).RemoveListener(this, &SCamera::OnKeyboardEKeyDown);
 	Mouse.EventButton(EButton::Right, EInputState::Pressed).RemoveListener(this, &SCamera::OnMouseRightButtonPressed);
 	Mouse.EventButton(EButton::Right, EInputState::Released).RemoveListener(this, &SCamera::OnMouseRightButtonReleased);
 	Mouse.EventMove().RemoveListener(this, &SCamera::OnMouseMove);
@@ -103,6 +107,16 @@ void SCamera::OnKeyboardDKeyDown()
 	const auto direction{ -RightVector() };
 	const auto delta{ direction * TimeManager.Delta() };
 	Translate(delta * speed_);
+}
+
+void SCamera::OnKeyboardQKeyDown()
+{
+	Translate(-WorldUpVector * TimeManager.Delta() * speed_);
+}
+
+void SCamera::OnKeyboardEKeyDown()
+{
+	Translate(WorldUpVector * TimeManager.Delta() * speed_);
 }
 
 void SCamera::OnMouseRightButtonPressed()

@@ -9,6 +9,7 @@ class WBox final : public WChildOwner
 public:
 	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
+	EExpand GetExpand() const override;
 	EFlex GetFlex() const override;
 	glm::vec2 GetDesiredSize(glm::vec2 bounds) const override;
 

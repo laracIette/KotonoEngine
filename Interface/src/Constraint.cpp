@@ -19,6 +19,16 @@ UWidgetDisplaySettings WConstraint::GetContentDisplaySettings(UWidgetDisplaySett
 	return displaySettings;
 }
 
+EExpand WConstraint::GetExpand() const
+{
+	switch (axis_)
+	{
+	case EAxis::Horizontal:	return EExpand::Vertical;
+	case EAxis::Vertical:	return EExpand::Horizontal;
+	default:				return EExpand::None;
+	}
+}
+
 EFlex WConstraint::GetFlex() const
 {
 	switch (axis_)

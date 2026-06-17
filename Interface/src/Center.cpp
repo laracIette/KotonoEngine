@@ -1,8 +1,12 @@
 #include "Center.h"
 
+WCenter::WCenter(const EAxis axis)
+	: axis_{ axis }
+{
+}
+
 UWidgetDisplaySettings WCenter::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
-
 	if (child_)
 	{
 		const auto childSettings{ child_->GetContentDisplaySettings(displaySettings) };

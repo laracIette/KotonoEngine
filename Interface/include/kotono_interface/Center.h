@@ -7,6 +7,8 @@ class WCenter final : public WChildOwner
 	GENERATED_WCENTER()
 
 public:
+	WCenter(const EAxis axis = EAxis::All);
+
 	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 public:

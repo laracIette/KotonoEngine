@@ -50,6 +50,11 @@ glm::vec2 WListBody::GetDesiredSize(glm::vec2 bounds) const
 	return size;
 }
 
+EFlex WListBody::GetFlex() const
+{
+	return EFlex::Vertical;
+}
+
 float WListBody::GetSpacing() const
 {
 	return spacing_;

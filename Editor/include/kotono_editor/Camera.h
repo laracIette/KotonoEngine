@@ -39,6 +39,8 @@ private:
 	void OnKeyboardAKeyDown();
 	void OnKeyboardSKeyDown();
 	void OnKeyboardDKeyDown();
+	void OnKeyboardQKeyDown();
+	void OnKeyboardEKeyDown();
 	void OnMouseRightButtonPressed();
 	void OnMouseRightButtonReleased();
 	void OnMouseMove(const glm::vec2 delta);

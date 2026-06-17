@@ -54,10 +54,6 @@ void WSceneExplorerItem::OnSelectedObjectChanged(const UPtr<KObject> object)
 {
 	if (bg_)
 	{
-		if (object == sceneObject_)
-		{
-			KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "", "");
-		}
 		bg_->SetColor(object == sceneObject_
 			? Colors::Black.WithAlpha(0.2f)
 			: Colors::Transparent

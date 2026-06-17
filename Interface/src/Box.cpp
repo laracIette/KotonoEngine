@@ -7,6 +7,11 @@ UWidgetDisplaySettings WBox::GetContentDisplaySettings(UWidgetDisplaySettings di
 	return displaySettings;
 }
 
+EExpand WBox::GetExpand() const
+{
+	return EExpand::None;
+}
+
 EFlex WBox::GetFlex() const
 {
 	return EFlex::None;

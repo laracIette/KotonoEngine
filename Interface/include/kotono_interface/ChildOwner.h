@@ -10,7 +10,6 @@ public:
 
 	void Remove() override;
 
-	EFlex GetFlex() const override;
 	glm::vec2 GetDesiredSize(glm::vec2 bounds) const override;
 
 	WidgetVector GetWidgetTree() override;

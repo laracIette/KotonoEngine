@@ -9,18 +9,15 @@ class WColor final : public WWidget
 	GENERATED_WCOLOR()
 
 public:
-	void Remove() override;
-	
-public:
-	const UColor& GetColor() const;
+	WColor(const UColor& color = Colors::White);
 
-	void SetColor(const UColor& color);
+	void Remove() override;
 
 protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 
 private:
-	UColor color_;
+	StateProperty(UColor, color_, Color);
 
 	UInterfaceProxy* colorProxy_;
 };

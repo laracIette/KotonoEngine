@@ -44,34 +44,9 @@ glm::vec2 WHorizontalWrapListBody::GetDesiredSize(glm::vec2 bounds) const
 	return size;
 }
 
-const WidgetPool& WHorizontalWrapListBody::GetChildren() const
+EFlex WHorizontalWrapListBody::GetFlex() const
 {
-	return children_;
-}
-
-float WHorizontalWrapListBody::GetItemSpacing() const
-{
-	return itemSpacing_;
-}
-
-float WHorizontalWrapListBody::GetRowSpacing() const
-{
-	return rowSpacing_;
-}
-
-void WHorizontalWrapListBody::SetChildren(const WidgetPool& children)
-{
-	children_ = children;
-}
-
-void WHorizontalWrapListBody::SetItemSpacing(const float itemSpacing)
-{
-	itemSpacing_ = itemSpacing;
-}
-
-void WHorizontalWrapListBody::SetRowSpacing(const float rowSpacing)
-{
-	rowSpacing_ = rowSpacing;
+	return EFlex::All;
 }
 
 void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)

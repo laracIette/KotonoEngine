@@ -22,7 +22,7 @@ void SInterface::RemoveButton(const UPtr<WButton>& button)
 void SInterface::OnMouseLeftButtonPressed() const
 {
 	auto buttons{ buttons_ };
-	std::ranges::sort(buttons, std::ranges::greater{}, &WButton::Layer);
+	std::ranges::sort(buttons, std::ranges::greater{}, &WButton::GetLayer);
 
 	bool hasInteracted{ false };
 	for (auto& button : buttons)
@@ -44,7 +44,7 @@ void SInterface::OnMouseLeftButtonPressed() const
 void SInterface::OnMouseLeftButtonReleased() const
 {
 	auto buttons{ buttons_ };
-	std::ranges::sort(buttons, std::ranges::greater{}, &WButton::Layer);
+	std::ranges::sort(buttons, std::ranges::greater{}, &WButton::GetLayer);
 
 	for (auto& button : buttons)
 	{

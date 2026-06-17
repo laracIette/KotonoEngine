@@ -11,6 +11,9 @@ public:
 
 	glm::vec2 GetDesiredSize(glm::vec2 bounds) const override;
 
+	EExpand GetExpand() const override;
+	EFlex GetFlex() const override;
+
 public:
 	float GetSpacing() const;
 
@@ -20,7 +23,7 @@ protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 
 private:
-	size GetFlexCount() const;
+	size GetExpandCount() const;
 
 private:
 	float spacing_;

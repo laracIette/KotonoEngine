@@ -24,6 +24,7 @@ set(KINTERFACE_HEADERS
     "include/kotono_interface/Color.h"
     "include/kotono_interface/Column.h"
     "include/kotono_interface/Constraint.h"
+    "include/kotono_interface/Expand.h"    
     "include/kotono_interface/Expanded.h"
     "include/kotono_interface/Flex.h"
     "include/kotono_interface/HorizontalWrapList.h"

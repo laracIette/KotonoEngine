@@ -18,15 +18,6 @@ void WChildOwner::Remove()
 	}
 }
 
-EFlex WChildOwner::GetFlex() const
-{
-	if (child_)
-	{
-		return child_->GetFlex();
-	}
-	return EFlex::None;
-}
-
 glm::vec2 WChildOwner::GetDesiredSize(glm::vec2 bounds) const
 {
 	if (child_)

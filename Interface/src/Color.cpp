@@ -6,6 +6,11 @@
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/Texture.h>
 
+WColor::WColor(const UColor& color)
+	: color_{ color }
+{
+}
+
 void WColor::Remove()
 {
 	Base::Remove();
@@ -16,16 +21,6 @@ void WColor::Remove()
 		Renderer.InterfaceRenderer().DeleteProxy(colorProxy_);
 		colorProxy_ = nullptr;
 	}
-}
-
-const UColor& WColor::GetColor() const
-{
-	return color_;
-}
-
-void WColor::SetColor(const UColor& color)
-{
-	SetState([this, color]() { color_ = color; });
 }
 
 void WColor::DisplayInternal(UWidgetDisplaySettings displaySettings)

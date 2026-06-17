@@ -29,7 +29,7 @@ UWidgetDisplaySettings WRow::GetContentDisplaySettings(UWidgetDisplaySettings di
 
 glm::vec2 WRow::GetDesiredSize(glm::vec2 bounds) const
 {
-	glm::vec2 size{};
+	glm::vec2 size{ 0.0f, 0.0f };
 
 	for (auto& child : children_)
 	{
@@ -49,6 +49,16 @@ glm::vec2 WRow::GetDesiredSize(glm::vec2 bounds) const
 	return size;
 }
 
+EExpand WRow::GetExpand() const
+{
+	return EExpand::Horizontal;
+}
+
+EFlex WRow::GetFlex() const
+{
+	return EFlex::All;
+}
+
 float WRow::GetSpacing() const
 {
 	return spacing_;
@@ -56,31 +66,31 @@ float WRow::GetSpacing() const
 
 void WRow::SetSpacing(const float spacing)
 {
-	spacing_ = spacing;
+	SetState([this, spacing]() { spacing_ = spacing; });
 }
 
 void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
-	// Get non-flex width
-	float nonFlexWidth{ 0.0f };
+	// Get non-expand width
+	float nonExpandWidth{ 0.0f };
 	for (auto& child : children_)
 	{
-		// Check if not horizontal flex
-		if (child && !has_flag(child->GetFlex(), EFlex::Horizontal))
+		// Check if not horizontal expand
+		if (child && !has_flag(child->GetExpand(), EExpand::Horizontal))
 		{
-			nonFlexWidth += child->GetContentDisplaySettings(displaySettings).bounds.x;
+			nonExpandWidth += child->GetContentDisplaySettings(displaySettings).bounds.x;
 		}
 	}
 
-	// Get flex width
-	float flexWidth{ displaySettings.bounds.x - nonFlexWidth };
+	// Get expand width
+	float expandWidth{ displaySettings.bounds.x - nonExpandWidth };
 	if (!children_.empty())
 	{
-		flexWidth -= spacing_ * static_cast<float>(children_.size() - 1);
+		expandWidth -= spacing_ * static_cast<float>(children_.size() - 1);
 	}
-	if (const size flexCount{ GetFlexCount() })
+	if (const size expandCount{ GetExpandCount() })
 	{
-		flexWidth /= static_cast<float>(flexCount);
+		expandWidth /= static_cast<float>(expandCount);
 	}
 
 	++displaySettings.layer;
@@ -91,9 +101,9 @@ void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 		{
 			auto settings{ displaySettings };
 
-			if (has_flag(child->GetFlex(), EFlex::Horizontal))
+			if (has_flag(child->GetExpand(), EExpand::Horizontal))
 			{
-				settings.bounds.x = flexWidth;
+				settings.bounds.x = expandWidth;
 			}
 
 			child->Display(settings);
@@ -108,10 +118,10 @@ void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	}
 }
  
-size WRow::GetFlexCount() const
+size WRow::GetExpandCount() const
 {
 	return std::ranges::count_if(children_.begin(), children_.end(),
-		[](const WidgetPtr& child) { return child && has_flag(child->GetFlex(), EFlex::Horizontal); }
+		[](const WidgetPtr& child) { return child && has_flag(child->GetExpand(), EExpand::Horizontal); }
 	);
 }
 

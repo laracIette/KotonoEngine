@@ -2,8 +2,10 @@
 #include <kotono_common/log.h>
 #include "utils.h"
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <kotono_input/Mouse.h>
 #include <kotono_math/math_utils.h>
+#include <kotono_common/bitwise_utils.h>
 
 #if defined (_DEBUG)
 static constinit u32 Count{ 0 };
@@ -11,18 +13,21 @@ static constinit u32 Count{ 0 };
 
 #define KT_LOG_IMPORTANCE_LEVEL_WIDGET ELogImportanceLevel::Medium
 
+static EAxis getUpdatedAxis(const glm::vec2& left, const glm::vec2& right) noexcept;
+
 WWidget::WWidget() 
 	: build_{}
 	, parent_{}
 	, displaySettings_{}
 	, isDisplayed_{ false }
+	, wasMouseHovering_{ false }
 {
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_WIDGET, "Interface", "{0}", ++Count);
 }
 
 WWidget::~WWidget()
 {
-	if (build_ && build_ != Ptr())
+	if (IsNotBuild())
 	{
 		build_->Delete();
 	}
@@ -36,6 +41,15 @@ void WWidget::PostConstruct()
 	CacheBuild();
 }
 
+void WWidget::CacheBuild()
+{
+	build_ = Build();
+	if (IsNotBuild())
+	{
+		build_->SetParent(Ptr());
+	}
+}
+
 WidgetPtr WWidget::Build()
 {
 	return Ptr();
@@ -44,35 +58,43 @@ WidgetPtr WWidget::Build()
 void WWidget::Display(UWidgetDisplaySettings displaySettings)
 {
 	isDisplayed_ = true;
+
 	displaySettings_ = displaySettings;
 
 	// If build_ is not this, call Display
-	if (build_ && build_ != Ptr())
+	if (IsNotBuild())
 	{
 		build_->Display(displaySettings);
 	}
-
 	// If build_ is this, call DisplayInternal
-	if (build_ == Ptr() && IsRenderable())
+	else if (IsRenderable(displaySettings))
 	{
 		displaySettings = GetContentDisplaySettings(displaySettings);
 		DisplayInternal(displaySettings);
 	}
+
+	position_ = displaySettings.position;
+	size_ = displaySettings.bounds;
+	layer_ = displaySettings.layer;
+
+	Mouse.EventMove().AddListener(this, &WWidget::OnMouseMove);
 }
 
 void WWidget::Remove()
 {
 	isDisplayed_ = false;
 
-	if (build_ && build_ != Ptr())
+	if (IsNotBuild())
 	{
 		build_->Remove();
 	}
+
+	Mouse.EventMove().RemoveListener(this, &WWidget::OnMouseMove);
 }
 
 UWidgetDisplaySettings WWidget::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
-	if (build_ && build_ != Ptr())
+	if (IsNotBuild())
 	{
 		return build_->GetContentDisplaySettings(displaySettings);
 	}
@@ -80,9 +102,18 @@ UWidgetDisplaySettings WWidget::GetContentDisplaySettings(UWidgetDisplaySettings
 	return displaySettings;
 }
 
+EExpand WWidget::GetExpand() const
+{
+	if (IsNotBuild())
+	{
+		return build_->GetExpand();
+	}
+	return EExpand::All;
+}
+
 EFlex WWidget::GetFlex() const
 {
-	if (build_ && build_ != Ptr())
+	if (IsNotBuild())
 	{
 		return build_->GetFlex();
 	}
@@ -91,7 +122,7 @@ EFlex WWidget::GetFlex() const
 
 glm::vec2 WWidget::GetDesiredSize(glm::vec2 bounds) const
 {
-	if (build_ && build_ != Ptr())
+	if (IsNotBuild())
 	{
 		return build_->GetDesiredSize(bounds);
 	}
@@ -100,49 +131,27 @@ glm::vec2 WWidget::GetDesiredSize(glm::vec2 bounds) const
 
 WidgetVector WWidget::GetWidgetTree()
 {
-	if (build_ && build_ != Ptr())
+	if (IsNotBuild())
 	{
 		return build_->GetWidgetTree();
 	}
 	return { Ptr() };
 }
 
-glm::vec2 WWidget::Position() const
+bool WWidget::IsRenderable(const UWidgetDisplaySettings& displaySettings) const
 {
-	return displaySettings_.position;
-}
-
-glm::vec2 WWidget::Size() const
-{
-	return displaySettings_.bounds;
-}
-
-i32 WWidget::Layer() const
-{
-	return displaySettings_.layer;
-}
-
-bool WWidget::IsRenderable() const
-{
-	return is_overlapping(Position(), Size(), displaySettings_.scissor.offset, displaySettings_.scissor.extent);
+	return is_overlapping(displaySettings.position, displaySettings.bounds, displaySettings.scissor.offset, displaySettings.scissor.extent);
 }
 
 bool WWidget::IsMouseHovering() const
 {
-	return is_point_in_rect(Mouse.CursorPosition(), Position(), Size());
-}
-
-void WWidget::CacheBuild()
-{
-	build_ = Build();
-	if (build_ && build_ != Ptr())
-	{
-		build_->SetParent(Ptr());
-	}
+	return is_point_in_rect(Mouse.CursorPosition(), GetPosition(), GetSize());
 }
 
 void WWidget::SetState(const StateFunction& function)
 {
+	const auto oldDesiredSize{ GetDesiredSize(glm::vec2{ INFINITY }) };
+
 	const bool wasDisplayed{ isDisplayed_ };
 	if (wasDisplayed)
 	{
@@ -156,18 +165,24 @@ void WWidget::SetState(const StateFunction& function)
 
 	if (wasDisplayed)
 	{
-		auto displaySettings{ displaySettings_ };
-		if (build_ && build_ != Ptr())
+		const auto newDesiredSize{ GetDesiredSize(glm::vec2{ INFINITY }) };
+
+		if (oldDesiredSize == newDesiredSize)
 		{
-			displaySettings = build_->displaySettings_;
+			Display(displaySettings_);
 		}
-		Display(displaySettings);
+		else if (UPtr ancestor{ FindNonFlexAncestor(getUpdatedAxis(oldDesiredSize, newDesiredSize)) })
+		{
+			KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Interface", "ancestor: {0}", ancestor->GetName());
+			ancestor->Remove();
+			ancestor->Display(ancestor->displaySettings_);
+		}
 	}
 }
 
 glm::mat4 WWidget::TranslationMatrix() const
 {
-	return glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(displaySettings_.position + displaySettings_.bounds / 2.0f), 0.0f });
+	return glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(GetPosition() + GetSize() / 2.0f), 0.0f});
 }
 
 glm::mat4 WWidget::RotationMatrix() const
@@ -177,7 +192,7 @@ glm::mat4 WWidget::RotationMatrix() const
 
 glm::mat4 WWidget::ScaleMatrix() const
 {
-	return glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(displaySettings_.bounds), 1.0f });
+	return glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(GetSize()), 1.0f });
 }
 
 glm::mat4 WWidget::ModelMatrix() const
@@ -194,6 +209,41 @@ void WWidget::Refresh()
 	SetState({});
 }
 
+bool WWidget::IsNotBuild() const
+{
+	return build_ && build_ != Ptr();
+}
+
+void WWidget::OnMouseMove(const glm::vec2 delta)
+{
+	if (!IsMouseHovering())
+	{
+		wasMouseHovering_ = false;
+		return;
+	}
+
+	if (!wasMouseHovering_)
+	{
+		wasMouseHovering_ = true;
+		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Interface", "overlapping {0:20} | position: {1:30}, size: {2:30}", GetName(), glm::to_string(GetPosition()), glm::to_string(GetSize()));
+	}
+}
+
+UPtr<WWidget> WWidget::FindNonFlexAncestor(const EAxis axis) const
+{
+	if (!parent_)
+	{
+		return Ptr();
+	}
+
+	if (!has_flag(parent_->GetFlex(), static_cast<EFlex>(axis)))
+	{
+		return parent_;
+	}
+
+	return parent_->FindNonFlexAncestor(axis);
+}
+
 UWidgetTreeLeaf::UWidgetTreeLeaf(const WidgetPtr& widget)
 	: widget_(widget)
 {
@@ -206,6 +256,15 @@ WidgetPtr UWidgetTreeLeaf::Widget() const
 
 void UWidgetTreeLeaf::Link() const
 {
+}
+
+EAxis getUpdatedAxis(const glm::vec2& left, const glm::vec2& right) noexcept
+{
+	return left.x != right.x
+		? left.y != right.y
+			? EAxis::All
+			: EAxis::Horizontal
+		: EAxis::Vertical;
 }
 
 #include "generated/Widget.generated.inl"

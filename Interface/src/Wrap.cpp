@@ -2,8 +2,8 @@
 #include <glm/common.hpp>
 #include <kotono_common/bitwise_utils.h>
 
-WWrap::WWrap()
-	: axis_(EAxis::All)
+WWrap::WWrap(const EAxis axis)
+	: axis_(axis)
 {
 }
 
@@ -26,15 +26,19 @@ UWidgetDisplaySettings WWrap::GetContentDisplaySettings(UWidgetDisplaySettings d
 	return displaySettings;
 }
 
-EFlex WWrap::GetFlex() const
+EExpand WWrap::GetExpand() const
 {
 	switch (axis_)
 	{
-	case EAxis::Horizontal:	return EFlex::Vertical;
-	case EAxis::Vertical:	return EFlex::Horizontal;
-	case EAxis::All:		return EFlex::None;
-	default:				return EFlex::None;
+	case EAxis::Horizontal:	return EExpand::Vertical;
+	case EAxis::Vertical:	return EExpand::Horizontal;
+	default:				return EExpand::None;
 	}
+}
+
+EFlex WWrap::GetFlex() const
+{
+	return EFlex::All;
 }
 
 #include "generated/Wrap.generated.inl"

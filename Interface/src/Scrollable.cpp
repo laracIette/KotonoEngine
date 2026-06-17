@@ -37,7 +37,7 @@ void WScrollable::Scroll(const glm::vec2 delta)
 	}
 
 	SetState([this, delta]() {
-		const auto maxOffset{ glm::min(Size() - GetDesiredSize(Size()), 0.0f) };
+		const auto maxOffset{ glm::min(GetSize() - GetDesiredSize(GetSize()), 0.0f) };
 		offset_ += delta * 10.0f;
 		offset_ = glm::clamp(offset_, maxOffset, { 0.0f, 0.0f });
 		offset_ = {

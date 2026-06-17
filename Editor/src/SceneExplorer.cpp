@@ -9,14 +9,14 @@
 
 WidgetPtr WSceneExplorer::Build()
 {
-	UPtr addButtonBox{ UCreate<WBox>{}() };
+	UPtr addButtonBox{ UCreate<WBox>{ "Scene Explorer Add Button Box" }() };
 	addButtonBox->SetSize({ 80.0f, 40.0f });
 
-	UPtr removeButtonBox{ UCreate<WBox>{}() };
+	UPtr removeButtonBox{ UCreate<WBox>{ "Scene Explorer Remove Button Box" }() };
 	removeButtonBox->SetSize({ 80.0f, 40.0f });
 
 
-	UPtr headerText{ UCreate<WText>{}() };
+	UPtr headerText{ UCreate<WText>{ "Scene Explorer Text" }() };
 	headerText->SetText("Scene Explorer");
 	headerText->SetFontSize({ 20.0f, 24.0f });
 	headerText->SetSpacing(-5.0f);
@@ -25,8 +25,7 @@ WidgetPtr WSceneExplorer::Build()
 	UPtr itemListBg{ UCreate<WColor>{}() };
 	itemListBg->SetColor(Colors::Black.WithAlpha(0.2f));
 
-	itemList_ = UCreate<WList>{}();
-	itemList_->SetName("Scene Explorer Item List");
+	itemList_ = UCreate<WList>{ "Scene Explorer Item List" }();
 	PopulateItemList();
 
 	UPtr itemListPadding{ UCreate<WPadding>{}() };
@@ -54,7 +53,7 @@ WidgetPtr WSceneExplorer::Build()
 					new UChildOwnerTree(addButtonBox, 
 						new UWidgetTreeLeaf(UCreate<WSceneExplorerAddButton>{}())
 					),
-					new UWidgetTreeLeaf(UCreate<WSpacer>{}(EFlex::Horizontal)),
+					new UWidgetTreeLeaf(UCreate<WSpacer>{}(EAxis::Horizontal)),
 					new UChildOwnerTree(removeButtonBox, 
 						new UWidgetTreeLeaf(UCreate<WSceneExplorerRemoveButton>{}())
 					),

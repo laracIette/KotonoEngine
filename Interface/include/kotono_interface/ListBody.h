@@ -10,6 +10,8 @@ public:
 
 	glm::vec2 GetDesiredSize(glm::vec2 bounds) const override;
 
+	EFlex GetFlex() const override;
+
 public:
 	float GetSpacing() const;
 

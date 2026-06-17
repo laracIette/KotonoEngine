@@ -2,6 +2,7 @@
 #include "generated/Widget.generated.h"
 #include <kotono_object/Object.h>
 #include "Axis.h"
+#include "Expand.h"
 #include "Flex.h"
 #include <functional>
 #include <glm/fwd.hpp>
@@ -24,6 +25,13 @@ using WidgetPtr = UPtr<WWidget>;
 using WidgetVector = std::vector<WidgetPtr>;
 using WidgetPool = UPool<WidgetPtr>;
 
+#define StateProperty(Type, Name, PropertyName) private:												\
+	Type Name;																							\
+public:																									\
+	const Type& Get##PropertyName() const noexcept { return Name; }										\
+	void Set##PropertyName(const Type& value) noexcept { SetState([this, value]() { Name = value; }); }	\
+private:
+
 /// Base class of all widgets
 class WWidget : public KObject
 {
@@ -38,6 +46,8 @@ public:
 
 	void PostConstruct() override;
 
+	void CacheBuild();
+
 	/// Create the widget tree to display
 	virtual WidgetPtr Build(); // todo: make protected
 
@@ -47,23 +57,18 @@ public:
 	/// Stop displaying the widget
 	virtual void Remove();
 
-	virtual UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const;
+	virtual UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const; // todo: protected
 
+	virtual EExpand GetExpand() const;
 	virtual EFlex GetFlex() const;
-	virtual glm::vec2 GetDesiredSize(glm::vec2 bounds) const;
+	virtual glm::vec2 GetDesiredSize(glm::vec2 bounds) const; // todo: make arg const&, protected
 
 	virtual WidgetVector GetWidgetTree();
 
-	glm::vec2 Position() const;
-	glm::vec2 Size() const;
-	i32 Layer() const;
-
-	bool IsRenderable() const;
+	bool IsRenderable(const UWidgetDisplaySettings& displaySettings) const;
 	bool IsMouseHovering() const;
 
 protected:
-	void CacheBuild();
-
 	void SetState(const StateFunction& function);
 
 	glm::mat4 TranslationMatrix() const;
@@ -76,9 +81,19 @@ protected:
 	void Refresh();
 
 private:
+	bool IsNotBuild() const;
+
+	void OnMouseMove(const glm::vec2 delta);
+	UPtr<WWidget> FindNonFlexAncestor(const EAxis axis) const;
+
+private:
 	WritableProperty(WidgetPtr, parent_, Parent);
 	ReadonlyProperty(UWidgetDisplaySettings, displaySettings_, DisplaySettings);
 	ReadonlyProperty(bool, isDisplayed_, IsDisplayed);
+	ReadonlyProperty(glm::vec2, position_, Position);
+	ReadonlyProperty(glm::vec2, size_, Size);
+	ReadonlyProperty(i32, layer_, Layer);
+	bool wasMouseHovering_;
 	WidgetPtr build_;
 };
 

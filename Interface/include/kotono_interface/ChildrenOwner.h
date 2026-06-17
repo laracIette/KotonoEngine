@@ -10,8 +10,6 @@ public:
 
 	void Remove() override;
 
-	EFlex GetFlex() const override;
-
 	WidgetVector GetWidgetTree() override;
 
 public:

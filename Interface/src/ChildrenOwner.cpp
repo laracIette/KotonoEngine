@@ -27,21 +27,6 @@ void WChildrenOwner::Remove()
 	}
 }
 
-EFlex WChildrenOwner::GetFlex() const
-{
-	EFlex result{ EFlex::None };
-
-	for (auto& child : children_)
-	{
-		if (child)
-		{
-			result = bitwise_or(result, child->GetFlex());
-		}
-	}
-
-	return result;
-}
-
 WidgetVector WChildrenOwner::GetWidgetTree()
 {
 	WidgetVector result{ Base::GetWidgetTree() };

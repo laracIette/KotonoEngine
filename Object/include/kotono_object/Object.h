@@ -129,10 +129,14 @@ struct UCreate final
 {
 public:
 #if defined (_DEBUG)
-	constexpr UCreate(const std::source_location& loc = std::source_location::current()) 
-		: loc_{ loc } 
-	{
-	}
+	constexpr UCreate(const std::string& name = "", const std::source_location& loc = std::source_location::current())
+		: name_{ name }
+		, loc_{ loc }
+	{}
+#else
+	constexpr UCreate(const std::string& name = "")
+		: name_{ name }
+	{}
 #endif
 
 	template <typename ...Args>
@@ -140,6 +144,11 @@ public:
 	{
 		T* object{ new T(std::forward<Args>(args)...) };
 		object->PostConstruct();
+
+		if (!name_.empty())
+		{
+			object->SetName(name_);
+		}
 
 #	if defined (_DEBUG)
 		object->sourceFile = loc_.file_name();
@@ -151,6 +160,8 @@ public:
 	}
 
 private:
+	const std::string name_;
+
 #if defined (_DEBUG)
 	const std::source_location loc_;
 #endif
