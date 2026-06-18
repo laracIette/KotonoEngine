@@ -1,6 +1,6 @@
 #include "SceneCuller.h"
 #include "SceneProxy.h"
-#include <kotono_common/bitwise_utils.h>
+#include <kotono_common/enum_utils.h>
 #include <kotono_common/log.h>
 #include <kotono_common/Pool.h>
 

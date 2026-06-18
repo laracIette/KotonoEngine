@@ -1,7 +1,7 @@
 #include "ChildrenOwner.h"
 #include <algorithm>
 #include <ranges>
-#include <kotono_common/bitwise_utils.h>		 
+#include <kotono_common/enum_utils.h>		 
 
 WChildrenOwner::~WChildrenOwner()
 {

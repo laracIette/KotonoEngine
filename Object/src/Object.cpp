@@ -10,9 +10,8 @@ std::unordered_set<UPtr<KObject>> KObject::debugRegistry_{};
 #endif 
 
 KObject::KObject() 
-    : ptrOwner_(new UPtrOwner())
-    , name_(guid_)
-    , isConstructed_(false)
+    : ptrOwner_{ new UPtrOwner{} }
+    , name_{ guid_ }
 {
     ptrOwner_->Set(this);
 
@@ -31,7 +30,7 @@ KObject::~KObject()
         }
     }
 
-#if defined(_DEBUG)
+#if defined (_DEBUG)
     debugRegistry_.erase(Ptr());
 #endif
 
@@ -40,32 +39,13 @@ KObject::~KObject()
 
 void KObject::PostConstruct()
 {
-    if (!isConstructed_)
-    {
-        isConstructed_ = true;
-        type_ = TypeName();
-        SetName(std::format("{0}_{1}", TypeName(), Guid().ToString()));
-    }
-}
-
-const UGuid& KObject::Guid() const
-{
-    return guid_;
+    type_ = TypeName();
+    SetName(std::format("{0}_{1}", TypeName(), GetGuid().ToString()));
 }
 
 const std::type_info& KObject::Type() const
 {
     return typeid(*this);
-}
-
-bool KObject::IsConstructed() const
-{
-    return isConstructed_;
-}
-
-UPath KObject::Path() const
-{
-    return "${PROJECT_DIRECTORY}/assets/objects/" + guid_.ToString() + ".kobject";
 }
 
 std::string KObject::TypeName() const
@@ -74,10 +54,15 @@ std::string KObject::TypeName() const
     return std::string(name.substr(6));
 }
 
+UPath KObject::InstancePath() const
+{
+    return "${PROJECT_DIRECTORY}/assets/objects/" + GetGuid().ToString() + ".kobject";
+}
+
 nlohmann::json KObject::ReadJson() const
 {
     nlohmann::json json{};
-    USerializer::Deserialize(json, Path());
+    USerializer::Deserialize(json, InstancePath());
     return json;
 }
 
@@ -95,7 +80,7 @@ void KObject::Delete()
 
 void KObject::Serialize() const
 {
-    USerializer::Serialize(WriteJson(), Path());
+    USerializer::Serialize(WriteJson(), InstancePath());
 }
 
 void KObject::Deserialize()

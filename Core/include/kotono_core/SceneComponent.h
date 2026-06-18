@@ -92,7 +92,7 @@ private:
 	SERIALIZE EMobility mobility_;
 	SERIALIZE size componentIndex_;
 	SERIALIZE size childrenIndex_;
-	UEvent<> eventTransformUpdated_; // todo: maybe replace by eventPositionChanged...
+	UEvent<> eventTransformUpdated_;
 	KtCached<glm::mat4> modelMatrix_;
 };
 

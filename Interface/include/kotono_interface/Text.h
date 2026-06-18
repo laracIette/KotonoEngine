@@ -15,7 +15,7 @@ public:
 	float GetSpacing() const;
 	bool GetShouldWrap() const;
 
-	void SetText(const std::string& text); // TODO: set state properties?
+	void SetText(const std::string& text);
 	void SetFontSize(const glm::vec2& fontSize);
 	void SetSpacing(const float spacing);
 	void SetShouldWrap(const bool shouldWrap);

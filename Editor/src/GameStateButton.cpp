@@ -1,5 +1,5 @@
 #include "GameStateButton.h"
-#include "GameManager.h"
+#include <kotono_core/Game.h>
 #include <kotono_interface/widgets.h>
 #include <kotono_input/Keyboard.h>
 
@@ -14,7 +14,7 @@ WidgetPtr WGameStateButton::Build()
     playPauseBox->SetSize({ 64.0f, 64.0f });
 
     playPauseBg_ = UCreate<WColor>{}();
-    playPauseBg_->SetColor(GameManager.IsPlaying()
+    playPauseBg_->SetColor(Game.IsPlaying()
         ? Colors::White.WithValue(0.5f)
         : Colors::Green
     );
@@ -27,16 +27,16 @@ WidgetPtr WGameStateButton::Build()
     stopBox->SetSize({ 64.0f, 64.0f });
 
     stopBg_ = UCreate<WColor>{}();
-    stopBg_->SetColor(GameManager.IsStopped()
+    stopBg_->SetColor(Game.IsStopped()
         ? Colors::Red.WithAlpha(0.1f)
         : Colors::Red
     );
 
     UPtr stopButton{ UCreate<WButton>{}() };
     stopButton->SetOnPressed([]() {
-        if (!GameManager.IsStopped())
+        if (!Game.IsStopped())
         {
-            GameManager.Stop();
+            Game.Stop();
         }
     });
 
@@ -63,7 +63,7 @@ void WGameStateButton::Display(UWidgetDisplaySettings displaySettings)
     Base::Display(displaySettings);
 
     Keyboard.EventKey(EKey::Space, EInputState::Pressed).AddListener(this, &WGameStateButton::OnKeyboardSpaceKeyPressed);
-    GameManager.EventStateChanged().AddListener(this, &Self::OnGameStateChanged);
+    Game.EventStateChanged().AddListener(this, &Self::OnGameStateChanged);
 }
 
 void WGameStateButton::Remove()
@@ -71,7 +71,7 @@ void WGameStateButton::Remove()
     Base::Remove();
 
     Keyboard.EventKey(EKey::Space, EInputState::Pressed).RemoveListener(this, &WGameStateButton::OnKeyboardSpaceKeyPressed);
-    GameManager.EventStateChanged().RemoveListener(this, &Self::OnGameStateChanged);
+    Game.EventStateChanged().RemoveListener(this, &Self::OnGameStateChanged);
 }
 
 void WGameStateButton::OnKeyboardSpaceKeyPressed() const
@@ -81,11 +81,11 @@ void WGameStateButton::OnKeyboardSpaceKeyPressed() const
 
 void WGameStateButton::OnGameStateChanged(const EGameState gameState) const
 {
-    playPauseBg_->SetColor(GameManager.IsPlaying()
+    playPauseBg_->SetColor(Game.IsPlaying()
         ? Colors::White.WithValue(0.5f)
         : Colors::Green
     );
-    stopBg_->SetColor(GameManager.IsStopped()
+    stopBg_->SetColor(Game.IsStopped()
         ? Colors::Red.WithAlpha(0.1f)
         : Colors::Red
     );
@@ -93,13 +93,13 @@ void WGameStateButton::OnGameStateChanged(const EGameState gameState) const
 
 void SwitchPlayPause()
 {
-    if (GameManager.IsPlaying())
+    if (Game.IsPlaying())
     {
-        GameManager.Stop();
+        Game.Stop();
     }
     else
     {
-        GameManager.Play();
+        Game.Play();
     }
 }
 

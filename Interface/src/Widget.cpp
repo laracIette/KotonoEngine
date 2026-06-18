@@ -5,7 +5,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <kotono_input/Mouse.h>
 #include <kotono_math/math_utils.h>
-#include <kotono_common/bitwise_utils.h>
+#include <kotono_common/enum_utils.h>
 
 #if defined (_DEBUG)
 static constinit u32 Count{ 0 };

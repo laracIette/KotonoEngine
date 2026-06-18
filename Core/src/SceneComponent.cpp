@@ -1,5 +1,6 @@
 #include "SceneComponent.h"
 #include "SceneObject.h"
+#include "Game.h"
 #include <kotono_common/log.h>
 #include <kotono_platform/glm_utils.h>
 #include <stdexcept>
@@ -60,7 +61,7 @@ EMobility KSceneComponent::GetMobility() const
 
 bool KSceneComponent::CanSetTransform() const
 {
-    return mobility_ == EMobility::Dynamic || !IsConstructed();
+    return mobility_ == EMobility::Dynamic || Game.GetState() == EGameState::Stopped;
 }
 
 UEvent<>& KSceneComponent::EventTransformUpdated()

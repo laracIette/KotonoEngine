@@ -1,6 +1,6 @@
 #include "Row.h"
 #include <algorithm>
-#include <kotono_common/bitwise_utils.h>
+#include <kotono_common/enum_utils.h>
 #include <glm/common.hpp>
 #include <ranges>
 

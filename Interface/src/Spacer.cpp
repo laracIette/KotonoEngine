@@ -1,5 +1,5 @@
 #include "Spacer.h"
-#include <kotono_common/bitwise_utils.h>
+#include <kotono_common/enum_utils.h>
 
 WSpacer::WSpacer(const EAxis axis)
 	: axis_(axis)

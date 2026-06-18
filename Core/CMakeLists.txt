@@ -19,6 +19,7 @@ set(KCORE_HEADERS
     "include/kotono_core/CoordinateSpace.h"
     "include/kotono_core/Core.h"
     "include/kotono_core/Game.h"
+    "include/kotono_core/GameState.h"
     "include/kotono_core/Interface.h"
     "include/kotono_core/InterfaceBoxComponent.h"
     "include/kotono_core/InterfaceButtonComponent.h"

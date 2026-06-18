@@ -8,7 +8,6 @@
 #include <kotono_common/Asset.h>
 #include <kotono_common/Event.h>
 #include <kotono_common/log.h>
-#include <kotono_common/Property.h>
 #include <kotono_io/serialize_base.h>
 #include <nlohmann/json_fwd.hpp>
 #include <source_location>
@@ -58,11 +57,9 @@ public:
 	virtual void PostConstruct();
 
 public:
-	const UGuid& Guid() const;
 	const std::type_info& Type() const;
-	UPath Path() const; // TODO: rename to asset path?
-	bool IsConstructed() const;
 	std::string TypeName() const;
+	UPath InstancePath() const;
 
 	/// Read json from disk
 	nlohmann::json ReadJson() const;
@@ -105,10 +102,9 @@ protected:
 	std::vector<VoidCallback> unregisterDelegates_;
 
 private:
-	SERIALIZE UGuid guid_;
 	SERIALIZE std::string type_;
+	SERIALIZE ReadonlyProperty(UGuid, guid_, Guid);
 	SERIALIZE WritableProperty(std::string, name_, Name);
-	bool isConstructed_;
 
 #if defined(_DEBUG)
 public:
@@ -174,7 +170,7 @@ struct USerialize<UPtr<T>> final
 	{
 		if (v)
 		{
-			USerialize<UGuid>{}(json, v->Guid());
+			USerialize<UGuid>{}(json, v->GetGuid());
 			v->Serialize();
 		}
 	}

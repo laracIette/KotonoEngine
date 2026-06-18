@@ -1,6 +1,6 @@
 #include "Wrap.h"
 #include <glm/common.hpp>
-#include <kotono_common/bitwise_utils.h>
+#include <kotono_common/enum_utils.h>
 
 WWrap::WWrap(const EAxis axis)
 	: axis_(axis)

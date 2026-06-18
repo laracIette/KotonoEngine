@@ -18,10 +18,10 @@ set(KCOMMON_HEADERS
     "include/kotono_common/Asset.h"
     "include/kotono_common/AssetManager.h"
     "include/kotono_common/Average.h"
-    "include/kotono_common/bitwise_utils.h"
     "include/kotono_common/Buildable.h"
     "include/kotono_common/Cached.h"
     "include/kotono_common/Delegate.h"
+    "include/kotono_common/enum_utils.h"
     "include/kotono_common/Event.h"
     "include/kotono_common/hash_utils.h"
     "include/kotono_common/log.h"
@@ -29,7 +29,6 @@ set(KCOMMON_HEADERS
     "include/kotono_common/Path.h"
     "include/kotono_common/PathManager.h"
     "include/kotono_common/Pool.h"
-    "include/kotono_common/Property.h"
     "include/kotono_common/types.h"
 )
 set(KCOMMON_SOURCES

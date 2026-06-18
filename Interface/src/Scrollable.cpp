@@ -1,6 +1,6 @@
 #include "Scrollable.h"
 #include "widgets.h"
-#include <kotono_common/bitwise_utils.h>
+#include <kotono_common/enum_utils.h>
 #include <kotono_input/Mouse.h>
 #include <glm/common.hpp>
 

@@ -1,5 +1,4 @@
 #include "SceneExplorer.h"
-#include "GameManager.h"
 #include "SceneExplorerAddButton.h"
 #include "SceneExplorerItem.h"
 #include "SceneExplorerRemoveButton.h"
@@ -79,7 +78,7 @@ void WSceneExplorer::Display(UWidgetDisplaySettings displaySettings)
 {
 	Base::Display(displaySettings);
 
-	GameManager.EventStateChanged().AddListener(this, &Self::OnGameStateChanged);
+	Game.EventStateChanged().AddListener(this, &Self::OnGameStateChanged);
 	
 	if (UPtr scene{ Game.GetOpenedScene() })
 	{
@@ -91,7 +90,7 @@ void WSceneExplorer::Remove()
 {
 	Base::Remove();
 
-	GameManager.EventStateChanged().RemoveListener(this, &Self::OnGameStateChanged);
+	Game.EventStateChanged().RemoveListener(this, &Self::OnGameStateChanged);
 	
 	if (UPtr scene{ Game.GetOpenedScene() })
 	{

@@ -2,7 +2,7 @@
 #include "InterfaceObject.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <kotono_common/bitwise_utils.h>
+#include <kotono_common/enum_utils.h>
 #include <kotono_common/log.h>
 #include <kotono_input/Mouse.h>
 #include <kotono_platform/WindowViewport.h>
