@@ -13,7 +13,7 @@ UWidgetDisplaySettings WPadding::GetContentDisplaySettings(UWidgetDisplaySetting
 	return displaySettings;
 }
 
-glm::vec2 WPadding::GetDesiredSize(glm::vec2 bounds) const
+glm::vec2 WPadding::GetDesiredSize(const glm::vec2& bounds) const
 {
 	if (child_)
 	{
@@ -24,16 +24,6 @@ glm::vec2 WPadding::GetDesiredSize(glm::vec2 bounds) const
 	}
 
 	return { 0.0f, 0.0f };
-}
-
-const UPadding& WPadding::GetPadding() const
-{
-	return padding_;
-}
-
-void WPadding::SetPadding(const UPadding& padding)
-{
-	padding_ = padding;
 }
 
 #include "generated/Padding.generated.inl"

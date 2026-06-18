@@ -4,36 +4,33 @@
 
 WidgetPtr WList::Build()
 {
-	listBody_ = UCreate<WListBody>{}();
-	listBody_->SetSpacing(spacing_);
+	body_ = UCreate<WListBody>{}();
 
 	UPtr scrollable{ UCreate<WScrollable>{}() };
 	scrollable->SetAxis(EAxis::Vertical);
-	scrollable->SetChild(listBody_);
+	scrollable->SetChild(body_);
 
 	return scrollable;
 }
 
 float WList::GetSpacing() const
 {
-	return spacing_;
+	return body_->GetSpacing();
 }
 
 const WidgetPool& WList::GetChildren() const
 {
-	return children_;
+	return body_->GetChildren();
 }
 
 void WList::SetSpacing(const float spacing)
 {
-	spacing_ = spacing;
-	listBody_->SetSpacing(spacing);
+	body_->SetSpacing(spacing);
 }
 
 void WList::SetChildren(const WidgetPool& children)
 {
-	children_ = children;
-	listBody_->SetChildren(children);
+	body_->SetChildren(children);
 }
 
 #include "generated/List.generated.inl"

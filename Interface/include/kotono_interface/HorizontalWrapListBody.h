@@ -7,8 +7,7 @@ class WHorizontalWrapListBody final : public WWidget
 
 public:
 	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
-
-	glm::vec2 GetDesiredSize(glm::vec2 bounds) const override;
+	glm::vec2 GetDesiredSize(const glm::vec2& bounds) const override;
 
 	EFlex GetFlex() const override;
 
@@ -20,7 +19,7 @@ private:
 	std::vector<glm::vec2> GetRowDesiredSizes(const glm::vec2& bounds) const;
 
 private:
-	WritableProperty(WidgetPool, children_, Children);
-	WritableProperty(float, itemSpacing_, ItemSpacing);
-	WritableProperty(float, rowSpacing_, RowSpacing);
+	StateProperty(WidgetPool, children_, Children);
+	StateProperty(float, itemSpacing_, ItemSpacing);
+	StateProperty(float, rowSpacing_, RowSpacing);
 };

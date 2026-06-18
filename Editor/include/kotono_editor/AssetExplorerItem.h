@@ -12,9 +12,8 @@ public:
 public:
 	WAssetExplorerItem(const UPath& path, const OnClickedFunc& onDoubleClicked);
 
+protected:
 	WidgetPtr Build() override;
-
-	void Display(UWidgetDisplaySettings displaySettings) override;
 
 protected:
 	const UPath path_;

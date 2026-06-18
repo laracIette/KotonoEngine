@@ -4,36 +4,43 @@
 
 WidgetPtr WHorizontalWrapList::Build()
 {
-	UPtr horizontalWrapListBody{ UCreate<WHorizontalWrapListBody>{}() };
-	horizontalWrapListBody->SetItemSpacing(itemSpacing_);
-	horizontalWrapListBody->SetRowSpacing(rowSpacing_);
-	horizontalWrapListBody->SetChildren(children_);
+	body_ = UCreate<WHorizontalWrapListBody>{}();
 
 	UPtr scrollable{ UCreate<WScrollable>{}() };
 	scrollable->SetAxis(EAxis::Vertical);
-	scrollable->SetChild(horizontalWrapListBody);
+	scrollable->SetChild(body_);
 
 	return scrollable;
 }
 
 float WHorizontalWrapList::GetItemSpacing() const
 {
-	return itemSpacing_;
+	return body_->GetItemSpacing();
 }
 
 float WHorizontalWrapList::GetRowSpacing() const
 {
-	return rowSpacing_;
+	return body_->GetRowSpacing();
+}
+
+const WidgetPool& WHorizontalWrapList::GetChildren() const
+{
+	return body_->GetChildren();
 }
 
 void WHorizontalWrapList::SetItemSpacing(const float itemSpacing)
 {
-	itemSpacing_ = itemSpacing;
+	body_->SetItemSpacing(itemSpacing);
 }
 
 void WHorizontalWrapList::SetRowSpacing(const float rowSpacing)
 {
-	rowSpacing_ = rowSpacing;
+	body_->SetRowSpacing(rowSpacing);
+}
+
+void WHorizontalWrapList::SetChildren(const WidgetPool& children)
+{
+	body_->SetChildren(children);
 }
 
 #include "generated/HorizontalWrapList.generated.inl"

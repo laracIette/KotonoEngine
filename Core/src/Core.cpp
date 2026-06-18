@@ -4,6 +4,7 @@
 #include "TimeManager.h"
 #include <kotono_audio/AudioManager.h>
 #include <kotono_common/AssetManager.h>
+#include <kotono_common/log.h>
 #include <kotono_graphics/Model.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/Shader.h>
@@ -11,8 +12,6 @@
 #include <kotono_graphics/Texture.h>
 #include <kotono_input/Keyboard.h>
 #include <kotono_input/Mouse.h>
-#include <kotono_object/Object.h>
-#include <kotono_object/ObjectManager.h>
 #include <kotono_platform/Context.h>
 #include <kotono_platform/Window.h>
 #include <kotono_timing/TimerManager.h>
@@ -28,7 +27,6 @@ void SCore::Init()
     Keyboard.Init();
     Mouse.Init();
     TimeManager.Init();
-    ObjectManager.Init();
     Game.Init();
 
     auto& logUPSTimer{ TimerManager.GetTimer("log ups timer") };
@@ -49,7 +47,6 @@ void SCore::Update()
 void SCore::Cleanup()
 {
     Game.Cleanup();
-    ObjectManager.Cleanup(); // todo: remove that prob
     AudioManager.Cleanup();
     UAssetManager<KtTexture>::Cleanup();
     UAssetManager<KtShader>::Cleanup();

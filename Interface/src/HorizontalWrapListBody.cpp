@@ -25,7 +25,7 @@ UWidgetDisplaySettings WHorizontalWrapListBody::GetContentDisplaySettings(UWidge
 	return displaySettings;
 }
 
-glm::vec2 WHorizontalWrapListBody::GetDesiredSize(glm::vec2 bounds) const
+glm::vec2 WHorizontalWrapListBody::GetDesiredSize(const glm::vec2& bounds) const
 {
 	const auto rowSizes{ GetRowDesiredSizes(bounds) };
 	glm::vec2 size{ 0.0f, 0.0f };

@@ -8,12 +8,14 @@ class WChildrenOwner : public WWidget
 public:
 	~WChildrenOwner() override;
 
+public:
 	void Remove() override;
 
 	WidgetVector GetWidgetTree() override;
 
 public:
 	const WidgetPool& GetChildren() const;
+
 	void SetChildren(const WidgetPool& widgets);
 
 protected:

@@ -29,7 +29,7 @@ UWidgetDisplaySettings WStack::GetContentDisplaySettings(UWidgetDisplaySettings 
 	return displaySettings;
 }
 
-glm::vec2 WStack::GetDesiredSize(glm::vec2 bounds) const
+glm::vec2 WStack::GetDesiredSize(const glm::vec2& bounds) const
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 

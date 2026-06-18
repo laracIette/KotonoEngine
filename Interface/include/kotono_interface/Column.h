@@ -8,8 +8,7 @@ class WColumn final : public WChildrenOwner
 
 public:
 	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
-
-	glm::vec2 GetDesiredSize(glm::vec2 bounds) const override;
+	glm::vec2 GetDesiredSize(const glm::vec2& bounds) const override;
 
 	EExpand GetExpand() const override;
 	EFlex GetFlex() const override;
@@ -21,6 +20,6 @@ private:
 	size GetExpandCount() const;
 
 private:
-	WritableProperty(float, spacing_, Spacing);
+	StateProperty(float, spacing_, Spacing);
 };
 

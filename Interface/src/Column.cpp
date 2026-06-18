@@ -26,7 +26,7 @@ UWidgetDisplaySettings WColumn::GetContentDisplaySettings(UWidgetDisplaySettings
 	return displaySettings;
 }
 
-glm::vec2 WColumn::GetDesiredSize(glm::vec2 bounds) const
+glm::vec2 WColumn::GetDesiredSize(const glm::vec2& bounds) const
 {
 	glm::vec2 size{};
 

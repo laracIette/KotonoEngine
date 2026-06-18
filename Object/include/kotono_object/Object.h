@@ -60,7 +60,7 @@ public:
 public:
 	const UGuid& Guid() const;
 	const std::type_info& Type() const;
-	UPath Path() const;
+	UPath Path() const; // TODO: rename to asset path?
 	bool IsConstructed() const;
 	std::string TypeName() const;
 

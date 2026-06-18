@@ -1,13 +1,12 @@
 #pragma once
 #include "generated/Text.generated.h"
 #include "Widget.h"
-class WChildrenOwner;
 /// Display a text
 class WText final : public WWidget
 {
 	GENERATED_WTEXT()
 
-public:
+protected:
 	WidgetPtr Build() override;
 
 public:
@@ -16,7 +15,7 @@ public:
 	float GetSpacing() const;
 	bool GetShouldWrap() const;
 
-	void SetText(const std::string& text);
+	void SetText(const std::string& text); // TODO: set state properties?
 	void SetFontSize(const glm::vec2& fontSize);
 	void SetSpacing(const float spacing);
 	void SetShouldWrap(const bool shouldWrap);
@@ -26,7 +25,7 @@ private:
 	WidgetPool GetCharacters() const;
 
 private:
-	UPtr<WChildrenOwner> textBody_;
+	UPtr<WWidget> textBody_;
 
 	std::string text_;
 	glm::vec2 fontSize_;

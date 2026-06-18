@@ -9,14 +9,10 @@ class WCenter final : public WChildOwner
 public:
 	WCenter(const EAxis axis = EAxis::All);
 
+public:
 	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
-public:
-	EAxis GetAxis() const;
-
-	void SetAxis(const EAxis axis);
-
 private:
-	EAxis axis_;
+	StateProperty(EAxis, axis_, Axis);
 };
 

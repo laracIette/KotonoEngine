@@ -9,6 +9,7 @@ class WSpacer final : public WWidget
 public:
 	WSpacer(const EAxis axis);
 
+public:
 	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 	EExpand GetExpand() const override;

@@ -18,7 +18,7 @@ void WChildOwner::Remove()
 	}
 }
 
-glm::vec2 WChildOwner::GetDesiredSize(glm::vec2 bounds) const
+glm::vec2 WChildOwner::GetDesiredSize(const glm::vec2& bounds) const
 {
 	if (child_)
 	{

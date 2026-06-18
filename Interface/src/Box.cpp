@@ -7,6 +7,11 @@ UWidgetDisplaySettings WBox::GetContentDisplaySettings(UWidgetDisplaySettings di
 	return displaySettings;
 }
 
+glm::vec2 WBox::GetDesiredSize(const glm::vec2& bounds) const
+{
+	return size_;
+}
+
 EExpand WBox::GetExpand() const
 {
 	return EExpand::None;
@@ -15,21 +20,6 @@ EExpand WBox::GetExpand() const
 EFlex WBox::GetFlex() const
 {
 	return EFlex::None;
-}
-
-glm::vec2 WBox::GetDesiredSize(glm::vec2 bounds) const
-{
-	return size_;
-}
-
-const glm::vec2& WBox::GetSize() const
-{
-	return size_;
-}
-
-void WBox::SetSize(const glm::vec2& size)
-{
-	size_ = size;
 }
 
 #include "generated/Box.generated.inl"

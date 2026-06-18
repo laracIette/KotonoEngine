@@ -9,6 +9,7 @@ class WVisualizerWindowItem : public WWidget
 public:
 	WVisualizerWindowItem(const EVisualizationField field, const std::string& name);
 
+protected:
 	WidgetPtr Build() override;
 
 private:

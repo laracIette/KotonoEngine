@@ -10,8 +10,10 @@ class WSceneExplorerItem : public WWidget
 public:
 	WSceneExplorerItem(const UPtr<TSceneObject>& sceneObject);
 	
+protected:
 	WidgetPtr Build() override;
 
+public:
 	void Display(UWidgetDisplaySettings displaySettings) override;
 	void Remove() override;
 

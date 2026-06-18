@@ -70,10 +70,15 @@ void WText::SetShouldWrap(const bool shouldWrap)
 
 void WText::UpdateTextBody() const
 {
-	if (textBody_)
+	if (UPtr row{ TryCast<WRow>(textBody_) })
 	{
-		const UAutoDelete itemListChildren{ textBody_->GetChildren() };
-		textBody_->SetChildren(GetCharacters());
+		const UAutoDelete itemListChildren{ row->GetChildren() };
+		row->SetChildren(GetCharacters());
+	}
+	else if (UPtr horizontalWrapList{ TryCast<WHorizontalWrapList>(textBody_) })
+	{
+		const UAutoDelete itemListChildren{ horizontalWrapList->GetChildren() };
+		horizontalWrapList->SetChildren(GetCharacters());
 	}
 }
 

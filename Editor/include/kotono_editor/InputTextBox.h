@@ -13,8 +13,10 @@ class WInputTextBox : public WWidget
 public:
 	WInputTextBox();
 
+protected:
 	WidgetPtr Build() override;
 
+public:
 	void Display(UWidgetDisplaySettings displaySettings) override;
 	void Remove() override;
 

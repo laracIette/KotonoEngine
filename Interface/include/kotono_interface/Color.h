@@ -11,6 +11,7 @@ class WColor final : public WWidget
 public:
 	WColor(const UColor& color = Colors::White);
 
+public:
 	void Remove() override;
 
 protected:

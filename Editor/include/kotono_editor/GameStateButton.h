@@ -7,9 +7,10 @@ class WGameStateButton : public WWidget
 {
 	GENERATED_WGAMESTATEBUTTON()
 
-public:
+protected:
 	WidgetPtr Build() override;
 
+public:
 	void Display(UWidgetDisplaySettings displaySettings) override;
 	void Remove() override;
 

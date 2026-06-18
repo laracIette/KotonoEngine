@@ -8,9 +8,10 @@ class WChildOwner : public WWidget
 public:
 	~WChildOwner() override;
 
+public:
 	void Remove() override;
 
-	glm::vec2 GetDesiredSize(glm::vec2 bounds) const override;
+	glm::vec2 GetDesiredSize(const glm::vec2& bounds) const override;
 
 	WidgetVector GetWidgetTree() override;
 

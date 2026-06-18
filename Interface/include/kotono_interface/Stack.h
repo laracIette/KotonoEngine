@@ -9,8 +9,7 @@ class WStack final : public WChildrenOwner
 
 public:
 	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
-	
-	glm::vec2 GetDesiredSize(glm::vec2 bounds) const override;
+	glm::vec2 GetDesiredSize(const glm::vec2& bounds) const override;
 
 protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;

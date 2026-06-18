@@ -8,13 +8,13 @@ class WConstraint final : public WChildOwner
 
 public:
 	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
+	glm::vec2 GetDesiredSize(const glm::vec2& bounds) const override;
 
 	EExpand GetExpand() const override;
 	EFlex GetFlex() const override;
-	glm::vec2 GetDesiredSize(glm::vec2 bounds) const override;
 
 private:
-	WritableProperty(EAxis, axis_, Axis);
-	WritableProperty(float, size_, Size);
+	StateProperty(EAxis, axis_, Axis);
+	StateProperty(float, size_, Size);
 };
 

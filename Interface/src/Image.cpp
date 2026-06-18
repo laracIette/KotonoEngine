@@ -25,16 +25,6 @@ void WImage::Remove()
 	}
 }
 
-const UPath& WImage::GetPath() const
-{
-	return path_;
-}
-
-void WImage::SetPath(const UPath& path)
-{
-	path_ = path;
-}
-
 void WImage::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	if (!imageProxy_)

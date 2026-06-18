@@ -19,7 +19,7 @@ private:
 public:
 	void DrawFrame();
 
-	u32 GetGameThreadFrame() const; // todo: make private
+	u32 GetGameThreadFrame() const; // todo: make private, staging interface uniform buffers
 
 	VkExtent2D SwapChainExtent() const;
 

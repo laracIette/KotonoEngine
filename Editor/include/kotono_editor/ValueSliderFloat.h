@@ -5,6 +5,6 @@ class WValueSliderFloat : public WValueSlider<f32>
 {
 	GENERATED_WVALUESLIDERFLOAT()
 
-public:
+protected:
 	WidgetPtr Build() override;
 };

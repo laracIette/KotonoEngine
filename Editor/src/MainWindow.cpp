@@ -7,6 +7,22 @@
 #include "UpdateTimeText.h"
 #include "VisualizerWindow.h"
 #include <kotono_interface/widgets.h>
+#include <kotono_platform/WindowViewport.h>
+
+void WMainWindow::BeginDraw()
+{
+	Display({
+		.position = { 0.0f, 0.0f },
+		.bounds = static_cast<glm::vec2>(WindowViewport.GetExtent()),
+		.layer = 0,
+		.scissor = { { 0, 0 }, WindowViewport.GetExtent()},
+	});
+}
+
+void WMainWindow::EndDraw()
+{
+	Remove();
+}
 
 WidgetPtr WMainWindow::Build()
 {	

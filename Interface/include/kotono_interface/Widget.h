@@ -46,26 +46,25 @@ public:
 
 	void PostConstruct() override;
 
-	void CacheBuild();
-
+protected:
 	/// Create the widget tree to display
-	virtual WidgetPtr Build(); // todo: make protected
+	virtual WidgetPtr Build();
 
+public:
 	/// Start displaying the widget
 	virtual void Display(UWidgetDisplaySettings displaySettings);
 
 	/// Stop displaying the widget
 	virtual void Remove();
 
-	virtual UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const; // todo: protected
+	virtual UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const;
+	virtual glm::vec2 GetDesiredSize(const glm::vec2& bounds) const;
 
 	virtual EExpand GetExpand() const;
 	virtual EFlex GetFlex() const;
-	virtual glm::vec2 GetDesiredSize(glm::vec2 bounds) const; // todo: make arg const&, protected
 
 	virtual WidgetVector GetWidgetTree();
 
-	bool IsRenderable(const UWidgetDisplaySettings& displaySettings) const;
 	bool IsMouseHovering() const;
 
 protected:
@@ -81,7 +80,9 @@ protected:
 	void Refresh();
 
 private:
+	void CacheBuild();
 	bool IsNotBuild() const;
+	bool IsRenderable(const UWidgetDisplaySettings& displaySettings) const;
 
 	void OnMouseMove(const glm::vec2 delta);
 	UPtr<WWidget> FindNonFlexAncestor(const EAxis axis) const;

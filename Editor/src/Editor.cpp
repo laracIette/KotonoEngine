@@ -3,7 +3,6 @@
 #include "MainWindow.h"
 #include "Visualizer.h"
 #include <kotono_platform/Window.h>
-#include <kotono_platform/WindowViewport.h>
 #include <kotono_timing/Timer.h>
 #include <kotono_timing/TimerManager.h>
 #include <kotono_interface/Interface.h>
@@ -39,21 +38,16 @@ void SEditor::Cleanup()
 
 void SEditor::CreateWidget()
 {
-	widget_ = UCreate<WMainWindow>{ "Main Window" }();
-	widget_->Display({
-		.position = { 0.0f, 0.0f },
-		.bounds = static_cast<glm::vec2>(WindowViewport.GetExtent()),
-		.layer = 0,
-		.scissor = { glm::zero<glm::ivec2>(), WindowViewport.GetExtent() },
-	});
+	mainWindow_ = UCreate<WMainWindow>{ "Main Window" }();
+	mainWindow_->BeginDraw();
 }
 
 void SEditor::DeleteWidget()
 {
-	if (widget_)
+	if (mainWindow_)
 	{
-		widget_->Remove();
-		widget_->Delete();
+		mainWindow_->EndDraw();
+		mainWindow_->Delete();
 	}
 }
 

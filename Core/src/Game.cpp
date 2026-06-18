@@ -5,7 +5,6 @@
 #include <kotono_common/log.h>
 #include <kotono_input/Keyboard.h>
 #include <kotono_object/ObjectFactory.h>
-#include <kotono_object/ObjectManager.h>
 
 void SGame::Init()
 {

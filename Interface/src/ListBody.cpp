@@ -28,7 +28,7 @@ UWidgetDisplaySettings WListBody::GetContentDisplaySettings(UWidgetDisplaySettin
 	return displaySettings;
 }
 
-glm::vec2 WListBody::GetDesiredSize(glm::vec2 bounds) const
+glm::vec2 WListBody::GetDesiredSize(const glm::vec2& bounds) const
 {
 	glm::vec2 size{};
 
@@ -53,16 +53,6 @@ glm::vec2 WListBody::GetDesiredSize(glm::vec2 bounds) const
 EFlex WListBody::GetFlex() const
 {
 	return EFlex::Vertical;
-}
-
-float WListBody::GetSpacing() const
-{
-	return spacing_;
-}
-
-void WListBody::SetSpacing(const float spacing)
-{
-	spacing_ = spacing;
 }
 
 void WListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)

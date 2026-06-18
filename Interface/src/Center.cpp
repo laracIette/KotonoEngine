@@ -28,14 +28,4 @@ UWidgetDisplaySettings WCenter::GetContentDisplaySettings(UWidgetDisplaySettings
 	return displaySettings;
 }
 
-EAxis WCenter::GetAxis() const
-{
-	return axis_;
-}
-
-void WCenter::SetAxis(const EAxis axis)
-{
-	axis_ = axis;
-}
-
 #include "generated/Center.generated.inl"

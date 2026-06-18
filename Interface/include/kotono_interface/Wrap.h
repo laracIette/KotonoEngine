@@ -9,6 +9,7 @@ class WWrap final : public WChildOwner
 public:
 	WWrap(const EAxis axis = EAxis::All);
 
+public:
 	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
 	EExpand GetExpand() const override;

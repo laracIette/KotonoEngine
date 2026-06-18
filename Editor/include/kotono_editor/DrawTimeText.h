@@ -6,9 +6,10 @@ class WDrawTimeText : public WWidget
 {
 	GENERATED_WDRAWTIMETEXT()
 
-public:
+protected:
 	WidgetPtr Build() override;
 
+public:
 	void Display(UWidgetDisplaySettings displaySettings) override;
 	void Remove() override;
 

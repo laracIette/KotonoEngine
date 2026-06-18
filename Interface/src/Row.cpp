@@ -27,7 +27,7 @@ UWidgetDisplaySettings WRow::GetContentDisplaySettings(UWidgetDisplaySettings di
 	return displaySettings;
 }
 
-glm::vec2 WRow::GetDesiredSize(glm::vec2 bounds) const
+glm::vec2 WRow::GetDesiredSize(const glm::vec2& bounds) const
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
@@ -57,16 +57,6 @@ EExpand WRow::GetExpand() const
 EFlex WRow::GetFlex() const
 {
 	return EFlex::All;
-}
-
-float WRow::GetSpacing() const
-{
-	return spacing_;
-}
-
-void WRow::SetSpacing(const float spacing)
-{
-	SetState([this, spacing]() { spacing_ = spacing; });
 }
 
 void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)

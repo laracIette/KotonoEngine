@@ -6,15 +6,10 @@ class WOffset final : public WChildOwner
 {
 	GENERATED_WOFFSET()
 
-public:	
+public:
 	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 
-public:	
-	const glm::vec2& GetOffset() const;
-
-	void SetOffset(const glm::vec2& offset);
-
 private:
-	glm::vec2 offset_;
+	StateProperty(glm::vec2, offset_, Offset);
 };
 

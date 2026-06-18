@@ -6,9 +6,10 @@ class WUpdateTimeText : public WWidget
 {
 	GENERATED_WUPDATETIMETEXT()
 
-public:
+protected:
 	WidgetPtr Build() override;
 
+public:
 	void Display(UWidgetDisplaySettings displaySettings) override;
 	void Remove() override;
 

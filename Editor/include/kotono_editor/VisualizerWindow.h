@@ -6,7 +6,7 @@ class WVisualizerWindow : public WWidget
 {
 	GENERATED_WVISUALIZERWINDOW()
 
-public:
+protected:
 	WidgetPtr Build() override;
 };
 

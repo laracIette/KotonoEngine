@@ -1,5 +1,6 @@
 #pragma once
-#include <kotono_interface/Widget.h>
+#include <kotono_object/Ptr.h>
+class WMainWindow;
 class SEditor final
 {
 public:
@@ -8,7 +9,7 @@ public:
 	void Cleanup();
 
 private:
-	WidgetPtr widget_;
+	UPtr<WMainWindow> mainWindow_;
 
 	void CreateWidget();
 	void DeleteWidget();

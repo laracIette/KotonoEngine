@@ -9,7 +9,7 @@ public:
 	using ValueToStringFunction = std::function<std::string()>;
 	using StringToValueFunction = std::function<void(const std::string&)>;
 
-public:
+protected:
 	WidgetPtr Build() override;
 
 private:

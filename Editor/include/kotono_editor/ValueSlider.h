@@ -1,7 +1,7 @@
 #pragma once
 #include <kotono_interface/Widget.h>
 template <typename T>
-class WValueSlider : public WWidget
+class WValueSlider : public WWidget // TODO: check if still used
 {
 public:
 	using ValueType = T;

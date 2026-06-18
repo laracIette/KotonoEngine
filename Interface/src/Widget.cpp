@@ -41,15 +41,6 @@ void WWidget::PostConstruct()
 	CacheBuild();
 }
 
-void WWidget::CacheBuild()
-{
-	build_ = Build();
-	if (IsNotBuild())
-	{
-		build_->SetParent(Ptr());
-	}
-}
-
 WidgetPtr WWidget::Build()
 {
 	return Ptr();
@@ -120,7 +111,7 @@ EFlex WWidget::GetFlex() const
 	return EFlex::All;
 }
 
-glm::vec2 WWidget::GetDesiredSize(glm::vec2 bounds) const
+glm::vec2 WWidget::GetDesiredSize(const glm::vec2& bounds) const
 {
 	if (IsNotBuild())
 	{
@@ -136,11 +127,6 @@ WidgetVector WWidget::GetWidgetTree()
 		return build_->GetWidgetTree();
 	}
 	return { Ptr() };
-}
-
-bool WWidget::IsRenderable(const UWidgetDisplaySettings& displaySettings) const
-{
-	return is_overlapping(displaySettings.position, displaySettings.bounds, displaySettings.scissor.offset, displaySettings.scissor.extent);
 }
 
 bool WWidget::IsMouseHovering() const
@@ -209,9 +195,23 @@ void WWidget::Refresh()
 	SetState({});
 }
 
+void WWidget::CacheBuild()
+{
+	build_ = Build();
+	if (IsNotBuild())
+	{
+		build_->SetParent(Ptr());
+	}
+}
+
 bool WWidget::IsNotBuild() const
 {
 	return build_ && build_ != Ptr();
+}
+
+bool WWidget::IsRenderable(const UWidgetDisplaySettings& displaySettings) const
+{
+	return is_overlapping(displaySettings.position, displaySettings.bounds, displaySettings.scissor.offset, displaySettings.scissor.extent);
 }
 
 void WWidget::OnMouseMove(const glm::vec2 delta)

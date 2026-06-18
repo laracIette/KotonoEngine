@@ -6,6 +6,10 @@ class WMainWindow : public WWidget
 	GENERATED_WMAINWINDOW()
 
 public:
+	void BeginDraw();
+	void EndDraw();
+
+protected:
 	WidgetPtr Build() override;
 };
 

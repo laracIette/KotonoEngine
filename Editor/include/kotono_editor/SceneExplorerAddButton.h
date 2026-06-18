@@ -5,6 +5,6 @@ class WSceneExplorerAddButton final : public WWidget
 {
 	GENERATED_WSCENEEXPLORERADDBUTTON()
 
-public:
+protected:
 	WidgetPtr Build() override;
 };

@@ -9,7 +9,7 @@ class WList final : public WWidget
 
 	friend class WListBody;
 
-public:
+protected:
 	WidgetPtr Build() override;
 
 public:
@@ -20,8 +20,6 @@ public:
 	void SetChildren(const WidgetPool& children);
 
 private:
-	float spacing_;
-	WidgetPool children_;
-	UPtr<WListBody> listBody_;
+	UPtr<WListBody> body_;
 };
 
