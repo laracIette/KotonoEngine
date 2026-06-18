@@ -30,7 +30,7 @@ WidgetPtr WVisualizerWindow::Build()
         UCreate<WVisualizerWindowItem>{}(EVisualizationField::InterfaceObject, "Interface Object"),
         UCreate<WVisualizerWindowItem>{}(EVisualizationField::InterfaceObjectBounds, "Interface Object Bounds"),
         UCreate<WVisualizerWindowItem>{}(EVisualizationField::InterfaceObjectCollider, "Interface Object Collider"),
-        UCreate<WVisualizerWindowItem>{}(EVisualizationField::InterfaceObjectWireframe, "Interface Object Wireframe")
+        UCreate<WVisualizerWindowItem>{}(EVisualizationField::InterfaceObjectWireframe, "Interface Object Wireframe"),
     });
 
     UPtr column{ UCreate<WColumn>{}() };

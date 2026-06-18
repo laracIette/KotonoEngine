@@ -7,8 +7,6 @@ class WList final : public WWidget
 {
 	GENERATED_WLIST()
 
-	friend class WListBody;
-
 protected:
 	WidgetPtr Build() override;
 

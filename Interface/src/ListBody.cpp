@@ -1,7 +1,5 @@
 #include "ListBody.h"
-#include "List.h"
 #include <glm/common.hpp>
-#include <kotono_math/math_utils.h>
 
 UWidgetDisplaySettings WListBody::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
@@ -58,23 +56,6 @@ EFlex WListBody::GetFlex() const
 void WListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	++displaySettings.layer;
-
-	if (UPtr asList{ TryCast<WList>(GetParent()) }) // todo: move to scrollable ?
-	{
-		glm::vec2 newScissorOffset;
-		glm::vec2 newScissorExtent;
-		compute_intersect(
-			GetDisplaySettings().scissor.offset,
-			GetDisplaySettings().scissor.extent,
-			asList->GetDisplaySettings().position,
-			asList->GetDisplaySettings().bounds,
-			newScissorOffset,
-			newScissorExtent
-
-		);
-		displaySettings.scissor.offset = newScissorOffset;
-		displaySettings.scissor.extent = newScissorExtent;
-	}
 
 	for (auto& child : children_)
 	{

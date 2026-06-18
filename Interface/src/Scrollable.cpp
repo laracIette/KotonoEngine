@@ -2,6 +2,7 @@
 #include "widgets.h"
 #include <kotono_common/enum_utils.h>
 #include <kotono_input/Mouse.h>
+#include <kotono_math/math_utils.h>
 #include <glm/common.hpp>
 
 void WScrollable::Display(UWidgetDisplaySettings displaySettings)
@@ -21,6 +22,9 @@ void WScrollable::Remove()
 UWidgetDisplaySettings WScrollable::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	displaySettings.position += offset_;
+
+	displaySettings.scissor.offset = displaySettings.position;
+	displaySettings.scissor.extent = displaySettings.bounds;
 
 	if (child_)
 	{

@@ -1,7 +1,5 @@
 #include "HorizontalWrapListBody.h"
-#include "HorizontalWrapList.h"
 #include <glm/common.hpp>
-#include <kotono_math/math_utils.h>
 
 UWidgetDisplaySettings WHorizontalWrapListBody::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
@@ -52,23 +50,6 @@ EFlex WHorizontalWrapListBody::GetFlex() const
 void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	++displaySettings.layer;
-
-	if (UPtr asList{ TryCast<WHorizontalWrapList>(GetParent()) }) // todo: move to scrollable ?
-	{
-		glm::vec2 newScissorOffset;
-		glm::vec2 newScissorExtent;
-		compute_intersect(
-			GetDisplaySettings().scissor.offset,
-			GetDisplaySettings().scissor.extent,
-			asList->GetDisplaySettings().position,
-			asList->GetDisplaySettings().bounds,
-			newScissorOffset,
-			newScissorExtent
-
-		);
-		displaySettings.scissor.offset = newScissorOffset;
-		displaySettings.scissor.extent = newScissorExtent;
-	}
 
 	const auto baseDisplaySettings{ displaySettings };
 

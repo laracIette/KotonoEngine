@@ -7,8 +7,6 @@ class WHorizontalWrapList final : public WWidget
 {
 	GENERATED_WHORIZONTALWRAPLIST()
 
-	friend class WHorizontalWrapListBody;
-
 protected:
 	WidgetPtr Build() override;
 
