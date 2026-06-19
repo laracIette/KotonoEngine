@@ -4,13 +4,12 @@
 
 WidgetPtr WHorizontalWrapList::Build()
 {
-	body_ = UCreate<WHorizontalWrapListBody>{}();
+	const auto widgetTree{ UChildOwnerTree{ UCreate<WScrollable>{ "Horizontal Wrap List Scrollable" }(EAxis::Vertical),
+		new UWidgetTreeLeaf{ body_ = UCreate<WHorizontalWrapListBody>{ "Horizontal Wrap List Body" }() }
+	} };
+	widgetTree.Link();
 
-	UPtr scrollable{ UCreate<WScrollable>{}() };
-	scrollable->SetAxis(EAxis::Vertical);
-	scrollable->SetChild(body_);
-
-	return scrollable;
+	return widgetTree.Widget();
 }
 
 float WHorizontalWrapList::GetItemSpacing() const

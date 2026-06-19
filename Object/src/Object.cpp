@@ -109,8 +109,8 @@ void KObject::CheckDebugRegistry()
         {
             if (object)
             {
-                KT_LOG(ELogImportanceLevel::High
-                    , "Object", "{0:48s} : {1:4d} | {2}"
+                KT_LOG(ELogImportanceLevel::High, "Object"
+                    , "{0:32s} | L{1:03d}: {2}"
                     , object->ToString()
                     , object->sourceLine
                     , object->sourceFunc

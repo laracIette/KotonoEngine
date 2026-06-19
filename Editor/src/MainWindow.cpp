@@ -30,9 +30,9 @@ WidgetPtr WMainWindow::Build()
 	sceneExplorerConstraint->SetAxis(EAxis::Horizontal);
 	sceneExplorerConstraint->SetSize(300.0f);
 	
-	//UPtr assetExplorerConstraint{ UCreate<WConstraint>{ "Asset Explorer Constraint" }() };
-	//assetExplorerConstraint->SetAxis(EAxis::Vertical);
-	//assetExplorerConstraint->SetSize(200.0f);
+	UPtr assetExplorerConstraint{ UCreate<WConstraint>{ "Asset Explorer Constraint" }() };
+	assetExplorerConstraint->SetAxis(EAxis::Vertical);
+	assetExplorerConstraint->SetSize(200.0f);
 	
 	UPtr leftPanelColumn{ UCreate<WColumn>{ "Left Panel Column" }()};
 	leftPanelColumn->SetSpacing(10.0f);
@@ -72,17 +72,14 @@ WidgetPtr WMainWindow::Build()
 				} }
 			},
 			new UChildrenOwnerTree{ centerRow, {
-				//new UChildOwnerTree{ UCreate<WWrap>{ "Left Panel Wrap" }(EAxis::Horizontal),
-					new UChildrenOwnerTree{ leftPanelColumn, {
-						new UChildOwnerTree{ sceneExplorerConstraint,
-							new UWidgetTreeLeaf{ UCreate<WSceneExplorer>{}() }
-						},
-						//new UWidgetTreeLeaf{ UCreate<WSpacer>{ "Left Panel Column Spacer" }(EAxis::Vertical) },
-						//new UChildOwnerTree{ assetExplorerConstraint,
-						//	new UWidgetTreeLeaf{ UCreate<WAssetExplorer>{ "Asset Explorer" }()}
-						//},
-					} },
-				//},
+				new UChildrenOwnerTree{ leftPanelColumn, {
+					new UChildOwnerTree{ sceneExplorerConstraint,
+						new UWidgetTreeLeaf{ UCreate<WSceneExplorer>{}() }
+					},
+					new UChildOwnerTree{ assetExplorerConstraint,
+						new UWidgetTreeLeaf{ UCreate<WAssetExplorer>{ "Asset Explorer" }()}
+					},
+				} },
 				new UWidgetTreeLeaf{ UCreate<WSpacer>{ "Center Row Spacer" }(EAxis::Horizontal) },
 				new UChildOwnerTree{ UCreate<WWrap>{ "Right Panel Wrap" }(EAxis::Horizontal),
 					new UChildrenOwnerTree{ UCreate<WStack>{}(), {

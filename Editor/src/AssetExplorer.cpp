@@ -7,9 +7,9 @@
 #include <kotono_input/Mouse.h>
 
 WAssetExplorer::WAssetExplorer()
-	: path_("${ENGINE_DIRECTORY}")
-	, navigatedPaths_({ path_ })
-	, currentPathIndex_(0)
+	: path_{ "${ENGINE_DIRECTORY}" }
+	, navigatedPaths_{ path_ }
+	, currentPathIndex_{ 0 }
 {
 }
 
@@ -66,37 +66,37 @@ WidgetPtr WAssetExplorer::Build()
 	itemList_->SetRowSpacing(10.0f);
 	PopulateItemList();
 
-	UChildrenOwnerTree(mainColumn, {
-		new UChildrenOwnerTree(navigationRow, {
-			new UChildOwnerTree(UCreate<WWrap>{}(),
-				new UChildrenOwnerTree(UCreate<WStack>{}(), {
-					new UWidgetTreeLeaf(upBg),
-					new UWidgetTreeLeaf(upText),
-					new UWidgetTreeLeaf(upButton),
-				})
-			),
-			new UChildOwnerTree(UCreate<WWrap>{}(),
-				new UChildrenOwnerTree(UCreate<WStack>{}(), {
-					new UWidgetTreeLeaf(previousBg),
-					new UWidgetTreeLeaf(previousText),
-					new UWidgetTreeLeaf(previousButton),
-				})
-			),
-			new UChildOwnerTree(UCreate<WWrap>{}(),
-				new UChildrenOwnerTree(UCreate<WStack>{}(), {
-					new UWidgetTreeLeaf(nextBg),
-					new UWidgetTreeLeaf(nextText),
-					new UWidgetTreeLeaf(nextButton),
-				})
-			),
-		}),
-		new UChildrenOwnerTree(UCreate<WStack>{}(), {
-			new UWidgetTreeLeaf(explorerBg),
-			new UChildOwnerTree(explorerPadding,
-				new UWidgetTreeLeaf(itemList_)
-			),
-		}),
-	}).Link();		
+	UChildrenOwnerTree{ mainColumn, {
+		new UChildrenOwnerTree{ navigationRow, {
+			new UChildOwnerTree{ UCreate<WWrap>{}(),
+				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
+					new UWidgetTreeLeaf{ upBg },
+					new UWidgetTreeLeaf{ upText },
+					new UWidgetTreeLeaf{ upButton },
+				} }
+			},
+			new UChildOwnerTree{ UCreate<WWrap>{}(),
+				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
+					new UWidgetTreeLeaf{ previousBg },
+					new UWidgetTreeLeaf{ previousText },
+					new UWidgetTreeLeaf{ previousButton },
+				} }
+			},
+			new UChildOwnerTree{ UCreate<WWrap>{}(),
+				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
+					new UWidgetTreeLeaf{ nextBg },
+					new UWidgetTreeLeaf{ nextText },
+					new UWidgetTreeLeaf{ nextButton },
+				} }
+			},
+		} },
+		new UChildrenOwnerTree{ UCreate<WStack>{}(), {
+			new UWidgetTreeLeaf{ explorerBg },
+			new UChildOwnerTree{ explorerPadding,
+				new UWidgetTreeLeaf{ itemList_ }
+			},
+		} },
+	} }.Link();
 
 	return mainColumn;
 }

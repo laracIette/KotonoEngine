@@ -8,6 +8,9 @@ class WScrollable final : public WChildOwner
 	GENERATED_WSCROLLABLE()
 
 public:
+	WScrollable(const EAxis axis = EAxis::All);
+
+public:
 	void Display(UWidgetDisplaySettings displaySettings) override;
 	void Remove() override;
 

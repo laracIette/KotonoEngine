@@ -1,7 +1,7 @@
 #pragma once
 #include "generated/HorizontalWrapListBody.generated.h"
-#include "Widget.h"
-class WHorizontalWrapListBody final : public WWidget 
+#include "ChildrenOwner.h"
+class WHorizontalWrapListBody final : public WChildrenOwner
 {
 	GENERATED_WHORIZONTALWRAPLISTBODY()
 
@@ -19,7 +19,6 @@ private:
 	std::vector<glm::vec2> GetRowDesiredSizes(const glm::vec2& bounds) const;
 
 private:
-	StateProperty(WidgetPool, children_, Children);
 	StateProperty(float, itemSpacing_, ItemSpacing);
 	StateProperty(float, rowSpacing_, RowSpacing);
 };

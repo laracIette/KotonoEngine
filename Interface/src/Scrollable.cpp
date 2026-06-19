@@ -5,6 +5,11 @@
 #include <kotono_math/math_utils.h>
 #include <glm/common.hpp>
 
+WScrollable::WScrollable(const EAxis axis)
+	: axis_{ axis }
+{
+}
+
 void WScrollable::Display(UWidgetDisplaySettings displaySettings)
 {
 	Base::Display(displaySettings);

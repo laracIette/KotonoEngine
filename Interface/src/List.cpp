@@ -4,13 +4,12 @@
 
 WidgetPtr WList::Build()
 {
-	body_ = UCreate<WListBody>{}();
+	const auto widgetTree{ UChildOwnerTree{ UCreate<WScrollable>{ "List Scrollable" }(EAxis::Vertical),
+		new UWidgetTreeLeaf{ body_ = UCreate<WListBody>{ "List Body" }() }
+	} };
+	widgetTree.Link();
 
-	UPtr scrollable{ UCreate<WScrollable>{}() };
-	scrollable->SetAxis(EAxis::Vertical);
-	scrollable->SetChild(body_);
-
-	return scrollable;
+	return widgetTree.Widget();
 }
 
 float WList::GetSpacing() const
