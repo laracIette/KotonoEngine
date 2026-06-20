@@ -26,10 +26,10 @@ void WScrollable::Remove()
 
 UWidgetDisplaySettings WScrollable::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
-	displaySettings.position += offset_;
-
 	displaySettings.scissor.offset = displaySettings.position;
 	displaySettings.scissor.extent = displaySettings.bounds;
+
+	displaySettings.position += offset_;
 
 	if (child_)
 	{
@@ -46,7 +46,14 @@ void WScrollable::Scroll(const glm::vec2 delta)
 	}
 
 	SetState([this, delta]() {
-		const auto maxOffset{ glm::min(GetSize() - GetDesiredSize(GetSize()), 0.0f) };
+		if (!GetParent())
+		{
+			return;
+		}
+
+		const auto parentSize{ GetParent()->GetSize() };
+		const auto maxOffset{ glm::min(parentSize - GetDesiredSize(parentSize), 0.0f) };
+		
 		offset_ += delta * 10.0f;
 		offset_ = glm::clamp(offset_, maxOffset, { 0.0f, 0.0f });
 		offset_ = {
