@@ -27,13 +27,13 @@ glm::vec2 WChildOwner::GetDesiredSize(const glm::vec2& bounds) const
 	return { 0.0f, 0.0f };
 }
 
-WidgetVector WChildOwner::GetWidgetTree()
+WidgetVector WChildOwner::WidgetTree() const
 {
-	WidgetVector result{ Base::GetWidgetTree() };
+	WidgetVector result{ Base::WidgetTree() };
 
 	if (child_)
 	{
-		const auto sub{ child_->GetWidgetTree() };
+		const auto sub{ child_->WidgetTree() };
 		result.insert(result.end(), sub.begin(), sub.end());
 	}
 

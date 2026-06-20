@@ -2,6 +2,7 @@
 #include "generated/AssetExplorerItem.generated.h"
 #include <kotono_interface/Widget.h>
 #include <kotono_common/Path.h>
+class WColor;
 class WAssetExplorerItem : public WWidget
 {
 	GENERATED_WASSETEXPLORERITEM()
@@ -24,4 +25,6 @@ private:
 	bool isSelected_;
 	float lastClickedTime_;
 	float doubleClickTreshold_;
+
+	UPtr<WColor> background_;
 };

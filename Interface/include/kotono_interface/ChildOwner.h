@@ -13,7 +13,7 @@ public:
 
 	glm::vec2 GetDesiredSize(const glm::vec2& bounds) const override;
 
-	WidgetVector GetWidgetTree() override;
+	WidgetVector WidgetTree() const override;
 
 public:
 	const WidgetPtr& GetChild() const;

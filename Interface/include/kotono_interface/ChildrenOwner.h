@@ -11,7 +11,7 @@ public:
 public:
 	void Remove() override;
 
-	WidgetVector GetWidgetTree() override;
+	WidgetVector WidgetTree() const override;
 
 public:
 	const WidgetPool& GetChildren() const;

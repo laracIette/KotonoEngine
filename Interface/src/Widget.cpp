@@ -120,13 +120,22 @@ glm::vec2 WWidget::GetDesiredSize(const glm::vec2& bounds) const
 	return { 0.0f, 0.0f };
 }
 
-WidgetVector WWidget::GetWidgetTree()
+WidgetVector WWidget::WidgetTree() const
 {
 	if (IsNotBuild())
 	{
-		return build_->GetWidgetTree();
+		return build_->WidgetTree();
 	}
 	return { Ptr() };
+}
+
+std::string WWidget::ClassPath() const
+{
+	if (parent_)
+	{
+		return std::format("{0} {1}", parent_->ClassPath(), TypeName());
+	}
+	return TypeName();
 }
 
 bool WWidget::IsMouseHovering() const
@@ -225,7 +234,7 @@ void WWidget::OnMouseMove(const glm::vec2 delta)
 	if (!wasMouseHovering_)
 	{
 		wasMouseHovering_ = true;
-		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Interface", "overlapping {0:20} | position: {1:30}, size: {2:30}", GetName(), glm::to_string(GetPosition()), glm::to_string(GetSize()));
+		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Interface", "overlapping {0:20} | position: {1:30}, size: {2:30} | {3}", GetName(), glm::to_string(GetPosition()), glm::to_string(GetSize()), ClassPath());
 	}
 }
 

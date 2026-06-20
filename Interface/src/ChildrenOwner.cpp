@@ -27,15 +27,15 @@ void WChildrenOwner::Remove()
 	}
 }
 
-WidgetVector WChildrenOwner::GetWidgetTree()
+WidgetVector WChildrenOwner::WidgetTree() const
 {
-	WidgetVector result{ Base::GetWidgetTree() };
+	WidgetVector result{ Base::WidgetTree() };
 
 	for (auto& child : children_)
 	{
 		if (child)
 		{
-			const auto sub{ child->GetWidgetTree() };
+			const auto sub{ child->WidgetTree() };
 			result.insert(result.end(), sub.begin(), sub.end());
 		}
 	}

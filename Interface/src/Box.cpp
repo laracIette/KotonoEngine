@@ -1,6 +1,11 @@
 #include "Box.h"
 #include <glm/common.hpp>
 
+WBox::WBox(const glm::vec2& size)
+	: size_{ size }
+{
+}
+
 UWidgetDisplaySettings WBox::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	displaySettings.bounds = glm::min(size_, displaySettings.bounds);

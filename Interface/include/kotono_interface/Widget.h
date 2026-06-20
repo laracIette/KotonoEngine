@@ -63,7 +63,8 @@ public:
 	virtual EExpand GetExpand() const;
 	virtual EFlex GetFlex() const;
 
-	virtual WidgetVector GetWidgetTree();
+	virtual WidgetVector WidgetTree() const;
+	std::string ClassPath() const;
 
 	bool IsMouseHovering() const;
 
