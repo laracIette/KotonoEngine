@@ -6,19 +6,19 @@
 #include <kotono_common/log.h>
 #include <set>
 
-static constexpr std::array<const char*, 1> ValidationLayers
+static constexpr std::array ValidationLayers
 {
-	"VK_LAYER_KHRONOS_validation"
+	"VK_LAYER_KHRONOS_validation",
 };
 
-static constexpr std::array<const char*, 3> DeviceExtensions
+static constexpr std::array DeviceExtensions
 {
 	VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-	VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME,
-	VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME
+	//VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME,
+	//VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
 };
 
-#ifdef _DEBUG
+#if defined (_DEBUG)
 static constexpr bool enableValidationLayers{ true };
 #else
 static constexpr bool enableValidationLayers{ false };
@@ -78,19 +78,20 @@ void KtContext::CreateInstance()
 		throw std::runtime_error("validation layers requested, but not available!");
 	}
 
-	VkApplicationInfo appInfo{};
-	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = "Kotono Engine Application";
-	appInfo.applicationVersion = VK_MAKE_VERSION(0, 0, 1);
-	appInfo.pEngineName = "Kotono Engine";
-	appInfo.engineVersion = VK_MAKE_VERSION(0, 0, 1);
-	appInfo.apiVersion = VK_API_VERSION_1_3;
+	VkApplicationInfo appInfo{
+		.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+		.pApplicationName = "Kotono Engine Application",
+		.applicationVersion = VK_MAKE_VERSION(0, 0, 1),
+		.pEngineName = "Kotono Engine",
+		.engineVersion = VK_MAKE_VERSION(0, 0, 1),
+		.apiVersion = VK_API_VERSION_1_4,
+	};
 
 	VkInstanceCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
 
-	auto extensions = GetRequiredExtensions();
+	const auto extensions{ GetRequiredExtensions() };
 	createInfo.enabledExtensionCount = static_cast<u32>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
 
@@ -106,14 +107,13 @@ void KtContext::CreateInstance()
 	else
 	{
 		createInfo.enabledLayerCount = 0;
-
 		createInfo.pNext = nullptr;
 	}
 
-	if (vkCreateInstance(&createInfo, nullptr, &instance_) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create instance!");
-	}
+	VK_CHECK_THROW(
+		vkCreateInstance(&createInfo, nullptr, &instance_),
+		"failed to create instance!"
+	);
 }
 
 void KtContext::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) const
@@ -213,7 +213,7 @@ void KtContext::PickPhysicalDevice()
 
 			VkDeviceSize totalVRAM = 0;
 			// Iterate over memory types and sum the VRAM of the suitable types
-			for (u32 i = 0; i < memoryProperties.memoryTypeCount; ++i)
+			for (u32 i{ 0 }; i < memoryProperties.memoryTypeCount; ++i)
 			{
 				const VkMemoryType& memoryType = memoryProperties.memoryTypes[i];
 				// Consider only the VRAM (local memory)
@@ -251,37 +251,22 @@ void KtContext::PickPhysicalDevice()
 
 bool KtContext::IsDeviceSuitable(VkPhysicalDevice device)
 {
-	const KtQueueFamilyIndices indices = FindQueueFamilies(device);
+	const KtQueueFamilyIndices indices{ FindQueueFamilies(device) };
 
-	const bool extensionsSupported = CheckDeviceExtensionSupport(device);
+	const bool extensionsSupported{ CheckDeviceExtensionSupport(device) };
+	const bool featuresSupported{ CheckDeviceFeatureSupport(device) };
 
-	bool swapChainAdequate = false;
+	bool swapChainAdequate{ false };
 	if (extensionsSupported)
 	{
-		KtSwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device);
+		const KtSwapChainSupportDetails swapChainSupport{ QuerySwapChainSupport(device) };
 		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 	}
 
-	VkPhysicalDeviceFeatures supportedFeatures;
-	vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
-
-	
-	VkPhysicalDeviceDescriptorIndexingFeatures indexingFeatures{};
-	indexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
-
-	VkPhysicalDeviceFeatures2 deviceFeatures2{};
-	deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-	deviceFeatures2.pNext = &indexingFeatures;
-
-	vkGetPhysicalDeviceFeatures2(device, &deviceFeatures2);
-
-	const bool indexingSupported = indexingFeatures.shaderSampledImageArrayNonUniformIndexing
-		&& indexingFeatures.runtimeDescriptorArray
-		&& indexingFeatures.descriptorBindingVariableDescriptorCount
-		&& indexingFeatures.descriptorBindingPartiallyBound
-		&& indexingFeatures.descriptorBindingSampledImageUpdateAfterBind;
-
-	return indices.IsComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy && supportedFeatures.fillModeNonSolid && indexingSupported;
+	return indices.IsComplete() 
+		&& extensionsSupported 
+		&& swapChainAdequate 
+		&& featuresSupported;
 }
 
 bool KtContext::CheckDeviceExtensionSupport(VkPhysicalDevice device)
@@ -300,6 +285,50 @@ bool KtContext::CheckDeviceExtensionSupport(VkPhysicalDevice device)
 	}
 
 	return requiredExtensions.empty();
+}
+
+bool KtContext::CheckDeviceFeatureSupport(VkPhysicalDevice device)
+{
+	VkPhysicalDeviceVulkan14Features features14{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_FEATURES,
+	};
+	VkPhysicalDeviceVulkan13Features features13{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES,
+		.pNext = &features14,
+	};
+	VkPhysicalDeviceVulkan12Features features12{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES,
+		.pNext = &features13,
+	};
+	VkPhysicalDeviceVulkan11Features features11{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES,
+		.pNext = &features12,
+	};
+	VkPhysicalDeviceFeatures2 features2{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+		.pNext = &features11,
+	};
+	vkGetPhysicalDeviceFeatures2(device, &features2);
+
+	const bool coreFeaturesSupported{ features2.features.samplerAnisotropy
+		&& features2.features.fillModeNonSolid 
+	};
+
+	const bool drawParametersSupported{ features11.shaderDrawParameters == VK_TRUE };
+
+	const bool bindlessSupported{ features12.shaderSampledImageArrayNonUniformIndexing
+		&& features12.runtimeDescriptorArray
+		&& features12.descriptorBindingVariableDescriptorCount
+		&& features12.descriptorBindingPartiallyBound
+		&& features12.descriptorBindingSampledImageUpdateAfterBind 
+	};
+
+	const bool dynamicRenderingSupported{ features13.dynamicRendering == VK_TRUE };
+
+    return coreFeaturesSupported 
+		&& drawParametersSupported
+		&& bindlessSupported 
+		&& dynamicRenderingSupported;
 }
 
 KtQueueFamilyIndices KtContext::FindQueueFamilies(VkPhysicalDevice device) const
@@ -341,12 +370,12 @@ KtQueueFamilyIndices KtContext::FindQueueFamilies(VkPhysicalDevice device) const
 
 void KtContext::CreateLogicalDevice()
 {
-	const KtQueueFamilyIndices indices = FindQueueFamilies(physicalDevice_);
+	const KtQueueFamilyIndices indices{ FindQueueFamilies(physicalDevice_) };
 
-	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-	const std::set<u32> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
+	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos{};
+	const std::set uniqueQueueFamilies{ indices.graphicsFamily.value(), indices.presentFamily.value() };
 
-	const float queuePriority = 1.0f;
+	const float queuePriority{ 1.0f };
 	for (u32 queueFamily : uniqueQueueFamilies)
 	{
 		const VkDeviceQueueCreateInfo queueCreateInfo{
@@ -358,22 +387,20 @@ void KtContext::CreateLogicalDevice()
 		queueCreateInfos.push_back(queueCreateInfo);
 	}
 
-	const VkPhysicalDeviceFeatures deviceFeatures{
-		.sampleRateShading = VK_TRUE, // enable sample shading feature for the device
-		.fillModeNonSolid = VK_TRUE, // enable wireframe
-		.samplerAnisotropy = VK_TRUE,
+	VkPhysicalDeviceVulkan14Features features14{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_FEATURES,
+		.pNext = nullptr,
 	};
 
-	// Enable shader draw parameters
-	VkPhysicalDeviceShaderDrawParametersFeatures shaderDrawParametersFeatures{
-		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETERS_FEATURES,
-		.pNext = nullptr, // No further extensions
-		.shaderDrawParameters = VK_TRUE,
+	VkPhysicalDeviceVulkan13Features features13{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES,
+		.pNext = &features14,
+		.dynamicRendering = VK_TRUE,
 	};
 
-	VkPhysicalDeviceDescriptorIndexingFeatures indexingFeatures{
-		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
-		.pNext = &shaderDrawParametersFeatures,
+	VkPhysicalDeviceVulkan12Features features12{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES,
+		.pNext = &features13,
 		.shaderSampledImageArrayNonUniformIndexing = VK_TRUE,
 		.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE,
 		.descriptorBindingPartiallyBound = VK_TRUE,
@@ -381,19 +408,28 @@ void KtContext::CreateLogicalDevice()
 		.runtimeDescriptorArray = VK_TRUE,
 	};
 
-	const VkPhysicalDeviceFeatures2 deviceFeatures2{
+	VkPhysicalDeviceVulkan11Features features11{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES,
+		.pNext = &features12,
+		.shaderDrawParameters = VK_TRUE,
+	};
+
+	const VkPhysicalDeviceFeatures2 features2{
 		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-		.pNext = &indexingFeatures,
-		.features = deviceFeatures,
+		.pNext = &features11,
+		.features = {
+			.sampleRateShading = VK_TRUE,
+			.fillModeNonSolid = VK_TRUE, // enable wireframe
+			.samplerAnisotropy = VK_TRUE,
+		},
 	};
 
 	VkDeviceCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	createInfo.pNext = &features2;
 
 	createInfo.queueCreateInfoCount = static_cast<u32>(queueCreateInfos.size());
 	createInfo.pQueueCreateInfos = queueCreateInfos.data();
-
-	//createInfo.pEnabledFeatures = &deviceFeatures;
 
 	createInfo.enabledExtensionCount = static_cast<u32>(DeviceExtensions.size());
 	createInfo.ppEnabledExtensionNames = DeviceExtensions.data();
@@ -408,8 +444,6 @@ void KtContext::CreateLogicalDevice()
 		createInfo.enabledLayerCount = 0;
 	}
 
-	// Attach the shader draw parameters feature via pNext
-	createInfo.pNext = &deviceFeatures2;
 
 	VK_CHECK_THROW(
 		vkCreateDevice(physicalDevice_, &createInfo, nullptr, &device_),
@@ -430,8 +464,7 @@ void KtContext::CreateSurface()
 
 KtSwapChainSupportDetails KtContext::QuerySwapChainSupport(VkPhysicalDevice device) const
 {
-	KtSwapChainSupportDetails details;
-
+	KtSwapChainSupportDetails details{};
 	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_, &details.capabilities);
 
 	u32 formatCount;
@@ -457,7 +490,7 @@ KtSwapChainSupportDetails KtContext::QuerySwapChainSupport(VkPhysicalDevice devi
 
 VkResult KtContext::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) const
 {
-	const auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+	const auto func{ (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT") };
 	if (func != nullptr)
 	{
 		return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
@@ -470,7 +503,7 @@ VkResult KtContext::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDe
 
 void KtContext::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) const
 {
-	const auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+	const auto func{ (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT") };
 	if (func != nullptr)
 	{
 		func(instance, debugMessenger, pAllocator);
@@ -514,7 +547,7 @@ VkExtent2D KtContext::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilit
 		int width, height;
 		glfwGetFramebufferSize(Window.GetGLFWWindow(), &width, &height);
 
-		VkExtent2D actualExtent =
+		VkExtent2D actualExtent
 		{
 			static_cast<u32>(width),
 			static_cast<u32>(height)
@@ -529,12 +562,12 @@ VkExtent2D KtContext::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilit
 
 void KtContext::CreateAllocator()
 {
-	VmaAllocatorCreateInfo allocatorInfo{};
-	allocatorInfo.physicalDevice = physicalDevice_;
-	allocatorInfo.device = device_;
-	allocatorInfo.instance = instance_;
-	allocatorInfo.vulkanApiVersion = VK_API_VERSION_1_3;
-
+	const VmaAllocatorCreateInfo allocatorInfo{
+		.physicalDevice = physicalDevice_,
+		.device = device_,
+		.instance = instance_,
+		.vulkanApiVersion = VK_API_VERSION_1_4,
+	};
 	VK_CHECK_THROW(
 		vmaCreateAllocator(&allocatorInfo, &allocator_),
 		"Failed to create VMA allocator"
@@ -543,19 +576,19 @@ void KtContext::CreateAllocator()
 
 VkCommandBuffer KtContext::BeginSingleTimeCommands() const
 {
-	VkCommandBufferAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocInfo.commandPool = commandPool_;
-	allocInfo.commandBufferCount = 1;
-
+	const VkCommandBufferAllocateInfo allocInfo{
+		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+		.commandPool = commandPool_,
+		.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+		.commandBufferCount = 1,
+	};
 	VkCommandBuffer commandBuffer{};
 	vkAllocateCommandBuffers(device_, &allocInfo, &commandBuffer);
 
-	VkCommandBufferBeginInfo beginInfo{};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
+	const VkCommandBufferBeginInfo beginInfo{
+		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+		.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+	};
 	vkBeginCommandBuffer(commandBuffer, &beginInfo);
 
 	return commandBuffer;
@@ -574,11 +607,11 @@ void KtContext::ExecuteSingleTimeCommands()
 		return;
 	}
 
-	VkSubmitInfo submitInfo{};
-	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-	submitInfo.commandBufferCount = static_cast<u32>(singleTimeCommands_.size());
-	submitInfo.pCommandBuffers = singleTimeCommands_.data();
-
+	const VkSubmitInfo submitInfo{
+		.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+		.commandBufferCount = static_cast<u32>(singleTimeCommands_.size()),
+		.pCommandBuffers = singleTimeCommands_.data(),
+	};
 	vkQueueSubmit(graphicsQueue_, 1, &submitInfo, VK_NULL_HANDLE);
 	vkQueueWaitIdle(graphicsQueue_);
 
@@ -597,26 +630,29 @@ UEvent<>& KtContext::GetEventExecuteSingleTimeCommands()
 
 void KtContext::CreateCommandPool()
 {
-	const KtQueueFamilyIndices queueFamilyIndices = FindQueueFamilies(physicalDevice_);
+	const KtQueueFamilyIndices queueFamilyIndices{ FindQueueFamilies(physicalDevice_) };
 
-	VkCommandPoolCreateInfo poolInfo{};
-	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-	poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+	const VkCommandPoolCreateInfo poolInfo{
+		.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+		.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+		.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value(),
+	};
 
-	if (vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool_) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create command pool!");
-	}
+	VK_CHECK_THROW(
+		vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool_),
+		"failed to create command pool!"
+	);
+	
 }
 
 void KtContext::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VmaAllocationCreateFlags flags, KtAllocatedBuffer& buffer, VmaMemoryUsage vmaUsage) const
 {
-	VkBufferCreateInfo bufferInfo{};
-	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	bufferInfo.size = size;
-	bufferInfo.usage = usage;
-	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	const VkBufferCreateInfo bufferInfo{
+		.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+		.size = size,
+		.usage = usage,
+		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+	};
 
 	VmaAllocationCreateInfo allocCreateInfo{};
 	if (vmaUsage != VMA_MEMORY_USAGE_UNKNOWN)
@@ -654,10 +690,11 @@ void KtContext::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemo
 
 void KtContext::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 {
-	VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
+	VkCommandBuffer commandBuffer{ BeginSingleTimeCommands() };
 
-	VkBufferCopy copyRegion{};
-	copyRegion.size = size;
+	const VkBufferCopy copyRegion{
+		.size = size,
+	};
 	vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
 	EndSingleTimeCommands(commandBuffer);
@@ -668,7 +705,7 @@ u32 KtContext::FindMemoryType(u32 typeFilter, VkMemoryPropertyFlags properties) 
 	VkPhysicalDeviceMemoryProperties memProperties;
 	vkGetPhysicalDeviceMemoryProperties(physicalDevice_, &memProperties);
 
-	for (u32 i = 0; i < memProperties.memoryTypeCount; i++)
+	for (u32 i{ 0 }; i < memProperties.memoryTypeCount; i++)
 	{
 		if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
 		{
@@ -681,31 +718,33 @@ u32 KtContext::FindMemoryType(u32 typeFilter, VkMemoryPropertyFlags properties) 
 
 void KtContext::CreateImage(u32 width, u32 height, u32 mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VmaAllocation& imageAllocation) const
 {
-	VkImageCreateInfo imageInfo{};
-	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-	imageInfo.imageType = VK_IMAGE_TYPE_2D;
-	imageInfo.extent.width = width;
-	imageInfo.extent.height = height;
-	imageInfo.extent.depth = 1;
-	imageInfo.mipLevels = mipLevels;
-	imageInfo.arrayLayers = 1;
-	imageInfo.format = format;
-	imageInfo.tiling = tiling;
-	imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	imageInfo.usage = usage;
-	imageInfo.samples = numSamples;
-	imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	const VkImageCreateInfo imageInfo{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+		.imageType = VK_IMAGE_TYPE_2D,
+		.format = format,
+		.extent{
+			.width = width,
+			.height = height,
+			.depth = 1,
+		},
+		.mipLevels = mipLevels,
+		.arrayLayers = 1,
+		.samples = numSamples,
+		.tiling = tiling,
+		.usage = usage,
+		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+	};
 
-	VmaAllocationCreateInfo allocCreateInfo{};
-	allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO;
-	allocCreateInfo.requiredFlags = properties;
+	VmaAllocationCreateInfo allocCreateInfo{
+		.usage = VMA_MEMORY_USAGE_AUTO,
+		.requiredFlags = properties,
+	};
 
-	// Use vmaCreateImage for image creation and memory allocation
 	VK_CHECK_THROW(
 		vmaCreateImage(allocator_, &imageInfo, &allocCreateInfo, &image, &imageAllocation, nullptr),
 		"failed to create image with memory allocation!"
 	);
-	
 }
 
 VkFormat KtContext::FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const
@@ -744,21 +783,23 @@ bool KtContext::HasStencilComponent(VkFormat format) const
 
 void KtContext::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, u32 mipLevels)
 {
-	VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
+	VkCommandBuffer commandBuffer{ BeginSingleTimeCommands() };
 
-	VkImageMemoryBarrier barrier{};
-	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	barrier.oldLayout = oldLayout;
-	barrier.newLayout = newLayout;
-	barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	barrier.image = image;
-	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	barrier.subresourceRange.baseMipLevel = 0;
-	barrier.subresourceRange.levelCount = mipLevels;
-	barrier.subresourceRange.baseArrayLayer = 0;
-	barrier.subresourceRange.layerCount = 1;
-
+	VkImageMemoryBarrier barrier{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+		.oldLayout = oldLayout,
+		.newLayout = newLayout,
+		.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+		.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+		.image = image,
+		.subresourceRange{
+			.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+			.baseMipLevel = 0,
+			.levelCount = mipLevels,
+			.baseArrayLayer = 0,
+			.layerCount = 1,
+		},
+	};
 	VkPipelineStageFlags sourceStage;
 	VkPipelineStageFlags destinationStage;
 
@@ -821,22 +862,18 @@ void KtContext::CopyBufferToImage(VkBuffer buffer, VkImage image, u32 width, u32
 {
 	VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
 
-	VkBufferImageCopy region{};
-	region.bufferOffset = 0;
-	region.bufferRowLength = 0;
-	region.bufferImageHeight = 0;
-
-	region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	region.imageSubresource.mipLevel = 0;
-	region.imageSubresource.baseArrayLayer = 0;
-	region.imageSubresource.layerCount = 1;
-
-	region.imageOffset = { 0, 0, 0 };
-	region.imageExtent =
-	{
-		width,
-		height,
-		1
+	const VkBufferImageCopy region{
+		.bufferOffset = 0,
+		.bufferRowLength = 0,
+		.bufferImageHeight = 0,
+		.imageSubresource{
+			.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+			.mipLevel = 0,
+			.baseArrayLayer = 0,
+			.layerCount = 1,
+		},
+		.imageOffset = { 0, 0, 0 },
+		.imageExtent = { width, height, 1 },
 	};
 
 	vkCmdCopyBufferToImage(
@@ -853,22 +890,25 @@ void KtContext::CopyBufferToImage(VkBuffer buffer, VkImage image, u32 width, u32
 
 VkImageView KtContext::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, u32 mipLevels) const
 {
-	VkImageViewCreateInfo viewInfo{};
-	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-	viewInfo.image = image;
-	viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-	viewInfo.format = format;
-	viewInfo.subresourceRange.aspectMask = aspectFlags;
-	viewInfo.subresourceRange.baseMipLevel = 0;
-	viewInfo.subresourceRange.levelCount = mipLevels;
-	viewInfo.subresourceRange.baseArrayLayer = 0;
-	viewInfo.subresourceRange.layerCount = 1;
+	const VkImageViewCreateInfo viewInfo{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+		.image = image,
+		.viewType = VK_IMAGE_VIEW_TYPE_2D,
+		.format = format,
+		.subresourceRange{
+			.aspectMask = aspectFlags,
+			.baseMipLevel = 0,
+			.levelCount = mipLevels,
+			.baseArrayLayer = 0,
+			.layerCount = 1,
+		},
+	};
 
 	VkImageView imageView;
-	if (vkCreateImageView(device_, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create texture image view!");
-	}
+	VK_CHECK_THROW(
+		vkCreateImageView(device_, &viewInfo, nullptr, &imageView),
+		"failed to create texture image view!"
+	);
 
 	return imageView;
 }
@@ -883,22 +923,25 @@ void KtContext::GenerateMipmaps(VkImage image, VkFormat imageFormat, i32 texWidt
 		throw std::runtime_error("texture image format does not support linear blitting!");
 	}
 
-	VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
+	VkCommandBuffer commandBuffer{ BeginSingleTimeCommands() };
 
-	VkImageMemoryBarrier barrier{};
-	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	barrier.image = image;
-	barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	barrier.subresourceRange.baseArrayLayer = 0;
-	barrier.subresourceRange.layerCount = 1;
-	barrier.subresourceRange.levelCount = 1;
+	VkImageMemoryBarrier barrier{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+		.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+		.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+		.image = image,
+		.subresourceRange{
+			.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+			.levelCount = 1,
+			.baseArrayLayer = 0,
+			.layerCount = 1,
+		},
+	};
 
 	i32 mipWidth = texWidth;
 	i32 mipHeight = texHeight;
 
-	for (u32 i = 1; i < mipLevels; i++)
+	for (u32 i{ 1 }; i < mipLevels; i++)
 	{
 		barrier.subresourceRange.baseMipLevel = i - 1;
 		barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
@@ -913,19 +956,28 @@ void KtContext::GenerateMipmaps(VkImage image, VkFormat imageFormat, i32 texWidt
 			1, &barrier
 		);
 
-		VkImageBlit blit{};
-		blit.srcOffsets[0] = { 0, 0, 0 };
-		blit.srcOffsets[1] = { mipWidth, mipHeight, 1 };
-		blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		blit.srcSubresource.mipLevel = i - 1;
-		blit.srcSubresource.baseArrayLayer = 0;
-		blit.srcSubresource.layerCount = 1;
-		blit.dstOffsets[0] = { 0, 0, 0 };
-		blit.dstOffsets[1] = { mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1 };
-		blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		blit.dstSubresource.mipLevel = i;
-		blit.dstSubresource.baseArrayLayer = 0;
-		blit.dstSubresource.layerCount = 1;
+		const VkImageBlit blit{
+			.srcSubresource{
+				.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+				.mipLevel = i - 1,
+				.baseArrayLayer = 0,
+				.layerCount = 1,
+			},
+			.srcOffsets = { 
+				{ 0, 0, 0 },
+				{ mipWidth, mipHeight, 1 } 
+			},
+			.dstSubresource{
+				.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+				.mipLevel = i,
+				.baseArrayLayer = 0,
+				.layerCount = 1,
+			},
+			.dstOffsets = { 
+				{ 0, 0, 0 },
+				{ mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1 }
+			},
+		};
 
 		vkCmdBlitImage(commandBuffer,
 			image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
@@ -971,13 +1023,13 @@ VkSampleCountFlagBits KtContext::GetMaxUsableSampleCount() const
 	VkPhysicalDeviceProperties physicalDeviceProperties;
 	vkGetPhysicalDeviceProperties(physicalDevice_, &physicalDeviceProperties);
 
-	VkSampleCountFlags counts = physicalDeviceProperties.limits.framebufferColorSampleCounts & physicalDeviceProperties.limits.framebufferDepthSampleCounts;
-	if (counts & VK_SAMPLE_COUNT_64_BIT) { return VK_SAMPLE_COUNT_64_BIT; }
-	if (counts & VK_SAMPLE_COUNT_32_BIT) { return VK_SAMPLE_COUNT_32_BIT; }
-	if (counts & VK_SAMPLE_COUNT_16_BIT) { return VK_SAMPLE_COUNT_16_BIT; }
-	if (counts & VK_SAMPLE_COUNT_8_BIT) { return VK_SAMPLE_COUNT_8_BIT; }
-	if (counts & VK_SAMPLE_COUNT_4_BIT) { return VK_SAMPLE_COUNT_4_BIT; }
-	if (counts & VK_SAMPLE_COUNT_2_BIT) { return VK_SAMPLE_COUNT_2_BIT; }
+	const VkSampleCountFlags counts{ physicalDeviceProperties.limits.framebufferColorSampleCounts & physicalDeviceProperties.limits.framebufferDepthSampleCounts };
+	if (counts & VK_SAMPLE_COUNT_64_BIT) return VK_SAMPLE_COUNT_64_BIT; 
+	if (counts & VK_SAMPLE_COUNT_32_BIT) return VK_SAMPLE_COUNT_32_BIT; 
+	if (counts & VK_SAMPLE_COUNT_16_BIT) return VK_SAMPLE_COUNT_16_BIT; 
+	if (counts & VK_SAMPLE_COUNT_8_BIT) return VK_SAMPLE_COUNT_8_BIT; 
+	if (counts & VK_SAMPLE_COUNT_4_BIT) return VK_SAMPLE_COUNT_4_BIT; 
+	if (counts & VK_SAMPLE_COUNT_2_BIT) return VK_SAMPLE_COUNT_2_BIT; 
 
 	return VK_SAMPLE_COUNT_1_BIT;
 }

@@ -396,7 +396,7 @@ void KtSceneRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const std::v
 
 void KtSceneRenderer::CmdExecuteCommandBuffers(VkCommandBuffer commandBuffer, const u32 frameIndex)
 {
-	const std::array<VkCommandBuffer, 2> commandBuffers 
+	const std::array commandBuffers 
 	{
 		frameDatas_[frameIndex].staticBuffer.commandBuffer,
 		frameDatas_[frameIndex].dynamicBuffer.commandBuffer

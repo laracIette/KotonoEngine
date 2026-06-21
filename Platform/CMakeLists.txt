@@ -37,7 +37,7 @@ foreach(glfw_target
 endforeach()
 ##############
 
-find_package(Vulkan 1.3 REQUIRED)
+find_package(Vulkan 1.4 REQUIRED)
 
 # Static library
 add_library(KotonoPlatform STATIC)

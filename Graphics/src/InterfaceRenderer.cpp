@@ -10,7 +10,7 @@
 #include <kotono_platform/vk_utils.h>
 #include <kotono_platform/WindowViewport.h>
 
-static constexpr std::array<KtVertex2D, 4> Vertices
+static constexpr std::array Vertices
 {//                   Position,              UColor,      TexCoords
 	KtVertex2D{ {-0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f} }, // Bottom-left
 	KtVertex2D{ { 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f} }, // Bottom-right
@@ -18,7 +18,7 @@ static constexpr std::array<KtVertex2D, 4> Vertices
 	KtVertex2D{ {-0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f} }  // Top-left
 };
 
-static constexpr std::array<u32, 6> Indices{ 0, 1, 2, 2, 3, 0 };
+static constexpr std::array Indices{ 0u, 1u, 2u, 2u, 3u, 0u };
 
 void KtInterfaceRenderer::Init()
 {
@@ -97,7 +97,7 @@ UInterfaceProxy* KtInterfaceRenderer::CreateProxy() const
 
 void KtInterfaceRenderer::DeleteProxy(Proxy* proxy)
 {
-	deleteProxies_[proxy] = static_cast<u32>(KT_FRAMES_IN_FLIGHT);;
+	deleteProxies_[proxy] = static_cast<u32>(KT_FRAMES_IN_FLIGHT);
 }
 
 void KtInterfaceRenderer::CreateVertexBuffer()
@@ -164,8 +164,8 @@ void KtInterfaceRenderer::DestroyStagingIndexBuffer() const
 
 void KtInterfaceRenderer::CmdBindVertexBuffer(VkCommandBuffer commandBuffer) const
 {
-	const std::array<VkBuffer, 1> vertexBuffers{ vertexBuffer_.Buffer };
-	const std::array<VkDeviceSize, 1> offsets{ 0 };
+	const std::array vertexBuffers{ vertexBuffer_.Buffer };
+	const std::array offsets{ VkDeviceSize{ 0 } };
 	vkCmdBindVertexBuffers(commandBuffer, 0, static_cast<u32>(vertexBuffers.size()), vertexBuffers.data(), offsets.data());
 }
 

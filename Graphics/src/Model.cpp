@@ -34,8 +34,8 @@ const UPath& KtModel::Path() const
 
 void KtModel::CmdBind(VkCommandBuffer commandBuffer) const
 {
-	const std::array<VkBuffer, 1> vertexBuffers = { vertexBuffer_.Buffer };
-	const std::array<VkDeviceSize, 1> offsets = { 0 };
+	const std::array vertexBuffers{ vertexBuffer_.Buffer };
+	const std::array offsets{ VkDeviceSize{ 0 } };
 	vkCmdBindVertexBuffers(commandBuffer, 0, static_cast<u32>(vertexBuffers.size()), vertexBuffers.data(), offsets.data());
 	vkCmdBindIndexBuffer(commandBuffer, indexBuffer_.Buffer, 0, VK_INDEX_TYPE_UINT32);
 }

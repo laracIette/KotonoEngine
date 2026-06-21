@@ -70,6 +70,7 @@ private:
 	void PickPhysicalDevice();
 	bool IsDeviceSuitable(VkPhysicalDevice device);
 	bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
+	bool CheckDeviceFeatureSupport(VkPhysicalDevice device);
 	void CreateLogicalDevice();
 	void CreateSurface();
 	VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;

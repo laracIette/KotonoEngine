@@ -72,8 +72,8 @@ void KtRenderer::CreateSwapChain()
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	const KtQueueFamilyIndices indices = Context.FindQueueFamilies(Context.GetPhysicalDevice());
-	const std::array<u32, 2> queueFamilyIndices =
+	const KtQueueFamilyIndices indices{ Context.FindQueueFamilies(Context.GetPhysicalDevice()) };
+	const std::array queueFamilyIndices
 	{
 		indices.graphicsFamily.value(),
 		indices.presentFamily.value()
@@ -236,7 +236,7 @@ void KtRenderer::CreateRenderPass()
 	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
-	const std::array<VkAttachmentDescription, 3> attachments =
+	const std::array attachments
 	{
 		colorAttachment,
 		depthAttachment,
@@ -262,7 +262,7 @@ void KtRenderer::CreateFramebuffers()
 {
 	for (auto& swapChainData : swapChainDatas_)
 	{
-		const std::array<VkImageView, 3> attachments =
+		const std::array attachments
 		{
 			colorImageView_,
 			depthImageView_,
@@ -550,8 +550,8 @@ void KtRenderer::SubmitCommandBuffer(const u32 frameIndex)
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-	const std::array<VkSemaphore, 1> waitSemaphores = { frameDatas_[frameIndex].imageAvailableSemaphore };
-	const std::array<VkPipelineStageFlags, 1> waitStages = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+	const std::array waitSemaphores{ frameDatas_[frameIndex].imageAvailableSemaphore };
+	const std::array waitStages{ VkPipelineStageFlags{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT } };
 	submitInfo.waitSemaphoreCount = static_cast<u32>(waitSemaphores.size());
 	submitInfo.pWaitSemaphores = waitSemaphores.data();
 	submitInfo.pWaitDstStageMask = waitStages.data();
@@ -559,7 +559,7 @@ void KtRenderer::SubmitCommandBuffer(const u32 frameIndex)
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &frameDatas_[frameIndex].commandBuffer;
 
-	const std::array<VkSemaphore, 1> signalSemaphores = { frameDatas_[frameIndex].renderFinishedSemaphore };
+	const std::array signalSemaphores{ frameDatas_[frameIndex].renderFinishedSemaphore };
 	submitInfo.signalSemaphoreCount = static_cast<u32>(signalSemaphores.size());
 	submitInfo.pSignalSemaphores = signalSemaphores.data();
 
@@ -573,7 +573,7 @@ void KtRenderer::SubmitCommandBuffer(const u32 frameIndex)
 	presentInfo.waitSemaphoreCount = static_cast<u32>(signalSemaphores.size());
 	presentInfo.pWaitSemaphores = signalSemaphores.data();
 
-	const std::array<VkSwapchainKHR, 1> swapChains = { swapChain_ };
+	const std::array swapChains{ swapChain_ };
 	presentInfo.swapchainCount = static_cast<u32>(swapChains.size());
 	presentInfo.pSwapchains = swapChains.data();
 	presentInfo.pImageIndices = &frameDatas_[frameIndex].imageIndex;

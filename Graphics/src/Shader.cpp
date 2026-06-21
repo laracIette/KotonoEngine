@@ -242,13 +242,13 @@ void KtShader::CreateDescriptorSetLayoutBindings()
 
 void KtShader::CreateDescriptorPool(const std::span<VkDescriptorPoolSize> poolSizes, const u32 setCount)
 {
-	VkDescriptorPoolCreateInfo poolInfo{};
-	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	poolInfo.maxSets = static_cast<u32>(KT_FRAMES_IN_FLIGHT) * setCount;
-	poolInfo.poolSizeCount = static_cast<u32>(poolSizes.size());
-	poolInfo.pPoolSizes = poolSizes.data();
-	poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
-
+	const VkDescriptorPoolCreateInfo poolInfo{
+		.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+		.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT,
+		.maxSets = static_cast<u32>(KT_FRAMES_IN_FLIGHT) * setCount,
+		.poolSizeCount = static_cast<u32>(poolSizes.size()),
+		.pPoolSizes = poolSizes.data(),
+	};
 	VK_CHECK_THROW(
 		vkCreateDescriptorPool(Context.GetDevice(), &poolInfo, nullptr, &descriptorPool_),
 		"failed to create descriptor pool!"
@@ -257,11 +257,11 @@ void KtShader::CreateDescriptorPool(const std::span<VkDescriptorPoolSize> poolSi
 
 void KtShader::CreateShaderModule(VkShaderModule& shaderModule, const std::span<u8> code)
 {
-	VkShaderModuleCreateInfo createInfo{};
-	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	createInfo.codeSize = code.size();
-	createInfo.pCode = reinterpret_cast<const u32*>(code.data());
-
+	const VkShaderModuleCreateInfo createInfo{
+		.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+		.codeSize = code.size(),
+		.pCode = reinterpret_cast<const u32*>(code.data()),
+	};
 	VK_CHECK_THROW(
 		vkCreateShaderModule(Context.GetDevice(), &createInfo, nullptr, &shaderModule),
 		"failed to create shader module!"
@@ -277,117 +277,123 @@ void KtShader::CreateGraphicsPipeline()
 	USerializer::Deserialize(json, path_);
 	for (const auto& shader : json["shaders"])
 	{
-		const auto path{ UPath("${ENGINE_DIRECTORY}/Graphics/shaders").ToPath() / shader["path"]};
-		std::vector<u8> shaderCode{ UFile(path).ReadBinary() };
+		const auto path{ UPath("${ENGINE_DIRECTORY}/Graphics/shaders").ToPath() / shader["path"] };
+		std::vector shaderCode{ UFile(path).ReadBinary() };
 
 		VkShaderModule shaderModule;
 		CreateShaderModule(shaderModule, shaderCode);
 		shaderModules.push_back(shaderModule);
 
-		VkPipelineShaderStageCreateInfo shaderStageInfo{};
-		shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		shaderStageInfo.stage = shader["shaderStage"];
-		shaderStageInfo.module = shaderModule;
-		shaderStageInfo.pName = "main";
-
+		const VkPipelineShaderStageCreateInfo shaderStageInfo{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+			.stage = shader["shaderStage"],
+			.module = shaderModule,
+			.pName = "main",
+		};
 		shaderStages.push_back(shaderStageInfo);
 	}
 
-	auto& dataRasterizer = json["rasterizer"];
-	VkPipelineRasterizationStateCreateInfo rasterizer{};
-	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-	rasterizer.depthClampEnable = dataRasterizer["depthClampEnable"];
-	rasterizer.rasterizerDiscardEnable = dataRasterizer["rasterizerDiscardEnable"];
-	rasterizer.polygonMode = dataRasterizer["polygonMode"];
-	rasterizer.lineWidth = dataRasterizer["lineWidth"]; // For rasterizer.polygonMode = VK_POLYGON_MODE_LINE; 
-	// enable wideLines GPU feature for thicker
-	rasterizer.cullMode = dataRasterizer["cullMode"];
-	rasterizer.frontFace = dataRasterizer["frontFace"];
-	rasterizer.depthBiasEnable = dataRasterizer["depthBiasEnable"];
-	rasterizer.depthBiasConstantFactor = dataRasterizer["depthBiasConstantFactor"]; // Optional
-	rasterizer.depthBiasClamp = dataRasterizer["depthBiasClamp"]; // Optional
-	rasterizer.depthBiasSlopeFactor = dataRasterizer["depthBiasSlopeFactor"]; // Optional
+	const auto& dataRasterizer{ json["rasterizer"] };
+	const VkPipelineRasterizationStateCreateInfo rasterizer{
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+		.depthClampEnable = dataRasterizer["depthClampEnable"],
+		.rasterizerDiscardEnable = dataRasterizer["rasterizerDiscardEnable"],
+		.polygonMode = dataRasterizer["polygonMode"],
+		.cullMode = dataRasterizer["cullMode"],
+		.frontFace = dataRasterizer["frontFace"],
+		.depthBiasEnable = dataRasterizer["depthBiasEnable"],
+		.depthBiasConstantFactor = dataRasterizer["depthBiasConstantFactor"], // Optional
+		.depthBiasClamp = dataRasterizer["depthBiasClamp"], // Optional
+		.depthBiasSlopeFactor = dataRasterizer["depthBiasSlopeFactor"], // Optional
+		.lineWidth = dataRasterizer["lineWidth"], // For rasterizer.polygonMode = VK_POLYGON_MODE_LINE, enable wideLines GPU feature for thicker
+	};
 
-	auto& dataMultisampling = json["multisampling"];
-	VkPipelineMultisampleStateCreateInfo multisampling{};
-	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-	multisampling.sampleShadingEnable = dataMultisampling["sampleShadingEnable"]; // enable sample shading in the pipeline
-	multisampling.rasterizationSamples = Context.GetMSAASamples();
-	multisampling.minSampleShading = dataMultisampling["minSampleShading"]; // min fraction for sample shading; closer to one is smoother
-	multisampling.pSampleMask = nullptr; // Optional
-	multisampling.alphaToCoverageEnable = dataMultisampling["alphaToCoverageEnable"]; // Optional
-	multisampling.alphaToOneEnable = dataMultisampling["alphaToOneEnable"]; // Optional
+	const auto& dataMultisampling{ json["multisampling"] };
+	const VkPipelineMultisampleStateCreateInfo multisampling{
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+		.rasterizationSamples = Context.GetMSAASamples(),
+		.sampleShadingEnable = dataMultisampling["sampleShadingEnable"], // enable sample shading in the pipeline
+		.minSampleShading = dataMultisampling["minSampleShading"], // min fraction for sample shading, closer to one is smoother
+		.pSampleMask = nullptr, // Optional
+		.alphaToCoverageEnable = dataMultisampling["alphaToCoverageEnable"], // Optional
+		.alphaToOneEnable = dataMultisampling["alphaToOneEnable"], // Optional
+	};
 
-	auto& dataDepthStencil = json["depthStencil"];
-	VkPipelineDepthStencilStateCreateInfo depthStencil{};
-	depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-	depthStencil.depthTestEnable = dataDepthStencil["depthTestEnable"];
-	depthStencil.depthWriteEnable = dataDepthStencil["depthWriteEnable"];
-	depthStencil.depthCompareOp = dataDepthStencil["depthCompareOp"];
-	depthStencil.depthBoundsTestEnable = dataDepthStencil["depthBoundsTestEnable"];
-	depthStencil.minDepthBounds = dataDepthStencil["minDepthBounds"]; // Optional
-	depthStencil.maxDepthBounds = dataDepthStencil["maxDepthBounds"]; // Optional
-	depthStencil.stencilTestEnable = dataDepthStencil["stencilTestEnable"];
-	depthStencil.front = {}; // Optional
-	depthStencil.back = {}; // Optional
+	const auto& dataDepthStencil{ json["depthStencil"] };
+	const VkPipelineDepthStencilStateCreateInfo depthStencil{
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+		.depthTestEnable = dataDepthStencil["depthTestEnable"],
+		.depthWriteEnable = dataDepthStencil["depthWriteEnable"],
+		.depthCompareOp = dataDepthStencil["depthCompareOp"],
+		.depthBoundsTestEnable = dataDepthStencil["depthBoundsTestEnable"],
+		.stencilTestEnable = dataDepthStencil["stencilTestEnable"],
+		.front = {}, // Optional
+		.back = {}, // Optional
+		.minDepthBounds = dataDepthStencil["minDepthBounds"], // Optional
+		.maxDepthBounds = dataDepthStencil["maxDepthBounds"], // Optional
+	};
 
-	auto& dataColorBlendAttachment = json["colorBlendAttachment"];
-	VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-	colorBlendAttachment.colorWriteMask = 0;
+	const auto& dataColorBlendAttachment{ json["colorBlendAttachment"] };
+	VkColorComponentFlags colorWriteMask{ 0 };
 	for (const auto& component : dataColorBlendAttachment["colorWriteMask"])
 	{
-		colorBlendAttachment.colorWriteMask |= component;
+		colorWriteMask |= component;
 	}
-	colorBlendAttachment.blendEnable = dataColorBlendAttachment["blendEnable"];
-	colorBlendAttachment.srcColorBlendFactor = dataColorBlendAttachment["srcColorBlendFactor"];
-	colorBlendAttachment.dstColorBlendFactor = dataColorBlendAttachment["dstColorBlendFactor"];
-	colorBlendAttachment.colorBlendOp = dataColorBlendAttachment["colorBlendOp"];
-	colorBlendAttachment.srcAlphaBlendFactor = dataColorBlendAttachment["srcAlphaBlendFactor"];
-	colorBlendAttachment.dstAlphaBlendFactor = dataColorBlendAttachment["dstAlphaBlendFactor"];
-	colorBlendAttachment.alphaBlendOp = dataColorBlendAttachment["alphaBlendOp"];
+	const VkPipelineColorBlendAttachmentState colorBlendAttachment{
+		.blendEnable = dataColorBlendAttachment["blendEnable"],
+		.srcColorBlendFactor = dataColorBlendAttachment["srcColorBlendFactor"],
+		.dstColorBlendFactor = dataColorBlendAttachment["dstColorBlendFactor"],
+		.colorBlendOp = dataColorBlendAttachment["colorBlendOp"],
+		.srcAlphaBlendFactor = dataColorBlendAttachment["srcAlphaBlendFactor"],
+		.dstAlphaBlendFactor = dataColorBlendAttachment["dstAlphaBlendFactor"],
+		.alphaBlendOp = dataColorBlendAttachment["alphaBlendOp"],
+		.colorWriteMask = colorWriteMask,
+	};
 
-	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+	const VkPipelineVertexInputStateCreateInfo vertexInputInfo{
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+		.vertexBindingDescriptionCount = static_cast<u32>(shaderLayout_.VertexInputBindingDescriptions.size()),
+		.pVertexBindingDescriptions = shaderLayout_.VertexInputBindingDescriptions.data(),
+		.vertexAttributeDescriptionCount = static_cast<u32>(shaderLayout_.VertexInputAttributeDescriptions.size()),
+		.pVertexAttributeDescriptions = shaderLayout_.VertexInputAttributeDescriptions.data(),
+	};
 
-	vertexInputInfo.vertexBindingDescriptionCount = static_cast<u32>(shaderLayout_.VertexInputBindingDescriptions.size());
-	vertexInputInfo.pVertexBindingDescriptions = shaderLayout_.VertexInputBindingDescriptions.data();
-	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<u32>(shaderLayout_.VertexInputAttributeDescriptions.size());
-	vertexInputInfo.pVertexAttributeDescriptions = shaderLayout_.VertexInputAttributeDescriptions.data();
+	const VkPipelineInputAssemblyStateCreateInfo inputAssembly{
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+		.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+		.primitiveRestartEnable = VK_FALSE,
+	};
 
-	VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
-	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-	inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-	inputAssembly.primitiveRestartEnable = VK_FALSE;
+	const VkViewport viewport{
+		.x = 0.0f,
+		.y = 0.0f,
+		.width = (float)Renderer.SwapChainExtent().width,
+		.height = (float)Renderer.SwapChainExtent().height,
+		.minDepth = 0.0f,
+		.maxDepth = 1.0f,
+	};
 
-	VkViewport viewport{};
-	viewport.x = 0.0f;
-	viewport.y = 0.0f;
-	viewport.width = (float)Renderer.SwapChainExtent().width;
-	viewport.height = (float)Renderer.SwapChainExtent().height;
-	viewport.minDepth = 0.0f;
-	viewport.maxDepth = 1.0f;
+	const VkRect2D scissor{
+		.offset = { 0, 0 },
+		.extent = Renderer.SwapChainExtent(),
+	};
 
-	VkRect2D scissor{};
-	scissor.offset = { 0, 0 };
-	scissor.extent = Renderer.SwapChainExtent();
+	const VkPipelineViewportStateCreateInfo viewportState{
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+		.viewportCount = 1,
+		.pViewports = &viewport,
+		.scissorCount = 1,
+		.pScissors = &scissor,
+	};
 
-	VkPipelineViewportStateCreateInfo viewportState{};
-	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-	viewportState.viewportCount = 1;
-	viewportState.pViewports = &viewport;
-	viewportState.scissorCount = 1;
-	viewportState.pScissors = &scissor;
-
-	VkPipelineColorBlendStateCreateInfo colorBlending{};
-	colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-	colorBlending.logicOpEnable = VK_FALSE;
-	colorBlending.logicOp = VK_LOGIC_OP_COPY; // Optional
-	colorBlending.attachmentCount = 1;
-	colorBlending.pAttachments = &colorBlendAttachment;
-	colorBlending.blendConstants[0] = 0.0f; // Optional
-	colorBlending.blendConstants[1] = 0.0f; // Optional
-	colorBlending.blendConstants[2] = 0.0f; // Optional
-	colorBlending.blendConstants[3] = 0.0f; // Optional
+	const VkPipelineColorBlendStateCreateInfo colorBlending{
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+		.logicOpEnable = VK_FALSE,
+		.logicOp = VK_LOGIC_OP_COPY, // Optional
+		.attachmentCount = 1,
+		.pAttachments = &colorBlendAttachment,
+		.blendConstants = { 0.0f, 0.0f, 0.0f, 0.0f }, // Optional
+	};
 
 	std::vector<VkDynamicState> dynamicStates =
 	{
@@ -395,11 +401,11 @@ void KtShader::CreateGraphicsPipeline()
 		VK_DYNAMIC_STATE_SCISSOR
 	};
 
-	VkPipelineDynamicStateCreateInfo dynamicState{};
-	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-	dynamicState.dynamicStateCount = static_cast<u32>(dynamicStates.size());
-	dynamicState.pDynamicStates = dynamicStates.data();
-
+	const VkPipelineDynamicStateCreateInfo dynamicState{
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+		.dynamicStateCount = static_cast<u32>(dynamicStates.size()),
+		.pDynamicStates = dynamicStates.data(),
+	};
 
 	std::vector<VkDescriptorSetLayout> setLayouts;
 	for (const auto& descriptorSetLayoutData : descriptorSetLayoutDatas_)
@@ -407,36 +413,36 @@ void KtShader::CreateGraphicsPipeline()
 		setLayouts.push_back(descriptorSetLayoutData.DescriptorSetLayout);
 	}
 
-	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipelineLayoutInfo.setLayoutCount = static_cast<u32>(setLayouts.size());;
-	pipelineLayoutInfo.pSetLayouts = setLayouts.data();
-	pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
-	pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
-
+	const VkPipelineLayoutCreateInfo pipelineLayoutInfo{
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+		.setLayoutCount = static_cast<u32>(setLayouts.size()),
+		.pSetLayouts = setLayouts.data(),
+		.pushConstantRangeCount = 0, // Optional
+		.pPushConstantRanges = nullptr, // Optional
+	};
 	VK_CHECK_THROW(
 		vkCreatePipelineLayout(Context.GetDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout_),
 		"failed to create pipeline layout!"
 	);
 
-	VkGraphicsPipelineCreateInfo pipelineInfo{};
-	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-	pipelineInfo.stageCount = static_cast<u32>(shaderStages.size());
-	pipelineInfo.pStages = shaderStages.data();
-	pipelineInfo.pVertexInputState = &vertexInputInfo;
-	pipelineInfo.pInputAssemblyState = &inputAssembly;
-	pipelineInfo.pViewportState = &viewportState;
-	pipelineInfo.pRasterizationState = &rasterizer;
-	pipelineInfo.pMultisampleState = &multisampling;
-	pipelineInfo.pDepthStencilState = &depthStencil;
-	pipelineInfo.pColorBlendState = &colorBlending;
-	pipelineInfo.pDynamicState = &dynamicState;
-	pipelineInfo.layout = pipelineLayout_;
-	pipelineInfo.renderPass = Renderer.RenderPass();
-	pipelineInfo.subpass = 0;
-	pipelineInfo.basePipelineHandle = nullptr; // Optional
-	pipelineInfo.basePipelineIndex = -1; // Optional
-
+	const VkGraphicsPipelineCreateInfo pipelineInfo{
+		.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+		.stageCount = static_cast<u32>(shaderStages.size()),
+		.pStages = shaderStages.data(),
+		.pVertexInputState = &vertexInputInfo,
+		.pInputAssemblyState = &inputAssembly,
+		.pViewportState = &viewportState,
+		.pRasterizationState = &rasterizer,
+		.pMultisampleState = &multisampling,
+		.pDepthStencilState = &depthStencil,
+		.pColorBlendState = &colorBlending,
+		.pDynamicState = &dynamicState,
+		.layout = pipelineLayout_,
+		.renderPass = Renderer.RenderPass(),
+		.subpass = 0,
+		.basePipelineHandle = nullptr, // Optional
+		.basePipelineIndex = -1, // Optional
+	};
 	VK_CHECK_THROW(
 		vkCreateGraphicsPipelines(Context.GetDevice(), nullptr, 1, &pipelineInfo, nullptr, &graphicsPipeline_),
 		"failed to create graphics pipeline!"
