@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 4.2)
 project(KotonoInterface LANGUAGES C CXX)
 
 if (MSVC)
@@ -24,7 +24,7 @@ set(KINTERFACE_HEADERS
     "include/kotono_interface/Color.h"
     "include/kotono_interface/Column.h"
     "include/kotono_interface/Constraint.h"
-    "include/kotono_interface/Expand.h"    
+    "include/kotono_interface/Expand.h"
     "include/kotono_interface/Expanded.h"
     "include/kotono_interface/Flex.h"
     "include/kotono_interface/HorizontalWrapList.h"

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 4.2)
 project(KotonoPlatform LANGUAGES C CXX)
 
 if (MSVC)
@@ -37,7 +37,7 @@ foreach(glfw_target
 endforeach()
 ##############
 
-find_package(Vulkan REQUIRED)
+find_package(Vulkan 1.3 REQUIRED)
 
 # Static library
 add_library(KotonoPlatform STATIC)
