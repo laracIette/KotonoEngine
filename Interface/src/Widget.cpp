@@ -168,7 +168,7 @@ void WWidget::SetState(const StateFunction& function)
 		}
 		else if (UPtr ancestor{ FindNonFlexAncestor(getUpdatedAxis(oldDesiredSize, newDesiredSize)) })
 		{
-			KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Interface", "ancestor: {0}", ancestor->GetName());
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_WIDGET, "Interface", "ancestor: {0}", ancestor->GetName());
 			ancestor->Remove();
 			ancestor->Display(ancestor->displaySettings_);
 		}
@@ -234,7 +234,7 @@ void WWidget::OnMouseMove(const glm::vec2 delta)
 	if (!wasMouseHovering_)
 	{
 		wasMouseHovering_ = true;
-		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Interface", "overlapping {0:20} | position: {1:30}, size: {2:30} | {3}", GetName(), glm::to_string(GetPosition()), glm::to_string(GetSize()), ClassPath());
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_WIDGET, "Interface", "overlapping {0:20} | position: {1:30}, size: {2:30} | {3}", GetName(), glm::to_string(GetPosition()), glm::to_string(GetSize()), ClassPath());
 	}
 }
 

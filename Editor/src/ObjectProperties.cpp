@@ -1,18 +1,11 @@
 #include "ObjectProperties.h"
 #include "ValueBox.h"
 #include "ValueSliderFloat.h"
+#include <kotono_common/conversion_utils.h>
 #include <kotono_common/log.h>
 #include <kotono_interface/widgets.h>
 #include <kotono_object/Object.h>
 #include <glm/gtx/string_cast.hpp>
-
-template<typename T>
-static T from_string(const std::string& string, T defaultValue = T{})
-{
-    T result;
-    auto [ptr, ec] { std::from_chars(string.data(), string.data() + string.size(), result) };
-    return (ec == std::errc()) ? result : defaultValue;
-}
 
 static void* get_member_variable_pointer(void* object, const size offset) noexcept
 {
@@ -58,9 +51,9 @@ WidgetPtr WObjectProperties::Build()
     UPtr column{ UCreate<WColumn>{}() };
     column->SetSpacing(5.0f);
 
-    const auto widgetTree{ UChildOwnerTree(UCreate<WWrap>{}(),
-        new UChildrenOwnerTree(column, properties)
-    ) };
+    const auto widgetTree{ UChildOwnerTree{ UCreate<WWrap>{}(),
+        new UChildrenOwnerTree{ column, properties }
+    } };
     widgetTree.Link();
 
     return widgetTree.Widget();
@@ -74,7 +67,17 @@ WidgetPtr WObjectProperties::BuildMemberWidget(const std::string& type, void* va
     }
 	if (type == "f32")
     {
-        return UCreate<WValueSliderFloat>{}(static_cast<f32*>(variablePtr));
+        auto* floatPtr{ static_cast<f32*>(variablePtr) };
+
+        UPtr valueSlider{ UCreate<WValueSliderFloat>{}() };
+        valueSlider->SetValueToString([floatPtr]() {
+            return std::format("{0}", *floatPtr);
+        });
+        valueSlider->SetStringToValue([floatPtr](const std::string& value) {
+            *floatPtr = from_string<f32>(value);
+        });
+
+        return valueSlider;
     }
 	if (type == "size")
     {
@@ -82,7 +85,7 @@ WidgetPtr WObjectProperties::BuildMemberWidget(const std::string& type, void* va
 
         UPtr valueBox{ UCreate<WValueBox>{}() };
         valueBox->SetValueToString([sizePtr]() { 
-            return std::to_string(*sizePtr); 
+            return std::format("{0}", *sizePtr);
         });
         valueBox->SetStringToValue([sizePtr](const std::string& value) { 
             *sizePtr = from_string<size>(value); 

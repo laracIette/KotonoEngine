@@ -53,7 +53,7 @@ WidgetPtr WMainWindow::Build()
 	mainPadding->SetPadding(UPadding::All(16.0f));
 
 
-	const auto widgetTree{ UChildOwnerTree(mainPadding,
+	const auto widgetTree{ UChildOwnerTree{ mainPadding,
 		new UChildrenOwnerTree{ mainColumn, {
 			new UChildrenOwnerTree{ UCreate<WRow>{ "Top Row" }(), {
 				new UWidgetTreeLeaf{ UCreate<WSpacer>{ "Top Row Spacer" }(EAxis::Horizontal) },
@@ -64,11 +64,11 @@ WidgetPtr WMainWindow::Build()
 					} },
 				},
 			} },
-			new UChildOwnerTree{ UCreate<WWrap>{ "Game State Button Wrap" }(EAxis::Vertical),
-				new UChildrenOwnerTree{ UCreate<WRow>{ "Game State Button Row" }(), {
-					new UChildOwnerTree{ UCreate<WCenter>{ "Game State Button Center" }(EAxis::Horizontal),
+			new UChildOwnerTree{ UCreate<WWrap>{ "Game State Wrap" }(EAxis::Vertical),
+				new UChildrenOwnerTree{ UCreate<WRow>{ "Game State Row" }(), {
+					new UChildOwnerTree{ UCreate<WCenter>{ "Game State Center" }(EAxis::Horizontal),
 						new UWidgetTreeLeaf{ UCreate<WGameStateButton>{ "Game State Button" }() }
-					}
+					},
 				} }
 			},
 			new UChildrenOwnerTree{ centerRow, {
@@ -77,7 +77,7 @@ WidgetPtr WMainWindow::Build()
 						new UWidgetTreeLeaf{ UCreate<WSceneExplorer>{}() }
 					},
 					new UChildOwnerTree{ assetExplorerConstraint,
-						new UWidgetTreeLeaf{ UCreate<WAssetExplorer>{ "Asset Explorer" }()}
+						new UWidgetTreeLeaf{ UCreate<WAssetExplorer>{ "Asset Explorer" }() }
 					},
 				} },
 				new UWidgetTreeLeaf{ UCreate<WSpacer>{ "Center Row Spacer" }(EAxis::Horizontal) },
@@ -94,7 +94,7 @@ WidgetPtr WMainWindow::Build()
 				},
 			} },
 		} }
-	) };
+	} };
 	
 	widgetTree.Link();
 	

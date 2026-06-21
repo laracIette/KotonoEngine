@@ -8,14 +8,12 @@ WidgetPtr WValueBox::Build()
 	inputTextBox->SetText(valueToString_ ? valueToString_() : "");
 	inputTextBox->SetOnTextChanged(stringToValue_);
 
-	UPtr wrap{ UCreate<WWrap>{}() };
-	wrap->SetAxis(EAxis::Vertical);
+	const auto widgetTree{ UChildOwnerTree{ UCreate<WWrap>{}(EAxis::Vertical),
+		new UWidgetTreeLeaf{ inputTextBox }
+	} };
+	widgetTree.Link();
 
-	UChildOwnerTree(
-		wrap, new UWidgetTreeLeaf(inputTextBox)
-	).Link();
-
-	return wrap;
+	return widgetTree.Widget();
 }
 
 #include "generated/ValueBox.generated.inl"

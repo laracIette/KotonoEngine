@@ -1,25 +1,16 @@
 #pragma once
-#include <kotono_interface/Widget.h>
-template <typename T>
-class WValueSlider : public WWidget
+#include "generated/ValueSlider.generated.h"
+#include "ValueBox.h"
+class WValueSlider : public WValueBox
 {
-public:
-	using ValueType = T;
+	GENERATED_WVALUESLIDER()
 
 public:
-	WValueSlider() : value_(nullptr) {}
-	WValueSlider(T* value) : value_(value) {}
+	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Remove() override;
 
-	T& GetValue() const 
-	{ 
-		return *value_;
-	}
-	
-	void SetValue(T& value) 
-	{ 
-		value_ = value;
-	}
-
-private:
-	T* value_;
+protected:
+	virtual std::string Clamp(const std::string& value) const;
+	virtual std::string Increment(const std::string& value) const;
+	virtual std::string Decrement(const std::string& value) const;
 };

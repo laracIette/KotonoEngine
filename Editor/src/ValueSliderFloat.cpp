@@ -1,27 +1,33 @@
 #include "ValueSliderFloat.h"
-#include <kotono_interface/widgets.h>
+#include <kotono_common/conversion_utils.h>
 
-WidgetPtr WValueSliderFloat::Build()
+WValueSliderFloat::WValueSliderFloat() 
+	: defaultValue_{ 0.0f }
+	, minValue_{ -INFINITY }
+	, maxValue_{ INFINITY }
+	, step_{ 1.0f }
 {
-	UPtr box{ UCreate<WBox>{}() };
-	box->SetSize({ 300.0f, 60.0f });
+}
 
-	UPtr bg{ UCreate<WColor>{}() };
-	bg->SetColor(Colors::White.WithValue(0.75f));
+std::string WValueSliderFloat::Clamp(const std::string& value) const
+{
+	f32 fValue{ from_string<f32>(value) };
+	fValue = std::clamp(fValue, minValue_, maxValue_);
+	return std::format("{0}", fValue);
+}
 
-	UPtr text{ UCreate<WText>{}() };
-	text->SetText(std::to_string(GetValue()));
-	text->SetFontSize({ 42.0f, 50.0f });
-	text->SetSpacing(-10.0f);
+std::string WValueSliderFloat::Increment(const std::string& value) const
+{
+	f32 fValue{ from_string<f32>(value) };
+	fValue = std::clamp(fValue + step_, minValue_, maxValue_);
+	return std::format("{0}", fValue);
+}
 
-	UChildOwnerTree(box,
-		new UChildrenOwnerTree(UCreate<WStack>{}(), {
-			new UWidgetTreeLeaf(bg),
-			new UWidgetTreeLeaf(text),
-		})
-	).Link();
-
-	return box;
+std::string WValueSliderFloat::Decrement(const std::string& value) const
+{
+	f32 fValue{ from_string<f32>(value) };
+	fValue = std::clamp(fValue - step_, minValue_, maxValue_);
+	return std::format("{0}", fValue);
 }
 
 #include "generated/ValueSliderFloat.generated.inl"

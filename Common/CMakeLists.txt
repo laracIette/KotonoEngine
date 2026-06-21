@@ -20,6 +20,7 @@ set(KCOMMON_HEADERS
     "include/kotono_common/Average.h"
     "include/kotono_common/Buildable.h"
     "include/kotono_common/Cached.h"
+    "include/kotono_common/conversion_utils.h"
     "include/kotono_common/Delegate.h"
     "include/kotono_common/enum_utils.h"
     "include/kotono_common/Event.h"

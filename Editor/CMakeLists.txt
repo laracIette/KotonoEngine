@@ -58,6 +58,7 @@ set(KEDITOR_SOURCES
     "src/SceneExplorerRemoveButton.cpp"
     "src/UpdateTimeText.cpp"
     "src/ValueBox.cpp"
+    "src/ValueSlider.cpp"
     "src/ValueSliderFloat.cpp"
     "src/Visualizer.cpp"
     "src/VisualizerWindow.cpp"

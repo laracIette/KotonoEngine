@@ -30,12 +30,12 @@ WidgetPtr WAssetExplorerItem::Build()
         else {
             lastClickedTime_ = TimeManager.Now();
             isSelected_ = true;
-            background_->SetColor(Colors::White.WithValue(isSelected_ ? 0.2f : 0.1f));
+            background_->SetColor(Colors::White.WithValue(0.2f));
         }
     });
     button->SetOnPressOut([this]() {  
         isSelected_ = false;
-        background_->SetColor(Colors::White.WithValue(isSelected_ ? 0.2f : 0.1f));
+        background_->SetColor(Colors::White.WithValue(0.1f));
     });
 
     const auto widgetTree{ UChildOwnerTree{ UCreate<WBox>{ "Item Box" }(glm::vec2{ 128.0f }),
