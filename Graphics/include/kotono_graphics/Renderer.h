@@ -21,13 +21,13 @@ public:
 
 	u32 GetGameThreadFrame() const; // todo: make private, staging interface uniform buffers
 
-	VkExtent2D SwapChainExtent() const;
+	VkExtent2D GetSwapChainExtent() const;
+	VkFormat GetSwapChainFormat() const;
+	VkFormat GetDepthFormat() const;
 
 	KtInterfaceRenderer& InterfaceRenderer();
 	KtSceneRenderer& SceneRenderer();
 
-	VkRenderPass& RenderPass();
-	VkFramebuffer& GetFramebuffer(const u32 frameIndex);
 	VkCommandPool& GetCommandPool(const u32 frameIndex);
 
 private:
@@ -35,7 +35,13 @@ private:
 	{
 		VkImage image;
 		VkImageView imageView;
-		VkFramebuffer framebuffer;
+	};
+
+	struct AllocatedImage
+	{
+		VkImage image;
+		VmaAllocation allocation;
+		VkImageView imageView;
 	};
 
 	struct FrameData
@@ -44,6 +50,8 @@ private:
 		VkCommandBuffer commandBuffer;
 		VkSemaphore imageAvailableSemaphore;
 		VkSemaphore renderFinishedSemaphore;
+		AllocatedImage colorTarget;
+		AllocatedImage depthTarget;
 		VkFence inFlightFence;
 		u32 imageIndex;
 	};
@@ -53,23 +61,15 @@ private:
 
 	std::vector<SwapChainData> swapChainDatas_;
 	VkSwapchainKHR swapChain_;
-	VkFormat swapChainImageFormat_;
+	VkFormat swapChainFormat_;
 	VkExtent2D swapChainExtent_;
 
-	VkRenderPass renderPass_;
+	VkFormat depthFormat_;
 
 	KtFramesInFlightArray<FrameData> frameDatas_;
 
 	std::thread renderThread_;
 	std::thread rhiThread_;
-
-	VkImage colorImage_;
-	VmaAllocation colorImageAllocation_;
-	VkImageView colorImageView_;
-
-	VkImage depthImage_;
-	VmaAllocation depthImageAllocation_;
-	VkImageView depthImageView_;
 
 	u32 frameCount_;
 
@@ -81,14 +81,10 @@ private:
 	VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
 	void CreateImageViews();
 
-	void CreateRenderPass();
-	void CreateFramebuffers();
-
 	void CreateColorResources();
 	void CreateDepthResources();
 	VkFormat FindSupportedFormat(const std::span<VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const;
 	VkFormat FindDepthFormat() const;
-	bool HasStencilComponent(const VkFormat format) const;
 
 	bool TryAcquireNextImage(const u32 frameIndex);
 

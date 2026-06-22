@@ -108,6 +108,7 @@ set(KGRAPHICS_SOURCES
     "src/SceneProxy.cpp"
     "src/SceneRenderer.cpp"
     "src/Shader.cpp"
+    "src/ShaderLayout.cpp"
     "src/SpvCompiler.cpp"
     "src/Texture.cpp"
     "src/Vertex2D.cpp"

@@ -175,17 +175,29 @@ void KtSceneRenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer, const u3
 {
 	vkResetCommandBuffer(commandBuffer, 0);
 
+	const std::array colorAttachmentFormats{ Renderer.GetSwapChainFormat() };
+	const VkCommandBufferInheritanceRenderingInfo inheritanceRenderingInfo{
+		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_RENDERING_INFO,
+		.pNext = VK_NULL_HANDLE,
+		.flags = 0,
+		.colorAttachmentCount = static_cast<u32>(colorAttachmentFormats.size()),
+		.pColorAttachmentFormats = colorAttachmentFormats.data(),
+		.depthAttachmentFormat = Renderer.GetDepthFormat(),
+		.stencilAttachmentFormat = VK_FORMAT_UNDEFINED, // Change if using stencil
+		.rasterizationSamples = Context.GetMSAASamples()
+	};
+
 	const VkCommandBufferInheritanceInfo inheritanceInfo{
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO,
-		.renderPass = Renderer.RenderPass(),
-		.subpass = 0,
-		.framebuffer = Renderer.GetFramebuffer(frameIndex),
+		.pNext = &inheritanceRenderingInfo,
 	};
+
 	const VkCommandBufferBeginInfo beginInfo{
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
 		.flags = VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT,
 		.pInheritanceInfo = &inheritanceInfo,
 	};
+
 	VK_CHECK_THROW(
 		vkBeginCommandBuffer(commandBuffer, &beginInfo),
 		"failed to begin recording command buffer!"

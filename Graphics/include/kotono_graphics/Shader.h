@@ -12,25 +12,25 @@ class KtShader final
 public:	
 	struct DescriptorSetLayoutBindingData final
 	{														  
-		VkDescriptorSetLayout										DescriptorSetLayout;
-		KtFramesInFlightArray<VkDescriptorSet>						DescriptorSets;
-		std::string													Name;
-		KtFramesInFlightArray<KtAllocatedBuffer>					Buffers;
-		KtFramesInFlightArray<KtAllocatedBuffer>					StagingBuffers;
-		KtFramesInFlightArray<size>									MemberCounts;
-		size														MemberSize;
-		VkDescriptorType											DescriptorType;
-		u32															Binding;
-		u32															DescriptorCount;
-		VkShaderStageFlags											ShaderStageFlags;
-		VkDescriptorBindingFlags									BindingFlags;
-		KtFramesInFlightArray<std::vector<VkDescriptorImageInfo>>	ImageInfos;
+		VkDescriptorSetLayout										descriptorSetLayout;
+		KtFramesInFlightArray<VkDescriptorSet>						descriptorSets;
+		std::string													name;
+		KtFramesInFlightArray<KtAllocatedBuffer>					buffers;
+		KtFramesInFlightArray<KtAllocatedBuffer>					stagingBuffers;
+		KtFramesInFlightArray<size>									memberCounts;
+		size														memberSize;
+		VkDescriptorType											descriptorType;
+		u32															binding;
+		u32															descriptorCount;
+		VkShaderStageFlags											shaderStageFlags;
+		KtFramesInFlightArray<std::vector<VkDescriptorImageInfo>>	imageInfos;
+		bool														isBindless;
 	};
 	struct DescriptorSetLayoutData final
 	{
-	    VkDescriptorSetLayout                          DescriptorSetLayout;
-		KtFramesInFlightArray<VkDescriptorSet>         DescriptorSets;
-	    std::vector<DescriptorSetLayoutBindingData>    DescriptorSetLayoutBindingDatas;
+	    VkDescriptorSetLayout                          descriptorSetLayout;
+		KtFramesInFlightArray<VkDescriptorSet>         descriptorSets;
+	    std::vector<DescriptorSetLayoutBindingData>    descriptorSetLayoutBindingDatas;
 	};
 
 	KtShader(const UPath& path);
@@ -52,9 +52,6 @@ public:
 	void UpdateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const std::vector<VkDescriptorImageInfo>& imageInfos, const u32 imageIndex);
 
 private:
-	void CreateShaderLayout();
-	void PopulateShaderLayout(const std::span<u8> spirvData, const VkShaderStageFlagBits shaderStage);
-
 	void CreateDescriptorSetLayouts();
 	void CreateDescriptorSetLayout(VkDescriptorSetLayout& layout, const std::span<VkDescriptorSetLayoutBinding> layoutBindings, const std::span<VkDescriptorBindingFlags> bindingFlags);
 
@@ -74,9 +71,12 @@ private:
 
 	bool GetIsBufferDescriptorType(const VkDescriptorType descriptorType) const;
 	bool GetIsImageSamplerDescriptorType(const VkDescriptorType descriptorType) const;
+	VkBufferUsageFlagBits GetBufferUsageFlagBits(const VkDescriptorType descriptorType) const;
 	
 	void UpdateDescriptorSetLayoutBindingBufferDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const u32 imageIndex);
 	void UpdateDescriptorSetLayoutBindingImageSamplerDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const u32 imageIndex);
+
+	void CreateShaderLayout();
 
 private:
 	const UPath path_;

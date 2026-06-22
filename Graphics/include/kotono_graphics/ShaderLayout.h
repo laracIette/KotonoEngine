@@ -1,33 +1,39 @@
 #pragma once
-#include <vulkan/vulkan_core.h>
-#include <vector>
-#include <string>
+#include <kotono_common/types.h>
 #include <map>
+#include <span>
+#include <string>
+#include <vector>
+#include <vulkan/vulkan_core.h>
+struct SpvReflectShaderModule;
 struct KtShaderLayout final
 {
+	void Populate(const std::span<u8> spirvData, const VkShaderStageFlagBits shaderStage);
+	void PopulateDescriptorSets(const SpvReflectShaderModule& module, const VkShaderStageFlagBits shaderStage);
+	void PopulatePushConstants(const SpvReflectShaderModule& module);
+	void PopulateVertexInputs(const SpvReflectShaderModule& module);
+
 	struct DescriptorSetLayout final
 	{
 		struct Binding final
 		{
-			std::string				Name; // todo: maybe const char*
-			u32						Binding;
-			VkDescriptorType		DescriptorType;
-			u32						DescriptorCount;
-			VkShaderStageFlags		ShaderStageFlags;
-			size					Size;
+			std::string				name;
+			u32						binding;
+			VkDescriptorType		descriptorType;
+			u32						descriptorCount;
+			VkShaderStageFlags		shaderStageFlags;
+			size					size;
+			bool					isBindless;
 		};
 
-		std::vector<Binding>    Bindings;
+		std::vector<Binding>    bindings;
 	};
 
-	std::vector<VkShaderStageFlagBits>				ShaderStages;
+	std::vector<VkShaderStageFlagBits>				shaderStages;
 													  
-	std::map<size, DescriptorSetLayout>				DescriptorSetLayouts;
+	std::map<size, DescriptorSetLayout>				descriptorSetLayouts;
 	 												  
-	std::vector<VkVertexInputBindingDescription>	VertexInputBindingDescriptions;
-	std::vector<VkVertexInputAttributeDescription>	VertexInputAttributeDescriptions;
-													  
-	std::vector<VkDescriptorType>					DescriptorPoolTypes; // deducted
-	std::vector<VkWriteDescriptorSet>				WriteDescriptorSets; // deducted
+	std::vector<VkVertexInputBindingDescription>	vertexInputBindingDescriptions;
+	std::vector<VkVertexInputAttributeDescription>	vertexInputAttributeDescriptions;
 };
 
