@@ -6,6 +6,8 @@
 #include <kotono_common/log.h>
 #include <set>
 
+#define KT_LOG_IMPORTANCE_LEVEL_VMA ELogImportanceLevel::Low
+
 static constexpr std::array ValidationLayers
 {
 	"VK_LAYER_KHRONOS_validation",
@@ -14,8 +16,6 @@ static constexpr std::array ValidationLayers
 static constexpr std::array DeviceExtensions
 {
 	VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-	//VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME,
-	//VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
 };
 
 #if defined (_DEBUG)
@@ -41,18 +41,18 @@ void KtContext::Cleanup()
 
 	vkDestroyCommandPool(device_, commandPool_, nullptr);
 
-	if constexpr (KT_SHOULD_LOG(ELogImportanceLevel::Low))
+	if constexpr (KT_SHOULD_LOG(KT_LOG_IMPORTANCE_LEVEL_VMA))
 	{
 		VmaTotalStatistics stats{};
 		vmaCalculateStatistics(allocator_, &stats);
 
-		KT_LOG(ELogImportanceLevel::Low, "Platform", "VMA Allocator Stats:");
-		KT_LOG(ELogImportanceLevel::Low, "Platform", "Total memory allocated: {} bytes", stats.total.statistics.allocationBytes);
-		KT_LOG(ELogImportanceLevel::Low, "Platform", "Number of allocations: {}", stats.total.statistics.allocationCount);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_VMA, "Platform", "VMA Allocator Stats:");
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_VMA, "Platform", "Total memory allocated: {} bytes", stats.total.statistics.allocationBytes);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_VMA, "Platform", "Number of allocations: {}", stats.total.statistics.allocationCount);
 
 		char* statsString;
 		vmaBuildStatsString(allocator_, &statsString, true);
-		KT_LOG(ELogImportanceLevel::Low, "Platform", "VMA Stats:\n{}", statsString);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_VMA, "Platform", "VMA Stats:\n{}", statsString);
 		vmaFreeStatsString(allocator_, statsString);
 	}
 
@@ -143,10 +143,10 @@ void KtContext::SetupDebugMessenger()
 	VkDebugUtilsMessengerCreateInfoEXT createInfo{};
 	PopulateDebugMessengerCreateInfo(createInfo);
 
-	if (CreateDebugUtilsMessengerEXT(instance_, &createInfo, nullptr, &debugMessenger_) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to set up debug messenger!");
-	}
+	VK_CHECK_THROW(
+		CreateDebugUtilsMessengerEXT(instance_, &createInfo, nullptr, &debugMessenger_),
+		"failed to set up debug messenger!"
+	);
 }
 
 bool KtContext::CheckValidationLayerSupport()
@@ -163,7 +163,7 @@ bool KtContext::CheckValidationLayerSupport()
 
 		for (const auto& layerProperties : availableLayers)
 		{
-			if (strcmp(layerName, layerProperties.layerName) == 0)
+			if (std::strcmp(layerName, layerProperties.layerName) == 0)
 			{
 				layerFound = true;
 				break;
@@ -196,7 +196,7 @@ std::vector<const char*> KtContext::GetRequiredExtensions()
 
 void KtContext::PickPhysicalDevice()
 {
-	u32 deviceCount{ 0 };
+	u32 deviceCount;
 	vkEnumeratePhysicalDevices(instance_, &deviceCount, nullptr);
 
 	if (deviceCount == 0)
@@ -331,10 +331,12 @@ bool KtContext::CheckDeviceFeatureSupport(VkPhysicalDevice device)
 	const bool bindlessSupported{ features12.shaderSampledImageArrayNonUniformIndexing
 		&& features12.shaderStorageBufferArrayNonUniformIndexing
 		&& features12.descriptorBindingSampledImageUpdateAfterBind 
+		&& features12.descriptorBindingStorageImageUpdateAfterBind 
 		&& features12.descriptorBindingStorageBufferUpdateAfterBind 
 		&& features12.descriptorBindingPartiallyBound
 		&& features12.descriptorBindingVariableDescriptorCount
 		&& features12.runtimeDescriptorArray
+		// BDA
 		&& features12.scalarBlockLayout
 		&& features12.bufferDeviceAddress
 	};
@@ -424,13 +426,16 @@ void KtContext::CreateLogicalDevice()
 	VkPhysicalDeviceVulkan12Features features12{
 		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES,
 		.pNext = &features13,
+		// Descriptor indexing
 		.shaderSampledImageArrayNonUniformIndexing = VK_TRUE,
 		.shaderStorageBufferArrayNonUniformIndexing = VK_TRUE,
 		.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE,
+		.descriptorBindingStorageImageUpdateAfterBind = VK_TRUE,
 		.descriptorBindingStorageBufferUpdateAfterBind = VK_TRUE,
 		.descriptorBindingPartiallyBound = VK_TRUE,
 		.descriptorBindingVariableDescriptorCount = VK_TRUE,
 		.runtimeDescriptorArray = VK_TRUE,
+		// BDA
 		.scalarBlockLayout = VK_TRUE,
 		.bufferDeviceAddress = VK_TRUE,
 	};
@@ -583,6 +588,7 @@ VkExtent2D KtContext::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilit
 void KtContext::CreateAllocator()
 {
 	const VmaAllocatorCreateInfo allocatorInfo{
+		.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT,
 		.physicalDevice = physicalDevice_,
 		.device = device_,
 		.instance = instance_,
@@ -603,20 +609,29 @@ VkCommandBuffer KtContext::BeginSingleTimeCommands() const
 		.commandBufferCount = 1,
 	};
 	VkCommandBuffer commandBuffer{};
-	vkAllocateCommandBuffers(device_, &allocInfo, &commandBuffer);
+	VK_CHECK_THROW(
+		vkAllocateCommandBuffers(device_, &allocInfo, &commandBuffer),
+		"failed to allocate command buffer!"
+	);
 
 	const VkCommandBufferBeginInfo beginInfo{
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
 		.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
 	};
-	vkBeginCommandBuffer(commandBuffer, &beginInfo);
+	VK_CHECK_THROW(
+		vkBeginCommandBuffer(commandBuffer, &beginInfo),
+		"failed to begin single time command buffer"
+	);
 
 	return commandBuffer;
 }
 
 void KtContext::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
 {
-	vkEndCommandBuffer(commandBuffer);
+	VK_CHECK_THROW(
+		vkEndCommandBuffer(commandBuffer),
+		"failed to end single time command buffer"
+	);
 	singleTimeCommands_.push_back(commandBuffer);
 }
 
@@ -662,10 +677,14 @@ void KtContext::CreateCommandPool()
 		vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool_),
 		"failed to create command pool!"
 	);
-	
 }
 
-void KtContext::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VmaAllocationCreateFlags flags, KtAllocatedBuffer& buffer, VmaMemoryUsage vmaUsage) const
+void KtContext::CreateBuffer(VkDeviceSize size
+	, VkBufferUsageFlags usage
+	, VkMemoryPropertyFlags properties
+	, VmaAllocationCreateFlags flags
+	, KtAllocatedBuffer& buffer
+	, VmaMemoryUsage vmaUsage) const
 {
 	const VkBufferCreateInfo bufferInfo{
 		.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
@@ -866,13 +885,12 @@ void KtContext::TransitionImageLayout(VkImage image, VkFormat format, VkImageLay
 		throw std::invalid_argument("unsupported layout transition!");
 	}
 
-	vkCmdPipelineBarrier(
-		commandBuffer,
-		sourceStage, destinationStage,
-		0,
-		0, nullptr,
-		0, nullptr,
-		1, &barrier
+	vkCmdPipelineBarrier(commandBuffer
+		, sourceStage, destinationStage
+		, 0
+		, 0, nullptr
+		, 0, nullptr
+		, 1, &barrier
 	);
 
 	EndSingleTimeCommands(commandBuffer);
@@ -880,7 +898,7 @@ void KtContext::TransitionImageLayout(VkImage image, VkFormat format, VkImageLay
 
 void KtContext::CopyBufferToImage(VkBuffer buffer, VkImage image, u32 width, u32 height)
 {
-	VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
+	VkCommandBuffer commandBuffer{ BeginSingleTimeCommands() };
 
 	const VkBufferImageCopy region{
 		.bufferOffset = 0,

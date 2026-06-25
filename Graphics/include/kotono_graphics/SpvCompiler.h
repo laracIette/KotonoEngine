@@ -8,6 +8,6 @@ public:
 	void CompileAll() const;
 
 private:
-	void Compile(const std::filesystem::path& path) const;
+	bool Compile(const std::filesystem::path& path) const;
 };
 

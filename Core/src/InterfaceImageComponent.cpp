@@ -14,7 +14,7 @@ KInterfaceImageComponent::KInterfaceImageComponent()
 {
 	if (!WireframeShader)
 	{
-		WireframeShader = UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/wireframe2D.ktshader");
+		//WireframeShader = UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/wireframe2D.ktshader");
 	}
 
 	textureProxy_ = Renderer.InterfaceRenderer().CreateProxy();

@@ -20,7 +20,7 @@ public:
 private:
 	static Asset Create(const UPath& path)
 	{
-		Asset asset(path, new T(path));
+		Asset asset(path, new T{ path });
 		assets_[path] = asset;
 		return asset;
 	}

@@ -129,11 +129,6 @@ void KtSceneRenderer::CmdDraw(VkCommandBuffer commandBuffer, const u32 frameInde
 	CmdExecuteCommandBuffers(commandBuffer, frameIndex);
 }
 
-USceneProxy* KtSceneRenderer::CreateProxy() const
-{
-	return new USceneProxy{};
-}
-
 void KtSceneRenderer::DeleteProxy(Proxy* proxy)
 {
 	deleteProxies_[proxy] = static_cast<u32>(KT_FRAMES_IN_FLIGHT);

@@ -1,11 +1,13 @@
 #pragma once
 #include "generated/SceneMeshComponent.generated.h"
-#include <kotono_graphics/SceneProxy.h>
 #include "SceneComponent.h"
 #include "Task.h"
 
 class KtShader;
 class KtModel;
+class UMaterial;
+class USceneProxy;
+struct UDrawCall;
 
 class KSceneMeshComponent : public KSceneComponent
 {
@@ -20,11 +22,13 @@ protected:
 	void Update(const float deltaTime) override;
 
 public:
-	UAsset<KtShader> GetShader() const;
-	UAsset<KtModel> GetModel() const;
+	const UAsset<KtShader>& GetShader() const;
+	const UAsset<KtModel>& GetModel() const;
+	const UAsset<UMaterial>& GetMaterial() const;
 
-	void SetShader(UAsset<KtShader> shader);
-	void SetModel(UAsset<KtModel> model);
+	void SetShader(const UAsset<KtShader>& shader);
+	void SetModel(const UAsset<KtModel>& model);
+	void SetMaterial(const UAsset<UMaterial>& material);
 
 	void SetVisibility(const EVisibility visibility, const bool propagateToChildren = false) override;
 	void SetMobility(const EMobility mobility) override;
@@ -33,12 +37,15 @@ public:
 
 private:
 	void CreateModelProxy();
+	void CreateDrawCall();
 
 	void MarkModelProxyTransformDirty();
 	void MarkModelProxyScissorDirty();
 
 	void RegisterModelProxy() const;
+	void RegisterDrawCall();
 	void UnregisterModelProxy() const;
+	void UnregisterDrawCall() const;
 
 	// temp
 	void Spin();
@@ -48,7 +55,12 @@ private:
 private:
 	SERIALIZE UAsset<KtShader> shader_;
 	SERIALIZE UAsset<KtModel> model_;
+	UAsset<UMaterial> material_;
 	UTask spinTask_;
+
 	USceneProxy* modelProxy_;
+	UDrawCall* drawCall_;
+	u32 drawDataIndex_;
+	u32 transformIndex_;
 };
 

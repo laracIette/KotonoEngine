@@ -33,7 +33,6 @@ public:
 
 	void CmdDraw(VkCommandBuffer commandBuffer, const u32 frameIndex);
 
-	Proxy* CreateProxy() const;
 	// Stage deletion of the proxy after KT_FRAMES_IN_FLIGHT frames, 
 	// warning: MUST be called after UnregisterProxy
 	void DeleteProxy(Proxy* proxy);

@@ -35,30 +35,13 @@ public:
 	VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, u32 mipLevels) const;
 	KtQueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const;
 	KtSwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
-	
+
+	VkCommandBuffer BeginSingleTimeCommands() const;
+	void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
 	void ExecuteSingleTimeCommands();
 	UEvent<>& GetEventExecuteSingleTimeCommands();
 
 private:
-	VkInstance instance_;
-	VkDebugUtilsMessengerEXT debugMessenger_;
-	VkSurfaceKHR surface_;
-
-	VkPhysicalDevice physicalDevice_;
-	VkDevice device_;
-
-	VmaAllocator allocator_;
-
-	VkQueue graphicsQueue_;
-	VkQueue presentQueue_;
-
-	VkCommandPool commandPool_;
-
-	std::vector<VkCommandBuffer> singleTimeCommands_;
-	UEvent<> eventExecuteSingleTimeCommands_;
-
-	VkSampleCountFlagBits msaaSamples_;
-
 	void CreateInstance();
 
 	void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) const;
@@ -80,8 +63,6 @@ private:
 	void CreateAllocator();
 
 	void CreateCommandPool();
-	VkCommandBuffer BeginSingleTimeCommands() const;
-	void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
 
 	u32 FindMemoryType(u32 typeFilter, VkMemoryPropertyFlags properties) const;
 	VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
@@ -97,6 +78,26 @@ private:
 		std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 		return VK_FALSE;
 	}
+
+private:
+	VkInstance instance_;
+	VkDebugUtilsMessengerEXT debugMessenger_;
+	VkSurfaceKHR surface_;
+
+	VkPhysicalDevice physicalDevice_;
+	VkDevice device_;
+
+	VmaAllocator allocator_;
+
+	VkQueue graphicsQueue_;
+	VkQueue presentQueue_;
+
+	VkCommandPool commandPool_;
+
+	std::vector<VkCommandBuffer> singleTimeCommands_;
+	UEvent<> eventExecuteSingleTimeCommands_;
+
+	VkSampleCountFlagBits msaaSamples_;
 };
 
 inline KtContext Context;

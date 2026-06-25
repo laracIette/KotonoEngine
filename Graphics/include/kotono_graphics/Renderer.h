@@ -2,11 +2,41 @@
 #include "frames_in_flight.h"
 #include "InterfaceRenderer.h"
 #include "SceneRenderer.h"
+#include <kotono_common/Pool.h>
 #include <span>
 #include <thread>
 #include <vector>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
+
+enum class ERenderBucket : u8
+{
+	Shadow,
+	Opaque,
+	Transparent,
+	Interface,
+};
+
+struct UDrawCall
+{
+	VkPipeline pipeline;
+
+	// Push constants
+	u32 index;
+	u32 flags;
+
+	// Geometry
+	VkDeviceAddress vertexBufferAdress;
+	VkBuffer indexBuffer;
+	u32 indexCount;
+	u32 firstIndex;
+
+	// Ordering
+	ERenderBucket renderBucket;
+	f32 sortKey; // Depth for 3D translucent, layer for 2D
+
+	size poolIndex;
+};
 
 class KtRenderer final
 {
@@ -29,6 +59,9 @@ public:
 	KtSceneRenderer& SceneRenderer();
 
 	VkCommandPool& GetCommandPool(const u32 frameIndex);
+
+	void RegisterDrawCall(UDrawCall* drawCall);
+	void UnregisterDrawCall(UDrawCall* drawCall);
 
 private:
 	struct SwapChainData
@@ -56,23 +89,7 @@ private:
 		u32 imageIndex;
 	};
 
-	KtInterfaceRenderer interfaceRenderer_;
-	KtSceneRenderer sceneRenderer_;
-
-	std::vector<SwapChainData> swapChainDatas_;
-	VkSwapchainKHR swapChain_;
-	VkFormat swapChainFormat_;
-	VkExtent2D swapChainExtent_;
-
-	VkFormat depthFormat_;
-
-	KtFramesInFlightArray<FrameData> frameDatas_;
-
-	std::thread renderThread_;
-	std::thread rhiThread_;
-
-	u32 frameCount_;
-
+private:
 	void CreateSwapChain();
 	void CleanupSwapChain();
 	void RecreateSwapChain();
@@ -93,17 +110,44 @@ private:
 	void CreateCommandBuffers();
 	void CreateCommandBuffer(const u32 frameIndex);
 	void RecordCommandBuffer(const u32 frameIndex);
+	void BeginCommandBuffer(VkCommandBuffer commandBuffer);
+	void CmdAcquireBarrier(VkCommandBuffer commandBuffer, const u32 frameIndex);
+	void CmdBeginRendering(VkCommandBuffer commandBuffer, const u32 frameIndex);
+	void CmdDrawFrame(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	void CmdDrawRenderers(VkCommandBuffer commandBuffer, const u32 frameIndex);
+	void CmdEndRendering(VkCommandBuffer commandBuffer);
+	void CmdPresentationBarrier(VkCommandBuffer commandBuffer, const u32 frameIndex);
+	void EndCommandBuffer(VkCommandBuffer commandBuffer);
 	void SubmitCommandBuffer(const u32 frameIndex);
 
 	void CreateSyncObjects();
 
 	void UpdateRenderers(const u32 frameIndex);
-	void CmdDrawRenderers(VkCommandBuffer commandBuffer, const u32 frameIndex);
 
 	void JoinThread(std::thread& thread) const;
 
 	u32 GetRenderThreadFrame() const;
 	u32 GetRHIThreadFrame() const;
+
+private:
+	KtInterfaceRenderer interfaceRenderer_;
+	KtSceneRenderer sceneRenderer_;
+
+	std::vector<SwapChainData> swapChainDatas_;
+	VkSwapchainKHR swapChain_;
+	VkFormat swapChainFormat_;
+	VkExtent2D swapChainExtent_;
+
+	VkFormat depthFormat_;
+
+	KtFramesInFlightArray<FrameData> frameDatas_;
+
+	std::thread renderThread_;
+	std::thread rhiThread_;
+
+	u32 frameCount_;
+
+	UPool<UDrawCall*> drawCalls_;
 };
 
 inline KtRenderer Renderer;

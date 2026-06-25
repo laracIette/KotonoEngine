@@ -13,6 +13,10 @@ public:
 
 	const UPath& Path() const;
 
+	VkDeviceAddress GetVertexBufferAddress() const;
+	VkBuffer GetIndexBuffer() const;
+	u32 GetIndexCount() const;
+
 	void CmdBind(VkCommandBuffer commandBuffer) const override;
 	void CmdDraw(VkCommandBuffer commandBuffer, const u32 frameIndex) const override;
 	

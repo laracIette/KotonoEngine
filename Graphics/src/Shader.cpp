@@ -3,6 +3,7 @@
 #include "Texture.h"
 #include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
+#include <kotono_graphics/PipelineResourceManager.h>
 #include <kotono_io/File.h>
 #include <kotono_io/Serializer.h>
 #include <kotono_platform/Context.h>
@@ -10,25 +11,25 @@
 #include <nlohmann/json.hpp>
 #include <spirv-reflect/spirv_reflect.h>
 
-#define KT_LOG_IMPORTANCE_LEVEL_SHADER ELogImportanceLevel::Medium
+#define KT_LOG_IMPORTANCE_LEVEL_SHADER ELogImportanceLevel::High
 
-static constexpr u32 MAX_BINDLESS_TEXTURES{ 8192 }; // todo: editable in project settings
+static constexpr u32 MAX_BINDLESS_TEXTURES{ 8192 };
 
-static constexpr VkDescriptorBindingFlags BINDLESS_TEXTURE_FLAGS{ VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT 
-	| VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT 
-	| VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
+static constexpr VkDescriptorBindingFlags BINDLESS_TEXTURE_FLAGS{
+VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT |
+	VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
 };
 
 KtShader::KtShader(const UPath& path) 
 	: path_{ path }
 {
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "initializing shader {0}", path_.ToString());
-	CreateShaderLayout();
-	CreateDescriptorSetLayouts();
-	DebugLogDescriptorSetLayoutData();
-	CreateDescriptorPools();
-	CreateDescriptorSets();
-	CreateDescriptorSetLayoutBindings();
+	//CreateShaderLayout();
+	//CreateDescriptorSetLayouts();
+	//DebugLogDescriptorSetLayoutData();
+	//CreateDescriptorPools();
+	//CreateDescriptorSets();
+	//CreateDescriptorSetLayoutBindings();
 	CreateGraphicsPipeline();
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "initialized shader {0}", path_.ToString());
 }
@@ -38,7 +39,7 @@ KtShader::~KtShader()
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "cleaning up shader {0}", path_.ToString());
 
 	vkDestroyPipeline(Context.GetDevice(), graphicsPipeline_, nullptr);
-	vkDestroyPipelineLayout(Context.GetDevice(), pipelineLayout_, nullptr);
+	//vkDestroyPipelineLayout(Context.GetDevice(), pipelineLayout_, nullptr);
 
 	for (const auto& descriptorSetLayoutData : descriptorSetLayoutDatas_)
 	{
@@ -69,10 +70,10 @@ VkPipeline KtShader::GetGraphicsPipeline() const
 	return graphicsPipeline_;
 }
 
-VkPipelineLayout KtShader::GetPipelineLayout() const
-{
-	return pipelineLayout_;
-}
+//VkPipelineLayout KtShader::GetPipelineLayout() const
+//{
+//	return pipelineLayout_;
+//}
 
 void KtShader::CmdBind(VkCommandBuffer commandBuffer) const
 {
@@ -91,7 +92,7 @@ void KtShader::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const u32 im
 
 	vkCmdBindDescriptorSets(commandBuffer
 		, VK_PIPELINE_BIND_POINT_GRAPHICS
-		, pipelineLayout_
+		, PipelineResourceManager.GetPipelineLayout()
 		, 0
 		, static_cast<u32>(descriptorSets.size())
 		, descriptorSets.data()
@@ -241,7 +242,8 @@ void KtShader::CreateDescriptorSetLayoutBindings()
 	}
 }
 
-void KtShader::CreateDescriptorPool(const std::span<VkDescriptorPoolSize> poolSizes, const u32 setCount)
+void KtShader::CreateDescriptorPool(const std::span<VkDescriptorPoolSize> poolSizes
+	, const u32 setCount)
 {
 	const VkDescriptorPoolCreateInfo poolInfo{
 		.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
@@ -273,6 +275,25 @@ void KtShader::CreateShaderModule(VkShaderModule& shaderModule, const std::span<
 
 void KtShader::CreateGraphicsPipeline()
 {
+	//std::vector<VkDescriptorSetLayout> setLayouts{};
+	//for (const auto& descriptorSetLayoutData : descriptorSetLayoutDatas_)
+	//{
+	//	setLayouts.push_back(descriptorSetLayoutData.descriptorSetLayout);
+	//}
+	//
+	//const VkPipelineLayoutCreateInfo pipelineLayoutInfo{
+	//	.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+	//	.setLayoutCount = static_cast<u32>(setLayouts.size()),
+	//	.pSetLayouts = setLayouts.data(),
+	//	.pushConstantRangeCount = 0, // Optional
+	//	.pPushConstantRanges = nullptr, // Optional
+	//};
+	//VK_CHECK_THROW(
+	//	vkCreatePipelineLayout(Context.GetDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout_),
+	//	"failed to create pipeline layout!"
+	//);
+
+
 	std::vector<VkShaderModule> shaderModules;
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
 
@@ -281,8 +302,8 @@ void KtShader::CreateGraphicsPipeline()
 
 	for (const auto& shader : json["shaders"])
 	{
-		const auto path{ UPath("${ENGINE_DIRECTORY}/Graphics/shaders").ToPath() / shader["path"] };
-		std::vector shaderCode{ UFile(path).ReadBinary() };
+		const auto path{ UPath{ "${ENGINE_DIRECTORY}/Graphics/shaders" }.ToPath() / shader["path"] };
+		std::vector shaderCode{ UFile{ path }.ReadBinary() };
 
 		VkShaderModule shaderModule;
 		CreateShaderModule(shaderModule, shaderCode);
@@ -357,11 +378,13 @@ void KtShader::CreateGraphicsPipeline()
 	const VkPipelineVertexInputStateCreateInfo vertexInputInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 		
-		.vertexBindingDescriptionCount = static_cast<u32>(shaderLayout_.vertexInputBindingDescriptions.size()),
-		.pVertexBindingDescriptions = shaderLayout_.vertexInputBindingDescriptions.data(),
+		.vertexBindingDescriptionCount = 0,
+		//.vertexBindingDescriptionCount = static_cast<u32>(shaderLayout_.vertexInputBindingDescriptions.size()),
+		//.pVertexBindingDescriptions = shaderLayout_.vertexInputBindingDescriptions.data(),
 		
-		.vertexAttributeDescriptionCount = static_cast<u32>(shaderLayout_.vertexInputAttributeDescriptions.size()),
-		.pVertexAttributeDescriptions = shaderLayout_.vertexInputAttributeDescriptions.data(),
+		.vertexAttributeDescriptionCount = 0,
+		//.vertexAttributeDescriptionCount = static_cast<u32>(shaderLayout_.vertexInputAttributeDescriptions.size()),
+		//.pVertexAttributeDescriptions = shaderLayout_.vertexInputAttributeDescriptions.data(),
 	};
 
 	const VkPipelineInputAssemblyStateCreateInfo inputAssembly{
@@ -412,24 +435,6 @@ void KtShader::CreateGraphicsPipeline()
 		.pDynamicStates = dynamicStates.data(),
 	};
 
-	std::vector<VkDescriptorSetLayout> setLayouts{};
-	for (const auto& descriptorSetLayoutData : descriptorSetLayoutDatas_)
-	{
-		setLayouts.push_back(descriptorSetLayoutData.descriptorSetLayout);
-	}
-
-	const VkPipelineLayoutCreateInfo pipelineLayoutInfo{
-		.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-		.setLayoutCount = static_cast<u32>(setLayouts.size()),
-		.pSetLayouts = setLayouts.data(),
-		.pushConstantRangeCount = 0, // Optional
-		.pPushConstantRanges = nullptr, // Optional
-	};
-	VK_CHECK_THROW(
-		vkCreatePipelineLayout(Context.GetDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout_),
-		"failed to create pipeline layout!"
-	);
-
 	const std::array colorAttachmentFormats{ Renderer.GetSwapChainFormat() };
 	const VkPipelineRenderingCreateInfo pipelineRenderingInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
@@ -454,7 +459,7 @@ void KtShader::CreateGraphicsPipeline()
 		.pColorBlendState = &colorBlending,
 		.pDynamicState = &dynamicState,
 
-		.layout = pipelineLayout_,
+		.layout = PipelineResourceManager.GetPipelineLayout(),
 	};
 	VK_CHECK_THROW(
 		vkCreateGraphicsPipelines(Context.GetDevice(), nullptr, 1, &pipelineInfo, nullptr, &graphicsPipeline_),

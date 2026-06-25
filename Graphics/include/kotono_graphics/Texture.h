@@ -17,6 +17,8 @@ public:
 
     const VkDescriptorImageInfo& GetDescriptorImageInfo() const;
 
+    u32 GetIndex() const;
+
 private:
     void CreateTextureImage();
     void CreateTextureImageView();
@@ -42,6 +44,8 @@ private:
     glm::uvec2 size_;
     // Number of levels of mipmaps
     u32 mipLevels_;
+
+    u32 index_;
 
     KtAllocatedBuffer stagingBuffer_;
 

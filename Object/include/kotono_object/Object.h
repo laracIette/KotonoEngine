@@ -4,6 +4,7 @@
 #include "ObjectFactory.h"
 #include "Ptr.h"
 #include "VariableInfo.h"
+#include <concepts>
 #include <functional>
 #include <kotono_common/Asset.h>
 #include <kotono_common/Event.h>
@@ -136,9 +137,10 @@ public:
 #endif
 
 	template <typename ...Args>
+		requires std::constructible_from<T, Args...>
 	UPtr<T> operator()(Args&&... args) const
 	{
-		T* object{ new T(std::forward<Args>(args)...) };
+		T* object{ new T{ std::forward<Args>(args)... } };
 		object->PostConstruct();
 
 		if (!name_.empty())

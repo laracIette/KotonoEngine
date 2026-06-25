@@ -68,6 +68,7 @@ set_target_properties(KotonoGraphics PROPERTIES FOLDER "KotonoEngine")
 
 set(KGRAPHICS_HEADERS
     "include/kotono_graphics/Color.h"
+    "include/kotono_graphics/DrawDataBuffer.h"
     "include/kotono_graphics/Font.h"
     "include/kotono_graphics/frames_in_flight.h"
     "include/kotono_graphics/InterfaceCuller.h"
@@ -76,8 +77,11 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/InterfaceRenderable.h"
     "include/kotono_graphics/InterfaceRenderer.h"
     "include/kotono_graphics/InterfaceUniformData.h"
+    "include/kotono_graphics/Material.h"
+    "include/kotono_graphics/MaterialBuffer.h"
     "include/kotono_graphics/Mobility.h"
     "include/kotono_graphics/Model.h"
+    "include/kotono_graphics/PipelineResourceManager.h"
     "include/kotono_graphics/Renderer.h"
     "include/kotono_graphics/RendererFrameStats.h"
     "include/kotono_graphics/SceneCuller.h"
@@ -92,17 +96,22 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/ShaderLayout.h"
     "include/kotono_graphics/SpvCompiler.h"
     "include/kotono_graphics/Texture.h"
+    "include/kotono_graphics/TransformBuffer.h"
     "include/kotono_graphics/Vertex2D.h"
     "include/kotono_graphics/Vertex3D.h"
     "include/kotono_graphics/Visibility.h"
 )
 set(KGRAPHICS_SOURCES
+    "src/DrawDataBuffer.cpp"
     "src/Font.cpp"
     "src/implementations.cpp"
     "src/InterfaceCuller.cpp"
     "src/InterfaceProxy.cpp"
     "src/InterfaceRenderer.cpp"
+    "src/Material.cpp"
+    "src/MaterialBuffer.cpp"
     "src/Model.cpp"
+    "src/PipelineResourceManager.cpp"
     "src/Renderer.cpp"
     "src/SceneCuller.cpp"
     "src/SceneProxy.cpp"
@@ -111,6 +120,7 @@ set(KGRAPHICS_SOURCES
     "src/ShaderLayout.cpp"
     "src/SpvCompiler.cpp"
     "src/Texture.cpp"
+    "src/TransformBuffer.cpp"
     "src/Vertex2D.cpp"
     "src/Vertex3D.cpp"
 
@@ -142,9 +152,13 @@ target_link_libraries(KotonoGraphics PRIVATE
 )
 
 # Shader folder included for IDE visibility (not compiled)
-file(GLOB_RECURSE KGRAPHICS_SHADERS "shaders/*")
+file(GLOB_RECURSE KGRAPHICS_SHADERS "${CMAKE_CURRENT_SOURCE_DIR}/shaders/*")
 source_group("Shaders" FILES ${KGRAPHICS_SHADERS})
 target_sources(KotonoGraphics PRIVATE ${KGRAPHICS_SHADERS})
+
+file(GLOB_RECURSE KGRAPHICS_MATERIALS "${CMAKE_CURRENT_SOURCE_DIR}/materials/*")
+source_group("Materials" FILES ${KGRAPHICS_MATERIALS})
+target_sources(KotonoGraphics PRIVATE ${KGRAPHICS_MATERIALS})
 
 # Link libs
 target_link_libraries(KotonoGraphics PUBLIC

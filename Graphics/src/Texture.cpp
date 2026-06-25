@@ -1,10 +1,12 @@
 #include "Texture.h"
+#include "PipelineResourceManager.h"
 #include <kotono_common/log.h>
 #include <kotono_platform/Context.h>
 #include <stbimage/stb_image.h>
 
 KtTexture::KtTexture(const UPath& path) 
-	: path_(path)
+	: path_{ path }
+	, index_{}
 {
 	CreateTextureImage();
 	CreateTextureImageView();
@@ -13,10 +15,14 @@ KtTexture::KtTexture(const UPath& path)
 	imageInfo_.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 	imageInfo_.imageView = imageView_;
 	imageInfo_.sampler = sampler_;
+
+	index_ = PipelineResourceManager.RegisterTexture(imageView_, sampler_);
 }
 
 KtTexture::~KtTexture()
 {
+	PipelineResourceManager.UnregisterTexture(index_);
+
 	vkDestroySampler(Context.GetDevice(), sampler_, nullptr);
 	vkDestroyImageView(Context.GetDevice(), imageView_, nullptr);
 	vmaDestroyImage(Context.GetAllocator(), image_, allocation_);
@@ -36,6 +42,11 @@ const glm::uvec2& KtTexture::GetSize() const
 const VkDescriptorImageInfo& KtTexture::GetDescriptorImageInfo() const
 {
 	return imageInfo_;
+}
+
+u32 KtTexture::GetIndex() const
+{
+	return index_;
 }
 
 void KtTexture::CreateTextureImage()

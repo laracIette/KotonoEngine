@@ -4,9 +4,13 @@
 #include "TimeManager.h"
 #include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
+#include <kotono_graphics/DrawDataBuffer.h>
+#include <kotono_graphics/Material.h>
 #include <kotono_graphics/Model.h>
 #include <kotono_graphics/Renderer.h>
+#include <kotono_graphics/SceneProxy.h>
 #include <kotono_graphics/Shader.h>
+#include <kotono_graphics/TransformBuffer.h>
 #include <kotono_input/Keyboard.h>
 #include <kotono_platform/Window.h>
 #include <kotono_platform/WindowViewport.h>
@@ -14,13 +18,16 @@
 static UAsset<KtShader> WireframeShader;
 
 KSceneMeshComponent::KSceneMeshComponent() 
+    : modelProxy_{ new USceneProxy{} }
+    , drawCall_{ new UDrawCall{} }
+    , drawDataIndex_{}
+    , transformIndex_{}
+    , material_{ UAssetManager<UMaterial>::Get("${ENGINE_DIRECTORY}/Graphics/materials/default.ktmaterial")}
 {
     if (!WireframeShader)
     {
-        WireframeShader = UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/wireframe3D.ktshader");
+        //WireframeShader = UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/wireframe3D.ktshader");
     }
-
-    modelProxy_ = Renderer.SceneRenderer().CreateProxy();
 
     spinTask_.duration = 5.0f;
 }
@@ -47,24 +54,34 @@ void KSceneMeshComponent::Update(const float deltaTime)
     spinTask_.Update(deltaTime);
 }
 
-UAsset<KtShader> KSceneMeshComponent::GetShader() const
+const UAsset<KtShader>& KSceneMeshComponent::GetShader() const
 {
     return shader_;
 }
 
-UAsset<KtModel> KSceneMeshComponent::GetModel() const
+const UAsset<KtModel>& KSceneMeshComponent::GetModel() const
 {
     return model_;
 }
 
-void KSceneMeshComponent::SetShader(UAsset<KtShader> shader)
+const UAsset<UMaterial>& KSceneMeshComponent::GetMaterial() const
+{
+    return material_;
+}
+
+void KSceneMeshComponent::SetShader(const UAsset<KtShader>& shader)
 {
     shader_ = shader;
 }
 
-void KSceneMeshComponent::SetModel(UAsset<KtModel> model)
+void KSceneMeshComponent::SetModel(const UAsset<KtModel>& model)
 {
     model_ = model;
+}
+
+void KSceneMeshComponent::SetMaterial(const UAsset<UMaterial>& material)
+{
+    material_ = material;
 }
 
 void KSceneMeshComponent::Spawn()
@@ -72,7 +89,9 @@ void KSceneMeshComponent::Spawn()
     Base::Spawn();
 
     CreateModelProxy();
+    CreateDrawCall();
     RegisterModelProxy();
+    RegisterDrawCall();
 
     EventTransformUpdated().AddListener(this, &KSceneMeshComponent::MarkModelProxyTransformDirty);
     
@@ -112,6 +131,19 @@ void KSceneMeshComponent::CreateModelProxy()
     );
 }
 
+void KSceneMeshComponent::CreateDrawCall()
+{    
+    drawCall_->pipeline = shader_->GetGraphicsPipeline();
+    drawCall_->index = drawDataIndex_;
+    drawCall_->flags = 0;
+    drawCall_->indexBuffer = model_->GetIndexBuffer();
+    drawCall_->indexCount = model_->GetIndexCount();
+    drawCall_->vertexBufferAdress = model_->GetVertexBufferAddress();
+    drawCall_->firstIndex = 0;
+    drawCall_->renderBucket = ERenderBucket::Opaque;
+    drawCall_->sortKey = 0.0f;
+}
+
 void KSceneMeshComponent::MarkModelProxyTransformDirty()
 {
     modelProxy_->ScheduleUpdate(
@@ -120,7 +152,7 @@ void KSceneMeshComponent::MarkModelProxyTransformDirty()
             data.objectData.modelMatrix = ModelMatrix();
         }
     );
-	KT_LOG(ELogImportanceLevel::Medium, "Core", "{}", GetName());
+	KT_LOG(ELogImportanceLevel::Medium, "Core", "{0}", GetName());
 }
 
 void KSceneMeshComponent::MarkModelProxyScissorDirty()
@@ -139,9 +171,30 @@ void KSceneMeshComponent::RegisterModelProxy() const
     Renderer.SceneRenderer().RegisterProxy(modelProxy_, GetMobility());
 }
 
+void KSceneMeshComponent::RegisterDrawCall()
+{
+    Renderer.RegisterDrawCall(drawCall_);
+    transformIndex_ = TransformBuffer.RegisterTransform({
+        .modelMatrix = ModelMatrix(),
+        .normalMatrix = glm::identity<glm::mat4>(),
+    });
+    drawDataIndex_ = DrawDataBuffer.RegisterDrawData({
+        .materialIndex = material_->GetIndex(),
+        .transformIndex = transformIndex_,
+        .meshletOffset = 0,
+    });
+}
+
 void KSceneMeshComponent::UnregisterModelProxy() const
 {
     Renderer.SceneRenderer().UnregisterProxy(modelProxy_, GetMobility());
+}
+
+void KSceneMeshComponent::UnregisterDrawCall() const
+{
+    Renderer.UnregisterDrawCall(drawCall_);
+    DrawDataBuffer.UnregisterDrawData(drawDataIndex_);
+    TransformBuffer.UnregisterTransform(transformIndex_);
 }
 
 void KSceneMeshComponent::Spin()

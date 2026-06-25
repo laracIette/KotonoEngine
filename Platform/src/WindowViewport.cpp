@@ -68,21 +68,27 @@ void KtWindowViewport::SetAspectRatio(const float aspectRatio)
 void KtWindowViewport::CmdUse(VkCommandBuffer commandBuffer) const
 {
 	// Sets the render region
-	VkViewport vkViewport{};
-	vkViewport.x = static_cast<float>(offset_.x);
-	vkViewport.y = static_cast<float>(offset_.y);
-	vkViewport.width = static_cast<float>(extent_.x);
-	vkViewport.height = static_cast<float>(extent_.y);
-	vkViewport.minDepth = 0.0f;
-	vkViewport.maxDepth = 1.0f;
+	const VkViewport vkViewport{
+		.x = static_cast<float>(offset_.x),
+		.y = static_cast<float>(offset_.y),
+		.width = static_cast<float>(extent_.x),
+		.height = static_cast<float>(extent_.y),
+		.minDepth = 0.0f,
+		.maxDepth = 1.0f,
+	};
 	vkCmdSetViewport(commandBuffer, 0, 1, &vkViewport);
 
 	// Crops the render region
-	VkRect2D vkScissor{};
-	vkScissor.offset.x = offset_.x;
-	vkScissor.offset.y = offset_.y;
-	vkScissor.extent.width = extent_.x;
-	vkScissor.extent.height = extent_.y;
+	const VkRect2D vkScissor{
+		.offset {
+			.x = offset_.x,
+			.y = offset_.y,
+		},
+		.extent{
+			.width = extent_.x,
+			.height = extent_.y,
+		},
+	};
 	vkCmdSetScissor(commandBuffer, 0, 1, &vkScissor);
 }
 

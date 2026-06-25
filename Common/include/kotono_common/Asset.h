@@ -1,9 +1,7 @@
 #pragma once
 #include "Path.h"
-
 template <typename T>
 class UAssetManager;
-
 template <typename T>
 class UAsset final
 {

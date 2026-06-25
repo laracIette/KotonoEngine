@@ -39,7 +39,7 @@ public:
 	const UPath& Path() const;
 
 	VkPipeline GetGraphicsPipeline() const;
-	VkPipelineLayout GetPipelineLayout() const;
+	//VkPipelineLayout GetPipelineLayout() const;
 
 	void CmdBind(VkCommandBuffer commandBuffer) const;
 	void CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const u32 imageIndex) const;
@@ -83,7 +83,7 @@ private:
 
 	KtShaderLayout shaderLayout_;
 
-	VkPipelineLayout pipelineLayout_;
+	//VkPipelineLayout pipelineLayout_;
 	VkPipeline graphicsPipeline_;
 
 	VkDescriptorPool descriptorPool_;

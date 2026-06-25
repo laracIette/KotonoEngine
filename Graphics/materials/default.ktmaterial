@@ -1,0 +1,8 @@
+{
+  "albedo": "${ENGINE_DIRECTORY}/Graphics/assets/textures/default_texture.jpg",
+  "normal": "${ENGINE_DIRECTORY}/Graphics/assets/textures/default_texture.jpg",
+  "roughness": "${ENGINE_DIRECTORY}/Graphics/assets/textures/default_texture.jpg",
+  "emissive": "${ENGINE_DIRECTORY}/Graphics/assets/textures/default_texture.jpg",
+  "materialType": 0,
+  "samplerIndex": 0
+}
