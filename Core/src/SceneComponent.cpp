@@ -6,11 +6,11 @@
 #include <stdexcept>
 
 KSceneComponent::KSceneComponent() 
-    : visibility_(EVisibility::Visible)
-    , canUpdate_(true)
-    , isInit_(false)
-    , mobility_(EMobility::Dynamic)
-    , modelMatrix_([this]() { return TranslationMatrix() * RotationMatrix() * ScaleMatrix(); })
+    : visibility_{ EVisibility::Visible }
+    , canUpdate_{ true }
+    , isInit_{ false }
+    , mobility_{ EMobility::Dynamic }
+    , modelMatrix_{ [this]() { return TranslationMatrix() * RotationMatrix() * ScaleMatrix(); } }
 {
     eventTransformUpdated_.AddListener(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty);
 }

@@ -49,7 +49,7 @@ public:
 	u32 RegisterTexture(VkImageView imageView, VkSampler sampler);
 	void UnregisterTexture(const u32 slot);
 
-	void CmdBindGlobalDescriptorSets(VkCommandBuffer commandBuffer) const;
+	void CmdBindGlobalDescriptorSet(VkCommandBuffer commandBuffer) const;
 	void CmdPushUniformDescriptorSet(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 
 private:

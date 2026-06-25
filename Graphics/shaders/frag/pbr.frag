@@ -14,6 +14,6 @@ void main() {
     vec4 albedo    = sampleTex(mat.albedoIndex,    mat.samplerIndex, inUV);
     vec4 normSamp  = sampleTex(mat.normalIndex,    mat.samplerIndex, inUV);
     vec4 roughSamp = sampleTex(mat.roughnessIndex, mat.samplerIndex, inUV);
-
+    
     outColor = albedo;
 }

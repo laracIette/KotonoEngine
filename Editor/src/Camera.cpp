@@ -164,13 +164,8 @@ void SCamera::OnMouseVerticalScroll(const float delta)
 void SCamera::OnEventUpdateTransform() const
 {
 	const auto view{ glm::lookAt(transform_.position, transform_.position + ForwardVector(), UpVector()) };
-	const auto proj{ glm::perspective(glm::radians(fov_), WindowViewport.GetAspectRatio(), depthNear_, depthFar_) };
-
-	KtSceneUniformData ubo{
-		.view = view,
-		.projection = proj,
-	};
-	ubo.projection[1][1] *= -1.0f;
+	auto proj{ glm::perspective(glm::radians(fov_), WindowViewport.GetAspectRatio(), depthNear_, depthFar_) };
+	proj[1][1] *= -1.0f;
 
 	//Renderer.SceneRenderer().SetUniformData(ubo);
 	PipelineResourceManager.SetFrameUBO({

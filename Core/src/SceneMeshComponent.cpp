@@ -17,17 +17,22 @@
 
 static UAsset<KtShader> WireframeShader;
 
+constinit bool flipFlop{ false };
+
 KSceneMeshComponent::KSceneMeshComponent() 
     : modelProxy_{ new USceneProxy{} }
     , drawCall_{ new UDrawCall{} }
     , drawDataIndex_{}
     , transformIndex_{}
-    , material_{ UAssetManager<UMaterial>::Get("${ENGINE_DIRECTORY}/Graphics/materials/default.ktmaterial")}
+    , material_{}
 {
     if (!WireframeShader)
     {
         //WireframeShader = UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/wireframe3D.ktshader");
     }
+    material_ = (flipFlop = !flipFlop)
+        ? UAssetManager<UMaterial>::Get("${ENGINE_DIRECTORY}/Graphics/materials/default.ktmaterial")
+        : UAssetManager<UMaterial>::Get("${ENGINE_DIRECTORY}/Graphics/materials/default2.ktmaterial");
 
     spinTask_.duration = 5.0f;
 }
@@ -132,7 +137,17 @@ void KSceneMeshComponent::CreateModelProxy()
 }
 
 void KSceneMeshComponent::CreateDrawCall()
-{    
+{
+    transformIndex_ = TransformBuffer.RegisterTransform({
+        .modelMatrix = ModelMatrix(),
+        .normalMatrix = glm::identity<glm::mat4>(),
+    });
+    drawDataIndex_ = DrawDataBuffer.RegisterDrawData({
+        .materialIndex = material_->GetIndex(),
+        .transformIndex = transformIndex_,
+        .meshletOffset = 0,
+    });
+
     drawCall_->pipeline = shader_->GetGraphicsPipeline();
     drawCall_->index = drawDataIndex_;
     drawCall_->flags = 0;
@@ -174,15 +189,6 @@ void KSceneMeshComponent::RegisterModelProxy() const
 void KSceneMeshComponent::RegisterDrawCall()
 {
     Renderer.RegisterDrawCall(drawCall_);
-    transformIndex_ = TransformBuffer.RegisterTransform({
-        .modelMatrix = ModelMatrix(),
-        .normalMatrix = glm::identity<glm::mat4>(),
-    });
-    drawDataIndex_ = DrawDataBuffer.RegisterDrawData({
-        .materialIndex = material_->GetIndex(),
-        .transformIndex = transformIndex_,
-        .meshletOffset = 0,
-    });
 }
 
 void KSceneMeshComponent::UnregisterModelProxy() const

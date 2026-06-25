@@ -89,15 +89,14 @@ void SPipelineResourceManager::UnregisterTexture(const u32 slot)
 	freeSampledSlots_.push_back(slot);
 }
 
-void SPipelineResourceManager::CmdBindGlobalDescriptorSets(VkCommandBuffer commandBuffer) const
+void SPipelineResourceManager::CmdBindGlobalDescriptorSet(VkCommandBuffer commandBuffer) const
 {
-	const std::array descriptorSets{ globalDescriptorSet_ };
 	vkCmdBindDescriptorSets(commandBuffer
 		, VK_PIPELINE_BIND_POINT_GRAPHICS
 		, pipelineLayout_
 		, 0
-		, static_cast<u32>(descriptorSets.size())
-		, descriptorSets.data()
+		, 1
+		, &globalDescriptorSet_
 		, 0
 		, nullptr
 	);

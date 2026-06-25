@@ -75,14 +75,14 @@ void KtModel::UpdateIndirectBuffer(const u32 firstInstance, const u32 instanceCo
 void KtModel::Load()
 {
 	Assimp::Importer importer{};
-	const aiScene* scene = importer.ReadFile(path_.ToPath().string().c_str()
-		, aiProcess_Triangulate 
-		| aiProcess_FlipUVs 
-		| aiProcess_MakeLeftHanded 
+	const aiScene* scene{ importer.ReadFile(path_.ToPath().string().c_str()
+		, aiProcess_Triangulate
+		| aiProcess_FlipUVs
+		| aiProcess_MakeLeftHanded
 		| aiProcess_JoinIdenticalVertices
 		| aiProcess_CalcTangentSpace
 		| aiProcess_GenSmoothNormals
-	);
+	) };
 
 	if (!scene || !scene->HasMeshes())
 	{

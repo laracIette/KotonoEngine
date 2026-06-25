@@ -106,7 +106,7 @@ void KtShader::CreateDescriptorSetLayouts()
 	descriptorSetLayoutDatas_.reserve(shaderLayout_.descriptorSetLayouts.size());
 	for (const auto& [set, setLayout] : shaderLayout_.descriptorSetLayouts)
 	{
-		const size bindingCount = setLayout.bindings.size();
+		const size bindingCount{ setLayout.bindings.size() };
 
 		std::vector<VkDescriptorSetLayoutBinding> setBindings{};
 		std::vector<VkDescriptorBindingFlags> setBindingFlags{};

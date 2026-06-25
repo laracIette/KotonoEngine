@@ -66,57 +66,61 @@ void KtRenderer::CreateSwapChain()
 {
 	KtSwapChainSupportDetails swapChainSupport = Context.QuerySwapChainSupport(Context.GetPhysicalDevice());
 
-	const VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
-	const VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
-	const VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities);
+	const auto surfaceFormat{ ChooseSwapSurfaceFormat(swapChainSupport.formats) };
+	const auto presentMode{ ChooseSwapPresentMode(swapChainSupport.presentModes) };
+	const auto extent{ ChooseSwapExtent(swapChainSupport.capabilities) };
 
-	u32 imageCount = swapChainSupport.capabilities.minImageCount + 1;
-	if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount)
+	u32 imageCount{ swapChainSupport.capabilities.minImageCount + 1 };
+	if (swapChainSupport.capabilities.maxImageCount > 0 
+		&& imageCount > swapChainSupport.capabilities.maxImageCount)
 	{
 		imageCount = swapChainSupport.capabilities.maxImageCount;
 	}
 
-	KT_LOG(ELogImportanceLevel::High, "Graphics", "swap chain image count: {}", imageCount);
-
-	VkSwapchainCreateInfoKHR createInfo{};
-	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	createInfo.surface = Context.GetSurface();
-
-	createInfo.minImageCount = imageCount;
-	createInfo.imageFormat = surfaceFormat.format;
-	createInfo.imageColorSpace = surfaceFormat.colorSpace;
-	createInfo.imageExtent = extent;
-	createInfo.imageArrayLayers = 1;
-	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+	KT_LOG(ELogImportanceLevel::High, "Graphics", "swap chain image count: {0}", imageCount);
 
 	const KtQueueFamilyIndices indices{ Context.FindQueueFamilies(Context.GetPhysicalDevice()) };
-	const std::array queueFamilyIndices
-	{
-		indices.graphicsFamily.value(),
-		indices.presentFamily.value()
-	};
+	const std::array queueFamilyIndices{ indices.graphicsFamily.value(), indices.presentFamily.value() };
 
+	VkSharingMode imageSharingMode;
+	u32 queueFamilyIndexCount;
+	const u32* pQueueFamilyIndices;
 	if (indices.graphicsFamily != indices.presentFamily)
 	{
-		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-		createInfo.queueFamilyIndexCount = static_cast<u32>(queueFamilyIndices.size());
-		createInfo.pQueueFamilyIndices = queueFamilyIndices.data();
+		imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+		queueFamilyIndexCount = static_cast<u32>(queueFamilyIndices.size());
+		pQueueFamilyIndices = queueFamilyIndices.data();
 	}
 	else
 	{
-		createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		createInfo.queueFamilyIndexCount = 0; // Optional
-		createInfo.pQueueFamilyIndices = nullptr; // Optional
+		imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		queueFamilyIndexCount = 0;
+		pQueueFamilyIndices = VK_NULL_HANDLE;
 	}
 
-	createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
-	// Used for blending window (here opaque)
-	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-	createInfo.presentMode = presentMode;
-	// Discard pixels that are hidden by other windows
-	createInfo.clipped = VK_TRUE;
-	createInfo.oldSwapchain = VK_NULL_HANDLE;
+	const VkSwapchainCreateInfoKHR createInfo{
+		.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+		.surface = Context.GetSurface(),
 
+		.minImageCount = imageCount,
+		.imageFormat = surfaceFormat.format,
+		.imageColorSpace = surfaceFormat.colorSpace,
+
+		.imageExtent = extent,
+		.imageArrayLayers = 1,
+		.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+
+		.imageSharingMode = imageSharingMode,
+		.queueFamilyIndexCount = queueFamilyIndexCount,
+		.pQueueFamilyIndices = pQueueFamilyIndices,
+
+		.preTransform = swapChainSupport.capabilities.currentTransform,
+		
+		.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR, // Used for blending window (here opaque)
+		.presentMode = presentMode,
+		.clipped = VK_TRUE, // Discard pixels that are hidden by other windows
+		.oldSwapchain = VK_NULL_HANDLE,
+	};
 	VK_CHECK_THROW(
 		vkCreateSwapchainKHR(Context.GetDevice(), &createInfo, nullptr, &swapChain_),
 		"failed to create swap chain!"
@@ -173,7 +177,7 @@ VkExtent2D KtRenderer::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabili
 		int width, height;
 		glfwGetFramebufferSize(Window.GetGLFWWindow(), &width, &height);
 
-		VkExtent2D actualExtent =
+		VkExtent2D actualExtent
 		{
 			static_cast<u32>(width),
 			static_cast<u32>(height)
@@ -411,7 +415,7 @@ void KtRenderer::RecordCommandBuffer(const u32 frameIndex)
 	CmdAcquireBarrier(commandBuffer, frameIndex);
 	CmdBeginRendering(commandBuffer, frameIndex);
 
-	PipelineResourceManager.CmdBindGlobalDescriptorSets(commandBuffer);
+	PipelineResourceManager.CmdBindGlobalDescriptorSet(commandBuffer);
 	PipelineResourceManager.CmdPushUniformDescriptorSet(commandBuffer, frameIndex);
 
 	WindowViewport.CmdUse(commandBuffer);
@@ -514,7 +518,7 @@ void KtRenderer::CmdBeginRendering(VkCommandBuffer commandBuffer, const u32 fram
 		.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
 		.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
 		.clearValue{
-			.color = { 1.0f, 0.0f, 0.0f, 1.0f },
+			.color = { 0.0f, 0.0f, 0.0f, 1.0f },
 		},
 	};
 
