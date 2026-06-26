@@ -62,5 +62,6 @@ private:
 	UDrawCall* drawCall_;
 	u32 drawDataIndex_;
 	u32 transformIndex_;
+	u32 parametersIndex_;
 };
 

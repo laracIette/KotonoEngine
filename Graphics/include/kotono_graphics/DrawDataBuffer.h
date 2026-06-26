@@ -11,6 +11,7 @@ public:
     {
         u32 materialIndex;
         u32 transformIndex; 
+        u32 parametersIndex; 
         u32 meshletOffset;
     };
 
@@ -20,7 +21,6 @@ public:
         VmaAllocation allocation;
         DrawData* mapped;
         VkDeviceAddress bda;
-        u32 drawCount;
     };
 
 public:
@@ -31,7 +31,7 @@ public:
     void UnregisterDrawData(const u32 index);
     void UpdateDrawData(const u32 index, const DrawData& drawData);
 
-    void UpdateDrawDatas(const u32 frameIndex);
+    void UpdateBuffer(const u32 frameIndex);
     VkDeviceAddress GetAddress(const u32 frameIndex) const;
 
 private:

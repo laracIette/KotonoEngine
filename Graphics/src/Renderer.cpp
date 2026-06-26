@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include "DrawDataBuffer.h"
 #include "MaterialBuffer.h"
+#include "ParametersBuffer.h"
 #include "PipelineResourceManager.h"
 #include "TransformBuffer.h"
 #include <kotono_platform/Context.h>
@@ -31,6 +32,7 @@ void KtRenderer::Init()
 	DrawDataBuffer.Init();
 	MaterialBuffer.Init();
 	TransformBuffer.Init();
+	ParametersBuffer.Init();
 }
 
 void KtRenderer::Cleanup()
@@ -39,7 +41,8 @@ void KtRenderer::Cleanup()
 
 	JoinThread(renderThread_);
 	JoinThread(rhiThread_); 
-	
+
+	ParametersBuffer.Cleanup();
 	TransformBuffer.Cleanup();
 	MaterialBuffer.Cleanup();
 	DrawDataBuffer.Cleanup();
@@ -335,13 +338,13 @@ void KtRenderer::CreateCommandBuffer(const u32 frameIndex)
 
 void KtRenderer::CreateSyncObjects()
 {
-	VkSemaphoreCreateInfo semaphoreInfo{};
-	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-	VkFenceCreateInfo fenceInfo{};
-	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
+	const VkSemaphoreCreateInfo semaphoreInfo{
+		.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+	};
+	const VkFenceCreateInfo fenceInfo{
+		.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+		.flags = VK_FENCE_CREATE_SIGNALED_BIT,
+	};
 	for (auto& frameData : frameDatas_)
 	{
 		if (vkCreateSemaphore(Context.GetDevice(), &semaphoreInfo, nullptr, &frameData.imageAvailableSemaphore) != VK_SUCCESS ||
@@ -361,8 +364,9 @@ void KtRenderer::DrawFrame()
 	//UploadStager.Flush();
 
 	PipelineResourceManager.UpdateMappedFrameUBO(frameIndex);
-	DrawDataBuffer.UpdateDrawDatas(frameIndex);
-	TransformBuffer.UpdateTransforms(frameIndex);
+	DrawDataBuffer.UpdateBuffer(frameIndex);
+	TransformBuffer.UpdateBuffer(frameIndex);
+	ParametersBuffer.UpdateBuffer(frameIndex);
 
 	if constexpr (IS_MULTI_THREADED)
 	{
@@ -567,6 +571,7 @@ void KtRenderer::CmdDrawFrame(VkCommandBuffer commandBuffer, const u32 frameInde
 			.drawDataAddress = DrawDataBuffer.GetAddress(frameIndex),
 			.materialAddress = MaterialBuffer.GetAddress(),
 			.transformAddress = TransformBuffer.GetAddress(frameIndex),
+			.parametersAddress = ParametersBuffer.GetAddress(frameIndex),
 			.vertexBufferAddress = drawCall->vertexBufferAdress,
 			.drawIndex = drawCall->index,
 			.flags = drawCall->flags,

@@ -1,16 +1,16 @@
-#include "TransformBuffer.h"
+#include "ParametersBuffer.h"
 #include <kotono_platform/Context.h>
 #include <kotono_platform/vk_utils.h>
 
-static constexpr u32 MAX_TRANSFORMS{ 65536 };
+static constexpr u32 MAX_PARAMETERS{ 65536 };
 
-void STransformBuffer::Init()
+void SParametersBuffer::Init()
 {
     CreateBuffers();
-    transforms_.resize(MAX_TRANSFORMS);
+    parameters_.resize(MAX_PARAMETERS);
 }
 
-void STransformBuffer::Cleanup() const
+void SParametersBuffer::Cleanup() const
 {
     for (const auto& frameData : frameDatas_)
     {
@@ -18,41 +18,41 @@ void STransformBuffer::Cleanup() const
     }
 }
 
-u32 STransformBuffer::RegisterTransform()
+u32 SParametersBuffer::RegisterParameters()
 {
-    return FindTransformSlot();
+    return FindParametersSlot();
 }
 
-void STransformBuffer::UpdateTransform(const u32 index, const Transform& transform)
+void SParametersBuffer::UpdateParameters(const u32 index, const Parameters& parameters)
 {
-    transforms_[index] = transform;
+    parameters_[index] = parameters;
 }
 
-void STransformBuffer::UnregisterTransform(const u32 index)
+void SParametersBuffer::UnregisterParameters(const u32 index)
 {
-    freeTransformSlots_.push_back(index);
+    freeParametersSlots_.push_back(index);
 }
 
-void STransformBuffer::UpdateBuffer(const u32 frameIndex)
+void SParametersBuffer::UpdateBuffer(const u32 frameIndex)
 {
     std::memcpy(frameDatas_[frameIndex].mapped
-        , transforms_.data()
-        , transformCount_ * sizeof(Transform)
+        , parameters_.data()
+        , parametersCount_ * sizeof(Parameters)
     );
 }
 
-VkDeviceAddress STransformBuffer::GetAddress(const u32 frameIndex) const
+VkDeviceAddress SParametersBuffer::GetAddress(const u32 frameIndex) const
 {
     return frameDatas_[frameIndex].bda;
 }
 
-void STransformBuffer::CreateBuffers()
+void SParametersBuffer::CreateBuffers()
 {
     for (auto& frameData : frameDatas_)
     {
         const VkBufferCreateInfo bufInfo{
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = sizeof(Transform) * MAX_TRANSFORMS,
+        .size = sizeof(Parameters) * MAX_PARAMETERS,
         .usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
             | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
         };
@@ -76,7 +76,7 @@ void STransformBuffer::CreateBuffers()
             "failed to create buffer with VMA!"
         );
 
-        frameData.mapped = static_cast<Transform*>(allocationInfo.pMappedData);
+        frameData.mapped = static_cast<Parameters*>(allocationInfo.pMappedData);
 
         const VkBufferDeviceAddressInfo addrInfo{
             .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
@@ -86,14 +86,14 @@ void STransformBuffer::CreateBuffers()
     }
 }
 
-u32 STransformBuffer::FindTransformSlot()
+u32 SParametersBuffer::FindParametersSlot()
 {
-    if (!freeTransformSlots_.empty())
+    if (!freeParametersSlots_.empty())
     {
-        const u32 slot{ freeTransformSlots_.back() };
-        freeTransformSlots_.pop_back();
+        const u32 slot{ freeParametersSlots_.back() };
+        freeParametersSlots_.pop_back();
         return slot;
     }
-    assert(transformCount_ < MAX_TRANSFORMS);
-    return transformCount_++;
+    assert(parametersCount_ < MAX_PARAMETERS);
+    return parametersCount_++;
 }

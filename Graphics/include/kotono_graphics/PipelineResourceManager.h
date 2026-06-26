@@ -11,6 +11,7 @@ struct UPushConstants
 	VkDeviceAddress drawDataAddress;
 	VkDeviceAddress materialAddress;
 	VkDeviceAddress transformAddress;
+	VkDeviceAddress parametersAddress;
 	VkDeviceAddress vertexBufferAddress;
 	u32 drawIndex;
 	u32 flags;

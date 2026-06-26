@@ -34,7 +34,7 @@ void SDrawDataBuffer::UnregisterDrawData(const u32 index)
     freeDrawDataSlots_.push_back(index);
 }
 
-void SDrawDataBuffer::UpdateDrawDatas(const u32 frameIndex)
+void SDrawDataBuffer::UpdateBuffer(const u32 frameIndex)
 {
     std::memcpy(frameDatas_[frameIndex].mapped
         , drawDatas_.data()

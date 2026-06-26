@@ -6,6 +6,7 @@
 struct DrawData {
     uint materialIndex;
     uint transformIndex;
+    uint parametersIndex;
     uint meshletOffset;
 };
 
@@ -21,6 +22,12 @@ struct Material {
 struct Transform {
     mat4 modelMatrix;
 	mat4 normalMatrix;
+};
+
+struct Parameters {
+    float scalars[16];
+    vec4 vectors[16];
+    uint textures[16]; // indices
 };
 
 struct Vertex {
@@ -52,6 +59,10 @@ layout(buffer_reference, scalar) readonly buffer MaterialBuf {
 layout(buffer_reference, scalar) readonly buffer TransformBuf {
     Transform data[];
 };
+layout(buffer_reference, scalar) readonly buffer ParametersBuf {
+    Parameters data[];
+};
+
 layout(buffer_reference, scalar) readonly buffer VertexBuf {
     Vertex data[];
 };
@@ -60,6 +71,7 @@ layout(push_constant, scalar) uniform PC {
     DrawDataBuf  drawData;
     MaterialBuf  materials;
     TransformBuf transforms;
+    ParametersBuf parameters;
     VertexBuf vertices;
     uint drawIndex;
     uint flags;

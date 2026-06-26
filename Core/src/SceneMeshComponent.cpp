@@ -7,10 +7,12 @@
 #include <kotono_graphics/DrawDataBuffer.h>
 #include <kotono_graphics/Material.h>
 #include <kotono_graphics/Model.h>
+#include <kotono_graphics/ParametersBuffer.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/SceneProxy.h>
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/TransformBuffer.h>
+#include <kotono_graphics/Color.h>
 #include <kotono_input/Keyboard.h>
 #include <kotono_platform/Window.h>
 #include <kotono_platform/WindowViewport.h>
@@ -22,6 +24,7 @@ KSceneMeshComponent::KSceneMeshComponent()
     , drawCall_{ new UDrawCall{} }
     , drawDataIndex_{ DrawDataBuffer.RegisterDrawData() }
     , transformIndex_{ TransformBuffer.RegisterTransform() }
+    , parametersIndex_{ ParametersBuffer.RegisterParameters() }
 {
     if (!WireframeShader)
     {
@@ -176,14 +179,19 @@ void KSceneMeshComponent::RegisterModelProxy() const
 
 void KSceneMeshComponent::RegisterDrawCall()
 {
+    static int id{ 0 };
     Renderer.RegisterDrawCall(drawCall_);
     TransformBuffer.UpdateTransform(transformIndex_, {
         .modelMatrix = ModelMatrix(),
         .normalMatrix = glm::identity<glm::mat4>(),
     });
+    ParametersBuffer.UpdateParameters(parametersIndex_, {
+        .vectors = { (id++ % 2) ? Colors::Red : Colors::White },
+    });
     DrawDataBuffer.UpdateDrawData(drawDataIndex_, {
         .materialIndex = material_->GetIndex(),
         .transformIndex = transformIndex_,
+        .parametersIndex = parametersIndex_,
         .meshletOffset = 0,
     });
 }
@@ -198,6 +206,7 @@ void KSceneMeshComponent::UnregisterDrawCall() const
     Renderer.UnregisterDrawCall(drawCall_);
     DrawDataBuffer.UnregisterDrawData(drawDataIndex_);
     TransformBuffer.UnregisterTransform(transformIndex_);
+    ParametersBuffer.UnregisterParameters(parametersIndex_);
 }
 
 void KSceneMeshComponent::Spin()
