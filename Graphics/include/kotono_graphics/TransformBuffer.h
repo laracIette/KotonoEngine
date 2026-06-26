@@ -26,9 +26,9 @@ public:
     void Init();
     void Cleanup() const;
 
-    u32 RegisterTransform(const Transform& drawData);
+    u32 RegisterTransform();
     void UnregisterTransform(const u32 index);
-    void UpdateTransform(const Transform& drawData, const u32 index);
+    void UpdateTransform(const u32 index, const Transform& transform);
 
     void UpdateTransforms(const u32 frameIndex);
     VkDeviceAddress GetAddress(const u32 frameIndex) const;

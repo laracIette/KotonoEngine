@@ -27,9 +27,9 @@ public:
     void Init();
     void Cleanup() const;
 
-    u32 RegisterDrawData(const DrawData& drawData);
+    u32 RegisterDrawData();
     void UnregisterDrawData(const u32 index);
-    void UpdateDrawData(const DrawData& drawData, const u32 index);
+    void UpdateDrawData(const u32 index, const DrawData& drawData);
 
     void UpdateDrawDatas(const u32 frameIndex);
     VkDeviceAddress GetAddress(const u32 frameIndex) const;

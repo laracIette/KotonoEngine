@@ -55,7 +55,7 @@ private:
 private:
 	SERIALIZE UAsset<KtShader> shader_;
 	SERIALIZE UAsset<KtModel> model_;
-	UAsset<UMaterial> material_;
+	SERIALIZE UAsset<UMaterial> material_;
 	UTask spinTask_;
 
 	USceneProxy* modelProxy_;

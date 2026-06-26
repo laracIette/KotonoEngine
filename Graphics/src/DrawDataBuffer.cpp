@@ -19,14 +19,12 @@ void SDrawDataBuffer::Cleanup() const
     }
 }
 
-u32 SDrawDataBuffer::RegisterDrawData(const DrawData& drawData)
+u32 SDrawDataBuffer::RegisterDrawData()
 {
-    const auto slot{ FindDrawDataSlot() };
-    drawDatas_[slot] = drawData;
-    return slot;
+    return FindDrawDataSlot();
 }
 
-void SDrawDataBuffer::UpdateDrawData(const DrawData& drawData, const u32 index)
+void SDrawDataBuffer::UpdateDrawData(const u32 index, const DrawData& drawData)
 {
     drawDatas_[index] = drawData;
 }

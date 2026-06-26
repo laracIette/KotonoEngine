@@ -17,22 +17,16 @@
 
 static UAsset<KtShader> WireframeShader;
 
-constinit bool flipFlop{ false };
-
 KSceneMeshComponent::KSceneMeshComponent() 
     : modelProxy_{ new USceneProxy{} }
     , drawCall_{ new UDrawCall{} }
-    , drawDataIndex_{}
-    , transformIndex_{}
-    , material_{}
+    , drawDataIndex_{ DrawDataBuffer.RegisterDrawData() }
+    , transformIndex_{ TransformBuffer.RegisterTransform() }
 {
     if (!WireframeShader)
     {
         //WireframeShader = UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/wireframe3D.ktshader");
     }
-    material_ = (flipFlop = !flipFlop)
-        ? UAssetManager<UMaterial>::Get("${ENGINE_DIRECTORY}/Graphics/materials/default.ktmaterial")
-        : UAssetManager<UMaterial>::Get("${ENGINE_DIRECTORY}/Graphics/materials/default2.ktmaterial");
 
     spinTask_.duration = 5.0f;
 }
@@ -41,6 +35,8 @@ KSceneMeshComponent::~KSceneMeshComponent()
 {
     UnregisterModelProxy();
     Renderer.SceneRenderer().DeleteProxy(modelProxy_);
+    UnregisterDrawCall();
+    delete drawCall_;
 }
 
 void KSceneMeshComponent::Init()
@@ -138,25 +134,17 @@ void KSceneMeshComponent::CreateModelProxy()
 
 void KSceneMeshComponent::CreateDrawCall()
 {
-    transformIndex_ = TransformBuffer.RegisterTransform({
-        .modelMatrix = ModelMatrix(),
-        .normalMatrix = glm::identity<glm::mat4>(),
-    });
-    drawDataIndex_ = DrawDataBuffer.RegisterDrawData({
-        .materialIndex = material_->GetIndex(),
-        .transformIndex = transformIndex_,
-        .meshletOffset = 0,
-    });
-
-    drawCall_->pipeline = shader_->GetGraphicsPipeline();
-    drawCall_->index = drawDataIndex_;
-    drawCall_->flags = 0;
-    drawCall_->indexBuffer = model_->GetIndexBuffer();
-    drawCall_->indexCount = model_->GetIndexCount();
-    drawCall_->vertexBufferAdress = model_->GetVertexBufferAddress();
-    drawCall_->firstIndex = 0;
-    drawCall_->renderBucket = ERenderBucket::Opaque;
-    drawCall_->sortKey = 0.0f;
+    *drawCall_ = {
+        .pipeline = shader_->GetGraphicsPipeline(),
+        .index = drawDataIndex_,
+        .flags = 0,
+        .vertexBufferAdress = model_->GetVertexBufferAddress(),
+        .indexBuffer = model_->GetIndexBuffer(),
+        .indexCount = model_->GetIndexCount(),
+        .firstIndex = 0,
+        .renderBucket = ERenderBucket::Opaque,
+        .sortKey = 0.0f,
+    };
 }
 
 void KSceneMeshComponent::MarkModelProxyTransformDirty()
@@ -189,6 +177,15 @@ void KSceneMeshComponent::RegisterModelProxy() const
 void KSceneMeshComponent::RegisterDrawCall()
 {
     Renderer.RegisterDrawCall(drawCall_);
+    TransformBuffer.UpdateTransform(transformIndex_, {
+        .modelMatrix = ModelMatrix(),
+        .normalMatrix = glm::identity<glm::mat4>(),
+    });
+    DrawDataBuffer.UpdateDrawData(drawDataIndex_, {
+        .materialIndex = material_->GetIndex(),
+        .transformIndex = transformIndex_,
+        .meshletOffset = 0,
+    });
 }
 
 void KSceneMeshComponent::UnregisterModelProxy() const

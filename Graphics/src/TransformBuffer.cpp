@@ -18,14 +18,12 @@ void STransformBuffer::Cleanup() const
     }
 }
 
-u32 STransformBuffer::RegisterTransform(const Transform& transform)
+u32 STransformBuffer::RegisterTransform()
 {
-    const auto slot{ FindTransformSlot() };
-    transforms_[slot] = transform;
-    return slot;
+    return FindTransformSlot();
 }
 
-void STransformBuffer::UpdateTransform(const Transform& transform, const u32 index)
+void STransformBuffer::UpdateTransform(const u32 index, const Transform& transform)
 {
     transforms_[index] = transform;
 }
