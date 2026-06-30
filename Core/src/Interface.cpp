@@ -9,9 +9,9 @@
 
 KInterface::KInterface()
 {
-	UAsset shader{ UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader2D.ktshader") };
-	UAsset texture1{ UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png") };
-	UAsset texture2{ UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/default_texture.jpg") };
+	UAsset shader{ UAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader2D.ktshader") };
+	UAsset texture1{ UAssetManager<UTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png") };
+	UAsset texture2{ UAssetManager<UTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/default_texture.jpg") };
 
 	UPtr image1{ UCreate<RInterfaceObject>{}() };
 	UPtr image2{ UCreate<RInterfaceObject>{}() };

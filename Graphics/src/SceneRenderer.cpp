@@ -285,7 +285,7 @@ void KtSceneRenderer::UpdateStagingProxies(StagingProxiesMap& stagingProxies, Fr
 
 void KtSceneRenderer::UpdateDescriptorSetObjectBuffers(const ProxiesPool& proxies, const u32 frameIndex) const
 {
-	std::unordered_map<KtShader*, std::vector<KtSceneObjectData>> shaderObjectBufferDatas{};
+	std::unordered_map<UShader*, std::vector<KtSceneObjectData>> shaderObjectBufferDatas{};
 	for (const Proxy* proxy : proxies)
 	{
 		const auto& frameData{ proxy->frameDatas_[frameIndex] };
@@ -304,7 +304,7 @@ void KtSceneRenderer::UpdateDescriptorSetObjectBuffers(const ProxiesPool& proxie
 
 void KtSceneRenderer::UpdateDescriptorSetUniformBuffers(const ProxiesPool& proxies, const u32 frameIndex) const
 {
-	std::unordered_set<KtShader*> shaders{};
+	std::unordered_set<UShader*> shaders{};
 	for (const Proxy* proxy : proxies)
 	{
 		const auto& frameData{ proxy->frameDatas_[frameIndex] };
@@ -366,7 +366,7 @@ void KtSceneRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const std::v
 
 	WindowViewport.CmdUse(commandBuffer);
 
-	const KtShader* currentShader{ nullptr };
+	const UShader* currentShader{ nullptr };
 	const KtSceneRenderable* currentRenderable{ nullptr };
 	KtScissor currentScissor{};
 
@@ -422,7 +422,7 @@ void KtSceneRenderer::UpdateDrawBatches(FrameData::ObjectBufferData& objectBuffe
 	for (size i{ 0 }; i < proxies.size();)
 	{
 		const auto& frameData{ proxies[i]->frameDatas_[frameIndex] };
-		KtShader* shader{ frameData.data.shader };
+		UShader* shader{ frameData.data.shader };
 		KtSceneRenderable* renderable{ frameData.data.renderable };
 		KtScissor scissor{ frameData.data.scissor };
 

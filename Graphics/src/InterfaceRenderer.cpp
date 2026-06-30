@@ -319,7 +319,7 @@ void KtInterfaceRenderer::UpdateDescriptorSets(const ProxiesPool& proxies, const
 		std::vector<u32> renderableIndices;
 	};
 
-	std::unordered_map<KtShader*, ShaderData> shaderDatas{};
+	std::unordered_map<UShader*, ShaderData> shaderDatas{};
 
 	for (const auto* proxy : proxies)
 	{
@@ -364,8 +364,8 @@ void KtInterfaceRenderer::UpdateDescriptorSets(const ProxiesPool& proxies, const
 			imageInfos.reserve(shaderData.renderables.size());
 			for (const auto* renderable : shaderData.renderables)
 			{
-				// static_cast is safe because 'textures' expects only KtTexture
-				const auto* asTexture{ static_cast<const KtTexture*>(renderable) };
+				// static_cast is safe because 'textures' expects only UTexture
+				const auto* asTexture{ static_cast<const UTexture*>(renderable) };
 				imageInfos.push_back(asTexture->GetDescriptorImageInfo());
 			}
 			shader->UpdateDescriptorSetLayoutBindingImageSampler(*binding, imageInfos, frameIndex);
@@ -423,7 +423,7 @@ void KtInterfaceRenderer::CmdDrawProxies(VkCommandBuffer commandBuffer, const st
 	CmdBindVertexBuffer(commandBuffer);
 	CmdBindIndexBuffer(commandBuffer);
 
-	const KtShader* currentShader{ nullptr };
+	const UShader* currentShader{ nullptr };
 	KtScissor currentScissor{};
 
 	for (auto& drawBatch : drawBatches)
@@ -461,7 +461,7 @@ void KtInterfaceRenderer::UpdateDrawBatches(FrameData::ObjectBufferData& objectB
 	for (size i{ 0 }; i < proxies.size();)
 	{
 		const auto& frameData{ proxies[i]->frameDatas_[frameIndex] };
-		KtShader* shader{ frameData.data.shader };
+		UShader* shader{ frameData.data.shader };
 		KtScissor scissor{ frameData.data.scissor };
 
 		// Find the extent of the current batch

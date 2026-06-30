@@ -7,7 +7,7 @@
 #include <span>
 #include <unordered_map>
 #include <vulkan/vulkan.h>
-class KtShader final
+class UShader final
 {
 public:	
 	struct DescriptorSetLayoutBindingData final
@@ -33,8 +33,8 @@ public:
 	    std::vector<DescriptorSetLayoutBindingData>    descriptorSetLayoutBindingDatas;
 	};
 
-	KtShader(const UPath& path);
-	~KtShader();
+	UShader(const UPath& path);
+	~UShader();
 
 	const UPath& Path() const;
 

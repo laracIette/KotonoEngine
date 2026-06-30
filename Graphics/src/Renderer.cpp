@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "DrawCall.h"
 #include "DrawDataBuffer.h"
 #include "MaterialBuffer.h"
 #include "ParametersBuffer.h"
@@ -560,8 +561,10 @@ void KtRenderer::CmdDrawFrame(VkCommandBuffer commandBuffer, const u32 frameInde
 	auto sortedDrawCalls{ drawCalls_ };
 
 	std::ranges::sort(sortedDrawCalls, std::less{}, [](const UDrawCall* dc) {
-		return std::tie(dc->renderBucket, dc->pipeline, dc->sortKey);
+		return std::tie(dc->renderBucket, dc->sortKey, dc->pipeline);
 	});
+
+	//KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Graphics", "{0}", drawCalls_.size());
 
 	for (const auto* drawCall : sortedDrawCalls)
 	{
@@ -574,7 +577,6 @@ void KtRenderer::CmdDrawFrame(VkCommandBuffer commandBuffer, const u32 frameInde
 			.parametersAddress = ParametersBuffer.GetAddress(frameIndex),
 			.vertexBufferAddress = drawCall->vertexBufferAdress,
 			.drawIndex = drawCall->index,
-			.flags = drawCall->flags,
 		};
 
 		vkCmdPushConstants(commandBuffer
@@ -584,6 +586,8 @@ void KtRenderer::CmdDrawFrame(VkCommandBuffer commandBuffer, const u32 frameInde
 			, sizeof(UPushConstants)
 			, &pc
 		);
+
+		vkCmdSetScissor(commandBuffer, 0, 1, &drawCall->scissor);
 
 		vkCmdBindIndexBuffer(commandBuffer, drawCall->indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 		vkCmdDrawIndexed(commandBuffer

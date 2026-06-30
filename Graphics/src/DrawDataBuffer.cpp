@@ -8,7 +8,7 @@ static constexpr u32 MAX_DRAW_DATAS{ 65536 };
 void SDrawDataBuffer::Init()
 {
     CreateBuffers();
-    drawDatas_.resize(MAX_DRAW_DATAS);
+    datas_.resize(MAX_DRAW_DATAS);
 }
 
 void SDrawDataBuffer::Cleanup() const
@@ -19,26 +19,26 @@ void SDrawDataBuffer::Cleanup() const
     }
 }
 
-u32 SDrawDataBuffer::RegisterDrawData()
+UDrawDataBufferData* SDrawDataBuffer::RegisterDrawData()
 {
     return FindDrawDataSlot();
 }
 
-void SDrawDataBuffer::UpdateDrawData(const u32 index, const DrawData& drawData)
+void SDrawDataBuffer::UnregisterDrawData(Data* slot)
 {
-    drawDatas_[index] = drawData;
+    freeDataSlots_.push_back(slot);
 }
 
-void SDrawDataBuffer::UnregisterDrawData(const u32 index)
+u32 SDrawDataBuffer::GetIndex(const Data* slot) const
 {
-    freeDrawDataSlots_.push_back(index);
+    return static_cast<u32>(slot - datas_.data());
 }
 
 void SDrawDataBuffer::UpdateBuffer(const u32 frameIndex)
 {
     std::memcpy(frameDatas_[frameIndex].mapped
-        , drawDatas_.data()
-        , drawDatasCount_ * sizeof(DrawData)
+        , datas_.data()
+        , dataCount_ * sizeof(Data)
     );
 }
 
@@ -53,7 +53,7 @@ void SDrawDataBuffer::CreateBuffers()
     {
         const VkBufferCreateInfo bufInfo{
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = sizeof(DrawData) * MAX_DRAW_DATAS,
+        .size = sizeof(Data) * MAX_DRAW_DATAS,
         .usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
             | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
         };
@@ -77,7 +77,7 @@ void SDrawDataBuffer::CreateBuffers()
             "failed to create buffer with VMA!"
         );
 
-        frameData.mapped = static_cast<DrawData*>(allocationInfo.pMappedData);
+        frameData.mapped = static_cast<Data*>(allocationInfo.pMappedData);
 
         const VkBufferDeviceAddressInfo addrInfo{
             .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
@@ -87,14 +87,14 @@ void SDrawDataBuffer::CreateBuffers()
     }
 }
 
-u32 SDrawDataBuffer::FindDrawDataSlot()
+UDrawDataBufferData* SDrawDataBuffer::FindDrawDataSlot()
 {
-    if (!freeDrawDataSlots_.empty())
+    if (!freeDataSlots_.empty())
     {
-        const u32 slot{ freeDrawDataSlots_.back() };
-        freeDrawDataSlots_.pop_back();
+        Data* slot{ freeDataSlots_.back() };
+        freeDataSlots_.pop_back();
         return slot;
     }
-    assert(drawDatasCount_ < MAX_DRAW_DATAS);
-    return drawDatasCount_++;
+    assert(dataCount_ < MAX_DRAW_DATAS);
+    return &datas_[dataCount_++];
 }

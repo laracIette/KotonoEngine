@@ -8,36 +8,7 @@
 #include <vector>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
-
-enum class ERenderBucket : u8
-{
-	Shadow,
-	Opaque,
-	Transparent,
-	Interface,
-};
-
-struct UDrawCall
-{
-	VkPipeline pipeline;
-
-	// Push constants
-	u32 index;
-	u32 flags;
-
-	// Geometry
-	VkDeviceAddress vertexBufferAdress;
-	VkBuffer indexBuffer;
-	u32 indexCount;
-	u32 firstIndex;
-
-	// Ordering
-	ERenderBucket renderBucket;
-	f32 sortKey; // Depth for 3D translucent, layer for 2D
-
-	size poolIndex;
-};
-
+struct UDrawCall;
 class KtRenderer final
 {
 	friend class SCore;

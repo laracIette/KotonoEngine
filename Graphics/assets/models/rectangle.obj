@@ -1,0 +1,18 @@
+# Kotono Engine 2D Quad
+
+# Vertices (Positions with Z=0.0)
+v -0.5 -0.5 0.0
+v  0.5 -0.5 0.0
+v  0.5  0.5 0.0
+v -0.5  0.5 0.0
+
+# Texture Coordinates (U, V)
+vt 0.0 0.0
+vt 1.0 0.0
+vt 1.0 1.0
+vt 0.0 1.0
+
+# Faces (Triangle primitives)
+# mapped as v1/vt1 v2/vt2 v3/vt3
+f 1/1 2/2 3/3
+f 3/3 4/4 1/1

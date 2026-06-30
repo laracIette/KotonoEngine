@@ -48,9 +48,9 @@ void SCore::Cleanup()
 {
     Game.Cleanup();
     AudioManager.Cleanup();
-    UAssetManager<KtTexture>::Cleanup();
-    UAssetManager<KtShader>::Cleanup();
-    UAssetManager<KtModel>::Cleanup();
+    UAssetManager<UTexture>::Cleanup();
+    UAssetManager<UShader>::Cleanup();
+    UAssetManager<UModel>::Cleanup();
     Renderer.Cleanup();
     Context.Cleanup();
     Window.Cleanup();

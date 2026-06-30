@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 
-KtModel::KtModel(const UPath& path) 
+UModel::UModel(const UPath& path) 
 	: path_(path)
 {
 	Load();
@@ -17,7 +17,7 @@ KtModel::KtModel(const UPath& path)
 	CreateIndirectBuffers();
 }
 
-KtModel::~KtModel()
+UModel::~UModel()
 {
 	vmaDestroyBuffer(Context.GetAllocator(), indexBuffer_.Buffer, indexBuffer_.Allocation);
 	vmaDestroyBuffer(Context.GetAllocator(), vertexBuffer_.Buffer, vertexBuffer_.Allocation);
@@ -28,12 +28,12 @@ KtModel::~KtModel()
 	KT_LOG(ELogImportanceLevel::Low, "Graphics", "cleaned up {}", Path().ToString());
 }
 
-const UPath& KtModel::Path() const
+const UPath& UModel::Path() const
 {
 	return path_;
 }
 
-VkDeviceAddress KtModel::GetVertexBufferAddress() const
+VkDeviceAddress UModel::GetVertexBufferAddress() const
 {
 	const VkBufferDeviceAddressInfo addrInfo{
 		.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
@@ -42,17 +42,17 @@ VkDeviceAddress KtModel::GetVertexBufferAddress() const
 	return vkGetBufferDeviceAddress(Context.GetDevice(), &addrInfo);
 }
 
-VkBuffer KtModel::GetIndexBuffer() const
+VkBuffer UModel::GetIndexBuffer() const
 {
 	return indexBuffer_.Buffer;
 }
 
-u32 KtModel::GetIndexCount() const
+u32 UModel::GetIndexCount() const
 {
 	return indices_.size();
 }
 
-void KtModel::CmdBind(VkCommandBuffer commandBuffer) const
+void UModel::CmdBind(VkCommandBuffer commandBuffer) const
 {
 	const std::array vertexBuffers{ vertexBuffer_.Buffer };
 	const std::array offsets{ VkDeviceSize{ 0 } };
@@ -60,19 +60,19 @@ void KtModel::CmdBind(VkCommandBuffer commandBuffer) const
 	vkCmdBindIndexBuffer(commandBuffer, indexBuffer_.Buffer, 0, VK_INDEX_TYPE_UINT32);
 }
 
-void KtModel::CmdDraw(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void UModel::CmdDraw(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	vkCmdDrawIndexedIndirect(commandBuffer, indirectBuffers_[frameIndex].Buffer, 0, 1, sizeof(VkDrawIndexedIndirectCommand));
 }
 
-void KtModel::UpdateIndirectBuffer(const u32 firstInstance, const u32 instanceCount, const u32 frameIndex) const
+void UModel::UpdateIndirectBuffer(const u32 firstInstance, const u32 instanceCount, const u32 frameIndex) const
 {
 	auto* cmd{ static_cast<VkDrawIndexedIndirectCommand*>(indirectBuffers_[frameIndex].AllocationInfo.pMappedData) };
 	cmd->instanceCount = instanceCount;
 	cmd->firstInstance = firstInstance;
 }
 
-void KtModel::Load()
+void UModel::Load()
 {
 	Assimp::Importer importer{};
 	const aiScene* scene{ importer.ReadFile(path_.ToPath().string().c_str()
@@ -146,7 +146,7 @@ void KtModel::Load()
 	}
 }
 
-void KtModel::CreateVertexBuffer()
+void UModel::CreateVertexBuffer()
 {
 	const VkDeviceSize bufferSize{ sizeof(KtVertex3D) * vertices_.size() };
 
@@ -171,10 +171,10 @@ void KtModel::CreateVertexBuffer()
 	);
 
 	Context.CopyBuffer(stagingVertexBuffer_.Buffer, vertexBuffer_.Buffer, bufferSize);
-	Context.GetEventExecuteSingleTimeCommands().AddListener(this, &KtModel::DestroyStagingVertexBuffer);
+	Context.GetEventExecuteSingleTimeCommands().AddListener(this, &UModel::DestroyStagingVertexBuffer);
 }
 
-void KtModel::CreateIndexBuffer()
+void UModel::CreateIndexBuffer()
 {
 	const VkDeviceSize bufferSize{ sizeof(u32) * indices_.size() };
 
@@ -197,10 +197,10 @@ void KtModel::CreateIndexBuffer()
 	);
 
 	Context.CopyBuffer(stagingIndexBuffer_.Buffer, indexBuffer_.Buffer, bufferSize);
-	Context.GetEventExecuteSingleTimeCommands().AddListener(this, &KtModel::DestroyStagingIndexBuffer);
+	Context.GetEventExecuteSingleTimeCommands().AddListener(this, &UModel::DestroyStagingIndexBuffer);
 }
 
-void KtModel::CreateIndirectBuffers()
+void UModel::CreateIndirectBuffers()
 {
 	for (size i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
 	{
@@ -208,7 +208,7 @@ void KtModel::CreateIndirectBuffers()
 	}
 }
 
-void KtModel::CreateIndirectBuffer(const u32 frameIndex)
+void UModel::CreateIndirectBuffer(const u32 frameIndex)
 {
 	const VkDeviceSize bufferSize{ sizeof(VkDrawIndexedIndirectCommand) };
 
@@ -231,12 +231,12 @@ void KtModel::CreateIndirectBuffer(const u32 frameIndex)
 	std::memcpy(indirectBuffers_[frameIndex].AllocationInfo.pMappedData, &cmd, sizeof(cmd));
 }
 
-void KtModel::DestroyStagingVertexBuffer() const
+void UModel::DestroyStagingVertexBuffer() const
 {
 	vmaDestroyBuffer(Context.GetAllocator(), stagingVertexBuffer_.Buffer, stagingVertexBuffer_.Allocation);
 }
 
-void KtModel::DestroyStagingIndexBuffer() const
+void UModel::DestroyStagingIndexBuffer() const
 {
 	vmaDestroyBuffer(Context.GetAllocator(), stagingIndexBuffer_.Buffer, stagingIndexBuffer_.Allocation);
 }

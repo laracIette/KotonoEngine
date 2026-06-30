@@ -5,11 +5,11 @@
 #include <kotono_common/Path.h>
 #include <kotono_platform/AllocatedBuffer.h>
 
-class KtModel final : public KtSceneRenderable
+class UModel final : public KtSceneRenderable
 {
 public:
-	KtModel(const UPath& path);
-	~KtModel();
+	UModel(const UPath& path);
+	~UModel();
 
 	const UPath& Path() const;
 

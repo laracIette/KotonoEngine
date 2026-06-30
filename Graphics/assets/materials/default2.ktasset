@@ -4,5 +4,5 @@
   "roughness": "${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png",
   "emissive": "${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png",
   "materialType": 0,
-  "samplerIndex": 0
+  "sampler": "${ENGINE_DIRECTORY}/Graphics/assets/samplers/default.ktasset"
 }

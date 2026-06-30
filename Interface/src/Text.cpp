@@ -93,8 +93,7 @@ WidgetPool WText::GetCharacters() const
 
 	for (const auto& characterPath : characterPaths)
 	{
-		UPtr image{ UCreate<WImage>{}() };
-		image->SetPath(characterPath);
+		UPtr image{ UCreate<WImage>{}(characterPath) };
 		image->SetName("text image");
 
 		UPtr box{ UCreate<WBox>{}() };

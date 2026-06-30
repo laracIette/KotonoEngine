@@ -4,7 +4,7 @@
 #include "Scissor.h"
 #include <functional>
 #include <kotono_common/Pool.h>
-class KtShader;
+class UShader;
 class KtSceneRenderable;
 class USceneProxy final
 {
@@ -15,7 +15,7 @@ private:
 public:
 	struct Data
 	{
-		KtShader* shader;
+		UShader* shader;
 		KtSceneRenderable* renderable;
 		KtSceneObjectData objectData;
 		KtScissor scissor;

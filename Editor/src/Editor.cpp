@@ -18,9 +18,9 @@ void SEditor::Init()
 	updateTimer.SetIsRepeat(true);
 	updateTimer.Start();
 
-	//CreateWidget();
+	CreateWidget();
 
-	//Window.GetEventWindowResized().AddListener(this, &SEditor::RefreshMainWindowWidget);
+	Window.GetEventWindowResized().AddListener(this, &SEditor::RefreshMainWindowWidget);
 }
 
 void SEditor::Update()
@@ -31,9 +31,9 @@ void SEditor::Cleanup()
 {
 	Camera.Cleanup();
 
-	//DeleteWidget();
+	DeleteWidget();
 
-	//Window.GetEventWindowResized().RemoveListener(this, &SEditor::RefreshMainWindowWidget);
+	Window.GetEventWindowResized().RemoveListener(this, &SEditor::RefreshMainWindowWidget);
 }
 
 void SEditor::CreateWidget()

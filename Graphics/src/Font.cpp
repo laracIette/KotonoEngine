@@ -88,14 +88,14 @@ std::vector<UPath> KtFont::GetTextPaths(const std::string_view text) const
     return result;
 }
 
-std::vector<UAsset<KtTexture>> KtFont::GetTextTextures(const std::string_view text) const
+std::vector<UAsset<UTexture>> KtFont::GetTextTextures(const std::string_view text) const
 {
-    std::vector<UAsset<KtTexture>> result;
+    std::vector<UAsset<UTexture>> result;
     result.reserve(text.size());
 
     for (const auto& path : GetTextPaths(text))
     {
-        result.push_back(UAssetManager<KtTexture>::Get(path));
+        result.push_back(UAssetManager<UTexture>::Get(path));
     }
 
     return result;

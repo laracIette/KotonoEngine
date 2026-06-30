@@ -7,7 +7,7 @@
 template <typename T>
 class UAsset;
 
-class KtTexture;
+class UTexture;
 
 class KtFont final
 {
@@ -22,7 +22,7 @@ public:
 	void SetSpacing(const float spacing);
 
 	std::vector<UPath> GetTextPaths(const std::string_view text) const;
-	std::vector<UAsset<KtTexture>> GetTextTextures(const std::string_view text) const;
+	std::vector<UAsset<UTexture>> GetTextTextures(const std::string_view text) const;
 
 private:
 	const UPath path_;

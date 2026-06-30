@@ -8,13 +8,13 @@
 #include <kotono_platform/WindowViewport.h>
 #include <kotono_common/log.h>
 
-static UAsset<KtShader> WireframeShader;
+static UAsset<UShader> WireframeShader;
 
 KInterfaceImageComponent::KInterfaceImageComponent() 
 {
 	if (!WireframeShader)
 	{
-		//WireframeShader = UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/wireframe2D.ktshader");
+		//WireframeShader = UAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/wireframe2D.ktshader");
 	}
 
 	textureProxy_ = Renderer.InterfaceRenderer().CreateProxy();
@@ -31,12 +31,12 @@ void KInterfaceImageComponent::Init()
 	Base::Init();
 }
 
-UAsset<KtShader> KInterfaceImageComponent::GetShader() const
+UAsset<UShader> KInterfaceImageComponent::GetShader() const
 {
 	return shader_;
 }
 
-UAsset<KtTexture> KInterfaceImageComponent::GetTexture() const
+UAsset<UTexture> KInterfaceImageComponent::GetTexture() const
 {
 	return texture_;
 }
@@ -51,13 +51,13 @@ UEvent<>& KInterfaceImageComponent::GetEventTextureUpdated()
 	return eventTextureUpdated_;
 }
 
-void KInterfaceImageComponent::SetShader(UAsset<KtShader> shader)
+void KInterfaceImageComponent::SetShader(UAsset<UShader> shader)
 {
 	shader_ = shader;
 	eventShaderUpdated_.Broadcast();
 }
 
-void KInterfaceImageComponent::SetTexture(UAsset<KtTexture> texture)
+void KInterfaceImageComponent::SetTexture(UAsset<UTexture> texture)
 {
 	texture_ = texture;
 	eventTextureUpdated_.Broadcast();

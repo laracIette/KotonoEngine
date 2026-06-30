@@ -10,9 +10,7 @@ KSceneComponent::KSceneComponent()
     , canUpdate_{ true }
     , isInit_{ false }
     , mobility_{ EMobility::Dynamic }
-    , modelMatrix_{ [this]() { return TranslationMatrix() * RotationMatrix() * ScaleMatrix(); } }
 {
-    eventTransformUpdated_.AddListener(&modelMatrix_, &KtCached<glm::mat4>::MarkDirty);
 }
 
 KSceneComponent::~KSceneComponent()
@@ -185,9 +183,9 @@ glm::mat4 KSceneComponent::ScaleMatrix() const
     return glm::scale(glm::identity<glm::mat4>(), GetWorldScale());
 }
 
-const glm::mat4& KSceneComponent::ModelMatrix()
+glm::mat4 KSceneComponent::ModelMatrix() const
 {
-    return modelMatrix_;
+    return TranslationMatrix() * RotationMatrix() * ScaleMatrix();
 }
 
 glm::vec3 KSceneComponent::GetScreenPosition() const

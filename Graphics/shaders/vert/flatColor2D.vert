@@ -1,24 +1,9 @@
 #version 460
-
-struct ObjectData
-{
-    mat4 model;
-    vec4 color;
-};
-
-layout(set = 0, binding = 0, std430) readonly buffer ObjectBuffer
-{
-	ObjectData objectDatas[];
-} objectBuffer;
-
-layout(location = 0) in vec2 inPosition;
-layout(location = 1) in vec3 inColor;
-layout(location = 2) in vec2 inTexCoord;
-
-layout(location = 0) out vec4 color;
+#include "../common.glsl"
 
 void main() 
 {
-    gl_Position = objectBuffer.objectDatas[gl_InstanceIndex].model * vec4(inPosition, 0.0, 1.0);
-    color = objectBuffer.objectDatas[gl_InstanceIndex].color;
+    UNPACK_PUSH_CONSTANTS_VERT
+
+    gl_Position = transform.modelMatrix * vec4(vertex.position, 1.0);
 }

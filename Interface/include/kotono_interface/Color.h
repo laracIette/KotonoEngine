@@ -1,6 +1,7 @@
 #pragma once
 #include "generated/Color.generated.h"
 #include "Widget.h"
+#include <kotono_graphics/DrawCallBuilder.h>
 #include <kotono_graphics/Color.h>
 class UInterfaceProxy;
 /// Fill the widget's bounds with a color
@@ -21,5 +22,7 @@ private:
 	StateProperty(UColor, color_, Color);
 
 	UInterfaceProxy* colorProxy_;
+
+	UDrawCallBuilder drawCallBuilder_;
 };
 

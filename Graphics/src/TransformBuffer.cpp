@@ -7,7 +7,7 @@ static constexpr u32 MAX_TRANSFORMS{ 65536 };
 void STransformBuffer::Init()
 {
     CreateBuffers();
-    transforms_.resize(MAX_TRANSFORMS);
+    datas_.resize(MAX_TRANSFORMS);
 }
 
 void STransformBuffer::Cleanup() const
@@ -18,26 +18,26 @@ void STransformBuffer::Cleanup() const
     }
 }
 
-u32 STransformBuffer::RegisterTransform()
+UTransformBufferData* STransformBuffer::RegisterTransform()
 {
     return FindTransformSlot();
 }
 
-void STransformBuffer::UpdateTransform(const u32 index, const Transform& transform)
+void STransformBuffer::UnregisterTransform(Data* slot)
 {
-    transforms_[index] = transform;
+    freeDataSlots_.push_back(slot);
 }
 
-void STransformBuffer::UnregisterTransform(const u32 index)
+u32 STransformBuffer::GetIndex(const Data* slot) const
 {
-    freeTransformSlots_.push_back(index);
+    return static_cast<u32>(slot - datas_.data());
 }
 
 void STransformBuffer::UpdateBuffer(const u32 frameIndex)
 {
     std::memcpy(frameDatas_[frameIndex].mapped
-        , transforms_.data()
-        , transformCount_ * sizeof(Transform)
+        , datas_.data()
+        , dataCount_ * sizeof(Data)
     );
 }
 
@@ -52,7 +52,7 @@ void STransformBuffer::CreateBuffers()
     {
         const VkBufferCreateInfo bufInfo{
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = sizeof(Transform) * MAX_TRANSFORMS,
+        .size = sizeof(Data) * MAX_TRANSFORMS,
         .usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
             | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
         };
@@ -76,7 +76,7 @@ void STransformBuffer::CreateBuffers()
             "failed to create buffer with VMA!"
         );
 
-        frameData.mapped = static_cast<Transform*>(allocationInfo.pMappedData);
+        frameData.mapped = static_cast<Data*>(allocationInfo.pMappedData);
 
         const VkBufferDeviceAddressInfo addrInfo{
             .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
@@ -86,14 +86,14 @@ void STransformBuffer::CreateBuffers()
     }
 }
 
-u32 STransformBuffer::FindTransformSlot()
+UTransformBufferData* STransformBuffer::FindTransformSlot()
 {
-    if (!freeTransformSlots_.empty())
+    if (!freeDataSlots_.empty())
     {
-        const u32 slot{ freeTransformSlots_.back() };
-        freeTransformSlots_.pop_back();
+        Data* slot{ freeDataSlots_.back() };
+        freeDataSlots_.pop_back();
         return slot;
     }
-    assert(transformCount_ < MAX_TRANSFORMS);
-    return transformCount_++;
+    assert(dataCount_ < MAX_TRANSFORMS);
+    return &datas_[dataCount_++];
 }

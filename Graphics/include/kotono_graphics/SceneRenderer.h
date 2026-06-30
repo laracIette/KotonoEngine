@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <vulkan/vulkan_core.h>
 class USceneProxy;
-class KtShader;
+class UShader;
 class KtSceneRenderable;
 class KtSceneRenderer final
 {
@@ -40,7 +40,7 @@ public:
 private:
 	struct DrawBatch
 	{
-		KtShader* shader;
+		UShader* shader;
 		KtSceneRenderable* renderable;
 		KtScissor scissor;
 		u32 firstInstance;
@@ -71,7 +71,7 @@ private:
 		ObjectBufferData staticBuffer;
 		ObjectBufferData dynamicBuffer;
 
-		std::unordered_map<const KtShader*, u32> instanceIndices;
+		std::unordered_map<const UShader*, u32> instanceIndices;
 	};
 
 	// Those are accessed from one thread

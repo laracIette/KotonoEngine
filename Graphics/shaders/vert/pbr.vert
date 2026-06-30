@@ -5,12 +5,10 @@ layout(location = 0) out vec2 outUV;
 layout(location = 1) out vec3 outNormal;
 
 void main() {
-    DrawData  d     = pc.drawData.data[pc.drawIndex];
-    Transform trans = pc.transforms.data[d.transformIndex];
-    Vertex    vert  = pc.vertices.data[gl_VertexIndex];
+    UNPACK_PUSH_CONSTANTS_VERT
 
-    gl_Position = frame.viewProj * trans.modelMatrix * vec4(vert.position, 1.0);
+    gl_Position = frame.viewProj * transform.modelMatrix * vec4(vertex.position, 1.0);
 
-    outUV     = vert.uv;
-    outNormal = mat3(trans.normalMatrix) * vert.normal;
+    outUV     = vertex.uv;
+    outNormal = mat3(transform.normalMatrix) * vertex.normal;
 }

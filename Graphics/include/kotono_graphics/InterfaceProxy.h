@@ -4,7 +4,7 @@
 #include "Scissor.h"
 #include <functional>
 #include <kotono_common/Pool.h>
-class KtShader;
+class UShader;
 class KtInterfaceRenderable;
 class UInterfaceProxy final
 {
@@ -15,7 +15,7 @@ private:
 public:
 	struct Data
 	{
-		KtShader* shader;
+		UShader* shader;
 		KtInterfaceRenderable* renderable;
 		i32 layer;
 		KtInterfaceObjectData objectData;

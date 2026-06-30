@@ -39,8 +39,8 @@ void KInterfaceBoxComponent::CreateBoxProxy()
     boxProxy_->ScheduleUpdate(
         [this](UInterfaceProxy::Data& data)
         {
-            data.shader = UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/flatColor2D.ktshader").Get();
-            data.renderable = UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg").Get();
+            data.shader = UAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/flatColor2D.ktshader").Get();
+            data.renderable = UAssetManager<UTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg").Get();
             data.layer = GetLayer();
             data.objectData.modelMatrix = ModelMatrix();
             data.objectData.color = GetColor();

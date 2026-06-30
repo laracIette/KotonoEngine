@@ -22,9 +22,6 @@ WidgetPtr WAssetExplorer::Build()
 	navigationRow->SetSpacing(4.0f);
 
 
-	UPtr upBg{ UCreate<WColor>{}() };
-	upBg->SetColor(Colors::White.WithAlpha(0.1f));
-
 	UPtr upText{ UCreate<WText>{}() };
 	upText->SetText("Up");
 	upText->SetFontSize({ 16.0f, 20.0f });
@@ -32,9 +29,6 @@ WidgetPtr WAssetExplorer::Build()
 	UPtr upButton{ UCreate<WButton>{}() };
 	upButton->SetOnClicked([this]() { Push(path_.Directory()); });
 
-
-	UPtr previousBg{ UCreate<WColor>{}() };
-	previousBg->SetColor(Colors::White.WithAlpha(0.1f));
 
 	UPtr previousText{ UCreate<WText>{}() };
 	previousText->SetText("Prev");
@@ -44,9 +38,6 @@ WidgetPtr WAssetExplorer::Build()
 	previousButton->SetOnClicked([this]() { NavigatePrevious(); });
 
 
-	UPtr nextBg{ UCreate<WColor>{}() };
-	nextBg->SetColor(Colors::White.WithAlpha(0.1f));
-
 	UPtr nextText{ UCreate<WText>{}() };
 	nextText->SetText("Next");
 	nextText->SetFontSize({ 16.0f, 20.0f });
@@ -54,9 +45,6 @@ WidgetPtr WAssetExplorer::Build()
 	UPtr nextButton{ UCreate<WButton>{}() };
 	nextButton->SetOnClicked([this]() { NavigateNext(); });
 
-
-	UPtr explorerBg{ UCreate<WColor>{}() };
-	explorerBg->SetColor(Colors::White.WithAlpha(0.1f));
 
 	UPtr explorerPadding{ UCreate<WPadding>{}() };
 	explorerPadding->SetPadding(UPadding::All(8.0f));
@@ -70,28 +58,28 @@ WidgetPtr WAssetExplorer::Build()
 		new UChildrenOwnerTree{ navigationRow, {
 			new UChildOwnerTree{ UCreate<WWrap>{}(),
 				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-					new UWidgetTreeLeaf{ upBg },
+					new UWidgetTreeLeaf{ UCreate<WColor>{}(Colors::White.WithValue(0.25f)) },
 					new UWidgetTreeLeaf{ upText },
 					new UWidgetTreeLeaf{ upButton },
 				} }
 			},
 			new UChildOwnerTree{ UCreate<WWrap>{}(),
 				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-					new UWidgetTreeLeaf{ previousBg },
+					new UWidgetTreeLeaf{ UCreate<WColor>{}(Colors::White.WithValue(0.25f)) },
 					new UWidgetTreeLeaf{ previousText },
 					new UWidgetTreeLeaf{ previousButton },
 				} }
 			},
 			new UChildOwnerTree{ UCreate<WWrap>{}(),
 				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-					new UWidgetTreeLeaf{ nextBg },
+					new UWidgetTreeLeaf{ UCreate<WColor>{}(Colors::White.WithValue(0.25f)) },
 					new UWidgetTreeLeaf{ nextText },
 					new UWidgetTreeLeaf{ nextButton },
 				} }
 			},
 		} },
 		new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-			new UWidgetTreeLeaf{ explorerBg },
+			new UWidgetTreeLeaf{ UCreate<WColor>{}(Colors::White.WithValue(0.25f)) },
 			new UChildOwnerTree{ explorerPadding,
 				new UWidgetTreeLeaf{ itemList_ }
 			},

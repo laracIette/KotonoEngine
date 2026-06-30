@@ -7,7 +7,6 @@ struct DrawData {
     uint materialIndex;
     uint transformIndex;
     uint parametersIndex;
-    uint meshletOffset;
 };
 
 struct Material {
@@ -62,7 +61,6 @@ layout(buffer_reference, scalar) readonly buffer TransformBuf {
 layout(buffer_reference, scalar) readonly buffer ParametersBuf {
     Parameters data[];
 };
-
 layout(buffer_reference, scalar) readonly buffer VertexBuf {
     Vertex data[];
 };
@@ -74,10 +72,22 @@ layout(push_constant, scalar) uniform PC {
     ParametersBuf parameters;
     VertexBuf vertices;
     uint drawIndex;
-    uint flags;
 } pc;
 
 // Convenience helpers
+#define UNPACK_PUSH_CONSTANTS_VERT                                        \
+    DrawData   drawData   = pc.drawData.data[pc.drawIndex];               \
+    Material   material   = pc.materials.data[drawData.materialIndex];    \
+    Transform  transform  = pc.transforms.data[drawData.transformIndex];  \
+    Parameters parameters = pc.parameters.data[drawData.parametersIndex]; \
+    Vertex     vertex     = pc.vertices.data[gl_VertexIndex];
+
+#define UNPACK_PUSH_CONSTANTS_FRAG                                        \
+    DrawData   drawData   = pc.drawData.data[pc.drawIndex];               \
+    Material   material   = pc.materials.data[drawData.materialIndex];    \
+    Transform  transform  = pc.transforms.data[drawData.transformIndex];  \
+    Parameters parameters = pc.parameters.data[drawData.parametersIndex];
+
 vec4 sampleTex(uint texIdx, uint sampIdx, vec2 uv) {
     return texture(
         sampler2D(gTextures[nonuniformEXT(texIdx)],

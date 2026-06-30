@@ -7,7 +7,7 @@ static constexpr u32 MAX_PARAMETERS{ 65536 };
 void SParametersBuffer::Init()
 {
     CreateBuffers();
-    parameters_.resize(MAX_PARAMETERS);
+    datas_.resize(MAX_PARAMETERS);
 }
 
 void SParametersBuffer::Cleanup() const
@@ -18,26 +18,26 @@ void SParametersBuffer::Cleanup() const
     }
 }
 
-u32 SParametersBuffer::RegisterParameters()
+UParametersBufferData* SParametersBuffer::RegisterParameters()
 {
     return FindParametersSlot();
 }
 
-void SParametersBuffer::UpdateParameters(const u32 index, const Parameters& parameters)
+void SParametersBuffer::UnregisterParameters(Data* slot)
 {
-    parameters_[index] = parameters;
+    freeDataSlots_.push_back(slot);
 }
 
-void SParametersBuffer::UnregisterParameters(const u32 index)
+u32 SParametersBuffer::GetIndex(const Data* slot) const
 {
-    freeParametersSlots_.push_back(index);
+    return static_cast<u32>(slot - datas_.data());
 }
 
 void SParametersBuffer::UpdateBuffer(const u32 frameIndex)
 {
     std::memcpy(frameDatas_[frameIndex].mapped
-        , parameters_.data()
-        , parametersCount_ * sizeof(Parameters)
+        , datas_.data()
+        , dataCount_ * sizeof(Data)
     );
 }
 
@@ -52,7 +52,7 @@ void SParametersBuffer::CreateBuffers()
     {
         const VkBufferCreateInfo bufInfo{
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = sizeof(Parameters) * MAX_PARAMETERS,
+        .size = sizeof(Data) * MAX_PARAMETERS,
         .usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
             | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
         };
@@ -76,7 +76,7 @@ void SParametersBuffer::CreateBuffers()
             "failed to create buffer with VMA!"
         );
 
-        frameData.mapped = static_cast<Parameters*>(allocationInfo.pMappedData);
+        frameData.mapped = static_cast<Data*>(allocationInfo.pMappedData);
 
         const VkBufferDeviceAddressInfo addrInfo{
             .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
@@ -86,14 +86,14 @@ void SParametersBuffer::CreateBuffers()
     }
 }
 
-u32 SParametersBuffer::FindParametersSlot()
+UParametersBufferData* SParametersBuffer::FindParametersSlot()
 {
-    if (!freeParametersSlots_.empty())
+    if (!freeDataSlots_.empty())
     {
-        const u32 slot{ freeParametersSlots_.back() };
-        freeParametersSlots_.pop_back();
+        Data* slot{ freeDataSlots_.back() };
+        freeDataSlots_.pop_back();
         return slot;
     }
-    assert(parametersCount_ < MAX_PARAMETERS);
-    return parametersCount_++;
+    assert(dataCount_ < MAX_PARAMETERS);
+    return &datas_[dataCount_++];
 }

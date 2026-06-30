@@ -4,7 +4,6 @@
 #include "CoordinateSpace.h"
 #include "Transform.h"
 #include <kotono_graphics/Visibility.h>
-#include <kotono_common/Cached.h>
 #include <kotono_common/Event.h>
 #include <kotono_common/Pool.h>
 #include <kotono_graphics/Mobility.h>
@@ -51,7 +50,7 @@ public:
 	glm::mat4 TranslationMatrix() const;
 	glm::mat4 RotationMatrix() const;
 	glm::mat4 ScaleMatrix() const;
-	const glm::mat4& ModelMatrix();
+	glm::mat4 ModelMatrix() const;
 
 	glm::vec3 GetScreenPosition() const;
 
@@ -93,6 +92,5 @@ private:
 	SERIALIZE size componentIndex_;
 	SERIALIZE size childrenIndex_;
 	UEvent<> eventTransformUpdated_;
-	KtCached<glm::mat4> modelMatrix_;
 };
 

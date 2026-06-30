@@ -2,8 +2,8 @@
 #include "generated/InterfaceImageComponent.generated.h"
 #include "InterfaceComponent.h"
 
-class KtShader;
-class KtTexture;
+class UShader;
+class UTexture;
 class UInterfaceProxy;
 
 class KInterfaceImageComponent : public KInterfaceComponent
@@ -18,14 +18,14 @@ protected:
 	void Init() override;
 
 public:
-	UAsset<KtShader> GetShader() const;
-	UAsset<KtTexture> GetTexture() const;
+	UAsset<UShader> GetShader() const;
+	UAsset<UTexture> GetTexture() const;
 
 	UEvent<>& GetEventShaderUpdated();
 	UEvent<>& GetEventTextureUpdated();
 
-	void SetShader(UAsset<KtShader> shader);
-	void SetTexture(UAsset<KtTexture> texture);
+	void SetShader(UAsset<UShader> shader);
+	void SetTexture(UAsset<UTexture> texture);
 
 	void Spawn() override;
 
@@ -37,8 +37,8 @@ private:
 	void MarkTextureProxyLayerDirty();
 
 private:
-	UAsset<KtShader> shader_;
-	UAsset<KtTexture> texture_;
+	UAsset<UShader> shader_;
+	UAsset<UTexture> texture_;
 	UInterfaceProxy* textureProxy_;
 	UEvent<> eventShaderUpdated_;
 	UEvent<> eventTextureUpdated_;

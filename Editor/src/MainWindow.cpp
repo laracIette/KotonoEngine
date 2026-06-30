@@ -83,7 +83,7 @@ WidgetPtr WMainWindow::Build()
 				new UWidgetTreeLeaf{ UCreate<WSpacer>{ "Center Row Spacer" }(EAxis::Horizontal) },
 				new UChildOwnerTree{ UCreate<WWrap>{ "Right Panel Wrap" }(EAxis::Horizontal),
 					new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-						new UWidgetTreeLeaf{ UCreate<WColor>{ "Right Panel Background" }(Colors::Magenta.WithAlpha(0.2f))},
+						new UWidgetTreeLeaf{ UCreate<WColor>{ "Right Panel Background" }(Colors::Magenta.WithAlpha(0.9f))},
 						new UChildOwnerTree{ rightPanelPadding,
 							new UChildrenOwnerTree{ rightPanelColumn, {
 								new UWidgetTreeLeaf{ UCreate<WVisualizerWindow>{}() },

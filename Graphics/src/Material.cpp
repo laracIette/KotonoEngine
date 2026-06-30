@@ -1,6 +1,7 @@
 #include "Material.h"
 #include <kotono_common/AssetManager.h>
 #include "MaterialBuffer.h"
+#include "Sampler.h"
 #include "Texture.h"
 #include <kotono_io/Serializer.h>
 #include <kotono_io/serialize_base.h>
@@ -23,16 +24,16 @@ UMaterial::UMaterial(const UPath& path)
 	UDeserialize<std::string>{}(json["emissive"], emissive);
 	u32 materialType;
 	UDeserialize<u32>{}(json["materialType"], materialType);
-	u32 samplerIndex;
-	UDeserialize<u32>{}(json["samplerIndex"], samplerIndex);
+	UPath sampler;
+	UDeserialize<UPath>{}(json["sampler"], sampler);
 
 	index_ = MaterialBuffer.RegisterMaterial({
-		.albedoIndex = UAssetManager<KtTexture>::Get(albedo)->GetIndex(),
-		.normalIndex = UAssetManager<KtTexture>::Get(normal)->GetIndex(),
-		.roughnessIndex = UAssetManager<KtTexture>::Get(roughness)->GetIndex(),
-		.emissiveIndex = UAssetManager<KtTexture>::Get(emissive)->GetIndex(),
+		.albedoIndex = UAssetManager<UTexture>::Get(albedo)->GetIndex(),
+		.normalIndex = UAssetManager<UTexture>::Get(normal)->GetIndex(),
+		.roughnessIndex = UAssetManager<UTexture>::Get(roughness)->GetIndex(),
+		.emissiveIndex = UAssetManager<UTexture>::Get(emissive)->GetIndex(),
 		.materialType = materialType,
-		.samplerIndex = samplerIndex,
+		.samplerIndex = UAssetManager<USampler>::Get(sampler)->GetIndex(),
 	});
 }
 

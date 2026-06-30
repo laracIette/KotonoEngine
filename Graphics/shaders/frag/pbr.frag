@@ -7,16 +7,11 @@ layout(location = 1) in vec3 inNormal;
 layout(location = 0) out vec4 outColor;
 
 void main() {
-    DrawData  d       = pc.drawData.data[pc.drawIndex];
-    Material  mat     = pc.materials.data[d.materialIndex];
-    Transform trans   = pc.transforms.data[d.transformIndex];
-    Parameters params = pc.parameters.data[d.parametersIndex];
+    UNPACK_PUSH_CONSTANTS_FRAG
 
-    vec4 colorParam = params.vectors[0];
-
-    vec4 albedo    = sampleTex(mat.albedoIndex,    mat.samplerIndex, inUV);
-    vec4 normSamp  = sampleTex(mat.normalIndex,    mat.samplerIndex, inUV);
-    vec4 roughSamp = sampleTex(mat.roughnessIndex, mat.samplerIndex, inUV);
+    const vec4 albedo    = sampleTex(material.albedoIndex,    material.samplerIndex, inUV);
+    const vec4 normSamp  = sampleTex(material.normalIndex,    material.samplerIndex, inUV);
+    const vec4 roughSamp = sampleTex(material.roughnessIndex, material.samplerIndex, inUV);
     
-    outColor = albedo * colorParam;
+    outColor = albedo;
 }

@@ -3,7 +3,7 @@
 #include <vector>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
-class SUploadStager final
+class SUploadStager final // TODO: move to context, only StagingUpload() used
 {
 public:
     struct StagingBuffer

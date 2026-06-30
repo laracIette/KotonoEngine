@@ -4,6 +4,7 @@
 #include "TimeManager.h"
 #include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
+#include <kotono_graphics/DrawCall.h>
 #include <kotono_graphics/DrawDataBuffer.h>
 #include <kotono_graphics/Material.h>
 #include <kotono_graphics/Model.h>
@@ -17,18 +18,15 @@
 #include <kotono_platform/Window.h>
 #include <kotono_platform/WindowViewport.h>
 
-static UAsset<KtShader> WireframeShader;
+static UAsset<UShader> WireframeShader;
 
 KSceneMeshComponent::KSceneMeshComponent() 
     : modelProxy_{ new USceneProxy{} }
-    , drawCall_{ new UDrawCall{} }
-    , drawDataIndex_{ DrawDataBuffer.RegisterDrawData() }
-    , transformIndex_{ TransformBuffer.RegisterTransform() }
-    , parametersIndex_{ ParametersBuffer.RegisterParameters() }
+    , drawCallBuilder_{}
 {
     if (!WireframeShader)
     {
-        //WireframeShader = UAssetManager<KtShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/wireframe3D.ktshader");
+        //WireframeShader = UAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/wireframe3D.ktshader");
     }
 
     spinTask_.duration = 5.0f;
@@ -39,7 +37,6 @@ KSceneMeshComponent::~KSceneMeshComponent()
     UnregisterModelProxy();
     Renderer.SceneRenderer().DeleteProxy(modelProxy_);
     UnregisterDrawCall();
-    delete drawCall_;
 }
 
 void KSceneMeshComponent::Init()
@@ -58,12 +55,12 @@ void KSceneMeshComponent::Update(const float deltaTime)
     spinTask_.Update(deltaTime);
 }
 
-const UAsset<KtShader>& KSceneMeshComponent::GetShader() const
+const UAsset<UShader>& KSceneMeshComponent::GetShader() const
 {
     return shader_;
 }
 
-const UAsset<KtModel>& KSceneMeshComponent::GetModel() const
+const UAsset<UModel>& KSceneMeshComponent::GetModel() const
 {
     return model_;
 }
@@ -73,19 +70,22 @@ const UAsset<UMaterial>& KSceneMeshComponent::GetMaterial() const
     return material_;
 }
 
-void KSceneMeshComponent::SetShader(const UAsset<KtShader>& shader)
+void KSceneMeshComponent::SetShader(const UAsset<UShader>& shader)
 {
     shader_ = shader;
+    RefreshDrawCallShaderData();
 }
 
-void KSceneMeshComponent::SetModel(const UAsset<KtModel>& model)
+void KSceneMeshComponent::SetModel(const UAsset<UModel>& model)
 {
     model_ = model;
+    RefreshDrawCallModelData();
 }
 
 void KSceneMeshComponent::SetMaterial(const UAsset<UMaterial>& material)
 {
     material_ = material;
+    RefreshDrawCallMaterialData();
 }
 
 void KSceneMeshComponent::Spawn()
@@ -93,8 +93,8 @@ void KSceneMeshComponent::Spawn()
     Base::Spawn();
 
     CreateModelProxy();
-    CreateDrawCall();
     RegisterModelProxy();
+    RefreshDrawCall();
     RegisterDrawCall();
 
     EventTransformUpdated().AddListener(this, &KSceneMeshComponent::MarkModelProxyTransformDirty);
@@ -135,23 +135,10 @@ void KSceneMeshComponent::CreateModelProxy()
     );
 }
 
-void KSceneMeshComponent::CreateDrawCall()
-{
-    *drawCall_ = {
-        .pipeline = shader_->GetGraphicsPipeline(),
-        .index = drawDataIndex_,
-        .flags = 0,
-        .vertexBufferAdress = model_->GetVertexBufferAddress(),
-        .indexBuffer = model_->GetIndexBuffer(),
-        .indexCount = model_->GetIndexCount(),
-        .firstIndex = 0,
-        .renderBucket = ERenderBucket::Opaque,
-        .sortKey = 0.0f,
-    };
-}
-
 void KSceneMeshComponent::MarkModelProxyTransformDirty()
 {
+    RefreshDrawCallTransformData();
+
     modelProxy_->ScheduleUpdate(
         [this](USceneProxy::Data& data)
         {
@@ -179,21 +166,7 @@ void KSceneMeshComponent::RegisterModelProxy() const
 
 void KSceneMeshComponent::RegisterDrawCall()
 {
-    static int id{ 0 };
-    Renderer.RegisterDrawCall(drawCall_);
-    TransformBuffer.UpdateTransform(transformIndex_, {
-        .modelMatrix = ModelMatrix(),
-        .normalMatrix = glm::identity<glm::mat4>(),
-    });
-    ParametersBuffer.UpdateParameters(parametersIndex_, {
-        .vectors = { (id++ % 2) ? Colors::Red : Colors::White },
-    });
-    DrawDataBuffer.UpdateDrawData(drawDataIndex_, {
-        .materialIndex = material_->GetIndex(),
-        .transformIndex = transformIndex_,
-        .parametersIndex = parametersIndex_,
-        .meshletOffset = 0,
-    });
+    drawCallBuilder_.Register();
 }
 
 void KSceneMeshComponent::UnregisterModelProxy() const
@@ -201,12 +174,60 @@ void KSceneMeshComponent::UnregisterModelProxy() const
     Renderer.SceneRenderer().UnregisterProxy(modelProxy_, GetMobility());
 }
 
-void KSceneMeshComponent::UnregisterDrawCall() const
+void KSceneMeshComponent::UnregisterDrawCall()
 {
-    Renderer.UnregisterDrawCall(drawCall_);
-    DrawDataBuffer.UnregisterDrawData(drawDataIndex_);
-    TransformBuffer.UnregisterTransform(transformIndex_);
-    ParametersBuffer.UnregisterParameters(parametersIndex_);
+    drawCallBuilder_.Unregister();
+}
+
+void KSceneMeshComponent::RefreshDrawCall() const
+{
+    drawCallBuilder_.GetDrawCall()->renderBucket = ERenderBucket::Opaque;
+
+    const auto& offset{ GetOwner()->GetViewport()->GetOffset() };
+    const auto& extent{ GetOwner()->GetViewport()->GetExtent() };
+
+    drawCallBuilder_.GetDrawCall()->scissor = {
+        .offset = { offset.x, offset.y },
+        .extent = { extent.x, extent.y },
+    };
+    
+    RefreshDrawCallShaderData();
+    RefreshDrawCallModelData();
+    RefreshDrawCallMaterialData();
+    RefreshDrawCallTransformData();
+}
+
+void KSceneMeshComponent::RefreshDrawCallShaderData() const
+{
+    if (shader_)
+    {
+        drawCallBuilder_.GetDrawCall()->pipeline = shader_->GetGraphicsPipeline();
+    }
+}
+
+void KSceneMeshComponent::RefreshDrawCallModelData() const
+{
+    if (model_)
+    {
+        drawCallBuilder_.GetDrawCall()->vertexBufferAdress = model_->GetVertexBufferAddress();
+        drawCallBuilder_.GetDrawCall()->indexBuffer = model_->GetIndexBuffer();
+        drawCallBuilder_.GetDrawCall()->indexCount = model_->GetIndexCount();
+        drawCallBuilder_.GetDrawCall()->firstIndex = 0;
+    }
+}
+
+void KSceneMeshComponent::RefreshDrawCallMaterialData() const
+{
+    if (material_)
+    {
+        drawCallBuilder_.GetDrawData()->materialIndex = material_->GetIndex();
+    }
+}
+
+void KSceneMeshComponent::RefreshDrawCallTransformData() const
+{
+    drawCallBuilder_.GetTransform()->modelMatrix = ModelMatrix();
+    drawCallBuilder_.GetTransform()->normalMatrix = glm::identity<glm::mat4>();
 }
 
 void KSceneMeshComponent::Spin()
@@ -219,7 +240,7 @@ void KSceneMeshComponent::Spin()
 void KSceneMeshComponent::SetMobilityStatic()
 {
     SetMobility(EMobility::Static);
-    KT_LOG(ELogImportanceLevel::High, "Core", "{}", GetName());
+    KT_LOG(ELogImportanceLevel::High, "Core", "{0}", GetName());
 }
 
 void KSceneMeshComponent::SetMobilityDynamic()

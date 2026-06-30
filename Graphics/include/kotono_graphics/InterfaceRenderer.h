@@ -6,7 +6,7 @@
 #include <kotono_common/Pool.h>
 #include <vulkan/vulkan_core.h>
 #include <unordered_map>
-class KtShader;
+class UShader;
 class UInterfaceProxy;
 class KtInterfaceRenderer final
 {
@@ -39,7 +39,7 @@ public:
 private:
 	struct DrawBatch
 	{
-		KtShader* shader;
+		UShader* shader;
 		KtScissor scissor;
 		u32 firstInstance;
 		u32 instanceCount;
@@ -57,7 +57,7 @@ private:
 		};
 
 		KtInterfaceUniformData uniformData;
-		std::unordered_map<const KtShader*, u32> instanceIndices;
+		std::unordered_map<const UShader*, u32> instanceIndices;
 
 		ObjectBufferData objectBuffer;
 	};

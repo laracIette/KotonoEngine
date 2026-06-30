@@ -14,7 +14,6 @@ struct UPushConstants
 	VkDeviceAddress parametersAddress;
 	VkDeviceAddress vertexBufferAddress;
 	u32 drawIndex;
-	u32 flags;
 };
 
 class SPipelineResourceManager final
@@ -47,8 +46,10 @@ public:
 	void SetFrameUBO(const FrameUBO& frameUBO);
 	void UpdateMappedFrameUBO(const u32 frameIndex) const;
 
-	u32 RegisterTexture(VkImageView imageView, VkSampler sampler);
+	u32 RegisterTexture(VkImageView imageView);
+	u32 RegisterSampler(VkSampler sampler);
 	void UnregisterTexture(const u32 slot);
+	void UnregisterSampler(const u32 slot);
 
 	void CmdBindGlobalDescriptorSet(VkCommandBuffer commandBuffer) const;
 	void CmdPushUniformDescriptorSet(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
@@ -61,7 +62,8 @@ private:
 	void CreateGlobalDescriptorSet();
 	void CreateFrameDataBuffers();
 
-	u32 AllocateSlot();
+	u32 AllocateTextureSlot();
+	u32 AllocateSamplerSlot();
 
 private:
 	KtFramesInFlightArray<FrameData> frameDatas_;
@@ -73,8 +75,10 @@ private:
 	VkPipelineLayout pipelineLayout_;
 	VkDescriptorSet globalDescriptorSet_;
 
-	std::vector<u32> freeSampledSlots_;
-	u32 nextSampledSlot_;
+	std::vector<u32> freeTextureSlots_;
+	u32 nextTextureSlot_;
+	std::vector<u32> freeSamplerSlots_;
+	u32 nextSamplerSlot_;
 };
 
 inline SPipelineResourceManager PipelineResourceManager;

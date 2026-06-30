@@ -68,6 +68,11 @@ public:
 
 	bool IsMouseHovering() const;
 
+	const glm::vec2& GetPosition() const;
+	const glm::vec2& GetSize() const;
+	u32 GetLayer() const;
+	const KtScissor& GetScissor() const;
+
 protected:
 	void SetState(const StateFunction& function);
 
@@ -82,7 +87,7 @@ protected:
 
 private:
 	void CacheBuild();
-	bool IsNotBuild() const;
+	bool HasBuild() const;
 	bool IsRenderable(const UWidgetDisplaySettings& displaySettings) const;
 
 	void OnMouseMove(const glm::vec2 delta);
@@ -90,11 +95,11 @@ private:
 
 private:
 	WritableProperty(WidgetPtr, parent_, Parent);
-	ReadonlyProperty(UWidgetDisplaySettings, displaySettings_, DisplaySettings);
 	ReadonlyProperty(bool, isDisplayed_, IsDisplayed);
-	ReadonlyProperty(glm::vec2, position_, Position);
-	ReadonlyProperty(glm::vec2, size_, Size);
-	ReadonlyProperty(i32, layer_, Layer);
+	// The display settings this widget's parent gave it
+	ReadonlyProperty(UWidgetDisplaySettings, slotDisplaySettings_, SlotDisplaySettings);
+	/// The actual display settings this widget uses
+	ReadonlyProperty(UWidgetDisplaySettings, displaySettings_, DisplaySettings);
 	bool wasMouseHovering_;
 	WidgetPtr build_;
 };

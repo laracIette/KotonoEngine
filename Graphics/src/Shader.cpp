@@ -20,7 +20,7 @@ VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT |
 	VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
 };
 
-KtShader::KtShader(const UPath& path) 
+UShader::UShader(const UPath& path) 
 	: path_{ path }
 {
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "initializing shader {0}", path_.ToString());
@@ -34,7 +34,7 @@ KtShader::KtShader(const UPath& path)
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "initialized shader {0}", path_.ToString());
 }
 
-KtShader::~KtShader()
+UShader::~UShader()
 {
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "cleaning up shader {0}", path_.ToString());
 
@@ -60,27 +60,27 @@ KtShader::~KtShader()
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "cleaned up shader {0}", path_.ToString());
 }
 
-const UPath& KtShader::Path() const
+const UPath& UShader::Path() const
 {
 	return path_;
 }
 
-VkPipeline KtShader::GetGraphicsPipeline() const
+VkPipeline UShader::GetGraphicsPipeline() const
 {
 	return graphicsPipeline_;
 }
 
-//VkPipelineLayout KtShader::GetPipelineLayout() const
+//VkPipelineLayout UShader::GetPipelineLayout() const
 //{
 //	return pipelineLayout_;
 //}
 
-void KtShader::CmdBind(VkCommandBuffer commandBuffer) const
+void UShader::CmdBind(VkCommandBuffer commandBuffer) const
 {
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline_);
 }
 
-void KtShader::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const u32 imageIndex) const
+void UShader::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const u32 imageIndex) const
 {
 	std::vector<VkDescriptorSet> descriptorSets{};
 	descriptorSets.reserve(descriptorSetLayoutDatas_.size());
@@ -101,7 +101,7 @@ void KtShader::CmdBindDescriptorSets(VkCommandBuffer commandBuffer, const u32 im
 	);
 }
 
-void KtShader::CreateDescriptorSetLayouts()
+void UShader::CreateDescriptorSetLayouts()
 {
 	descriptorSetLayoutDatas_.reserve(shaderLayout_.descriptorSetLayouts.size());
 	for (const auto& [set, setLayout] : shaderLayout_.descriptorSetLayouts)
@@ -168,7 +168,7 @@ void KtShader::CreateDescriptorSetLayouts()
 	}
 }
 
-void KtShader::CreateDescriptorSetLayout(VkDescriptorSetLayout& layout
+void UShader::CreateDescriptorSetLayout(VkDescriptorSetLayout& layout
 	, const std::span<VkDescriptorSetLayoutBinding> layoutBindings
 	, const std::span<VkDescriptorBindingFlags> bindingFlags)
 {
@@ -192,7 +192,7 @@ void KtShader::CreateDescriptorSetLayout(VkDescriptorSetLayout& layout
 	);
 }
 
-void KtShader::CreateDescriptorSets()
+void UShader::CreateDescriptorSets()
 {
 	for (auto& descriptorSetLayoutData : descriptorSetLayoutDatas_)
 	{
@@ -227,7 +227,7 @@ void KtShader::CreateDescriptorSets()
 	}
 }
 
-void KtShader::CreateDescriptorSetLayoutBindings()
+void UShader::CreateDescriptorSetLayoutBindings()
 {
 	for (auto& descriptorSetLayoutData : descriptorSetLayoutDatas_)
 	{
@@ -242,7 +242,7 @@ void KtShader::CreateDescriptorSetLayoutBindings()
 	}
 }
 
-void KtShader::CreateDescriptorPool(const std::span<VkDescriptorPoolSize> poolSizes
+void UShader::CreateDescriptorPool(const std::span<VkDescriptorPoolSize> poolSizes
 	, const u32 setCount)
 {
 	const VkDescriptorPoolCreateInfo poolInfo{
@@ -259,7 +259,7 @@ void KtShader::CreateDescriptorPool(const std::span<VkDescriptorPoolSize> poolSi
 	);
 }
 
-void KtShader::CreateShaderModule(VkShaderModule& shaderModule, const std::span<u8> code)
+void UShader::CreateShaderModule(VkShaderModule& shaderModule, const std::span<u8> code)
 {
 	const VkShaderModuleCreateInfo createInfo{
 		.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
@@ -273,7 +273,7 @@ void KtShader::CreateShaderModule(VkShaderModule& shaderModule, const std::span<
 	);
 }
 
-void KtShader::CreateGraphicsPipeline()
+void UShader::CreateGraphicsPipeline()
 {
 	//std::vector<VkDescriptorSetLayout> setLayouts{};
 	//for (const auto& descriptorSetLayoutData : descriptorSetLayoutDatas_)
@@ -472,7 +472,7 @@ void KtShader::CreateGraphicsPipeline()
 	}
 }
 
-void KtShader::CreateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const u32 imageIndex)
+void UShader::CreateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const u32 imageIndex)
 {
 	if (const auto bufferUsageFlagBits{ GetBufferUsageFlagBits(descriptorSetLayoutBindingData.descriptorType) })
 	{
@@ -496,7 +496,7 @@ void KtShader::CreateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBinding
 	}
 }
 
-void KtShader::CreateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const u32 imageIndex)
+void UShader::CreateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const u32 imageIndex)
 {
 	if (!GetIsImageSamplerDescriptorType(descriptorSetLayoutBindingData.descriptorType))
 	{
@@ -504,12 +504,12 @@ void KtShader::CreateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutB
 		return;
 	}
 
-	static const UAsset texture{ UAssetManager<KtTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png") };
+	static const UAsset texture{ UAssetManager<UTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png") };
 
 	UpdateDescriptorSetLayoutBindingImageSampler(descriptorSetLayoutBindingData, { texture->GetDescriptorImageInfo() }, imageIndex);
 }
 
-void KtShader::DebugLogDescriptorSetLayoutData() const
+void UShader::DebugLogDescriptorSetLayoutData() const
 {
 	for (const auto& descriptorSetLayoutData : descriptorSetLayoutDatas_)
 	{
@@ -541,7 +541,7 @@ void KtShader::DebugLogDescriptorSetLayoutData() const
 	}
 }
 
-bool KtShader::GetIsBufferDescriptorType(const VkDescriptorType descriptorType) const
+bool UShader::GetIsBufferDescriptorType(const VkDescriptorType descriptorType) const
 {
 	return descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER 
 		|| descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER 
@@ -551,12 +551,12 @@ bool KtShader::GetIsBufferDescriptorType(const VkDescriptorType descriptorType) 
 		|| descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 }
 
-bool KtShader::GetIsImageSamplerDescriptorType(const VkDescriptorType descriptorType) const
+bool UShader::GetIsImageSamplerDescriptorType(const VkDescriptorType descriptorType) const
 {
 	return descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 }
 
-VkBufferUsageFlagBits KtShader::GetBufferUsageFlagBits(const VkDescriptorType descriptorType) const
+VkBufferUsageFlagBits UShader::GetBufferUsageFlagBits(const VkDescriptorType descriptorType) const
 {
 	switch (descriptorType)
 	{
@@ -570,7 +570,7 @@ VkBufferUsageFlagBits KtShader::GetBufferUsageFlagBits(const VkDescriptorType de
 	}
 }
 
-void KtShader::UpdateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const void* data, const u32 imageIndex)
+void UShader::UpdateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const void* data, const u32 imageIndex)
 {
 	const size dataSize{ descriptorSetLayoutBindingData.memberSize * descriptorSetLayoutBindingData.memberCounts[imageIndex] };
 
@@ -583,7 +583,7 @@ void KtShader::UpdateDescriptorSetLayoutBindingBuffer(DescriptorSetLayoutBinding
 	);
 }
 
-void KtShader::UpdateDescriptorSetLayoutBindingBufferMemberCount(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const size memberCount, const u32 imageIndex)
+void UShader::UpdateDescriptorSetLayoutBindingBufferMemberCount(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const size memberCount, const u32 imageIndex)
 {
 	if (!GetIsBufferDescriptorType(descriptorSetLayoutBindingData.descriptorType))
 	{
@@ -607,7 +607,7 @@ void KtShader::UpdateDescriptorSetLayoutBindingBufferMemberCount(DescriptorSetLa
 	UpdateDescriptorSetLayoutBindingBufferDescriptorSet(descriptorSetLayoutBindingData, imageIndex);
 }
 
-void KtShader::UpdateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData
+void UShader::UpdateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData
 	, const std::vector<VkDescriptorImageInfo>& imageInfos
 	, const u32 imageIndex)
 {
@@ -643,7 +643,7 @@ void KtShader::UpdateDescriptorSetLayoutBindingImageSampler(DescriptorSetLayoutB
 	}
 }
 
-void KtShader::UpdateDescriptorSetLayoutBindingBufferDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const u32 imageIndex)
+void UShader::UpdateDescriptorSetLayoutBindingBufferDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const u32 imageIndex)
 {
 	const VkDescriptorBufferInfo bufferInfo{
 		.buffer = descriptorSetLayoutBindingData.buffers[imageIndex].Buffer,
@@ -664,7 +664,7 @@ void KtShader::UpdateDescriptorSetLayoutBindingBufferDescriptorSet(DescriptorSet
 	vkUpdateDescriptorSets(Context.GetDevice(), 1, &writeDescriptorSet, 0, nullptr);
 }
 
-void KtShader::UpdateDescriptorSetLayoutBindingImageSamplerDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const u32 imageIndex)
+void UShader::UpdateDescriptorSetLayoutBindingImageSamplerDescriptorSet(DescriptorSetLayoutBindingData& descriptorSetLayoutBindingData, const u32 imageIndex)
 {
 	VkWriteDescriptorSet writeDescriptorSet{
 		.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
@@ -678,7 +678,7 @@ void KtShader::UpdateDescriptorSetLayoutBindingImageSamplerDescriptorSet(Descrip
 	vkUpdateDescriptorSets(Context.GetDevice(), 1, &writeDescriptorSet, 0, nullptr);
 }
 
-KtShader::DescriptorSetLayoutBindingData* KtShader::GetDescriptorSetLayoutBinding(const std::string& name)
+UShader::DescriptorSetLayoutBindingData* UShader::GetDescriptorSetLayoutBinding(const std::string& name)
 {
 	const auto it{ descriptorSetLayoutBindingDataRegistry_.find(name) };
 	if (it != descriptorSetLayoutBindingDataRegistry_.end())
@@ -688,7 +688,7 @@ KtShader::DescriptorSetLayoutBindingData* KtShader::GetDescriptorSetLayoutBindin
 	return nullptr;
 }
 
-void KtShader::CreateDescriptorPools()
+void UShader::CreateDescriptorPools()
 {
 	std::vector<VkDescriptorPoolSize> poolSizes{};
 	for (const auto& [index, setLayout] : shaderLayout_.descriptorSetLayouts)
@@ -710,7 +710,7 @@ void KtShader::CreateDescriptorPools()
 	CreateDescriptorPool(poolSizes, static_cast<u32>(shaderLayout_.descriptorSetLayouts.size()));
 }
 
-void KtShader::CreateShaderLayout()
+void UShader::CreateShaderLayout()
 {
 	nlohmann::json json{};
 	USerializer::Deserialize(json, path_);

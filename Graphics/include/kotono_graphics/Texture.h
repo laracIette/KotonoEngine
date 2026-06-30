@@ -5,11 +5,11 @@
 #include <kotono_platform/AllocatedBuffer.h>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
-class KtTexture final : public KtInterfaceRenderable
+class UTexture final : public KtInterfaceRenderable
 {
 public:
-    KtTexture(const UPath& path);
-    ~KtTexture();
+    UTexture(const UPath& path);
+    ~UTexture();
 
     const UPath& Path() const;
 
@@ -20,9 +20,9 @@ public:
     u32 GetIndex() const;
 
 private:
-    void CreateTextureImage();
-    void CreateTextureImageView();
-    void CreateTextureSampler();
+    void CreateImage();
+    void CreateImageView();
+    void CreateSampler();
 
     void DestroyStagingBuffer() const;
 
@@ -49,5 +49,5 @@ private:
 
     KtAllocatedBuffer stagingBuffer_;
 
-    VkDescriptorImageInfo imageInfo_;
+    VkDescriptorImageInfo imageInfo_; // TODO: yoink
 };

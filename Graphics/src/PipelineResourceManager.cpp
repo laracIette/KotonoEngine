@@ -61,12 +61,12 @@ void SPipelineResourceManager::UpdateMappedFrameUBO(const u32 frameIndex) const
 	*frameDatas_[frameIndex].uboMapped = frameUBO_;
 }
 
-u32 SPipelineResourceManager::RegisterTexture(VkImageView imageView, VkSampler sampler)
+u32 SPipelineResourceManager::RegisterTexture(VkImageView imageView)
 {
-	const u32 slot{ AllocateSlot() };
+	const u32 slot{ AllocateTextureSlot() };
 
-	const VkDescriptorImageInfo imgInfo{
-		.sampler = sampler,
+	const VkDescriptorImageInfo imageInfo{
+		.sampler = VK_NULL_HANDLE,
 		.imageView = imageView,
 		.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 	};
@@ -76,17 +76,49 @@ u32 SPipelineResourceManager::RegisterTexture(VkImageView imageView, VkSampler s
 		.dstBinding = 0,
 		.dstArrayElement = slot,
 		.descriptorCount = 1,
-		.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-		.pImageInfo = &imgInfo,
+		.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+		.pImageInfo = &imageInfo,
 	};
+
 	// This is safe mid-frame as long as the slot isn't in active use by in-flight command buffers
 	vkUpdateDescriptorSets(Context.GetDevice(), 1, &write, 0, nullptr);
+
+	return slot;
+}
+
+u32 SPipelineResourceManager::RegisterSampler(VkSampler sampler)
+{
+	const u32 slot{ AllocateSamplerSlot() };
+
+	const VkDescriptorImageInfo samplerInfo{
+		.sampler = sampler,
+		.imageView = VK_NULL_HANDLE,
+		.imageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+	};
+	const VkWriteDescriptorSet write{
+		.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+		.dstSet = globalDescriptorSet_,
+		.dstBinding = 1,
+		.dstArrayElement = slot,
+		.descriptorCount = 1,
+		.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
+		.pImageInfo = &samplerInfo,
+	};
+
+	// This is safe mid-frame as long as the slot isn't in active use by in-flight command buffers
+	vkUpdateDescriptorSets(Context.GetDevice(), 1, &write, 0, nullptr);
+
 	return slot;
 }
 
 void SPipelineResourceManager::UnregisterTexture(const u32 slot)
 {
-	freeSampledSlots_.push_back(slot);
+	freeTextureSlots_.push_back(slot);
+}
+
+void SPipelineResourceManager::UnregisterSampler(const u32 slot)
+{
+	freeSamplerSlots_.push_back(slot);
 }
 
 void SPipelineResourceManager::CmdBindGlobalDescriptorSet(VkCommandBuffer commandBuffer) const
@@ -128,9 +160,9 @@ void SPipelineResourceManager::CmdPushUniformDescriptorSet(VkCommandBuffer comma
 void SPipelineResourceManager::CreateGlobalDescriptorSetLayout()
 {
 	constexpr std::array<VkDescriptorSetLayoutBinding, 3> BINDINGS{ {
-		{ 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,	MAX_TEXTURES,		VK_SHADER_STAGE_ALL, nullptr },
-		{ 1, VK_DESCRIPTOR_TYPE_SAMPLER,				MAX_SAMPLERS,		VK_SHADER_STAGE_ALL, nullptr },
-		{ 2, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,			MAX_STORAGE_IMAGES,	VK_SHADER_STAGE_ALL, nullptr },
+		{ 0, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURES,		VK_SHADER_STAGE_ALL, nullptr },
+		{ 1, VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SAMPLERS,		VK_SHADER_STAGE_ALL, nullptr },
+		{ 2, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,	MAX_STORAGE_IMAGES,	VK_SHADER_STAGE_ALL, nullptr },
 	} };
 
 	/// Add VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT to the last binding (only) to make it resizeable
@@ -210,9 +242,9 @@ void SPipelineResourceManager::CreatePipelineLayout()
 void SPipelineResourceManager::CreateDescriptorPool()
 {
 	constexpr std::array<VkDescriptorPoolSize, 3> POOL_SIZES{ {
-		{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,	MAX_TEXTURES		},
-		{ VK_DESCRIPTOR_TYPE_SAMPLER,					MAX_SAMPLERS		},
-		{ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,				MAX_STORAGE_IMAGES	},
+		{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURES		},
+		{ VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SAMPLERS		},
+		{ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,	MAX_STORAGE_IMAGES	},
 	} };
 
 	const VkDescriptorPoolCreateInfo poolInfo{
@@ -268,14 +300,26 @@ void SPipelineResourceManager::CreateFrameDataBuffers()
 	}
 }
 
-u32 SPipelineResourceManager::AllocateSlot()
+u32 SPipelineResourceManager::AllocateTextureSlot()
 {
-	if (!freeSampledSlots_.empty())
+	if (!freeTextureSlots_.empty())
 	{
-		const u32 slot{ freeSampledSlots_.back() };
-		freeSampledSlots_.pop_back();
+		const u32 slot{ freeTextureSlots_.back() };
+		freeTextureSlots_.pop_back();
 		return slot;
 	}
-	assert(nextSampledSlot_ < MAX_TEXTURES);
-	return nextSampledSlot_++;
+	assert(nextTextureSlot_ < MAX_TEXTURES);
+	return nextTextureSlot_++;
+}
+
+u32 SPipelineResourceManager::AllocateSamplerSlot()
+{
+	if (!freeSamplerSlots_.empty())
+	{
+		const u32 slot{ freeSamplerSlots_.back() };
+		freeSamplerSlots_.pop_back();
+		return slot;
+	}
+	assert(nextSamplerSlot_ < MAX_SAMPLERS);
+	return nextSamplerSlot_++;
 }

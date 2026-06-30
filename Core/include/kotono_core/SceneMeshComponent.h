@@ -2,9 +2,9 @@
 #include "generated/SceneMeshComponent.generated.h"
 #include "SceneComponent.h"
 #include "Task.h"
-
-class KtShader;
-class KtModel;
+#include <kotono_graphics/DrawCallBuilder.h>
+class UShader;
+class UModel;
 class UMaterial;
 class USceneProxy;
 struct UDrawCall;
@@ -22,12 +22,12 @@ protected:
 	void Update(const float deltaTime) override;
 
 public:
-	const UAsset<KtShader>& GetShader() const;
-	const UAsset<KtModel>& GetModel() const;
+	const UAsset<UShader>& GetShader() const;
+	const UAsset<UModel>& GetModel() const;
 	const UAsset<UMaterial>& GetMaterial() const;
 
-	void SetShader(const UAsset<KtShader>& shader);
-	void SetModel(const UAsset<KtModel>& model);
+	void SetShader(const UAsset<UShader>& shader);
+	void SetModel(const UAsset<UModel>& model);
 	void SetMaterial(const UAsset<UMaterial>& material);
 
 	void SetVisibility(const EVisibility visibility, const bool propagateToChildren = false) override;
@@ -37,7 +37,6 @@ public:
 
 private:
 	void CreateModelProxy();
-	void CreateDrawCall();
 
 	void MarkModelProxyTransformDirty();
 	void MarkModelProxyScissorDirty();
@@ -45,7 +44,13 @@ private:
 	void RegisterModelProxy() const;
 	void RegisterDrawCall();
 	void UnregisterModelProxy() const;
-	void UnregisterDrawCall() const;
+	void UnregisterDrawCall();
+	void RefreshDrawCall() const;
+
+	void RefreshDrawCallShaderData() const;
+	void RefreshDrawCallModelData() const;
+	void RefreshDrawCallMaterialData() const;
+	void RefreshDrawCallTransformData() const;
 
 	// temp
 	void Spin();
@@ -53,15 +58,12 @@ private:
 	void SetMobilityDynamic();
 
 private:
-	SERIALIZE UAsset<KtShader> shader_;
-	SERIALIZE UAsset<KtModel> model_;
+	SERIALIZE UAsset<UShader> shader_;
+	SERIALIZE UAsset<UModel> model_;
 	SERIALIZE UAsset<UMaterial> material_;
 	UTask spinTask_;
 
 	USceneProxy* modelProxy_;
-	UDrawCall* drawCall_;
-	u32 drawDataIndex_;
-	u32 transformIndex_;
-	u32 parametersIndex_;
+	UDrawCallBuilder drawCallBuilder_;
 };
 
