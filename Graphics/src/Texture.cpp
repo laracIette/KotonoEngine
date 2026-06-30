@@ -11,10 +11,6 @@ UTexture::UTexture(const UPath& path)
 	CreateImage();
 	CreateImageView();
 
-	imageInfo_.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	imageInfo_.imageView = imageView_;
-	imageInfo_.sampler = sampler_;
-
 	index_ = PipelineResourceManager.RegisterTexture(imageView_);
 }
 
@@ -22,10 +18,9 @@ UTexture::~UTexture()
 {
 	PipelineResourceManager.UnregisterTexture(index_);
 
-	vkDestroySampler(Context.GetDevice(), sampler_, nullptr);
 	vkDestroyImageView(Context.GetDevice(), imageView_, nullptr);
 	vmaDestroyImage(Context.GetAllocator(), image_, allocation_);
-	KT_LOG(ELogImportanceLevel::Low, "Graphics", "cleaned up {}", Path().ToString());
+	KT_LOG(ELogImportanceLevel::Low, "Graphics", "cleaned up {0}", Path().ToString());
 }
 
 const UPath& UTexture::Path() const
@@ -36,11 +31,6 @@ const UPath& UTexture::Path() const
 const glm::uvec2& UTexture::GetSize() const
 {
 	return size_;
-}
-
-const VkDescriptorImageInfo& UTexture::GetDescriptorImageInfo() const
-{
-	return imageInfo_;
 }
 
 u32 UTexture::GetIndex() const

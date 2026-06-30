@@ -1,7 +1,5 @@
 #pragma once
 #include "frames_in_flight.h"
-#include "InterfaceRenderer.h"
-#include "SceneRenderer.h"
 #include <kotono_common/Pool.h>
 #include <span>
 #include <thread>
@@ -9,7 +7,7 @@
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
 struct UDrawCall;
-class KtRenderer final
+class GRenderer final
 {
 	friend class SCore;
 
@@ -20,16 +18,9 @@ private:
 public:
 	void DrawFrame();
 
-	u32 GetGameThreadFrame() const; // todo: make private, staging interface uniform buffers
-
 	VkExtent2D GetSwapChainExtent() const;
 	VkFormat GetSwapChainFormat() const;
 	VkFormat GetDepthFormat() const;
-
-	KtInterfaceRenderer& InterfaceRenderer();
-	KtSceneRenderer& SceneRenderer();
-
-	VkCommandPool& GetCommandPool(const u32 frameIndex);
 
 	void RegisterDrawCall(UDrawCall* drawCall);
 	void UnregisterDrawCall(UDrawCall* drawCall);
@@ -85,7 +76,6 @@ private:
 	void CmdAcquireBarrier(VkCommandBuffer commandBuffer, const u32 frameIndex);
 	void CmdBeginRendering(VkCommandBuffer commandBuffer, const u32 frameIndex);
 	void CmdDrawFrame(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
-	void CmdDrawRenderers(VkCommandBuffer commandBuffer, const u32 frameIndex);
 	void CmdEndRendering(VkCommandBuffer commandBuffer);
 	void CmdPresentationBarrier(VkCommandBuffer commandBuffer, const u32 frameIndex);
 	void EndCommandBuffer(VkCommandBuffer commandBuffer);
@@ -93,17 +83,13 @@ private:
 
 	void CreateSyncObjects();
 
-	void UpdateRenderers(const u32 frameIndex);
-
 	void JoinThread(std::thread& thread) const;
 
+	u32 GetGameThreadFrame() const;
 	u32 GetRenderThreadFrame() const;
 	u32 GetRHIThreadFrame() const;
 
 private:
-	KtInterfaceRenderer interfaceRenderer_;
-	KtSceneRenderer sceneRenderer_;
-
 	std::vector<SwapChainData> swapChainDatas_;
 	VkSwapchainKHR swapChain_;
 	VkFormat swapChainFormat_;
@@ -121,4 +107,4 @@ private:
 	UPool<UDrawCall*> drawCalls_;
 };
 
-inline KtRenderer Renderer;
+inline GRenderer Renderer;

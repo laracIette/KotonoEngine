@@ -5,15 +5,11 @@
 #include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
 #include <kotono_graphics/DrawCall.h>
-#include <kotono_graphics/DrawDataBuffer.h>
+#include <kotono_graphics/DrawDataBufferData.h>
 #include <kotono_graphics/Material.h>
 #include <kotono_graphics/Model.h>
-#include <kotono_graphics/ParametersBuffer.h>
-#include <kotono_graphics/Renderer.h>
-#include <kotono_graphics/SceneProxy.h>
 #include <kotono_graphics/Shader.h>
-#include <kotono_graphics/TransformBuffer.h>
-#include <kotono_graphics/Color.h>
+#include <kotono_graphics/TransformBufferData.h>
 #include <kotono_input/Keyboard.h>
 #include <kotono_platform/Window.h>
 #include <kotono_platform/WindowViewport.h>
@@ -21,8 +17,7 @@
 static UAsset<UShader> WireframeShader;
 
 KSceneMeshComponent::KSceneMeshComponent() 
-    : modelProxy_{ new USceneProxy{} }
-    , drawCallBuilder_{}
+    : drawCallBuilder_{}
 {
     if (!WireframeShader)
     {
@@ -34,9 +29,6 @@ KSceneMeshComponent::KSceneMeshComponent()
 
 KSceneMeshComponent::~KSceneMeshComponent()
 {
-    UnregisterModelProxy();
-    Renderer.SceneRenderer().DeleteProxy(modelProxy_);
-    UnregisterDrawCall();
 }
 
 void KSceneMeshComponent::Init()
@@ -92,14 +84,11 @@ void KSceneMeshComponent::Spawn()
 {
     Base::Spawn();
 
-    CreateModelProxy();
-    RegisterModelProxy();
     RefreshDrawCall();
     RegisterDrawCall();
 
-    EventTransformUpdated().AddListener(this, &KSceneMeshComponent::MarkModelProxyTransformDirty);
-    
-    RegisterDelegate(&Window, Window.GetEventWindowResized(), this, &KSceneMeshComponent::MarkModelProxyScissorDirty);
+    EventTransformUpdated().AddListener(this, &KSceneMeshComponent::RefreshDrawCallTransformData);
+    RegisterDelegate(&Window, Window.GetEventWindowResized(), this, &KSceneMeshComponent::RefreshDrawCallScissor);
 
     RegisterDelegate(&Keyboard, Keyboard.EventKey(EKey::N, EInputState::Pressed), this, &KSceneMeshComponent::SetMobilityStatic);
     RegisterDelegate(&Keyboard, Keyboard.EventKey(EKey::M, EInputState::Pressed), this, &KSceneMeshComponent::SetMobilityDynamic);
@@ -109,69 +98,17 @@ void KSceneMeshComponent::Spawn()
 
 void KSceneMeshComponent::SetVisibility(const EVisibility visibility, const bool propagateToChildren)
 {
-    UnregisterModelProxy();
     Base::SetVisibility(visibility, propagateToChildren);
-    RegisterModelProxy();
 }
 
 void KSceneMeshComponent::SetMobility(const EMobility mobility)
 {
-    UnregisterModelProxy();
     Base::SetMobility(mobility);
-    RegisterModelProxy();
-}
-
-void KSceneMeshComponent::CreateModelProxy()
-{
-    modelProxy_->ScheduleUpdate(
-        [this](USceneProxy::Data& data)
-        {
-            data.shader = shader_.Get();
-            data.renderable = model_.Get();
-            data.objectData.modelMatrix = ModelMatrix();
-            data.scissor.offset = GetOwner()->GetViewport()->GetOffset();
-            data.scissor.extent = GetOwner()->GetViewport()->GetExtent();
-        }
-    );
-}
-
-void KSceneMeshComponent::MarkModelProxyTransformDirty()
-{
-    RefreshDrawCallTransformData();
-
-    modelProxy_->ScheduleUpdate(
-        [this](USceneProxy::Data& data)
-        {
-            data.objectData.modelMatrix = ModelMatrix();
-        }
-    );
-	KT_LOG(ELogImportanceLevel::Medium, "Core", "{0}", GetName());
-}
-
-void KSceneMeshComponent::MarkModelProxyScissorDirty()
-{
-    modelProxy_->ScheduleUpdate(
-        [this](USceneProxy::Data& data)
-        {
-            data.scissor.offset = GetOwner()->GetViewport()->GetOffset();
-            data.scissor.extent = GetOwner()->GetViewport()->GetExtent();
-        }
-    );
-}
-
-void KSceneMeshComponent::RegisterModelProxy() const
-{
-    Renderer.SceneRenderer().RegisterProxy(modelProxy_, GetMobility());
 }
 
 void KSceneMeshComponent::RegisterDrawCall()
 {
     drawCallBuilder_.Register();
-}
-
-void KSceneMeshComponent::UnregisterModelProxy() const
-{
-    Renderer.SceneRenderer().UnregisterProxy(modelProxy_, GetMobility());
 }
 
 void KSceneMeshComponent::UnregisterDrawCall()
@@ -183,6 +120,15 @@ void KSceneMeshComponent::RefreshDrawCall() const
 {
     drawCallBuilder_.GetDrawCall()->renderBucket = ERenderBucket::Opaque;
 
+    RefreshDrawCallScissor();
+    RefreshDrawCallShaderData();
+    RefreshDrawCallModelData();
+    RefreshDrawCallMaterialData();
+    RefreshDrawCallTransformData();
+}
+
+void KSceneMeshComponent::RefreshDrawCallScissor() const
+{
     const auto& offset{ GetOwner()->GetViewport()->GetOffset() };
     const auto& extent{ GetOwner()->GetViewport()->GetExtent() };
 
@@ -190,11 +136,6 @@ void KSceneMeshComponent::RefreshDrawCall() const
         .offset = { offset.x, offset.y },
         .extent = { extent.x, extent.y },
     };
-    
-    RefreshDrawCallShaderData();
-    RefreshDrawCallModelData();
-    RefreshDrawCallMaterialData();
-    RefreshDrawCallTransformData();
 }
 
 void KSceneMeshComponent::RefreshDrawCallShaderData() const

@@ -1,12 +1,13 @@
 #include "Model.h"
-#include <array>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <glm/glm.hpp>
+#include <glm/gtx/hash.hpp>
+#include <kotono_common/hash_utils.h>
 #include <kotono_common/log.h>
 #include <kotono_platform/Context.h>
 #include <unordered_map>
-#include <glm/glm.hpp>
 
 UModel::UModel(const UPath& path) 
 	: path_(path)
@@ -14,18 +15,13 @@ UModel::UModel(const UPath& path)
 	Load();
 	CreateVertexBuffer();
 	CreateIndexBuffer();
-	CreateIndirectBuffers();
 }
 
 UModel::~UModel()
 {
 	vmaDestroyBuffer(Context.GetAllocator(), indexBuffer_.Buffer, indexBuffer_.Allocation);
 	vmaDestroyBuffer(Context.GetAllocator(), vertexBuffer_.Buffer, vertexBuffer_.Allocation);
-	for (auto& indirectBuffer : indirectBuffers_)
-	{
-		vmaDestroyBuffer(Context.GetAllocator(), indirectBuffer.Buffer, indirectBuffer.Allocation);
-	}
-	KT_LOG(ELogImportanceLevel::Low, "Graphics", "cleaned up {}", Path().ToString());
+	KT_LOG(ELogImportanceLevel::Low, "Graphics", "cleaned up {0}", Path().ToString());
 }
 
 const UPath& UModel::Path() const
@@ -52,26 +48,6 @@ u32 UModel::GetIndexCount() const
 	return indices_.size();
 }
 
-void UModel::CmdBind(VkCommandBuffer commandBuffer) const
-{
-	const std::array vertexBuffers{ vertexBuffer_.Buffer };
-	const std::array offsets{ VkDeviceSize{ 0 } };
-	vkCmdBindVertexBuffers(commandBuffer, 0, static_cast<u32>(vertexBuffers.size()), vertexBuffers.data(), offsets.data());
-	vkCmdBindIndexBuffer(commandBuffer, indexBuffer_.Buffer, 0, VK_INDEX_TYPE_UINT32);
-}
-
-void UModel::CmdDraw(VkCommandBuffer commandBuffer, const u32 frameIndex) const
-{
-	vkCmdDrawIndexedIndirect(commandBuffer, indirectBuffers_[frameIndex].Buffer, 0, 1, sizeof(VkDrawIndexedIndirectCommand));
-}
-
-void UModel::UpdateIndirectBuffer(const u32 firstInstance, const u32 instanceCount, const u32 frameIndex) const
-{
-	auto* cmd{ static_cast<VkDrawIndexedIndirectCommand*>(indirectBuffers_[frameIndex].AllocationInfo.pMappedData) };
-	cmd->instanceCount = instanceCount;
-	cmd->firstInstance = firstInstance;
-}
-
 void UModel::Load()
 {
 	Assimp::Importer importer{};
@@ -89,7 +65,7 @@ void UModel::Load()
 		throw std::runtime_error("Failed to load model: " + path_.ToString());
 	}
 
-	std::unordered_map<KtVertex3D, u32> uniqueVertices{};
+	std::unordered_map<UVertex, u32> uniqueVertices{};
 
 	for (u32 m{ 0 }; m < scene->mNumMeshes; ++m)
 	{
@@ -127,7 +103,7 @@ void UModel::Load()
 
 				const float handedness{ glm::dot(glm::cross(N, T), B) < 0.0f ? -1.0f : 1.0f };
 
-				const KtVertex3D vertex{ 
+				const UVertex vertex{ 
 					.position = { pos.x, pos.y, pos.z },
 					.normal = N,
 					.uv = { uv.x, uv.y },
@@ -148,7 +124,7 @@ void UModel::Load()
 
 void UModel::CreateVertexBuffer()
 {
-	const VkDeviceSize bufferSize{ sizeof(KtVertex3D) * vertices_.size() };
+	const VkDeviceSize bufferSize{ sizeof(UVertex) * vertices_.size() };
 
 	Context.CreateBuffer(bufferSize
 		, VK_BUFFER_USAGE_TRANSFER_SRC_BIT
@@ -200,37 +176,6 @@ void UModel::CreateIndexBuffer()
 	Context.GetEventExecuteSingleTimeCommands().AddListener(this, &UModel::DestroyStagingIndexBuffer);
 }
 
-void UModel::CreateIndirectBuffers()
-{
-	for (size i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
-	{
-		CreateIndirectBuffer(static_cast<u32>(i));
-	}
-}
-
-void UModel::CreateIndirectBuffer(const u32 frameIndex)
-{
-	const VkDeviceSize bufferSize{ sizeof(VkDrawIndexedIndirectCommand) };
-
-	Context.CreateBuffer(
-		bufferSize,
-		VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
-		VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
-		indirectBuffers_[frameIndex]
-	);
-
-	const VkDrawIndexedIndirectCommand cmd{
-		.indexCount = static_cast<u32>(indices_.size()),
-		.instanceCount = 0,
-		.firstIndex = 0,
-		.vertexOffset = 0,
-		.firstInstance = 0,
-	};
-
-	std::memcpy(indirectBuffers_[frameIndex].AllocationInfo.pMappedData, &cmd, sizeof(cmd));
-}
-
 void UModel::DestroyStagingVertexBuffer() const
 {
 	vmaDestroyBuffer(Context.GetAllocator(), stagingVertexBuffer_.Buffer, stagingVertexBuffer_.Allocation);
@@ -239,4 +184,22 @@ void UModel::DestroyStagingVertexBuffer() const
 void UModel::DestroyStagingIndexBuffer() const
 {
 	vmaDestroyBuffer(Context.GetAllocator(), stagingIndexBuffer_.Buffer, stagingIndexBuffer_.Allocation);
+}
+
+bool UVertex::operator==(const UVertex& other) const noexcept
+{
+	return position == other.position
+		&& normal == other.normal
+		&& uv == other.uv
+		&& tangent == other.tangent;
+}
+
+size std::hash<UVertex>::operator()(const UVertex& v) const noexcept
+{
+	::size h{};
+	h = combine(h, std::hash<glm::vec3>{}(v.position));
+	h = combine(h, std::hash<glm::vec3>{}(v.normal));
+	h = combine(h, std::hash<glm::vec2>{}(v.uv));
+	h = combine(h, std::hash<glm::vec2>{}(v.tangent));
+	return h;
 }

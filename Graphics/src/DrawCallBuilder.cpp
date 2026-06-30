@@ -22,6 +22,7 @@ UDrawCallBuilder::~UDrawCallBuilder()
 	DrawDataBuffer.UnregisterDrawData(drawData_);
 	TransformBuffer.UnregisterTransform(transform_);
 	ParametersBuffer.UnregisterParameters(parameters_);
+	Unregister();
 	delete drawCall_;
 }
 

@@ -2,46 +2,6 @@
 #include "Context.h"
 #include "vk_utils.h"
 
-void SUploadStager::Flush()
-{
-	if (deletionQueue_.empty())
-	{
-		return;
-	}
-
-	EndRecording();
-
-	const VkCommandBufferSubmitInfo cmdInfo{
-		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO,
-		.commandBuffer = commandBuffer_,
-	};
-	const VkSubmitInfo2 submitInfo{
-		.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO_2,
-		.commandBufferInfoCount = 1,
-		.pCommandBufferInfos = &cmdInfo,
-	};
-	VK_CHECK_THROW(
-		vkQueueSubmit2(Context.GetGraphicsQueue(), 1, &submitInfo, fence_),
-		"failed submitting the queue!"
-	);
-
-	// Stall until done, acceptable at load time, not during a frame
-	VK_CHECK_THROW(
-		vkWaitForFences(Context.GetDevice(), 1, &fence_, VK_TRUE, UINT64_MAX),
-		"failed waiting for fences!"
-	);
-	vkResetFences(Context.GetDevice(), 1, &fence_);
-
-	for (auto& stagingBuffer : deletionQueue_)
-	{
-		vmaDestroyBuffer(Context.GetAllocator(), stagingBuffer.buffer, stagingBuffer.allocation);
-	}
-	deletionQueue_.clear();
-
-	vkResetCommandBuffer(commandBuffer_, 0);
-	BeginRecording();
-}
-
 void SUploadStager::StagingUpload(const void* data
 	, const VkDeviceSize dataSize
 	, VkBuffer dstBuffer
@@ -95,66 +55,6 @@ void SUploadStager::StagingUpload(const void* data
 	Context.GetEventExecuteSingleTimeCommands().AddListener(this, &SUploadStager::ClearDeletionQueue);
 }
 
-void SUploadStager::CreateCommandPool()
-{
-	const KtQueueFamilyIndices queueFamilyIndices{ Context.FindQueueFamilies(Context.GetPhysicalDevice()) };
-
-	const VkCommandPoolCreateInfo poolInfo{
-		.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-		.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
-		.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value(),
-	};
-	VK_CHECK_THROW(
-		vkCreateCommandPool(Context.GetDevice(), &poolInfo, nullptr, &commandPool_),
-		"failed to create command pool!"
-	);
-}
-
-void SUploadStager::CreateCommandBuffer()
-{
-	const VkCommandBufferAllocateInfo allocInfo{
-		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-		.commandPool = commandPool_,
-		.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-		.commandBufferCount = 1,
-	};
-	VK_CHECK_THROW(
-		vkAllocateCommandBuffers(Context.GetDevice(), &allocInfo, &commandBuffer_),
-		"failed to allocate command buffers!"
-	);
-}
-
-void SUploadStager::CreateFence()
-{
-	const VkFenceCreateInfo fenceInfo{
-		.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-	};
-	VK_CHECK_THROW(
-		vkCreateFence(Context.GetDevice(), &fenceInfo, nullptr, &fence_),
-		"failed to create fence!"
-	);
-}
-
-void SUploadStager::BeginRecording() const
-{
-	const VkCommandBufferBeginInfo beginInfo{
-		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-		.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
-	};
-	VK_CHECK_THROW(
-		vkBeginCommandBuffer(commandBuffer_, &beginInfo),
-		"failed to begin recording command buffer!"
-	);
-}
-
-void SUploadStager::EndRecording() const
-{
-	VK_CHECK_THROW(
-		vkEndCommandBuffer(commandBuffer_),
-		"failed to end recording command buffer!"
-	);
-}
-
 void SUploadStager::CreateStagingBuffer(VkBuffer& stagingBuffer
 	, VmaAllocation& stagingAlloc
 	, VmaAllocationInfo& allocationInfo
@@ -171,12 +71,15 @@ void SUploadStager::CreateStagingBuffer(VkBuffer& stagingBuffer
 		.usage = VMA_MEMORY_USAGE_AUTO,
 	};
 
-	vmaCreateBuffer(Context.GetAllocator()
-		, &stagingInfo
-		, &allocInfo
-		, &stagingBuffer
-		, &stagingAlloc
-		, &allocationInfo
+	VK_CHECK_THROW(
+		vmaCreateBuffer(Context.GetAllocator()
+			, &stagingInfo
+			, &allocInfo
+			, &stagingBuffer
+			, &stagingAlloc
+			, &allocationInfo
+		),
+		"failed to create buffer!"
 	);
 }
 

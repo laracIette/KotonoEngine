@@ -1,11 +1,21 @@
 #pragma once
 #include "frames_in_flight.h"
-#include "SceneRenderable.h" 
-#include "Vertex3D.h"
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 #include <kotono_common/Path.h>
+#include <kotono_common/types.h>
 #include <kotono_platform/AllocatedBuffer.h>
+struct UVertex
+{
+	glm::vec3 position;
+	glm::vec3 normal;
+	glm::vec2 uv;
+	glm::vec4 tangent;
 
-class UModel final : public KtSceneRenderable
+	bool operator==(const UVertex& other) const noexcept;
+};
+class UModel final
 {
 public:
 	UModel(const UPath& path);
@@ -16,29 +26,27 @@ public:
 	VkDeviceAddress GetVertexBufferAddress() const;
 	VkBuffer GetIndexBuffer() const;
 	u32 GetIndexCount() const;
-
-	void CmdBind(VkCommandBuffer commandBuffer) const override;
-	void CmdDraw(VkCommandBuffer commandBuffer, const u32 frameIndex) const override;
 	
-	void UpdateIndirectBuffer(const u32 firstInstance, const u32 instanceCount, const u32 frameIndex) const override;
-
 private:
 	void Load();
 	void CreateVertexBuffer();
 	void CreateIndexBuffer();
-	void CreateIndirectBuffers();
-	void CreateIndirectBuffer(const u32 frameIndex);
 	void DestroyStagingVertexBuffer() const;
 	void DestroyStagingIndexBuffer() const;
 
 private:
 	const UPath path_;
 
-	std::vector<KtVertex3D> vertices_;
+	std::vector<UVertex> vertices_;
 	std::vector<u32> indices_;
 	KtAllocatedBuffer vertexBuffer_;
 	KtAllocatedBuffer indexBuffer_;
-	KtFramesInFlightArray<KtAllocatedBuffer> indirectBuffers_;
 	KtAllocatedBuffer stagingVertexBuffer_;
 	KtAllocatedBuffer stagingIndexBuffer_;
+};
+
+template<>
+struct std::hash<UVertex>
+{
+	::size operator()(const UVertex& v) const noexcept;
 };

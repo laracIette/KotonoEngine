@@ -3,7 +3,6 @@
 #include "Widget.h"
 #include <kotono_common/Path.h>
 #include <kotono_graphics/DrawCallBuilder.h>
-class UInterfaceProxy;
 /// Display an image over the widget's bounds
 class WImage final : public WWidget
 {
@@ -19,8 +18,6 @@ public:
 
 private:
 	StateProperty(UPath, path_, Path);
-
-	UInterfaceProxy* imageProxy_;
 
 	UDrawCallBuilder drawCallBuilder_;
 };

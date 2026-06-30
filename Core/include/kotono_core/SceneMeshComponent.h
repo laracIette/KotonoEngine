@@ -6,7 +6,6 @@
 class UShader;
 class UModel;
 class UMaterial;
-class USceneProxy;
 struct UDrawCall;
 
 class KSceneMeshComponent : public KSceneComponent
@@ -36,17 +35,11 @@ public:
 	void Spawn() override;
 
 private:
-	void CreateModelProxy();
-
-	void MarkModelProxyTransformDirty();
-	void MarkModelProxyScissorDirty();
-
-	void RegisterModelProxy() const;
 	void RegisterDrawCall();
-	void UnregisterModelProxy() const;
 	void UnregisterDrawCall();
 	void RefreshDrawCall() const;
 
+	void RefreshDrawCallScissor() const;
 	void RefreshDrawCallShaderData() const;
 	void RefreshDrawCallModelData() const;
 	void RefreshDrawCallMaterialData() const;
@@ -63,7 +56,6 @@ private:
 	SERIALIZE UAsset<UMaterial> material_;
 	UTask spinTask_;
 
-	USceneProxy* modelProxy_;
 	UDrawCallBuilder drawCallBuilder_;
 };
 

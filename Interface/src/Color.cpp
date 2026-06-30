@@ -1,8 +1,8 @@
 #include "Color.h"
+#include <glm/ext/matrix_transform.hpp>
 #include <kotono_common/AssetManager.h>
 #include <kotono_graphics/DrawDataBufferData.h>
 #include <kotono_graphics/DrawCall.h>
-#include <kotono_graphics/InterfaceProxy.h>
 #include <kotono_graphics/Model.h>
 #include <kotono_graphics/ParametersBufferData.h>
 #include <kotono_graphics/Renderer.h>
@@ -20,24 +20,12 @@ void WColor::Remove()
 {
 	Base::Remove();
 
-	if (colorProxy_)
-	{
-		Renderer.InterfaceRenderer().UnregisterProxy(colorProxy_);
-		Renderer.InterfaceRenderer().DeleteProxy(colorProxy_);
-		colorProxy_ = nullptr;
-		drawCallBuilder_.Unregister();
-	}
-
+	drawCallBuilder_.Unregister();
 }
 
 void WColor::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
-	if (!colorProxy_)
-	{
-		colorProxy_ = Renderer.InterfaceRenderer().CreateProxy();
-		Renderer.InterfaceRenderer().RegisterProxy(colorProxy_);
-		drawCallBuilder_.Register();
-	}
+	drawCallBuilder_.Register();
 
 	drawCallBuilder_.GetDrawCall()->scissor = {
 		.offset = { displaySettings.scissor.offset.x, displaySettings.scissor.offset.y },
@@ -63,18 +51,6 @@ void WColor::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	drawCallBuilder_.GetTransform()->normalMatrix = glm::identity<glm::mat4>();
 
 	drawCallBuilder_.GetParameters()->vectors = { color_ };
-
-	colorProxy_->ScheduleUpdate(
-		[this, displaySettings](UInterfaceProxy::Data& data)
-		{
-			data.shader = UAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/flatColor2D.ktshader").Get();
-			data.renderable = UAssetManager<UTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg").Get();
-			data.layer = displaySettings.layer;
-			data.objectData.modelMatrix = ModelMatrix();
-			data.objectData.color = color_;
-			data.scissor = displaySettings.scissor;
-		}
-	);
 }
 
 #include "generated/Color.generated.inl"

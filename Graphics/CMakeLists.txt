@@ -54,10 +54,6 @@ foreach(assimp_target
 endforeach()
 ################
 
-if(TARGET SPIRVReflect)
-    set_target_properties(SPIRVReflect PROPERTIES FOLDER "KotonoEngine/ThirdParty")
-endif()
-
 # Static library
 add_library(KotonoGraphics STATIC)
 
@@ -74,12 +70,6 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/DrawCallBuilder.h"
     "include/kotono_graphics/Font.h"
     "include/kotono_graphics/frames_in_flight.h"
-    "include/kotono_graphics/InterfaceCuller.h"
-    "include/kotono_graphics/InterfaceObjectData.h"
-    "include/kotono_graphics/InterfaceProxy.h"
-    "include/kotono_graphics/InterfaceRenderable.h"
-    "include/kotono_graphics/InterfaceRenderer.h"
-    "include/kotono_graphics/InterfaceUniformData.h"
     "include/kotono_graphics/Material.h"
     "include/kotono_graphics/MaterialBuffer.h"
     "include/kotono_graphics/Mobility.h"
@@ -90,22 +80,12 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/Renderer.h"
     "include/kotono_graphics/RendererFrameStats.h"
     "include/kotono_graphics/Sampler.h"
-    "include/kotono_graphics/SceneCuller.h"
-    "include/kotono_graphics/SceneCullerField.h"
-    "include/kotono_graphics/SceneObjectData.h"
-    "include/kotono_graphics/SceneProxy.h"
-    "include/kotono_graphics/SceneRenderable.h"
-    "include/kotono_graphics/SceneRenderer.h"
-    "include/kotono_graphics/SceneUniformData.h"
     "include/kotono_graphics/Scissor.h"
     "include/kotono_graphics/Shader.h"
-    "include/kotono_graphics/ShaderLayout.h"
     "include/kotono_graphics/SpvCompiler.h"
     "include/kotono_graphics/Texture.h"
     "include/kotono_graphics/TransformBuffer.h"
     "include/kotono_graphics/TransformBufferData.h"
-    "include/kotono_graphics/Vertex2D.h"
-    "include/kotono_graphics/Vertex3D.h"
     "include/kotono_graphics/Visibility.h"
 )
 set(KGRAPHICS_SOURCES
@@ -113,9 +93,6 @@ set(KGRAPHICS_SOURCES
     "src/DrawDataBuffer.cpp"
     "src/Font.cpp"
     "src/implementations.cpp"
-    "src/InterfaceCuller.cpp"
-    "src/InterfaceProxy.cpp"
-    "src/InterfaceRenderer.cpp"
     "src/Material.cpp"
     "src/MaterialBuffer.cpp"
     "src/Model.cpp"
@@ -123,17 +100,10 @@ set(KGRAPHICS_SOURCES
     "src/PipelineResourceManager.cpp"
     "src/Renderer.cpp"
     "src/Sampler.cpp"
-    "src/SceneCuller.cpp"
-    "src/SceneProxy.cpp"
-    "src/SceneRenderer.cpp"
     "src/Shader.cpp"
-    "src/ShaderLayout.cpp"
     "src/SpvCompiler.cpp"
     "src/Texture.cpp"
     "src/TransformBuffer.cpp"
-    "src/Vertex2D.cpp"
-    "src/Vertex3D.cpp"
-
 )
 
 target_sources(KotonoGraphics
@@ -157,7 +127,6 @@ target_compile_definitions(KotonoGraphics PUBLIC
 
 # Link system + third-party libs
 target_link_libraries(KotonoGraphics PRIVATE
-    SPIRVReflect
     assimp::assimp
 )
 

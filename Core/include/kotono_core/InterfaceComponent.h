@@ -11,11 +11,8 @@
 #include <kotono_common/Event.h>
 #include <kotono_graphics/Visibility.h>
 #include <kotono_graphics/Color.h>
-
 class KtWindowViewport;
 class RInterfaceObject;
-class UInterfaceProxy;
-
 class KInterfaceComponent : public KObject
 {
 	GENERATED_KINTERFACECOMPONENT()
@@ -113,7 +110,6 @@ private:
 	SERIALIZE URect rect_;
 	SERIALIZE EVisibility visibility_;
 	SERIALIZE UColor color_;
-	//UInterfaceProxy* boundsProxy_;
 	UEvent<> eventRectChanged_;
 	UEvent<> eventLayerChanged_;
 	UEvent<> eventColorChanged_;

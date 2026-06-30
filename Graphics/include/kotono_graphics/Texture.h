@@ -1,11 +1,10 @@
 #pragma once
-#include "InterfaceRenderable.h"
 #include <glm/vec2.hpp>
 #include <kotono_common/Path.h>
 #include <kotono_platform/AllocatedBuffer.h>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
-class UTexture final : public KtInterfaceRenderable
+class UTexture final
 {
 public:
     UTexture(const UPath& path);
@@ -15,14 +14,11 @@ public:
 
     const glm::uvec2& GetSize() const;
 
-    const VkDescriptorImageInfo& GetDescriptorImageInfo() const;
-
     u32 GetIndex() const;
 
 private:
     void CreateImage();
     void CreateImageView();
-    void CreateSampler();
 
     void DestroyStagingBuffer() const;
 
@@ -36,8 +32,6 @@ private:
     VmaAllocation allocation_;
     // Image view for rendering
     VkImageView imageView_;
-    // Sampler for texture filtering
-    VkSampler sampler_;
     // Descriptor set for binding image in shaders
     VkDescriptorSet descriptorSet_;
     // Width and height of the texture
@@ -48,6 +42,4 @@ private:
     u32 index_;
 
     KtAllocatedBuffer stagingBuffer_;
-
-    VkDescriptorImageInfo imageInfo_; // TODO: yoink
 };

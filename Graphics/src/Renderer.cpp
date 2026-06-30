@@ -9,13 +9,12 @@
 #include <kotono_platform/Window.h>
 #include <kotono_platform/WindowViewport.h>
 #include <kotono_common/log.h>
-#include <kotono_platform/UploadStager.h>
 #include <kotono_platform/vk_utils.h>
 #include <ranges>
 #include <algorithm>
 #include <tuple>
 
-void KtRenderer::Init()
+void GRenderer::Init()
 {
 	CreateSwapChain();
 	CreateImageViews();
@@ -26,17 +25,13 @@ void KtRenderer::Init()
 	CreateSyncObjects();
 
 	PipelineResourceManager.Init();
-
-	//interfaceRenderer_.Init();
-	//sceneRenderer_.Init();
-
 	DrawDataBuffer.Init();
 	MaterialBuffer.Init();
 	TransformBuffer.Init();
 	ParametersBuffer.Init();
 }
 
-void KtRenderer::Cleanup()
+void GRenderer::Cleanup()
 {
 	KT_LOG(ELogImportanceLevel::High, "Graphics", "cleaning up renderer");
 
@@ -47,10 +42,6 @@ void KtRenderer::Cleanup()
 	TransformBuffer.Cleanup();
 	MaterialBuffer.Cleanup();
 	DrawDataBuffer.Cleanup();
-
-	//interfaceRenderer_.Cleanup();
-	//sceneRenderer_.Cleanup();
-
 	PipelineResourceManager.Cleanup();
 
 	CleanupSwapChain();
@@ -66,7 +57,7 @@ void KtRenderer::Cleanup()
 	KT_LOG(ELogImportanceLevel::High, "Graphics", "cleaned up renderer");
 }
 
-void KtRenderer::CreateSwapChain()
+void GRenderer::CreateSwapChain()
 {
 	KtSwapChainSupportDetails swapChainSupport = Context.QuerySwapChainSupport(Context.GetPhysicalDevice());
 
@@ -144,7 +135,7 @@ void KtRenderer::CreateSwapChain()
 	swapChainExtent_ = extent;
 }
 
-VkSurfaceFormatKHR KtRenderer::ChooseSwapSurfaceFormat(const std::span<VkSurfaceFormatKHR> availableFormats) const
+VkSurfaceFormatKHR GRenderer::ChooseSwapSurfaceFormat(const std::span<VkSurfaceFormatKHR> availableFormats) const
 {
 	for (const auto& availableFormat : availableFormats)
 	{
@@ -157,7 +148,7 @@ VkSurfaceFormatKHR KtRenderer::ChooseSwapSurfaceFormat(const std::span<VkSurface
 	return availableFormats[0];
 }
 
-VkPresentModeKHR KtRenderer::ChooseSwapPresentMode(const std::span<VkPresentModeKHR> availablePresentModes) const
+VkPresentModeKHR GRenderer::ChooseSwapPresentMode(const std::span<VkPresentModeKHR> availablePresentModes) const
 {
 	for (const auto& availablePresentMode : availablePresentModes)
 	{
@@ -170,7 +161,7 @@ VkPresentModeKHR KtRenderer::ChooseSwapPresentMode(const std::span<VkPresentMode
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D KtRenderer::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const
+VkExtent2D GRenderer::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const
 {
 	if (capabilities.currentExtent.width != std::numeric_limits<u32>::max())
 	{
@@ -194,7 +185,7 @@ VkExtent2D KtRenderer::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabili
 	}
 }
 
-void KtRenderer::CreateImageViews()
+void GRenderer::CreateImageViews()
 {
 	for (auto& swapChainData : swapChainDatas_)
 	{
@@ -202,7 +193,7 @@ void KtRenderer::CreateImageViews()
 	}
 }
 
-void KtRenderer::CreateColorResources()
+void GRenderer::CreateColorResources()
 {
 	const VkFormat colorFormat{ swapChainFormat_ };
 
@@ -230,7 +221,7 @@ void KtRenderer::CreateColorResources()
 	}
 }
 
-void KtRenderer::CreateDepthResources()
+void GRenderer::CreateDepthResources()
 {
 	depthFormat_ = FindDepthFormat();
 	
@@ -266,7 +257,7 @@ void KtRenderer::CreateDepthResources()
 	}
 }
 
-VkFormat KtRenderer::FindSupportedFormat(const std::span<VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const
+VkFormat GRenderer::FindSupportedFormat(const std::span<VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const
 {
 	for (const VkFormat format : candidates)
 	{
@@ -286,13 +277,13 @@ VkFormat KtRenderer::FindSupportedFormat(const std::span<VkFormat> candidates, c
 	throw std::runtime_error("failed to find supported format!");
 }
 
-VkFormat KtRenderer::FindDepthFormat() const
+VkFormat GRenderer::FindDepthFormat() const
 {
 	std::vector<VkFormat> formats{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT };
 	return FindSupportedFormat(formats, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
 
-void KtRenderer::CreateCommandPools()
+void GRenderer::CreateCommandPools()
 {
 	for (size i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
 	{
@@ -300,7 +291,7 @@ void KtRenderer::CreateCommandPools()
 	}
 }
 
-void KtRenderer::CreateCommandPool(const u32 frameIndex)
+void GRenderer::CreateCommandPool(const u32 frameIndex)
 {
 	const KtQueueFamilyIndices queueFamilyIndices{ Context.FindQueueFamilies(Context.GetPhysicalDevice()) };
 
@@ -315,7 +306,7 @@ void KtRenderer::CreateCommandPool(const u32 frameIndex)
 	);
 }
 
-void KtRenderer::CreateCommandBuffers()
+void GRenderer::CreateCommandBuffers()
 {
 	for (size i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
 	{
@@ -323,7 +314,7 @@ void KtRenderer::CreateCommandBuffers()
 	}
 }
 
-void KtRenderer::CreateCommandBuffer(const u32 frameIndex)
+void GRenderer::CreateCommandBuffer(const u32 frameIndex)
 {
 	const VkCommandBufferAllocateInfo allocInfo{
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
@@ -337,7 +328,7 @@ void KtRenderer::CreateCommandBuffer(const u32 frameIndex)
 	);
 }
 
-void KtRenderer::CreateSyncObjects()
+void GRenderer::CreateSyncObjects()
 {
 	const VkSemaphoreCreateInfo semaphoreInfo{
 		.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
@@ -357,12 +348,9 @@ void KtRenderer::CreateSyncObjects()
 	}
 }
 static constexpr bool IS_MULTI_THREADED{ false };
-void KtRenderer::DrawFrame()
+void GRenderer::DrawFrame()
 {
 	const u32 frameIndex{ GetGameThreadFrame() };
-	//UpdateRenderers(frameIndex);
-
-	//UploadStager.Flush();
 
 	PipelineResourceManager.UpdateMappedFrameUBO(frameIndex);
 	DrawDataBuffer.UpdateBuffer(frameIndex);
@@ -375,7 +363,7 @@ void KtRenderer::DrawFrame()
 		{
 			JoinThread(renderThread_);
 			const u32 renderThreadFrame{ GetRenderThreadFrame() };
-			renderThread_ = std::thread(&KtRenderer::RecordCommandBuffer, this, renderThreadFrame);
+			renderThread_ = std::thread(&GRenderer::RecordCommandBuffer, this, renderThreadFrame);
 		}
 
 		if (frameCount_ >= 2)
@@ -385,7 +373,7 @@ void KtRenderer::DrawFrame()
 			JoinThread(rhiThread_);
 			Context.ExecuteSingleTimeCommands();
 			const u32 renderRHIFrame{ GetRHIThreadFrame() };
-			rhiThread_ = std::thread(&KtRenderer::SubmitCommandBuffer, this, renderRHIFrame);
+			rhiThread_ = std::thread(&GRenderer::SubmitCommandBuffer, this, renderRHIFrame);
 		}
 	}
 	else
@@ -404,13 +392,7 @@ void KtRenderer::DrawFrame()
 	frameCount_++;
 }
 
-void KtRenderer::UpdateRenderers(const u32 frameIndex)
-{
-	sceneRenderer_.Update(frameIndex);
-	interfaceRenderer_.Update(frameIndex);
-}
-
-void KtRenderer::RecordCommandBuffer(const u32 frameIndex)
+void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 {
 	VkCommandBuffer commandBuffer{ frameDatas_[frameIndex].commandBuffer };
 	vkResetCommandBuffer(commandBuffer, 0);
@@ -427,15 +409,13 @@ void KtRenderer::RecordCommandBuffer(const u32 frameIndex)
 
 	CmdDrawFrame(commandBuffer, frameIndex);
 
-	//CmdDrawRenderers(commandBuffer, frameIndex);
-
 	CmdEndRendering(commandBuffer);
 	CmdPresentationBarrier(commandBuffer, frameIndex);
 
 	EndCommandBuffer(commandBuffer);
 }
 
-void KtRenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer)
+void GRenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer)
 {
 	const VkCommandBufferBeginInfo beginInfo{
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -446,7 +426,7 @@ void KtRenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer)
 	);
 }
 
-void KtRenderer::CmdAcquireBarrier(VkCommandBuffer commandBuffer, const u32 frameIndex)
+void GRenderer::CmdAcquireBarrier(VkCommandBuffer commandBuffer, const u32 frameIndex)
 {
 	const VkImageMemoryBarrier2 msaaTargetBarrier{
 		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
@@ -509,7 +489,7 @@ void KtRenderer::CmdAcquireBarrier(VkCommandBuffer commandBuffer, const u32 fram
 	vkCmdPipelineBarrier2(commandBuffer, &preRenderDependencyInfo);
 }
 
-void KtRenderer::CmdBeginRendering(VkCommandBuffer commandBuffer, const u32 frameIndex)
+void GRenderer::CmdBeginRendering(VkCommandBuffer commandBuffer, const u32 frameIndex)
 {
 	const VkRenderingAttachmentInfo colorAttachment{
 		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
@@ -556,7 +536,7 @@ void KtRenderer::CmdBeginRendering(VkCommandBuffer commandBuffer, const u32 fram
 	vkCmdBeginRendering(commandBuffer, &renderInfo);
 }
 
-void KtRenderer::CmdDrawFrame(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void GRenderer::CmdDrawFrame(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	auto sortedDrawCalls{ drawCalls_ };
 
@@ -600,18 +580,12 @@ void KtRenderer::CmdDrawFrame(VkCommandBuffer commandBuffer, const u32 frameInde
 	}
 }
 
-void KtRenderer::CmdDrawRenderers(VkCommandBuffer commandBuffer, const u32 frameIndex)
-{
-	sceneRenderer_.CmdDraw(commandBuffer, frameIndex);
-	interfaceRenderer_.CmdDraw(commandBuffer, frameIndex);
-}
-
-void KtRenderer::CmdEndRendering(VkCommandBuffer commandBuffer)
+void GRenderer::CmdEndRendering(VkCommandBuffer commandBuffer)
 {
 	vkCmdEndRendering(commandBuffer);
 }
 
-void KtRenderer::CmdPresentationBarrier(VkCommandBuffer commandBuffer, const u32 frameIndex)
+void GRenderer::CmdPresentationBarrier(VkCommandBuffer commandBuffer, const u32 frameIndex)
 {
 	const VkImageMemoryBarrier2 presentBarrier{
 		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
@@ -638,7 +612,7 @@ void KtRenderer::CmdPresentationBarrier(VkCommandBuffer commandBuffer, const u32
 	vkCmdPipelineBarrier2(commandBuffer, &postRenderDependencyInfo);
 }
 
-void KtRenderer::EndCommandBuffer(VkCommandBuffer commandBuffer)
+void GRenderer::EndCommandBuffer(VkCommandBuffer commandBuffer)
 {
 	VK_CHECK_THROW(
 		vkEndCommandBuffer(commandBuffer),
@@ -646,12 +620,7 @@ void KtRenderer::EndCommandBuffer(VkCommandBuffer commandBuffer)
 	);
 }
 
-VkCommandPool& KtRenderer::GetCommandPool(const u32 frameIndex)
-{
-	return frameDatas_[frameIndex].commandPool;
-}
-
-void KtRenderer::RegisterDrawCall(UDrawCall* drawCall)
+void GRenderer::RegisterDrawCall(UDrawCall* drawCall)
 {
 	if (!drawCall)
 	{
@@ -662,7 +631,7 @@ void KtRenderer::RegisterDrawCall(UDrawCall* drawCall)
 	drawCall->poolIndex = drawCalls_.LastIndex();
 }
 
-void KtRenderer::UnregisterDrawCall(UDrawCall* drawCall)
+void GRenderer::UnregisterDrawCall(UDrawCall* drawCall)
 {
 	if (!drawCall)
 	{
@@ -676,7 +645,7 @@ void KtRenderer::UnregisterDrawCall(UDrawCall* drawCall)
 	}
 }
 
-void KtRenderer::SubmitCommandBuffer(const u32 frameIndex)
+void GRenderer::SubmitCommandBuffer(const u32 frameIndex)
 {
 	const VkCommandBufferSubmitInfo cmdBufInfo{
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO,
@@ -749,7 +718,7 @@ void KtRenderer::SubmitCommandBuffer(const u32 frameIndex)
 }
 
 
-bool KtRenderer::TryAcquireNextImage(const u32 frameIndex)
+bool GRenderer::TryAcquireNextImage(const u32 frameIndex)
 {
 	// Wait for current frame to be rendered
 	VK_CHECK_THROW(
@@ -774,7 +743,7 @@ bool KtRenderer::TryAcquireNextImage(const u32 frameIndex)
 	return true;
 }
 
-void KtRenderer::JoinThread(std::thread& thread) const
+void GRenderer::JoinThread(std::thread& thread) const
 {
 	if (thread.joinable())
 	{
@@ -782,25 +751,25 @@ void KtRenderer::JoinThread(std::thread& thread) const
 	}
 }
 
-u32 KtRenderer::GetGameThreadFrame() const
+u32 GRenderer::GetGameThreadFrame() const
 {
 	// Prepare game thread for render thread
 	return frameCount_ % static_cast<u32>(KT_FRAMES_IN_FLIGHT);
 }
 
-u32 KtRenderer::GetRenderThreadFrame() const
+u32 GRenderer::GetRenderThreadFrame() const
 {
 	// Prepare render thread for RHI thread
 	return ((frameCount_ + KT_FRAMES_IN_FLIGHT) - 1) % static_cast<u32>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
 }
 
-u32 KtRenderer::GetRHIThreadFrame() const
+u32 GRenderer::GetRHIThreadFrame() const
 {
 	// Prepare RHI thread for game thread
 	return ((frameCount_ + KT_FRAMES_IN_FLIGHT) - 2) % static_cast<u32>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
 }
 
-void KtRenderer::RecreateSwapChain()
+void GRenderer::RecreateSwapChain()
 {
 	// Wait for CPU
 	JoinThread(renderThread_);
@@ -820,37 +789,24 @@ void KtRenderer::RecreateSwapChain()
 	{
 		vkResetCommandPool(Context.GetDevice(), frameData.commandPool, 0);
 	}
-
-	interfaceRenderer_.MarkCommandBuffersDirty();
-	sceneRenderer_.MarkObjectBuffersDirty();
 }
 
-VkExtent2D KtRenderer::GetSwapChainExtent() const
+VkExtent2D GRenderer::GetSwapChainExtent() const
 {
 	return swapChainExtent_;
 }
 
-VkFormat KtRenderer::GetSwapChainFormat() const
+VkFormat GRenderer::GetSwapChainFormat() const
 {
 	return swapChainFormat_;
 }
 
-VkFormat KtRenderer::GetDepthFormat() const
+VkFormat GRenderer::GetDepthFormat() const
 {
 	return depthFormat_;
 }
 
-KtInterfaceRenderer& KtRenderer::InterfaceRenderer()
-{
-	return interfaceRenderer_;
-}
-
-KtSceneRenderer& KtRenderer::SceneRenderer()
-{
-	return sceneRenderer_;
-}
-
-void KtRenderer::CleanupSwapChain()
+void GRenderer::CleanupSwapChain()
 {
 	for (auto& swapChainData : swapChainDatas_)
 	{

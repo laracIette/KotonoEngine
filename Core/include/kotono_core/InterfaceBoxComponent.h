@@ -14,13 +14,5 @@ protected:
 
 public:
 	void Spawn() override;
-
-private:
-	void CreateBoxProxy();
-	void MarkBoxProxyColorDirty();
-	void MarkBoxProxyRectDirty();
-
-private:
-	UInterfaceProxy* boxProxy_;
 };
 
