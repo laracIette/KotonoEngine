@@ -1,8 +1,10 @@
 #pragma once
-#include <vulkan/vulkan_core.h>
 
-#define VK_CHECK(x, msg) VulkanCheckAndCErr(x, msg)
+#if defined (_DEBUG)
 #define VK_CHECK_THROW(x, msg) VulkanCheckAndThrow(x, msg)
+#else
+#define VK_CHECK_THROW(x, msg) x
+#endif
 
-void VulkanCheckAndCErr(const VkResult result, const char* message);
+enum VkResult;
 void VulkanCheckAndThrow(const VkResult result, const char* message);

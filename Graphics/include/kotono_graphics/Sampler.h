@@ -6,6 +6,7 @@ class USampler final
 {
 public:
 	USampler(const UPath& path);
+	~USampler();
 
 	u32 GetIndex() const;
 

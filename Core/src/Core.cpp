@@ -7,6 +7,7 @@
 #include <kotono_common/log.h>
 #include <kotono_graphics/Model.h>
 #include <kotono_graphics/Renderer.h>
+#include <kotono_graphics/Sampler.h>
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/SpvCompiler.h>
 #include <kotono_graphics/Texture.h>
@@ -48,6 +49,7 @@ void SCore::Cleanup()
 {
     Game.Cleanup();
     AudioManager.Cleanup();
+    UAssetManager<USampler>::Cleanup();
     UAssetManager<UTexture>::Cleanup();
     UAssetManager<UShader>::Cleanup();
     UAssetManager<UModel>::Cleanup();

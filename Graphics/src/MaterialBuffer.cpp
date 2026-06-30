@@ -1,6 +1,5 @@
 #include "MaterialBuffer.h"
 #include <kotono_platform/Context.h>
-#include <kotono_platform/UploadStager.h>
 
 static constexpr u32 MAX_MATERIALS{ 4096 };
 
@@ -38,7 +37,7 @@ void SMaterialBuffer::Cleanup() const
 
 u32 SMaterialBuffer::RegisterMaterial(const Material& material)
 {
-    UploadStager.StagingUpload(&material
+    Context.StagingUpload(&material
         , sizeof(Material)
         , buffer_
         , materialCount_ * sizeof(Material)

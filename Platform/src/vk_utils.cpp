@@ -1,14 +1,8 @@
 #include "vk_utils.h"
-#include <print>
+#include <stdexcept>
+#include <format>
 #include <kotono_common/types.h>
-
-void VulkanCheckAndCErr(const VkResult result, const char* message)
-{
-	if (result != VK_SUCCESS)
-	{
-		std::println("{0} (VkResult: {1})", message, static_cast<i32>(result));
-	}
-}
+#include <vulkan/vulkan_core.h>
 
 void VulkanCheckAndThrow(const VkResult result, const char* message)
 {

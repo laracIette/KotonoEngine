@@ -53,14 +53,12 @@ set(KPLATFORM_HEADERS
     "include/kotono_platform/glm_utils.h"
     "include/kotono_platform/QueueFamilyIndices.h"
     "include/kotono_platform/SwapChainSupportDetails.h"
-    "include/kotono_platform/UploadStager.h"
     "include/kotono_platform/vk_utils.h"
     "include/kotono_platform/Window.h"
     "include/kotono_platform/WindowViewport.h"
 )
 set(KPLATFORM_SOURCES
     "src/Context.cpp"
-    "src/UploadStager.cpp"
     "src/vk_utils.cpp"
     "src/Window.cpp"
     "src/WindowViewport.cpp"

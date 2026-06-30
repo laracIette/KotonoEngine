@@ -39,10 +39,10 @@ private:
 
 	std::vector<UVertex> vertices_;
 	std::vector<u32> indices_;
-	KtAllocatedBuffer vertexBuffer_;
-	KtAllocatedBuffer indexBuffer_;
-	KtAllocatedBuffer stagingVertexBuffer_;
-	KtAllocatedBuffer stagingIndexBuffer_;
+	UAllocatedBuffer vertexBuffer_;
+	UAllocatedBuffer indexBuffer_;
+	UAllocatedBuffer stagingVertexBuffer_;
+	UAllocatedBuffer stagingIndexBuffer_;
 };
 
 template<>

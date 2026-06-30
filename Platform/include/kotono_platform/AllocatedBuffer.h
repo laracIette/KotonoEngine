@@ -1,9 +1,9 @@
 #pragma once
 #include <vma/vk_mem_alloc.h>
-struct KtAllocatedBuffer final
+struct UAllocatedBuffer final
 {
-	VkBuffer Buffer;
-	VmaAllocation Allocation;
-	VmaAllocationInfo AllocationInfo;
+	VkBuffer buffer;
+	VmaAllocation allocation;
+	VmaAllocationInfo allocationInfo;
 };
 

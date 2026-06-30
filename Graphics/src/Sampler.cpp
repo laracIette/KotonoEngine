@@ -12,6 +12,11 @@ USampler::USampler(const UPath& path)
 	index_ = PipelineResourceManager.RegisterSampler(sampler_);
 }
 
+USampler::~USampler()
+{
+	vkDestroySampler(Context.GetDevice(), sampler_, nullptr);
+}
+
 u32 USampler::GetIndex() const
 {
 	return index_;

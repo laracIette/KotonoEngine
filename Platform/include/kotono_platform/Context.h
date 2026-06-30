@@ -2,14 +2,11 @@
 #include "AllocatedBuffer.h"
 #include "QueueFamilyIndices.h"
 #include "SwapChainSupportDetails.h"
-#include <GLFW/glfw3.h>
-#include <GLFW/glfw3native.h>
-#include <iostream>
 #include <kotono_common/Event.h>
 #include <vector>
 #include <vma/vk_mem_alloc.h> 
 
-class KtContext final
+class SContext final
 {
 	friend class SCore;
 
@@ -26,7 +23,7 @@ public:
 	VkQueue& GetPresentQueue();
 	VkSurfaceKHR& GetSurface();
 
-	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VmaAllocationCreateFlags flags, KtAllocatedBuffer& buffer, VmaMemoryUsage vmaUsage = VMA_MEMORY_USAGE_UNKNOWN) const;
+	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VmaAllocationCreateFlags flags, UAllocatedBuffer& buffer, VmaMemoryUsage vmaUsage = VMA_MEMORY_USAGE_UNKNOWN) const;
 	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 	void CreateImage(u32 width, u32 height, u32 mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VmaAllocation& imageAllocation) const;
 	void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, u32 mipLevels);
@@ -40,6 +37,7 @@ public:
 	void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
 	void ExecuteSingleTimeCommands();
 	UEvent<>& GetEventExecuteSingleTimeCommands();
+	void StagingUpload(const void* data, const VkDeviceSize size, VkBuffer dstBuffer, const VkDeviceSize dstOffset);
 
 private:
 	void CreateInstance();
@@ -73,11 +71,8 @@ private:
 
 	bool GetIsComputerPluggedIn();
 
-	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
-	{
-		std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
-		return VK_FALSE;
-	}
+	void CreateStagingBuffer(UAllocatedBuffer& stagingBuffer, const VkDeviceSize bufSize) const;
+	void ClearDeletionQueue();
 
 private:
 	VkInstance instance_;
@@ -92,12 +87,13 @@ private:
 	VkQueue graphicsQueue_;
 	VkQueue presentQueue_;
 
+	VkSampleCountFlagBits msaaSamples_;
+
 	VkCommandPool commandPool_;
 
 	std::vector<VkCommandBuffer> singleTimeCommands_;
 	UEvent<> eventExecuteSingleTimeCommands_;
-
-	VkSampleCountFlagBits msaaSamples_;
+	std::vector<UAllocatedBuffer> deletionQueue_;
 };
 
-inline KtContext Context;
+inline SContext Context;

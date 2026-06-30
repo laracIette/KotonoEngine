@@ -19,8 +19,8 @@ UModel::UModel(const UPath& path)
 
 UModel::~UModel()
 {
-	vmaDestroyBuffer(Context.GetAllocator(), indexBuffer_.Buffer, indexBuffer_.Allocation);
-	vmaDestroyBuffer(Context.GetAllocator(), vertexBuffer_.Buffer, vertexBuffer_.Allocation);
+	vmaDestroyBuffer(Context.GetAllocator(), indexBuffer_.buffer, indexBuffer_.allocation);
+	vmaDestroyBuffer(Context.GetAllocator(), vertexBuffer_.buffer, vertexBuffer_.allocation);
 	KT_LOG(ELogImportanceLevel::Low, "Graphics", "cleaned up {0}", Path().ToString());
 }
 
@@ -33,14 +33,14 @@ VkDeviceAddress UModel::GetVertexBufferAddress() const
 {
 	const VkBufferDeviceAddressInfo addrInfo{
 		.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
-		.buffer = vertexBuffer_.Buffer,
+		.buffer = vertexBuffer_.buffer,
 	};
 	return vkGetBufferDeviceAddress(Context.GetDevice(), &addrInfo);
 }
 
 VkBuffer UModel::GetIndexBuffer() const
 {
-	return indexBuffer_.Buffer;
+	return indexBuffer_.buffer;
 }
 
 u32 UModel::GetIndexCount() const
@@ -135,7 +135,7 @@ void UModel::CreateVertexBuffer()
 		, stagingVertexBuffer_
 	);
 
-	std::memcpy(stagingVertexBuffer_.AllocationInfo.pMappedData, vertices_.data(), static_cast<size>(bufferSize));
+	std::memcpy(stagingVertexBuffer_.allocationInfo.pMappedData, vertices_.data(), static_cast<size>(bufferSize));
 
 	Context.CreateBuffer(bufferSize
 		, VK_BUFFER_USAGE_TRANSFER_DST_BIT 
@@ -146,7 +146,7 @@ void UModel::CreateVertexBuffer()
 		, vertexBuffer_
 	);
 
-	Context.CopyBuffer(stagingVertexBuffer_.Buffer, vertexBuffer_.Buffer, bufferSize);
+	Context.CopyBuffer(stagingVertexBuffer_.buffer, vertexBuffer_.buffer, bufferSize);
 	Context.GetEventExecuteSingleTimeCommands().AddListener(this, &UModel::DestroyStagingVertexBuffer);
 }
 
@@ -162,7 +162,7 @@ void UModel::CreateIndexBuffer()
 		stagingIndexBuffer_
 	);
 
-	std::memcpy(stagingIndexBuffer_.AllocationInfo.pMappedData, indices_.data(), static_cast<size>(bufferSize));
+	std::memcpy(stagingIndexBuffer_.allocationInfo.pMappedData, indices_.data(), static_cast<size>(bufferSize));
 
 	Context.CreateBuffer(
 		bufferSize,
@@ -172,18 +172,18 @@ void UModel::CreateIndexBuffer()
 		indexBuffer_
 	);
 
-	Context.CopyBuffer(stagingIndexBuffer_.Buffer, indexBuffer_.Buffer, bufferSize);
+	Context.CopyBuffer(stagingIndexBuffer_.buffer, indexBuffer_.buffer, bufferSize);
 	Context.GetEventExecuteSingleTimeCommands().AddListener(this, &UModel::DestroyStagingIndexBuffer);
 }
 
 void UModel::DestroyStagingVertexBuffer() const
 {
-	vmaDestroyBuffer(Context.GetAllocator(), stagingVertexBuffer_.Buffer, stagingVertexBuffer_.Allocation);
+	vmaDestroyBuffer(Context.GetAllocator(), stagingVertexBuffer_.buffer, stagingVertexBuffer_.allocation);
 }
 
 void UModel::DestroyStagingIndexBuffer() const
 {
-	vmaDestroyBuffer(Context.GetAllocator(), stagingIndexBuffer_.Buffer, stagingIndexBuffer_.Allocation);
+	vmaDestroyBuffer(Context.GetAllocator(), stagingIndexBuffer_.buffer, stagingIndexBuffer_.allocation);
 }
 
 bool UVertex::operator==(const UVertex& other) const noexcept

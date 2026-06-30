@@ -41,5 +41,5 @@ private:
 
     u32 index_;
 
-    KtAllocatedBuffer stagingBuffer_;
+    UAllocatedBuffer stagingBuffer_;
 };

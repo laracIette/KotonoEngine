@@ -63,7 +63,7 @@ void UTexture::CreateImage()
 		stagingBuffer_
 	);
 
-	std::memcpy(stagingBuffer_.AllocationInfo.pMappedData, pixels, static_cast<size>(imageSize));
+	std::memcpy(stagingBuffer_.allocationInfo.pMappedData, pixels, static_cast<size>(imageSize));
 
 	stbi_image_free(pixels);
 
@@ -89,7 +89,7 @@ void UTexture::CreateImage()
 	);
 
 	Context.CopyBufferToImage(
-		stagingBuffer_.Buffer,
+		stagingBuffer_.buffer,
 		image_,
 		static_cast<u32>(texWidth),
 		static_cast<u32>(texHeight)
@@ -109,5 +109,5 @@ void UTexture::CreateImageView()
 
 void UTexture::DestroyStagingBuffer() const
 {
-	vmaDestroyBuffer(Context.GetAllocator(), stagingBuffer_.Buffer, stagingBuffer_.Allocation);
+	vmaDestroyBuffer(Context.GetAllocator(), stagingBuffer_.buffer, stagingBuffer_.allocation);
 }
