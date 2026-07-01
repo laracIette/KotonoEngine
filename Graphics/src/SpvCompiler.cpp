@@ -2,25 +2,43 @@
 #include <format>
 #include <kotono_common/log.h>
 #include <kotono_common/Path.h>
-#include <kotono_io/serialize_base.h>
+#include <kotono_io/File.h>
 #include <kotono_io/Serializer.h>
 #include <nlohmann/json.hpp>
 
 #define KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER ELogImportanceLevel::High
 
-void KtSpvCompiler::CompileUpdated() const
+static const UPath ShadersPath{ "${ENGINE_DIRECTORY}/Graphics/shaders" };
+static const UPath ShaderRegistryPath{ ShadersPath / "shaders.ktregistry" };
+
+static const UPath DependencyRegistryPath{ ShadersPath / "dependencies.ktregistry" };
+static const std::array DependencyPaths{
+    "common.glsl",
+};
+
+void USpvCompiler::CompileAll()
 {
+    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "Clearing registry...");
+
+    USerializer::Serialize(nlohmann::json::object(), ShaderRegistryPath);
+    CompileUpdated();
+}
+
+void USpvCompiler::CompileUpdated()
+{
+    if (DependenciesUpdated())
+    {
+        return CompileAll();
+    }
+
     KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "compiling updated spirv shaders");
 
-    static const UPath shadersPath{ "${ENGINE_DIRECTORY}/Graphics/shaders" };
-    static const UPath registryPath{ shadersPath / "shaders.ktregistry" };
-
     nlohmann::json json{};
-    USerializer::Deserialize(json, registryPath);
+    USerializer::Deserialize(json, ShaderRegistryPath);
 
     for (const auto* directory : { "vert", "frag" })
     {
-        for (const auto& entry : std::filesystem::directory_iterator{ shadersPath / directory })
+        for (const auto& entry : std::filesystem::directory_iterator{ ShadersPath / directory })
         {
             // not a glsl file
             if (entry.path().extension() != std::format(".{0}", directory))
@@ -30,8 +48,8 @@ void KtSpvCompiler::CompileUpdated() const
 
             const auto entryPath{ std::format("{0}/{1}", directory, entry.path().filename().string()) };
 
-            const auto ftime{ entry.last_write_time() };
-            const auto formattedTime{ std::format("{0:%F}-{0:%T}", ftime) };
+            const auto time{ entry.last_write_time() };
+            const auto formattedTime{ std::format("{0:%F}-{0:%T}", time) };
 
             bool isInList{ false };
             for (auto& shader : json["shaders"])
@@ -66,51 +84,56 @@ void KtSpvCompiler::CompileUpdated() const
         }
     }
 
-    USerializer::Serialize(json, registryPath);
+    USerializer::Serialize(json, ShaderRegistryPath);
 
     KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "compiled updated spirv shaders");
 }
 
-void KtSpvCompiler::CompileAll() const
+bool USpvCompiler::DependenciesUpdated()
 {
-    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "compiling all spirv shaders");
-
-    static const UPath shadersPath{ "${ENGINE_DIRECTORY}/Graphics/shaders" };
-    static const UPath registryPath{ shadersPath / "shaders.ktregistry" };
-
     nlohmann::json json{};
-    make_array(json["shaders"]);
-
-    for (const auto* directory : { "vert", "frag" })
+    USerializer::Deserialize(json, DependencyRegistryPath);
+    
+    bool updated{ false };
+    for (const auto& dependencyPath : DependencyPaths)
     {
-        for (const auto& entry : std::filesystem::directory_iterator{ shadersPath / directory })
+        const UFile dependencyFile{ ShadersPath / dependencyPath };
+        const auto time{ dependencyFile.LastWriteTime() };
+        const auto formattedTime{ std::format("{0:%F}-{0:%T}", time) };
+        
+        bool isInList{ false };
+        for (auto& dependency : json["dependencies"])
         {
-            if (entry.path().extension() != std::format(".{0}", directory))
+            if (dependency["path"] != dependencyPath)
             {
                 continue;
             }
 
-            const auto entryPath{ std::format("{0}/{1}", directory, entry.path().filename().string()) };
-            
-            const auto ftime{ entry.last_write_time() };
-            const auto formattedTime{ std::format("{0:%F}-{0:%T}", ftime) };
-
-            if (Compile(entry.path()))
+            if (dependency["modified"] != formattedTime)
             {
-                nlohmann::json shader{};
-                shader["path"] = entryPath;
-                shader["modified"] = formattedTime;
-                json["shaders"].push_back(shader);
+                dependency["modified"] = formattedTime;
+                updated = true;
             }
+
+            isInList = true;
+            break;
+        }
+        
+        if (!isInList)
+        {
+            nlohmann::json dependency{};
+            dependency["path"] = dependencyPath;
+            dependency["modified"] = formattedTime;
+            json["dependencies"].push_back(dependency);
+            updated = true;
         }
     }
 
-    USerializer::Serialize(json, registryPath);
-
-    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "compiled all spirv shaders");
+    USerializer::Serialize(json, DependencyRegistryPath);
+    return updated;
 }
 
-bool KtSpvCompiler::Compile(const std::filesystem::path& path) const
+bool USpvCompiler::Compile(const std::filesystem::path& path)
 {
     // user must have vulkan bin in environment variables path
     const auto command{ std::format("glslc \"{0}\" -o \"{0}\".spv", path.string()) };

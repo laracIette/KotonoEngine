@@ -1,11 +1,11 @@
 ﻿#include "Generator.h"
 #include <iostream>
+#include <kotono_common/log.h>
 #include <kotono_common/Path.h>
 #include <kotono_io/File.h>
 #include <kotono_io/Serializer.h>
 #include <kotono_reflection/Reflector.h>
 #include <nlohmann/json.hpp>
-#include <print>
 #include <ranges>
 
 static const UPath RegistryPath{ "${ENGINE_DIRECTORY}/Generator/generated.ktregistry" };
@@ -24,7 +24,7 @@ static std::string to_upper(std::string s)
 
 void SGenerator::GenerateAll() const
 {
-	std::println("Clearing registry...");
+	KT_LOG(ELogImportanceLevel::High, "Generator", "Clearing registry...");
 
 	USerializer::Serialize(nlohmann::json::object(), RegistryPath);
 	GenerateUpdated();
@@ -32,7 +32,7 @@ void SGenerator::GenerateAll() const
 
 void SGenerator::GenerateUpdated() const
 {
-	std::println("Generating...");
+	KT_LOG(ELogImportanceLevel::High, "Generator", "Generating...");
 
 	nlohmann::json json{};
 	USerializer::Deserialize(json, RegistryPath);
@@ -82,7 +82,7 @@ void SGenerator::Generate(const UReflectionResult& reflectionResult) const
 	GenerateHeader(reflectionResult);
 	GenerateSource(reflectionResult);
 
-	std::println("Generated {0}", reflectionResult.path.ToPath().string());
+	KT_LOG(ELogImportanceLevel::High, "Generator", "Generated {0}", reflectionResult.path.ToPath().string());
 }
 
 void SGenerator::GenerateHeader(const UReflectionResult& reflectionResult) const

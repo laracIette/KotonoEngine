@@ -19,7 +19,7 @@
 
 void SCore::Init()
 {
-    KtSpvCompiler{}.CompileUpdated();
+    USpvCompiler::CompileUpdated();
 
     Window.Init();
     Context.Init();

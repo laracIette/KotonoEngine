@@ -1,13 +1,13 @@
 #pragma once
 #include <filesystem>
-
-class KtSpvCompiler final
+class USpvCompiler final
 {
 public:
-	void CompileUpdated() const;
-	void CompileAll() const;
+	static void CompileAll();
+	static void CompileUpdated();
 
 private:
-	bool Compile(const std::filesystem::path& path) const;
+	static bool DependenciesUpdated();
+	static bool Compile(const std::filesystem::path& path);
 };
 
