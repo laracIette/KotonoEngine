@@ -31,7 +31,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
 	return VK_FALSE;
 }
 
-void SContext::Init()
+void GContext::Init()
 {
 	CreateInstance();
 	SetupDebugMessenger();
@@ -42,7 +42,7 @@ void SContext::Init()
 	CreateCommandPool();
 }
 
-void SContext::Cleanup()
+void GContext::Cleanup()
 {
 	KT_LOG(ELogImportanceLevel::High, "Platform", "cleaning up context");
 
@@ -78,7 +78,7 @@ void SContext::Cleanup()
 	KT_LOG(ELogImportanceLevel::High, "Platform", "cleaned up context");
 }
 
-void SContext::CreateInstance()
+void GContext::CreateInstance()
 {
 	if (ENABLE_VALIDATION_LAYERS && !CheckValidationLayerSupport())
 	{
@@ -130,7 +130,7 @@ void SContext::CreateInstance()
 	);
 }
 
-void SContext::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) const
+void GContext::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) const
 {
 	createInfo = {
 		.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
@@ -140,7 +140,7 @@ void SContext::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoE
 	};
 }
 
-void SContext::SetupDebugMessenger()
+void GContext::SetupDebugMessenger()
 {
 	if constexpr (!ENABLE_VALIDATION_LAYERS)
 	{
@@ -156,7 +156,7 @@ void SContext::SetupDebugMessenger()
 	);
 }
 
-bool SContext::CheckValidationLayerSupport()
+bool GContext::CheckValidationLayerSupport()
 {
 	u32 layerCount;
 	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -186,7 +186,7 @@ bool SContext::CheckValidationLayerSupport()
 	return true;
 }
 
-std::vector<const char*> SContext::GetRequiredExtensions()
+std::vector<const char*> GContext::GetRequiredExtensions()
 {
 	u32 glfwExtensionCount{ 0 };
 	const char** glfwExtensions{ glfwGetRequiredInstanceExtensions(&glfwExtensionCount) };
@@ -201,7 +201,7 @@ std::vector<const char*> SContext::GetRequiredExtensions()
 	return extensions;
 }
 
-void SContext::PickPhysicalDevice()
+void GContext::PickPhysicalDevice()
 {
 	u32 deviceCount;
 	vkEnumeratePhysicalDevices(instance_, &deviceCount, nullptr);
@@ -266,7 +266,7 @@ void SContext::PickPhysicalDevice()
 	msaaSamples_ = GetMaxUsableSampleCount();
 }
 
-bool SContext::IsDeviceSuitable(VkPhysicalDevice device)
+bool GContext::IsDeviceSuitable(VkPhysicalDevice device)
 {
 	const KtQueueFamilyIndices indices{ FindQueueFamilies(device) };
 
@@ -286,7 +286,7 @@ bool SContext::IsDeviceSuitable(VkPhysicalDevice device)
 		&& featuresSupported;
 }
 
-bool SContext::CheckDeviceExtensionSupport(VkPhysicalDevice device)
+bool GContext::CheckDeviceExtensionSupport(VkPhysicalDevice device)
 {
 	u32 extensionCount;
 	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
@@ -304,7 +304,7 @@ bool SContext::CheckDeviceExtensionSupport(VkPhysicalDevice device)
 	return requiredExtensions.empty();
 }
 
-bool SContext::CheckDeviceFeatureSupport(VkPhysicalDevice device)
+bool GContext::CheckDeviceFeatureSupport(VkPhysicalDevice device)
 {
 	VkPhysicalDeviceVulkan14Features features14{
 		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_FEATURES,
@@ -361,7 +361,7 @@ bool SContext::CheckDeviceFeatureSupport(VkPhysicalDevice device)
 		&& pushDescriptorEnabled;
 }
 
-KtQueueFamilyIndices SContext::FindQueueFamilies(VkPhysicalDevice device) const
+KtQueueFamilyIndices GContext::FindQueueFamilies(VkPhysicalDevice device) const
 {
 	KtQueueFamilyIndices indices{};
 
@@ -398,7 +398,7 @@ KtQueueFamilyIndices SContext::FindQueueFamilies(VkPhysicalDevice device) const
 	return indices;
 }
 
-void SContext::CreateLogicalDevice()
+void GContext::CreateLogicalDevice()
 {
 	const KtQueueFamilyIndices indices{ FindQueueFamilies(physicalDevice_) };
 
@@ -486,7 +486,7 @@ void SContext::CreateLogicalDevice()
 	vkGetDeviceQueue(device_, indices.presentFamily.value(), 0, &presentQueue_);
 }
 
-void SContext::CreateSurface()
+void GContext::CreateSurface()
 {
 	VK_CHECK_THROW(
 		glfwCreateWindowSurface(instance_, Window.GetGLFWWindow(), nullptr, &surface_),
@@ -494,7 +494,7 @@ void SContext::CreateSurface()
 	);
 }
 
-KtSwapChainSupportDetails SContext::QuerySwapChainSupport(VkPhysicalDevice device) const
+KtSwapChainSupportDetails GContext::QuerySwapChainSupport(VkPhysicalDevice device) const
 {
 	KtSwapChainSupportDetails details{};
 	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_, &details.capabilities);
@@ -520,7 +520,7 @@ KtSwapChainSupportDetails SContext::QuerySwapChainSupport(VkPhysicalDevice devic
 	return details;
 }
 
-VkResult SContext::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) const
+VkResult GContext::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) const
 {
 	const auto func{ (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT") };
 	if (func != nullptr)
@@ -533,7 +533,7 @@ VkResult SContext::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDeb
 	}
 }
 
-void SContext::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) const
+void GContext::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) const
 {
 	const auto func{ (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT") };
 	if (func != nullptr)
@@ -542,7 +542,7 @@ void SContext::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMe
 	}
 }
 
-VkSurfaceFormatKHR SContext::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const
+VkSurfaceFormatKHR GContext::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const
 {
 	for (const auto& availableFormat : availableFormats)
 	{
@@ -555,7 +555,7 @@ VkSurfaceFormatKHR SContext::ChooseSwapSurfaceFormat(const std::vector<VkSurface
 	return availableFormats[0];
 }
 
-VkPresentModeKHR SContext::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const
+VkPresentModeKHR GContext::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const
 {
 	for (const auto& availablePresentMode : availablePresentModes)
 	{
@@ -568,7 +568,7 @@ VkPresentModeKHR SContext::ChooseSwapPresentMode(const std::vector<VkPresentMode
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D SContext::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const
+VkExtent2D GContext::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const
 {
 	if (capabilities.currentExtent.width != std::numeric_limits<u32>::max())
 	{
@@ -592,7 +592,7 @@ VkExtent2D SContext::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabiliti
 	}
 }
 
-void SContext::CreateAllocator()
+void GContext::CreateAllocator()
 {
 	const VmaAllocatorCreateInfo allocatorInfo{
 		.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT,
@@ -607,7 +607,7 @@ void SContext::CreateAllocator()
 	);
 }
 
-VkCommandBuffer SContext::BeginSingleTimeCommands() const
+VkCommandBuffer GContext::BeginSingleTimeCommands() const
 {
 	const VkCommandBufferAllocateInfo allocInfo{
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
@@ -633,7 +633,7 @@ VkCommandBuffer SContext::BeginSingleTimeCommands() const
 	return commandBuffer;
 }
 
-void SContext::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
+void GContext::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
 {
 	VK_CHECK_THROW(
 		vkEndCommandBuffer(commandBuffer),
@@ -642,7 +642,7 @@ void SContext::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
 	singleTimeCommands_.push_back(commandBuffer);
 }
 
-void SContext::ExecuteSingleTimeCommands()
+void GContext::ExecuteSingleTimeCommands()
 {
 	if (singleTimeCommands_.empty())
 	{
@@ -665,12 +665,12 @@ void SContext::ExecuteSingleTimeCommands()
 	eventExecuteSingleTimeCommands_.Clear();
 }
 
-UEvent<>& SContext::GetEventExecuteSingleTimeCommands()
+UEvent<>& GContext::GetEventExecuteSingleTimeCommands()
 {
 	return eventExecuteSingleTimeCommands_;
 }
 
-void SContext::StagingUpload(const void* data
+void GContext::StagingUpload(const void* data
 	, const VkDeviceSize dataSize
 	, VkBuffer dstBuffer
 	, const VkDeviceSize dstOffset)
@@ -718,10 +718,10 @@ void SContext::StagingUpload(const void* data
 	// Staging buffer must outlive the command buffer
 	deletionQueue_.push_back(stagingBuffer);
 
-	GetEventExecuteSingleTimeCommands().AddListener(this, &SContext::ClearDeletionQueue);
+	GetEventExecuteSingleTimeCommands().AddListener(this, &GContext::ClearDeletionQueue);
 }
 
-void SContext::CreateCommandPool()
+void GContext::CreateCommandPool()
 {
 	const KtQueueFamilyIndices queueFamilyIndices{ FindQueueFamilies(physicalDevice_) };
 
@@ -737,7 +737,7 @@ void SContext::CreateCommandPool()
 	);
 }
 
-void SContext::CreateBuffer(VkDeviceSize size
+void GContext::CreateBuffer(VkDeviceSize size
 	, VkBufferUsageFlags usage
 	, VkMemoryPropertyFlags properties
 	, VmaAllocationCreateFlags flags
@@ -785,7 +785,7 @@ void SContext::CreateBuffer(VkDeviceSize size
 	}
 }
 
-void SContext::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
+void GContext::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 {
 	VkCommandBuffer commandBuffer{ BeginSingleTimeCommands() };
 
@@ -797,7 +797,7 @@ void SContext::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize s
 	EndSingleTimeCommands(commandBuffer);
 }
 
-u32 SContext::FindMemoryType(u32 typeFilter, VkMemoryPropertyFlags properties) const
+u32 GContext::FindMemoryType(u32 typeFilter, VkMemoryPropertyFlags properties) const
 {
 	VkPhysicalDeviceMemoryProperties memProperties;
 	vkGetPhysicalDeviceMemoryProperties(physicalDevice_, &memProperties);
@@ -813,7 +813,7 @@ u32 SContext::FindMemoryType(u32 typeFilter, VkMemoryPropertyFlags properties) c
 	throw std::runtime_error("failed to find suitable memory type!");
 }
 
-void SContext::CreateImage(u32 width, u32 height, u32 mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VmaAllocation& imageAllocation) const
+void GContext::CreateImage(u32 width, u32 height, u32 mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VmaAllocation& imageAllocation) const
 {
 	const VkImageCreateInfo imageInfo{
 		.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
@@ -844,7 +844,7 @@ void SContext::CreateImage(u32 width, u32 height, u32 mipLevels, VkSampleCountFl
 	);
 }
 
-VkFormat SContext::FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const
+VkFormat GContext::FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const
 {
 	for (VkFormat format : candidates)
 	{
@@ -864,7 +864,7 @@ VkFormat SContext::FindSupportedFormat(const std::vector<VkFormat>& candidates, 
 	throw std::runtime_error("failed to find supported format!");
 }
 
-VkFormat SContext::FindDepthFormat() const
+VkFormat GContext::FindDepthFormat() const
 {
 	return FindSupportedFormat(
 		{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
@@ -873,12 +873,12 @@ VkFormat SContext::FindDepthFormat() const
 	);
 }
 
-bool SContext::HasStencilComponent(VkFormat format) const
+bool GContext::HasStencilComponent(VkFormat format) const
 {
 	return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 }
 
-void SContext::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, u32 mipLevels)
+void GContext::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, u32 mipLevels)
 {
 	VkCommandBuffer commandBuffer{ BeginSingleTimeCommands() };
 
@@ -954,7 +954,7 @@ void SContext::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayo
 	EndSingleTimeCommands(commandBuffer);
 }
 
-void SContext::CopyBufferToImage(VkBuffer buffer, VkImage image, u32 width, u32 height)
+void GContext::CopyBufferToImage(VkBuffer buffer, VkImage image, u32 width, u32 height)
 {
 	VkCommandBuffer commandBuffer{ BeginSingleTimeCommands() };
 
@@ -984,7 +984,7 @@ void SContext::CopyBufferToImage(VkBuffer buffer, VkImage image, u32 width, u32 
 	EndSingleTimeCommands(commandBuffer);
 }
 
-VkImageView SContext::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, u32 mipLevels) const
+VkImageView GContext::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, u32 mipLevels) const
 {
 	const VkImageViewCreateInfo viewInfo{
 		.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
@@ -1009,7 +1009,7 @@ VkImageView SContext::CreateImageView(VkImage image, VkFormat format, VkImageAsp
 	return imageView;
 }
 
-void SContext::GenerateMipmaps(VkImage image, VkFormat imageFormat, i32 texWidth, i32 texHeight, u32 mipLevels)
+void GContext::GenerateMipmaps(VkImage image, VkFormat imageFormat, i32 texWidth, i32 texHeight, u32 mipLevels)
 {
 	VkFormatProperties formatProperties;
 	vkGetPhysicalDeviceFormatProperties(physicalDevice_, imageFormat, &formatProperties);
@@ -1114,7 +1114,7 @@ void SContext::GenerateMipmaps(VkImage image, VkFormat imageFormat, i32 texWidth
 	EndSingleTimeCommands(commandBuffer);
 }
 
-VkSampleCountFlagBits SContext::GetMaxUsableSampleCount() const
+VkSampleCountFlagBits GContext::GetMaxUsableSampleCount() const
 {
 	VkPhysicalDeviceProperties physicalDeviceProperties;
 	vkGetPhysicalDeviceProperties(physicalDevice_, &physicalDeviceProperties);
@@ -1130,49 +1130,49 @@ VkSampleCountFlagBits SContext::GetMaxUsableSampleCount() const
 }
 
 
-VkPhysicalDevice& SContext::GetPhysicalDevice()
+VkPhysicalDevice& GContext::GetPhysicalDevice()
 {
 	return physicalDevice_;
 }
 
-VkDevice& SContext::GetDevice()
+VkDevice& GContext::GetDevice()
 {
 	return device_;
 }
 
-VmaAllocator& SContext::GetAllocator() 
+VmaAllocator& GContext::GetAllocator() 
 { 
 	return allocator_; 
 }
 
-VkQueue& SContext::GetGraphicsQueue()
+VkQueue& GContext::GetGraphicsQueue()
 {
 	return graphicsQueue_;
 }
 
-VkQueue& SContext::GetPresentQueue()
+VkQueue& GContext::GetPresentQueue()
 {
 	return presentQueue_;
 }
 
-VkSurfaceKHR& SContext::GetSurface()
+VkSurfaceKHR& GContext::GetSurface()
 {
 	return surface_;
 }
 
-VkSampleCountFlagBits SContext::GetMSAASamples() const
+VkSampleCountFlagBits GContext::GetMSAASamples() const
 {
 	return msaaSamples_;
 }
 
-bool SContext::GetIsComputerPluggedIn()
+bool GContext::GetIsComputerPluggedIn()
 {
 	SYSTEM_POWER_STATUS powerStatus;
 	return GetSystemPowerStatus(&powerStatus) 
 		&& powerStatus.ACLineStatus == AC_LINE_ONLINE;
 }
 
-void SContext::CreateStagingBuffer(UAllocatedBuffer& stagingBuffer, const VkDeviceSize bufSize) const
+void GContext::CreateStagingBuffer(UAllocatedBuffer& stagingBuffer, const VkDeviceSize bufSize) const
 {
 	const VkBufferCreateInfo stagingInfo{
 		.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
@@ -1197,7 +1197,7 @@ void SContext::CreateStagingBuffer(UAllocatedBuffer& stagingBuffer, const VkDevi
 	);
 }
 
-void SContext::ClearDeletionQueue()
+void GContext::ClearDeletionQueue()
 {
 	if (deletionQueue_.empty())
 	{

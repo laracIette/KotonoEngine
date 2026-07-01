@@ -3,10 +3,8 @@
 #include <vector>
 #include <kotono_common/Path.h>
 
-
 template <typename T>
 class UAsset;
-
 class UTexture;
 
 class KtFont final

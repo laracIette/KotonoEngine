@@ -16,7 +16,7 @@ struct UPushConstants
 	u32 drawIndex;
 };
 
-class SPipelineResourceManager final
+class GPipelineResourceManager final
 {
 public:
 	struct FrameUBO
@@ -66,7 +66,7 @@ private:
 	u32 AllocateSamplerSlot();
 
 private:
-	KtFramesInFlightArray<FrameData> frameDatas_;
+	UFramesInFlightArray<FrameData> frameDatas_;
 	FrameUBO frameUBO_;
 
 	VkDescriptorSetLayout globalDescriptorSetLayout_;
@@ -81,4 +81,4 @@ private:
 	u32 nextSamplerSlot_;
 };
 
-inline SPipelineResourceManager PipelineResourceManager;
+inline GPipelineResourceManager PipelineResourceManager;

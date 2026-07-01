@@ -3,7 +3,7 @@
 
 static constexpr u32 MAX_MATERIALS{ 4096 };
 
-void SMaterialBuffer::Init()
+void GMaterialBuffer::Init()
 {
     const VkBufferCreateInfo bufInfo{
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
@@ -30,12 +30,12 @@ void SMaterialBuffer::Init()
     bda_ = vkGetBufferDeviceAddress(Context.GetDevice(), &addrInfo);
 }
 
-void SMaterialBuffer::Cleanup() const
+void GMaterialBuffer::Cleanup() const
 {
     vmaDestroyBuffer(Context.GetAllocator(), buffer_, allocation_);
 }
 
-u32 SMaterialBuffer::RegisterMaterial(const Material& material)
+u32 GMaterialBuffer::RegisterMaterial(const Material& material)
 {
     Context.StagingUpload(&material
         , sizeof(Material)
@@ -46,7 +46,7 @@ u32 SMaterialBuffer::RegisterMaterial(const Material& material)
     return materialCount_++;
 }
 
-VkDeviceAddress SMaterialBuffer::GetAddress() const
+VkDeviceAddress GMaterialBuffer::GetAddress() const
 {
     return bda_;
 }

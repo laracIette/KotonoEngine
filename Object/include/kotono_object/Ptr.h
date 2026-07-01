@@ -155,7 +155,7 @@ private:
 
 		if (owner_)
 		{
-			if (owner_->children_.RemoveAt(index_) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+			if (owner_->children_.RemoveAt(index_) == EPoolRemoveResult::ItemSwappedAndRemoved)
 			{
 				static_cast<UPtr*>(owner_->children_[index_])->index_ = index_;
 			}

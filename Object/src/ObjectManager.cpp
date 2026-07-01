@@ -1,12 +1,12 @@
 #include "ObjectManager.h"
 #include "Object.h"
 
-UPtr<KObject>& SObjectManager::GetSelectedObject()
+UPtr<KObject>& GObjectManager::GetSelectedObject()
 {
 	return selectedObject_;
 }
 
-void SObjectManager::SetSelectedObject(const UPtr<KObject>& object)
+void GObjectManager::SetSelectedObject(const UPtr<KObject>& object)
 {
 	if (selectedObject_ == object)
 	{
@@ -17,7 +17,7 @@ void SObjectManager::SetSelectedObject(const UPtr<KObject>& object)
 	eventSelectedObjectChanged_.Broadcast(object);
 }
 
-UEvent<UPtr<KObject>>& SObjectManager::EventSelectedObjectChanged()
+UEvent<UPtr<KObject>>& GObjectManager::EventSelectedObjectChanged()
 {
 	return eventSelectedObjectChanged_;
 }

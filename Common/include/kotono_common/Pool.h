@@ -4,12 +4,12 @@
 #include <concepts>
 #include "types.h"
 
-enum class KtPoolRemoveResult : u8
+enum class EPoolRemoveResult : u8
 {
 	IndexOutOfRange,
 	ItemNotFound,
 	ItemRemoved,
-	ItemSwappedAndRemoved
+	ItemSwappedAndRemoved,
 };
 
 /// <summary>
@@ -63,31 +63,31 @@ public:
 	}
 
 	// Remove the specified item with O(n) complexity
-	constexpr KtPoolRemoveResult Remove(const ValueType& value)
+	constexpr EPoolRemoveResult Remove(const ValueType& value)
 	{
 		const i64 index{ FindIndex(value) };
 		if (index == -1)
 		{
-			return KtPoolRemoveResult::ItemNotFound;
+			return EPoolRemoveResult::ItemNotFound;
 		}
 
 		return RemoveAt(index);
 	}
 
 	// Remove the item at the specified index with O(1) complexity
-	constexpr KtPoolRemoveResult RemoveAt(const IndexType index) noexcept
+	constexpr EPoolRemoveResult RemoveAt(const IndexType index) noexcept
 	{
 		if (!IsValidIndex(index))
 		{
-			return KtPoolRemoveResult::IndexOutOfRange;
+			return EPoolRemoveResult::IndexOutOfRange;
 		}
 
-		auto result{ KtPoolRemoveResult::ItemRemoved };
+		auto result{ EPoolRemoveResult::ItemRemoved };
 		if (index != static_cast<IndexType>(LastIndex()))
 		{
 			// Only swap if not last
 			data_[index] = std::move(data_.back()); 
-			result = KtPoolRemoveResult::ItemSwappedAndRemoved;
+			result = EPoolRemoveResult::ItemSwappedAndRemoved;
 		}
 		data_.pop_back();
 		return result;

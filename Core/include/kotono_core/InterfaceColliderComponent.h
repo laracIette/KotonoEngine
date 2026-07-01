@@ -7,7 +7,7 @@ class KInterfaceColliderComponent : public KInterfaceComponent
 {
 	GENERATED_KINTERFACECOLLIDERCOMPONENT()
 
-	friend class SInterfacePhysicsManager;
+	friend class GInterfacePhysicsManager;
 
 public:
 	KInterfaceColliderComponent();

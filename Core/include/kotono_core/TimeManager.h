@@ -1,9 +1,9 @@
 #pragma once
 #include <kotono_common/Average.h>
 #include <kotono_timing/TimeContext.h>
-class STimeManager final
+class GTimeManager final
 {
-	friend class SCore;
+	friend class GCore;
 
 private:
 	void Init();
@@ -13,8 +13,8 @@ public:
 	float Now() const;
 	float Delta() const;
 
-	KtTimeContext& GameTime();
-	KtTimeContext& RenderTime();
+	UTimeContext& GameTime();
+	UTimeContext& RenderTime();
 
 	float AverageUpdateTime() const;
 	float AverageGameTime() const;
@@ -24,12 +24,12 @@ private:
 	float now_;
 	float delta_;
 
-	KtTimeContext gameTime_;
-	KtTimeContext renderTime_;
+	UTimeContext gameTime_;
+	UTimeContext renderTime_;
 
 	KtAverage<256> averageUpdateTime_;
 	KtAverage<256> averageGameTime_;
 	KtAverage<256> averageRenderTime_;
 };
 
-inline STimeManager TimeManager;
+inline GTimeManager TimeManager;

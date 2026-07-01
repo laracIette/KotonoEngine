@@ -1,7 +1,7 @@
 #include "AudioManager.h"
 #include <AL/alc.h>
 
-void KtAudioManager::Init()
+void GAudioManager::Init()
 {
     device_ = alcOpenDevice(nullptr); // Select the default device
     if (!device_)
@@ -18,7 +18,7 @@ void KtAudioManager::Init()
     alcMakeContextCurrent(context_);
 }
 
-void KtAudioManager::Cleanup()
+void GAudioManager::Cleanup()
 {
     alcMakeContextCurrent(nullptr);
     alcDestroyContext(context_);

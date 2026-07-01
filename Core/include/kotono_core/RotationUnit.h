@@ -1,7 +1,8 @@
 #pragma once
-enum class ERotationUnit : char
+#include <kotono_common/types.h>
+enum class ERotationUnit : u8
 {
 	Radians,
-	Degrees
+	Degrees,
 };
 

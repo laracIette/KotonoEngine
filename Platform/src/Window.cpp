@@ -5,7 +5,7 @@
 
 void framebuffersize_callback_(GLFWwindow* window, int width, int height);
 
-void KtWindow::Init()
+void GWindow::Init()
 {
     size_ = { 1600, 900 };
 
@@ -39,14 +39,14 @@ void KtWindow::Init()
     glfwShowWindow(window_);
 }
 
-void KtWindow::Cleanup()
+void GWindow::Cleanup()
 {
     // Cleanup GLFW
     glfwDestroyWindow(window_);
     glfwTerminate();
 }
 
-bool KtWindow::GetShouldClose() const
+bool GWindow::GetShouldClose() const
 {
     if (shouldClose_ || glfwWindowShouldClose(window_))
     {
@@ -58,27 +58,27 @@ bool KtWindow::GetShouldClose() const
     return false;
 }
 
-void KtWindow::SetShouldClose(const bool shouldClose)
+void GWindow::SetShouldClose(const bool shouldClose)
 {
     shouldClose_ = shouldClose;
 }
 
-GLFWwindow* KtWindow::GetGLFWWindow() const
+GLFWwindow* GWindow::GetGLFWWindow() const
 {
     return window_;
 }
 
-const glm::uvec2& KtWindow::GetSize() const
+const glm::uvec2& GWindow::GetSize() const
 {
     return size_;
 }
 
-UEvent<>& KtWindow::GetEventWindowResized()
+UEvent<>& GWindow::GetEventWindowResized()
 {
     return eventWindowResized_;
 }
 
-void KtWindow::SetSize(const glm::uvec2& size)
+void GWindow::SetSize(const glm::uvec2& size)
 {
     size_ = size;
 }

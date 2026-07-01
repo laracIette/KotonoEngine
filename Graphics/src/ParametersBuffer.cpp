@@ -4,13 +4,13 @@
 
 static constexpr u32 MAX_PARAMETERS{ 65536 };
 
-void SParametersBuffer::Init()
+void GParametersBuffer::Init()
 {
     CreateBuffers();
     datas_.resize(MAX_PARAMETERS);
 }
 
-void SParametersBuffer::Cleanup() const
+void GParametersBuffer::Cleanup() const
 {
     for (const auto& frameData : frameDatas_)
     {
@@ -18,22 +18,22 @@ void SParametersBuffer::Cleanup() const
     }
 }
 
-UParametersBufferData* SParametersBuffer::RegisterParameters()
+UParametersBufferData* GParametersBuffer::RegisterParameters()
 {
     return FindParametersSlot();
 }
 
-void SParametersBuffer::UnregisterParameters(Data* slot)
+void GParametersBuffer::UnregisterParameters(Data* slot)
 {
     freeDataSlots_.push_back(slot);
 }
 
-u32 SParametersBuffer::GetIndex(const Data* slot) const
+u32 GParametersBuffer::GetIndex(const Data* slot) const
 {
     return static_cast<u32>(slot - datas_.data());
 }
 
-void SParametersBuffer::UpdateBuffer(const u32 frameIndex)
+void GParametersBuffer::UpdateBuffer(const u32 frameIndex)
 {
     std::memcpy(frameDatas_[frameIndex].mapped
         , datas_.data()
@@ -41,12 +41,12 @@ void SParametersBuffer::UpdateBuffer(const u32 frameIndex)
     );
 }
 
-VkDeviceAddress SParametersBuffer::GetAddress(const u32 frameIndex) const
+VkDeviceAddress GParametersBuffer::GetAddress(const u32 frameIndex) const
 {
     return frameDatas_[frameIndex].bda;
 }
 
-void SParametersBuffer::CreateBuffers()
+void GParametersBuffer::CreateBuffers()
 {
     for (auto& frameData : frameDatas_)
     {
@@ -86,7 +86,7 @@ void SParametersBuffer::CreateBuffers()
     }
 }
 
-UParametersBufferData* SParametersBuffer::FindParametersSlot()
+UParametersBufferData* GParametersBuffer::FindParametersSlot()
 {
     if (!freeDataSlots_.empty())
     {

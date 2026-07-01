@@ -5,10 +5,10 @@
 #undef interface
 class KInterface;
 class KScene;
-class SGame final
+class GGame final
 {
-	friend class SCore;
-	friend class STimeManager;
+	friend class GCore;
+	friend class GTimeManager;
 
 private:
 	void Init();
@@ -49,4 +49,4 @@ private:
 	UPtr<KInterface> interface_;
 };
 
-inline SGame Game;
+inline GGame Game;

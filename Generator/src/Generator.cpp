@@ -22,20 +22,20 @@ static std::string to_upper(std::string s)
 	return s;
 }
 
-void SGenerator::GenerateAll() const
+void SGenerator::GenerateAll()
 {
 	KT_LOG(ELogImportanceLevel::High, "Generator", "Clearing registry...");
 
-	USerializer::Serialize(nlohmann::json::object(), RegistryPath);
+	SSerializer::Serialize(nlohmann::json::object(), RegistryPath);
 	GenerateUpdated();
 }
 
-void SGenerator::GenerateUpdated() const
+void SGenerator::GenerateUpdated()
 {
 	KT_LOG(ELogImportanceLevel::High, "Generator", "Generating...");
 
 	nlohmann::json json{};
-	USerializer::Deserialize(json, RegistryPath);
+	SSerializer::Deserialize(json, RegistryPath);
 
 	const auto& reflectionResults{ Reflector.GetReflectionResults() };
 	for (const auto& reflectionResult : reflectionResults)
@@ -74,10 +74,10 @@ void SGenerator::GenerateUpdated() const
 		}
 	}
 
-	USerializer::Serialize(json, RegistryPath);
+	SSerializer::Serialize(json, RegistryPath);
 }
 
-void SGenerator::Generate(const UReflectionResult& reflectionResult) const
+void SGenerator::Generate(const UReflectionResult& reflectionResult)
 {
 	GenerateHeader(reflectionResult);
 	GenerateSource(reflectionResult);
@@ -85,7 +85,7 @@ void SGenerator::Generate(const UReflectionResult& reflectionResult) const
 	KT_LOG(ELogImportanceLevel::High, "Generator", "Generated {0}", reflectionResult.path.ToPath().string());
 }
 
-void SGenerator::GenerateHeader(const UReflectionResult& reflectionResult) const
+void SGenerator::GenerateHeader(const UReflectionResult& reflectionResult)
 {
 	const auto classInfo{ GetClassInfo(reflectionResult) };
 
@@ -128,7 +128,7 @@ R"(#define GENERATED_{0}() \
 	UFile(fileDirectory / "generated" / fileName).WriteString(generatedCode);
 }
 
-void SGenerator::GenerateSource(const UReflectionResult & reflectionResult) const
+void SGenerator::GenerateSource(const UReflectionResult& reflectionResult)
 {
 	const auto classInfo{ GetClassInfo(reflectionResult) };
 
@@ -222,7 +222,7 @@ UPtr<{0}> {0}::Ptr() const
 	UFile(fileDirectory / "generated" / fileName).WriteString(generatedCode);
 }
 
-SGenerator::ClassInfo SGenerator::GetClassInfo(const UReflectionResult& reflectionResult) const
+SGenerator::ClassInfo SGenerator::GetClassInfo(const UReflectionResult& reflectionResult)
 {
 	std::vector<ClassInfo::VariableInfo> variables;
 	std::ranges::copy(

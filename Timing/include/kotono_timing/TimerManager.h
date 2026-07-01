@@ -1,19 +1,20 @@
 #pragma once
-#include <unordered_map>
-#include <string>
 #include "Timer.h"
-class KtTimerManager final
+#include <kotono_common/types.h>
+#include <string_view>
+#include <unordered_map>
+class GTimerManager final
 {
-	friend class STimeManager;
+	friend class GTimeManager;
 
 public:
-	KtTimer& GetTimer(const std::string_view name);
+	UTimer& GetTimer(const std::string_view name);
 
 private:
-	void Update(const float deltaTime);
+	void Update(const f32 deltaTime);
 
 private:
-	std::unordered_map<std::string_view, KtTimer> timers_;
+	std::unordered_map<std::string_view, UTimer> timers_;
 };
 
-inline KtTimerManager TimerManager;
+inline GTimerManager TimerManager;

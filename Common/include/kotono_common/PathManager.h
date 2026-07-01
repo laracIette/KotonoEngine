@@ -3,11 +3,9 @@
 class SPathManager final
 {
 public:
-	std::filesystem::path Engine() const;
-	const std::filesystem::path& Project() const;
+	static const std::filesystem::path& Engine();
+	static const std::filesystem::path& Project();
 
 private:
 	static std::filesystem::path projectPath_;
 };
-
-inline SPathManager PathManager;

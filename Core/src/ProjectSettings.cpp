@@ -1,6 +1,7 @@
 #include "ProjectSettings.h"
 
-UPath SProjectSettings::Path()
+const UPath& SProjectSettings::Path()
 {
-	return "${PROJECT_DIRECTORY}/projectSettings.json";
+	static UPath projectSettings{ "${PROJECT_DIRECTORY}/projectSettings.json" };
+	return projectSettings;
 }

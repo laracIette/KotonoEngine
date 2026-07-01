@@ -6,7 +6,7 @@
 
 #define KT_LOG_IMPORTANCE_LEVEL_SERIALIZER ELogImportanceLevel::High
 
-void USerializer::Serialize(const nlohmann::json& json, const UPath& path)
+void SSerializer::Serialize(const nlohmann::json& json, const UPath& path)
 {
 	if (path.IsEmpty())
 	{
@@ -26,7 +26,7 @@ void USerializer::Serialize(const nlohmann::json& json, const UPath& path)
 	file.WriteString(jsonString);
 }
 
-void USerializer::Deserialize(nlohmann::json& json, const UPath& path)
+void SSerializer::Deserialize(nlohmann::json& json, const UPath& path)
 {
 	if (path.IsEmpty())
 	{

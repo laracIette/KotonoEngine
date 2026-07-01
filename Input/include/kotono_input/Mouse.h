@@ -6,7 +6,7 @@
 #include <unordered_set>
 #include <glm/vec2.hpp>
 struct GLFWwindow;
-class SMouse final
+class GMouse final
 {
 	friend void mousebutton_callback_(GLFWwindow* window, int button, int action, int mods);
 	friend void cursorpos_callback_(GLFWwindow* window, double xpos, double ypos);
@@ -46,4 +46,4 @@ private:
 	void UpdateButton(const EButton button, const int action);
 };
 
-inline SMouse Mouse;
+inline GMouse Mouse;

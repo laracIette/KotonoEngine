@@ -5,13 +5,13 @@
 class SProjectSettings final
 {
 public:
-	static UPath Path();
+	static const UPath& Path();
 
 	template <typename T>
 	static T Get(const std::string& name)
 	{
 		nlohmann::json json{};
-		USerializer::Deserialize(json, Path());
+		SSerializer::Deserialize(json, Path());
 
 		return json.at(nlohmann::json::json_pointer(name)).get<T>();
 	}
@@ -19,9 +19,9 @@ public:
 	static void Set(const std::string& name, const auto& value)
 	{
 		nlohmann::json json{};
-		USerializer::Deserialize(json, Path());
+		SSerializer::Deserialize(json, Path());
 
 		json.at(nlohmann::json::json_pointer(name)) = value;
-		USerializer::Serialize(json, Path());
+		SSerializer::Serialize(json, Path());
 	}
 };

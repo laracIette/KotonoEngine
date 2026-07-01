@@ -1,6 +1,6 @@
 #include "TimeContext.h"
 
-bool KtTimeContext::Update(const float deltaTime)
+bool UTimeContext::Update(const float deltaTime)
 {
 	if (state == ETimeContextState::Paused)
 	{

@@ -10,12 +10,12 @@ void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mo
 constexpr int keyToGLFWKey(const EKey key);
 constexpr EKey GLFWKeyToKey(const int key);
 
-void SKeyboard::Init()
+void GKeyboard::Init()
 {
     glfwSetKeyCallback(Window.GetGLFWWindow(), key_callback_);
 }
 
-void SKeyboard::Update()
+void GKeyboard::Update()
 {
     for (size key{ 0 }; key < KeyCount; ++key)
     {
@@ -39,7 +39,7 @@ void SKeyboard::Update()
     }
 }
 
-void SKeyboard::UpdateKey(const EKey key, const i32 action)
+void GKeyboard::UpdateKey(const EKey key, const i32 action)
 {
     const size keyIndex{ to_index(key) };
 
@@ -72,17 +72,17 @@ void SKeyboard::UpdateKey(const EKey key, const i32 action)
     }
 }
 
-UEvent<>& SKeyboard::EventKey(const EKey key, const EInputState inputState)
+UEvent<>& GKeyboard::EventKey(const EKey key, const EInputState inputState)
 {
     return keyEvents_[to_index(key)][to_index(inputState)];
 }
 
-bool SKeyboard::KeyState(const EKey key, const EInputState inputState) const
+bool GKeyboard::KeyState(const EKey key, const EInputState inputState) const
 {
     return keyStates_[to_index(key)][to_index(inputState)];
 }
 
-UEvent<EKey>& SKeyboard::EventAnyKey(const EInputState inputState)
+UEvent<EKey>& GKeyboard::EventAnyKey(const EInputState inputState)
 {
     return anyKeyEvents_[to_index(inputState)];
 }

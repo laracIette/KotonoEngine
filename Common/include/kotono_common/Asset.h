@@ -1,7 +1,7 @@
 #pragma once
 #include "Path.h"
 template <typename T>
-class UAssetManager;
+class SAssetManager;
 template <typename T>
 class UAsset final
 {
@@ -9,7 +9,7 @@ public:
 	using PointerType = T;
 
 private:
-	friend class UAssetManager<PointerType>;
+	friend class SAssetManager<PointerType>;
 
 	UAsset(const UPath& path, PointerType* pointer) : path_(path), pointer_(pointer) {}
 

@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <kotono_common/Pool.h>
 
-class KtWindowViewport;
+class GWindowViewport;
 class KInterfaceComponent;
 
 class RInterfaceObject : public KObject
@@ -25,13 +25,13 @@ protected:
 
 public:
 	bool GetCanUpdate() const;
-	KtWindowViewport* GetViewport() const;
+	GWindowViewport* GetViewport() const;
 	UPtr<RInterfaceObject>& GetParent();
 	UPtr<KInterfaceComponent>& RootComponent();
 	const UPool<UPtr<RInterfaceObject>>& GetChildren() const;
 
 	void SetCanUpdate(const bool canUpdate);
-	void SetViewport(KtWindowViewport* viewport);
+	void SetViewport(GWindowViewport* viewport);
 	void SetParent(const UPtr<RInterfaceObject>& parent, const ECoordinateSpace keepRect);
 
 	/// Returns true if any component is hovered
@@ -57,7 +57,7 @@ private:
 private:
 	bool isInit_;
 	bool canUpdate_;
-	KtWindowViewport* viewport_;
+	GWindowViewport* viewport_;
 	UPtr<RInterfaceObject> parent_;
 	UPtr<KInterfaceComponent> rootComponent_;
 	UPool<UPtr<RInterfaceObject>> children_;

@@ -5,7 +5,7 @@
 #include <vector>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
-class STransformBuffer final
+class GTransformBuffer final
 {
     using Data = UTransformBufferData;
 
@@ -34,11 +34,11 @@ private:
     UTransformBufferData* FindTransformSlot();
 
 private:
-    KtFramesInFlightArray<FrameData> frameDatas_;
+    UFramesInFlightArray<FrameData> frameDatas_;
 
     std::vector<Data> datas_;
     std::vector<Data*> freeDataSlots_;
     u32 dataCount_;
 };
 
-inline STransformBuffer TransformBuffer;
+inline GTransformBuffer TransformBuffer;

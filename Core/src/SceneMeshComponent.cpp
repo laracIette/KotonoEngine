@@ -21,7 +21,7 @@ KSceneMeshComponent::KSceneMeshComponent()
 {
     if (!WireframeShader)
     {
-        //WireframeShader = UAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/wireframe3D.ktshader");
+        //WireframeShader = SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/wireframe3D.ktshader");
     }
 
     spinTask_.duration = 5.0f;

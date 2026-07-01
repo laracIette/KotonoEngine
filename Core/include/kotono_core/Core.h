@@ -1,5 +1,5 @@
 #pragma once
-class SCore final
+class GCore final
 {
 public:
 	void Init();
@@ -10,4 +10,4 @@ private:
 	void LogUPS() const;
 };
 
-inline SCore Core;
+inline GCore Core;

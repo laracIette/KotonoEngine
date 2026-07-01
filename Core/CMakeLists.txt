@@ -40,7 +40,6 @@ set(KCORE_HEADERS
     "include/kotono_core/serialize_glm.h"
     "include/kotono_core/Task.h"
     "include/kotono_core/TimeManager.h"
-    "include/kotono_core/Timer.h"
     "include/kotono_core/Transform.h"
 )
 set(KCORE_SOURCES
@@ -56,6 +55,7 @@ set(KCORE_SOURCES
     "src/InterfacePhysicsManager.cpp"
     "src/math_utils.cpp"
     "src/ProjectSettings.cpp"
+    "src/Rect.cpp"
     "src/Scene.cpp"
     "src/SceneComponent.cpp"
     "src/SceneMeshComponent.cpp"
@@ -63,7 +63,7 @@ set(KCORE_SOURCES
     "src/serialize_glm.cpp"
     "src/Task.cpp"
     "src/TimeManager.cpp"
-    "src/Timer.cpp"
+    "src/Transform.cpp"
 )
 
 target_sources(KotonoCore

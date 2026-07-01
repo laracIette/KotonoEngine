@@ -35,12 +35,12 @@ void WImage::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	drawCallBuilder_.GetDrawCall()->renderBucket = ERenderBucket::Interface;
 	drawCallBuilder_.GetDrawCall()->sortKey = GetLayer();
 
-	if (UAsset shader{ UAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader2D.ktshader") })
+	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader2D.ktshader") })
 	{
 		drawCallBuilder_.GetDrawCall()->pipeline = shader->GetGraphicsPipeline();
 	}
 
-	if (UAsset model{ UAssetManager<UModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/rectangle.obj") })
+	if (UAsset model{ SAssetManager<UModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/rectangle.obj") })
 	{
 		drawCallBuilder_.GetDrawCall()->vertexBufferAdress = model->GetVertexBufferAddress();
 		drawCallBuilder_.GetDrawCall()->indexBuffer = model->GetIndexBuffer();
@@ -51,7 +51,7 @@ void WImage::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	drawCallBuilder_.GetTransform()->modelMatrix = ModelMatrix();
 	drawCallBuilder_.GetTransform()->normalMatrix = glm::identity<glm::mat4>();
 
-	if (UAsset texture{ UAssetManager<UTexture>::Get(path_) })
+	if (UAsset texture{ SAssetManager<UTexture>::Get(path_) })
 	{
 		drawCallBuilder_.GetParameters()->textures = { texture->GetIndex() };
 	}

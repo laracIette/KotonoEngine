@@ -10,7 +10,7 @@ class KInterface : public KObject
 	GENERATED_KINTERFACE()
 
 private:
-	friend class SGame;
+	friend class GGame;
 
 public:
 	KInterface();

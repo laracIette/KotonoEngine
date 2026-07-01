@@ -2,9 +2,9 @@
 #include <GLFW/glfw3.h>
 #include <glm/vec2.hpp>
 #include <kotono_common/Event.h>
-class KtWindow final
+class GWindow final
 {
-	friend class SCore;
+	friend class GCore;
 
 private:
 	void Init(); 
@@ -29,4 +29,4 @@ private:
 	UEvent<> eventWindowResized_;
 };
 
-inline KtWindow Window;
+inline GWindow Window;

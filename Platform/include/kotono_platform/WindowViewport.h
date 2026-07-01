@@ -2,7 +2,7 @@
 #include <vulkan/vulkan_core.h>
 #include <glm/vec2.hpp>
 #include <kotono_common/Event.h>
-class KtWindowViewport final
+class GWindowViewport final
 {
 public:
 	const glm::uvec2& GetExtent() const;
@@ -31,4 +31,4 @@ private:
 	UEvent<> eventExtentChanged_;
 };
 
-inline KtWindowViewport WindowViewport;
+inline GWindowViewport WindowViewport;

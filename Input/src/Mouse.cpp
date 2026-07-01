@@ -9,14 +9,14 @@ void mousebutton_callback_(GLFWwindow* window, int button, int action, int mods)
 void cursorpos_callback_(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback_(GLFWwindow* window, double xoffset, double yoffset);
 
-void SMouse::Init()
+void GMouse::Init()
 {
     glfwSetMouseButtonCallback(Window.GetGLFWWindow(), mousebutton_callback_);
     glfwSetCursorPosCallback(Window.GetGLFWWindow(), cursorpos_callback_);
     glfwSetScrollCallback(Window.GetGLFWWindow(), scroll_callback_);
 }
 
-void SMouse::Update()
+void GMouse::Update()
 {
     for (size button{ 0 }; button < ButtonCount; ++button)
     {
@@ -61,7 +61,7 @@ void SMouse::Update()
     }
 }
 
-void SMouse::UpdateButton(const EButton button, const int action)
+void GMouse::UpdateButton(const EButton button, const int action)
 {
 	const size buttonIndex{ to_index(button) };
 
@@ -94,63 +94,63 @@ void SMouse::UpdateButton(const EButton button, const int action)
     }
 }
 
-const glm::vec2& SMouse::PreviousCursorPosition() const
+const glm::vec2& GMouse::PreviousCursorPosition() const
 {
     return previousCursorPosition_;
 }
 
-const glm::vec2& SMouse::CursorPosition() const
+const glm::vec2& GMouse::CursorPosition() const
 {
     return cursorPosition_;
 }
 
-glm::vec2 SMouse::CursorPositionNormalized() const
+glm::vec2 GMouse::CursorPositionNormalized() const
 {
     const auto& windowSize = Window.GetSize();
     return 2.0f * cursorPosition_ / glm::vec2(windowSize) - 1.0f;
 }
 
-glm::vec2 SMouse::CursorPositionDelta() const
+glm::vec2 GMouse::CursorPositionDelta() const
 {
     return cursorPosition_ - previousCursorPosition_;
 }
 
-float SMouse::HorizontalScrollDelta() const
+float GMouse::HorizontalScrollDelta() const
 {
     return scrollDelta_.x;
 }
 
-float SMouse::VerticalScrollDelta() const
+float GMouse::VerticalScrollDelta() const
 {
     return scrollDelta_.y;
 }
 
-UEvent<>& SMouse::EventButton(const EButton button, const EInputState inputState)
+UEvent<>& GMouse::EventButton(const EButton button, const EInputState inputState)
 {
     return buttonEvents_[to_index(button)][to_index(inputState)];
 }
 
-bool SMouse::ButtonState(const EButton button, const EInputState inputState) const
+bool GMouse::ButtonState(const EButton button, const EInputState inputState) const
 {
     return buttonStates_[to_index(button)][to_index(inputState)];
 }
 
-UEvent<glm::vec2>& SMouse::EventMove()
+UEvent<glm::vec2>& GMouse::EventMove()
 {
     return eventMove_;
 }
 
-UEvent<glm::vec2>& SMouse::EventScroll()
+UEvent<glm::vec2>& GMouse::EventScroll()
 {
     return eventScroll_;
 }
 
-UEvent<float>& SMouse::EventHorizontalScroll()
+UEvent<float>& GMouse::EventHorizontalScroll()
 {
     return eventHorizontalScroll_;
 }
 
-UEvent<float>& SMouse::EventVerticalScroll()
+UEvent<float>& GMouse::EventVerticalScroll()
 {
     return eventVerticalScroll_;
 }

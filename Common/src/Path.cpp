@@ -75,8 +75,8 @@ std::string UPath::ToString() const
 std::filesystem::path UPath::ToPath() const
 {
     std::string result{ source_ };
-    replace(result, "${ENGINE_DIRECTORY}", PathManager.Engine().string());
-    replace(result, "${PROJECT_DIRECTORY}", PathManager.Project().string());
+    replace(result, "${ENGINE_DIRECTORY}", SPathManager::Engine().string());
+    replace(result, "${PROJECT_DIRECTORY}", SPathManager::Project().string());
     return result;
 }
 

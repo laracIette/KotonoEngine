@@ -3,7 +3,7 @@
 template <typename T>
 class UPtr;
 class WButton;
-class SInterface final
+class GInterface final
 {
 public:
 	void Init();
@@ -19,4 +19,4 @@ private:
 	UPool<UPtr<WButton>> buttons_;
 };
 
-inline SInterface Interface;
+inline GInterface Interface;

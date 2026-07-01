@@ -421,7 +421,7 @@ void KInterfaceComponent::RemoveChildren(const UPtr<KInterfaceComponent>& interf
     }
 
     const size index{ interfaceComponent->childrenIndex_ };
-    if (children_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+    if (children_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
     {
         children_[index]->childrenIndex_ = index;
     }

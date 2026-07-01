@@ -3,23 +3,23 @@
 #include <kotono_input/Mouse.h>
 #include <algorithm>
 
-void SInterface::Init()
+void GInterface::Init()
 {
-	Mouse.EventButton(EButton::Left, EInputState::Pressed).AddListener(this, &SInterface::OnMouseLeftButtonPressed);
-	Mouse.EventButton(EButton::Left, EInputState::Released).AddListener(this, &SInterface::OnMouseLeftButtonReleased);
+	Mouse.EventButton(EButton::Left, EInputState::Pressed).AddListener(this, &GInterface::OnMouseLeftButtonPressed);
+	Mouse.EventButton(EButton::Left, EInputState::Released).AddListener(this, &GInterface::OnMouseLeftButtonReleased);
 }
 
-void SInterface::AddButton(const UPtr<WButton>& button)
+void GInterface::AddButton(const UPtr<WButton>& button)
 {
 	buttons_.Add(button);
 }
 
-void SInterface::RemoveButton(const UPtr<WButton>& button)
+void GInterface::RemoveButton(const UPtr<WButton>& button)
 {
 	buttons_.Remove(button);
 }
 
-void SInterface::OnMouseLeftButtonPressed() const
+void GInterface::OnMouseLeftButtonPressed() const
 {
 	auto buttons{ buttons_ };
 	std::ranges::sort(buttons, std::ranges::greater{}, &WButton::GetLayer);
@@ -41,7 +41,7 @@ void SInterface::OnMouseLeftButtonPressed() const
 	}
 }
 
-void SInterface::OnMouseLeftButtonReleased() const
+void GInterface::OnMouseLeftButtonReleased() const
 {
 	auto buttons{ buttons_ };
 	std::ranges::sort(buttons, std::ranges::greater{}, &WButton::GetLayer);

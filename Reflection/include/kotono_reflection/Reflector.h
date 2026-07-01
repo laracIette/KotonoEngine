@@ -1,7 +1,7 @@
 #pragma once
 #include "ReflectionResult.h"
 #include <vector>
-class SReflector final
+class GReflector final
 {
 public:
 	void Reflect();
@@ -19,4 +19,4 @@ private:
 	std::vector<UReflectionResult> reflectionResults_;
 };
 
-inline SReflector Reflector;
+inline GReflector Reflector;

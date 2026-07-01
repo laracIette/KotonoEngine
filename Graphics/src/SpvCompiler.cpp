@@ -16,15 +16,15 @@ static const std::array DependencyPaths{
     "common.glsl",
 };
 
-void USpvCompiler::CompileAll()
+void SSpvCompiler::CompileAll()
 {
     KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "Clearing registry...");
 
-    USerializer::Serialize(nlohmann::json::object(), ShaderRegistryPath);
+    SSerializer::Serialize(nlohmann::json::object(), ShaderRegistryPath);
     CompileUpdated();
 }
 
-void USpvCompiler::CompileUpdated()
+void SSpvCompiler::CompileUpdated()
 {
     if (DependenciesUpdated())
     {
@@ -34,7 +34,7 @@ void USpvCompiler::CompileUpdated()
     KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "compiling updated spirv shaders");
 
     nlohmann::json json{};
-    USerializer::Deserialize(json, ShaderRegistryPath);
+    SSerializer::Deserialize(json, ShaderRegistryPath);
 
     for (const auto* directory : { "vert", "frag" })
     {
@@ -84,15 +84,15 @@ void USpvCompiler::CompileUpdated()
         }
     }
 
-    USerializer::Serialize(json, ShaderRegistryPath);
+    SSerializer::Serialize(json, ShaderRegistryPath);
 
     KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "compiled updated spirv shaders");
 }
 
-bool USpvCompiler::DependenciesUpdated()
+bool SSpvCompiler::DependenciesUpdated()
 {
     nlohmann::json json{};
-    USerializer::Deserialize(json, DependencyRegistryPath);
+    SSerializer::Deserialize(json, DependencyRegistryPath);
     
     bool updated{ false };
     for (const auto& dependencyPath : DependencyPaths)
@@ -129,11 +129,11 @@ bool USpvCompiler::DependenciesUpdated()
         }
     }
 
-    USerializer::Serialize(json, DependencyRegistryPath);
+    SSerializer::Serialize(json, DependencyRegistryPath);
     return updated;
 }
 
-bool USpvCompiler::Compile(const std::filesystem::path& path)
+bool SSpvCompiler::Compile(const std::filesystem::path& path)
 {
     // user must have vulkan bin in environment variables path
     const auto command{ std::format("glslc \"{0}\" -o \"{0}\".spv", path.string()) };

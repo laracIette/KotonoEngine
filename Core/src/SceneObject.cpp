@@ -31,7 +31,7 @@ bool TSceneObject::GetCanUpdate() const
 	return canUpdate_;
 }
 
-KtWindowViewport* TSceneObject::GetViewport() const
+GWindowViewport* TSceneObject::GetViewport() const
 {
 	return viewport_;
 }
@@ -51,7 +51,7 @@ void TSceneObject::SetCanUpdate(const bool canUpdate)
 	canUpdate_ = canUpdate;
 }
 
-void TSceneObject::SetViewport(KtWindowViewport* viewport)
+void TSceneObject::SetViewport(GWindowViewport* viewport)
 {
 	viewport_ = viewport;
 }
@@ -78,7 +78,7 @@ void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinate
 	if (parent_)
 	{
 		const size index{ childrenIndex_ };
-		if (parent_->children_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+		if (parent_->children_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
 		{
 			parent_->children_[index]->childrenIndex_ = index;
 		}
@@ -115,7 +115,7 @@ void TSceneObject::AddComponent(const UPtr<KSceneComponent>& component)
 void TSceneObject::RemoveComponent(const UPtr<KSceneComponent>& component)
 {
 	const size index{ component->componentIndex_ };
-	if (sceneComponents_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+	if (sceneComponents_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
 	{
 		sceneComponents_[index]->componentIndex_ = index;
 		if (component == rootComponent_)

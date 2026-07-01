@@ -2,7 +2,7 @@
 #include <kotono_common/types.h>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
-class SMaterialBuffer final
+class GMaterialBuffer final
 {
 public:
 	struct Material
@@ -30,4 +30,4 @@ private:
 	u32 materialCount_;
 };
 
-inline SMaterialBuffer MaterialBuffer;
+inline GMaterialBuffer MaterialBuffer;

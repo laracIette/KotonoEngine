@@ -6,7 +6,7 @@
 #include "Key.h"
 #include "InputState.h"
 struct GLFWwindow;
-class SKeyboard final
+class GKeyboard final
 {
 	friend void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mods);
 
@@ -29,4 +29,4 @@ private:
 	std::array<UEvent<EKey>, InputStateCount> anyKeyEvents_;
 };
 
-inline SKeyboard Keyboard;
+inline GKeyboard Keyboard;

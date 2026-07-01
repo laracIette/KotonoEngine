@@ -14,8 +14,8 @@ private:
 	friend struct UAutoRegister;
 
 public:
-	SObjectFactory(const SObjectFactory &) = delete;
-	void operator=(const SObjectFactory &) = delete;
+	SObjectFactory(const SObjectFactory&) = delete;
+	void operator=(const SObjectFactory&) = delete;
 
 private:
 	SObjectFactory() {}

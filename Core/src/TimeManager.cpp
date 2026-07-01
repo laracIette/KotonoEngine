@@ -7,7 +7,7 @@
 #include <kotono_timing/Clock.h>
 #include "Game.h"
 
-void STimeManager::Init()
+void GTimeManager::Init()
 {
 	gameTime_ = {
 		.frequency = 1.0f / 120.0f,
@@ -28,9 +28,9 @@ void STimeManager::Init()
 	};
 }
 
-void STimeManager::Update()
+void GTimeManager::Update()
 {
-	const float now{ KtClock::Now() };
+	const float now{ SClock::Now() };
 	delta_ = now - now_;
 	now_ = now;
 
@@ -40,48 +40,48 @@ void STimeManager::Update()
 
 	if (gameTime_.Update(delta_))
 	{
-		const float gameTime{ KtStopwatch::Time([this]() { Game.Update(gameTime_.lastDelta); }) };
+		const float gameTime{ UStopwatch::Time([this]() { Game.Update(gameTime_.lastDelta); }) };
 		averageGameTime_.Add(gameTime);
 	}
 
 	if (renderTime_.Update(delta_))
 	{
-		const float renderTime{ KtStopwatch::Time([]() { Renderer.DrawFrame(); }) };
+		const float renderTime{ UStopwatch::Time([]() { Renderer.DrawFrame(); }) };
 		averageRenderTime_.Add(renderTime);
 	}
 }
 
-float STimeManager::Now() const
+float GTimeManager::Now() const
 {
 	return now_;
 }
 
-float STimeManager::Delta() const
+float GTimeManager::Delta() const
 {
 	return delta_;
 }
 
-KtTimeContext& STimeManager::GameTime()
+UTimeContext& GTimeManager::GameTime()
 {
 	return gameTime_;
 }
 
-KtTimeContext& STimeManager::RenderTime()
+UTimeContext& GTimeManager::RenderTime()
 {
 	return renderTime_;
 }
 
-float STimeManager::AverageUpdateTime() const
+float GTimeManager::AverageUpdateTime() const
 {
 	return averageUpdateTime_.Get();
 }
 
-float STimeManager::AverageGameTime() const
+float GTimeManager::AverageGameTime() const
 {
 	return averageGameTime_.Get();
 }
 
-float STimeManager::AverageRenderTime() const
+float GTimeManager::AverageRenderTime() const
 {
 	return averageRenderTime_.Get();
 }

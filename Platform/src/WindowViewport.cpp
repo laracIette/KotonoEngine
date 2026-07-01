@@ -1,26 +1,26 @@
 #include "WindowViewport.h"
 
-const glm::uvec2& KtWindowViewport::GetExtent() const
+const glm::uvec2& GWindowViewport::GetExtent() const
 {
 	return extent_;
 }
 
-const glm::ivec2& KtWindowViewport::GetOffset() const
+const glm::ivec2& GWindowViewport::GetOffset() const
 {
     return offset_;
 }
 
-bool KtWindowViewport::GetIsKeepAspectRatio() const
+bool GWindowViewport::GetIsKeepAspectRatio() const
 {
 	return isKeepAspectRatio_;
 }
 
-float KtWindowViewport::GetAspectRatio() const
+float GWindowViewport::GetAspectRatio() const
 {
 	return aspectRatio_;
 }
 
-void KtWindowViewport::SetExtent(const glm::uvec2& extent)
+void GWindowViewport::SetExtent(const glm::uvec2& extent)
 {
 	if (isKeepAspectRatio_)
 	{
@@ -50,22 +50,22 @@ void KtWindowViewport::SetExtent(const glm::uvec2& extent)
 	eventExtentChanged_.Broadcast();
 }
 
-void KtWindowViewport::SetOffset(const glm::ivec2& offset)
+void GWindowViewport::SetOffset(const glm::ivec2& offset)
 {
     offset_ = offset;
 }
 
-void KtWindowViewport::SetIsKeepAspectRatio(const bool isKeepAspectRatio)
+void GWindowViewport::SetIsKeepAspectRatio(const bool isKeepAspectRatio)
 {
 	isKeepAspectRatio_ = isKeepAspectRatio;
 }
 
-void KtWindowViewport::SetAspectRatio(const float aspectRatio)
+void GWindowViewport::SetAspectRatio(const float aspectRatio)
 {
 	aspectRatio_ = aspectRatio;
 }
 
-void KtWindowViewport::CmdUse(VkCommandBuffer commandBuffer) const
+void GWindowViewport::CmdUse(VkCommandBuffer commandBuffer) const
 {
 	// Sets the render region
 	const VkViewport vkViewport{
@@ -92,7 +92,7 @@ void KtWindowViewport::CmdUse(VkCommandBuffer commandBuffer) const
 	vkCmdSetScissor(commandBuffer, 0, 1, &vkScissor);
 }
 
-UEvent<>& KtWindowViewport::EventExtentChanged()
+UEvent<>& GWindowViewport::EventExtentChanged()
 {
 	return eventExtentChanged_;
 }

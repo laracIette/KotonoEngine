@@ -62,7 +62,7 @@ UPath KObject::InstancePath() const
 nlohmann::json KObject::ReadJson() const
 {
     nlohmann::json json{};
-    USerializer::Deserialize(json, InstancePath());
+    SSerializer::Deserialize(json, InstancePath());
     return json;
 }
 
@@ -80,7 +80,7 @@ void KObject::Delete()
 
 void KObject::Serialize() const
 {
-    USerializer::Serialize(WriteJson(), InstancePath());
+    SSerializer::Serialize(WriteJson(), InstancePath());
 }
 
 void KObject::Deserialize()

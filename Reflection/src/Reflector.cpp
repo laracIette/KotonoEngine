@@ -5,11 +5,11 @@
 #include <nlohmann/json.hpp>
 #include <regex>
 
-void SReflector::Reflect()
+void GReflector::Reflect()
 {
 	nlohmann::json json{};
 	const UPath includePath{ "${ENGINE_DIRECTORY}/Reflection/include.ktregistry" };
-	USerializer::Deserialize(json, includePath);
+	SSerializer::Deserialize(json, includePath);
 
 	for (const auto& file : json.at("files"))
 	{
@@ -39,12 +39,12 @@ void SReflector::Reflect()
 	);
 }
 
-const std::vector<UReflectionResult>& SReflector::GetReflectionResults() const
+const std::vector<UReflectionResult>& GReflector::GetReflectionResults() const
 {
 	return reflectionResults_;
 }
 
-UReflectionResult::TypeInfo SReflector::GetTypeInfo(const std::string& content) const
+UReflectionResult::TypeInfo GReflector::GetTypeInfo(const std::string& content) const
 {
 	const std::regex pattern(R"((template\s*<[^;\{]*>\s+)?(?:class)\s+([a-zA-Z_]\w*)\s*(?:final)?\s*(?::\s*(?:public|protected|private)?\s*([a-zA-Z_]\w*)\s*(?:<[^\{]*>)?\s*)?\{)");
 	
@@ -73,7 +73,7 @@ UReflectionResult::TypeInfo SReflector::GetTypeInfo(const std::string& content) 
 	};
 }
 
-std::vector<UReflectionResult::MemberInfo> SReflector::GetMemberInfos(const std::string& content) const
+std::vector<UReflectionResult::MemberInfo> GReflector::GetMemberInfos(const std::string& content) const
 {
 	std::vector<UReflectionResult::MemberInfo> result{};
 
@@ -94,7 +94,7 @@ std::vector<UReflectionResult::MemberInfo> SReflector::GetMemberInfos(const std:
 	return result;
 }
 
-bool SReflector::IsObjectType(const UReflectionResult::TypeInfo& type) const
+bool GReflector::IsObjectType(const UReflectionResult::TypeInfo& type) const
 {
 	if (type.name == "KObject")
 	{

@@ -6,13 +6,13 @@ enum class ETimeContextState : u8
 	Paused
 };
 
-struct KtTimeContext final
+struct UTimeContext final
 {
-	float frequency;
-	float lastDelta;
-	float currentDelta;
-	float scale;
-	float total;
+	f32 frequency;
+	f32 lastDelta;
+	f32 currentDelta;
+	f32 scale;
+	f32 total;
 	ETimeContextState state;
 
 	/// <summary>

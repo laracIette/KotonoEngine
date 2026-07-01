@@ -3,10 +3,10 @@
 #include "Path.h"
 #include <unordered_map>
 template <typename T>
-class UAssetManager final
+class SAssetManager final
 {
 private:
-	friend class SCore;
+	friend class GCore;
 
 	using Asset = UAsset<T>;
 

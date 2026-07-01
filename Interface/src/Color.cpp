@@ -34,12 +34,12 @@ void WColor::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	drawCallBuilder_.GetDrawCall()->renderBucket = ERenderBucket::Interface;
 	drawCallBuilder_.GetDrawCall()->sortKey = GetLayer();
 
-	if (UAsset shader{ UAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/flatColor2D.ktshader") })
+	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/flatColor2D.ktshader") })
 	{
 		drawCallBuilder_.GetDrawCall()->pipeline = shader->GetGraphicsPipeline();
 	}
 
-	if (UAsset model{ UAssetManager<UModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/rectangle.obj") })
+	if (UAsset model{ SAssetManager<UModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/rectangle.obj") })
 	{
 		drawCallBuilder_.GetDrawCall()->vertexBufferAdress = model->GetVertexBufferAddress();
 		drawCallBuilder_.GetDrawCall()->indexBuffer = model->GetIndexBuffer();

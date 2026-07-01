@@ -19,15 +19,13 @@ class SGenerator final
 	};
 
 public:
-	void GenerateAll() const;
-	void GenerateUpdated() const;
+	static void GenerateAll();
+	static void GenerateUpdated();
 
 private:
-	void Generate(const UReflectionResult& reflectionResult) const;
-	void GenerateHeader(const UReflectionResult& reflectionResult) const;
-	void GenerateSource(const UReflectionResult& reflectionResult) const;
-	
-	ClassInfo GetClassInfo(const UReflectionResult& reflectionResult) const;
+	static void Generate(const UReflectionResult& reflectionResult);
+	static void GenerateHeader(const UReflectionResult& reflectionResult);
+	static void GenerateSource(const UReflectionResult& reflectionResult);
+	 
+	static ClassInfo GetClassInfo(const UReflectionResult& reflectionResult);
 };
-
-inline SGenerator Generator;

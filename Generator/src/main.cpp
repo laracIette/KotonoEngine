@@ -7,6 +7,6 @@ std::filesystem::path SPathManager::projectPath_{ "" };
 int main()
 {
 	Reflector.Reflect();
-	Generator.GenerateUpdated();
+	SGenerator::GenerateUpdated();
 	return 0;
 }

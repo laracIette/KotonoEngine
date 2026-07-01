@@ -221,7 +221,7 @@ void KSceneComponent::SetParent(const UPtr<KSceneComponent>& parent, const ECoor
     if (parent_)
     {
         const size index{ childrenIndex_ };
-        if (parent_->children_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+        if (parent_->children_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
         {
             parent_->children_[index]->childrenIndex_ = index;
         }

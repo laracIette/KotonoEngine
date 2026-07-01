@@ -1,7 +1,7 @@
 #pragma once
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include "serialize_glm.h"
+#include <kotono_io/serialize_base.h>
 struct UTransform final
 {
     glm::vec3 position{ 0.0f, 0.0f, 0.0f };
@@ -9,24 +9,14 @@ struct UTransform final
     glm::vec3 scale{ 1.0f, 1.0f, 1.0f };
 };
 
-template <>
+template<>
 struct USerialize<UTransform>
 {
-	void operator()(nlohmann::json& json, const UTransform& v) const
-	{
-		USerialize<glm::vec3>{}(get(json, "position"), v.position);
-		USerialize<glm::quat>{}(get(json, "rotation"), v.rotation);
-		USerialize<glm::vec3>{}(get(json, "scale"), v.scale);
-	}
+	void operator()(nlohmann::json& json, const UTransform& v) const;
 };
 
-template <>
+template<>
 struct UDeserialize<UTransform>
 {
-	void operator()(const nlohmann::json& json, UTransform& v) const
-	{
-		UDeserialize<glm::vec3>{}(get(json, "position"), v.position);
-		UDeserialize<glm::quat>{}(get(json, "rotation"), v.rotation);
-		UDeserialize<glm::vec3>{}(get(json, "scale"), v.scale);
-	}
+    void operator()(const nlohmann::json& json, UTransform& v) const;
 };

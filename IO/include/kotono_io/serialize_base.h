@@ -19,90 +19,90 @@ nlohmann::json& get_next(nlohmann::json& json);
 size get_size(const nlohmann::json& json);
 const nlohmann::json& get_at(const nlohmann::json& json, size index);
 
-template <typename T>
+template<typename T>
 struct USerialize
 {
 };
 
-template <>
+template<>
 struct USerialize<bool>
 {
 	void operator()(nlohmann::json& json, const bool v) const;
 };
 
-template <>
+template<>
 struct USerialize<i8>
 {
 	void operator()(nlohmann::json& json, const i8 v) const;
 };
 
-template <>
+template<>
 struct USerialize<i16>
 {
 	void operator()(nlohmann::json& json, const i16 v) const;
 };
 
-template <>
+template<>
 struct USerialize<i32>
 {
 	void operator()(nlohmann::json& json, const i32 v) const;
 };
 
-template <>
+template<>
 struct USerialize<i64>
 {
 	void operator()(nlohmann::json& json, const i64 v) const;
 };
 
-template <>
+template<>
 struct USerialize<u8>
 {
 	void operator()(nlohmann::json& json, const u8 v) const;
 };
 
-template <>
+template<>
 struct USerialize<u16>
 {
 	void operator()(nlohmann::json& json, const u16 v) const;
 };
 
-template <>
+template<>
 struct USerialize<u32>
 {
 	void operator()(nlohmann::json& json, const u32 v) const;
 };
 
-template <>
+template<>
 struct USerialize<u64>
 {
 	void operator()(nlohmann::json& json, const u64 v) const;
 };
 
-template <>
-struct USerialize<float>
+template<>
+struct USerialize<f32>
 {
-	void operator()(nlohmann::json& json, const float v) const;
+	void operator()(nlohmann::json& json, const f32 v) const;
 };
 
-template <>
-struct USerialize<double>
+template<>
+struct USerialize<f64>
 {
-	void operator()(nlohmann::json& json, const double v) const;
+	void operator()(nlohmann::json& json, const f64 v) const;
 };
 
-template <>
+template<>
 struct USerialize<std::string>
 {
 	void operator()(nlohmann::json& json, const std::string& v) const;
 };
 
-template <>
+template<>
 struct USerialize<UPath>
 {
 	void operator()(nlohmann::json& json, const UPath& v) const;
 };
 
-template <typename T>
+template<typename T>
 	requires std::is_enum_v<T>
 struct USerialize<T>
 {
@@ -113,7 +113,7 @@ struct USerialize<T>
 	}
 };
 
-template <typename T>
+template<typename T>
 	requires std::ranges::range<T> && (!std::convertible_to<T, std::string>)
 struct USerialize<T>
 {
@@ -128,7 +128,7 @@ struct USerialize<T>
 	}
 };
 
-template <typename T>
+template<typename T>
 struct USerialize<UAsset<T>>
 {
 	void operator()(nlohmann::json& json, const UAsset<T>& v) const
@@ -140,89 +140,89 @@ struct USerialize<UAsset<T>>
 	}
 };
 
-template <typename T>
+template<typename T>
 struct UDeserialize
 {};
 
-template <>
+template<>
 struct UDeserialize<bool>
 {
 	void operator()(const nlohmann::json& json, bool& v) const;
 };
 
-template <>
+template<>
 struct UDeserialize<i8>
 {
 	void operator()(const nlohmann::json& json, i8& v) const;
 };
 
-template <>
+template<>
 struct UDeserialize<i16>
 {
 	void operator()(const nlohmann::json& json, i16& v) const;
 };
 
-template <>
+template<>
 struct UDeserialize<i32>
 {
 	void operator()(const nlohmann::json& json, i32& v) const;
 };
 
-template <>
+template<>
 struct UDeserialize<i64>
 {
 	void operator()(const nlohmann::json& json, i64& v) const;
 };
 
-template <>
+template<>
 struct UDeserialize<u8>
 {
 	void operator()(const nlohmann::json& json, u8& v) const;
 };
 
-template <>
+template<>
 struct UDeserialize<u16>
 {
 	void operator()(const nlohmann::json& json, u16& v) const;
 };
 
-template <>
+template<>
 struct UDeserialize<u32>
 {
 	void operator()(const nlohmann::json& json, u32& v) const;
 };
 
-template <>
+template<>
 struct UDeserialize<u64>
 {
 	void operator()(const nlohmann::json& json, u64& v) const;
 };
 
-template <>
-struct UDeserialize<float>
+template<>
+struct UDeserialize<f32>
 {
-	void operator()(const nlohmann::json& json, float& v) const;
+	void operator()(const nlohmann::json& json, f32& v) const;
 };
 
-template <>
-struct UDeserialize<double>
+template<>
+struct UDeserialize<f64>
 {
-	void operator()(const nlohmann::json& json, double& v) const;
+	void operator()(const nlohmann::json& json, f64& v) const;
 };
 
-template <>
+template<>
 struct UDeserialize<std::string>
 {
 	void operator()(const nlohmann::json& json, std::string& v) const;
 };
 
-template <>
+template<>
 struct UDeserialize<UPath>
 {
 	void operator()(const nlohmann::json& json, UPath& v) const;
 };
 
-template <typename T>
+template<typename T>
 	requires std::is_enum_v<T>
 struct UDeserialize<T>
 {
@@ -235,7 +235,7 @@ struct UDeserialize<T>
 	}
 };
 
-template <typename T>
+template<typename T>
 	requires std::ranges::range<T> && (!std::convertible_to<T, std::string>)
 struct UDeserialize<T>
 {
@@ -250,13 +250,13 @@ struct UDeserialize<T>
 	}
 }; 
 
-template <typename T>
+template<typename T>
 struct UDeserialize<UAsset<T>>
 {
 	void operator()(const nlohmann::json& json, UAsset<T>& v) const
 	{
 		UPath path{};
 		UDeserialize<UPath>{}(json, path);
-		v = UAssetManager<T>::Get(path);
+		v = SAssetManager<T>::Get(path);
 	}
 };

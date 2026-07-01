@@ -6,9 +6,9 @@
 #include <vector>
 #include <vma/vk_mem_alloc.h> 
 
-class SContext final
+class GContext final
 {
-	friend class SCore;
+	friend class GCore;
 
 private:
 	void Init();
@@ -96,4 +96,4 @@ private:
 	std::vector<UAllocatedBuffer> deletionQueue_;
 };
 
-inline SContext Context;
+inline GContext Context;

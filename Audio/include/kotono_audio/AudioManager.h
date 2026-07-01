@@ -3,9 +3,9 @@
 struct ALCdevice;
 struct ALCcontext;
 
-class KtAudioManager final
+class GAudioManager final
 {
-	friend class SCore;
+	friend class GCore;
 
 private:
 	void Init();
@@ -16,4 +16,4 @@ private:
 	ALCcontext* context_;
 };
 
-inline KtAudioManager AudioManager;
+inline GAudioManager AudioManager;

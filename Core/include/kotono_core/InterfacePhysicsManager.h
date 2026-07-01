@@ -1,9 +1,9 @@
 #pragma once
 #include <kotono_common/Pool.h>
 class KInterfaceColliderComponent;
-class SInterfacePhysicsManager final
+class GInterfacePhysicsManager final
 {
-	friend class SCore;
+	friend class GCore;
 
 private:
 	void Update();
@@ -16,4 +16,4 @@ private:
 	UPool<KInterfaceColliderComponent*> colliderComponents_;
 };
 
-inline SInterfacePhysicsManager InterfacePhysicsManager;
+inline GInterfacePhysicsManager InterfacePhysicsManager;

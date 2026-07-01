@@ -7,7 +7,7 @@
 #include <kotono_timing/TimerManager.h>
 #include <kotono_interface/Interface.h>
 
-void SEditor::Init()
+void GEditor::Init()
 {
 	Visualizer.Init();
 	Camera.Init();
@@ -20,29 +20,29 @@ void SEditor::Init()
 
 	CreateWidget();
 
-	Window.GetEventWindowResized().AddListener(this, &SEditor::RefreshMainWindowWidget);
+	Window.GetEventWindowResized().AddListener(this, &GEditor::RefreshMainWindowWidget);
 }
 
-void SEditor::Update()
+void GEditor::Update()
 {
 }
 
-void SEditor::Cleanup()
+void GEditor::Cleanup()
 {
 	Camera.Cleanup();
 
 	DeleteWidget();
 
-	Window.GetEventWindowResized().RemoveListener(this, &SEditor::RefreshMainWindowWidget);
+	Window.GetEventWindowResized().RemoveListener(this, &GEditor::RefreshMainWindowWidget);
 }
 
-void SEditor::CreateWidget()
+void GEditor::CreateWidget()
 {
 	mainWindow_ = UCreate<WMainWindow>{ "Main Window" }();
 	mainWindow_->BeginDraw();
 }
 
-void SEditor::DeleteWidget()
+void GEditor::DeleteWidget()
 {
 	if (mainWindow_)
 	{
@@ -51,7 +51,7 @@ void SEditor::DeleteWidget()
 	}
 }
 
-void SEditor::RefreshMainWindowWidget()
+void GEditor::RefreshMainWindowWidget()
 {
 	DeleteWidget();
 	CreateWidget();

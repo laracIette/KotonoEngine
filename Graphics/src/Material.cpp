@@ -12,7 +12,7 @@ UMaterial::UMaterial(const UPath& path)
 	, index_{}
 {
 	nlohmann::json json{};
-	USerializer::Deserialize(json, path);
+	SSerializer::Deserialize(json, path);
 
 	std::string albedo;
 	UDeserialize<std::string>{}(json["albedo"], albedo);
@@ -28,12 +28,12 @@ UMaterial::UMaterial(const UPath& path)
 	UDeserialize<UPath>{}(json["sampler"], sampler);
 
 	index_ = MaterialBuffer.RegisterMaterial({
-		.albedoIndex = UAssetManager<UTexture>::Get(albedo)->GetIndex(),
-		.normalIndex = UAssetManager<UTexture>::Get(normal)->GetIndex(),
-		.roughnessIndex = UAssetManager<UTexture>::Get(roughness)->GetIndex(),
-		.emissiveIndex = UAssetManager<UTexture>::Get(emissive)->GetIndex(),
+		.albedoIndex = SAssetManager<UTexture>::Get(albedo)->GetIndex(),
+		.normalIndex = SAssetManager<UTexture>::Get(normal)->GetIndex(),
+		.roughnessIndex = SAssetManager<UTexture>::Get(roughness)->GetIndex(),
+		.emissiveIndex = SAssetManager<UTexture>::Get(emissive)->GetIndex(),
 		.materialType = materialType,
-		.samplerIndex = UAssetManager<USampler>::Get(sampler)->GetIndex(),
+		.samplerIndex = SAssetManager<USampler>::Get(sampler)->GetIndex(),
 	});
 }
 

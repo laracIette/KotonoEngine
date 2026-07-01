@@ -11,7 +11,7 @@ class KScene : public KObject
 	GENERATED_KSCENE()
 
 private:
-	friend class SGame;
+	friend class GGame;
 
 public:
 	~KScene() override;

@@ -1,6 +1,6 @@
 #pragma once
 #include <filesystem>
-class USpvCompiler final
+class SSpvCompiler final
 {
 public:
 	static void CompileAll();

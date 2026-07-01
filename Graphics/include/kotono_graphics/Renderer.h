@@ -9,7 +9,7 @@
 struct UDrawCall;
 class GRenderer final
 {
-	friend class SCore;
+	friend class GCore;
 
 private:
 	void Init();
@@ -97,7 +97,7 @@ private:
 
 	VkFormat depthFormat_;
 
-	KtFramesInFlightArray<FrameData> frameDatas_;
+	UFramesInFlightArray<FrameData> frameDatas_;
 
 	std::thread renderThread_;
 	std::thread rhiThread_;

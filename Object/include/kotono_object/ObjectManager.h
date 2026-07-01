@@ -6,7 +6,7 @@
 
 class KObject;
 
-class SObjectManager final
+class GObjectManager final
 {
 public:
 	UPtr<KObject>& GetSelectedObject();
@@ -18,4 +18,4 @@ private:
 	UEvent<UPtr<KObject>> eventSelectedObjectChanged_;
 };
 
-inline SObjectManager ObjectManager;
+inline GObjectManager ObjectManager;

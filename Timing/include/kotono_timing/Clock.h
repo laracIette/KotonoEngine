@@ -1,5 +1,5 @@
 #pragma once
-class KtClock final
+class SClock final
 {
 public:
 	// Current exact UTC Time since Epoch in seconds.

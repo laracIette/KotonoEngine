@@ -1,7 +1,7 @@
 #include "InterfacePhysicsManager.h"
 #include "InterfaceColliderComponent.h"
 
-void SInterfacePhysicsManager::Update()
+void GInterfacePhysicsManager::Update()
 {
 	//for (size i{ 0 }; i < colliderComponents_.size(); ++i)
 	//{
@@ -18,16 +18,16 @@ void SInterfacePhysicsManager::Update()
 	//}
 }
 
-void SInterfacePhysicsManager::Register(KInterfaceColliderComponent* colliderComponent)
+void GInterfacePhysicsManager::Register(KInterfaceColliderComponent* colliderComponent)
 {
 	colliderComponents_.Add(colliderComponent);
 	colliderComponent->physicsIndex_ = colliderComponents_.LastIndex();
 }
 
-void SInterfacePhysicsManager::Unregister(KInterfaceColliderComponent* colliderComponent)
+void GInterfacePhysicsManager::Unregister(KInterfaceColliderComponent* colliderComponent)
 {
 	const size index{ colliderComponent->physicsIndex_ };
-	if (colliderComponents_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+	if (colliderComponents_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
 	{
 		colliderComponents_[index]->physicsIndex_ = index;
 	}

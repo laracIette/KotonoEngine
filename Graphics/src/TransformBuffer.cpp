@@ -4,13 +4,13 @@
 
 static constexpr u32 MAX_TRANSFORMS{ 65536 };
 
-void STransformBuffer::Init()
+void GTransformBuffer::Init()
 {
     CreateBuffers();
     datas_.resize(MAX_TRANSFORMS);
 }
 
-void STransformBuffer::Cleanup() const
+void GTransformBuffer::Cleanup() const
 {
     for (const auto& frameData : frameDatas_)
     {
@@ -18,22 +18,22 @@ void STransformBuffer::Cleanup() const
     }
 }
 
-UTransformBufferData* STransformBuffer::RegisterTransform()
+UTransformBufferData* GTransformBuffer::RegisterTransform()
 {
     return FindTransformSlot();
 }
 
-void STransformBuffer::UnregisterTransform(Data* slot)
+void GTransformBuffer::UnregisterTransform(Data* slot)
 {
     freeDataSlots_.push_back(slot);
 }
 
-u32 STransformBuffer::GetIndex(const Data* slot) const
+u32 GTransformBuffer::GetIndex(const Data* slot) const
 {
     return static_cast<u32>(slot - datas_.data());
 }
 
-void STransformBuffer::UpdateBuffer(const u32 frameIndex)
+void GTransformBuffer::UpdateBuffer(const u32 frameIndex)
 {
     std::memcpy(frameDatas_[frameIndex].mapped
         , datas_.data()
@@ -41,12 +41,12 @@ void STransformBuffer::UpdateBuffer(const u32 frameIndex)
     );
 }
 
-VkDeviceAddress STransformBuffer::GetAddress(const u32 frameIndex) const
+VkDeviceAddress GTransformBuffer::GetAddress(const u32 frameIndex) const
 {
     return frameDatas_[frameIndex].bda;
 }
 
-void STransformBuffer::CreateBuffers()
+void GTransformBuffer::CreateBuffers()
 {
     for (auto& frameData : frameDatas_)
     {
@@ -86,7 +86,7 @@ void STransformBuffer::CreateBuffers()
     }
 }
 
-UTransformBufferData* STransformBuffer::FindTransformSlot()
+UTransformBufferData* GTransformBuffer::FindTransformSlot()
 {
     if (!freeDataSlots_.empty())
     {

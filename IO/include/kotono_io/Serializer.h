@@ -2,7 +2,7 @@
 #include <nlohmann/json_fwd.hpp>
 #include <filesystem>
 class UPath;
-class USerializer final
+class SSerializer final
 {
 public:
 	static void Serialize(const nlohmann::json& json, const UPath& path);

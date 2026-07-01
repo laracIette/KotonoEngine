@@ -1,7 +1,7 @@
 #pragma once
 #include <kotono_object/Ptr.h>
 class WMainWindow;
-class SEditor final
+class GEditor final
 {
 public:
 	void Init();
@@ -17,4 +17,4 @@ private:
 	void RefreshMainWindowWidget();
 };
 
-inline SEditor Editor;
+inline GEditor Editor;

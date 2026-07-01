@@ -3,5 +3,5 @@
 enum class EMobility : u8
 {
 	Dynamic,
-	Static
+	Static,
 };

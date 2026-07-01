@@ -31,7 +31,7 @@ bool RInterfaceObject::GetCanUpdate() const
 	return canUpdate_;
 }
 
-KtWindowViewport* RInterfaceObject::GetViewport() const
+GWindowViewport* RInterfaceObject::GetViewport() const
 {
 	return viewport_;
 }
@@ -56,7 +56,7 @@ void RInterfaceObject::SetCanUpdate(const bool canUpdate)
 	canUpdate_ = canUpdate;
 }
 
-void RInterfaceObject::SetViewport(KtWindowViewport* viewport)
+void RInterfaceObject::SetViewport(GWindowViewport* viewport)
 {
 	viewport_ = viewport;
 }
@@ -83,7 +83,7 @@ void RInterfaceObject::SetParent(const UPtr<RInterfaceObject>& parent, const ECo
 	if (parent_)
 	{
 		const size index{ childrenIndex_ };
-		if (parent_->children_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+		if (parent_->children_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
 		{
 			parent_->children_[index]->childrenIndex_ = index;
 		}
@@ -127,7 +127,7 @@ void RInterfaceObject::AddComponent(const UPtr<KInterfaceComponent>& component)
 void RInterfaceObject::RemoveComponent(const UPtr<KInterfaceComponent>& component)
 {
 	const size index{ component->componentIndex_ };
-	if (interfaceComponents_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+	if (interfaceComponents_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
 	{
 		interfaceComponents_[index]->componentIndex_ = index;
 		if (component == rootComponent_)

@@ -11,7 +11,7 @@
 #include <kotono_common/Event.h>
 #include <kotono_graphics/Visibility.h>
 #include <kotono_graphics/Color.h>
-class KtWindowViewport;
+class GWindowViewport;
 class RInterfaceObject;
 class KInterfaceComponent : public KObject
 {

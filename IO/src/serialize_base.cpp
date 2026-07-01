@@ -77,12 +77,12 @@ void USerialize<u64>::operator()(nlohmann::json& json, const u64 v) const
     json = v;
 }
 
-void USerialize<float>::operator()(nlohmann::json& json, const float v) const
+void USerialize<f32>::operator()(nlohmann::json& json, const f32 v) const
 {
     json = v;
 }
 
-void USerialize<double>::operator()(nlohmann::json& json, const double v) const
+void USerialize<f64>::operator()(nlohmann::json& json, const f64 v) const
 {
     json = v;
 }
@@ -143,12 +143,12 @@ void UDeserialize<u64>::operator()(const nlohmann::json& json, u64& v) const
     v = json;
 }
 
-void UDeserialize<float>::operator()(const nlohmann::json& json, float& v) const
+void UDeserialize<f32>::operator()(const nlohmann::json& json, f32& v) const
 {
     v = json;
 }
 
-void UDeserialize<double>::operator()(const nlohmann::json& json, double& v) const
+void UDeserialize<f64>::operator()(const nlohmann::json& json, f64& v) const
 {
     v = json;
 }

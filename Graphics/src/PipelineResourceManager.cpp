@@ -14,7 +14,7 @@ static constexpr VkDescriptorBindingFlags BINDLESS_FLAGS{
 	VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
 };
 
-void SPipelineResourceManager::Init()
+void GPipelineResourceManager::Init()
 {
 	CreateGlobalDescriptorSetLayout();
 	CreateUniformDescriptorSetLayout();
@@ -24,7 +24,7 @@ void SPipelineResourceManager::Init()
 	CreateFrameDataBuffers();
 }
 
-void SPipelineResourceManager::Cleanup() const
+void GPipelineResourceManager::Cleanup() const
 {
 	for (auto& frameData : frameDatas_)
 	{
@@ -36,32 +36,32 @@ void SPipelineResourceManager::Cleanup() const
 	vkDestroyDescriptorSetLayout(Context.GetDevice(), globalDescriptorSetLayout_, nullptr);
 }
 
-VkDescriptorPool SPipelineResourceManager::GetDescriptorPool() const
+VkDescriptorPool GPipelineResourceManager::GetDescriptorPool() const
 {
 	return descriptorPool_;
 }
 
-VkPipelineLayout SPipelineResourceManager::GetPipelineLayout() const
+VkPipelineLayout GPipelineResourceManager::GetPipelineLayout() const
 {
 	return pipelineLayout_;
 }
 
-VkDescriptorSet SPipelineResourceManager::GetGlobalDescriptorSet() const
+VkDescriptorSet GPipelineResourceManager::GetGlobalDescriptorSet() const
 {
 	return globalDescriptorSet_;
 }
 
-void SPipelineResourceManager::SetFrameUBO(const FrameUBO& frameUBO)
+void GPipelineResourceManager::SetFrameUBO(const FrameUBO& frameUBO)
 {
 	frameUBO_ = frameUBO;
 }
 
-void SPipelineResourceManager::UpdateMappedFrameUBO(const u32 frameIndex) const
+void GPipelineResourceManager::UpdateMappedFrameUBO(const u32 frameIndex) const
 {
 	*frameDatas_[frameIndex].uboMapped = frameUBO_;
 }
 
-u32 SPipelineResourceManager::RegisterTexture(VkImageView imageView)
+u32 GPipelineResourceManager::RegisterTexture(VkImageView imageView)
 {
 	const u32 slot{ AllocateTextureSlot() };
 
@@ -86,7 +86,7 @@ u32 SPipelineResourceManager::RegisterTexture(VkImageView imageView)
 	return slot;
 }
 
-u32 SPipelineResourceManager::RegisterSampler(VkSampler sampler)
+u32 GPipelineResourceManager::RegisterSampler(VkSampler sampler)
 {
 	const u32 slot{ AllocateSamplerSlot() };
 
@@ -111,17 +111,17 @@ u32 SPipelineResourceManager::RegisterSampler(VkSampler sampler)
 	return slot;
 }
 
-void SPipelineResourceManager::UnregisterTexture(const u32 slot)
+void GPipelineResourceManager::UnregisterTexture(const u32 slot)
 {
 	freeTextureSlots_.push_back(slot);
 }
 
-void SPipelineResourceManager::UnregisterSampler(const u32 slot)
+void GPipelineResourceManager::UnregisterSampler(const u32 slot)
 {
 	freeSamplerSlots_.push_back(slot);
 }
 
-void SPipelineResourceManager::CmdBindGlobalDescriptorSet(VkCommandBuffer commandBuffer) const
+void GPipelineResourceManager::CmdBindGlobalDescriptorSet(VkCommandBuffer commandBuffer) const
 {
 	vkCmdBindDescriptorSets(commandBuffer
 		, VK_PIPELINE_BIND_POINT_GRAPHICS
@@ -134,7 +134,7 @@ void SPipelineResourceManager::CmdBindGlobalDescriptorSet(VkCommandBuffer comman
 	);
 }
 
-void SPipelineResourceManager::CmdPushUniformDescriptorSet(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void GPipelineResourceManager::CmdPushUniformDescriptorSet(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	const VkDescriptorBufferInfo bufInfo{
 		.buffer = frameDatas_[frameIndex].ubo,
@@ -157,7 +157,7 @@ void SPipelineResourceManager::CmdPushUniformDescriptorSet(VkCommandBuffer comma
 	);
 }
 
-void SPipelineResourceManager::CreateGlobalDescriptorSetLayout()
+void GPipelineResourceManager::CreateGlobalDescriptorSetLayout()
 {
 	constexpr std::array<VkDescriptorSetLayoutBinding, 3> BINDINGS{ {
 		{ 0, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURES,		VK_SHADER_STAGE_ALL, nullptr },
@@ -192,7 +192,7 @@ void SPipelineResourceManager::CreateGlobalDescriptorSetLayout()
 	);
 }
 
-void SPipelineResourceManager::CreateUniformDescriptorSetLayout()
+void GPipelineResourceManager::CreateUniformDescriptorSetLayout()
 {
 	const VkDescriptorSetLayoutBinding uniformBinding{
 		.binding = 0,
@@ -211,7 +211,7 @@ void SPipelineResourceManager::CreateUniformDescriptorSetLayout()
 	vkCreateDescriptorSetLayout(Context.GetDevice(), &uniformLayoutInfo, nullptr, &uniformDescriptorSetLayout_);
 }
 
-void SPipelineResourceManager::CreatePipelineLayout()
+void GPipelineResourceManager::CreatePipelineLayout()
 {
 	const VkPushConstantRange pushConstantRange{
 	   .stageFlags = VK_SHADER_STAGE_ALL,
@@ -239,7 +239,7 @@ void SPipelineResourceManager::CreatePipelineLayout()
 	);
 }
 
-void SPipelineResourceManager::CreateDescriptorPool()
+void GPipelineResourceManager::CreateDescriptorPool()
 {
 	constexpr std::array<VkDescriptorPoolSize, 3> POOL_SIZES{ {
 		{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURES		},
@@ -261,7 +261,7 @@ void SPipelineResourceManager::CreateDescriptorPool()
 	);
 }
 
-void SPipelineResourceManager::CreateGlobalDescriptorSet()
+void GPipelineResourceManager::CreateGlobalDescriptorSet()
 {
 	const VkDescriptorSetAllocateInfo allocInfo{
 		.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
@@ -272,7 +272,7 @@ void SPipelineResourceManager::CreateGlobalDescriptorSet()
 	vkAllocateDescriptorSets(Context.GetDevice(), &allocInfo, &globalDescriptorSet_);
 }
 
-void SPipelineResourceManager::CreateFrameDataBuffers()
+void GPipelineResourceManager::CreateFrameDataBuffers()
 {
 	for (auto& frameData : frameDatas_)
 	{
@@ -300,7 +300,7 @@ void SPipelineResourceManager::CreateFrameDataBuffers()
 	}
 }
 
-u32 SPipelineResourceManager::AllocateTextureSlot()
+u32 GPipelineResourceManager::AllocateTextureSlot()
 {
 	if (!freeTextureSlots_.empty())
 	{
@@ -312,7 +312,7 @@ u32 SPipelineResourceManager::AllocateTextureSlot()
 	return nextTextureSlot_++;
 }
 
-u32 SPipelineResourceManager::AllocateSamplerSlot()
+u32 GPipelineResourceManager::AllocateSamplerSlot()
 {
 	if (!freeSamplerSlots_.empty())
 	{

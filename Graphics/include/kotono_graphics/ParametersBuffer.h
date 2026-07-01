@@ -5,7 +5,7 @@
 #include <vector>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
-class SParametersBuffer final
+class GParametersBuffer final
 {
     using Data = UParametersBufferData;
 
@@ -34,11 +34,11 @@ private:
     Data* FindParametersSlot();
 
 private:
-    KtFramesInFlightArray<FrameData> frameDatas_;
+    UFramesInFlightArray<FrameData> frameDatas_;
 
     std::vector<Data> datas_;
     std::vector<Data*> freeDataSlots_;
     u32 dataCount_;
 };
 
-inline SParametersBuffer ParametersBuffer;
+inline GParametersBuffer ParametersBuffer;

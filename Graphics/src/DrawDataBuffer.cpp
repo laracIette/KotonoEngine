@@ -5,13 +5,13 @@
 
 static constexpr u32 MAX_DRAW_DATAS{ 65536 };
 
-void SDrawDataBuffer::Init()
+void GDrawDataBuffer::Init()
 {
     CreateBuffers();
     datas_.resize(MAX_DRAW_DATAS);
 }
 
-void SDrawDataBuffer::Cleanup() const
+void GDrawDataBuffer::Cleanup() const
 {
     for (const auto& frameData : frameDatas_)
     {
@@ -19,22 +19,22 @@ void SDrawDataBuffer::Cleanup() const
     }
 }
 
-UDrawDataBufferData* SDrawDataBuffer::RegisterDrawData()
+UDrawDataBufferData* GDrawDataBuffer::RegisterDrawData()
 {
     return FindDrawDataSlot();
 }
 
-void SDrawDataBuffer::UnregisterDrawData(Data* slot)
+void GDrawDataBuffer::UnregisterDrawData(Data* slot)
 {
     freeDataSlots_.push_back(slot);
 }
 
-u32 SDrawDataBuffer::GetIndex(const Data* slot) const
+u32 GDrawDataBuffer::GetIndex(const Data* slot) const
 {
     return static_cast<u32>(slot - datas_.data());
 }
 
-void SDrawDataBuffer::UpdateBuffer(const u32 frameIndex)
+void GDrawDataBuffer::UpdateBuffer(const u32 frameIndex)
 {
     std::memcpy(frameDatas_[frameIndex].mapped
         , datas_.data()
@@ -42,12 +42,12 @@ void SDrawDataBuffer::UpdateBuffer(const u32 frameIndex)
     );
 }
 
-VkDeviceAddress SDrawDataBuffer::GetAddress(const u32 frameIndex) const
+VkDeviceAddress GDrawDataBuffer::GetAddress(const u32 frameIndex) const
 {
     return frameDatas_[frameIndex].bda;
 }
 
-void SDrawDataBuffer::CreateBuffers()
+void GDrawDataBuffer::CreateBuffers()
 {
     for (auto& frameData : frameDatas_)
     {
@@ -87,7 +87,7 @@ void SDrawDataBuffer::CreateBuffers()
     }
 }
 
-UDrawDataBufferData* SDrawDataBuffer::FindDrawDataSlot()
+UDrawDataBufferData* GDrawDataBuffer::FindDrawDataSlot()
 {
     if (!freeDataSlots_.empty())
     {

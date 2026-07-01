@@ -95,7 +95,7 @@ std::vector<UAsset<UTexture>> KtFont::GetTextTextures(const std::string_view tex
 
     for (const auto& path : GetTextPaths(text))
     {
-        result.push_back(UAssetManager<UTexture>::Get(path));
+        result.push_back(SAssetManager<UTexture>::Get(path));
     }
 
     return result;

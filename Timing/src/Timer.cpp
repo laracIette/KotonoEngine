@@ -1,6 +1,52 @@
 #include "Timer.h"
 
-void KtTimer::Update(const float deltaTime)
+bool UTimer::GetIsPlaying() const
+{
+    return isPlaying_;
+}
+
+bool UTimer::GetIsRepeat() const
+{
+    return isRepeat_;
+}
+
+f32 UTimer::GetDuration() const
+{
+    return duration_;
+}
+
+UEvent<>& UTimer::EventCompleted()
+{
+    return eventCompleted_;
+}
+
+void UTimer::SetIsRepeat(const bool isRepeat)
+{
+    isRepeat_ = isRepeat;
+}
+
+void UTimer::SetDuration(const f32 duration)
+{
+    duration_ = duration;
+}
+
+void UTimer::Start(const bool isOverride)
+{
+    if (isPlaying_ && !isOverride)
+    {
+        return;
+    }
+
+    isPlaying_ = true;
+    current_ = 0.0f;
+}
+
+void UTimer::Stop()
+{
+    isPlaying_ = false;
+}
+
+void UTimer::Update(const f32 deltaTime)
 {
     if (!isPlaying_)
     {
@@ -24,50 +70,4 @@ void KtTimer::Update(const float deltaTime)
     {
         Stop();
     }
-}
-
-bool KtTimer::GetIsPlaying() const
-{
-    return isPlaying_;
-}
-
-bool KtTimer::GetIsRepeat() const
-{
-    return isRepeat_;
-}
-
-float KtTimer::GetDuration() const
-{
-    return duration_;
-}
-
-UEvent<>& KtTimer::EventCompleted()
-{
-    return eventCompleted_;
-}
-
-void KtTimer::SetIsRepeat(const bool isRepeat)
-{
-    isRepeat_ = isRepeat;
-}
-
-void KtTimer::SetDuration(const float duration)
-{
-    duration_ = duration;
-}
-
-void KtTimer::Start(const bool isOverride)
-{
-    if (isPlaying_ && !isOverride)
-    {
-        return;
-    }
-
-    isPlaying_ = true;
-    current_ = 0.0f;
-}
-
-void KtTimer::Stop()
-{
-    isPlaying_ = false;
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include <functional>
-class KtStopwatch final
+class UStopwatch final
 {
 public:
     using TimeFunction = std::function<void()>;

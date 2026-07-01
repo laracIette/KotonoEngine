@@ -7,15 +7,15 @@
 #include <kotono_input/Keyboard.h>
 #include <kotono_object/ObjectFactory.h>
 
-void SGame::Init()
+void GGame::Init()
 {
-	Keyboard.EventKey(EKey::S, EInputState::Pressed).AddListener(this, &SGame::OnKeySPressed);
+	Keyboard.EventKey(EKey::S, EInputState::Pressed).AddListener(this, &GGame::OnKeySPressed);
 
     //OpenStartupInterface();
     OpenStartupScene();
 }
 
-void SGame::Update(const float deltaTime)
+void GGame::Update(const float deltaTime)
 {
     if (interface_)
     {
@@ -27,7 +27,7 @@ void SGame::Update(const float deltaTime)
     }
 }
 
-void SGame::Cleanup()
+void GGame::Cleanup()
 {
     if (interface_)
     {
@@ -39,53 +39,53 @@ void SGame::Cleanup()
     }
 }
 
-bool SGame::IsPlaying() const
+bool GGame::IsPlaying() const
 {
     return state_ == EGameState::Playing;
 }
 
-bool SGame::IsPaused() const
+bool GGame::IsPaused() const
 {
     return state_ == EGameState::Paused;
 }
 
-bool SGame::IsStopped() const
+bool GGame::IsStopped() const
 {
     return state_ == EGameState::Stopped;
 }
 
-void SGame::Play()
+void GGame::Play()
 {
     SetState(EGameState::Playing);
 }
 
-void SGame::Pause()
+void GGame::Pause()
 {
     SetState(EGameState::Paused);
 }
 
-void SGame::Stop()
+void GGame::Stop()
 {
     SetState(EGameState::Stopped);
 }
 
-void SGame::OpenInterface(const UPtr<KInterface>& interface)
+void GGame::OpenInterface(const UPtr<KInterface>& interface)
 {
     interface_ = interface;
 }
 
-void SGame::OpenScene(const UPtr<KScene>& scene)
+void GGame::OpenScene(const UPtr<KScene>& scene)
 {
     scene_ = scene;
 }
 
-void SGame::OpenStartupInterface()
+void GGame::OpenStartupInterface()
 {
     interface_ = UCreate<KInterface>{}();
     interface_->SpawnInterfaceObjects();
 }
 
-void SGame::OpenStartupScene()
+void GGame::OpenStartupScene()
 {
     if (scene_)
     {
@@ -98,17 +98,17 @@ void SGame::OpenStartupScene()
     }
 }
 
-EGameState SGame::GetState() const
+EGameState GGame::GetState() const
 {
     return state_;
 }
 
-const UPtr<KScene>& SGame::GetOpenedScene() const
+const UPtr<KScene>& GGame::GetOpenedScene() const
 {
     return scene_;
 }
 
-void SGame::SetState(const EGameState state)
+void GGame::SetState(const EGameState state)
 {
     if (state_ == state)
     {
@@ -141,12 +141,12 @@ void SGame::SetState(const EGameState state)
     eventStateChanged_.Broadcast(state_);
 }
 
-UEvent<EGameState>& SGame::EventStateChanged()
+UEvent<EGameState>& GGame::EventStateChanged()
 {
     return eventStateChanged_;
 }
 
-void SGame::OnKeySPressed() const
+void GGame::OnKeySPressed() const
 {
     if (!Keyboard.KeyState(EKey::LeftControl, EInputState::Down))
     {

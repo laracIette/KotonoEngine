@@ -3,7 +3,7 @@
 #include <kotono_common/Event.h>
 class SCamera final
 {
-	friend class SEditor;
+	friend class GEditor;
 
 private:
 	void Init();

@@ -2,9 +2,9 @@
 #include "VisualizationField.h"
 #include <kotono_common/Event.h>
 #include <unordered_map>
-class SVisualizer final
+class GVisualizer final
 {
-	friend class SEditor;
+	friend class GEditor;
 
 private:
 	void Init();
@@ -17,4 +17,4 @@ private:
 	std::unordered_map<EVisualizationField, bool> fieldVisibilities_;
 };
 
-inline SVisualizer Visualizer;
+inline GVisualizer Visualizer;

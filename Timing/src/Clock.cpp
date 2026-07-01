@@ -1,16 +1,16 @@
 #include "Clock.h"
 #include <chrono>
 
-double KtClock::startUTC_{ KtClock::ExactUTC() };
+double SClock::startUTC_{ SClock::ExactUTC() };
 
-double KtClock::ExactUTC()
+double SClock::ExactUTC()
 {
 	const auto now{ std::chrono::system_clock::now() };
 	const auto duration{ now.time_since_epoch() };
 	return std::chrono::duration<double>(duration).count();
 }
 
-float KtClock::Now()
+float SClock::Now()
 {
 	return static_cast<float>(ExactUTC() - startUTC_);
 }

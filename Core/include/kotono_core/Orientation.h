@@ -1,7 +1,8 @@
 #pragma once
-enum class EOrientation : char
+#include <kotono_common/types.h>
+enum class EOrientation : u8
 {
 	Horizontal,
-	Vertical
+	Vertical,
 };
 

@@ -53,7 +53,7 @@ void UShader::CreateGraphicsPipeline()
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
 
 	nlohmann::json json{};
-	USerializer::Deserialize(json, path_);
+	SSerializer::Deserialize(json, path_);
 
 	for (const auto& shader : json["shaders"])
 	{

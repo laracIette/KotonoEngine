@@ -15,11 +15,12 @@
 #include <kotono_input/Mouse.h>
 #include <kotono_platform/Context.h>
 #include <kotono_platform/Window.h>
+#include <kotono_timing/Timer.h>
 #include <kotono_timing/TimerManager.h>
 
-void SCore::Init()
+void GCore::Init()
 {
-    USpvCompiler::CompileUpdated();
+    SSpvCompiler::CompileUpdated();
 
     Window.Init();
     Context.Init();
@@ -33,11 +34,11 @@ void SCore::Init()
     auto& logUPSTimer{ TimerManager.GetTimer("log ups timer") };
     logUPSTimer.SetDuration(1.0f);
     logUPSTimer.SetIsRepeat(true);
-    logUPSTimer.EventCompleted().AddListener(this, &SCore::LogUPS);
+    logUPSTimer.EventCompleted().AddListener(this, &GCore::LogUPS);
     logUPSTimer.Start();
 }
 
-void SCore::Update()
+void GCore::Update()
 {
     Keyboard.Update();
     Mouse.Update();
@@ -45,20 +46,20 @@ void SCore::Update()
     InterfacePhysicsManager.Update();
 }
 
-void SCore::Cleanup()
+void GCore::Cleanup()
 {
     Game.Cleanup();
     AudioManager.Cleanup();
-    UAssetManager<USampler>::Cleanup();
-    UAssetManager<UTexture>::Cleanup();
-    UAssetManager<UShader>::Cleanup();
-    UAssetManager<UModel>::Cleanup();
+    SAssetManager<USampler>::Cleanup();
+    SAssetManager<UTexture>::Cleanup();
+    SAssetManager<UShader>::Cleanup();
+    SAssetManager<UModel>::Cleanup();
     Renderer.Cleanup();
     Context.Cleanup();
     Window.Cleanup();
 }
 
-void SCore::LogUPS() const
+void GCore::LogUPS() const
 {
     KT_LOG(ELogImportanceLevel::High, "Core", "{:.2f} ups", 1.0f / TimeManager.AverageUpdateTime());
 }

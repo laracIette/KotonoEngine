@@ -5,7 +5,7 @@
 #include <vector>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
-class SDrawDataBuffer final
+class GDrawDataBuffer final
 {
     using Data = UDrawDataBufferData;
 
@@ -34,11 +34,11 @@ private:
     Data* FindDrawDataSlot();
 
 private:
-    KtFramesInFlightArray<FrameData> frameDatas_;
+    UFramesInFlightArray<FrameData> frameDatas_;
 
     std::vector<Data> datas_;
     std::vector<Data*> freeDataSlots_;
     u32 dataCount_;
 };
 
-inline SDrawDataBuffer DrawDataBuffer;
+inline GDrawDataBuffer DrawDataBuffer;

@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <kotono_common/Pool.h>
 
-class KtWindowViewport;
+class GWindowViewport;
 class KSceneComponent; 
 
 class TSceneObject : public KObject
@@ -25,12 +25,12 @@ protected:
 
 public:
 	bool GetCanUpdate() const;
-	KtWindowViewport* GetViewport() const;
+	GWindowViewport* GetViewport() const;
 	UPtr<TSceneObject>& GetParent();
 	UPtr<KSceneComponent>& RootComponent();
 
 	void SetCanUpdate(const bool canUpdate);
-	void SetViewport(KtWindowViewport* viewport);
+	void SetViewport(GWindowViewport* viewport);
 	void SetParent(const UPtr<TSceneObject>& parent, const ECoordinateSpace keepTransform);
 
 	template <std::derived_from<KSceneComponent> T>
@@ -55,7 +55,7 @@ private:
 private:
 	bool isInit_;
 	bool canUpdate_;
-	KtWindowViewport* viewport_;
+	GWindowViewport* viewport_;
 	UPtr<TSceneObject> parent_;
 	SERIALIZE UPtr<KSceneComponent> rootComponent_;
 	SERIALIZE UPool<UPtr<KSceneComponent>> sceneComponents_;

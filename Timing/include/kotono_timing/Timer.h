@@ -1,29 +1,30 @@
 #pragma once
 #include <kotono_common/Event.h>
-class KtTimer final
+#include <kotono_common/types.h>
+class UTimer final
 {
-	friend class KtTimerManager;
+	friend class GTimerManager;
 
 public:
 	bool GetIsPlaying() const;
 	bool GetIsRepeat() const;
-	float GetDuration() const;
+	f32 GetDuration() const;
 	UEvent<>& EventCompleted();
 
 	void SetIsRepeat(const bool isRepeat);
-	void SetDuration(const float duration);
+	void SetDuration(const f32 duration);
 
 	void Start(const bool isOverride = true);
 	void Stop();
 
 private:
-	void Update(const float deltaTime);
+	void Update(const f32 deltaTime);
 
 private:
 	bool isPlaying_;
 	bool isRepeat_;
-	float duration_;
-	float current_;
+	f32 duration_;
+	f32 current_;
 	UEvent<> eventCompleted_;
 	size index_;
 };

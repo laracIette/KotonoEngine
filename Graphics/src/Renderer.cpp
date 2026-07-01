@@ -639,7 +639,7 @@ void GRenderer::UnregisterDrawCall(UDrawCall* drawCall)
 	}
 
 	const auto index{ drawCall->poolIndex };
-	if (drawCalls_.RemoveAt(index) == KtPoolRemoveResult::ItemSwappedAndRemoved)
+	if (drawCalls_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
 	{
 		drawCalls_[index]->poolIndex = index;
 	}
