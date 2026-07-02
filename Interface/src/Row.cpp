@@ -4,6 +4,11 @@
 #include <glm/common.hpp>
 #include <ranges>
 
+WRow::WRow(const f32 spacing)
+	: spacing_{ spacing }
+{
+}
+
 UWidgetDisplaySettings WRow::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	glm::vec2 size{ 0.0f, 0.0f };

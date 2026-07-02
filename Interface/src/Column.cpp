@@ -3,6 +3,11 @@
 #include <kotono_common/enum_utils.h>
 #include <glm/common.hpp>
 
+WColumn::WColumn(const f32 spacing)
+	: spacing_{ spacing }
+{
+}
+
 UWidgetDisplaySettings WColumn::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	glm::vec2 size{ 0.0f, 0.0f };

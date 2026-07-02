@@ -15,13 +15,6 @@ WAssetExplorer::WAssetExplorer()
 
 WidgetPtr WAssetExplorer::Build()
 {
-	UPtr mainColumn{ UCreate<WColumn>{ "Asset Explorer Main Column" }()};
-	mainColumn->SetSpacing(4.0f);
-
-	UPtr navigationRow{ UCreate<WRow>{ "Asset Explorer Navigation Row" }() };
-	navigationRow->SetSpacing(4.0f);
-
-
 	UPtr upText{ UCreate<WText>{ "Directory Up Text" }()};
 	upText->SetText("Up");
 	upText->SetFontSize({ 16.0f, 20.0f });
@@ -46,13 +39,13 @@ WidgetPtr WAssetExplorer::Build()
 	nextButton->SetOnClicked([this]() { NavigateNext(); });
 
 
-	//itemList_ = UCreate<WHorizontalWrapList>{ "Item List" }();
-	//itemList_->SetItemSpacing(10.0f);
-	//itemList_->SetRowSpacing(10.0f);
-	//PopulateItemList();
+	itemList_ = UCreate<WHorizontalWrapList>{ "Item List" }();
+	itemList_->SetItemSpacing(10.0f);
+	itemList_->SetRowSpacing(10.0f);
+	PopulateItemList();
 
-	const auto widgetTree{ UChildrenOwnerTree{ mainColumn, {
-		new UChildrenOwnerTree{ navigationRow, {
+	const auto widgetTree{ UChildrenOwnerTree{ UCreate<WColumn>{ "Asset Explorer Main Column" }(4.0f), {
+		new UChildrenOwnerTree{ UCreate<WRow>{ "Asset Explorer Navigation Row" }(4.0f), {
 			new UChildOwnerTree{ UCreate<WWrap>{}(),
 				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
 					new UWidgetTreeLeaf{ UCreate<WColor>{}(Colors::White.WithValue(0.25f)) },
@@ -77,9 +70,9 @@ WidgetPtr WAssetExplorer::Build()
 		} },
 		new UChildrenOwnerTree{ UCreate<WStack>{ "Item List Stack" }(), {
 			new UWidgetTreeLeaf{ UCreate<WColor>{ "Item List Background" }(Colors::White.WithValue(0.25f).WithAlpha(0.9f))},
-			//new UChildOwnerTree{ UCreate<WPadding>{ "Item List Padding" }(UPadding::All(8.0f)),
-			//	new UWidgetTreeLeaf{ itemList_ }
-			//},
+			new UChildOwnerTree{ UCreate<WPadding>{ "Item List Padding" }(UPadding::All(8.0f)),
+				new UWidgetTreeLeaf{ itemList_ }
+			},
 		} },
 	} } }; 
 	widgetTree.Link();

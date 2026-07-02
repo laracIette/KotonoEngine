@@ -7,6 +7,9 @@ class WColumn final : public WChildrenOwner
 	GENERATED_WCOLUMN()
 
 public:
+	WColumn(const f32 spacing = 0.0f);
+
+public:
 	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
 	glm::vec2 GetDesiredSize(const glm::vec2& bounds) const override;
 
@@ -20,6 +23,6 @@ private:
 	size GetExpandCount() const;
 
 private:
-	StateProperty(float, spacing_, Spacing);
+	StateProperty(f32, spacing_, Spacing);
 };
 

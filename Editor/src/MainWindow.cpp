@@ -33,28 +33,10 @@ WidgetPtr WMainWindow::Build()
 	UPtr assetExplorerConstraint{ UCreate<WConstraint>{ "Asset Explorer Constraint" }() };
 	assetExplorerConstraint->SetAxis(EAxis::Vertical);
 	assetExplorerConstraint->SetSize(200.0f);
-	
-	UPtr leftPanelColumn{ UCreate<WColumn>{ "Left Panel Column" }()};
-	leftPanelColumn->SetSpacing(10.0f);
-	
-	UPtr rightPanelColumn{ UCreate<WColumn>{}() };
-	rightPanelColumn->SetSpacing(4.0f);
-	
-	UPtr rightPanelPadding{ UCreate<WPadding>{}() };
-	rightPanelPadding->SetPadding(UPadding::All(8.0f));
-	
-	UPtr centerRow{ UCreate<WRow>{ "Center Row" }()};
-	centerRow->SetSpacing(10.0f);
-	
-	UPtr mainColumn{ UCreate<WColumn>{ "Main Window Column" }() };
-	mainColumn->SetSpacing(5.0f);
-	
-	UPtr mainPadding{ UCreate<WPadding>{ "Main Window Padding" }() };
-	mainPadding->SetPadding(UPadding::All(16.0f));
 
 
-	const auto widgetTree{ UChildOwnerTree{ mainPadding,
-		new UChildrenOwnerTree{ mainColumn, {
+	const auto widgetTree{ UChildOwnerTree{ UCreate<WPadding>{ "Main Window Padding" }(UPadding::All(16.0f)),
+		new UChildrenOwnerTree{ UCreate<WColumn>{ "Main Window Column" }(5.0f), {
 			new UChildrenOwnerTree{ UCreate<WRow>{ "Top Row" }(), {
 				new UWidgetTreeLeaf{ UCreate<WSpacer>{ "Top Row Spacer" }(EAxis::Horizontal) },
 				new UChildOwnerTree{ UCreate<WWrap>{ "Times Wrap" }(),
@@ -71,9 +53,9 @@ WidgetPtr WMainWindow::Build()
 					},
 				} }
 			},
-			new UChildrenOwnerTree{ centerRow, {
+			new UChildrenOwnerTree{ UCreate<WRow>{ "Center Row" }(10.0f), {
 				new UChildOwnerTree{ UCreate<WExpanded>{ "Left Panel Expanded" }(), {
-					new UChildrenOwnerTree{ leftPanelColumn, {
+					new UChildrenOwnerTree{ UCreate<WColumn>{ "Left Panel Column" }(10.0f), {
 						new UChildOwnerTree{ sceneExplorerConstraint,
 							new UWidgetTreeLeaf{ UCreate<WSceneExplorer>{ "Scene Explorer" }()}
 						},
@@ -86,10 +68,10 @@ WidgetPtr WMainWindow::Build()
 				new UChildOwnerTree{ UCreate<WWrap>{ "Right Panel Wrap" }(EAxis::Horizontal),
 					new UChildrenOwnerTree{ UCreate<WStack>{ "Right Panel Stack" }(), {
 						new UWidgetTreeLeaf{ UCreate<WColor>{ "Right Panel Background" }(Colors::Magenta.WithAlpha(0.9f))},
-						new UChildOwnerTree{ rightPanelPadding,
-							new UChildrenOwnerTree{ rightPanelColumn, {
-								new UWidgetTreeLeaf{ UCreate<WVisualizerWindow>{}() },
-								new UWidgetTreeLeaf{ UCreate<WPropertiesWindow>{}() },
+						new UChildOwnerTree{ UCreate<WPadding>{ "Right Panel Padding" }(UPadding::All(8.0f)),
+							new UChildrenOwnerTree{ UCreate<WColumn>{ "Right Panel Column" }(4.0f), {
+								new UWidgetTreeLeaf{ UCreate<WVisualizerWindow>{ "Visualizer Window" }() },
+								new UWidgetTreeLeaf{ UCreate<WPropertiesWindow>{ "Properties Window" }() },
 							} }
 						},
 					} }
@@ -97,7 +79,6 @@ WidgetPtr WMainWindow::Build()
 			} },
 		} }
 	} };
-	
 	widgetTree.Link();
 	
 	return widgetTree.Widget();
