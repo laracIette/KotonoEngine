@@ -219,7 +219,7 @@ UPtr<{0}> {0}::Ptr() const
 
 	const UPath fileDirectory{ reflectionResult.path.Directory().Directory().Directory() / "src" };
 	const UPath fileName{ reflectionResult.path.ToPath().filename().replace_extension(".generated.inl") };
-	UFile(fileDirectory / "generated" / fileName).WriteString(generatedCode);
+	UFile{ fileDirectory / "generated" / fileName }.WriteString(generatedCode);
 }
 
 SGenerator::ClassInfo SGenerator::GetClassInfo(const UReflectionResult& reflectionResult)

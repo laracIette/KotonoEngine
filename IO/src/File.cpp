@@ -1,5 +1,4 @@
 #include "File.h"
-#include <fstream>
 #include <sstream>
 #include <iostream>
 #include <kotono_common/log.h>
@@ -7,12 +6,12 @@
 #define KT_LOG_IMPORTANCE_LEVEL_FILE ELogImportanceLevel::High
 
 UFile::UFile(const UPath& path) 
-    : path_(path)
+    : path_{ path }
 {
 }
 
 UFile::UFile(UPath&& path) 
-    : path_(std::move(path))
+    : path_{ std::move(path) }
 {
 }
 
@@ -108,11 +107,11 @@ std::vector<u8> UFile::ReadBinary() const
 void UFile::WriteString(const std::string_view data) const
 {
     // Open file for writing
-    std::ofstream file(path_.ToPath(), std::ios::out | std::ios::trunc);
+    auto file{ OpenFile() };
 
     if (!file.is_open())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to open the file at {}", path_.ToString());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to open the file at {0}", path_.ToString());
         return;
     }
 
@@ -126,7 +125,7 @@ void UFile::WriteString(const std::string_view data) const
 void UFile::WriteBinary(const std::span<u32> data) const
 {
     // Open file for writing in binary mode
-    std::ofstream file(path_.ToPath(), std::ios::out | std::ios::binary | std::ios::trunc);
+    auto file{ OpenFile() };
 
     if (!file.is_open())
     {
@@ -139,4 +138,17 @@ void UFile::WriteBinary(const std::span<u32> data) const
 
     // Close file
     file.close();
+}
+
+std::ofstream UFile::OpenFile() const
+{
+    const auto parentDir{ path_.ToPath().parent_path() };
+
+    // Create the directories if they don't exist
+    if (!parentDir.empty())
+    {
+        std::filesystem::create_directories(parentDir);
+    }
+
+    return std::ofstream{ path_.ToPath(), std::ios::out | std::ios::binary | std::ios::trunc };
 }
