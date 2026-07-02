@@ -14,7 +14,15 @@ static constinit u32 Count{ 0 };
 
 #define KT_LOG_IMPORTANCE_LEVEL_WIDGET ELogImportanceLevel::Medium
 
-static EAxis getUpdatedAxis(const glm::vec2& left, const glm::vec2& right) noexcept;
+static EFlex getUpdatedFlex(const glm::vec2& left, const glm::vec2& right) noexcept
+{
+	if (left.x != right.x)
+	{
+		if (left.y != right.y)	return EFlex::All;
+		else					return EFlex::Horizontal;
+	}
+	return EFlex::Vertical;
+}
 
 WWidget::WWidget() 
 	: build_{}
@@ -129,11 +137,11 @@ WidgetVector WWidget::WidgetTree() const
 	return { Ptr() };
 }
 
-std::string WWidget::ClassPath() const
+std::string WWidget::GetClassPath() const
 {
 	if (parent_)
 	{
-		return std::format("{0} {1}", parent_->ClassPath(), TypeName());
+		return std::format("{0} {1}", parent_->GetClassPath(), TypeName());
 	}
 	return TypeName();
 }
@@ -186,9 +194,9 @@ void WWidget::SetState(const StateFunction& function)
 		{
 			Display(slotDisplaySettings_);
 		}
-		else if (UPtr ancestor{ FindNonFlexAncestor(getUpdatedAxis(oldDesiredSize, newDesiredSize)) })
+		else if (UPtr ancestor{ FindNonFlexAncestor(getUpdatedFlex(oldDesiredSize, newDesiredSize)) })
 		{
-			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_WIDGET, "Interface", "ancestor: {0}", ancestor->GetName());
+			KT_LOG(ELogImportanceLevel::High, "Interface", "ancestor: {0}", ancestor->GetName());
 			ancestor->Remove();
 			ancestor->Display(ancestor->slotDisplaySettings_);
 		}
@@ -254,27 +262,27 @@ void WWidget::OnMouseMove(const glm::vec2 delta)
 	if (!wasMouseHovering_)
 	{
 		wasMouseHovering_ = true;
-		KT_LOG(ELogImportanceLevel::Medium, "Interface", "overlapping {0:20} | position: {1:30}, size: {2:30}", GetName(), glm::to_string(GetPosition()), glm::to_string(GetSize()));
+		KT_LOG(ELogImportanceLevel::Medium, "Interface", "overlapping {0:30} | {1:100} | | position: {2:30} | size: {3:30} | | slot | position: {4:30} | bounds: {5:30}", GetName(), GetClassPath(), glm::to_string(GetPosition()), glm::to_string(GetSize()), glm::to_string(slotDisplaySettings_.position), glm::to_string(slotDisplaySettings_.bounds));
 	}
 }
 
-UPtr<WWidget> WWidget::FindNonFlexAncestor(const EAxis axis) const
+WidgetPtr WWidget::FindNonFlexAncestor(const EFlex flex) const
 {
 	if (!parent_)
 	{
 		return Ptr();
 	}
 
-	if (!has_flag(parent_->GetFlex(), static_cast<EFlex>(axis)))
+	if (!has_flag(parent_->GetFlex(), flex))
 	{
 		return parent_;
 	}
 
-	return parent_->FindNonFlexAncestor(axis);
+	return parent_->FindNonFlexAncestor(flex);
 }
 
 UWidgetTreeLeaf::UWidgetTreeLeaf(const WidgetPtr& widget)
-	: widget_(widget)
+	: widget_{ widget }
 {
 }
 
@@ -285,15 +293,6 @@ WidgetPtr UWidgetTreeLeaf::Widget() const
 
 void UWidgetTreeLeaf::Link() const
 {
-}
-
-EAxis getUpdatedAxis(const glm::vec2& left, const glm::vec2& right) noexcept
-{
-	return left.x != right.x
-		? left.y != right.y
-			? EAxis::All
-			: EAxis::Horizontal
-		: EAxis::Vertical;
 }
 
 #include "generated/Widget.generated.inl"

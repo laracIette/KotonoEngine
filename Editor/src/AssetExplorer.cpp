@@ -15,46 +15,43 @@ WAssetExplorer::WAssetExplorer()
 
 WidgetPtr WAssetExplorer::Build()
 {
-	UPtr mainColumn{ UCreate<WColumn>{}() };
+	UPtr mainColumn{ UCreate<WColumn>{ "Asset Explorer Main Column" }()};
 	mainColumn->SetSpacing(4.0f);
 
-	UPtr navigationRow{ UCreate<WRow>{}() };
+	UPtr navigationRow{ UCreate<WRow>{ "Asset Explorer Navigation Row" }() };
 	navigationRow->SetSpacing(4.0f);
 
 
-	UPtr upText{ UCreate<WText>{}() };
+	UPtr upText{ UCreate<WText>{ "Directory Up Text" }()};
 	upText->SetText("Up");
 	upText->SetFontSize({ 16.0f, 20.0f });
 
-	UPtr upButton{ UCreate<WButton>{}() };
+	UPtr upButton{ UCreate<WButton>{ "Directory Up Button" }() };
 	upButton->SetOnClicked([this]() { Push(path_.Directory()); });
 
 
-	UPtr previousText{ UCreate<WText>{}() };
+	UPtr previousText{ UCreate<WText>{ "Directory Prev Text" }() };
 	previousText->SetText("Prev");
 	previousText->SetFontSize({ 16.0f, 20.0f });
 
-	UPtr previousButton{ UCreate<WButton>{}() };
+	UPtr previousButton{ UCreate<WButton>{ "Directory Prev Button" }() };
 	previousButton->SetOnClicked([this]() { NavigatePrevious(); });
 
 
-	UPtr nextText{ UCreate<WText>{}() };
+	UPtr nextText{ UCreate<WText>{ "Directory Next Text" }() };
 	nextText->SetText("Next");
 	nextText->SetFontSize({ 16.0f, 20.0f });
 
-	UPtr nextButton{ UCreate<WButton>{}() };
+	UPtr nextButton{ UCreate<WButton>{ "Directory Next Button" }() };
 	nextButton->SetOnClicked([this]() { NavigateNext(); });
 
 
-	UPtr explorerPadding{ UCreate<WPadding>{}() };
-	explorerPadding->SetPadding(UPadding::All(8.0f));
+	//itemList_ = UCreate<WHorizontalWrapList>{ "Item List" }();
+	//itemList_->SetItemSpacing(10.0f);
+	//itemList_->SetRowSpacing(10.0f);
+	//PopulateItemList();
 
-	itemList_ = UCreate<WHorizontalWrapList>{}();
-	itemList_->SetItemSpacing(10.0f);
-	itemList_->SetRowSpacing(10.0f);
-	PopulateItemList();
-
-	UChildrenOwnerTree{ mainColumn, {
+	const auto widgetTree{ UChildrenOwnerTree{ mainColumn, {
 		new UChildrenOwnerTree{ navigationRow, {
 			new UChildOwnerTree{ UCreate<WWrap>{}(),
 				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
@@ -78,15 +75,16 @@ WidgetPtr WAssetExplorer::Build()
 				} }
 			},
 		} },
-		new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-			new UWidgetTreeLeaf{ UCreate<WColor>{}(Colors::White.WithValue(0.25f)) },
-			new UChildOwnerTree{ explorerPadding,
-				new UWidgetTreeLeaf{ itemList_ }
-			},
+		new UChildrenOwnerTree{ UCreate<WStack>{ "Item List Stack" }(), {
+			new UWidgetTreeLeaf{ UCreate<WColor>{ "Item List Background" }(Colors::White.WithValue(0.25f).WithAlpha(0.9f))},
+			//new UChildOwnerTree{ UCreate<WPadding>{ "Item List Padding" }(UPadding::All(8.0f)),
+			//	new UWidgetTreeLeaf{ itemList_ }
+			//},
 		} },
-	} }.Link();
+	} } }; 
+	widgetTree.Link();
 
-	return mainColumn;
+	return widgetTree.Widget();
 }
 
 void WAssetExplorer::Display(UWidgetDisplaySettings displaySettings)

@@ -72,17 +72,19 @@ WidgetPtr WMainWindow::Build()
 				} }
 			},
 			new UChildrenOwnerTree{ centerRow, {
-				new UChildrenOwnerTree{ leftPanelColumn, {
-					new UChildOwnerTree{ sceneExplorerConstraint,
-						new UWidgetTreeLeaf{ UCreate<WSceneExplorer>{}() }
-					},
-					new UChildOwnerTree{ assetExplorerConstraint,
-						new UWidgetTreeLeaf{ UCreate<WAssetExplorer>{ "Asset Explorer" }() }
-					},
+				new UChildOwnerTree{ UCreate<WExpanded>{ "Left Panel Expanded" }(), {
+					new UChildrenOwnerTree{ leftPanelColumn, {
+						new UChildOwnerTree{ sceneExplorerConstraint,
+							new UWidgetTreeLeaf{ UCreate<WSceneExplorer>{ "Scene Explorer" }()}
+						},
+						new UChildOwnerTree{ assetExplorerConstraint,
+							new UWidgetTreeLeaf{ UCreate<WAssetExplorer>{ "Asset Explorer" }() }
+						},
+					} }
 				} },
-				new UWidgetTreeLeaf{ UCreate<WSpacer>{ "Center Row Spacer" }(EAxis::Horizontal) },
+
 				new UChildOwnerTree{ UCreate<WWrap>{ "Right Panel Wrap" }(EAxis::Horizontal),
-					new UChildrenOwnerTree{ UCreate<WStack>{}(), {
+					new UChildrenOwnerTree{ UCreate<WStack>{ "Right Panel Stack" }(), {
 						new UWidgetTreeLeaf{ UCreate<WColor>{ "Right Panel Background" }(Colors::Magenta.WithAlpha(0.9f))},
 						new UChildOwnerTree{ rightPanelPadding,
 							new UChildrenOwnerTree{ rightPanelColumn, {

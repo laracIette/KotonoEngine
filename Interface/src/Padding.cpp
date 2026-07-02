@@ -1,5 +1,10 @@
 #include "Padding.h"
 
+WPadding::WPadding(const UPadding& padding)
+	: padding_{ padding }
+{
+}
+
 UWidgetDisplaySettings WPadding::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	displaySettings.bounds.x -= padding_.l;

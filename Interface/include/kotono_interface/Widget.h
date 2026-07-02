@@ -64,7 +64,7 @@ public:
 	virtual EFlex GetFlex() const;
 
 	virtual WidgetVector WidgetTree() const;
-	std::string ClassPath() const;
+	std::string GetClassPath() const;
 
 	bool IsMouseHovering() const;
 
@@ -91,7 +91,7 @@ private:
 	bool IsRenderable(const UWidgetDisplaySettings& displaySettings) const;
 
 	void OnMouseMove(const glm::vec2 delta);
-	UPtr<WWidget> FindNonFlexAncestor(const EAxis axis) const;
+	WidgetPtr FindNonFlexAncestor(const EFlex flex) const;
 
 private:
 	WritableProperty(WidgetPtr, parent_, Parent);
