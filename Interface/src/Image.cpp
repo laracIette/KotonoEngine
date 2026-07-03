@@ -35,7 +35,7 @@ void WImage::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	drawCallBuilder_.GetDrawCall()->renderBucket = ERenderBucket::Interface;
 	drawCallBuilder_.GetDrawCall()->sortKey = GetLayer();
 
-	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader2D.ktshader") })
+	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/shader2D.kasset") })
 	{
 		drawCallBuilder_.GetDrawCall()->pipeline = shader->GetGraphicsPipeline();
 	}

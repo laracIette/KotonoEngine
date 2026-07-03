@@ -19,7 +19,7 @@ WidgetPtr WSceneExplorerAddButton::Build()
 	button->SetOnPressed([]() {
 		if (UPtr scene{ Game.GetOpenedScene() })
 		{
-			UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader3D.ktshader") };
+			UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/shader3D.kasset") };
 			UAsset model1{ SAssetManager<UModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.obj") };
 			UAsset model2{ SAssetManager<UModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/column.obj") };
 

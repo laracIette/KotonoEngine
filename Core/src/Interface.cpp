@@ -9,7 +9,7 @@
 
 KInterface::KInterface()
 {
-	UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/shaders/shader2D.ktshader") };
+	UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/shader2D.kasset") };
 	UAsset texture1{ SAssetManager<UTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png") };
 	UAsset texture2{ SAssetManager<UTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/default_texture.jpg") };
 
