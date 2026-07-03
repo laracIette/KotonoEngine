@@ -5,17 +5,17 @@
 #include <kotono_io/Serializer.h>
 #include <nlohmann/json.hpp>
 
-#if defined(_DEBUG)
+#ifndef NDEBUG
 std::unordered_set<UPtr<KObject>> KObject::debugRegistry_{};
 #endif 
 
-KObject::KObject() 
+KObject::KObject()
     : ptrOwner_{ new UPtrOwner{} }
     , name_{ guid_ }
 {
     ptrOwner_->Set(this);
 
-#if defined(_DEBUG)
+#ifndef NDEBUG
     debugRegistry_.insert(Ptr());
 #endif
 }
@@ -30,7 +30,7 @@ KObject::~KObject()
         }
     }
 
-#if defined (_DEBUG)
+#ifndef NDEBUG
     debugRegistry_.erase(Ptr());
 #endif
 
@@ -100,7 +100,7 @@ UPtr<KObject> KObject::Deserialize(const nlohmann::json& json)
     return SObjectFactory::Get().Get(guid);
 }
 
-#if defined (_DEBUG)
+#ifndef NDEBUG
 void KObject::CheckDebugRegistry()
 {
     if (!debugRegistry_.empty())

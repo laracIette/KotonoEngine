@@ -107,7 +107,7 @@ private:
 	SERIALIZE ReadonlyProperty(UGuid, guid_, Guid);
 	SERIALIZE WritableProperty(std::string, name_, Name);
 
-#if defined(_DEBUG)
+#ifndef NDEBUG
 public:
 	static void CheckDebugRegistry();
 
@@ -125,7 +125,7 @@ template <std::derived_from<KObject> T>
 struct UCreate final
 {
 public:
-#if defined (_DEBUG)
+#ifndef NDEBUG
 	constexpr UCreate(const std::string& name = "", const std::source_location& loc = std::source_location::current())
 		: name_{ name }
 		, loc_{ loc }
@@ -148,7 +148,7 @@ public:
 			object->SetName(name_);
 		}
 
-#	if defined (_DEBUG)
+#	ifndef NDEBUG
 		object->sourceFile = loc_.file_name();
 		object->sourceFunc = loc_.function_name();
 		object->sourceLine = loc_.line();
@@ -160,7 +160,7 @@ public:
 private:
 	const std::string name_;
 
-#if defined (_DEBUG)
+#ifndef NDEBUG
 	const std::source_location loc_;
 #endif
 };

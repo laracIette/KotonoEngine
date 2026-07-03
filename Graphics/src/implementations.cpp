@@ -1,10 +1,10 @@
 #include <kotono_common/LogImportanceLevel.h>
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 
 #ifndef VMA_LOG_IMPORTANCE_LEVEL
 #define VMA_LOG_IMPORTANCE_LEVEL ELogImportanceLevel::Low
-#endif // VMA_LOG_IMPORTANCE_LEVEL
+#endif
 
 #define VMA_DEBUG_LOG(format, ...)                            \
 	if constexpr (KT_SHOULD_LOG(VMA_LOG_IMPORTANCE_LEVEL))    \
@@ -14,7 +14,7 @@
 
 #define VMA_DEBUG_INITIALIZE_ALLOCATIONS 1 
 
-#endif // _DEBUG
+#endif
 
 #define VMA_IMPLEMENTATION
 #include <vma/vk_mem_alloc.h> 

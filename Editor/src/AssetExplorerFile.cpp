@@ -7,7 +7,7 @@
 #endif
 
 WAssetExplorerFile::WAssetExplorerFile(const UPath& path)
-	: WAssetExplorerItem(path, 
+	: Base(path, 
         [](const UPath& path)
         {
             const auto string{ std::format("\"{0}\"", path.ToString()) };

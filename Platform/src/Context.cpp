@@ -19,10 +19,10 @@ static constexpr std::array DEVICE_EXTENSIONS
 	VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 };
 
-#if defined (_DEBUG)
-static constexpr bool ENABLE_VALIDATION_LAYERS{ true };
-#else
+#ifdef NDEBUG
 static constexpr bool ENABLE_VALIDATION_LAYERS{ false };
+#else
+static constexpr bool ENABLE_VALIDATION_LAYERS{ true };
 #endif
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)

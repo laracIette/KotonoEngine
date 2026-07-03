@@ -8,7 +8,7 @@
 #include <kotono_common/enum_utils.h>
 #include <kotono_platform/glm_utils.h>
 
-#if defined (_DEBUG)
+#ifndef NDEBUG
 static constinit u32 Count{ 0 };
 #endif
 

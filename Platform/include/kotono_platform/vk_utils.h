@@ -1,9 +1,9 @@
 #pragma once
 
-#if defined (_DEBUG)
-#define VK_CHECK_THROW(x, msg) VulkanCheckAndThrow(x, msg)
-#else
+#ifdef NDEBUG
 #define VK_CHECK_THROW(x, msg) x
+#else
+#define VK_CHECK_THROW(x, msg) VulkanCheckAndThrow(x, msg)
 #endif
 
 enum VkResult;

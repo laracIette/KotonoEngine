@@ -2,7 +2,12 @@
 
 #include "LogImportanceLevel.h"
 
-#ifdef _DEBUG
+#ifndef NDEBUG
+
+#define KT_LOG(level, format, ...)
+
+#else
+
 #include <format>
 #include <iostream>
 #include <print>
@@ -14,8 +19,5 @@ void log_internal(const char* category, const char* funcName, std::format_string
 }
 
 #define KT_LOG(level, category, format, ...) if constexpr (KT_SHOULD_LOG(level)) log_internal(category, __FUNCTION__, format, __VA_ARGS__)
-    
-
-#else
-#define KT_LOG(level, format, ...)
-#endif // _DEBUG
+  
+#endif
