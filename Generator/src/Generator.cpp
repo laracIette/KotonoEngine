@@ -40,7 +40,7 @@ void SGenerator::GenerateUpdated()
 	const auto& reflectionResults{ Reflector.GetReflectionResults() };
 	for (const auto& reflectionResult : reflectionResults)
 	{
-		const UFile file(reflectionResult.path);
+		const UFile file{ reflectionResult.path };
 
 		const auto entryPath{ reflectionResult.path.ToString() };
 		const auto ftime{ file.LastWriteTime() };

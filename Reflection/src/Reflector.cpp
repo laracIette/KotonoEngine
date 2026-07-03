@@ -14,7 +14,7 @@ void GReflector::Reflect()
 	for (const auto& file : json.at("files"))
 	{
 		const UPath filePath{ file };
-		const auto content{ UFile(filePath).ReadString() };
+		const auto content{ UFile{ filePath }.ReadString() };
 
 		const UReflectionResult reflectionResult{
 			.path = filePath,
