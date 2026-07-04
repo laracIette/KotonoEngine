@@ -64,7 +64,6 @@ void UTimer::Update(const f32 deltaTime)
     if (isRepeat_)
     {
         current_ -= duration_;
-        Start();
     }
     else
     {

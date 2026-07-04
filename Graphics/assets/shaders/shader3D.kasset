@@ -30,7 +30,7 @@
   "depthStencil": {
     "depthTestEnable": true,
     "depthWriteEnable": true,
-    "depthCompareOp": 1,
+    "depthCompareOp": 4,
     "depthBoundsTestEnable": false,
     "minDepthBounds": 0.0,
     "maxDepthBounds": 1.0,

@@ -27,7 +27,6 @@ private:
 	// Vertical fov in degrees
 	float fov_;
 	float depthNear_;
-	float depthFar_;
 	float speed_;
 	float sensitivity_;
 	float pitch_;

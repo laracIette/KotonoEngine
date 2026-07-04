@@ -12,8 +12,7 @@
 void SCamera::Init()
 {
 	fov_ = 90.0f;
-	depthNear_ = 0.01f;
-	depthFar_ = 1000.0f;
+	depthNear_ = 0.1f;
 	speed_ = 1.0f;
 	sensitivity_ = 0.005f;
 
@@ -166,16 +165,14 @@ void SCamera::OnMouseVerticalScroll(const float delta)
 
 void SCamera::OnEventUpdateTransform() const
 {
-	const auto view{ glm::lookAt(transform_.position, transform_.position + ForwardVector(), UpVector()) };
-	auto proj{ glm::perspective(glm::radians(fov_), WindowViewport.GetAspectRatio(), depthNear_, depthFar_) };
-	proj[1][1] *= -1.0f;
+	const auto view{ glm::lookAt(transform_.position, transform_.position + ForwardVector(), UpVector()) };	
+	const auto proj{ calculate_reverse_z_infinite_perspective(glm::radians(fov_), WindowViewport.GetAspectRatio(), depthNear_) };
 
-	//Renderer.SceneRenderer().SetUniformData(ubo);
 	PipelineResourceManager.SetFrameUBO({
 		.view = view,
 		.proj = proj,
 		.viewProj = proj * view,
-		.viewPos = glm::vec4{ transform_.position, 1.0f },
+		.viewPos = glm::vec4{ transform_.position, 0.0f },
 		.time = TimeManager.Now(),
 	});
 }

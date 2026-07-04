@@ -2,7 +2,7 @@
 
 #include "LogImportanceLevel.h"
 
-#ifndef NDEBUG
+#ifdef NDEBUG
 
 #define KT_LOG(level, format, ...)
 

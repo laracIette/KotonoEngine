@@ -536,7 +536,7 @@ void GRenderer::CmdBeginRendering(VkCommandBuffer commandBuffer, const u32 frame
 		.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
 		.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
 		.clearValue{
-			.depthStencil = { 1.0f, 0 },
+			.depthStencil = { 0.0f, 0 }, // 0.0f instead of 1.0f because of reverse depth
 		},
 	};
 
