@@ -1,11 +1,9 @@
 #version 460
-#include "../common.glsl"
-
-layout(location = 0) out vec4 outColor;
+#include "../common_frag.glsl"
 
 void main() 
 {
-    UNPACK_PUSH_CONSTANTS_FRAG
+    UNPACK_PUSH_CONSTANTS
 
     const vec4 colorParam = parameters.vectors[0];
 

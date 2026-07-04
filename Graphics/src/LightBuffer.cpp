@@ -1,14 +1,14 @@
-#include "MaterialBuffer.h"
+#include "LightBuffer.h"
 #include <assert.h>
 #include <kotono_platform/Context.h>
 
-static constexpr u32 MAX_MATERIALS{ 4096 };
+static constexpr u32 MAX_LIGHTS{ 32 };
 
-void GMaterialBuffer::Init()
+void GLightBuffer::Init()
 {
     const VkBufferCreateInfo bufInfo{
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = sizeof(Material) * MAX_MATERIALS,
+        .size = sizeof(Light) * MAX_LIGHTS,
         .usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
             | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
             | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
@@ -31,23 +31,28 @@ void GMaterialBuffer::Init()
     bda_ = vkGetBufferDeviceAddress(Context.GetDevice(), &addrInfo);
 }
 
-void GMaterialBuffer::Cleanup() const
+void GLightBuffer::Cleanup() const
 {
     vmaDestroyBuffer(Context.GetAllocator(), buffer_, allocation_);
 }
 
-u32 GMaterialBuffer::RegisterMaterial(const Material& material)
+u32 GLightBuffer::RegisterLight(const Light& light)
 {
-    Context.StagingUpload(&material
-        , sizeof(Material)
+    Context.StagingUpload(&light
+        , sizeof(Light)
         , buffer_
-        , materialCount_ * sizeof(Material)
+        , lightCount_ * sizeof(Light)
     );
-    assert(materialCount_ < MAX_MATERIALS);
-    return materialCount_++;
+    assert(lightCount_ < MAX_LIGHTS);
+    return lightCount_++;
 }
 
-VkDeviceAddress GMaterialBuffer::GetAddress() const
+VkDeviceAddress GLightBuffer::GetAddress() const
 {
     return bda_;
+}
+
+u32 GLightBuffer::GetLightCount() const
+{
+    return lightCount_;
 }

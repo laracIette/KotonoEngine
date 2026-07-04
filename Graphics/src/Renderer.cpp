@@ -1,17 +1,20 @@
 #include "Renderer.h"
+#include "Color.h"
 #include "DrawCall.h"
 #include "DrawDataBuffer.h"
+#include "LightBuffer.h"
 #include "MaterialBuffer.h"
 #include "ParametersBuffer.h"
 #include "PipelineResourceManager.h"
 #include "TransformBuffer.h"
+#include <algorithm>
 #include <kotono_platform/Context.h>
 #include <kotono_platform/Window.h>
 #include <kotono_platform/WindowViewport.h>
 #include <kotono_common/log.h>
+#include <kotono_platform/glm_utils.h>
 #include <kotono_platform/vk_utils.h>
 #include <ranges>
-#include <algorithm>
 #include <tuple>
 
 void GRenderer::Init()
@@ -29,6 +32,21 @@ void GRenderer::Init()
 	MaterialBuffer.Init();
 	TransformBuffer.Init();
 	ParametersBuffer.Init();
+	LightBuffer.Init();
+
+	LightBuffer.RegisterLight({
+		.direction = glm::normalize(-WorldForwardVector - WorldUpVector * 0.5f),
+		.color = Colors::White,
+		.intensity = 1.0f,
+		.type = static_cast<u32>(ELightType::Directional),
+	});
+
+	LightBuffer.RegisterLight({
+		.position = WorldUpVector + WorldForwardVector * 3.0f,
+		.color = UColor::Mix(Colors::Green, Colors::Blue),
+		.intensity = 100.0f,
+		.type = static_cast<u32>(ELightType::Point),
+	});
 }
 
 void GRenderer::Cleanup()
@@ -38,6 +56,7 @@ void GRenderer::Cleanup()
 	JoinThread(renderThread_);
 	JoinThread(rhiThread_); 
 
+	LightBuffer.Cleanup();
 	ParametersBuffer.Cleanup();
 	TransformBuffer.Cleanup();
 	MaterialBuffer.Cleanup();
@@ -556,6 +575,8 @@ void GRenderer::CmdDrawFrame(VkCommandBuffer commandBuffer, const u32 frameIndex
 			.transformAddress = TransformBuffer.GetAddress(frameIndex),
 			.parametersAddress = ParametersBuffer.GetAddress(frameIndex),
 			.vertexBufferAddress = drawCall->vertexBufferAdress,
+			.lightBufferAddress = LightBuffer.GetAddress(),
+			.lightCount = LightBuffer.GetLightCount(),
 			.drawIndex = drawCall->index,
 		};
 

@@ -1,8 +1,16 @@
 {
     "dependencies": [
         {
-            "modified": "2026-07-02-18:48:38.1890255",
+            "modified": "2026-07-04-13:06:12.8462085",
             "path": "common.glsl"
+        },
+        {
+            "modified": "2026-07-04-12:57:21.3485409",
+            "path": "common_vert.glsl"
+        },
+        {
+            "modified": "2026-07-04-12:57:21.3485409",
+            "path": "common_frag.glsl"
         }
     ]
 }

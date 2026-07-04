@@ -18,7 +18,10 @@ void SCamera::Init()
 	sensitivity_ = 0.005f;
 
 	eventTransformUpdated_.AddListener(this, &SCamera::OnEventUpdateTransform);
-	SetPosition(WorldForwardVector * -3.0f + WorldUpVector);
+	SetPosition(WorldForwardVector * 3.0f + WorldUpVector);
+	
+	yaw_ = glm::radians(180.0f);
+	SetRotation(glm::angleAxis(yaw_, WorldUpVector));
 
 	Keyboard.EventKey(EKey::W, EInputState::Down).AddListener(this, &SCamera::OnKeyboardWKeyDown);
 	Keyboard.EventKey(EKey::A, EInputState::Down).AddListener(this, &SCamera::OnKeyboardAKeyDown);

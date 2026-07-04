@@ -18,8 +18,8 @@ UMaterial::UMaterial(const UPath& path)
 	UDeserialize<std::string>{}(json["albedo"], albedo);
 	std::string normal;
 	UDeserialize<std::string>{}(json["normal"], normal);
-	std::string roughness;
-	UDeserialize<std::string>{}(json["roughness"], roughness);
+	std::string orm;
+	UDeserialize<std::string>{}(json["orm"], orm);
 	std::string emissive;
 	UDeserialize<std::string>{}(json["emissive"], emissive);
 	u32 materialType;
@@ -30,7 +30,7 @@ UMaterial::UMaterial(const UPath& path)
 	index_ = MaterialBuffer.RegisterMaterial({
 		.albedoIndex = SAssetManager<UTexture>::Get(albedo)->GetIndex(),
 		.normalIndex = SAssetManager<UTexture>::Get(normal)->GetIndex(),
-		.roughnessIndex = SAssetManager<UTexture>::Get(roughness)->GetIndex(),
+		.ormIndex = SAssetManager<UTexture>::Get(orm)->GetIndex(),
 		.emissiveIndex = SAssetManager<UTexture>::Get(emissive)->GetIndex(),
 		.materialType = materialType,
 		.samplerIndex = SAssetManager<USampler>::Get(sampler)->GetIndex(),

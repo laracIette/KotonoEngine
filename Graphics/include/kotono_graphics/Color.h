@@ -3,6 +3,7 @@
 #include <glm/vec4.hpp>
 #include <kotono_common/types.h>
 #include <kotono_io/serialize_base.h>
+#include <kotono_math/math_utils.h>
 struct UColor final
 {
 	struct RGB { f32 r, g, b; };
@@ -35,7 +36,15 @@ struct UColor final
 	constexpr UColor WithAlpha(f32 alpha)	const noexcept { return { r, g, b, alpha }; }
 	constexpr UColor WithValue(f32 value)	const noexcept { return { r * value, g * value, b * value, a }; }
 	
-	static constexpr UColor Mix(const UColor& left, const UColor& right) noexcept { return (left + right) / 2.0f; }
+	static constexpr UColor Mix(const UColor& left, const UColor& right) noexcept 
+	{ 
+		return {
+			clamp01(left.r + right.r),
+			clamp01(left.g + right.g),
+			clamp01(left.b + right.b),
+			clamp01(left.a + right.a)
+		};
+	}
 
 	constexpr bool IsVisible()		const noexcept { return a > 0.0f; }
 	constexpr bool IsOpaque()		const noexcept { return a >= 1.0f; }

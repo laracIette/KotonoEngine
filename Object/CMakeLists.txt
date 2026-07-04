@@ -42,7 +42,6 @@ target_include_directories(KotonoObject
 
 # Link libs
 target_link_libraries(KotonoObject PUBLIC
-    KotonoMath
     KotonoAudio
     KotonoInput
     KotonoTiming

@@ -1,13 +1,9 @@
 #version 460
-#include "../common.glsl"
-
-layout(location = 0) in vec2 inUV;
-
-layout(location = 0) out vec4 outColor;
+#include "../common_frag.glsl"
 
 void main() 
 {
-    UNPACK_PUSH_CONSTANTS_FRAG
+    UNPACK_PUSH_CONSTANTS
 
     const uint textureParam = parameters.textures[0];
     

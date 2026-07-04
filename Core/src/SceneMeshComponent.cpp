@@ -2,6 +2,7 @@
 #include "SceneObject.h"
 #include "Task.h"
 #include "TimeManager.h"
+#include <glm/gtc/matrix_inverse.hpp>
 #include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
 #include <kotono_graphics/DrawCall.h>
@@ -167,8 +168,9 @@ void KSceneMeshComponent::RefreshDrawCallMaterialData() const
 
 void KSceneMeshComponent::RefreshDrawCallTransformData() const
 {
-    drawCallBuilder_.GetTransform()->modelMatrix = ModelMatrix();
-    drawCallBuilder_.GetTransform()->normalMatrix = glm::identity<glm::mat4>();
+    const auto modelMatrix{ ModelMatrix() };
+    drawCallBuilder_.GetTransform()->modelMatrix = modelMatrix;
+    drawCallBuilder_.GetTransform()->normalMatrix = glm::mat4{ glm::inverseTranspose(glm::mat3{ modelMatrix }) };
 }
 
 void KSceneMeshComponent::Spin()

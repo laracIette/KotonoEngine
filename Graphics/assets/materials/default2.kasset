@@ -1,8 +1,8 @@
 {
   "albedo": "${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png",
-  "normal": "${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png",
-  "roughness": "${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png",
-  "emissive": "${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png",
+  "normal": "${ENGINE_DIRECTORY}/Graphics/assets/textures/default_normal.jpg",
+  "orm": "${ENGINE_DIRECTORY}/Graphics/assets/textures/default_orm.jpg",
+  "emissive": "${ENGINE_DIRECTORY}/Graphics/assets/textures/black_texture.jpg",
   "materialType": 0,
   "sampler": "${ENGINE_DIRECTORY}/Graphics/assets/samplers/default.ktasset"
 }

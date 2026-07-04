@@ -1,14 +1,14 @@
 #version 460
-#include "../common.glsl"
-
-layout(location = 0) out vec2 outUV;
-layout(location = 1) out vec3 outNormal;
+#include "../common_vert.glsl"
 
 void main() {
-    UNPACK_PUSH_CONSTANTS_VERT
+    UNPACK_PUSH_CONSTANTS
 
-    gl_Position = frame.viewProj * transform.modelMatrix * vec4(vertex.position, 1.0);
+    vec4 worldPos = transform.modelMatrix * vec4(vertex.position, 1.0);
+    gl_Position = frame.viewProj * worldPos;
 
-    outUV     = vertex.uv;
-    outNormal = mat3(transform.normalMatrix) * vertex.normal;
+    outWorldPos = worldPos.xyz;
+    outNormal   = mat3(transform.normalMatrix) * vertex.normal;
+    outUV       = vertex.uv;
+    outTangent  = vec4(mat3(transform.modelMatrix) * vertex.tangent.xyz, vertex.tangent.w);
 }

@@ -1,11 +1,9 @@
 #version 460
-#include "../common.glsl"
-
-layout(location = 0) out vec2 outUV;
+#include "../common_vert.glsl"
 
 void main() 
 {
-    UNPACK_PUSH_CONSTANTS_VERT
+    UNPACK_PUSH_CONSTANTS
 
     gl_Position = transform.modelMatrix * vec4(vertex.position, 1.0);
 

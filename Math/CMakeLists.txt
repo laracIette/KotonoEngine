@@ -20,6 +20,14 @@ set(KMATH_HEADERS
 set(KMATH_SOURCES
     "src/math_utils.cpp"
 )
+    
+target_compile_definitions(KotonoMath PUBLIC
+    GLM_FORCE_RADIANS
+    GLM_FORCE_LEFT_HANDED
+    GLM_FORCE_DEPTH_ZERO_TO_ONE
+    GLM_ENABLE_EXPERIMENTAL
+    GLM_FORCE_CXX20
+)
 
 target_sources(KotonoMath
     PRIVATE ${KMATH_HEADERS}

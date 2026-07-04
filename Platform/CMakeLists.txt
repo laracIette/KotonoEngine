@@ -73,7 +73,6 @@ set(THIRD_PARTY_DIR "${ENGINE_PATH}/ThirdParty")
 
 # Include directories
 target_include_directories(KotonoPlatform
-    PUBLIC  "${THIRD_PARTY_DIR}/glm/include"
     PUBLIC  "${THIRD_PARTY_DIR}/vma/include"
     PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_platform"
@@ -81,11 +80,6 @@ target_include_directories(KotonoPlatform
 
 # Preprocessor defines for all builds
 target_compile_definitions(KotonoPlatform PUBLIC
-    GLM_FORCE_RADIANS
-    GLM_FORCE_LEFT_HANDED
-    GLM_FORCE_DEPTH_ZERO_TO_ONE
-    GLM_ENABLE_EXPERIMENTAL
-    GLM_FORCE_CXX20
     GLFW_INCLUDE_VULKAN
     GLFW_EXPOSE_NATIVE_WIN32
     VK_USE_PLATFORM_WIN32_KHR
@@ -100,4 +94,5 @@ target_link_libraries(KotonoPlatform PUBLIC
 # Link libs
 target_link_libraries(KotonoPlatform PUBLIC
     KotonoCommon
+    KotonoMath
 )

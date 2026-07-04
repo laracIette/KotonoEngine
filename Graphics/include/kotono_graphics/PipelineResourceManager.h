@@ -13,6 +13,8 @@ struct UPushConstants
 	VkDeviceAddress transformAddress;
 	VkDeviceAddress parametersAddress;
 	VkDeviceAddress vertexBufferAddress;
+	VkDeviceAddress lightBufferAddress;
+	u32 lightCount;
 	u32 drawIndex;
 };
 

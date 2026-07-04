@@ -12,7 +12,7 @@ struct DrawData {
 struct Material {
     uint albedoIndex;
 	uint normalIndex;
-	uint roughnessIndex;
+	uint ormIndex;
 	uint emissiveIndex;
 	uint materialType;
 	uint samplerIndex;
@@ -36,10 +36,23 @@ struct Vertex {
     vec4 tangent;
 };
 
+struct Light {
+    vec3 position;
+    vec3 direction;
+    vec3 color;
+    float intensity;
+    float range;
+    float innerCone, outerCone;
+    uint type;
+    //uint shadowMapIndex; // index into bindless texture array, ~0u = no shadow
+    //mat4 lightViewProj[4]; // cascades for directional, 1 entry otherwise
+    //vec4 cascadeSplits; // directional only
+};
+
 // Global bindless resources
-layout(set = 0, binding = 0)            uniform texture2D gTextures[];
-layout(set = 0, binding = 1)            uniform sampler   gSamplers[];
-layout(set = 0, binding = 2, rgba16f)   uniform image2D   gImages[];
+layout(set = 0, binding = 0)          uniform texture2D gTextures[];
+layout(set = 0, binding = 1)          uniform sampler   gSamplers[];
+layout(set = 0, binding = 2, rgba16f) uniform image2D   gImages[];
 
 // Uniform 
 layout(set = 1, binding = 0) uniform FrameUBO {
@@ -64,40 +77,17 @@ layout(buffer_reference, scalar) readonly buffer ParametersBuf {
 layout(buffer_reference, scalar) readonly buffer VertexBuf {
     Vertex data[];
 };
+layout(buffer_reference, scalar) readonly buffer LightBuf {
+    Light data[];
+};
 
 layout(push_constant, scalar) uniform PC {
-    DrawDataBuf  drawData;
-    MaterialBuf  materials;
-    TransformBuf transforms;
+    DrawDataBuf   drawData;
+    MaterialBuf   materials;
+    TransformBuf  transforms;
     ParametersBuf parameters;
-    VertexBuf vertices;
-    uint drawIndex;
+    VertexBuf     vertices;
+    LightBuf      lights;
+    uint          lightCount;
+    uint          drawIndex;
 } pc;
-
-// Convenience helpers
-#define UNPACK_PUSH_CONSTANTS_VERT                                        \
-    DrawData   drawData   = pc.drawData.data[pc.drawIndex];               \
-    Material   material   = pc.materials.data[drawData.materialIndex];    \
-    Transform  transform  = pc.transforms.data[drawData.transformIndex];  \
-    Parameters parameters = pc.parameters.data[drawData.parametersIndex]; \
-    Vertex     vertex     = pc.vertices.data[gl_VertexIndex];
-
-#define UNPACK_PUSH_CONSTANTS_FRAG                                        \
-    DrawData   drawData   = pc.drawData.data[pc.drawIndex];               \
-    Material   material   = pc.materials.data[drawData.materialIndex];    \
-    Transform  transform  = pc.transforms.data[drawData.transformIndex];  \
-    Parameters parameters = pc.parameters.data[drawData.parametersIndex];
-
-vec4 sampleTex(uint texIdx, uint sampIdx, vec2 uv) {
-    return texture(
-        sampler2D(gTextures[nonuniformEXT(texIdx)],
-                  gSamplers[nonuniformEXT(sampIdx)]),
-        uv);
-}
-
-vec4 sampleTexLod(uint texIdx, uint sampIdx, vec2 uv, float lod) {
-    return textureLod(
-        sampler2D(gTextures[nonuniformEXT(texIdx)],
-                  gSamplers[nonuniformEXT(sampIdx)]),
-        uv, lod);
-}
