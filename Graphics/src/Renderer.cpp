@@ -45,6 +45,7 @@ void GRenderer::Init()
 		.position = WorldUpVector + WorldForwardVector * 3.0f,
 		.color = UColor::Mix(Colors::Green, Colors::Blue),
 		.intensity = 100.0f,
+		.range = 100.0f,
 		.type = static_cast<u32>(ELightType::Point),
 	});
 }

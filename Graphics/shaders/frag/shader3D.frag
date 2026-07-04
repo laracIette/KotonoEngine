@@ -31,7 +31,8 @@ void main() {
             vec3 toLight = light.position - inWorldPos;
             float dist = length(toLight);
             L = toLight / max(dist, 1e-4);
-            attenuation = 1.0 / max(dist * dist, 1e-4); // inverse-square
+            float falloff = pow(clamp(1.0 - pow(dist / light.range, 4.0), 0.0, 1.0), 2.0);
+            attenuation = falloff / max(dist * dist, 1e-4);
         }
 
         vec3 H = normalize(V + L);
@@ -49,18 +50,16 @@ void main() {
         vec3 kD = (vec3(1.0) - kS) * (1.0 - metallic); // metals have no diffuse term
 
         float NdotL = max(dot(N, L), 0.0);
-        Lo += (kD * albedo.rgb / PI + specular) * radiance * NdotL;
+        Lo += (kD * albedo.rgb / PI + specular) * radiance * NdotL; 
     }
 
     // Flat placeholder ambient — swap for IBL (irradiance + prefiltered specular
     // + BRDF LUT) once the shadowless direct-lighting pass is validated.
-    vec3 ambient = vec3(0.03) * albedo.rgb;
+    vec3 ambient = vec3(0.03) * albedo.rgb * occlusion;
 
     vec3 color = ambient + Lo + emissive;
 
     // Reinhard tonemap: compress HDR values between 0 and 1
     color = color / (color + vec3(1.0));
-
     outColor = vec4(color, albedo.a);
-
 }
