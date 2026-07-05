@@ -3,6 +3,13 @@
 #extension GL_EXT_buffer_reference2     : require
 #extension GL_EXT_scalar_block_layout   : require
 
+
+// Global bindless resources, not buffer_reference cause incompatible types
+layout(set = 0, binding = 0)          uniform texture2D gTextures[];
+layout(set = 0, binding = 1)          uniform sampler   gSamplers[];
+layout(set = 0, binding = 2, rgba16f) uniform image2D   gImages[];
+
+
 struct DrawData {
     uint materialIndex;
     uint transformIndex;
@@ -49,18 +56,6 @@ struct Light {
     //vec4 cascadeSplits; // directional only
 };
 
-// Global bindless resources
-layout(set = 0, binding = 0)          uniform texture2D gTextures[];
-layout(set = 0, binding = 1)          uniform sampler   gSamplers[];
-layout(set = 0, binding = 2, rgba16f) uniform image2D   gImages[];
-
-// Uniform 
-layout(set = 1, binding = 0) uniform FrameUBO {
-    mat4  view, proj, viewProj;
-    vec4  viewPos;
-    float time;
-} frame;
-
 // BDA struct definitions
 layout(buffer_reference, scalar) readonly buffer DrawDataBuf {
     DrawData data[];
@@ -77,7 +72,12 @@ layout(buffer_reference, scalar) readonly buffer ParametersBuf {
 layout(buffer_reference, scalar) readonly buffer LightBuf {
     Light data[];
 };
-layout(buffer_reference, scalar) readonly buffer FrameContextBuf {
+
+
+struct FrameContext {
+    mat4          view, proj, viewProj;
+    vec4          viewPos;
+    float         time;
     DrawDataBuf   drawDatas;
     MaterialBuf   materials;
     TransformBuf  transforms;
@@ -85,6 +85,12 @@ layout(buffer_reference, scalar) readonly buffer FrameContextBuf {
     LightBuf      lights;
     uint          lightCount;
 };
+
+layout(buffer_reference, scalar) readonly buffer FrameContextBuf {
+    FrameContext data;
+};
+
+
 layout(buffer_reference, scalar) readonly buffer VertexBuf {
     Vertex data[];
 };

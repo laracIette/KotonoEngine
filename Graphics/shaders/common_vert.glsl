@@ -6,9 +6,10 @@ layout(location = 2) out vec2 outUV;
 layout(location = 3) out vec4 outTangent;
 
 // Helpers
-#define UNPACK_PUSH_CONSTANTS                                                          \
-    DrawData   drawData   = pc.frameContext.drawDatas.data[pc.drawIndex];               \
-    Material   material   = pc.frameContext.materials.data[drawData.materialIndex];    \
-    Transform  transform  = pc.frameContext.transforms.data[drawData.transformIndex];  \
-    Parameters parameters = pc.frameContext.parameters.data[drawData.parametersIndex]; \
-    Vertex     vertex     = pc.vertices.data[gl_VertexIndex];
+#define UNPACK_PUSH_CONSTANTS                                                  \
+    FrameContext frame      = pc.frameContext.data;                            \
+    DrawData     drawData   = frame.drawDatas.data[pc.drawIndex];              \
+    Material     material   = frame.materials.data[drawData.materialIndex];    \
+    Transform    transform  = frame.transforms.data[drawData.transformIndex];  \
+    Parameters   parameters = frame.parameters.data[drawData.parametersIndex]; \
+    Vertex       vertex     = pc.vertices.data[gl_VertexIndex];

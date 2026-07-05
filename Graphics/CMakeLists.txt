@@ -66,7 +66,7 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/Color.h"
     "include/kotono_graphics/DrawCall.h"
     "include/kotono_graphics/DrawDataBuffer.h"
-    "include/kotono_graphics/DrawDataBufferData.h"    
+    "include/kotono_graphics/DrawDataBufferData.h"
     "include/kotono_graphics/DrawCallBuilder.h"
     "include/kotono_graphics/Font.h"
     "include/kotono_graphics/FrameContextBuffer.h"
@@ -77,8 +77,8 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/MaterialBuffer.h"
     "include/kotono_graphics/Mobility.h"
     "include/kotono_graphics/Model.h"
-    "include/kotono_graphics/ParametersBuffer.h"    
-    "include/kotono_graphics/ParametersBufferData.h"    
+    "include/kotono_graphics/ParametersBuffer.h"
+    "include/kotono_graphics/ParametersBufferData.h"
     "include/kotono_graphics/PipelineResourceManager.h"
     "include/kotono_graphics/Renderer.h"
     "include/kotono_graphics/RendererFrameStats.h"
@@ -149,4 +149,5 @@ target_sources(KotonoGraphics PRIVATE ${KGRAPHICS_ASSETS})
 target_link_libraries(KotonoGraphics PUBLIC
     KotonoIO
     KotonoPlatform
+    KotonoTiming
 )

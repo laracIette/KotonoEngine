@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <kotono_common/log.h>
 #include <kotono_core/TimeManager.h>
-#include <kotono_graphics/PipelineResourceManager.h>
+#include <kotono_graphics/FrameContextBuffer.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_input/Keyboard.h>
 #include <kotono_input/Mouse.h>
@@ -168,11 +168,10 @@ void SCamera::OnEventUpdateTransform() const
 	const auto view{ glm::lookAt(transform_.position, transform_.position + ForwardVector(), UpVector()) };	
 	const auto proj{ calculate_reverse_z_infinite_perspective(glm::radians(fov_), WindowViewport.GetAspectRatio(), depthNear_) };
 
-	PipelineResourceManager.SetFrameUBO({
+	FrameContextBuffer.SetCameraData({
 		.view = view,
 		.proj = proj,
 		.viewProj = proj * view,
-		.viewPos = glm::vec4{ transform_.position, 0.0f },
-		.time = TimeManager.Now(),
+		.viewPos = transform_.position,
 	});
 }

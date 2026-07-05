@@ -44,7 +44,6 @@ target_include_directories(KotonoObject
 target_link_libraries(KotonoObject PUBLIC
     KotonoAudio
     KotonoInput
-    KotonoTiming
     KotonoGraphics
 )
 

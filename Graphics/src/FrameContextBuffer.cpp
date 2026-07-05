@@ -6,6 +6,7 @@
 #include "TransformBuffer.h"
 #include <kotono_platform/Context.h>
 #include <kotono_platform/vk_utils.h>
+#include <kotono_timing/Clock.h>
 
 void GFrameContextBuffer::Init()
 {
@@ -20,9 +21,19 @@ void GFrameContextBuffer::Cleanup() const
     }
 }
 
+void GFrameContextBuffer::SetCameraData(const CameraData& cameraData)
+{
+    cameraData_ = cameraData;
+}
+
 void GFrameContextBuffer::UpdateBuffer(const u32 frameIndex)
 {
     const Data data{
+        .view = cameraData_.view,
+        .proj = cameraData_.proj,
+        .viewProj = cameraData_.viewProj,
+        .viewPos = glm::vec4{ cameraData_.viewPos, 0.0f },
+        .time = SClock::Now(),
         .drawDataBufferAddress = DrawDataBuffer.GetAddress(frameIndex),
         .materialBufferAddress = MaterialBuffer.GetAddress(),
         .transformBufferAddress = TransformBuffer.GetAddress(frameIndex),

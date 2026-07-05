@@ -410,7 +410,6 @@ void GRenderer::DrawFrame()
 {
 	const u32 frameIndex{ GetGameThreadFrame() };
 
-	PipelineResourceManager.UpdateMappedFrameUBO(frameIndex);
 	FrameContextBuffer.UpdateBuffer(frameIndex);
 	DrawDataBuffer.UpdateBuffer(frameIndex);
 	TransformBuffer.UpdateBuffer(frameIndex);
@@ -458,8 +457,7 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 
 	BeginCommandBuffer(commandBuffer);
 
-	PipelineResourceManager.CmdBindGlobalDescriptorSet(commandBuffer);
-	PipelineResourceManager.CmdPushUniformDescriptorSet(commandBuffer, frameIndex);
+	PipelineResourceManager.CmdBindDescriptorSet(commandBuffer);
 
 	WindowViewport.CmdUse(commandBuffer);
 

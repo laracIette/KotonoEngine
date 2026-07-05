@@ -1,9 +1,8 @@
 #include "PipelineResourceManager.h"
-#include "frames_in_flight.h"
+#include <array>
+#include <assert.h>
 #include <kotono_platform/Context.h>
 #include <kotono_platform/vk_utils.h>
-
-#include <glm/glm.hpp>
 
 static constexpr u32 MAX_TEXTURES{ 65536 };
 static constexpr u32 MAX_SAMPLERS{ 4096 };
@@ -16,24 +15,17 @@ static constexpr VkDescriptorBindingFlags BINDLESS_FLAGS{
 
 void GPipelineResourceManager::Init()
 {
-	CreateGlobalDescriptorSetLayout();
-	CreateUniformDescriptorSetLayout();
+	CreateDescriptorSetLayout();
 	CreatePipelineLayout();
 	CreateDescriptorPool();
-	CreateGlobalDescriptorSet();
-	CreateFrameDataBuffers();
+	CreateDescriptorSet();
 }
 
 void GPipelineResourceManager::Cleanup() const
 {
-	for (auto& frameData : frameDatas_)
-	{
-		vmaDestroyBuffer(Context.GetAllocator(), frameData.ubo, frameData.uboAllocation);
-	}
 	vkDestroyDescriptorPool(Context.GetDevice(), descriptorPool_, nullptr);
 	vkDestroyPipelineLayout(Context.GetDevice(), pipelineLayout_, nullptr);
-	vkDestroyDescriptorSetLayout(Context.GetDevice(), uniformDescriptorSetLayout_, nullptr);
-	vkDestroyDescriptorSetLayout(Context.GetDevice(), globalDescriptorSetLayout_, nullptr);
+	vkDestroyDescriptorSetLayout(Context.GetDevice(), descriptorSetLayout_, nullptr);
 }
 
 VkDescriptorPool GPipelineResourceManager::GetDescriptorPool() const
@@ -46,19 +38,9 @@ VkPipelineLayout GPipelineResourceManager::GetPipelineLayout() const
 	return pipelineLayout_;
 }
 
-VkDescriptorSet GPipelineResourceManager::GetGlobalDescriptorSet() const
+VkDescriptorSet GPipelineResourceManager::GetDescriptorSet() const
 {
-	return globalDescriptorSet_;
-}
-
-void GPipelineResourceManager::SetFrameUBO(const FrameUBO& frameUBO)
-{
-	frameUBO_ = frameUBO;
-}
-
-void GPipelineResourceManager::UpdateMappedFrameUBO(const u32 frameIndex) const
-{
-	*frameDatas_[frameIndex].uboMapped = frameUBO_;
+	return descriptorSet_;
 }
 
 u32 GPipelineResourceManager::RegisterTexture(VkImageView imageView)
@@ -72,7 +54,7 @@ u32 GPipelineResourceManager::RegisterTexture(VkImageView imageView)
 	};
 	const VkWriteDescriptorSet write{
 		.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-		.dstSet = globalDescriptorSet_,
+		.dstSet = descriptorSet_,
 		.dstBinding = 0,
 		.dstArrayElement = slot,
 		.descriptorCount = 1,
@@ -97,7 +79,7 @@ u32 GPipelineResourceManager::RegisterSampler(VkSampler sampler)
 	};
 	const VkWriteDescriptorSet write{
 		.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-		.dstSet = globalDescriptorSet_,
+		.dstSet = descriptorSet_,
 		.dstBinding = 1,
 		.dstArrayElement = slot,
 		.descriptorCount = 1,
@@ -121,43 +103,20 @@ void GPipelineResourceManager::UnregisterSampler(const u32 slot)
 	freeSamplerSlots_.push_back(slot);
 }
 
-void GPipelineResourceManager::CmdBindGlobalDescriptorSet(VkCommandBuffer commandBuffer) const
+void GPipelineResourceManager::CmdBindDescriptorSet(VkCommandBuffer commandBuffer) const
 {
 	vkCmdBindDescriptorSets(commandBuffer
 		, VK_PIPELINE_BIND_POINT_GRAPHICS
 		, pipelineLayout_
 		, 0
 		, 1
-		, &globalDescriptorSet_
+		, &descriptorSet_
 		, 0
 		, nullptr
 	);
 }
 
-void GPipelineResourceManager::CmdPushUniformDescriptorSet(VkCommandBuffer commandBuffer, const u32 frameIndex) const
-{
-	const VkDescriptorBufferInfo bufInfo{
-		.buffer = frameDatas_[frameIndex].ubo,
-		.offset = 0,
-		.range = sizeof(FrameUBO),
-	};
-	const VkWriteDescriptorSet frameUBOWrite{
-		.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-		.dstBinding = 0,
-		.descriptorCount = 1,
-		.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-		.pBufferInfo = &bufInfo,
-	};
-	vkCmdPushDescriptorSet(commandBuffer
-		, VK_PIPELINE_BIND_POINT_GRAPHICS
-		, pipelineLayout_
-		, 1
-		, 1
-		, &frameUBOWrite
-	);
-}
-
-void GPipelineResourceManager::CreateGlobalDescriptorSetLayout()
+void GPipelineResourceManager::CreateDescriptorSetLayout()
 {
 	constexpr std::array<VkDescriptorSetLayoutBinding, 3> BINDINGS{ {
 		{ 0, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURES,		VK_SHADER_STAGE_ALL, nullptr },
@@ -187,28 +146,9 @@ void GPipelineResourceManager::CreateGlobalDescriptorSetLayout()
 	};
 
 	VK_CHECK_THROW(
-		vkCreateDescriptorSetLayout(Context.GetDevice(), &layoutInfo, nullptr, &globalDescriptorSetLayout_),
+		vkCreateDescriptorSetLayout(Context.GetDevice(), &layoutInfo, nullptr, &descriptorSetLayout_),
 		"failed to create descriptor set layout!"
 	);
-}
-
-void GPipelineResourceManager::CreateUniformDescriptorSetLayout()
-{
-	const VkDescriptorSetLayoutBinding uniformBinding{
-		.binding = 0,
-		.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-		.descriptorCount = 1,
-		.stageFlags = VK_SHADER_STAGE_ALL,
-	};
-
-	const VkDescriptorSetLayoutCreateInfo uniformLayoutInfo{
-		.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-		.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR,
-		.bindingCount = 1,
-		.pBindings = &uniformBinding,
-	};
-
-	vkCreateDescriptorSetLayout(Context.GetDevice(), &uniformLayoutInfo, nullptr, &uniformDescriptorSetLayout_);
 }
 
 void GPipelineResourceManager::CreatePipelineLayout()
@@ -219,8 +159,7 @@ void GPipelineResourceManager::CreatePipelineLayout()
 	   .size = sizeof(UPushConstants),
 	};
 
-	const std::array setLayouts{ globalDescriptorSetLayout_, uniformDescriptorSetLayout_ };
-
+	const std::array setLayouts{ descriptorSetLayout_ };
 	const std::array pushConstantRanges{ pushConstantRange };
 
 	const VkPipelineLayoutCreateInfo pipelineLayoutInfo{
@@ -261,43 +200,15 @@ void GPipelineResourceManager::CreateDescriptorPool()
 	);
 }
 
-void GPipelineResourceManager::CreateGlobalDescriptorSet()
+void GPipelineResourceManager::CreateDescriptorSet()
 {
 	const VkDescriptorSetAllocateInfo allocInfo{
 		.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
 		.descriptorPool = descriptorPool_,
 		.descriptorSetCount = 1,
-		.pSetLayouts = &globalDescriptorSetLayout_,
+		.pSetLayouts = &descriptorSetLayout_,
 	};
-	vkAllocateDescriptorSets(Context.GetDevice(), &allocInfo, &globalDescriptorSet_);
-}
-
-void GPipelineResourceManager::CreateFrameDataBuffers()
-{
-	for (auto& frameData : frameDatas_)
-	{
-		const VmaAllocationCreateInfo allocCreateInfo{
-			.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT 
-				| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
-			.usage = VMA_MEMORY_USAGE_AUTO,
-		};
-		const VkBufferCreateInfo bufCreateInfo{
-			.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-			.size = sizeof(FrameUBO),
-			.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-		};
-
-		VmaAllocationInfo allocInfo;
-		vmaCreateBuffer(Context.GetAllocator()
-			, &bufCreateInfo
-			, &allocCreateInfo
-			, &frameData.ubo
-			, &frameData.uboAllocation
-			, &allocInfo
-		);
-
-		frameData.uboMapped = static_cast<FrameUBO*>(allocInfo.pMappedData);
-	}
+	vkAllocateDescriptorSets(Context.GetDevice(), &allocInfo, &descriptorSet_);
 }
 
 u32 GPipelineResourceManager::AllocateTextureSlot()
