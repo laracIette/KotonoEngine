@@ -2,6 +2,12 @@
 #include <kotono_common/Path.h>
 #include <span>
 #include <vulkan/vulkan_core.h>
+enum class EPipelinePass : u8
+{
+	DepthPrePass,
+	GBuffer,
+	Present,
+};
 class UShader final
 {
 public:	
@@ -14,6 +20,7 @@ public:
 
 private:
 	void CreateGraphicsPipeline();
+	std::vector<VkFormat> GetColorAttachmentFormats(const EPipelinePass pipelinePass) const;
 	void CreateShaderModule(VkShaderModule& shaderModule, const std::span<u8> code);
 
 private:

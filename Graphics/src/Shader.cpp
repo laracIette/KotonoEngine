@@ -113,22 +113,21 @@ void UShader::CreateGraphicsPipeline()
 		.maxDepthBounds = dataDepthStencil["maxDepthBounds"], // Optional
 	};
 
-	const auto& dataColorBlendAttachment{ json["colorBlendAttachment"] };
-	VkColorComponentFlags colorWriteMask{ 0 };
-	for (const auto& component : dataColorBlendAttachment["colorWriteMask"])
+	std::vector<VkPipelineColorBlendAttachmentState> colorBlendAttachments{};
+	for (const auto& dataColorBlendAttachment : json["colorBlendAttachments"])
 	{
-		colorWriteMask |= component;
+		const VkPipelineColorBlendAttachmentState colorBlendAttachment{
+		   .blendEnable = dataColorBlendAttachment["blendEnable"],
+		   .srcColorBlendFactor = dataColorBlendAttachment["srcColorBlendFactor"],
+		   .dstColorBlendFactor = dataColorBlendAttachment["dstColorBlendFactor"],
+		   .colorBlendOp = dataColorBlendAttachment["colorBlendOp"],
+		   .srcAlphaBlendFactor = dataColorBlendAttachment["srcAlphaBlendFactor"],
+		   .dstAlphaBlendFactor = dataColorBlendAttachment["dstAlphaBlendFactor"],
+		   .alphaBlendOp = dataColorBlendAttachment["alphaBlendOp"],
+		   .colorWriteMask = dataColorBlendAttachment["colorWriteMask"],
+		};
+		colorBlendAttachments.push_back(colorBlendAttachment);
 	}
-	const VkPipelineColorBlendAttachmentState colorBlendAttachment{
-		.blendEnable = dataColorBlendAttachment["blendEnable"],
-		.srcColorBlendFactor = dataColorBlendAttachment["srcColorBlendFactor"],
-		.dstColorBlendFactor = dataColorBlendAttachment["dstColorBlendFactor"],
-		.colorBlendOp = dataColorBlendAttachment["colorBlendOp"],
-		.srcAlphaBlendFactor = dataColorBlendAttachment["srcAlphaBlendFactor"],
-		.dstAlphaBlendFactor = dataColorBlendAttachment["dstAlphaBlendFactor"],
-		.alphaBlendOp = dataColorBlendAttachment["alphaBlendOp"],
-		.colorWriteMask = colorWriteMask,
-	};
 
 	const VkPipelineVertexInputStateCreateInfo vertexInputInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
@@ -145,8 +144,8 @@ void UShader::CreateGraphicsPipeline()
 	const VkViewport viewport{
 		.x = 0.0f,
 		.y = 0.0f,
-		.width = (float)Renderer.GetSwapChainExtent().width,
-		.height = (float)Renderer.GetSwapChainExtent().height,
+		.width = static_cast<float>(Renderer.GetSwapChainExtent().width),
+		.height = static_cast<float>(Renderer.GetSwapChainExtent().height),
 		.minDepth = 0.0f,
 		.maxDepth = 1.0f,
 	};
@@ -168,12 +167,12 @@ void UShader::CreateGraphicsPipeline()
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
 		.logicOpEnable = VK_FALSE,
 		.logicOp = VK_LOGIC_OP_COPY, // Optional
-		.attachmentCount = 1,
-		.pAttachments = &colorBlendAttachment,
+		.attachmentCount = static_cast<u32>(colorBlendAttachments.size()),
+		.pAttachments = colorBlendAttachments.data(),
 		.blendConstants = { 0.0f, 0.0f, 0.0f, 0.0f }, // Optional
 	};
 
-	const std::vector<VkDynamicState> dynamicStates
+	constexpr std::array dynamicStates
 	{ 
 		VK_DYNAMIC_STATE_VIEWPORT, 
 		VK_DYNAMIC_STATE_SCISSOR 
@@ -184,12 +183,12 @@ void UShader::CreateGraphicsPipeline()
 		.pDynamicStates = dynamicStates.data(),
 	};
 
-	const VkFormat colorAttachmentFormat{ Renderer.GetSwapChainFormat() };
+	const std::vector colorAttachmentFormats{ GetColorAttachmentFormats(json["pipelinePass"]) };
 	const VkPipelineRenderingCreateInfo pipelineRenderingInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
 		.pNext = VK_NULL_HANDLE,
-		.colorAttachmentCount = json["colorAttachmentCount"],
-		.pColorAttachmentFormats = &colorAttachmentFormat,
+		.colorAttachmentCount = static_cast<u32>(colorAttachmentFormats.size()),
+		.pColorAttachmentFormats = colorAttachmentFormats.data(),
 		.depthAttachmentFormat = Renderer.GetDepthFormat(),
 	};
 
@@ -218,5 +217,20 @@ void UShader::CreateGraphicsPipeline()
 	for (auto shaderModule : shaderModules)
 	{
 		vkDestroyShaderModule(Context.GetDevice(), shaderModule, nullptr);
+	}
+}
+
+std::vector<VkFormat> UShader::GetColorAttachmentFormats(const EPipelinePass pipelinePass) const
+{
+	switch (pipelinePass)
+	{
+	case EPipelinePass::DepthPrePass:	return {};
+	case EPipelinePass::GBuffer:		return {
+		VK_FORMAT_R8G8B8A8_SRGB,		// Albedo
+		VK_FORMAT_R16G16B16A16_SFLOAT,	// Normal
+		VK_FORMAT_R8G8B8A8_UNORM		// ORM
+	};
+	case EPipelinePass::Present:		return { Renderer.GetSwapChainFormat() };
+	default:							return {};
 	}
 }

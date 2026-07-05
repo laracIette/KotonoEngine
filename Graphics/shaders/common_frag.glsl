@@ -5,7 +5,13 @@ layout(location = 1) in vec3 inNormal;
 layout(location = 2) in vec2 inUV;
 layout(location = 3) in vec4 inTangent;
 
+#ifdef OUTPUT_GBUFFER
+layout(location = 0) out vec4 outAlbedo;
+layout(location = 1) out vec4 outNormal;
+layout(location = 2) out vec4 outORM;
+#else
 layout(location = 0) out vec4 outColor;
+#endif
 
 // Helpers
 #define UNPACK_PUSH_CONSTANTS                                             \
