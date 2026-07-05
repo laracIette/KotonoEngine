@@ -38,8 +38,11 @@ void GFrameContextBuffer::UpdateBuffer(const u32 frameIndex)
         .materialBufferAddress = MaterialBuffer.GetAddress(),
         .transformBufferAddress = TransformBuffer.GetAddress(frameIndex),
         .parametersBufferAddress = ParametersBuffer.GetAddress(frameIndex),
-        .lightBufferAdress = LightBuffer.GetAddress(),
+        .lightBufferAddress = LightBuffer.GetAddress(),
         .lightCount = LightBuffer.GetLightCount(),
+        .clusterAABBBufferAddress = 0,
+        .clusterGridBufferAddress = 0,
+        .lightIndexBufferAddress = 0,
     };
 
     std::memcpy(frameDatas_[frameIndex].mapped

@@ -14,6 +14,9 @@ struct UFrameContextBufferData
     VkDeviceAddress materialBufferAddress;
     VkDeviceAddress transformBufferAddress;
     VkDeviceAddress parametersBufferAddress;
-    VkDeviceAddress lightBufferAdress;
+    VkDeviceAddress lightBufferAddress;
     u32 lightCount;
+    VkDeviceAddress clusterAABBBufferAddress;
+    VkDeviceAddress clusterGridBufferAddress;
+    VkDeviceAddress lightIndexBufferAddress;
 };

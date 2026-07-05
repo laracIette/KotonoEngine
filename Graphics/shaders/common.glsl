@@ -56,6 +56,16 @@ struct Light {
     //vec4 cascadeSplits; // directional only
 };
 
+struct AABB {
+    vec4 minPoint;
+    vec4 maxPoint;
+};
+
+struct LightGrid {
+    uint offset;
+    uint count;
+};
+
 // BDA struct definitions
 layout(buffer_reference, scalar) readonly buffer DrawDataBuf {
     DrawData data[];
@@ -72,18 +82,31 @@ layout(buffer_reference, scalar) readonly buffer ParametersBuf {
 layout(buffer_reference, scalar) readonly buffer LightBuf {
     Light data[];
 };
+layout(buffer_reference, scalar) buffer ClusterAABBBuf {
+    AABB data[];
+};
+layout(buffer_reference, scalar) buffer ClusterGridBuf {
+    LightGrid data[];
+};
+layout(buffer_reference, scalar) buffer LightIndexBuf {
+    uint globalIndexCount;
+    uint data[];
+};
 
 
 struct FrameContext {
-    mat4          view, proj, viewProj;
-    vec4          viewPos;
-    float         time;
-    DrawDataBuf   drawDatas;
-    MaterialBuf   materials;
-    TransformBuf  transforms;
-    ParametersBuf parameters;
-    LightBuf      lights;
-    uint          lightCount;
+    mat4           view, proj, viewProj;
+    vec4           viewPos;
+    float          time;
+    DrawDataBuf    drawDatas;
+    MaterialBuf    materials;
+    TransformBuf   transforms;
+    ParametersBuf  parameters;
+    LightBuf       lights;
+    uint           lightCount;
+    ClusterAABBBuf clusterAABBs;
+    ClusterGridBuf clusterGrids;
+    LightIndexBuf  lightIndices;
 };
 
 layout(buffer_reference, scalar) readonly buffer FrameContextBuf {
