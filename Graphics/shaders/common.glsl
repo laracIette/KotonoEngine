@@ -95,15 +95,21 @@ layout(buffer_reference, scalar) buffer LightIndexBuf {
 
 
 struct FrameContext {
-    mat4           view, proj, viewProj;
+    mat4           view;
+    mat4           proj;
+    mat4           viewProj;
     vec4           viewPos;
+
     float          time;
+
     DrawDataBuf    drawDatas;
     MaterialBuf    materials;
     TransformBuf   transforms;
     ParametersBuf  parameters;
+
     LightBuf       lights;
     uint           lightCount;
+
     ClusterAABBBuf clusterAABBs;
     ClusterGridBuf clusterGrids;
     LightIndexBuf  lightIndices;

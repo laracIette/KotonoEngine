@@ -409,3 +409,4 @@ FodyWeavers.xsd
 *.generated.inl
 Generator/generated.ktregistry
 Graphics/shaders/shaders.ktregistry
+Graphics/shaders/dependencies.ktregistry

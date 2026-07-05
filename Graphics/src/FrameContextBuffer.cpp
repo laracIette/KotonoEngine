@@ -33,13 +33,17 @@ void GFrameContextBuffer::UpdateBuffer(const u32 frameIndex)
         .proj = cameraData_.proj,
         .viewProj = cameraData_.viewProj,
         .viewPos = glm::vec4{ cameraData_.viewPos, 0.0f },
+
         .time = SClock::Now(),
+
         .drawDataBufferAddress = DrawDataBuffer.GetAddress(frameIndex),
         .materialBufferAddress = MaterialBuffer.GetAddress(),
         .transformBufferAddress = TransformBuffer.GetAddress(frameIndex),
         .parametersBufferAddress = ParametersBuffer.GetAddress(frameIndex),
+
         .lightBufferAddress = LightBuffer.GetAddress(),
         .lightCount = LightBuffer.GetLightCount(),
+
         .clusterAABBBufferAddress = 0,
         .clusterGridBufferAddress = 0,
         .lightIndexBufferAddress = 0,

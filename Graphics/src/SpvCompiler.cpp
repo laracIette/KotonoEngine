@@ -14,6 +14,8 @@ static const UPath ShaderRegistryPath{ ShadersPath / "shaders.ktregistry" };
 static const UPath DependencyRegistryPath{ ShadersPath / "dependencies.ktregistry" };
 static const std::array DependencyPaths{
     "common.glsl",
+    "common_frag.glsl",
+    "common_vert.glsl",
 };
 
 void SSpvCompiler::CompileAll()
