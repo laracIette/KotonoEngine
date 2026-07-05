@@ -46,6 +46,9 @@ private:
 		VkSemaphore imageAvailableSemaphore;
 		VkSemaphore renderFinishedSemaphore;
 		AllocatedImage colorTarget;
+		AllocatedImage albedoTarget;
+		AllocatedImage normalTarget;
+		AllocatedImage ormTarget;
 		AllocatedImage depthTarget;
 		VkFence inFlightFence;
 		u32 imageIndex;
@@ -61,6 +64,7 @@ private:
 	void CreateImageViews();
 
 	void CreateColorResources();
+	void CreateGBufferResources();
 	void CreateDepthResources();
 	VkFormat FindSupportedFormat(const std::span<VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const;
 	VkFormat FindDepthFormat() const;
@@ -76,6 +80,8 @@ private:
 	void CmdAcquireBarrier(VkCommandBuffer commandBuffer, const u32 frameIndex);
 	void CmdBeginRenderingDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex);
 	void CmdDrawFrameDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	void CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex);
+	void CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBeginRendering(VkCommandBuffer commandBuffer, const u32 frameIndex);
 	void CmdDrawFrame(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdPushConstants(VkCommandBuffer commandBuffer, const UDrawCall* drawCall, const u32 frameIndex) const;

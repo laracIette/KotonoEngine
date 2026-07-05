@@ -24,6 +24,7 @@ void GRenderer::Init()
 	CreateSwapChain();
 	CreateImageViews();
 	CreateColorResources();
+	CreateGBufferResources();
 	CreateDepthResources();
 	CreateCommandPools();
 	CreateCommandBuffers();
@@ -243,6 +244,38 @@ void GRenderer::CreateColorResources()
 	}
 }
 
+void GRenderer::CreateGBufferResources()
+{
+	const auto createImageAndImageView{ [this](AllocatedImage& allocatedImage, VkFormat format) {
+		Context.CreateImage(
+			swapChainExtent_.width,
+			swapChainExtent_.height,
+			1,
+			Context.GetMSAASamples(),
+			format,
+			VK_IMAGE_TILING_OPTIMAL,
+			VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+			allocatedImage.image,
+			allocatedImage.allocation
+		);
+
+		allocatedImage.imageView = Context.CreateImageView(
+			allocatedImage.image,
+			format,
+			VK_IMAGE_ASPECT_COLOR_BIT,
+			1
+		);
+	} };
+
+	for (auto& frameData : frameDatas_)
+	{
+		createImageAndImageView(frameData.albedoTarget, VK_FORMAT_R8G8B8A8_SRGB);
+		createImageAndImageView(frameData.normalTarget, VK_FORMAT_R16G16B16A16_SFLOAT);
+		createImageAndImageView(frameData.ormTarget, VK_FORMAT_R8G8B8A8_UNORM);
+	}
+}
+
 void GRenderer::CreateDepthResources()
 {
 	depthFormat_ = FindDepthFormat();
@@ -433,6 +466,11 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 	CmdDrawFrameDepthPrePass(commandBuffer, frameIndex);
 	CmdEndRendering(commandBuffer);
 
+	// GBuffer
+	CmdBeginRenderingGBuffer(commandBuffer, frameIndex);
+	CmdDrawFrameGBuffer(commandBuffer, frameIndex);
+	CmdEndRendering(commandBuffer);
+
 	// Color
 	CmdBeginRendering(commandBuffer, frameIndex);
 	CmdDrawFrame(commandBuffer, frameIndex);
@@ -456,7 +494,25 @@ void GRenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer)
 
 void GRenderer::CmdAcquireBarrier(VkCommandBuffer commandBuffer, const u32 frameIndex)
 {
-	const VkImageMemoryBarrier2 msaaTargetBarrier{
+	const auto makeGBufferMemoryBarrier{ [](AllocatedImage& allocatedImage) {
+		return VkImageMemoryBarrier2{
+			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+
+			.srcStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
+			.srcAccessMask = VK_ACCESS_2_NONE,
+
+			.dstStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
+			.dstAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
+
+			.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+			.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+
+			.image = allocatedImage.image,
+			.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 }
+		};
+	} };
+
+	const VkImageMemoryBarrier2 colorTargetBarrier{
 		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
 
 		.srcStageMask = VK_PIPELINE_STAGE_2_NONE,
@@ -507,7 +563,14 @@ void GRenderer::CmdAcquireBarrier(VkCommandBuffer commandBuffer, const u32 frame
 		.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 }
 	};
 
-	const std::array preRenderBarriers{ msaaTargetBarrier, depthTargetBarrier, swapchainTargetBarrier };
+	const std::array preRenderBarriers{ 
+		makeGBufferMemoryBarrier(frameDatas_[frameIndex].albedoTarget), 
+		makeGBufferMemoryBarrier(frameDatas_[frameIndex].normalTarget),		
+		makeGBufferMemoryBarrier(frameDatas_[frameIndex].ormTarget),		
+		colorTargetBarrier,
+		depthTargetBarrier,
+		swapchainTargetBarrier,
+	};
 	const VkDependencyInfo preRenderDependencyInfo{
 		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
 		.imageMemoryBarrierCount = static_cast<u32>(preRenderBarriers.size()),
@@ -549,6 +612,80 @@ void GRenderer::CmdBeginRenderingDepthPrePass(VkCommandBuffer commandBuffer, con
 void GRenderer::CmdDrawFrameDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/depthPrePass.kasset") })
+	{
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetGraphicsPipeline());
+	}
+	else
+	{
+		return;
+	}
+
+	for (const auto* drawCall : drawCalls_)
+	{
+		if (drawCall->renderBucket != ERenderBucket::Opaque)
+		{
+			continue;
+		}
+
+		CmdPushConstants(commandBuffer, drawCall, frameIndex);
+		CmdDraw(commandBuffer, drawCall);
+	}
+}
+
+void GRenderer::CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex)
+{
+	const auto makeRenderingAttachmentInfo{ [](VkImageView imageView) {
+		return VkRenderingAttachmentInfo{
+			.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+			.imageView = imageView,
+			.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+
+			.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+			.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+			.clearValue{
+				.color = { 0.0f, 0.0f, 0.0f, 1.0f },
+			},
+		};
+	} };
+
+	const std::array colorAttachments{
+		makeRenderingAttachmentInfo(frameDatas_[frameIndex].albedoTarget.imageView),
+		makeRenderingAttachmentInfo(frameDatas_[frameIndex].normalTarget.imageView),
+		makeRenderingAttachmentInfo(frameDatas_[frameIndex].ormTarget.imageView),
+	};
+
+	const VkRenderingAttachmentInfo depthAttachment{
+		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+
+		.imageView = frameDatas_[frameIndex].depthTarget.imageView,
+		.imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+
+		.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+		.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+		.clearValue{
+			.depthStencil = { 0.0f, 0 }, // 0.0f instead of 1.0f because of reverse depth
+		},
+	};
+
+	const VkRenderingInfo renderingInfo{
+		.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
+		.renderArea{
+			.offset = { 0, 0 },
+			.extent = swapChainExtent_
+		},
+		.layerCount = 1,
+		.colorAttachmentCount = static_cast<u32>(colorAttachments.size()),
+		.pColorAttachments = colorAttachments.data(),
+		.pDepthAttachment = &depthAttachment,
+		.pStencilAttachment = VK_NULL_HANDLE,
+	};
+	
+	vkCmdBeginRendering(commandBuffer, &renderingInfo);
+}
+
+void GRenderer::CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/gbuffer.kasset") })
 	{
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetGraphicsPipeline());
 	}
@@ -906,6 +1043,13 @@ void GRenderer::CleanupSwapChain()
 	{
 		vkDestroyImageView(Context.GetDevice(), frameData.colorTarget.imageView, nullptr);
 		vmaDestroyImage(Context.GetAllocator(), frameData.colorTarget.image, frameData.colorTarget.allocation);
+
+		vkDestroyImageView(Context.GetDevice(), frameData.albedoTarget.imageView, nullptr);
+		vmaDestroyImage(Context.GetAllocator(), frameData.albedoTarget.image, frameData.albedoTarget.allocation);
+		vkDestroyImageView(Context.GetDevice(), frameData.normalTarget.imageView, nullptr);
+		vmaDestroyImage(Context.GetAllocator(), frameData.normalTarget.image, frameData.normalTarget.allocation);
+		vkDestroyImageView(Context.GetDevice(), frameData.ormTarget.imageView, nullptr);
+		vmaDestroyImage(Context.GetAllocator(), frameData.ormTarget.image, frameData.ormTarget.allocation);
 
 		vkDestroyImageView(Context.GetDevice(), frameData.depthTarget.imageView, nullptr);
 		vmaDestroyImage(Context.GetAllocator(), frameData.depthTarget.image, frameData.depthTarget.allocation);
