@@ -50,5 +50,6 @@
     "srcAlphaBlendFactor": 1,
     "dstAlphaBlendFactor": 0,
     "alphaBlendOp": 0
-  }
+  },
+  "colorAttachmentCount": 1
 }

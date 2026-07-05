@@ -3,10 +3,6 @@
     {
       "path": "vert/shader3D.vert.spv",
       "shaderStage": 1
-    },
-    {
-      "path": "frag/shader3D.frag.spv",
-      "shaderStage": 16
     }
   ],
   "rasterizer": {
@@ -51,5 +47,5 @@
     "dstAlphaBlendFactor": 0,
     "alphaBlendOp": 0
   },
-  "colorAttachmentCount": 1
+  "colorAttachmentCount": 0
 }

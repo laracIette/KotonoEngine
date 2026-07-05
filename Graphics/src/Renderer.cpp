@@ -7,10 +7,12 @@
 #include "ParametersBuffer.h"
 #include "PipelineResourceManager.h"
 #include "TransformBuffer.h"
+#include "Shader.h"
 #include <algorithm>
 #include <kotono_platform/Context.h>
 #include <kotono_platform/Window.h>
 #include <kotono_platform/WindowViewport.h>
+#include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
 #include <kotono_platform/glm_utils.h>
 #include <kotono_platform/vk_utils.h>
@@ -419,17 +421,23 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 
 	BeginCommandBuffer(commandBuffer);
 
-	CmdAcquireBarrier(commandBuffer, frameIndex);
-	CmdBeginRendering(commandBuffer, frameIndex);
-
 	PipelineResourceManager.CmdBindGlobalDescriptorSet(commandBuffer);
 	PipelineResourceManager.CmdPushUniformDescriptorSet(commandBuffer, frameIndex);
 
 	WindowViewport.CmdUse(commandBuffer);
 
-	CmdDrawFrame(commandBuffer, frameIndex);
+	CmdAcquireBarrier(commandBuffer, frameIndex);
 
+	// Depth pre-pass
+	CmdBeginRenderingDepthPrePass(commandBuffer, frameIndex);
+	CmdDrawFrameDepthPrePass(commandBuffer, frameIndex);
 	CmdEndRendering(commandBuffer);
+
+	// Color
+	CmdBeginRendering(commandBuffer, frameIndex);
+	CmdDrawFrame(commandBuffer, frameIndex);
+	CmdEndRendering(commandBuffer);
+
 	CmdPresentationBarrier(commandBuffer, frameIndex);
 
 	EndCommandBuffer(commandBuffer);
@@ -509,6 +517,58 @@ void GRenderer::CmdAcquireBarrier(VkCommandBuffer commandBuffer, const u32 frame
 	vkCmdPipelineBarrier2(commandBuffer, &preRenderDependencyInfo);
 }
 
+void GRenderer::CmdBeginRenderingDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex)
+{
+	const VkRenderingAttachmentInfo depthAttachment{
+		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+
+		.imageView = frameDatas_[frameIndex].depthTarget.imageView,
+		.imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+
+		.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+		.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+		.clearValue{
+			.depthStencil = { 0.0f, 0 }, // 0.0f instead of 1.0f because of reverse depth
+		},
+	};
+
+	const VkRenderingInfo renderInfo{
+		.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
+		.renderArea{
+			.offset = { 0, 0 },
+			.extent = swapChainExtent_
+		},
+		.layerCount = 1,
+		.colorAttachmentCount = 0,
+		.pDepthAttachment = &depthAttachment,
+	};
+
+	vkCmdBeginRendering(commandBuffer, &renderInfo);
+}
+
+void GRenderer::CmdDrawFrameDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/depthPrePass.kasset") })
+	{
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetGraphicsPipeline());
+	}
+	else
+	{
+		return;
+	}
+
+	for (const auto* drawCall : drawCalls_)
+	{
+		if (drawCall->renderBucket != ERenderBucket::Opaque)
+		{
+			continue;
+		}
+
+		CmdPushConstants(commandBuffer, drawCall, frameIndex);
+		CmdDraw(commandBuffer, drawCall);
+	}
+}
+
 void GRenderer::CmdBeginRendering(VkCommandBuffer commandBuffer, const u32 frameIndex)
 {
 	const VkRenderingAttachmentInfo colorAttachment{
@@ -564,42 +624,48 @@ void GRenderer::CmdDrawFrame(VkCommandBuffer commandBuffer, const u32 frameIndex
 		return std::tie(dc->renderBucket, dc->sortKey, dc->pipeline);
 	});
 
-	//KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Graphics", "{0}", drawCalls_.size());
-
 	for (const auto* drawCall : sortedDrawCalls)
 	{
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, drawCall->pipeline);
-
-		const UPushConstants pc{
-			.drawDataAddress = DrawDataBuffer.GetAddress(frameIndex),
-			.materialAddress = MaterialBuffer.GetAddress(),
-			.transformAddress = TransformBuffer.GetAddress(frameIndex),
-			.parametersAddress = ParametersBuffer.GetAddress(frameIndex),
-			.vertexBufferAddress = drawCall->vertexBufferAdress,
-			.lightBufferAddress = LightBuffer.GetAddress(),
-			.lightCount = LightBuffer.GetLightCount(),
-			.drawIndex = drawCall->index,
-		};
-
-		vkCmdPushConstants(commandBuffer
-			, PipelineResourceManager.GetPipelineLayout()
-			, VK_SHADER_STAGE_ALL
-			, 0
-			, sizeof(UPushConstants)
-			, &pc
-		);
-
-		vkCmdSetScissor(commandBuffer, 0, 1, &drawCall->scissor);
-
-		vkCmdBindIndexBuffer(commandBuffer, drawCall->indexBuffer, 0, VK_INDEX_TYPE_UINT32);
-		vkCmdDrawIndexed(commandBuffer
-			, drawCall->indexCount
-			, 1
-			, drawCall->firstIndex
-			, 0
-			, 0
-		);
+		CmdPushConstants(commandBuffer, drawCall, frameIndex);
+		CmdDraw(commandBuffer, drawCall);
 	}
+}
+
+void GRenderer::CmdPushConstants(VkCommandBuffer commandBuffer, const UDrawCall* drawCall, const u32 frameIndex) const
+{
+	const UPushConstants pc{
+		.drawDataAddress = DrawDataBuffer.GetAddress(frameIndex),
+		.materialAddress = MaterialBuffer.GetAddress(),
+		.transformAddress = TransformBuffer.GetAddress(frameIndex),
+		.parametersAddress = ParametersBuffer.GetAddress(frameIndex),
+		.vertexBufferAddress = drawCall->vertexBufferAdress,
+		.lightBufferAddress = LightBuffer.GetAddress(),
+		.lightCount = LightBuffer.GetLightCount(),
+		.drawIndex = drawCall->index,
+	};
+
+	vkCmdPushConstants(commandBuffer
+		, PipelineResourceManager.GetPipelineLayout()
+		, VK_SHADER_STAGE_ALL
+		, 0
+		, sizeof(UPushConstants)
+		, &pc
+	);
+}
+
+void GRenderer::CmdDraw(VkCommandBuffer commandBuffer, const UDrawCall* drawCall) const
+{
+	vkCmdSetScissor(commandBuffer, 0, 1, &drawCall->scissor);
+
+	vkCmdBindIndexBuffer(commandBuffer, drawCall->indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+	vkCmdDrawIndexed(commandBuffer
+		, drawCall->indexCount
+		, 1
+		, drawCall->firstIndex
+		, 0
+		, 0
+	);
 }
 
 void GRenderer::CmdEndRendering(VkCommandBuffer commandBuffer)

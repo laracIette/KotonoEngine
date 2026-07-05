@@ -74,8 +74,12 @@ private:
 	void RecordCommandBuffer(const u32 frameIndex);
 	void BeginCommandBuffer(VkCommandBuffer commandBuffer);
 	void CmdAcquireBarrier(VkCommandBuffer commandBuffer, const u32 frameIndex);
+	void CmdBeginRenderingDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex);
+	void CmdDrawFrameDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBeginRendering(VkCommandBuffer commandBuffer, const u32 frameIndex);
 	void CmdDrawFrame(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	void CmdPushConstants(VkCommandBuffer commandBuffer, const UDrawCall* drawCall, const u32 frameIndex) const;
+	void CmdDraw(VkCommandBuffer commandBuffer, const UDrawCall* drawCall) const;
 	void CmdEndRendering(VkCommandBuffer commandBuffer);
 	void CmdPresentationBarrier(VkCommandBuffer commandBuffer, const u32 frameIndex);
 	void EndCommandBuffer(VkCommandBuffer commandBuffer);

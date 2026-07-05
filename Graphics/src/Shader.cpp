@@ -184,12 +184,12 @@ void UShader::CreateGraphicsPipeline()
 		.pDynamicStates = dynamicStates.data(),
 	};
 
-	const std::array colorAttachmentFormats{ Renderer.GetSwapChainFormat() };
+	const VkFormat colorAttachmentFormat{ Renderer.GetSwapChainFormat() };
 	const VkPipelineRenderingCreateInfo pipelineRenderingInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
 		.pNext = VK_NULL_HANDLE,
-		.colorAttachmentCount = static_cast<u32>(colorAttachmentFormats.size()),
-		.pColorAttachmentFormats = colorAttachmentFormats.data(),
+		.colorAttachmentCount = json["colorAttachmentCount"],
+		.pColorAttachmentFormats = &colorAttachmentFormat,
 		.depthAttachmentFormat = Renderer.GetDepthFormat(),
 	};
 
