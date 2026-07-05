@@ -14,13 +14,13 @@ layout(location = 0) out vec4 outColor;
 #endif
 
 // Helpers
-#define UNPACK_PUSH_CONSTANTS                                             \
-    DrawData   drawData   = pc.drawData.data[pc.drawIndex];               \
-    Material   material   = pc.materials.data[drawData.materialIndex];    \
-    Transform  transform  = pc.transforms.data[drawData.transformIndex];  \
-    Parameters parameters = pc.parameters.data[drawData.parametersIndex]; \
-    LightBuf   lights     = pc.lights;                                    \
-    uint       lightCount = pc.lightCount;
+#define UNPACK_PUSH_CONSTANTS                                                          \
+    DrawData   drawData   = pc.frameContext.drawDatas.data[pc.drawIndex];               \
+    Material   material   = pc.frameContext.materials.data[drawData.materialIndex];    \
+    Transform  transform  = pc.frameContext.transforms.data[drawData.transformIndex];  \
+    Parameters parameters = pc.frameContext.parameters.data[drawData.parametersIndex]; \
+    LightBuf   lights     = pc.frameContext.lights;                                    \
+    uint       lightCount = pc.frameContext.lightCount;
     
 const uint LIGHT_TYPE_DIRECTIONAL = 0u;
 const uint LIGHT_TYPE_POINT = 1u;

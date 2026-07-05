@@ -74,20 +74,23 @@ layout(buffer_reference, scalar) readonly buffer TransformBuf {
 layout(buffer_reference, scalar) readonly buffer ParametersBuf {
     Parameters data[];
 };
-layout(buffer_reference, scalar) readonly buffer VertexBuf {
-    Vertex data[];
-};
 layout(buffer_reference, scalar) readonly buffer LightBuf {
     Light data[];
 };
-
-layout(push_constant, scalar) uniform PC {
-    DrawDataBuf   drawData;
+layout(buffer_reference, scalar) readonly buffer FrameContextBuf {
+    DrawDataBuf   drawDatas;
     MaterialBuf   materials;
     TransformBuf  transforms;
     ParametersBuf parameters;
-    VertexBuf     vertices;
     LightBuf      lights;
     uint          lightCount;
-    uint          drawIndex;
+};
+layout(buffer_reference, scalar) readonly buffer VertexBuf {
+    Vertex data[];
+};
+
+layout(push_constant, scalar) uniform PC {
+    FrameContextBuf frameContext;
+    VertexBuf       vertices;
+    uint            drawIndex;
 } pc;

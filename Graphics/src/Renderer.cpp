@@ -2,6 +2,7 @@
 #include "Color.h"
 #include "DrawCall.h"
 #include "DrawDataBuffer.h"
+#include "FrameContextBuffer.h"
 #include "LightBuffer.h"
 #include "MaterialBuffer.h"
 #include "ParametersBuffer.h"
@@ -31,6 +32,7 @@ void GRenderer::Init()
 	CreateSyncObjects();
 
 	PipelineResourceManager.Init();
+	FrameContextBuffer.Init();
 	DrawDataBuffer.Init();
 	MaterialBuffer.Init();
 	TransformBuffer.Init();
@@ -65,6 +67,7 @@ void GRenderer::Cleanup()
 	TransformBuffer.Cleanup();
 	MaterialBuffer.Cleanup();
 	DrawDataBuffer.Cleanup();
+	FrameContextBuffer.Cleanup();
 	PipelineResourceManager.Cleanup();
 
 	CleanupSwapChain();
@@ -408,6 +411,7 @@ void GRenderer::DrawFrame()
 	const u32 frameIndex{ GetGameThreadFrame() };
 
 	PipelineResourceManager.UpdateMappedFrameUBO(frameIndex);
+	FrameContextBuffer.UpdateBuffer(frameIndex);
 	DrawDataBuffer.UpdateBuffer(frameIndex);
 	TransformBuffer.UpdateBuffer(frameIndex);
 	ParametersBuffer.UpdateBuffer(frameIndex);
@@ -772,13 +776,8 @@ void GRenderer::CmdDrawFrame(VkCommandBuffer commandBuffer, const u32 frameIndex
 void GRenderer::CmdPushConstants(VkCommandBuffer commandBuffer, const UDrawCall* drawCall, const u32 frameIndex) const
 {
 	const UPushConstants pc{
-		.drawDataAddress = DrawDataBuffer.GetAddress(frameIndex),
-		.materialAddress = MaterialBuffer.GetAddress(),
-		.transformAddress = TransformBuffer.GetAddress(frameIndex),
-		.parametersAddress = ParametersBuffer.GetAddress(frameIndex),
+		.frameContextBufferAddress = FrameContextBuffer.GetAddress(frameIndex),
 		.vertexBufferAddress = drawCall->vertexBufferAdress,
-		.lightBufferAddress = LightBuffer.GetAddress(),
-		.lightCount = LightBuffer.GetLightCount(),
 		.drawIndex = drawCall->index,
 	};
 

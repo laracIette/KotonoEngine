@@ -8,13 +8,8 @@
 
 struct UPushConstants
 {
-	VkDeviceAddress drawDataAddress;
-	VkDeviceAddress materialAddress;
-	VkDeviceAddress transformAddress;
-	VkDeviceAddress parametersAddress;
+	VkDeviceAddress frameContextBufferAddress;
 	VkDeviceAddress vertexBufferAddress;
-	VkDeviceAddress lightBufferAddress;
-	u32 lightCount;
 	u32 drawIndex;
 };
 
