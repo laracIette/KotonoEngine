@@ -4,7 +4,11 @@
 #include "LightBuffer.h"
 #include "MaterialBuffer.h"
 #include "ParametersBuffer.h"
+#include "PipelineResourceManager.h"
+#include "Renderer.h"
+#include "Sampler.h"
 #include "TransformBuffer.h"
+#include <kotono_common/AssetManager.h>
 #include <kotono_platform/Context.h>
 #include <kotono_platform/vk_utils.h>
 #include <kotono_timing/Clock.h>
@@ -12,6 +16,7 @@
 void GFrameContextBuffer::Init()
 {
     CreateBuffers();
+    RegisterGBufferTextures();
 }
 
 void GFrameContextBuffer::Cleanup() const
@@ -29,6 +34,12 @@ void GFrameContextBuffer::SetCameraData(const CameraData& cameraData)
 
 void GFrameContextBuffer::UpdateBuffer(const u32 frameIndex)
 {
+    static UAsset sampler{ SAssetManager<USampler>::Get("${ENGINE_DIRECTORY}/Graphics/assets/samplers/default.kasset") };
+    if (!sampler)
+    {
+        return;
+    }
+    
     const Data data{
         .view = cameraData_.view,
         .proj = cameraData_.proj,
@@ -51,6 +62,15 @@ void GFrameContextBuffer::UpdateBuffer(const u32 frameIndex)
         .clusterGridBufferAddress = GPUBuffers.GetClusterGridAddress(),
         .lightIndexBufferAddress = GPUBuffers.GetLightIndexAddress(),
         .lightCounterBufferAddress = GPUBuffers.GetLightCounterAddress(),
+
+        .gBufferAlbedo = frameDatas_[frameIndex].gBufferAlbedo,
+        .gBufferNormal = frameDatas_[frameIndex].gBufferNormal,
+        .gBufferORM = frameDatas_[frameIndex].gBufferORM,
+        .gBufferDepth = frameDatas_[frameIndex].gBufferDepth,
+        .gBufferSampler = sampler->GetIndex(),
+
+        .postProcessTarget = frameDatas_[frameIndex].postProcessTarget,
+        .postProcessSampler = sampler->GetIndex(),
     };
 
     std::memcpy(frameDatas_[frameIndex].mapped
@@ -101,5 +121,18 @@ void GFrameContextBuffer::CreateBuffers()
             .buffer = frameData.buffer,
         };
         frameData.bda = vkGetBufferDeviceAddress(Context.GetDevice(), &addrInfo);
+    }
+}
+
+void GFrameContextBuffer::RegisterGBufferTextures()
+{
+    for (u32 i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
+    {
+        auto& frameData{ frameDatas_[i] };
+        frameData.gBufferAlbedo = PipelineResourceManager.RegisterTexture(Renderer.GetGBufferAlbedoImageView(i));
+        frameData.gBufferNormal = PipelineResourceManager.RegisterTexture(Renderer.GetGBufferNormalImageView(i));
+        frameData.gBufferORM = PipelineResourceManager.RegisterTexture(Renderer.GetGBufferORMImageView(i));
+        frameData.gBufferDepth = PipelineResourceManager.RegisterTexture(Renderer.GetGBufferDepthImageView(i));
+        frameData.postProcessTarget = PipelineResourceManager.RegisterTexture(Renderer.GetColorTargetImageView(i));
     }
 }

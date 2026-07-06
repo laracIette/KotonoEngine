@@ -26,4 +26,13 @@ struct UFrameContextBufferData
     VkDeviceAddress clusterGridBufferAddress;
     VkDeviceAddress lightIndexBufferAddress;
     VkDeviceAddress lightCounterBufferAddress;
+
+    u32 gBufferAlbedo;
+    u32 gBufferNormal;
+    u32 gBufferORM;
+    u32 gBufferDepth;
+    u32 gBufferSampler;
+
+    u32 postProcessTarget;
+    u32 postProcessSampler;
 };

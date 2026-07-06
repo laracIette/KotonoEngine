@@ -4,10 +4,11 @@
 #include <vulkan/vulkan_core.h>
 enum class EPipelinePass : u8
 {
+	Compute,
 	DepthPrePass,
 	GBuffer,
-	Present,
-	Compute,
+	DeferredLighting,
+	PostProcess,
 };
 class UShader final
 {

@@ -1,8 +1,22 @@
-#extension GL_EXT_nonuniform_qualifier  : require
-#extension GL_EXT_buffer_reference      : require
-#extension GL_EXT_buffer_reference2     : require
-#extension GL_EXT_scalar_block_layout   : require
+#extension GL_EXT_nonuniform_qualifier : require
+#extension GL_EXT_buffer_reference     : require
+#extension GL_EXT_buffer_reference2    : require
+#extension GL_EXT_scalar_block_layout  : require
 
+// Define all buffers' access mode,
+// forces to specify a valid mode or leave readonly
+#ifndef ACCESS_CLUSTER_AABB_BUF
+#define ACCESS_CLUSTER_AABB_BUF readonly
+#endif
+#ifndef ACCESS_CLUSTER_GRID_BUF
+#define ACCESS_CLUSTER_GRID_BUF readonly
+#endif
+#ifndef ACCESS_LIGHT_INDEX_BUF
+#define ACCESS_LIGHT_INDEX_BUF readonly
+#endif
+#ifndef ACCESS_LIGHT_COUNTER_BUF
+#define ACCESS_LIGHT_COUNTER_BUF readonly
+#endif
 
 // Global bindless resources, not buffer_reference cause incompatible types
 layout(set = 0, binding = 0)          uniform texture2D gTextures[];
@@ -83,19 +97,18 @@ layout(buffer_reference, scalar) readonly buffer ParametersBuf {
 layout(buffer_reference, scalar) readonly buffer LightBuf {
     Light data[];
 };
-layout(buffer_reference, scalar) buffer ClusterAABBBuf {
+layout(buffer_reference, scalar) ACCESS_CLUSTER_AABB_BUF buffer ClusterAABBBuf {
     AABB data[];
 };
-layout(buffer_reference, scalar) buffer ClusterGridBuf {
+layout(buffer_reference, scalar) ACCESS_CLUSTER_GRID_BUF buffer ClusterGridBuf {
     LightGrid data[];
 };
-layout(buffer_reference, scalar) buffer LightIndexBuf {
+layout(buffer_reference, scalar) ACCESS_LIGHT_INDEX_BUF buffer LightIndexBuf {
     uint data[];
 };
-layout(buffer_reference, scalar) buffer LightCounterBuf {
+layout(buffer_reference, scalar) ACCESS_LIGHT_COUNTER_BUF buffer LightCounterBuf {
     uint data;
 };
-
 
 struct FrameContext {
     mat4            view;
@@ -119,6 +132,15 @@ struct FrameContext {
     ClusterGridBuf  clusterGrids;
     LightIndexBuf   lightIndices;
     LightCounterBuf lightCounter;
+
+    uint            gBufferAlbedo;
+    uint            gBufferNormal;
+    uint            gBufferORM;
+    uint            gBufferDepth;
+    uint            gBufferSampler;
+
+    uint            postProcessTarget;
+    uint            postProcessSampler;
 };
 
 layout(buffer_reference, scalar) readonly buffer FrameContextBuf {
@@ -133,3 +155,12 @@ layout(push_constant, scalar) uniform PC {
     VertexBuf       vertices;
     uint            drawIndex;
 } pc;
+
+const float PI = 3.14159265;
+
+const uint LIGHT_TYPE_DIRECTIONAL = 0u;
+const uint LIGHT_TYPE_POINT = 1u;
+const uint LIGHT_TYPE_SPOT = 2u;
+
+const float Z_NEAR = 0.1;
+const float Z_FAR = 1000.0;

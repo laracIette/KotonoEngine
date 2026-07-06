@@ -26,7 +26,6 @@ void GRenderer::Init()
 	CreateSwapChain();
 	CreateImageViews();
 	CreateColorResources();
-	CreateGBufferResources();
 	CreateDepthResources();
 	CreateCommandPools();
 	CreateCommandBuffers();
@@ -224,58 +223,29 @@ void GRenderer::CreateImageViews()
 
 void GRenderer::CreateColorResources()
 {
-	const VkFormat colorFormat{ swapChainFormat_ };
-
-	for (auto& frameData : frameDatas_)
-	{
-		Context.CreateImage(
-			swapChainExtent_.width,
-			swapChainExtent_.height,
-			1,
-			Context.GetMSAASamples(),
-			colorFormat,
-			VK_IMAGE_TILING_OPTIMAL,
-			VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-			frameData.colorTarget.image,
-			frameData.colorTarget.allocation
+	const auto createImageAndImageView{ [this](AllocatedImage& allocatedImage, const VkFormat format) {
+		Context.CreateImage(swapChainExtent_.width, swapChainExtent_.height
+			, 1
+			, VK_SAMPLE_COUNT_1_BIT
+			, format
+			, VK_IMAGE_TILING_OPTIMAL
+			, VK_IMAGE_USAGE_SAMPLED_BIT 
+			| VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+			, allocatedImage.image
+			, allocatedImage.allocation
 		);
 
-		frameData.colorTarget.imageView = Context.CreateImageView(
-			frameData.colorTarget.image,
-			colorFormat,
-			VK_IMAGE_ASPECT_COLOR_BIT,
-			1
-		);
-	}
-}
-
-void GRenderer::CreateGBufferResources()
-{
-	const auto createImageAndImageView{ [this](AllocatedImage& allocatedImage, VkFormat format) {
-		Context.CreateImage(
-			swapChainExtent_.width,
-			swapChainExtent_.height,
-			1,
-			Context.GetMSAASamples(),
-			format,
-			VK_IMAGE_TILING_OPTIMAL,
-			VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-			allocatedImage.image,
-			allocatedImage.allocation
-		);
-
-		allocatedImage.imageView = Context.CreateImageView(
-			allocatedImage.image,
-			format,
-			VK_IMAGE_ASPECT_COLOR_BIT,
-			1
+		allocatedImage.imageView = Context.CreateImageView(allocatedImage.image
+			, format
+			, VK_IMAGE_ASPECT_COLOR_BIT
+			, 1
 		);
 	} };
 
 	for (auto& frameData : frameDatas_)
 	{
+		createImageAndImageView(frameData.colorTarget, VK_FORMAT_R16G16B16A16_SFLOAT);
 		createImageAndImageView(frameData.albedoTarget, VK_FORMAT_R8G8B8A8_SRGB);
 		createImageAndImageView(frameData.normalTarget, VK_FORMAT_R16G16B16A16_SFLOAT);
 		createImageAndImageView(frameData.ormTarget, VK_FORMAT_R8G8B8A8_UNORM);
@@ -288,32 +258,29 @@ void GRenderer::CreateDepthResources()
 	
 	for (auto& frameData : frameDatas_)
 	{
-		Context.CreateImage(
-			swapChainExtent_.width,
-			swapChainExtent_.height,
-			1,
-			Context.GetMSAASamples(),
-			depthFormat_,
-			VK_IMAGE_TILING_OPTIMAL,
-			VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-			frameData.depthTarget.image,
-			frameData.depthTarget.allocation
+		Context.CreateImage(swapChainExtent_.width, swapChainExtent_.height
+			, 1
+			, VK_SAMPLE_COUNT_1_BIT
+			, depthFormat_
+			, VK_IMAGE_TILING_OPTIMAL
+			, VK_IMAGE_USAGE_SAMPLED_BIT
+			| VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+			, frameData.depthTarget.image
+			, frameData.depthTarget.allocation
 		);
 
-		frameData.depthTarget.imageView = Context.CreateImageView(
-			frameData.depthTarget.image,
-			depthFormat_,
-			VK_IMAGE_ASPECT_DEPTH_BIT,
-			1
+		frameData.depthTarget.imageView = Context.CreateImageView(frameData.depthTarget.image
+			, depthFormat_
+			, VK_IMAGE_ASPECT_DEPTH_BIT
+			, 1
 		);
 
-		Context.TransitionImageLayout(
-			frameData.depthTarget.image,
-			depthFormat_,
-			VK_IMAGE_LAYOUT_UNDEFINED,
-			VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-			1
+		Context.TransitionImageLayout(frameData.depthTarget.image
+			, depthFormat_
+			, VK_IMAGE_LAYOUT_UNDEFINED
+			, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+			, 1
 		);
 	}
 }
@@ -485,10 +452,20 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 	CmdDrawFrameGBuffer(commandBuffer, frameIndex);
 	CmdEndRendering(commandBuffer);
 
-	// Color
-	CmdBeginRendering(commandBuffer, frameIndex);
-	CmdDrawFrame(commandBuffer, frameIndex);
+	// Deferred lighting
+	CmdBeginRenderingDeferredLighting(commandBuffer, frameIndex);
+	CmdDrawFrameDeferredLighting(commandBuffer, frameIndex);
 	CmdEndRendering(commandBuffer);
+	
+	// Present Image
+	CmdBeginRenderingPostProcess(commandBuffer, frameIndex);
+	CmdDrawFramePostProcess(commandBuffer, frameIndex);
+	CmdEndRendering(commandBuffer);
+
+	// Color
+	//CmdBeginRendering(commandBuffer, frameIndex);
+	//CmdDrawFrame(commandBuffer, frameIndex);
+	//CmdEndRendering(commandBuffer);
 
 	CmdPresentationBarrier(commandBuffer, frameIndex);
 
@@ -757,7 +734,6 @@ void GRenderer::CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer, const u3
 		.colorAttachmentCount = static_cast<u32>(colorAttachments.size()),
 		.pColorAttachments = colorAttachments.data(),
 		.pDepthAttachment = &depthAttachment,
-		.pStencilAttachment = VK_NULL_HANDLE,
 	};
 	
 	vkCmdBeginRendering(commandBuffer, &renderingInfo);
@@ -783,6 +759,77 @@ void GRenderer::CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 fra
 
 		CmdPushConstants(commandBuffer, drawCall, frameIndex);
 		CmdDraw(commandBuffer, drawCall);
+	}
+}
+
+void GRenderer::CmdBeginRenderingDeferredLighting(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	const VkRenderingAttachmentInfo colorAttachment{
+		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+		.imageView = frameDatas_[frameIndex].colorTarget.imageView,
+		.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+
+		.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+		.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+	};
+
+	const VkRenderingInfo renderInfo{
+		.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
+		.renderArea{
+			.offset = { 0, 0 },
+			.extent = swapChainExtent_
+		},
+		.layerCount = 1,
+		.colorAttachmentCount = 1,
+		.pColorAttachments = &colorAttachment,
+		.pDepthAttachment = VK_NULL_HANDLE,
+	};
+
+	vkCmdBeginRendering(commandBuffer, &renderInfo);
+}
+
+void GRenderer::CmdDrawFrameDeferredLighting(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/deferredLighting.kasset") })
+	{
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
+		CmdPushConstants(commandBuffer, nullptr, frameIndex);
+		vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+	}
+}
+
+void GRenderer::CmdBeginRenderingPostProcess(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	const VkRenderingAttachmentInfo finalAttachment{
+		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+		.imageView = swapChainDatas_[frameDatas_[frameIndex].imageIndex].imageView,
+		.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+
+		.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+		.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+	};
+
+	const VkRenderingInfo finalRenderingInfo{
+		.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
+		.renderArea{
+			.offset = { 0, 0 },
+			.extent = swapChainExtent_
+		},
+		.layerCount = 1,
+		.colorAttachmentCount = 1,
+		.pColorAttachments = &finalAttachment,
+	};
+
+	vkCmdBeginRendering(commandBuffer, &finalRenderingInfo);
+}
+
+void GRenderer::CmdDrawFramePostProcess(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/postProcess.kasset") })
+	{
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
+		CmdPushConstants(commandBuffer, nullptr, frameIndex);
+		vkCmdDraw(commandBuffer, 3, 1, 0, 0);
 	}
 }
 
@@ -943,6 +990,31 @@ void GRenderer::UnregisterDrawCall(UDrawCall* drawCall)
 	{
 		drawCalls_[index]->poolIndex = index;
 	}
+}
+
+VkImageView GRenderer::GetGBufferAlbedoImageView(const u32 frameIndex) const
+{
+	return frameDatas_[frameIndex].albedoTarget.imageView;
+}
+
+VkImageView GRenderer::GetGBufferNormalImageView(const u32 frameIndex) const
+{
+	return frameDatas_[frameIndex].normalTarget.imageView;
+}
+
+VkImageView GRenderer::GetGBufferORMImageView(const u32 frameIndex) const
+{
+	return frameDatas_[frameIndex].ormTarget.imageView;
+}
+
+VkImageView GRenderer::GetGBufferDepthImageView(const u32 frameIndex) const
+{
+	return frameDatas_[frameIndex].depthTarget.imageView;
+}
+
+VkImageView GRenderer::GetColorTargetImageView(const u32 frameIndex) const
+{
+	return frameDatas_[frameIndex].colorTarget.imageView;
 }
 
 void GRenderer::SubmitCommandBuffer(const u32 frameIndex)

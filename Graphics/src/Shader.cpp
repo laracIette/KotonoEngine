@@ -100,9 +100,11 @@ void UShader::CreateGraphicsPipeline()
 	};
 
 	const auto& dataMultisampling{ json["multisampling"] };
+	const bool useMSAASamples{ dataMultisampling["useMSAASamples"] };
+	const VkSampleCountFlagBits rasterizationSamples{ dataMultisampling["rasterizationSamples"] };
 	const VkPipelineMultisampleStateCreateInfo multisampling{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-		.rasterizationSamples = Context.GetMSAASamples(),
+		.rasterizationSamples = useMSAASamples ? Context.GetMSAASamples() : rasterizationSamples,
 		.sampleShadingEnable = dataMultisampling["sampleShadingEnable"], // enable sample shading in the pipeline
 		.minSampleShading = dataMultisampling["minSampleShading"], // min fraction for sample shading, closer to one is smoother
 		.pSampleMask = nullptr, // Optional
@@ -272,13 +274,15 @@ std::vector<VkFormat> UShader::GetColorAttachmentFormats(const EPipelinePass pip
 {
 	switch (pipelinePass)
 	{
-	case EPipelinePass::DepthPrePass:	return {};
-	case EPipelinePass::GBuffer:		return {
+	case EPipelinePass::Compute:			return {};
+	case EPipelinePass::DepthPrePass:		return {};
+	case EPipelinePass::GBuffer:			return {
 		VK_FORMAT_R8G8B8A8_SRGB,		// Albedo
 		VK_FORMAT_R16G16B16A16_SFLOAT,	// Normal
 		VK_FORMAT_R8G8B8A8_UNORM		// ORM
 	};
-	case EPipelinePass::Present:		return { Renderer.GetSwapChainFormat() };
-	default:							return {};
+	case EPipelinePass::DeferredLighting:	return { VK_FORMAT_R16G16B16A16_SFLOAT };
+	case EPipelinePass::PostProcess:		return { Renderer.GetSwapChainFormat() };
+	default:								return {};
 	}
 }

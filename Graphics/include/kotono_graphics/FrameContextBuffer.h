@@ -24,6 +24,13 @@ public:
         VmaAllocation allocation;
         Data* mapped;
         VkDeviceAddress bda;
+
+        u32 gBufferAlbedo;
+        u32 gBufferNormal;
+        u32 gBufferORM;
+        u32 gBufferDepth;
+
+        u32 postProcessTarget;
     };
 
 public:
@@ -37,6 +44,7 @@ public:
 
 private:
     void CreateBuffers();
+    void RegisterGBufferTextures();
 
 private:
     UFramesInFlightArray<FrameData> frameDatas_;

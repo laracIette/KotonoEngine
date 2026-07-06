@@ -833,7 +833,7 @@ void GContext::CreateImage(u32 width, u32 height, u32 mipLevels, VkSampleCountFl
 		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
 	};
 
-	VmaAllocationCreateInfo allocCreateInfo{
+	const VmaAllocationCreateInfo allocCreateInfo{
 		.usage = VMA_MEMORY_USAGE_AUTO,
 		.requiredFlags = properties,
 	};

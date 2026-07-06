@@ -1,11 +1,11 @@
 {
   "shaders": [
     {
-      "path": "${ENGINE_DIRECTORY}/Graphics/shaders/vert/shader2D.vert.spv",
+      "path": "${ENGINE_DIRECTORY}/Graphics/shaders/vert/fullscreenTriangle.vert.spv",
       "shaderStage": 1
     },
     {
-      "path": "${ENGINE_DIRECTORY}/Graphics/shaders/frag/shader2D.frag.spv",
+      "path": "${ENGINE_DIRECTORY}/Graphics/shaders/frag/postProcess.frag.spv",
       "shaderStage": 16
     }
   ],
@@ -22,17 +22,17 @@
     "depthBiasSlopeFactor": 0.0
   },
   "multisampling": {
-    "useMSAASamples": true,
+    "useMSAASamples": false,
     "rasterizationSamples": 1,
-    "sampleShadingEnable": true,
-    "minSampleShading": 0.2,
+    "sampleShadingEnable": false,
+    "minSampleShading": 0.0,
     "alphaToCoverageEnable": false,
     "alphaToOneEnable": false
   },
   "depthStencil": {
     "depthTestEnable": false,
     "depthWriteEnable": false,
-    "depthCompareOp": 1,
+    "depthCompareOp": 0,
     "depthBoundsTestEnable": false,
     "minDepthBounds": 0.0,
     "maxDepthBounds": 1.0,
@@ -41,14 +41,14 @@
   "colorBlendAttachments": [
     {
       "colorWriteMask": 15,
-      "blendEnable": true,
-      "srcColorBlendFactor": 6,
-      "dstColorBlendFactor": 7,
+      "blendEnable": false,
+      "srcColorBlendFactor": 1,
+      "dstColorBlendFactor": 0,
       "colorBlendOp": 0,
       "srcAlphaBlendFactor": 1,
       "dstAlphaBlendFactor": 0,
       "alphaBlendOp": 0
     }
   ],
-  "pipelinePass": 3
+  "pipelinePass": 4
 }

@@ -1,7 +1,7 @@
 {
   "shaders": [
     {
-      "path": "${ENGINE_DIRECTORY}/Graphics/shaders/vert/shader3D.vert.spv",
+      "path": "${ENGINE_DIRECTORY}/Graphics/shaders/vert/gbuffer.vert.spv",
       "shaderStage": 1
     },
     {
@@ -22,6 +22,8 @@
     "depthBiasSlopeFactor": 0.0
   },
   "multisampling": {
+    "useMSAASamples": false,
+    "rasterizationSamples": 1,
     "sampleShadingEnable": true,
     "minSampleShading": 0.2,
     "alphaToCoverageEnable": false,
@@ -68,5 +70,5 @@
       "alphaBlendOp": 0
     }
   ],
-  "pipelinePass": 1
+  "pipelinePass": 2
 }

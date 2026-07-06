@@ -11,21 +11,7 @@ class GRenderer final
 {
 	friend class GCore;
 
-private:
-	void Init();
-	void Cleanup();
-
 public:
-	void DrawFrame();
-
-	VkExtent2D GetSwapChainExtent() const;
-	VkFormat GetSwapChainFormat() const;
-	VkFormat GetDepthFormat() const;
-
-	void RegisterDrawCall(UDrawCall* drawCall);
-	void UnregisterDrawCall(UDrawCall* drawCall);
-
-private:
 	struct SwapChainData
 	{
 		VkImage image;
@@ -55,6 +41,26 @@ private:
 	};
 
 private:
+	void Init();
+	void Cleanup();
+
+public:
+	void DrawFrame();
+
+	VkExtent2D GetSwapChainExtent() const;
+	VkFormat GetSwapChainFormat() const;
+	VkFormat GetDepthFormat() const;
+
+	void RegisterDrawCall(UDrawCall* drawCall);
+	void UnregisterDrawCall(UDrawCall* drawCall);
+
+	VkImageView GetGBufferAlbedoImageView(const u32 frameIndex) const;
+	VkImageView GetGBufferNormalImageView(const u32 frameIndex) const;
+	VkImageView GetGBufferORMImageView(const u32 frameIndex) const;
+	VkImageView GetGBufferDepthImageView(const u32 frameIndex) const;
+	VkImageView GetColorTargetImageView(const u32 frameIndex) const;
+
+private:
 	void CreateSwapChain();
 	void CleanupSwapChain();
 	void RecreateSwapChain();
@@ -64,7 +70,6 @@ private:
 	void CreateImageViews();
 
 	void CreateColorResources();
-	void CreateGBufferResources();
 	void CreateDepthResources();
 	VkFormat FindSupportedFormat(const std::span<VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const;
 	VkFormat FindDepthFormat() const;
@@ -88,6 +93,12 @@ private:
 	
 	void CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex);
 	void CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+
+	void CmdBeginRenderingDeferredLighting(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	void CmdDrawFrameDeferredLighting(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	
+	void CmdBeginRenderingPostProcess(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	void CmdDrawFramePostProcess(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	
 	void CmdBeginRendering(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdDrawFrame(VkCommandBuffer commandBuffer, const u32 frameIndex) const;

@@ -1,4 +1,8 @@
 #version 460
+#define ACCESS_CLUSTER_AABB_BUF readonly
+#define ACCESS_CLUSTER_GRID_BUF writeonly
+#define ACCESS_LIGHT_INDEX_BUF writeonly
+#define ACCESS_LIGHT_COUNTER_BUF // read and write
 #include "../common_comp.glsl"
 
 layout(local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
@@ -33,6 +37,8 @@ void main() {
     // The 64 threads loop through all totalLights in parallel
     for (uint i = gl_LocalInvocationIndex; i < lightCount; i += gl_WorkGroupSize.x) {
         Light light = lights.data[i];
+
+        if (light.type != LIGHT_TYPE_POINT) continue;
         
         if (testSphereAABB(light.position, light.range, aabb.minPoint.xyz, aabb.maxPoint.xyz)) {
             // Light intersects! Atomically add to shared memory
