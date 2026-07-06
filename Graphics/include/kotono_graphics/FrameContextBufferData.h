@@ -7,7 +7,9 @@ struct UFrameContextBufferData
 {
     glm::mat4 view;
     glm::mat4 proj;
+    glm::mat4 invProj;
     glm::mat4 viewProj;
+    glm::mat4 invViewProj;
     glm::vec4 viewPos;
 
     f32 time;
@@ -23,4 +25,5 @@ struct UFrameContextBufferData
     VkDeviceAddress clusterAABBBufferAddress;
     VkDeviceAddress clusterGridBufferAddress;
     VkDeviceAddress lightIndexBufferAddress;
+    VkDeviceAddress lightCounterBufferAddress;
 };

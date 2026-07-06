@@ -143,7 +143,7 @@ void KSceneMeshComponent::RefreshDrawCallShaderData() const
 {
     if (shader_)
     {
-        drawCallBuilder_.GetDrawCall()->pipeline = shader_->GetGraphicsPipeline();
+        drawCallBuilder_.GetDrawCall()->pipeline = shader_->GetPipeline();
     }
 }
 

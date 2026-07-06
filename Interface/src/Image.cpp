@@ -37,7 +37,7 @@ void WImage::DisplayInternal(UWidgetDisplaySettings displaySettings)
 
 	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/shader2D.kasset") })
 	{
-		drawCallBuilder_.GetDrawCall()->pipeline = shader->GetGraphicsPipeline();
+		drawCallBuilder_.GetDrawCall()->pipeline = shader->GetPipeline();
 	}
 
 	if (UAsset model{ SAssetManager<UModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/rectangle.obj") })

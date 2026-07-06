@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "GPUBuffers.h"
 #include "Color.h"
 #include "DrawCall.h"
 #include "DrawDataBuffer.h"
@@ -38,6 +39,7 @@ void GRenderer::Init()
 	TransformBuffer.Init();
 	ParametersBuffer.Init();
 	LightBuffer.Init();
+	GPUBuffers.Init();
 
 	LightBuffer.RegisterLight({
 		.direction = glm::normalize(-WorldForwardVector - WorldUpVector * 0.5f),
@@ -62,6 +64,7 @@ void GRenderer::Cleanup()
 	JoinThread(renderThread_);
 	JoinThread(rhiThread_); 
 
+	GPUBuffers.Cleanup();
 	LightBuffer.Cleanup();
 	ParametersBuffer.Cleanup();
 	TransformBuffer.Cleanup();
@@ -458,9 +461,18 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 	BeginCommandBuffer(commandBuffer);
 
 	PipelineResourceManager.CmdBindDescriptorSet(commandBuffer);
-
 	WindowViewport.CmdUse(commandBuffer);
 
+	static bool isClusterAABBDirty{ true };
+	if (isClusterAABBDirty)
+	{
+		isClusterAABBDirty = false;
+		CmdUpdateClusterAABB(commandBuffer, frameIndex);
+	}
+
+	CmdDispatchLightBinning(commandBuffer, frameIndex);
+
+	// GBuffer, color, depth pre-pass, swapchain
 	CmdAcquireBarrier(commandBuffer, frameIndex);
 
 	// Depth pre-pass
@@ -494,9 +506,75 @@ void GRenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer)
 	);
 }
 
-void GRenderer::CmdAcquireBarrier(VkCommandBuffer commandBuffer, const u32 frameIndex)
+void GRenderer::CmdUpdateClusterAABB(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	const auto makeGBufferMemoryBarrier{ [](AllocatedImage& allocatedImage) {
+	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/clusterAABB.kasset") })
+	{
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, shader->GetPipeline());
+		CmdPushConstants(commandBuffer, nullptr, frameIndex);
+		vkCmdDispatch(commandBuffer, 16, 9, 24);
+	}
+}
+
+void GRenderer::CmdDispatchLightBinning(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	UAsset<UShader> binningShader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/lightBinning.kasset") };
+	if (!binningShader)
+	{
+		return;
+	}
+
+	// Reset the Global Atomic Counter to 0
+	vkCmdFillBuffer(commandBuffer
+		, GPUBuffers.GetLightCounterBuffer()
+		, 0
+		, sizeof(u32)
+		, 0
+	);
+
+	// Wait for the fill and AABB building to finish
+	const VkMemoryBarrier2 memBarrier{
+		.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER_2,
+		.srcStageMask = VK_PIPELINE_STAGE_2_TRANSFER_BIT 
+			| VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT,
+		.srcAccessMask = VK_ACCESS_2_TRANSFER_WRITE_BIT 
+			| VK_ACCESS_2_SHADER_WRITE_BIT,
+		.dstStageMask = VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT,
+		.dstAccessMask = VK_ACCESS_2_SHADER_READ_BIT 
+			| VK_ACCESS_2_SHADER_WRITE_BIT
+	};
+	const VkDependencyInfo depInfo{
+		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+		.memoryBarrierCount = 1,
+		.pMemoryBarriers = &memBarrier
+	};
+	vkCmdPipelineBarrier2(commandBuffer, &depInfo);
+
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, binningShader->GetPipeline());
+
+	CmdPushConstants(commandBuffer, nullptr, frameIndex);
+
+	vkCmdDispatch(commandBuffer, 16, 9, 24);
+
+	// Wait for binning to finish before Fragment shader reads it
+	const VkMemoryBarrier2 lightingBarrier{
+		.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER_2,
+		.srcStageMask = VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT,
+		.srcAccessMask = VK_ACCESS_2_SHADER_WRITE_BIT,
+		.dstStageMask = VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT,
+		.dstAccessMask = VK_ACCESS_2_SHADER_READ_BIT
+	};
+	const VkDependencyInfo lightingDepInfo{
+		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+		.memoryBarrierCount = 1,
+		.pMemoryBarriers = &lightingBarrier
+	};
+	vkCmdPipelineBarrier2(commandBuffer, &lightingDepInfo);
+}
+
+void GRenderer::CmdAcquireBarrier(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	const auto makeGBufferMemoryBarrier{ [](const AllocatedImage& allocatedImage) {
 		return VkImageMemoryBarrier2{
 			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
 
@@ -615,7 +693,7 @@ void GRenderer::CmdDrawFrameDepthPrePass(VkCommandBuffer commandBuffer, const u3
 {
 	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/depthPrePass.kasset") })
 	{
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetGraphicsPipeline());
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
 	}
 	else
 	{
@@ -689,7 +767,7 @@ void GRenderer::CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 fra
 {
 	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/gbuffer.kasset") })
 	{
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetGraphicsPipeline());
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
 	}
 	else
 	{
@@ -708,7 +786,7 @@ void GRenderer::CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 fra
 	}
 }
 
-void GRenderer::CmdBeginRendering(VkCommandBuffer commandBuffer, const u32 frameIndex)
+void GRenderer::CmdBeginRendering(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	const VkRenderingAttachmentInfo colorAttachment{
 		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
@@ -775,8 +853,8 @@ void GRenderer::CmdPushConstants(VkCommandBuffer commandBuffer, const UDrawCall*
 {
 	const UPushConstants pc{
 		.frameContextBufferAddress = FrameContextBuffer.GetAddress(frameIndex),
-		.vertexBufferAddress = drawCall->vertexBufferAdress,
-		.drawIndex = drawCall->index,
+		.vertexBufferAddress = drawCall ? drawCall->vertexBufferAdress : 0,
+		.drawIndex = drawCall ? drawCall->index : 0,
 	};
 
 	vkCmdPushConstants(commandBuffer

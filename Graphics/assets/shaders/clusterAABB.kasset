@@ -1,0 +1,4 @@
+{
+  "path": "${ENGINE_DIRECTORY}/Graphics/shaders/comp/clusterAABB.comp.spv",
+  "pipelinePass": 3
+}

@@ -1,0 +1,78 @@
+#version 460
+#include "../common_comp.glsl"
+
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+const uint CLUSTER_AABB_COUNT = 16 * 9 * 24;
+
+void main() {
+    UNPACK_PUSH_CONSTANTS
+
+    uvec3 clusterID = gl_GlobalInvocationID;
+
+    uvec3 gridDimensions = uvec3(16, 9, 24);
+    vec2 screenSize = vec2(1600, 900);
+    float zNear = 0.1;
+    float zFar = 1000.0;
+
+    // Bounds check
+    if (clusterID.x >= gridDimensions.x ||
+        clusterID.y >= gridDimensions.y ||
+        clusterID.z >= gridDimensions.z) {
+        return;
+    }
+
+    // Calculate 1D index for the flat buffer
+    uint clusterIndex = clusterID.x +
+                        (clusterID.y * gridDimensions.x) +
+                        (clusterID.z * gridDimensions.x * gridDimensions.y);
+
+    // Calculate tile sizes in screen pixels
+    vec2 tileSize = screenSize / vec2(gridDimensions.xy);
+
+    // 4 corners of the tile in screen space
+    vec2 minScreen = vec2(clusterID.xy) * tileSize;
+    vec2 maxScreen = vec2(clusterID.xy + uvec2(1, 1)) * tileSize;
+
+    // Convert to Vulkan NDC space (X, Y in [-1, 1])
+    vec2 minNDC = (minScreen / screenSize) * 2.0 - 1.0;
+    vec2 maxNDC = (maxScreen / screenSize) * 2.0 - 1.0;
+
+    // Get View Space rays for the 4 corners of the tile (Z=1 is the near plane because of reversed depth)
+    vec3 viewMinMin = clipToView(frame.invProj, vec4(minNDC.x, minNDC.y, 1.0, 1.0));
+    vec3 viewMaxMin = clipToView(frame.invProj, vec4(maxNDC.x, minNDC.y, 1.0, 1.0));
+    vec3 viewMinMax = clipToView(frame.invProj, vec4(minNDC.x, maxNDC.y, 1.0, 1.0));
+    vec3 viewMaxMax = clipToView(frame.invProj, vec4(maxNDC.x, maxNDC.y, 1.0, 1.0));
+
+    // Exponential Depth Slicing
+    float tileNear = zNear * pow(zFar / zNear, float(clusterID.z) / float(gridDimensions.z));
+    float tileFar  = zNear * pow(zFar / zNear, float(clusterID.z + 1) / float(gridDimensions.z));
+
+    // NOTE: Standard right-handed View Space looks down the -Z axis. 
+    // If your math library (like GLM) uses this, we must make the depths negative.
+    tileNear = -tileNear;
+    tileFar  = -tileFar;
+
+    // Intersect the 4 corner rays with the Near Z plane of this cluster
+    vec3 minMinNear = lineIntersectionToZPlane(viewMinMin, tileNear);
+    vec3 maxMinNear = lineIntersectionToZPlane(viewMaxMin, tileNear);
+    vec3 minMaxNear = lineIntersectionToZPlane(viewMinMax, tileNear);
+    vec3 maxMaxNear = lineIntersectionToZPlane(viewMaxMax, tileNear);
+
+    // Intersect the 4 corner rays with the Far Z plane of this cluster
+    vec3 minMinFar = lineIntersectionToZPlane(viewMinMin, tileFar);
+    vec3 maxMinFar = lineIntersectionToZPlane(viewMaxMin, tileFar);
+    vec3 minMaxFar = lineIntersectionToZPlane(viewMinMax, tileFar);
+    vec3 maxMaxFar = lineIntersectionToZPlane(viewMaxMax, tileFar);
+
+    // Find the absolute min and max of all 8 points to form the AABB
+    vec3 minAABB = min(min(min(minMinNear, maxMinNear), min(minMaxNear, maxMaxNear)),
+                       min(min(minMinFar, maxMinFar), min(minMaxFar, maxMaxFar)));
+
+    vec3 maxAABB = max(max(max(minMinNear, maxMinNear), max(minMaxNear, maxMaxNear)),
+                       max(max(minMinFar, maxMinFar), max(minMaxFar, maxMaxFar)));
+
+    // Write directly to VRAM via the bindless pointer
+    clusterAABBs.data[clusterIndex].minPoint = vec4(minAABB, 1.0);
+    clusterAABBs.data[clusterIndex].maxPoint = vec4(maxAABB, 1.0);
+}

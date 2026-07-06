@@ -16,6 +16,7 @@ static const std::array DependencyPaths{
     "common.glsl",
     "common_frag.glsl",
     "common_vert.glsl",
+    "common_comp.glsl",
 };
 
 void SSpvCompiler::CompileAll()
@@ -38,7 +39,7 @@ void SSpvCompiler::CompileUpdated()
     nlohmann::json json{};
     SSerializer::Deserialize(json, ShaderRegistryPath);
 
-    for (const auto* directory : { "vert", "frag" })
+    for (const auto* directory : { "vert", "frag", "comp" })
     {
         for (const auto& entry : std::filesystem::directory_iterator{ ShadersPath / directory })
         {

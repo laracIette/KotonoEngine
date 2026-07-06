@@ -1,7 +1,7 @@
 {
   "shaders": [
     {
-      "path": "vert/shader3D.vert.spv",
+      "path": "${ENGINE_DIRECTORY}/Graphics/shaders/vert/shader3D.vert.spv",
       "shaderStage": 1
     }
   ],

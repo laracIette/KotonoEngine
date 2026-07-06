@@ -1,0 +1,66 @@
+#version 460
+#include "../common_comp.glsl"
+
+layout(local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
+
+const uint MAX_LIGHTS_PER_CLUSTER = 256;
+
+shared uint s_VisibleLightCount;
+shared uint s_VisibleLightIndices[MAX_LIGHTS_PER_CLUSTER];
+shared uint s_GlobalOffset;
+
+void main() {
+    UNPACK_PUSH_CONSTANTS
+
+    uint numClustersX = 16;
+    uint numClustersY = 9;
+
+    // 1D Index of the cluster (WorkGroup ID maps directly to the 3D grid)
+    uint clusterIndex = gl_WorkGroupID.z * (numClustersX * numClustersY) +
+                        gl_WorkGroupID.y * numClustersX +
+                        gl_WorkGroupID.x;
+
+    // Thread 0 initializes shared memory
+    if (gl_LocalInvocationIndex == 0) {
+        s_VisibleLightCount = 0;
+    }
+    barrier();
+
+    // Grab this cluster's AABB
+    AABB aabb = clusterAABBs.data[clusterIndex];
+
+    // --- Cooperative Intersection Testing ---
+    // The 64 threads loop through all totalLights in parallel
+    for (uint i = gl_LocalInvocationIndex; i < lightCount; i += gl_WorkGroupSize.x) {
+        Light light = lights.data[i];
+        
+        if (testSphereAABB(light.position, light.range, aabb.minPoint.xyz, aabb.maxPoint.xyz)) {
+            // Light intersects! Atomically add to shared memory
+            uint slot = atomicAdd(s_VisibleLightCount, 1);
+            if (slot < MAX_LIGHTS_PER_CLUSTER) {
+                s_VisibleLightIndices[slot] = i;
+            }
+        }
+    }
+    barrier();
+
+    // Cap the count just in case it exceeded the max
+    uint visibleCount = min(s_VisibleLightCount, MAX_LIGHTS_PER_CLUSTER);
+
+    // --- Global Memory Allocation ---
+    // Thread 0 reserves a block in the global index list
+    if (gl_LocalInvocationIndex == 0) {
+        s_GlobalOffset = atomicAdd(lightCounter.data, visibleCount);
+        
+        // Write the offset and count to the Grid Buffer
+        clusterGrids.data[clusterIndex].offset = s_GlobalOffset;
+        clusterGrids.data[clusterIndex].count = visibleCount;
+    }
+    barrier();
+
+    // --- Copy Shared to Global ---
+    // Threads cooperatively copy the visible lights into the globally allocated chunk
+    for (uint i = gl_LocalInvocationIndex; i < visibleCount; i += gl_WorkGroupSize.x) {
+        lightIndices.data[s_GlobalOffset + i] = s_VisibleLightIndices[i];
+    }
+}

@@ -12,14 +12,25 @@
 
 UShader::UShader(const UPath& path) 
 	: path_{ path }
+	, pipeline_{ VK_NULL_HANDLE }
 {
-	CreateGraphicsPipeline();
+	nlohmann::json json{};
+	SSerializer::Deserialize(json, path_);
+
+	if (json["pipelinePass"] == EPipelinePass::Compute)
+	{
+		CreateComputePipeline();
+	}
+	else
+	{
+		CreateGraphicsPipeline();
+	}
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "initialized shader {0}", path_.ToString());
 }
 
 UShader::~UShader()
 {
-	vkDestroyPipeline(Context.GetDevice(), graphicsPipeline_, nullptr);
+	vkDestroyPipeline(Context.GetDevice(), pipeline_, nullptr);
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "cleaned up shader {0}", path_.ToString());
 }
 
@@ -28,9 +39,9 @@ const UPath& UShader::Path() const
 	return path_;
 }
 
-VkPipeline UShader::GetGraphicsPipeline() const
+VkPipeline UShader::GetPipeline() const
 {
-	return graphicsPipeline_;
+	return pipeline_;
 }
 
 void UShader::CreateShaderModule(VkShaderModule& shaderModule, const std::span<u8> code)
@@ -57,7 +68,7 @@ void UShader::CreateGraphicsPipeline()
 
 	for (const auto& shader : json["shaders"])
 	{
-		const auto path{ UPath{ "${ENGINE_DIRECTORY}/Graphics/shaders" }.ToPath() / shader["path"] };
+		const UPath path{ shader["path"] };
 		std::vector shaderCode{ UFile{ path }.ReadBinary() };
 
 		VkShaderModule shaderModule;
@@ -173,9 +184,9 @@ void UShader::CreateGraphicsPipeline()
 	};
 
 	constexpr std::array dynamicStates
-	{ 
-		VK_DYNAMIC_STATE_VIEWPORT, 
-		VK_DYNAMIC_STATE_SCISSOR 
+	{
+		VK_DYNAMIC_STATE_VIEWPORT,
+		VK_DYNAMIC_STATE_SCISSOR
 	};
 	const VkPipelineDynamicStateCreateInfo dynamicState{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
@@ -210,7 +221,7 @@ void UShader::CreateGraphicsPipeline()
 		.layout = PipelineResourceManager.GetPipelineLayout(),
 	};
 	VK_CHECK_THROW(
-		vkCreateGraphicsPipelines(Context.GetDevice(), nullptr, 1, &pipelineInfo, nullptr, &graphicsPipeline_),
+		vkCreateGraphicsPipelines(Context.GetDevice(), nullptr, 1, &pipelineInfo, nullptr, &pipeline_),
 		"failed to create graphics pipeline!"
 	);
 
@@ -218,6 +229,43 @@ void UShader::CreateGraphicsPipeline()
 	{
 		vkDestroyShaderModule(Context.GetDevice(), shaderModule, nullptr);
 	}
+}
+
+void UShader::CreateComputePipeline()
+{
+	nlohmann::json json{};
+	SSerializer::Deserialize(json, path_);
+
+	const UPath path{ json["path"] };
+	std::vector shaderCode{ UFile{ path }.ReadBinary() };
+
+	VkShaderModule shaderModule;
+	CreateShaderModule(shaderModule, shaderCode);
+
+	const VkPipelineShaderStageCreateInfo shaderStageInfo{
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+		.pNext = VK_NULL_HANDLE,
+		.flags = 0,
+		.stage = VK_SHADER_STAGE_COMPUTE_BIT,
+		.module = shaderModule,
+		.pName = "main",
+		.pSpecializationInfo = VK_NULL_HANDLE,
+	};
+
+	const VkComputePipelineCreateInfo pipelineInfo{
+		.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
+		.pNext = VK_NULL_HANDLE,
+		.flags = 0,
+		.stage = shaderStageInfo,
+		.layout = PipelineResourceManager.GetPipelineLayout(),
+		.basePipelineHandle = VK_NULL_HANDLE,
+		.basePipelineIndex = -1,
+	};
+
+	VK_CHECK_THROW(
+		vkCreateComputePipelines(Context.GetDevice(), nullptr, 1, &pipelineInfo, nullptr, &pipeline_),
+		"failed to create compute pipeline!"
+	);
 }
 
 std::vector<VkFormat> UShader::GetColorAttachmentFormats(const EPipelinePass pipelinePass) const

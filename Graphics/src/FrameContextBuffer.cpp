@@ -1,4 +1,5 @@
 #include "FrameContextBuffer.h"
+#include "GPUBuffers.h"
 #include "DrawDataBuffer.h"
 #include "LightBuffer.h"
 #include "MaterialBuffer.h"
@@ -31,7 +32,9 @@ void GFrameContextBuffer::UpdateBuffer(const u32 frameIndex)
     const Data data{
         .view = cameraData_.view,
         .proj = cameraData_.proj,
+        .invProj = glm::inverse(cameraData_.proj),
         .viewProj = cameraData_.viewProj,
+        .invViewProj = glm::inverse(cameraData_.viewProj),
         .viewPos = glm::vec4{ cameraData_.viewPos, 0.0f },
 
         .time = SClock::Now(),
@@ -44,9 +47,10 @@ void GFrameContextBuffer::UpdateBuffer(const u32 frameIndex)
         .lightBufferAddress = LightBuffer.GetAddress(),
         .lightCount = LightBuffer.GetLightCount(),
 
-        .clusterAABBBufferAddress = 0,
-        .clusterGridBufferAddress = 0,
-        .lightIndexBufferAddress = 0,
+        .clusterAABBBufferAddress = GPUBuffers.GetClusterAABBAddress(),
+        .clusterGridBufferAddress = GPUBuffers.GetClusterGridAddress(),
+        .lightIndexBufferAddress = GPUBuffers.GetLightIndexAddress(),
+        .lightCounterBufferAddress = GPUBuffers.GetLightCounterAddress(),
     };
 
     std::memcpy(frameDatas_[frameIndex].mapped

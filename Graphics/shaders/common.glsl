@@ -32,8 +32,8 @@ struct Transform {
 
 struct Parameters {
     float scalars[16];
-    vec4 vectors[16];
-    uint textures[16]; // indices
+    vec4  vectors[16];
+    uint  textures[16]; // indices
 };
 
 struct Vertex {
@@ -44,13 +44,14 @@ struct Vertex {
 };
 
 struct Light {
-    vec3 position;
-    vec3 direction;
-    vec3 color;
+    vec3  position;
+    vec3  direction;
+    vec3  color;
     float intensity;
     float range;
-    float innerCone, outerCone;
-    uint type;
+    float innerCone;
+    float outerCone;
+    uint  type;
     //uint shadowMapIndex; // index into bindless texture array, ~0u = no shadow
     //mat4 lightViewProj[4]; // cascades for directional, 1 entry otherwise
     //vec4 cascadeSplits; // directional only
@@ -89,37 +90,40 @@ layout(buffer_reference, scalar) buffer ClusterGridBuf {
     LightGrid data[];
 };
 layout(buffer_reference, scalar) buffer LightIndexBuf {
-    uint globalIndexCount;
     uint data[];
+};
+layout(buffer_reference, scalar) buffer LightCounterBuf {
+    uint data;
 };
 
 
 struct FrameContext {
-    mat4           view;
-    mat4           proj;
-    mat4           viewProj;
-    vec4           viewPos;
+    mat4            view;
+    mat4            proj;
+    mat4            invProj;
+    mat4            viewProj;
+    mat4            invViewProj;
+    vec4            viewPos;
 
-    float          time;
+    float           time;
 
-    DrawDataBuf    drawDatas;
-    MaterialBuf    materials;
-    TransformBuf   transforms;
-    ParametersBuf  parameters;
+    DrawDataBuf     drawDatas;
+    MaterialBuf     materials;
+    TransformBuf    transforms;
+    ParametersBuf   parameters;
 
-    LightBuf       lights;
-    uint           lightCount;
+    LightBuf        lights;
+    uint            lightCount;
 
-    ClusterAABBBuf clusterAABBs;
-    ClusterGridBuf clusterGrids;
-    LightIndexBuf  lightIndices;
+    ClusterAABBBuf  clusterAABBs;
+    ClusterGridBuf  clusterGrids;
+    LightIndexBuf   lightIndices;
+    LightCounterBuf lightCounter;
 };
 
 layout(buffer_reference, scalar) readonly buffer FrameContextBuf {
     FrameContext data;
 };
-
-
 layout(buffer_reference, scalar) readonly buffer VertexBuf {
     Vertex data[];
 };

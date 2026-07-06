@@ -7,6 +7,7 @@ enum class EPipelinePass : u8
 	DepthPrePass,
 	GBuffer,
 	Present,
+	Compute,
 };
 class UShader final
 {
@@ -16,15 +17,16 @@ public:
 
 	const UPath& Path() const;
 
-	VkPipeline GetGraphicsPipeline() const;
+	VkPipeline GetPipeline() const;
 
 private:
 	void CreateGraphicsPipeline();
+	void CreateComputePipeline();
 	std::vector<VkFormat> GetColorAttachmentFormats(const EPipelinePass pipelinePass) const;
 	void CreateShaderModule(VkShaderModule& shaderModule, const std::span<u8> code);
 
 private:
 	const UPath path_;
 
-	VkPipeline graphicsPipeline_;
+	VkPipeline pipeline_;
 };
