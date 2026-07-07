@@ -268,6 +268,8 @@ void UShader::CreateComputePipeline()
 		vkCreateComputePipelines(Context.GetDevice(), nullptr, 1, &pipelineInfo, nullptr, &pipeline_),
 		"failed to create compute pipeline!"
 	);
+
+	vkDestroyShaderModule(Context.GetDevice(), shaderModule, nullptr);
 }
 
 std::vector<VkFormat> UShader::GetOutputColorAttachmentFormats(const EPipelinePass pipelinePass) const

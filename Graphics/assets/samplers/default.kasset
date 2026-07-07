@@ -8,7 +8,7 @@
   "addressModeW": 0,
   "mipLodBias": 0.0,
   "anisotropyEnable": 1,
-  "compareEnable": 0,
+  "compareEnable": false,
   "compareOp": 7,
   "minLod": 0.0,
   "maxLod": 1000.0,

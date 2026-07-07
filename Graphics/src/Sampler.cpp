@@ -44,6 +44,7 @@ void USampler::CreateSampler()
 	SSerializer::Deserialize(json, path_);
 
 	const VkSamplerCreateInfo samplerInfo{
+		.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
 		.magFilter = json["magFilter"],
 		.minFilter = json["minFilter"],
 		.mipmapMode = json["mipmapMode"],
