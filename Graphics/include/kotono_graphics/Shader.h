@@ -23,7 +23,7 @@ public:
 private:
 	void CreateGraphicsPipeline();
 	void CreateComputePipeline();
-	std::vector<VkFormat> GetColorAttachmentFormats(const EPipelinePass pipelinePass) const;
+	std::vector<VkFormat> GetOutputColorAttachmentFormats(const EPipelinePass pipelinePass) const;
 	void CreateShaderModule(VkShaderModule& shaderModule, const std::span<u8> code);
 
 private:

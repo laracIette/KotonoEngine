@@ -196,7 +196,7 @@ void UShader::CreateGraphicsPipeline()
 		.pDynamicStates = dynamicStates.data(),
 	};
 
-	const std::vector colorAttachmentFormats{ GetColorAttachmentFormats(json["pipelinePass"]) };
+	const std::vector colorAttachmentFormats{ GetOutputColorAttachmentFormats(json["pipelinePass"]) };
 	const VkPipelineRenderingCreateInfo pipelineRenderingInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
 		.pNext = VK_NULL_HANDLE,
@@ -270,7 +270,7 @@ void UShader::CreateComputePipeline()
 	);
 }
 
-std::vector<VkFormat> UShader::GetColorAttachmentFormats(const EPipelinePass pipelinePass) const
+std::vector<VkFormat> UShader::GetOutputColorAttachmentFormats(const EPipelinePass pipelinePass) const
 {
 	switch (pipelinePass)
 	{
