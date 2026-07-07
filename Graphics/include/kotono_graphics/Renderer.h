@@ -67,10 +67,9 @@ private:
 	VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::span<VkSurfaceFormatKHR> availableFormats) const;
 	VkPresentModeKHR ChooseSwapPresentMode(const std::span<VkPresentModeKHR> availablePresentModes) const;
 	VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
-	void CreateImageViews();
+	void CreateSwapChainImageViews();
 
-	void CreateColorResources();
-	void CreateDepthResources();
+	void CreateImageResources();
 	VkFormat FindSupportedFormat(const std::span<VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const;
 	VkFormat FindDepthFormat() const;
 
@@ -84,31 +83,41 @@ private:
 	void BeginCommandBuffer(VkCommandBuffer commandBuffer);
 
 	void CmdUpdateClusterAABB(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	
+	void CmdBarrierComputeFragmentReadToClearWrite(VkCommandBuffer commandBuffer) const;
+	void CmdResetLightCounter(VkCommandBuffer commandBuffer) const;
+	void CmdBarrierComputeClearWriteToReadWrite(VkCommandBuffer commandBuffer) const;
 	void CmdDispatchLightBinning(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	void CmdBarrierComputeWriteToFragmentRead(VkCommandBuffer commandBuffer) const;
 	
-	void CmdAcquireBarrier(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	
-	void CmdBeginRenderingDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex);
+	void CmdBarrierDepthNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	void CmdBeginRenderingDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdDrawFrameDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	void CmdBarrierDepthWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	
-	void CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex);
+	void CmdBarrierGBufferNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	void CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	void CmdBarrierGBufferWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 
+	void CmdBarrierDepthReadToShaderRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	void CmdBarrierColorNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBeginRenderingDeferredLighting(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdDrawFrameDeferredLighting(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	void CmdBarrierColorWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	
+	void CmdBarrierSwapchainNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBeginRenderingPostProcess(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdDrawFramePostProcess(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	void CmdBarrierSwapchainWriteToPresent(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	
-	void CmdBeginRendering(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
-	void CmdDrawFrame(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdPushConstants(VkCommandBuffer commandBuffer, const UDrawCall* drawCall, const u32 frameIndex) const;
 	void CmdDraw(VkCommandBuffer commandBuffer, const UDrawCall* drawCall) const;
 	
-	void CmdEndRendering(VkCommandBuffer commandBuffer);
-	void CmdPresentationBarrier(VkCommandBuffer commandBuffer, const u32 frameIndex);
+	void CmdEndRendering(VkCommandBuffer commandBuffer) const;
 	
-	void EndCommandBuffer(VkCommandBuffer commandBuffer);
+	void EndCommandBuffer(VkCommandBuffer commandBuffer) const;
 	void SubmitCommandBuffer(const u32 frameIndex);
 
 	void CreateSyncObjects();

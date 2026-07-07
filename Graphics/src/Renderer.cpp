@@ -24,9 +24,8 @@
 void GRenderer::Init()
 {
 	CreateSwapChain();
-	CreateImageViews();
-	CreateColorResources();
-	CreateDepthResources();
+	CreateSwapChainImageViews();
+	CreateImageResources();
 	CreateCommandPools();
 	CreateCommandBuffers();
 	CreateSyncObjects();
@@ -83,6 +82,116 @@ void GRenderer::Cleanup()
 	}
 
 	KT_LOG(ELogImportanceLevel::High, "Graphics", "cleaned up renderer");
+}
+
+static constexpr bool IS_MULTI_THREADED{ false };
+void GRenderer::DrawFrame()
+{
+	const u32 frameIndex{ GetGameThreadFrame() };
+
+	FrameContextBuffer.UpdateBuffer(frameIndex);
+	DrawDataBuffer.UpdateBuffer(frameIndex);
+	TransformBuffer.UpdateBuffer(frameIndex);
+	ParametersBuffer.UpdateBuffer(frameIndex);
+
+	if constexpr (IS_MULTI_THREADED)
+	{
+		if (frameCount_ >= 1)
+		{
+			JoinThread(renderThread_);
+			const u32 renderThreadFrame{ GetRenderThreadFrame() };
+			renderThread_ = std::thread(&GRenderer::RecordCommandBuffer, this, renderThreadFrame);
+		}
+
+		if (frameCount_ >= 2)
+		{
+			KT_LOG(ELogImportanceLevel::High, "Graphics", "frame {0} rendered", frameCount_);
+
+			JoinThread(rhiThread_);
+			Context.ExecuteSingleTimeCommands();
+			const u32 renderRHIFrame{ GetRHIThreadFrame() };
+			rhiThread_ = std::thread(&GRenderer::SubmitCommandBuffer, this, renderRHIFrame);
+		}
+	}
+	else
+	{
+		if (!TryAcquireNextImage(frameIndex))
+		{
+			KT_LOG(ELogImportanceLevel::High, "Graphics", "frame {0} skipped", frameCount_);
+			return;
+		}
+
+		RecordCommandBuffer(frameIndex);
+		Context.ExecuteSingleTimeCommands();
+		SubmitCommandBuffer(frameIndex);
+	}
+
+	frameCount_++;
+}
+
+VkExtent2D GRenderer::GetSwapChainExtent() const
+{
+	return swapChainExtent_;
+}
+
+VkFormat GRenderer::GetSwapChainFormat() const
+{
+	return swapChainFormat_;
+}
+
+VkFormat GRenderer::GetDepthFormat() const
+{
+	return depthFormat_;
+}
+
+void GRenderer::RegisterDrawCall(UDrawCall* drawCall)
+{
+	if (!drawCall)
+	{
+		return;
+	}
+
+	drawCalls_.Add(drawCall);
+	drawCall->poolIndex = drawCalls_.LastIndex();
+}
+
+void GRenderer::UnregisterDrawCall(UDrawCall* drawCall)
+{
+	if (!drawCall)
+	{
+		return;
+	}
+
+	const auto index{ drawCall->poolIndex };
+	if (drawCalls_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
+	{
+		drawCalls_[index]->poolIndex = index;
+	}
+}
+
+VkImageView GRenderer::GetGBufferAlbedoImageView(const u32 frameIndex) const
+{
+	return frameDatas_[frameIndex].albedoTarget.imageView;
+}
+
+VkImageView GRenderer::GetGBufferNormalImageView(const u32 frameIndex) const
+{
+	return frameDatas_[frameIndex].normalTarget.imageView;
+}
+
+VkImageView GRenderer::GetGBufferORMImageView(const u32 frameIndex) const
+{
+	return frameDatas_[frameIndex].ormTarget.imageView;
+}
+
+VkImageView GRenderer::GetGBufferDepthImageView(const u32 frameIndex) const
+{
+	return frameDatas_[frameIndex].depthTarget.imageView;
+}
+
+VkImageView GRenderer::GetColorTargetImageView(const u32 frameIndex) const
+{
+	return frameDatas_[frameIndex].colorTarget.imageView;
 }
 
 void GRenderer::CreateSwapChain()
@@ -213,7 +322,7 @@ VkExtent2D GRenderer::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilit
 	}
 }
 
-void GRenderer::CreateImageViews()
+void GRenderer::CreateSwapChainImageViews()
 {
 	for (auto& swapChainData : swapChainDatas_)
 	{
@@ -221,16 +330,16 @@ void GRenderer::CreateImageViews()
 	}
 }
 
-void GRenderer::CreateColorResources()
+void GRenderer::CreateImageResources()
 {
-	const auto createImageAndImageView{ [this](AllocatedImage& allocatedImage, const VkFormat format) {
+	const auto createImageAndImageView{ [this](AllocatedImage& allocatedImage, const VkFormat format, const VkImageUsageFlagBits usage, const VkImageAspectFlagBits aspect) {
 		Context.CreateImage(swapChainExtent_.width, swapChainExtent_.height
 			, 1
 			, VK_SAMPLE_COUNT_1_BIT
 			, format
 			, VK_IMAGE_TILING_OPTIMAL
 			, VK_IMAGE_USAGE_SAMPLED_BIT 
-			| VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+			| usage
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 			, allocatedImage.image
 			, allocatedImage.allocation
@@ -238,50 +347,20 @@ void GRenderer::CreateColorResources()
 
 		allocatedImage.imageView = Context.CreateImageView(allocatedImage.image
 			, format
-			, VK_IMAGE_ASPECT_COLOR_BIT
+			, aspect
 			, 1
 		);
 	} };
 
-	for (auto& frameData : frameDatas_)
-	{
-		createImageAndImageView(frameData.colorTarget, VK_FORMAT_R16G16B16A16_SFLOAT);
-		createImageAndImageView(frameData.albedoTarget, VK_FORMAT_R8G8B8A8_SRGB);
-		createImageAndImageView(frameData.normalTarget, VK_FORMAT_R16G16B16A16_SFLOAT);
-		createImageAndImageView(frameData.ormTarget, VK_FORMAT_R8G8B8A8_UNORM);
-	}
-}
-
-void GRenderer::CreateDepthResources()
-{
 	depthFormat_ = FindDepthFormat();
-	
+
 	for (auto& frameData : frameDatas_)
 	{
-		Context.CreateImage(swapChainExtent_.width, swapChainExtent_.height
-			, 1
-			, VK_SAMPLE_COUNT_1_BIT
-			, depthFormat_
-			, VK_IMAGE_TILING_OPTIMAL
-			, VK_IMAGE_USAGE_SAMPLED_BIT
-			| VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
-			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-			, frameData.depthTarget.image
-			, frameData.depthTarget.allocation
-		);
-
-		frameData.depthTarget.imageView = Context.CreateImageView(frameData.depthTarget.image
-			, depthFormat_
-			, VK_IMAGE_ASPECT_DEPTH_BIT
-			, 1
-		);
-
-		Context.TransitionImageLayout(frameData.depthTarget.image
-			, depthFormat_
-			, VK_IMAGE_LAYOUT_UNDEFINED
-			, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
-			, 1
-		);
+		createImageAndImageView(frameData.colorTarget, VK_FORMAT_R16G16B16A16_SFLOAT, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+		createImageAndImageView(frameData.albedoTarget, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+		createImageAndImageView(frameData.normalTarget, VK_FORMAT_R16G16B16A16_SFLOAT, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+		createImageAndImageView(frameData.ormTarget, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+		createImageAndImageView(frameData.depthTarget, depthFormat_, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_ASPECT_DEPTH_BIT);
 	}
 }
 
@@ -309,6 +388,31 @@ VkFormat GRenderer::FindDepthFormat() const
 {
 	std::vector<VkFormat> formats{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT };
 	return FindSupportedFormat(formats, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+}
+
+bool GRenderer::TryAcquireNextImage(const u32 frameIndex)
+{
+	// Wait for current frame to be rendered
+	VK_CHECK_THROW(
+		vkWaitForFences(Context.GetDevice(), 1, &frameDatas_[frameIndex].inFlightFence, VK_TRUE, UINT64_MAX),
+		"failed to wait for fences!"
+	);
+
+	// Set image index for current frame
+	const VkResult result{ vkAcquireNextImageKHR(Context.GetDevice(), swapChain_, UINT64_MAX, frameDatas_[frameIndex].imageAvailableSemaphore, VK_NULL_HANDLE, &frameDatas_[frameIndex].imageIndex) };
+	if (result == VK_ERROR_OUT_OF_DATE_KHR)
+	{
+		RecreateSwapChain();
+		return false;
+	}
+	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+	{
+		throw std::runtime_error("failed to acquire swap chain image!");
+	}
+
+	vkResetFences(Context.GetDevice(), 1, &frameDatas_[frameIndex].inFlightFence);
+
+	return true;
 }
 
 void GRenderer::CreateCommandPools()
@@ -375,50 +479,6 @@ void GRenderer::CreateSyncObjects()
 		}
 	}
 }
-static constexpr bool IS_MULTI_THREADED{ false };
-void GRenderer::DrawFrame()
-{
-	const u32 frameIndex{ GetGameThreadFrame() };
-
-	FrameContextBuffer.UpdateBuffer(frameIndex);
-	DrawDataBuffer.UpdateBuffer(frameIndex);
-	TransformBuffer.UpdateBuffer(frameIndex);
-	ParametersBuffer.UpdateBuffer(frameIndex);
-
-	if constexpr (IS_MULTI_THREADED)
-	{
-		if (frameCount_ >= 1)
-		{
-			JoinThread(renderThread_);
-			const u32 renderThreadFrame{ GetRenderThreadFrame() };
-			renderThread_ = std::thread(&GRenderer::RecordCommandBuffer, this, renderThreadFrame);
-		}
-
-		if (frameCount_ >= 2)
-		{
-			KT_LOG(ELogImportanceLevel::High, "Graphics", "frame {0} rendered", frameCount_);
-
-			JoinThread(rhiThread_);
-			Context.ExecuteSingleTimeCommands();
-			const u32 renderRHIFrame{ GetRHIThreadFrame() };
-			rhiThread_ = std::thread(&GRenderer::SubmitCommandBuffer, this, renderRHIFrame);
-		}
-	}
-	else
-	{
-		if (!TryAcquireNextImage(frameIndex))
-		{
-			KT_LOG(ELogImportanceLevel::High, "Graphics", "frame {0} skipped", frameCount_);
-			return;
-		}
-
-		RecordCommandBuffer(frameIndex);
-		Context.ExecuteSingleTimeCommands();
-		SubmitCommandBuffer(frameIndex);
-	}
-
-	frameCount_++;
-}
 
 void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 {
@@ -437,37 +497,59 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 		CmdUpdateClusterAABB(commandBuffer, frameIndex);
 	}
 
+	// Compute light binning 
+	// - Wait for fill buffer command to be executable
+	CmdBarrierComputeFragmentReadToClearWrite(commandBuffer);
+	// - Atomic reset light counter to 0
+	CmdResetLightCounter(commandBuffer);
+	// - Make light counter accessible and light binning writable
+	CmdBarrierComputeClearWriteToReadWrite(commandBuffer);
+	// - Compute light binning
 	CmdDispatchLightBinning(commandBuffer, frameIndex);
-
-	// GBuffer, color, depth pre-pass, swapchain
-	CmdAcquireBarrier(commandBuffer, frameIndex);
+	// - Make light binning accessible to fragment
+	CmdBarrierComputeWriteToFragmentRead(commandBuffer);
 
 	// Depth pre-pass
+	// - Make depth writable
+	CmdBarrierDepthNoneToWrite(commandBuffer, frameIndex);
+	// - Write depth
 	CmdBeginRenderingDepthPrePass(commandBuffer, frameIndex);
 	CmdDrawFrameDepthPrePass(commandBuffer, frameIndex);
 	CmdEndRendering(commandBuffer);
+	// - Make depth readable
+	CmdBarrierDepthWriteToRead(commandBuffer, frameIndex);
 
-	// GBuffer
+	// G-Buffer
+	// - Make G-Buffer writable
+	CmdBarrierGBufferNoneToWrite(commandBuffer, frameIndex);
+	// - Write G-Buffer
 	CmdBeginRenderingGBuffer(commandBuffer, frameIndex);
 	CmdDrawFrameGBuffer(commandBuffer, frameIndex);
 	CmdEndRendering(commandBuffer);
+	// - Make G-Buffer readable
+	CmdBarrierGBufferWriteToRead(commandBuffer, frameIndex);
 
 	// Deferred lighting
+	// - Make depth shader-readable (reconstruct world pos)
+	CmdBarrierDepthReadToShaderRead(commandBuffer, frameIndex);
+	// - Make color target writable
+	CmdBarrierColorNoneToWrite(commandBuffer, frameIndex);
+	// - Write color target
 	CmdBeginRenderingDeferredLighting(commandBuffer, frameIndex);
 	CmdDrawFrameDeferredLighting(commandBuffer, frameIndex);
 	CmdEndRendering(commandBuffer);
-	
-	// Present Image
+	// - Make color target readable
+	CmdBarrierColorWriteToRead(commandBuffer, frameIndex);
+
+	// Post process
+	// - Make swapchain writable
+	CmdBarrierSwapchainNoneToWrite(commandBuffer, frameIndex);
+	// - Write swapchain
 	CmdBeginRenderingPostProcess(commandBuffer, frameIndex);
 	CmdDrawFramePostProcess(commandBuffer, frameIndex);
 	CmdEndRendering(commandBuffer);
-
-	// Color
-	//CmdBeginRendering(commandBuffer, frameIndex);
-	//CmdDrawFrame(commandBuffer, frameIndex);
-	//CmdEndRendering(commandBuffer);
-
-	CmdPresentationBarrier(commandBuffer, frameIndex);
+	// - Reset swapchain image
+	CmdBarrierSwapchainWriteToPresent(commandBuffer, frameIndex);
 
 	EndCommandBuffer(commandBuffer);
 }
@@ -493,32 +575,51 @@ void GRenderer::CmdUpdateClusterAABB(VkCommandBuffer commandBuffer, const u32 fr
 	}
 }
 
-void GRenderer::CmdDispatchLightBinning(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void GRenderer::CmdBarrierComputeFragmentReadToClearWrite(VkCommandBuffer commandBuffer) const
 {
-	UAsset<UShader> binningShader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/lightBinning.kasset") };
-	if (!binningShader)
-	{
-		return;
-	}
+	const VkMemoryBarrier2 memBarrier{
+		.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER_2,
 
-	// Reset the Global Atomic Counter to 0
+		.srcStageMask = VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT,
+		.srcAccessMask = VK_ACCESS_2_SHADER_READ_BIT,
+
+		.dstStageMask = VK_PIPELINE_STAGE_2_CLEAR_BIT,
+		.dstAccessMask = VK_ACCESS_2_TRANSFER_WRITE_BIT
+	};
+
+	const VkDependencyInfo depInfo{
+		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+		.memoryBarrierCount = 1,
+		.pMemoryBarriers = &memBarrier
+	};
+
+	vkCmdPipelineBarrier2(commandBuffer, &depInfo);
+}
+
+void GRenderer::CmdResetLightCounter(VkCommandBuffer commandBuffer) const
+{
 	vkCmdFillBuffer(commandBuffer
 		, GPUBuffers.GetLightCounterBuffer()
 		, 0
 		, sizeof(u32)
 		, 0
 	);
+}
 
-	// Wait for the fill and AABB building to finish
+void GRenderer::CmdBarrierComputeClearWriteToReadWrite(VkCommandBuffer commandBuffer) const
+{
 	const VkMemoryBarrier2 memBarrier{
 		.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER_2,
-		.srcStageMask = VK_PIPELINE_STAGE_2_TRANSFER_BIT 
-			| VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT,
-		.srcAccessMask = VK_ACCESS_2_TRANSFER_WRITE_BIT 
-			| VK_ACCESS_2_SHADER_WRITE_BIT,
+
+		.srcStageMask = VK_PIPELINE_STAGE_2_TRANSFER_BIT
+					  | VK_PIPELINE_STAGE_2_CLEAR_BIT
+					  | VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT,
+		.srcAccessMask = VK_ACCESS_2_TRANSFER_WRITE_BIT
+					   | VK_ACCESS_2_SHADER_WRITE_BIT,
+
 		.dstStageMask = VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT,
-		.dstAccessMask = VK_ACCESS_2_SHADER_READ_BIT 
-			| VK_ACCESS_2_SHADER_WRITE_BIT
+		.dstAccessMask = VK_ACCESS_2_SHADER_READ_BIT
+					   | VK_ACCESS_2_SHADER_WRITE_BIT
 	};
 	const VkDependencyInfo depInfo{
 		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
@@ -526,18 +627,26 @@ void GRenderer::CmdDispatchLightBinning(VkCommandBuffer commandBuffer, const u32
 		.pMemoryBarriers = &memBarrier
 	};
 	vkCmdPipelineBarrier2(commandBuffer, &depInfo);
+}
 
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, binningShader->GetPipeline());
+void GRenderer::CmdDispatchLightBinning(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	if (UAsset binningShader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/lightBinning.kasset") })
+	{
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, binningShader->GetPipeline());
+		CmdPushConstants(commandBuffer, nullptr, frameIndex);
+		vkCmdDispatch(commandBuffer, 16, 9, 24);
+	}
+}
 
-	CmdPushConstants(commandBuffer, nullptr, frameIndex);
-
-	vkCmdDispatch(commandBuffer, 16, 9, 24);
-
-	// Wait for binning to finish before Fragment shader reads it
+void GRenderer::CmdBarrierComputeWriteToFragmentRead(VkCommandBuffer commandBuffer) const
+{
 	const VkMemoryBarrier2 lightingBarrier{
 		.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER_2,
+
 		.srcStageMask = VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT,
 		.srcAccessMask = VK_ACCESS_2_SHADER_WRITE_BIT,
+
 		.dstStageMask = VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT,
 		.dstAccessMask = VK_ACCESS_2_SHADER_READ_BIT
 	};
@@ -549,13 +658,111 @@ void GRenderer::CmdDispatchLightBinning(VkCommandBuffer commandBuffer, const u32
 	vkCmdPipelineBarrier2(commandBuffer, &lightingDepInfo);
 }
 
-void GRenderer::CmdAcquireBarrier(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void GRenderer::CmdBarrierDepthNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	const VkImageMemoryBarrier2 depthTargetBarrier{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+
+		.srcStageMask = VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT,
+		.srcAccessMask = VK_ACCESS_2_NONE,
+
+		.dstStageMask = VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT
+					  | VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT,
+		.dstAccessMask = VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+
+		.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+		.newLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
+
+		.image = frameDatas_[frameIndex].depthTarget.image,
+		.subresourceRange = { VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1 }
+	};
+	const VkDependencyInfo dependencyInfo{
+		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+		.imageMemoryBarrierCount = 1,
+		.pImageMemoryBarriers = &depthTargetBarrier,
+	};
+	vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
+}
+
+void GRenderer::CmdBeginRenderingDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	const VkRenderingAttachmentInfo depthAttachment{
+		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+
+		.imageView = frameDatas_[frameIndex].depthTarget.imageView,
+		.imageLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
+
+		.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+		.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+		.clearValue{
+			.depthStencil = { 0.0f, 0 }, // 0.0f instead of 1.0f because of reverse depth
+		},
+	};
+	const VkRenderingInfo renderInfo{
+		.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
+		.renderArea{
+			.offset = { 0, 0 },
+			.extent = swapChainExtent_
+		},
+		.layerCount = 1,
+		.colorAttachmentCount = 0,
+		.pDepthAttachment = &depthAttachment,
+	};
+	vkCmdBeginRendering(commandBuffer, &renderInfo);
+}
+
+void GRenderer::CmdDrawFrameDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/depthPrePass.kasset") })
+	{
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
+		for (const auto* drawCall : drawCalls_)
+		{
+			if (drawCall->renderBucket != ERenderBucket::Opaque)
+			{
+				continue;
+			}
+
+			CmdPushConstants(commandBuffer, drawCall, frameIndex);
+			CmdDraw(commandBuffer, drawCall);
+		}
+	}	
+}
+
+void GRenderer::CmdBarrierDepthWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	const VkImageMemoryBarrier2 depthTargetBarrier{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+
+		.srcStageMask = VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT
+					  | VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT,
+		.srcAccessMask = VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+
+		.dstStageMask = VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT
+					  | VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT,
+		.dstAccessMask = VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
+
+		.oldLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
+		.newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL,
+
+		.image = frameDatas_[frameIndex].depthTarget.image,
+		.subresourceRange = { VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1 }
+	};
+	const VkDependencyInfo dependencyInfo{
+		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+		.imageMemoryBarrierCount = 1,
+		.pImageMemoryBarriers = &depthTargetBarrier,
+	};
+	vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
+}
+
+void GRenderer::CmdBarrierGBufferNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	const auto makeGBufferMemoryBarrier{ [](const AllocatedImage& allocatedImage) {
 		return VkImageMemoryBarrier2{
 			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
 
-			.srcStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
+			.srcStageMask = VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT,
 			.srcAccessMask = VK_ACCESS_2_NONE,
 
 			.dstStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
@@ -568,128 +775,21 @@ void GRenderer::CmdAcquireBarrier(VkCommandBuffer commandBuffer, const u32 frame
 			.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 }
 		};
 	} };
-
-	const VkImageMemoryBarrier2 colorTargetBarrier{
-		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
-
-		.srcStageMask = VK_PIPELINE_STAGE_2_NONE,
-		.srcAccessMask = VK_ACCESS_2_NONE,
-
-		.dstStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
-		.dstAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
-
-		.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-		.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-
-		.image = frameDatas_[frameIndex].colorTarget.image,
-		.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 }
+	const std::array barriers{
+		makeGBufferMemoryBarrier(frameDatas_[frameIndex].albedoTarget),
+		makeGBufferMemoryBarrier(frameDatas_[frameIndex].normalTarget),
+		makeGBufferMemoryBarrier(frameDatas_[frameIndex].ormTarget),
 	};
-
-	const VkImageMemoryBarrier2 depthTargetBarrier{
-		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
-
-		.srcStageMask = VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT
-			| VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT,
-		.srcAccessMask = VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
-
-		.dstStageMask = VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT
-			| VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT,
-		.dstAccessMask = VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT
-			| VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
-
-		.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-		.newLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
-
-		.image = frameDatas_[frameIndex].depthTarget.image,
-		.subresourceRange = { VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1 }
-	};
-
-	const VkImageMemoryBarrier2 swapchainTargetBarrier{
-		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
-
-		.srcStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
-		.srcAccessMask = VK_ACCESS_2_NONE,
-
-		.dstStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
-		.dstAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
-
-		.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-		.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-
-		.image = swapChainDatas_[frameDatas_[frameIndex].imageIndex].image,
-		.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 }
-	};
-
-	const std::array preRenderBarriers{ 
-		makeGBufferMemoryBarrier(frameDatas_[frameIndex].albedoTarget), 
-		makeGBufferMemoryBarrier(frameDatas_[frameIndex].normalTarget),		
-		makeGBufferMemoryBarrier(frameDatas_[frameIndex].ormTarget),		
-		colorTargetBarrier,
-		depthTargetBarrier,
-		swapchainTargetBarrier,
-	};
-	const VkDependencyInfo preRenderDependencyInfo{
+	const VkDependencyInfo dependencyInfo{
 		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
-		.imageMemoryBarrierCount = static_cast<u32>(preRenderBarriers.size()),
-		.pImageMemoryBarriers = preRenderBarriers.data(),
+		.imageMemoryBarrierCount = static_cast<u32>(barriers.size()),
+		.pImageMemoryBarriers = barriers.data(),
 	};
 
-	vkCmdPipelineBarrier2(commandBuffer, &preRenderDependencyInfo);
+	vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
 }
 
-void GRenderer::CmdBeginRenderingDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex)
-{
-	const VkRenderingAttachmentInfo depthAttachment{
-		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-
-		.imageView = frameDatas_[frameIndex].depthTarget.imageView,
-		.imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-
-		.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-		.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-		.clearValue{
-			.depthStencil = { 0.0f, 0 }, // 0.0f instead of 1.0f because of reverse depth
-		},
-	};
-
-	const VkRenderingInfo renderInfo{
-		.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
-		.renderArea{
-			.offset = { 0, 0 },
-			.extent = swapChainExtent_
-		},
-		.layerCount = 1,
-		.colorAttachmentCount = 0,
-		.pDepthAttachment = &depthAttachment,
-	};
-
-	vkCmdBeginRendering(commandBuffer, &renderInfo);
-}
-
-void GRenderer::CmdDrawFrameDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex) const
-{
-	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/depthPrePass.kasset") })
-	{
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
-	}
-	else
-	{
-		return;
-	}
-
-	for (const auto* drawCall : drawCalls_)
-	{
-		if (drawCall->renderBucket != ERenderBucket::Opaque)
-		{
-			continue;
-		}
-
-		CmdPushConstants(commandBuffer, drawCall, frameIndex);
-		CmdDraw(commandBuffer, drawCall);
-	}
-}
-
-void GRenderer::CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex)
+void GRenderer::CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	const auto makeRenderingAttachmentInfo{ [](VkImageView imageView) {
 		return VkRenderingAttachmentInfo{
@@ -715,10 +815,10 @@ void GRenderer::CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer, const u3
 		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
 
 		.imageView = frameDatas_[frameIndex].depthTarget.imageView,
-		.imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+		.imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL,
 
-		.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-		.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+		.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
+		.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
 		.clearValue{
 			.depthStencil = { 0.0f, 0 }, // 0.0f instead of 1.0f because of reverse depth
 		},
@@ -762,6 +862,89 @@ void GRenderer::CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 fra
 	}
 }
 
+void GRenderer::CmdBarrierGBufferWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	const auto makeGBufferMemoryBarrier{ [](const AllocatedImage& allocatedImage) {
+		return VkImageMemoryBarrier2{
+			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+
+			.srcStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
+			.srcAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
+
+			.dstStageMask = VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT,
+			.dstAccessMask = VK_ACCESS_2_SHADER_SAMPLED_READ_BIT,
+
+			.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+			.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+
+			.image = allocatedImage.image,
+			.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 }
+		};
+	} };
+	const std::array barriers{
+		makeGBufferMemoryBarrier(frameDatas_[frameIndex].albedoTarget),
+		makeGBufferMemoryBarrier(frameDatas_[frameIndex].normalTarget),
+		makeGBufferMemoryBarrier(frameDatas_[frameIndex].ormTarget),
+	};
+	const VkDependencyInfo dependencyInfo{
+		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+		.imageMemoryBarrierCount = static_cast<u32>(barriers.size()),
+		.pImageMemoryBarriers = barriers.data(),
+	};
+	vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
+}
+
+void GRenderer::CmdBarrierDepthReadToShaderRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	const VkImageMemoryBarrier2 depthTargetBarrier{
+	   .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+
+	   .srcStageMask = VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT
+					 | VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT,
+	   .srcAccessMask = VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
+
+	   .dstStageMask = VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT,
+	   .dstAccessMask = VK_ACCESS_2_SHADER_SAMPLED_READ_BIT,
+
+	   .oldLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL,
+	   .newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL,
+
+	   .image = frameDatas_[frameIndex].depthTarget.image,
+	   .subresourceRange = { VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1 }
+	};
+	const VkDependencyInfo dependencyInfo{
+		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+		.imageMemoryBarrierCount = 1,
+		.pImageMemoryBarriers = &depthTargetBarrier,
+	};
+	vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
+}
+
+void GRenderer::CmdBarrierColorNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	const VkImageMemoryBarrier2 colorTargetBarrier{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+
+		.srcStageMask = VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT,
+		.srcAccessMask = VK_ACCESS_2_NONE,
+
+		.dstStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
+		.dstAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
+
+		.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+		.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+
+		.image = frameDatas_[frameIndex].colorTarget.image,
+		.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 }
+	};
+	const VkDependencyInfo dependencyInfo{
+		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+		.imageMemoryBarrierCount = 1,
+		.pImageMemoryBarriers = &colorTargetBarrier,
+	};
+	vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
+}
+
 void GRenderer::CmdBeginRenderingDeferredLighting(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	const VkRenderingAttachmentInfo colorAttachment{
@@ -772,7 +955,6 @@ void GRenderer::CmdBeginRenderingDeferredLighting(VkCommandBuffer commandBuffer,
 		.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 		.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
 	};
-
 	const VkRenderingInfo renderInfo{
 		.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
 		.renderArea{
@@ -784,7 +966,6 @@ void GRenderer::CmdBeginRenderingDeferredLighting(VkCommandBuffer commandBuffer,
 		.pColorAttachments = &colorAttachment,
 		.pDepthAttachment = VK_NULL_HANDLE,
 	};
-
 	vkCmdBeginRendering(commandBuffer, &renderInfo);
 }
 
@@ -796,6 +977,58 @@ void GRenderer::CmdDrawFrameDeferredLighting(VkCommandBuffer commandBuffer, cons
 		CmdPushConstants(commandBuffer, nullptr, frameIndex);
 		vkCmdDraw(commandBuffer, 3, 1, 0, 0);
 	}
+}
+
+void GRenderer::CmdBarrierColorWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	const VkImageMemoryBarrier2 colorTargetBarrier{
+	   .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+
+	   .srcStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
+	   .srcAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
+
+	   .dstStageMask = VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT,
+	   .dstAccessMask = VK_ACCESS_2_SHADER_SAMPLED_READ_BIT,
+
+	   .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+	   .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+
+	   .image = frameDatas_[frameIndex].colorTarget.image,
+	   .subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 }
+	};
+	const VkDependencyInfo dependencyInfo{
+		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+		.imageMemoryBarrierCount = 1,
+		.pImageMemoryBarriers = &colorTargetBarrier,
+	};
+	vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
+}
+
+void GRenderer::CmdBarrierSwapchainNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	const VkImageMemoryBarrier2 swapchainTargetBarrier{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+
+		.srcStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT 
+					  | VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT 
+					  | VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT,
+		.srcAccessMask = VK_ACCESS_2_NONE,
+
+		.dstStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
+		.dstAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
+
+		.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+		.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+
+		.image = swapChainDatas_[frameDatas_[frameIndex].imageIndex].image,
+		.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 }
+	};
+	const VkDependencyInfo dependencyInfo{
+		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+		.imageMemoryBarrierCount = 1,
+		.pImageMemoryBarriers = &swapchainTargetBarrier,
+	};
+	vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
 }
 
 void GRenderer::CmdBeginRenderingPostProcess(VkCommandBuffer commandBuffer, const u32 frameIndex) const
@@ -833,67 +1066,31 @@ void GRenderer::CmdDrawFramePostProcess(VkCommandBuffer commandBuffer, const u32
 	}
 }
 
-void GRenderer::CmdBeginRendering(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void GRenderer::CmdBarrierSwapchainWriteToPresent(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	const VkRenderingAttachmentInfo colorAttachment{
-		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-		.imageView = frameDatas_[frameIndex].colorTarget.imageView,
-		.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+	const VkImageMemoryBarrier2 presentBarrier{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
 
-		.resolveMode = VK_RESOLVE_MODE_AVERAGE_BIT,
-		.resolveImageView = swapChainDatas_[frameDatas_[frameIndex].imageIndex].imageView, // The actual swapchain image for this frame
-		.resolveImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+		.srcStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
+		.srcAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
 
-		.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-		.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-		.clearValue{
-			.color = { 0.0f, 0.0f, 0.0f, 1.0f },
-		},
+		.dstStageMask = VK_PIPELINE_STAGE_2_NONE,
+		.dstAccessMask = VK_ACCESS_2_NONE,
+
+		.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+		.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+
+		.image = swapChainDatas_[frameDatas_[frameIndex].imageIndex].image,
+		.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 }
 	};
 
-	const VkRenderingAttachmentInfo depthAttachment{
-		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-
-		.imageView = frameDatas_[frameIndex].depthTarget.imageView,
-		.imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-
-		.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-		.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-		.clearValue{
-			.depthStencil = { 0.0f, 0 }, // 0.0f instead of 1.0f because of reverse depth
-		},
+	const VkDependencyInfo postRenderDependencyInfo{
+		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+		.imageMemoryBarrierCount = 1,
+		.pImageMemoryBarriers = &presentBarrier
 	};
 
-	const VkRenderingInfo renderInfo{
-		.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
-		.renderArea{
-			.offset = { 0, 0 },
-			.extent = swapChainExtent_
-		},
-		.layerCount = 1,
-		.colorAttachmentCount = 1,
-		.pColorAttachments = &colorAttachment,
-		.pDepthAttachment = &depthAttachment,
-		.pStencilAttachment = VK_NULL_HANDLE,
-	};
-
-	vkCmdBeginRendering(commandBuffer, &renderInfo);
-}
-
-void GRenderer::CmdDrawFrame(VkCommandBuffer commandBuffer, const u32 frameIndex) const
-{
-	auto sortedDrawCalls{ drawCalls_ };
-
-	std::ranges::sort(sortedDrawCalls, std::less{}, [](const UDrawCall* dc) {
-		return std::tie(dc->renderBucket, dc->sortKey, dc->pipeline);
-	});
-
-	for (const auto* drawCall : sortedDrawCalls)
-	{
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, drawCall->pipeline);
-		CmdPushConstants(commandBuffer, drawCall, frameIndex);
-		CmdDraw(commandBuffer, drawCall);
-	}
+	vkCmdPipelineBarrier2(commandBuffer, &postRenderDependencyInfo);
 }
 
 void GRenderer::CmdPushConstants(VkCommandBuffer commandBuffer, const UDrawCall* drawCall, const u32 frameIndex) const
@@ -927,94 +1124,17 @@ void GRenderer::CmdDraw(VkCommandBuffer commandBuffer, const UDrawCall* drawCall
 	);
 }
 
-void GRenderer::CmdEndRendering(VkCommandBuffer commandBuffer)
+void GRenderer::CmdEndRendering(VkCommandBuffer commandBuffer) const
 {
 	vkCmdEndRendering(commandBuffer);
 }
 
-void GRenderer::CmdPresentationBarrier(VkCommandBuffer commandBuffer, const u32 frameIndex)
-{
-	const VkImageMemoryBarrier2 presentBarrier{
-		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
-
-		.srcStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
-		.srcAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
-
-		.dstStageMask = VK_PIPELINE_STAGE_2_NONE,
-		.dstAccessMask = VK_ACCESS_2_NONE,
-
-		.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-		.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-
-		.image = swapChainDatas_[frameDatas_[frameIndex].imageIndex].image,
-		.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 }
-	};
-
-	const VkDependencyInfo postRenderDependencyInfo{
-		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
-		.imageMemoryBarrierCount = 1,
-		.pImageMemoryBarriers = &presentBarrier
-	};
-
-	vkCmdPipelineBarrier2(commandBuffer, &postRenderDependencyInfo);
-}
-
-void GRenderer::EndCommandBuffer(VkCommandBuffer commandBuffer)
+void GRenderer::EndCommandBuffer(VkCommandBuffer commandBuffer) const
 {
 	VK_CHECK_THROW(
 		vkEndCommandBuffer(commandBuffer),
 		"failed to record command buffer!"
 	);
-}
-
-void GRenderer::RegisterDrawCall(UDrawCall* drawCall)
-{
-	if (!drawCall)
-	{
-		return;
-	}
-
-	drawCalls_.Add(drawCall);
-	drawCall->poolIndex = drawCalls_.LastIndex();
-}
-
-void GRenderer::UnregisterDrawCall(UDrawCall* drawCall)
-{
-	if (!drawCall)
-	{
-		return;
-	}
-
-	const auto index{ drawCall->poolIndex };
-	if (drawCalls_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
-	{
-		drawCalls_[index]->poolIndex = index;
-	}
-}
-
-VkImageView GRenderer::GetGBufferAlbedoImageView(const u32 frameIndex) const
-{
-	return frameDatas_[frameIndex].albedoTarget.imageView;
-}
-
-VkImageView GRenderer::GetGBufferNormalImageView(const u32 frameIndex) const
-{
-	return frameDatas_[frameIndex].normalTarget.imageView;
-}
-
-VkImageView GRenderer::GetGBufferORMImageView(const u32 frameIndex) const
-{
-	return frameDatas_[frameIndex].ormTarget.imageView;
-}
-
-VkImageView GRenderer::GetGBufferDepthImageView(const u32 frameIndex) const
-{
-	return frameDatas_[frameIndex].depthTarget.imageView;
-}
-
-VkImageView GRenderer::GetColorTargetImageView(const u32 frameIndex) const
-{
-	return frameDatas_[frameIndex].colorTarget.imageView;
 }
 
 void GRenderer::SubmitCommandBuffer(const u32 frameIndex)
@@ -1028,7 +1148,7 @@ void GRenderer::SubmitCommandBuffer(const u32 frameIndex)
 	const VkSemaphoreSubmitInfo waitSemaphoreInfo{
 		.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO,
 		.semaphore = frameDatas_[frameIndex].imageAvailableSemaphore,
-		.value = 0, 
+		.value = 0,
 		.stageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
 		.deviceIndex = 0,
 	};
@@ -1089,32 +1209,6 @@ void GRenderer::SubmitCommandBuffer(const u32 frameIndex)
 	}
 }
 
-
-bool GRenderer::TryAcquireNextImage(const u32 frameIndex)
-{
-	// Wait for current frame to be rendered
-	VK_CHECK_THROW(
-		vkWaitForFences(Context.GetDevice(), 1, &frameDatas_[frameIndex].inFlightFence, VK_TRUE, UINT64_MAX),
-		"failed to wait for fences!"
-	);
-
-	// Set image index for current frame
-	const VkResult result{ vkAcquireNextImageKHR(Context.GetDevice(), swapChain_, UINT64_MAX, frameDatas_[frameIndex].imageAvailableSemaphore, VK_NULL_HANDLE, &frameDatas_[frameIndex].imageIndex) };
-	if (result == VK_ERROR_OUT_OF_DATE_KHR)
-	{
-		RecreateSwapChain();
-		return false;
-	}
-	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-	{
-		throw std::runtime_error("failed to acquire swap chain image!");
-	}
-
-	vkResetFences(Context.GetDevice(), 1, &frameDatas_[frameIndex].inFlightFence);
-
-	return true;
-}
-
 void GRenderer::JoinThread(std::thread& thread) const
 {
 	if (thread.joinable())
@@ -1153,29 +1247,13 @@ void GRenderer::RecreateSwapChain()
 	CleanupSwapChain();
 
 	CreateSwapChain();
-	CreateImageViews();
-	CreateColorResources();
-	CreateDepthResources();
+	CreateSwapChainImageViews();
+	CreateImageResources();
 
 	for (auto& frameData : frameDatas_)
 	{
 		vkResetCommandPool(Context.GetDevice(), frameData.commandPool, 0);
 	}
-}
-
-VkExtent2D GRenderer::GetSwapChainExtent() const
-{
-	return swapChainExtent_;
-}
-
-VkFormat GRenderer::GetSwapChainFormat() const
-{
-	return swapChainFormat_;
-}
-
-VkFormat GRenderer::GetDepthFormat() const
-{
-	return depthFormat_;
 }
 
 void GRenderer::CleanupSwapChain()

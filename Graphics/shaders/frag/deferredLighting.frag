@@ -59,8 +59,8 @@ void main() {
         vec3 L = toLight / max(dist, 1e-4);
         vec3 H = normalize(V + L);
 
-        float falloff = clamp(1.0 - pow(dist / radius, 4.0), 0.0, 1.0);
-        float atten   = (falloff * falloff) / (dist * dist + 1.0);
+        float falloff  = clamp(1.0 - pow(dist / radius, 4.0), 0.0, 1.0);
+        float atten    = (falloff * falloff) / (dist * dist + 1.0);
         vec3  radiance = light.color * light.intensity * atten;
 
         float NDF = distributionGGX(N, H, roughness);

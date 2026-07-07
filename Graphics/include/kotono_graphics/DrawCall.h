@@ -8,7 +8,6 @@ enum class ERenderBucket : u8
 	Transparent,
 	Interface,
 };
-
 struct UDrawCall
 {
 	// Push constants
