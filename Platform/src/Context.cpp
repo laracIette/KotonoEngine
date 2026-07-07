@@ -14,6 +14,11 @@ static constexpr std::array VALIDATION_LAYERS
 	"VK_LAYER_KHRONOS_validation",
 };
 
+static constexpr std::array VALIDATION_FEATURES
+{
+	VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT,
+};
+
 static constexpr std::array DEVICE_EXTENSIONS
 {
 	VK_KHR_SWAPCHAIN_EXTENSION_NAME,
@@ -95,13 +100,21 @@ void GContext::CreateInstance()
 	};
 
 	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
+	VkValidationFeaturesEXT validationFeatures{};
 	const void* pNext;
 	u32 enabledLayerCount;
 
 	if constexpr (ENABLE_VALIDATION_LAYERS)
 	{
+		validationFeatures = {
+			.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT,
+			.pNext = &debugCreateInfo,
+			.enabledValidationFeatureCount = static_cast<u32>(VALIDATION_FEATURES.size()),
+			.pEnabledValidationFeatures = VALIDATION_FEATURES.data(),
+		};
+
 		PopulateDebugMessengerCreateInfo(debugCreateInfo);
-		pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
+		pNext = &validationFeatures;
 		enabledLayerCount = static_cast<u32>(VALIDATION_LAYERS.size());
 	}
 	else
@@ -134,6 +147,7 @@ void GContext::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoE
 {
 	createInfo = {
 		.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+		.pNext = VK_NULL_HANDLE,
 		.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
 		.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
 		.pfnUserCallback = debugCallback,
