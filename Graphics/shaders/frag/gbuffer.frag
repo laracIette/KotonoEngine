@@ -5,10 +5,10 @@
 void main() {
 	UNPACK_PUSH_CONSTANTS
 
-	vec3 normal     = getNormalFromMap(material, inUV);
-	vec3 viewNormal = normalize(mat3(frame.view) * normal);
+	vec3 normal      = getNormalFromMap(material, inUV);
+	vec3 worldNormal = normalize(mat3(transform.normalMatrix) * normal);
 
 	outAlbedo = sampleTex(material.albedoIndex, material.samplerIndex, inUV);
-	outNormal = vec4(viewNormal, 0.0);
+	outNormal = vec4(worldNormal, 0.0);
 	outORM    = sampleTex(material.ormIndex, material.samplerIndex, inUV);
 }
