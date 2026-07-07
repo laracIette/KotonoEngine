@@ -2,6 +2,11 @@
 #include <kotono_common/Path.h>
 #include <kotono_common/types.h>
 #include <vulkan/vulkan_core.h>
+enum class ESamplerType : u8
+{
+	Sampler,
+	SamplerShadow,
+};
 class USampler final
 {
 public:

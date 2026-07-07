@@ -1,7 +1,9 @@
 #include "Sampler.h"
 #include "PipelineResourceManager.h"
+#include <kotono_io/Serializer.h>
 #include <kotono_platform/Context.h>
 #include <kotono_platform/vk_utils.h>
+#include <nlohmann/json.hpp>
 
 USampler::USampler(const UPath& path)
 	: path_{ path }
@@ -9,7 +11,18 @@ USampler::USampler(const UPath& path)
 {
 	CreateSampler();
 
-	index_ = PipelineResourceManager.RegisterSampler(sampler_);
+	nlohmann::json json{};
+	SSerializer::Deserialize(json, path_);
+
+	if (json["type"] == ESamplerType::Sampler)
+	{
+		index_ = PipelineResourceManager.RegisterSampler(sampler_);
+	}
+	else
+	{
+		index_ = PipelineResourceManager.RegisterSamplerShadow(sampler_);
+	}
+
 }
 
 USampler::~USampler()
@@ -27,23 +40,25 @@ void USampler::CreateSampler()
 	VkPhysicalDeviceProperties properties;
 	vkGetPhysicalDeviceProperties(Context.GetPhysicalDevice(), &properties);
 
+	nlohmann::json json{};
+	SSerializer::Deserialize(json, path_);
+
 	const VkSamplerCreateInfo samplerInfo{
-		.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-		.magFilter = VK_FILTER_LINEAR,
-		.minFilter = VK_FILTER_LINEAR,
-		.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
-		.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-		.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-		.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-		.mipLodBias = 0.0f, // Optional
-		.anisotropyEnable = VK_TRUE,
+		.magFilter = json["magFilter"],
+		.minFilter = json["minFilter"],
+		.mipmapMode = json["mipmapMode"],
+		.addressModeU = json["addressModeU"],
+		.addressModeV = json["addressModeV"],
+		.addressModeW = json["addressModeW"],
+		.mipLodBias = json["mipLodBias"],
+		.anisotropyEnable = json["anisotropyEnable"],
 		.maxAnisotropy = properties.limits.maxSamplerAnisotropy,
-		.compareEnable = VK_FALSE,
-		.compareOp = VK_COMPARE_OP_ALWAYS,
-		.minLod = 0.0f,
-		.maxLod = VK_LOD_CLAMP_NONE,
-		.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
-		.unnormalizedCoordinates = VK_FALSE,
+		.compareEnable = json["compareEnable"],
+		.compareOp = json["compareOp"],
+		.minLod = json["minLod"],
+		.maxLod = json["maxLod"],
+		.borderColor = json["borderColor"],
+		.unnormalizedCoordinates = json["unnormalizedCoordinates"],
 	};
 	VK_CHECK_THROW(
 		vkCreateSampler(Context.GetDevice(), &samplerInfo, nullptr, &sampler_),

@@ -6,6 +6,7 @@
 
 static constexpr u32 MAX_TEXTURES{ 65536 };
 static constexpr u32 MAX_SAMPLERS{ 4096 };
+static constexpr u32 MAX_SAMPLER_SHADOWS{ 1024 };
 static constexpr u32 MAX_STORAGE_IMAGES{ 1024 };
 
 static constexpr VkDescriptorBindingFlags BINDLESS_FLAGS{
@@ -93,6 +94,31 @@ u32 GPipelineResourceManager::RegisterSampler(VkSampler sampler)
 	return slot;
 }
 
+u32 GPipelineResourceManager::RegisterSamplerShadow(VkSampler sampler)
+{
+	const u32 slot{ AllocateSamplerShadowSlot() };
+
+	const VkDescriptorImageInfo samplerInfo{
+		.sampler = sampler,
+		.imageView = VK_NULL_HANDLE,
+		.imageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+	};
+	const VkWriteDescriptorSet write{
+		.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+		.dstSet = descriptorSet_,
+		.dstBinding = 2,
+		.dstArrayElement = slot,
+		.descriptorCount = 1,
+		.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
+		.pImageInfo = &samplerInfo,
+	};
+
+	// This is safe mid-frame as long as the slot isn't in active use by in-flight command buffers
+	vkUpdateDescriptorSets(Context.GetDevice(), 1, &write, 0, nullptr);
+
+	return slot;
+}
+
 void GPipelineResourceManager::UnregisterTexture(const u32 slot)
 {
 	freeTextureSlots_.push_back(slot);
@@ -101,6 +127,11 @@ void GPipelineResourceManager::UnregisterTexture(const u32 slot)
 void GPipelineResourceManager::UnregisterSampler(const u32 slot)
 {
 	freeSamplerSlots_.push_back(slot);
+}
+
+void GPipelineResourceManager::UnregisterSamplerShadow(const u32 slot)
+{
+	freeSamplerShadowSlots_.push_back(slot);
 }
 
 void GPipelineResourceManager::CmdBindDescriptorSet(VkCommandBuffer commandBuffer) const
@@ -118,14 +149,16 @@ void GPipelineResourceManager::CmdBindDescriptorSet(VkCommandBuffer commandBuffe
 
 void GPipelineResourceManager::CreateDescriptorSetLayout()
 {
-	constexpr std::array<VkDescriptorSetLayoutBinding, 3> BINDINGS{ {
-		{ 0, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURES,		VK_SHADER_STAGE_ALL, nullptr },
-		{ 1, VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SAMPLERS,		VK_SHADER_STAGE_ALL, nullptr },
-		{ 2, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,	MAX_STORAGE_IMAGES,	VK_SHADER_STAGE_ALL, nullptr },
+	constexpr std::array<VkDescriptorSetLayoutBinding, 4> BINDINGS{ {
+		{ 0, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURES,			VK_SHADER_STAGE_ALL, nullptr },
+		{ 1, VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SAMPLERS,			VK_SHADER_STAGE_ALL, nullptr },
+		{ 2, VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SAMPLER_SHADOWS,	VK_SHADER_STAGE_ALL, nullptr },
+		{ 3, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,	MAX_STORAGE_IMAGES,		VK_SHADER_STAGE_ALL, nullptr },
 	} };
 
 	/// Add VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT to the last binding (only) to make it resizeable
 	constexpr std::array BINDING_FLAGS{
+		BINDLESS_FLAGS,
 		BINDLESS_FLAGS,
 		BINDLESS_FLAGS,
 		BINDLESS_FLAGS,
@@ -180,9 +213,10 @@ void GPipelineResourceManager::CreatePipelineLayout()
 
 void GPipelineResourceManager::CreateDescriptorPool()
 {
-	constexpr std::array<VkDescriptorPoolSize, 3> POOL_SIZES{ {
+	constexpr std::array<VkDescriptorPoolSize, 4> POOL_SIZES{ {
 		{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURES		},
 		{ VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SAMPLERS		},
+		{ VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SAMPLER_SHADOWS	},
 		{ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,	MAX_STORAGE_IMAGES	},
 	} };
 
@@ -233,4 +267,16 @@ u32 GPipelineResourceManager::AllocateSamplerSlot()
 	}
 	assert(nextSamplerSlot_ < MAX_SAMPLERS);
 	return nextSamplerSlot_++;
+}
+
+u32 GPipelineResourceManager::AllocateSamplerShadowSlot()
+{
+	if (!freeSamplerShadowSlots_.empty())
+	{
+		const u32 slot{ freeSamplerShadowSlots_.back() };
+		freeSamplerShadowSlots_.pop_back();
+		return slot;
+	}
+	assert(nextSamplerShadowSlot_ < MAX_SAMPLER_SHADOWS);
+	return nextSamplerShadowSlot_++;
 }

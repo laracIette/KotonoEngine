@@ -22,8 +22,10 @@ public:
 
 	u32 RegisterTexture(VkImageView imageView);
 	u32 RegisterSampler(VkSampler sampler);
+	u32 RegisterSamplerShadow(VkSampler sampler);
 	void UnregisterTexture(const u32 slot);
 	void UnregisterSampler(const u32 slot);
+	void UnregisterSamplerShadow(const u32 slot);
 
 	void CmdBindDescriptorSet(VkCommandBuffer commandBuffer) const;
 
@@ -35,6 +37,7 @@ private:
 
 	u32 AllocateTextureSlot();
 	u32 AllocateSamplerSlot();
+	u32 AllocateSamplerShadowSlot();
 
 private:
 	VkDescriptorSetLayout descriptorSetLayout_;
@@ -46,6 +49,8 @@ private:
 	u32 nextTextureSlot_;
 	std::vector<u32> freeSamplerSlots_;
 	u32 nextSamplerSlot_;
+	std::vector<u32> freeSamplerShadowSlots_;
+	u32 nextSamplerShadowSlot_;
 };
 
 inline GPipelineResourceManager PipelineResourceManager;
