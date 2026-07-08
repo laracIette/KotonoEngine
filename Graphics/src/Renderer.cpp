@@ -97,19 +97,17 @@ void GRenderer::Init()
 	LightBuffer.Init();
 	GPUBuffers.Init();
 
-	LightBuffer.RegisterLight({
+	LightBuffer.RegisterDirectionalLight({
 		.direction = glm::normalize(-WorldForwardVector - WorldUpVector * 0.5f),
 		.color = Colors::White,
 		.intensity = 1.0f,
-		.type = static_cast<u32>(ELightType::Directional),
 	});
 
-	LightBuffer.RegisterLight({
-		.position = WorldUpVector + WorldForwardVector * 3.0f,
+	LightBuffer.RegisterPointLight({
+		.position = -WorldForwardVector + WorldUpVector,
+		.range = 3.0f,
 		.color = UColor::Mix(Colors::Green, Colors::Blue),
 		.intensity = 100.0f,
-		.range = 100.0f,
-		.type = static_cast<u32>(ELightType::Point),
 	});
 }
 

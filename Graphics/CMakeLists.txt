@@ -74,6 +74,7 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/frames_in_flight.h"
     "include/kotono_graphics/GPUBuffers.h"
     "include/kotono_graphics/LightBuffer.h"
+    "include/kotono_graphics/Lights.h"
     "include/kotono_graphics/Material.h"
     "include/kotono_graphics/MaterialBuffer.h"
     "include/kotono_graphics/Mobility.h"

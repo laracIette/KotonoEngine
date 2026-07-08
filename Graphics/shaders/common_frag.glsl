@@ -15,14 +15,15 @@ layout(location = 0) out vec4 outColor;
 #endif
 
 // Helpers
-#define UNPACK_PUSH_CONSTANTS                                                  \
-    FrameContext frame      = pc.frameContext.data;                            \
-    DrawData     drawData   = frame.drawDatas.data[pc.drawIndex];              \
-    Material     material   = frame.materials.data[drawData.materialIndex];    \
-    Transform    transform  = frame.transforms.data[drawData.transformIndex];  \
-    Parameters   parameters = frame.parameters.data[drawData.parametersIndex]; \
-    LightBuf     lights     = frame.lights;                                    \
-    uint         lightCount = frame.lightCount;
+#define UNPACK_PUSH_CONSTANTS                                                             \
+    FrameContext     frame             = pc.frameContext.data;                            \
+    DrawData         drawData          = frame.drawDatas.data[pc.drawIndex];              \
+    Material         material          = frame.materials.data[drawData.materialIndex];    \
+    Transform        transform         = frame.transforms.data[drawData.transformIndex];  \
+    Parameters       parameters        = frame.parameters.data[drawData.parametersIndex]; \
+    DirectionalLight directionalLight  = frame.directionalLight;                          \
+    PointLightBuf    pointLights       = frame.pointLights;                               \
+    uint             pointLightCount   = frame.pointLightCount;
 
 vec4 sampleTex(uint texIdx, uint sampIdx, vec2 uv) {
     return texture(
@@ -58,27 +59,6 @@ void unpackORM(Material mat, vec2 uv, out float occlusion, out float roughness, 
     roughness = orm.g;
     metallic  = orm.b;
 }
-
-// Simplified PBR Point Light Calculation (Simplified for example)
-vec3 calculatePointLight(Light light, vec3 worldPos, vec3 normal, vec3 albedo, float roughness, float metallic) {
-    vec3 lightVec = light.position - worldPos;
-    float distance = length(lightVec);
-    float radius = light.range;
-    
-    // Attenuation (Falloff)
-    float attenuation = clamp(1.0 - (distance * distance) / (radius * radius), 0.0, 1.0);
-    attenuation *= attenuation; 
-    
-    if (attenuation <= 0.0) return vec3(0.0);
-    
-    vec3 L = normalize(lightVec);
-    float NdotL = max(dot(normal, L), 0.0);
-    
-    // Simplistic diffuse for demonstration
-    vec3 diffuse = albedo * light.color * light.intensity;
-    return diffuse * NdotL * attenuation;
-}
-
 
 
 
@@ -144,10 +124,25 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
+vec3 calculateLight(vec3 N, vec3 V, vec3 F0, vec3 L, vec3 H, vec3 albedo, float roughness, float metallic, vec3 radiance)
+{
+    float NDF = distributionGGX(N, H, roughness);
+    float G   = geometrySmith(N, V, L, roughness);
+    vec3  F   = fresnelSchlick(max(dot(H, V), 0.0), F0);
+        
+    vec3  numerator = NDF * G * F;
+    float denom     = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 1e-4;
+    vec3  specular  = numerator / denom;
+        
+    vec3  kD    = (vec3(1.0) - F) * (1.0 - metallic);
+    float NdotL = max(dot(N, L), 0.0);
+        
+    return (kD * albedo / PI + specular) * radiance * NdotL;
+}
 
 
 
-
+// Post-process
 vec3 reinhard(vec3 hdrColor)
 {
     return hdrColor / (hdrColor + vec3(1.0));

@@ -35,12 +35,10 @@ void main() {
 
     // --- Cooperative Intersection Testing ---
     // The 64 threads loop through all totalLights in parallel
-    for (uint i = gl_LocalInvocationIndex; i < lightCount; i += gl_WorkGroupSize.x) {
-        Light light = lights.data[i];
-
-        if (light.type != LIGHT_TYPE_POINT) continue;
+    for (uint i = gl_LocalInvocationIndex; i < pointLightCount; i += gl_WorkGroupSize.x) {
+        PointLight pointLight = pointLights.data[i];
         
-        if (testSphereAABB(light.position, light.range, aabb.minPoint.xyz, aabb.maxPoint.xyz)) {
+        if (testSphereAABB(pointLight.position, pointLight.range, aabb.minPoint.xyz, aabb.maxPoint.xyz)) {
             // Light intersects! Atomically add to shared memory
             uint slot = atomicAdd(s_VisibleLightCount, 1);
             if (slot < MAX_LIGHTS_PER_CLUSTER) {

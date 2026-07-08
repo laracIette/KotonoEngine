@@ -55,8 +55,10 @@ void GFrameContextBuffer::UpdateBuffer(const u32 frameIndex)
         .transformBufferAddress = TransformBuffer.GetAddress(frameIndex),
         .parametersBufferAddress = ParametersBuffer.GetAddress(frameIndex),
 
-        .lightBufferAddress = LightBuffer.GetAddress(),
-        .lightCount = LightBuffer.GetLightCount(),
+        .directionalLight = LightBuffer.GetDirectionalLight(),
+
+        .pointLightBufferAddress = LightBuffer.GetAddress(),
+        .pointLightCount = LightBuffer.GetPointLightCount(),
 
         .clusterAABBBufferAddress = GPUBuffers.GetClusterAABBAddress(),
         .clusterGridBufferAddress = GPUBuffers.GetClusterGridAddress(),

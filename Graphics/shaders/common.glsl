@@ -59,18 +59,20 @@ struct Vertex {
     vec4 tangent;
 };
 
-struct Light {
+struct PointLight {
     vec3  position;
-    vec3  direction;
+    float range;
     vec3  color;
     float intensity;
-    float range;
-    float innerCone;
-    float outerCone;
-    uint  type;
     //uint shadowMapIndex; // index into bindless texture array, ~0u = no shadow
     //mat4 lightViewProj[4]; // cascades for directional, 1 entry otherwise
     //vec4 cascadeSplits; // directional only
+};
+
+struct DirectionalLight {
+    vec3  direction;
+	vec3  color;
+	float intensity;
 };
 
 struct AABB {
@@ -96,8 +98,8 @@ layout(buffer_reference, scalar) readonly buffer TransformBuf {
 layout(buffer_reference, scalar) readonly buffer ParametersBuf {
     Parameters data[];
 };
-layout(buffer_reference, scalar) readonly buffer LightBuf {
-    Light data[];
+layout(buffer_reference, scalar) readonly buffer PointLightBuf {
+    PointLight data[];
 };
 layout(buffer_reference, scalar) ACCESS_CLUSTER_AABB_BUF buffer ClusterAABBBuf {
     AABB data[];
@@ -113,36 +115,38 @@ layout(buffer_reference, scalar) ACCESS_LIGHT_COUNTER_BUF buffer LightCounterBuf
 };
 
 struct FrameContext {
-    mat4            view;
-    mat4            proj;
-    mat4            invProj;
-    mat4            viewProj;
-    mat4            invViewProj;
-    vec4            viewPos;
+    mat4             view;
+    mat4             proj;
+    mat4             invProj;
+    mat4             viewProj;
+    mat4             invViewProj;
+    vec4             viewPos;
+                     
+    float            time;
+                     
+    DrawDataBuf      drawDatas;
+    MaterialBuf      materials;
+    TransformBuf     transforms;
+    ParametersBuf    parameters;
 
-    float           time;
+    DirectionalLight directionalLight;
 
-    DrawDataBuf     drawDatas;
-    MaterialBuf     materials;
-    TransformBuf    transforms;
-    ParametersBuf   parameters;
-
-    LightBuf        lights;
-    uint            lightCount;
-
-    ClusterAABBBuf  clusterAABBs;
-    ClusterGridBuf  clusterGrids;
-    LightIndexBuf   lightIndices;
-    LightCounterBuf lightCounter;
-
-    uint            gBufferAlbedo;
-    uint            gBufferNormal;
-    uint            gBufferORM;
-    uint            gBufferDepth;
-    uint            gBufferSampler;
-
-    uint            postProcessTarget;
-    uint            postProcessSampler;
+    PointLightBuf    pointLights;
+    uint             pointLightCount;
+                     
+    ClusterAABBBuf   clusterAABBs;
+    ClusterGridBuf   clusterGrids;
+    LightIndexBuf    lightIndices;
+    LightCounterBuf  lightCounter;
+                     
+    uint             gBufferAlbedo;
+    uint             gBufferNormal;
+    uint             gBufferORM;
+    uint             gBufferDepth;
+    uint             gBufferSampler;
+                     
+    uint             postProcessTarget;
+    uint             postProcessSampler;
 };
 
 layout(buffer_reference, scalar) readonly buffer FrameContextBuf {
@@ -159,10 +163,6 @@ layout(push_constant, scalar) uniform PC {
 } pc;
 
 const float PI = 3.14159265;
-
-const uint LIGHT_TYPE_DIRECTIONAL = 0u;
-const uint LIGHT_TYPE_POINT = 1u;
-const uint LIGHT_TYPE_SPOT = 2u;
 
 const float Z_NEAR = 0.1;
 const float Z_FAR = 1000.0;

@@ -1,14 +1,14 @@
 #include "common.glsl"
 
 // Helpers
-#define UNPACK_PUSH_CONSTANTS                            \
-    FrameContext    frame        = pc.frameContext.data; \
-    LightBuf        lights       = frame.lights;         \
-    uint            lightCount   = frame.lightCount;     \
-    ClusterAABBBuf  clusterAABBs = frame.clusterAABBs;   \
-    ClusterGridBuf  clusterGrids = frame.clusterGrids;   \
-    LightIndexBuf   lightIndices = frame.lightIndices;   \
-    LightCounterBuf lightCounter = frame.lightCounter;
+#define UNPACK_PUSH_CONSTANTS                                \
+    FrameContext    frame           = pc.frameContext.data;  \
+    PointLightBuf   pointLights     = frame.pointLights;     \
+    uint            pointLightCount = frame.pointLightCount; \
+    ClusterAABBBuf  clusterAABBs    = frame.clusterAABBs;    \
+    ClusterGridBuf  clusterGrids    = frame.clusterGrids;    \
+    LightIndexBuf   lightIndices    = frame.lightIndices;    \
+    LightCounterBuf lightCounter    = frame.lightCounter;
 
 vec3 clipToView(mat4 inverseProjection, vec4 clip) {
     vec4 view = inverseProjection * clip;

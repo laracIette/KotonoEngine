@@ -8,7 +8,7 @@ void GLightBuffer::Init()
 {
     const VkBufferCreateInfo bufInfo{
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = sizeof(Light) * MAX_LIGHTS,
+        .size = sizeof(UPointLight) * MAX_LIGHTS,
         .usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
             | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
             | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
@@ -36,15 +36,20 @@ void GLightBuffer::Cleanup() const
     vmaDestroyBuffer(Context.GetAllocator(), buffer_, allocation_);
 }
 
-u32 GLightBuffer::RegisterLight(const Light& light)
+u32 GLightBuffer::RegisterPointLight(const UPointLight& pointLight)
 {
-    Context.StagingUpload(&light
-        , sizeof(Light)
+    Context.StagingUpload(&pointLight
+        , sizeof(UPointLight)
         , buffer_
-        , lightCount_ * sizeof(Light)
+        , pointLightCount_ * sizeof(UPointLight)
     );
-    assert(lightCount_ < MAX_LIGHTS);
-    return lightCount_++;
+    assert(pointLightCount_ < MAX_LIGHTS);
+    return pointLightCount_++;
+}
+
+void GLightBuffer::RegisterDirectionalLight(const UDirectionalLight& directionalLight)
+{
+    directionalLight_ = directionalLight;
 }
 
 VkDeviceAddress GLightBuffer::GetAddress() const
@@ -52,7 +57,12 @@ VkDeviceAddress GLightBuffer::GetAddress() const
     return bda_;
 }
 
-u32 GLightBuffer::GetLightCount() const
+u32 GLightBuffer::GetPointLightCount() const
 {
-    return lightCount_;
+    return pointLightCount_;
+}
+
+const UDirectionalLight& GLightBuffer::GetDirectionalLight() const
+{
+    return directionalLight_;
 }
