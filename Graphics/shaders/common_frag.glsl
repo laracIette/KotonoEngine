@@ -15,15 +15,16 @@ layout(location = 0) out vec4 outColor;
 #endif
 
 // Helpers
-#define UNPACK_PUSH_CONSTANTS                                                             \
-    FrameContext     frame             = pc.frameContext.data;                            \
-    DrawData         drawData          = frame.drawDatas.data[pc.drawIndex];              \
-    Material         material          = frame.materials.data[drawData.materialIndex];    \
-    Transform        transform         = frame.transforms.data[drawData.transformIndex];  \
-    Parameters       parameters        = frame.parameters.data[drawData.parametersIndex]; \
-    DirectionalLight directionalLight  = frame.directionalLight;                          \
-    PointLightBuf    pointLights       = frame.pointLights;                               \
-    uint             pointLightCount   = frame.pointLightCount;
+#define UNPACK_PUSH_CONSTANTS                                                                    \
+    FrameContext        frame                 = pc.frameContext.data;                            \
+    DrawData            drawData              = frame.drawDatas.data[pc.drawIndex];              \
+    Material            material              = frame.materials.data[drawData.materialIndex];    \
+    Transform           transform             = frame.transforms.data[drawData.transformIndex];  \
+    Parameters          parameters            = frame.parameters.data[drawData.parametersIndex]; \
+    DirectionalLightBuf directionalLights     = frame.directionalLights;                         \
+    uint                directionalLightCount = frame.directionalLightCount;                     \
+    PointLightBuf       pointLights           = frame.pointLights;                               \
+    uint                pointLightCount       = frame.pointLightCount;
 
 vec4 sampleTex(uint texIdx, uint sampIdx, vec2 uv) {
     return texture(

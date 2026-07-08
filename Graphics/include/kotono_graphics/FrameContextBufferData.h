@@ -1,5 +1,4 @@
 #pragma once
-#include "Lights.h"
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
 #include <kotono_common/types.h>
@@ -20,7 +19,8 @@ struct UFrameContextBufferData
     VkDeviceAddress transformBufferAddress;
     VkDeviceAddress parametersBufferAddress;
 
-    UDirectionalLight directionalLight;
+    VkDeviceAddress directionalLightBufferAdress;
+    u32 directionalLightCount;
 
     VkDeviceAddress pointLightBufferAddress;
     u32 pointLightCount;

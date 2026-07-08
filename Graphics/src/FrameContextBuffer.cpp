@@ -1,7 +1,7 @@
 #include "FrameContextBuffer.h"
 #include "GPUBuffers.h"
 #include "DrawDataBuffer.h"
-#include "LightBuffer.h"
+#include "LightBuffers.h"
 #include "MaterialBuffer.h"
 #include "ParametersBuffer.h"
 #include "PipelineResourceManager.h"
@@ -55,10 +55,11 @@ void GFrameContextBuffer::UpdateBuffer(const u32 frameIndex)
         .transformBufferAddress = TransformBuffer.GetAddress(frameIndex),
         .parametersBufferAddress = ParametersBuffer.GetAddress(frameIndex),
 
-        .directionalLight = LightBuffer.GetDirectionalLight(),
+        .directionalLightBufferAdress = LightBuffers.GetDirectionalLightAddress(),
+        .directionalLightCount = LightBuffers.GetDirectionalLightCount(),
 
-        .pointLightBufferAddress = LightBuffer.GetAddress(),
-        .pointLightCount = LightBuffer.GetPointLightCount(),
+        .pointLightBufferAddress = LightBuffers.GetPointLightAddress(),
+        .pointLightCount = LightBuffers.GetPointLightCount(),
 
         .clusterAABBBufferAddress = GPUBuffers.GetClusterAABBAddress(),
         .clusterGridBufferAddress = GPUBuffers.GetClusterGridAddress(),

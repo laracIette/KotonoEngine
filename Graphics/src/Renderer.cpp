@@ -4,7 +4,7 @@
 #include "DrawCall.h"
 #include "DrawDataBuffer.h"
 #include "FrameContextBuffer.h"
-#include "LightBuffer.h"
+#include "LightBuffers.h"
 #include "MaterialBuffer.h"
 #include "ParametersBuffer.h"
 #include "PipelineResourceManager.h"
@@ -94,16 +94,16 @@ void GRenderer::Init()
 	MaterialBuffer.Init();
 	TransformBuffer.Init();
 	ParametersBuffer.Init();
-	LightBuffer.Init();
+	LightBuffers.Init();
 	GPUBuffers.Init();
 
-	LightBuffer.RegisterDirectionalLight({
+	LightBuffers.RegisterDirectionalLight({
 		.direction = glm::normalize(-WorldForwardVector - WorldUpVector * 0.5f),
 		.color = Colors::White,
 		.intensity = 1.0f,
 	});
 
-	LightBuffer.RegisterPointLight({
+	LightBuffers.RegisterPointLight({
 		.position = -WorldForwardVector + WorldUpVector,
 		.range = 3.0f,
 		.color = UColor::Mix(Colors::Green, Colors::Blue),
@@ -119,7 +119,7 @@ void GRenderer::Cleanup()
 	JoinThread(rhiThread_); 
 
 	GPUBuffers.Cleanup();
-	LightBuffer.Cleanup();
+	LightBuffers.Cleanup();
 	ParametersBuffer.Cleanup();
 	TransformBuffer.Cleanup();
 	MaterialBuffer.Cleanup();

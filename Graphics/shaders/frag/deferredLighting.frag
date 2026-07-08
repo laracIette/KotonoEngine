@@ -45,6 +45,18 @@ void main() {
     vec3 F0 = mix(vec3(0.04), albedo, metallic); // Fresnel reflectance
     vec3 Lo = vec3(0.0);
 
+    for (uint i = 0u; i < directionalLightCount; ++i)
+    {
+        DirectionalLight directionalLight = directionalLights.data[i];
+
+        vec3 L = normalize(-directionalLight.direction); 
+        vec3 H = normalize(V + L);
+        
+        // Linear intensity
+        vec3 radiance = directionalLight.color * directionalLight.intensity;
+        Lo += calculateLight(N, V, F0, L, H, albedo, roughness, metallic, radiance);
+    }
+
     for (uint i = 0u; i < lightGrid.count; ++i)
     {
         // Point lights only
@@ -65,13 +77,6 @@ void main() {
         vec3 radiance = pointLight.color * pointLight.intensity * atten;
         Lo += calculateLight(N, V, F0, L, H, albedo, roughness, metallic, radiance);
     }
-
-    vec3 dirL = normalize(-directionalLight.direction); 
-    vec3 dirH = normalize(V + dirL);
-        
-    // Linear intensity
-    vec3 dirRadiance = directionalLight.color * directionalLight.intensity;
-    Lo += calculateLight(N, V, F0, dirL, dirH, albedo, roughness, metallic, dirRadiance);
 
     vec3 ambient = vec3(0.03) * albedo * ao;
     outColor = vec4(ambient + Lo, 1.0);
