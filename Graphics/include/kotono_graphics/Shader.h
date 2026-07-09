@@ -5,6 +5,7 @@
 enum class EPipelinePass : u8
 {
 	Compute,
+	ShadowPrePass,
 	DepthPrePass,
 	GBuffer,
 	DeferredLighting,

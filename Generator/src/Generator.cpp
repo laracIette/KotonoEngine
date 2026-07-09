@@ -141,7 +141,7 @@ void SGenerator::GenerateSource(const UReflectionResult& reflectionResult)
 	std::ostringstream deserializeCode;
 	for (const auto& variable : classInfo.variables)
 	{
-		deserializeCode << std::format(R"(	UDeserialize<decltype({0})>{{}}(get(json, "{0}"), {0});)", variable.name) << std::endl;
+		deserializeCode << std::format(R"(	if (contains(json, "{0}")) UDeserialize<decltype({0})>{{}}(get(json, "{0}"), {0});)", variable.name) << std::endl;
 	}
 
 	std::ostringstream memberVariablesCode;
@@ -152,7 +152,7 @@ void SGenerator::GenerateSource(const UReflectionResult& reflectionResult)
 
 	const std::string generatedCode{ !classInfo.base.has_value()
 		? std::format(
-R"(UAutoRegister {0}::register_("{0}", []() {{ return UCreate<{0}>{{}}(); }});
+R"(UAutoRegister {0}::register_{{ "{0}", []() {{ return UCreate<{0}>{{}}(); }} }};
 
 void {0}::SerializeTo(nlohmann::json& json) const
 {{
@@ -182,7 +182,7 @@ UPtr<{0}> {0}::Ptr() const
 			memberVariablesCode.str()
 		)
 		: std::format(
-R"(UAutoRegister {0}::register_("{0}", []() {{ return UCreate<{0}>{{}}(); }});
+R"(UAutoRegister {0}::register_{{ "{0}", []() {{ return UCreate<{0}>{{}}(); }} }};
 
 void {0}::SerializeTo(nlohmann::json& json) const
 {{

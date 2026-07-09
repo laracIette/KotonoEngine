@@ -1,6 +1,8 @@
 #include "Core.h"
+#include "DirectionalLightComponent.h"
 #include "Game.h"
 #include "InterfacePhysicsManager.h"
+#include "PointLightComponent.h"
 #include "TimeManager.h"
 #include <kotono_audio/AudioManager.h>
 #include <kotono_common/AssetManager.h>
@@ -36,6 +38,10 @@ void GCore::Init()
     logUPSTimer.SetIsRepeat(true);
     logUPSTimer.EventCompleted().AddListener(this, &GCore::LogUPS);
     logUPSTimer.Start();
+
+    // force unused classes to compile, for registry
+    KDirectionalLightComponent{};
+    KPointLightComponent{};
 }
 
 void GCore::Update()

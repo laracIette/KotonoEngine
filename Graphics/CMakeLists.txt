@@ -63,6 +63,7 @@ target_compile_features(KotonoGraphics PUBLIC cxx_std_23)
 set_target_properties(KotonoGraphics PROPERTIES FOLDER "KotonoEngine")
 
 set(KGRAPHICS_HEADERS
+    "include/kotono_graphics/Camera.h"
     "include/kotono_graphics/Color.h"
     "include/kotono_graphics/DrawCall.h"
     "include/kotono_graphics/DrawDataBuffer.h"
@@ -94,6 +95,7 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/Visibility.h"
 )
 set(KGRAPHICS_SOURCES
+    "src/Camera.cpp"
     "src/DrawCallBuilder.cpp"
     "src/DrawDataBuffer.cpp"
     "src/Font.cpp"

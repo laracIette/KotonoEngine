@@ -276,7 +276,8 @@ std::vector<VkFormat> UShader::GetOutputColorAttachmentFormats(const EPipelinePa
 {
 	switch (pipelinePass)
 	{
-	case EPipelinePass::Compute:			return {};
+	case EPipelinePass::Compute:
+	case EPipelinePass::ShadowPrePass:
 	case EPipelinePass::DepthPrePass:		return {};
 	case EPipelinePass::GBuffer:			return {
 		VK_FORMAT_R8G8B8A8_SRGB,		// Albedo

@@ -16,8 +16,10 @@ set_target_properties(KotonoCore PROPERTIES FOLDER "KotonoEngine")
 
 set(KCORE_HEADERS
     "include/kotono_core/Anchor.h"
+    "include/kotono_core/CameraComponent.h"
     "include/kotono_core/CoordinateSpace.h"
     "include/kotono_core/Core.h"
+    "include/kotono_core/DirectionalLightComponent.h"
     "include/kotono_core/Game.h"
     "include/kotono_core/GameState.h"
     "include/kotono_core/Interface.h"
@@ -29,6 +31,7 @@ set(KCORE_HEADERS
     "include/kotono_core/InterfaceObject.h"
     "include/kotono_core/InterfacePhysicsManager.h"
     "include/kotono_core/Orientation.h"
+    "include/kotono_core/PointLightComponent.h"
     "include/kotono_core/ProjectSettings.h"
     "include/kotono_core/Rect.h"
     "include/kotono_core/RotationUnit.h"
@@ -42,7 +45,9 @@ set(KCORE_HEADERS
     "include/kotono_core/Transform.h"
 )
 set(KCORE_SOURCES
+    "src/CameraComponent.cpp"
     "src/Core.cpp"
+    "src/DirectionalLightComponent.cpp"
     "src/Game.cpp"
     "src/Interface.cpp"
     "src/InterfaceBoxComponent.cpp"
@@ -52,6 +57,7 @@ set(KCORE_SOURCES
     "src/InterfaceImageComponent.cpp"
     "src/InterfaceObject.cpp"
     "src/InterfacePhysicsManager.cpp"
+    "src/PointLightComponent.cpp"
     "src/ProjectSettings.cpp"
     "src/Rect.cpp"
     "src/Scene.cpp"

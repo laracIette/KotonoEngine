@@ -1,4 +1,5 @@
 #include "FrameContextBuffer.h"
+#include "Camera.h"
 #include "GPUBuffers.h"
 #include "DrawDataBuffer.h"
 #include "LightBuffers.h"
@@ -27,11 +28,6 @@ void GFrameContextBuffer::Cleanup() const
     }
 }
 
-void GFrameContextBuffer::SetCameraData(const CameraData& cameraData)
-{
-    cameraData_ = cameraData;
-}
-
 void GFrameContextBuffer::UpdateBuffer(const u32 frameIndex)
 {
     static UAsset sampler{ SAssetManager<USampler>::Get("${ENGINE_DIRECTORY}/Graphics/assets/samplers/default.kasset") };
@@ -40,13 +36,17 @@ void GFrameContextBuffer::UpdateBuffer(const u32 frameIndex)
         return;
     }
     
+    const auto view{ SCamera::GetViewMatrix() };
+    const auto proj{ SCamera::GetProjectionMatrix() };
+    const auto viewProj{ proj * view };
+
     const Data data{
-        .view = cameraData_.view,
-        .proj = cameraData_.proj,
-        .invProj = glm::inverse(cameraData_.proj),
-        .viewProj = cameraData_.viewProj,
-        .invViewProj = glm::inverse(cameraData_.viewProj),
-        .viewPos = glm::vec4{ cameraData_.viewPos, 0.0f },
+        .view = view,
+        .proj = proj,
+        .invProj = glm::inverse(proj),
+        .viewProj = viewProj,
+        .invViewProj = glm::inverse(viewProj),
+        .viewPos = SCamera::GetPosition(),
 
         .time = SClock::Now(),
 
@@ -56,9 +56,8 @@ void GFrameContextBuffer::UpdateBuffer(const u32 frameIndex)
         .parametersBufferAddress = ParametersBuffer.GetAddress(frameIndex),
 
         .directionalLightBufferAdress = LightBuffers.GetDirectionalLightAddress(),
-        .directionalLightCount = LightBuffers.GetDirectionalLightCount(),
-
         .pointLightBufferAddress = LightBuffers.GetPointLightAddress(),
+        .directionalLightCount = LightBuffers.GetDirectionalLightCount(),
         .pointLightCount = LightBuffers.GetPointLightCount(),
 
         .clusterAABBBufferAddress = GPUBuffers.GetClusterAABBAddress(),

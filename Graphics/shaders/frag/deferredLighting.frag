@@ -36,7 +36,7 @@ void main() {
 
     vec3 worldPos = reconstructWorldPos(inUV, depth, frame.invViewProj);
     vec3 viewPos  = (frame.view * vec4(worldPos, 1.0)).xyz;
-    vec3 camPos   = frame.viewPos.xyz;
+    vec3 camPos   = frame.viewPos;
     vec3 V        = normalize(camPos - worldPos); // view vector
    
     uint clusterIndex = computeClusterIndex(gl_FragCoord.xy, viewPos.z, tilePxSize, clusterScaleBias, clusterGridDim);

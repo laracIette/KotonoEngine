@@ -3,12 +3,14 @@
 #include <kotono_common/Asset.h>
 #include <kotono_common/AssetManager.h>
 #include <kotono_common/types.h>
-#include <type_traits>
 #include <ranges>
+#include <type_traits>
 
 #define SERIALIZE
 
 class UPath;
+
+bool contains(const nlohmann::json& json, const std::string_view name);
 
 nlohmann::json& get(nlohmann::json& json, const std::string_view name);
 const nlohmann::json& get(const nlohmann::json& json, const std::string_view name);

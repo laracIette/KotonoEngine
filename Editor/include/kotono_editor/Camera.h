@@ -1,7 +1,7 @@
 #pragma once
-#include <kotono_core/Transform.h>
-#include <kotono_common/Event.h>
-class SCamera final
+#include <glm/fwd.hpp>
+#include <kotono_common/types.h>
+class GCamera final
 {
 	friend class GEditor;
 
@@ -9,43 +9,27 @@ private:
 	void Init();
 	void Cleanup();
 
-public:
-	glm::vec3 RightVector() const;
-	glm::vec3 UpVector() const;
-	glm::vec3 ForwardVector() const;
-
-	void SetPosition(const glm::vec3& position);
-	void SetRotation(const glm::quat& rotation);
-
-	void Translate(const glm::vec3& offset);
-
 private:
-	UTransform transform_;
-
-	bool isFocused_;
-
-	// Vertical fov in degrees
-	float fov_;
-	float depthNear_;
-	float speed_;
-	float sensitivity_;
-	float pitch_;
-	float yaw_;
-
-	UEvent<> eventTransformUpdated_;
-
-	void OnKeyboardWKeyDown();
-	void OnKeyboardAKeyDown();
-	void OnKeyboardSKeyDown();
-	void OnKeyboardDKeyDown();
-	void OnKeyboardQKeyDown();
-	void OnKeyboardEKeyDown();
+	void OnKeyboardWKeyDown() const;
+	void OnKeyboardAKeyDown() const;
+	void OnKeyboardSKeyDown() const;
+	void OnKeyboardDKeyDown() const;
+	void OnKeyboardQKeyDown() const;
+	void OnKeyboardEKeyDown() const;
 	void OnMouseRightButtonPressed();
 	void OnMouseRightButtonReleased();
 	void OnMouseMove(const glm::vec2 delta);
-	void OnMouseVerticalScroll(const float delta);
+	void OnMouseVerticalScroll(const f32 delta);
 
-	void OnEventUpdateTransform() const;
+	void Translate(const glm::vec3& delta) const;
+
+private:
+	bool isFocused_;
+
+	f32 speed_;
+	f32 sensitivity_;
+	f32 pitch_;
+	f32 yaw_;
 };
 
-inline SCamera Camera;
+inline GCamera Camera;

@@ -63,9 +63,10 @@ struct DirectionalLight {
     vec3  direction;
 	vec3  color;
 	float intensity;
-    //uint shadowMapIndex; // index into bindless texture array, ~0u = no shadow
-    //mat4 lightViewProj[4]; // cascades for directional, 1 entry otherwise
-    //vec4 cascadeSplits; // directional only
+    uint  castShadow;
+    uint  shadowMap;
+	uint  shadowSampler;
+	mat4  lightViewProj;
 };
 
 struct PointLight {
@@ -123,7 +124,7 @@ struct FrameContext {
     mat4 invProj;
     mat4 viewProj;
     mat4 invViewProj;
-    vec4 viewPos;
+    vec3 viewPos;
           
     float time;
                      
@@ -133,10 +134,9 @@ struct FrameContext {
     ParametersBuf parameters;
 
     DirectionalLightBuf directionalLights;
+    PointLightBuf       pointLights;
     uint                directionalLightCount;
-
-    PointLightBuf pointLights;
-    uint          pointLightCount;
+    uint                pointLightCount;
                      
     ClusterAABBBuf  clusterAABBs;
     ClusterGridBuf  clusterGrids;
@@ -164,6 +164,7 @@ layout(push_constant, scalar) uniform PC {
     FrameContextBuf frameContext;
     VertexBuf       vertices;
     uint            drawIndex;
+    uint            directionalLightIndex;
 } pc;
 
 const float PI = 3.14159265;

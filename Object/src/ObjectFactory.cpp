@@ -36,7 +36,7 @@ UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 	const auto it{ json.find("type_") };
 	if (it == json.end())
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Core", "missing element type_ in json");
+		KT_LOG(ELogImportanceLevel::High, "Core", "missing element type_ in json");
 		return nullptr;
 	}
 
@@ -50,7 +50,7 @@ UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 		return object;
 	}
 
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Core", "missing value for type {} in object factories", type);
+	KT_LOG(ELogImportanceLevel::High, "Core", "missing value for type {} in object factories", type);
 	return nullptr;
 }
 

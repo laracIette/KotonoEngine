@@ -2,6 +2,8 @@
     "files": [
         "${ENGINE_DIRECTORY}/Object/include/kotono_object/Object.h",
 
+        "${ENGINE_DIRECTORY}/Core/include/kotono_core/CameraComponent.h",
+        "${ENGINE_DIRECTORY}/Core/include/kotono_core/DirectionalLightComponent.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/Interface.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/InterfaceBoxComponent.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/InterfaceButtonComponent.h",
@@ -9,6 +11,7 @@
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/InterfaceComponent.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/InterfaceImageComponent.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/InterfaceObject.h",
+        "${ENGINE_DIRECTORY}/Core/include/kotono_core/PointLightComponent.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/Scene.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/SceneComponent.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/SceneMeshComponent.h",

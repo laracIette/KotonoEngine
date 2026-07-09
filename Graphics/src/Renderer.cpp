@@ -1,83 +1,20 @@
 #include "Renderer.h"
-#include "GPUBuffers.h"
-#include "Color.h"
 #include "DrawCall.h"
 #include "DrawDataBuffer.h"
 #include "FrameContextBuffer.h"
+#include "GPUBuffers.h"
 #include "LightBuffers.h"
 #include "MaterialBuffer.h"
 #include "ParametersBuffer.h"
 #include "PipelineResourceManager.h"
 #include "TransformBuffer.h"
 #include "Shader.h"
-#include <algorithm>
 #include <kotono_platform/Context.h>
 #include <kotono_platform/Window.h>
 #include <kotono_platform/WindowViewport.h>
 #include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
-#include <kotono_platform/glm_utils.h>
 #include <kotono_platform/vk_utils.h>
-#include <ranges>
-#include <tuple>
-
-static void cmdTransitionImages(VkCommandBuffer commandBuffer
-	, const VkImage* image
-	, const u32 count
-	, const VkPipelineStageFlags2 srcStage
-	, const VkPipelineStageFlags2 dstStage
-	, const VkAccessFlags2 srcAccess
-	, const VkAccessFlags2 dstAccess
-	, const VkImageLayout oldLayout
-	, const VkImageLayout newLayout
-	, const VkImageSubresourceRange subresourceRange
-)
-{
-	std::vector<VkImageMemoryBarrier2> barriers{};
-	barriers.reserve(count);
-	for (u32 i{ 0 }; i < count; ++i)
-	{
-		barriers.push_back({
-			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
-			.srcStageMask = srcStage,
-			.srcAccessMask = srcAccess,
-			.dstStageMask = dstStage,
-			.dstAccessMask = dstAccess,
-			.oldLayout = oldLayout,
-			.newLayout = newLayout,
-			.image = image[i],
-			.subresourceRange = subresourceRange
-		});
-	}
-	const VkDependencyInfo dependencyInfo{
-		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
-		.imageMemoryBarrierCount = static_cast<u32>(barriers.size()),
-		.pImageMemoryBarriers = barriers.data(),
-	};
-	vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
-}
-
-static void cmdTransitionCompute(VkCommandBuffer commandBuffer
-	, const VkPipelineStageFlags2 srcStage
-	, const VkPipelineStageFlags2 dstStage
-	, const VkAccessFlags2 srcAccess
-	, const VkAccessFlags2 dstAccess
-)
-{
-	const VkMemoryBarrier2 barrier{
-		.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER_2,
-		.srcStageMask = srcStage,
-		.srcAccessMask = srcAccess,
-		.dstStageMask = dstStage,
-		.dstAccessMask = dstAccess,
-	};
-	const VkDependencyInfo dependencyInfo{
-		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
-		.memoryBarrierCount = 1,
-		.pMemoryBarriers = &barrier,
-	};
-	vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
-}
 
 void GRenderer::Init()
 {
@@ -96,19 +33,6 @@ void GRenderer::Init()
 	ParametersBuffer.Init();
 	LightBuffers.Init();
 	GPUBuffers.Init();
-
-	LightBuffers.RegisterDirectionalLight({
-		.direction = glm::normalize(-WorldForwardVector - WorldUpVector * 0.5f),
-		.color = Colors::White,
-		.intensity = 1.0f,
-	});
-
-	LightBuffers.RegisterPointLight({
-		.position = -WorldForwardVector + WorldUpVector,
-		.range = 3.0f,
-		.color = UColor::Mix(Colors::Green, Colors::Blue),
-		.intensity = 100.0f,
-	});
 }
 
 void GRenderer::Cleanup()
@@ -129,7 +53,13 @@ void GRenderer::Cleanup()
 
 	CleanupSwapChain();
 
-	for (auto& frameData : frameDatas_)
+	for (const auto& shadowMapTarget : directionalShadowMapTargets_)
+	{
+		vkDestroyImageView(Context.GetDevice(), shadowMapTarget.imageView, nullptr);
+		vmaDestroyImage(Context.GetAllocator(), shadowMapTarget.image, shadowMapTarget.allocation);
+	}
+
+	for (const auto& frameData : frameDatas_)
 	{
 		vkDestroySemaphore(Context.GetDevice(), frameData.renderFinishedSemaphore, nullptr);
 		vkDestroySemaphore(Context.GetDevice(), frameData.imageAvailableSemaphore, nullptr);
@@ -248,6 +178,121 @@ VkImageView GRenderer::GetGBufferDepthImageView(const u32 frameIndex) const
 VkImageView GRenderer::GetColorTargetImageView(const u32 frameIndex) const
 {
 	return frameDatas_[frameIndex].colorTarget.imageView;
+}
+
+u32 GRenderer::RegisterDirectionalShadowMapTarget()
+{
+	constexpr u32 SHADOW_MAP_RESOLUTION{ 2048 };
+
+	if (!freeDirectionalShadowMapSlots_.empty())
+	{
+		const auto index{ freeDirectionalShadowMapSlots_.back() };
+		freeDirectionalShadowMapSlots_.pop_back();
+		return index;
+	}
+
+	AllocatedImage shadowMapTarget;
+	CreateSampledImageAndImageView(shadowMapTarget
+		, { SHADOW_MAP_RESOLUTION , SHADOW_MAP_RESOLUTION }
+		, depthFormat_
+		, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+		, VK_IMAGE_ASPECT_DEPTH_BIT
+	);
+
+	const auto index{ static_cast<u32>(directionalShadowMapTargets_.size()) };
+	directionalShadowMapTargets_.push_back(shadowMapTarget);
+	return index;
+}
+
+void GRenderer::UnregisterDirectionalShadowMapTarget(const u32 index)
+{
+	freeDirectionalShadowMapSlots_.push_back(index); // todo: make better, needs freeSlots check for each shadow map render
+}
+
+VkImageView GRenderer::GetDirectionalShadowMapTargetImageView(const u32 index) const
+{
+	return directionalShadowMapTargets_[index].imageView;
+}
+
+void GRenderer::CreateSampledImageAndImageView(AllocatedImage& allocatedImage
+	, const VkExtent2D extent
+	, const VkFormat format
+	, const VkImageUsageFlagBits usage
+	, const VkImageAspectFlagBits aspect) const
+{
+	Context.CreateImage(extent.width, extent.height
+		, 1
+		, VK_SAMPLE_COUNT_1_BIT
+		, format
+		, VK_IMAGE_TILING_OPTIMAL
+		, VK_IMAGE_USAGE_SAMPLED_BIT
+		| usage
+		, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+		, allocatedImage.image
+		, allocatedImage.allocation
+	);
+
+	allocatedImage.imageView = Context.CreateImageView(allocatedImage.image
+		, format
+		, aspect
+		, 1
+	);
+}
+
+void GRenderer::CmdTransitionImages(VkCommandBuffer commandBuffer
+	, const VkImage* image
+	, const u32 count
+	, const VkPipelineStageFlags2 srcStage
+	, const VkPipelineStageFlags2 dstStage
+	, const VkAccessFlags2 srcAccess
+	, const VkAccessFlags2 dstAccess
+	, const VkImageLayout oldLayout
+	, const VkImageLayout newLayout
+	, const VkImageSubresourceRange subresourceRange) const
+{
+	std::vector<VkImageMemoryBarrier2> barriers{};
+	barriers.reserve(count);
+	for (u32 i{ 0 }; i < count; ++i)
+	{
+		barriers.push_back({
+			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+			.srcStageMask = srcStage,
+			.srcAccessMask = srcAccess,
+			.dstStageMask = dstStage,
+			.dstAccessMask = dstAccess,
+			.oldLayout = oldLayout,
+			.newLayout = newLayout,
+			.image = image[i],
+			.subresourceRange = subresourceRange
+		});
+	}
+	const VkDependencyInfo dependencyInfo{
+		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+		.imageMemoryBarrierCount = static_cast<u32>(barriers.size()),
+		.pImageMemoryBarriers = barriers.data(),
+	};
+	vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
+}
+
+void GRenderer::CmdTransitionCompute(VkCommandBuffer commandBuffer
+	, const VkPipelineStageFlags2 srcStage
+	, const VkPipelineStageFlags2 dstStage
+	, const VkAccessFlags2 srcAccess
+	, const VkAccessFlags2 dstAccess) const
+{
+	const VkMemoryBarrier2 barrier{
+		.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER_2,
+		.srcStageMask = srcStage,
+		.srcAccessMask = srcAccess,
+		.dstStageMask = dstStage,
+		.dstAccessMask = dstAccess,
+	};
+	const VkDependencyInfo dependencyInfo{
+		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+		.memoryBarrierCount = 1,
+		.pMemoryBarriers = &barrier,
+	};
+	vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
 }
 
 void GRenderer::CreateSwapChain()
@@ -388,35 +433,15 @@ void GRenderer::CreateSwapChainImageViews()
 
 void GRenderer::CreateImageResources()
 {
-	const auto createImageAndImageView{ [this](AllocatedImage& allocatedImage, const VkFormat format, const VkImageUsageFlagBits usage, const VkImageAspectFlagBits aspect) {
-		Context.CreateImage(swapChainExtent_.width, swapChainExtent_.height
-			, 1
-			, VK_SAMPLE_COUNT_1_BIT
-			, format
-			, VK_IMAGE_TILING_OPTIMAL
-			, VK_IMAGE_USAGE_SAMPLED_BIT 
-			| usage
-			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-			, allocatedImage.image
-			, allocatedImage.allocation
-		);
-
-		allocatedImage.imageView = Context.CreateImageView(allocatedImage.image
-			, format
-			, aspect
-			, 1
-		);
-	} };
-
 	depthFormat_ = FindDepthFormat();
 
 	for (auto& frameData : frameDatas_)
 	{
-		createImageAndImageView(frameData.colorTarget,	VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
-		createImageAndImageView(frameData.albedoTarget,	VK_FORMAT_R8G8B8A8_SRGB,		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
-		createImageAndImageView(frameData.normalTarget,	VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
-		createImageAndImageView(frameData.ormTarget,	VK_FORMAT_R8G8B8A8_UNORM,		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
-		createImageAndImageView(frameData.depthTarget,	depthFormat_,					VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,	VK_IMAGE_ASPECT_DEPTH_BIT);
+		CreateSampledImageAndImageView(frameData.colorTarget,	swapChainExtent_, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
+		CreateSampledImageAndImageView(frameData.albedoTarget,	swapChainExtent_, VK_FORMAT_R8G8B8A8_SRGB,			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
+		CreateSampledImageAndImageView(frameData.normalTarget,	swapChainExtent_, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
+		CreateSampledImageAndImageView(frameData.ormTarget,		swapChainExtent_, VK_FORMAT_R8G8B8A8_UNORM,			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
+		CreateSampledImageAndImageView(frameData.depthTarget,	swapChainExtent_, depthFormat_,						VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,	VK_IMAGE_ASPECT_DEPTH_BIT);
 	}
 }
 
@@ -442,7 +467,7 @@ VkFormat GRenderer::FindSupportedFormat(const std::span<VkFormat> candidates, co
 
 VkFormat GRenderer::FindDepthFormat() const
 {
-	std::vector<VkFormat> formats{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT };
+	std::array formats{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT };
 	return FindSupportedFormat(formats, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
 
@@ -633,7 +658,7 @@ void GRenderer::CmdUpdateClusterAABB(VkCommandBuffer commandBuffer, const u32 fr
 
 void GRenderer::CmdBarrierComputeFragmentReadToClearWrite(VkCommandBuffer commandBuffer) const
 {
-	cmdTransitionCompute(commandBuffer
+	CmdTransitionCompute(commandBuffer
 		, VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT
 		, VK_PIPELINE_STAGE_2_CLEAR_BIT
 		, VK_ACCESS_2_SHADER_READ_BIT
@@ -653,7 +678,7 @@ void GRenderer::CmdResetLightCounter(VkCommandBuffer commandBuffer) const
 
 void GRenderer::CmdBarrierComputeClearWriteToReadWrite(VkCommandBuffer commandBuffer) const
 {
-	cmdTransitionCompute(commandBuffer
+	CmdTransitionCompute(commandBuffer
 		, VK_PIPELINE_STAGE_2_TRANSFER_BIT
 		| VK_PIPELINE_STAGE_2_CLEAR_BIT
 		| VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT
@@ -677,7 +702,7 @@ void GRenderer::CmdDispatchLightBinning(VkCommandBuffer commandBuffer, const u32
 
 void GRenderer::CmdBarrierComputeWriteToFragmentRead(VkCommandBuffer commandBuffer) const
 {
-	cmdTransitionCompute(commandBuffer
+	CmdTransitionCompute(commandBuffer
 		, VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT
 		, VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT
 		, VK_ACCESS_2_SHADER_WRITE_BIT
@@ -687,7 +712,7 @@ void GRenderer::CmdBarrierComputeWriteToFragmentRead(VkCommandBuffer commandBuff
 
 void GRenderer::CmdBarrierDepthNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	cmdTransitionImages(commandBuffer
+	CmdTransitionImages(commandBuffer
 		, &frameDatas_[frameIndex].depthTarget.image, 1
 		, VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT
 		, VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT
@@ -747,7 +772,7 @@ void GRenderer::CmdDrawFrameDepthPrePass(VkCommandBuffer commandBuffer, const u3
 
 void GRenderer::CmdBarrierDepthWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	cmdTransitionImages(commandBuffer
+	CmdTransitionImages(commandBuffer
 		, &frameDatas_[frameIndex].depthTarget.image, 1
 		, VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT
 		| VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT
@@ -768,7 +793,7 @@ void GRenderer::CmdBarrierGBufferNoneToWrite(VkCommandBuffer commandBuffer, cons
 		frameDatas_[frameIndex].normalTarget.image,
 		frameDatas_[frameIndex].ormTarget.image,
 	};
-	cmdTransitionImages(commandBuffer
+	CmdTransitionImages(commandBuffer
 		, images.data(), 3
 		, VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
@@ -835,21 +860,17 @@ void GRenderer::CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 fra
 	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/gbuffer.kasset") })
 	{
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
-	}
-	else
-	{
-		return;
-	}
-
-	for (const auto* drawCall : drawCalls_)
-	{
-		if (drawCall->renderBucket != ERenderBucket::Opaque)
+		
+		for (const auto* drawCall : drawCalls_)
 		{
-			continue;
-		}
+			if (drawCall->renderBucket != ERenderBucket::Opaque)
+			{
+				continue;
+			}
 
-		CmdPushConstants(commandBuffer, drawCall, frameIndex);
-		CmdDraw(commandBuffer, drawCall);
+			CmdPushConstants(commandBuffer, drawCall, frameIndex);
+			CmdDraw(commandBuffer, drawCall);
+		}
 	}
 }
 
@@ -860,7 +881,7 @@ void GRenderer::CmdBarrierGBufferWriteToRead(VkCommandBuffer commandBuffer, cons
 		   frameDatas_[frameIndex].normalTarget.image,
 		   frameDatas_[frameIndex].ormTarget.image,
 	};
-	cmdTransitionImages(commandBuffer
+	CmdTransitionImages(commandBuffer
 		, images.data(), 3
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 		, VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT
@@ -874,7 +895,7 @@ void GRenderer::CmdBarrierGBufferWriteToRead(VkCommandBuffer commandBuffer, cons
 
 void GRenderer::CmdBarrierDepthReadToShaderRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	cmdTransitionImages(commandBuffer
+	CmdTransitionImages(commandBuffer
 		, &frameDatas_[frameIndex].depthTarget.image, 1
 		, VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT 
 		| VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT
@@ -889,7 +910,7 @@ void GRenderer::CmdBarrierDepthReadToShaderRead(VkCommandBuffer commandBuffer, c
 
 void GRenderer::CmdBarrierColorNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	cmdTransitionImages(commandBuffer
+	CmdTransitionImages(commandBuffer
 		, &frameDatas_[frameIndex].colorTarget.image, 1
 		, VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
@@ -937,7 +958,7 @@ void GRenderer::CmdDrawFrameDeferredLighting(VkCommandBuffer commandBuffer, cons
 
 void GRenderer::CmdBarrierColorWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	cmdTransitionImages(commandBuffer
+	CmdTransitionImages(commandBuffer
 		, &frameDatas_[frameIndex].colorTarget.image, 1
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 		, VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT
@@ -951,7 +972,7 @@ void GRenderer::CmdBarrierColorWriteToRead(VkCommandBuffer commandBuffer, const 
 
 void GRenderer::CmdBarrierSwapchainNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	cmdTransitionImages(commandBuffer
+	CmdTransitionImages(commandBuffer
 		, &swapChainDatas_[frameDatas_[frameIndex].imageIndex].image, 1
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 		| VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT
@@ -1002,7 +1023,7 @@ void GRenderer::CmdDrawFramePostProcess(VkCommandBuffer commandBuffer, const u32
 
 void GRenderer::CmdBarrierSwapchainWriteToPresent(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	cmdTransitionImages(commandBuffer
+	CmdTransitionImages(commandBuffer
 		, &swapChainDatas_[frameDatas_[frameIndex].imageIndex].image, 1
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 		, VK_PIPELINE_STAGE_2_NONE
@@ -1179,13 +1200,13 @@ void GRenderer::RecreateSwapChain()
 
 void GRenderer::CleanupSwapChain()
 {
-	for (auto& swapChainData : swapChainDatas_)
+	for (const auto& swapChainData : swapChainDatas_)
 	{
 		vkDestroyImageView(Context.GetDevice(), swapChainData.imageView, nullptr);
 	}
 	swapChainDatas_.clear();
 
-	for (auto& frameData : frameDatas_)
+	for (const auto& frameData : frameDatas_)
 	{
 		vkDestroyImageView(Context.GetDevice(), frameData.colorTarget.imageView, nullptr);
 		vmaDestroyImage(Context.GetAllocator(), frameData.colorTarget.image, frameData.colorTarget.allocation);

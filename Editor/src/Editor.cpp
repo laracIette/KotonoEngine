@@ -2,10 +2,10 @@
 #include "Camera.h"
 #include "MainWindow.h"
 #include "Visualizer.h"
+#include <kotono_interface/Interface.h>
 #include <kotono_platform/Window.h>
 #include <kotono_timing/Timer.h>
 #include <kotono_timing/TimerManager.h>
-#include <kotono_interface/Interface.h>
 
 void GEditor::Init()
 {
@@ -19,7 +19,6 @@ void GEditor::Init()
 	updateTimer.Start();
 
 	CreateWidget();
-
 	Window.GetEventWindowResized().AddListener(this, &GEditor::RefreshMainWindowWidget);
 }
 
@@ -31,9 +30,8 @@ void GEditor::Cleanup()
 {
 	Camera.Cleanup();
 
-	DeleteWidget();
-
 	Window.GetEventWindowResized().RemoveListener(this, &GEditor::RefreshMainWindowWidget);
+	DeleteWidget();
 }
 
 void GEditor::CreateWidget()

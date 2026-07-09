@@ -2,6 +2,11 @@
 #include <nlohmann/json.hpp>
 #include <kotono_common/Path.h>
 
+bool contains(const nlohmann::json& json, const std::string_view name)
+{
+    return json.contains(name);
+}
+
 nlohmann::json& get(nlohmann::json& json, const std::string_view name)
 {
     return json[name];

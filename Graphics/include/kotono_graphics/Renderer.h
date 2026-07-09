@@ -59,8 +59,16 @@ public:
 	VkImageView GetGBufferORMImageView(const u32 frameIndex) const;
 	VkImageView GetGBufferDepthImageView(const u32 frameIndex) const;
 	VkImageView GetColorTargetImageView(const u32 frameIndex) const;
+	
+	u32 RegisterDirectionalShadowMapTarget();
+	void UnregisterDirectionalShadowMapTarget(const u32 index);
+	VkImageView GetDirectionalShadowMapTargetImageView(const u32 index) const;
 
 private:
+	void CreateSampledImageAndImageView(AllocatedImage& allocatedImage, const VkExtent2D extent, const VkFormat format, const VkImageUsageFlagBits usage, const VkImageAspectFlagBits aspect) const;
+	void CmdTransitionImages(VkCommandBuffer commandBuffer, const VkImage* image, const u32 count, const VkPipelineStageFlags2 srcStage, const VkPipelineStageFlags2 dstStage, const VkAccessFlags2 srcAccess, const VkAccessFlags2 dstAccess, const VkImageLayout oldLayout, const VkImageLayout newLayout, const VkImageSubresourceRange subresourceRange) const;
+	void CmdTransitionCompute(VkCommandBuffer commandBuffer, const VkPipelineStageFlags2 srcStage, const VkPipelineStageFlags2 dstStage, const VkAccessFlags2 srcAccess, const VkAccessFlags2 dstAccess) const;
+
 	void CreateSwapChain();
 	void CleanupSwapChain();
 	void RecreateSwapChain();
@@ -144,6 +152,9 @@ private:
 	u32 frameCount_;
 
 	UPool<UDrawCall*> drawCalls_;
+
+	std::vector<AllocatedImage> directionalShadowMapTargets_;
+	std::vector<u32> freeDirectionalShadowMapSlots_;
 };
 
 inline GRenderer Renderer;

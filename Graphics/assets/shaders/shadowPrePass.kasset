@@ -1,7 +1,7 @@
 {
   "shaders": [
     {
-      "path": "${ENGINE_DIRECTORY}/Graphics/shaders/vert/depthPrePass.vert.spv",
+      "path": "${ENGINE_DIRECTORY}/Graphics/shaders/vert/shadowPrePass.vert.spv",
       "shaderStage": 1
     }
   ],
@@ -12,10 +12,10 @@
     "lineWidth": 1.0,
     "cullMode": 2,
     "frontFace": 0,
-    "depthBiasEnable": false,
-    "depthBiasConstantFactor": 0.0,
+    "depthBiasEnable": true,
+    "depthBiasConstantFactor": -1.25,
     "depthBiasClamp": 0.0,
-    "depthBiasSlopeFactor": 0.0
+    "depthBiasSlopeFactor": -1.75
   },
   "multisampling": {
     "useMSAASamples": false,
@@ -35,5 +35,5 @@
     "stencilTestEnable": false
   },
   "colorBlendAttachments": [],
-  "pipelinePass": 2
+  "pipelinePass": 1
 }
