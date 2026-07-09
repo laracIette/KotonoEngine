@@ -1,5 +1,6 @@
 #pragma once
 #include "AllocatedBuffer.h"
+#include "AllocatedImage.h"
 #include "QueueFamilyIndices.h"
 #include "SwapChainSupportDetails.h"
 #include <kotono_common/Event.h>
@@ -30,6 +31,7 @@ public:
 	void CopyBufferToImage(VkBuffer buffer, VkImage image, u32 width, u32 height);
 	void GenerateMipmaps(VkImage image, VkFormat imageFormat, i32 texWidth, i32 texHeight, u32 mipLevels);
 	VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, u32 mipLevels) const;
+	void CreateSampledImageAndImageView(UAllocatedImage& allocatedImage, const VkExtent2D extent, const VkFormat format, const VkImageUsageFlagBits usage, const VkImageAspectFlagBits aspect) const;
 	KtQueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const;
 	KtSwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
 

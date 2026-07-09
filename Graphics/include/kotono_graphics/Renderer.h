@@ -1,6 +1,7 @@
 #pragma once
 #include "frames_in_flight.h"
 #include <kotono_common/Pool.h>
+#include <kotono_platform/AllocatedImage.h>
 #include <span>
 #include <thread>
 #include <vector>
@@ -18,26 +19,22 @@ public:
 		VkImageView imageView;
 	};
 
-	struct AllocatedImage
-	{
-		VkImage image;
-		VmaAllocation allocation;
-		VkImageView imageView;
-	};
-
 	struct FrameData
 	{
-		VkCommandPool commandPool;
+		VkCommandPool	commandPool;
 		VkCommandBuffer commandBuffer;
+
 		VkSemaphore imageAvailableSemaphore;
 		VkSemaphore renderFinishedSemaphore;
-		AllocatedImage colorTarget;
-		AllocatedImage albedoTarget;
-		AllocatedImage normalTarget;
-		AllocatedImage ormTarget;
-		AllocatedImage depthTarget;
+
 		VkFence inFlightFence;
-		u32 imageIndex;
+		u32		imageIndex;
+
+		UAllocatedImage colorTarget;
+		UAllocatedImage albedoTarget;
+		UAllocatedImage normalTarget;
+		UAllocatedImage ormTarget;
+		UAllocatedImage depthTarget;
 	};
 
 private:
@@ -59,13 +56,8 @@ public:
 	VkImageView GetGBufferORMImageView(const u32 frameIndex) const;
 	VkImageView GetGBufferDepthImageView(const u32 frameIndex) const;
 	VkImageView GetColorTargetImageView(const u32 frameIndex) const;
-	
-	u32 RegisterDirectionalShadowMapTarget();
-	void UnregisterDirectionalShadowMapTarget(const u32 index);
-	VkImageView GetDirectionalShadowMapTargetImageView(const u32 index) const;
 
 private:
-	void CreateSampledImageAndImageView(AllocatedImage& allocatedImage, const VkExtent2D extent, const VkFormat format, const VkImageUsageFlagBits usage, const VkImageAspectFlagBits aspect) const;
 	void CmdTransitionImages(VkCommandBuffer commandBuffer, const VkImage* image, const u32 count, const VkPipelineStageFlags2 srcStage, const VkPipelineStageFlags2 dstStage, const VkAccessFlags2 srcAccess, const VkAccessFlags2 dstAccess, const VkImageLayout oldLayout, const VkImageLayout newLayout, const VkImageSubresourceRange subresourceRange) const;
 	void CmdTransitionCompute(VkCommandBuffer commandBuffer, const VkPipelineStageFlags2 srcStage, const VkPipelineStageFlags2 dstStage, const VkAccessFlags2 srcAccess, const VkAccessFlags2 dstAccess) const;
 
@@ -98,17 +90,17 @@ private:
 	void CmdDispatchLightBinning(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBarrierComputeWriteToFragmentRead(VkCommandBuffer commandBuffer) const;
 	
-	
 	void CmdBarrierDepthNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBeginRenderingDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdDrawFrameDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
-	void CmdBarrierDepthWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	
+	void CmdBarrierDepthWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBarrierGBufferNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBarrierGBufferWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 
+	void CmdBarrierShadowMapWriteToShaderRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBarrierDepthReadToShaderRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBarrierColorNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBeginRenderingDeferredLighting(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
@@ -152,9 +144,6 @@ private:
 	u32 frameCount_;
 
 	UPool<UDrawCall*> drawCalls_;
-
-	std::vector<AllocatedImage> directionalShadowMapTargets_;
-	std::vector<u32> freeDirectionalShadowMapSlots_;
 };
 
 inline GRenderer Renderer;

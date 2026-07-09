@@ -53,12 +53,6 @@ void GRenderer::Cleanup()
 
 	CleanupSwapChain();
 
-	for (const auto& shadowMapTarget : directionalShadowMapTargets_)
-	{
-		vkDestroyImageView(Context.GetDevice(), shadowMapTarget.imageView, nullptr);
-		vmaDestroyImage(Context.GetAllocator(), shadowMapTarget.image, shadowMapTarget.allocation);
-	}
-
 	for (const auto& frameData : frameDatas_)
 	{
 		vkDestroySemaphore(Context.GetDevice(), frameData.renderFinishedSemaphore, nullptr);
@@ -79,6 +73,7 @@ void GRenderer::DrawFrame()
 	DrawDataBuffer.UpdateBuffer(frameIndex);
 	TransformBuffer.UpdateBuffer(frameIndex);
 	ParametersBuffer.UpdateBuffer(frameIndex);
+	LightBuffers.UpdateBuffers(frameIndex);
 
 	if constexpr (IS_MULTI_THREADED)
 	{
@@ -178,65 +173,6 @@ VkImageView GRenderer::GetGBufferDepthImageView(const u32 frameIndex) const
 VkImageView GRenderer::GetColorTargetImageView(const u32 frameIndex) const
 {
 	return frameDatas_[frameIndex].colorTarget.imageView;
-}
-
-u32 GRenderer::RegisterDirectionalShadowMapTarget()
-{
-	constexpr u32 SHADOW_MAP_RESOLUTION{ 2048 };
-
-	if (!freeDirectionalShadowMapSlots_.empty())
-	{
-		const auto index{ freeDirectionalShadowMapSlots_.back() };
-		freeDirectionalShadowMapSlots_.pop_back();
-		return index;
-	}
-
-	AllocatedImage shadowMapTarget;
-	CreateSampledImageAndImageView(shadowMapTarget
-		, { SHADOW_MAP_RESOLUTION , SHADOW_MAP_RESOLUTION }
-		, depthFormat_
-		, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
-		, VK_IMAGE_ASPECT_DEPTH_BIT
-	);
-
-	const auto index{ static_cast<u32>(directionalShadowMapTargets_.size()) };
-	directionalShadowMapTargets_.push_back(shadowMapTarget);
-	return index;
-}
-
-void GRenderer::UnregisterDirectionalShadowMapTarget(const u32 index)
-{
-	freeDirectionalShadowMapSlots_.push_back(index); // todo: make better, needs freeSlots check for each shadow map render
-}
-
-VkImageView GRenderer::GetDirectionalShadowMapTargetImageView(const u32 index) const
-{
-	return directionalShadowMapTargets_[index].imageView;
-}
-
-void GRenderer::CreateSampledImageAndImageView(AllocatedImage& allocatedImage
-	, const VkExtent2D extent
-	, const VkFormat format
-	, const VkImageUsageFlagBits usage
-	, const VkImageAspectFlagBits aspect) const
-{
-	Context.CreateImage(extent.width, extent.height
-		, 1
-		, VK_SAMPLE_COUNT_1_BIT
-		, format
-		, VK_IMAGE_TILING_OPTIMAL
-		, VK_IMAGE_USAGE_SAMPLED_BIT
-		| usage
-		, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-		, allocatedImage.image
-		, allocatedImage.allocation
-	);
-
-	allocatedImage.imageView = Context.CreateImageView(allocatedImage.image
-		, format
-		, aspect
-		, 1
-	);
 }
 
 void GRenderer::CmdTransitionImages(VkCommandBuffer commandBuffer
@@ -437,11 +373,11 @@ void GRenderer::CreateImageResources()
 
 	for (auto& frameData : frameDatas_)
 	{
-		CreateSampledImageAndImageView(frameData.colorTarget,	swapChainExtent_, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
-		CreateSampledImageAndImageView(frameData.albedoTarget,	swapChainExtent_, VK_FORMAT_R8G8B8A8_SRGB,			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
-		CreateSampledImageAndImageView(frameData.normalTarget,	swapChainExtent_, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
-		CreateSampledImageAndImageView(frameData.ormTarget,		swapChainExtent_, VK_FORMAT_R8G8B8A8_UNORM,			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
-		CreateSampledImageAndImageView(frameData.depthTarget,	swapChainExtent_, depthFormat_,						VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,	VK_IMAGE_ASPECT_DEPTH_BIT);
+		Context.CreateSampledImageAndImageView(frameData.colorTarget,	swapChainExtent_, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
+		Context.CreateSampledImageAndImageView(frameData.albedoTarget,	swapChainExtent_, VK_FORMAT_R8G8B8A8_SRGB,			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
+		Context.CreateSampledImageAndImageView(frameData.normalTarget,	swapChainExtent_, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
+		Context.CreateSampledImageAndImageView(frameData.ormTarget,		swapChainExtent_, VK_FORMAT_R8G8B8A8_UNORM,			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
+		Context.CreateSampledImageAndImageView(frameData.depthTarget,	swapChainExtent_, depthFormat_,						VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,	VK_IMAGE_ASPECT_DEPTH_BIT);
 	}
 }
 
@@ -578,7 +514,7 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 		CmdUpdateClusterAABB(commandBuffer, frameIndex);
 	}
 
-	// Compute light binning 
+	// Light binning 
 	// - Wait for fill buffer command to be executable
 	CmdBarrierComputeFragmentReadToClearWrite(commandBuffer);
 	// - Atomic reset light counter to 0
@@ -590,6 +526,8 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 	// - Make light binning accessible to fragment
 	CmdBarrierComputeWriteToFragmentRead(commandBuffer);
 
+	// Shadow-maps
+
 	// Depth pre-pass
 	// - Make depth writable
 	CmdBarrierDepthNoneToWrite(commandBuffer, frameIndex);
@@ -597,10 +535,10 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 	CmdBeginRenderingDepthPrePass(commandBuffer, frameIndex);
 	CmdDrawFrameDepthPrePass(commandBuffer, frameIndex);
 	CmdEndRendering(commandBuffer);
-	// - Make depth readable
-	CmdBarrierDepthWriteToRead(commandBuffer, frameIndex);
 
 	// G-Buffer
+	// - Make depth readable
+	CmdBarrierDepthWriteToRead(commandBuffer, frameIndex);
 	// - Make G-Buffer writable
 	CmdBarrierGBufferNoneToWrite(commandBuffer, frameIndex);
 	// - Write G-Buffer
@@ -611,6 +549,8 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 	CmdBarrierGBufferWriteToRead(commandBuffer, frameIndex);
 
 	// Deferred lighting
+	// - Make shadow-maps shader-readable
+	CmdBarrierShadowMapWriteToShaderRead(commandBuffer, frameIndex);
 	// - Make depth shader-readable (reconstruct world pos)
 	CmdBarrierDepthReadToShaderRead(commandBuffer, frameIndex);
 	// - Make color target writable
@@ -877,9 +817,9 @@ void GRenderer::CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 fra
 void GRenderer::CmdBarrierGBufferWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	const std::array images{
-		   frameDatas_[frameIndex].albedoTarget.image,
-		   frameDatas_[frameIndex].normalTarget.image,
-		   frameDatas_[frameIndex].ormTarget.image,
+		frameDatas_[frameIndex].albedoTarget.image,
+		frameDatas_[frameIndex].normalTarget.image,
+		frameDatas_[frameIndex].ormTarget.image,
 	};
 	CmdTransitionImages(commandBuffer
 		, images.data(), 3
@@ -892,6 +832,9 @@ void GRenderer::CmdBarrierGBufferWriteToRead(VkCommandBuffer commandBuffer, cons
 		, { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 }
 	);
 }
+
+void GRenderer::CmdBarrierShadowMapWriteToShaderRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{}
 
 void GRenderer::CmdBarrierDepthReadToShaderRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {

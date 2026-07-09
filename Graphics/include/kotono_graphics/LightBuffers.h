@@ -1,39 +1,70 @@
 #pragma once
+#include "frames_in_flight.h"
 #include "Lights.h"
 #include <kotono_common/types.h>
+#include <kotono_platform/AllocatedImage.h>
+#include <vector>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
 class GLightBuffers final
 {
 public:
+	struct ShadowMapTarget
+	{
+		UAllocatedImage allocatedImage;
+		u32 textureIndex;
+	};
+
 	struct LightBuffer
 	{
 		VkBuffer buffer;
 		VmaAllocation allocation;
+		void* mapped;
 		VkDeviceAddress bda;
-		u32 count;
+	};
+	
+	struct FrameData
+	{
+		LightBuffer directionalLightBuffer;
+		std::vector<ShadowMapTarget> directionalLightShadowMapTargets;
+
+		LightBuffer pointLightBuffer;
+	};
+
+	struct DirectionalLightData
+	{
+		glm::vec3 direction;
+		glm::vec3 color;
+		f32 intensity;
+		bool castShadow;
+		glm::mat4 lightViewProj;
 	};
 
 public:
 	void Init();
 	void Cleanup() const;
 
-	u32 RegisterDirectionalLight(const UDirectionalLight& directionalLight);
-	u32 RegisterPointLight(const UPointLight& pointLight);
+	void RegisterDirectionalLight(const DirectionalLightData& directionalLight);
+	void RegisterPointLight(const UPointLight& pointLight);
 
-	VkDeviceAddress GetDirectionalLightAddress() const;
-	VkDeviceAddress GetPointLightAddress() const;
+	void UpdateBuffers(const u32 frameIndex);
+
+	VkDeviceAddress GetDirectionalLightAddress(const u32 frameIndex) const;
+	VkDeviceAddress GetPointLightAddress(const u32 frameIndex) const;
 
 	u32 GetDirectionalLightCount() const;
 	u32 GetPointLightCount() const;
 
 private:
+	void CreateBuffers();
 	void CreateBuffer(LightBuffer& lightBuffer, const VkDeviceSize size);
-	u32 Register(LightBuffer& lightBuffer, const void* data, const VkDeviceSize size, const u32 maxCount);
+	void CreateShadowMapResources();
 
 private:
-	LightBuffer directionalLightBuffer_;
-	LightBuffer pointLightBuffer_;
+	UFramesInFlightArray<FrameData> frameDatas_;
+
+	std::vector<UDirectionalLight> directionalLights_;
+	std::vector<UPointLight> pointLights_;
 };
 
 inline GLightBuffers LightBuffers;

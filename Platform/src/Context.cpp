@@ -1023,6 +1023,31 @@ VkImageView GContext::CreateImageView(VkImage image, VkFormat format, VkImageAsp
 	return imageView;
 }
 
+void GContext::CreateSampledImageAndImageView(UAllocatedImage& allocatedImage
+	, const VkExtent2D extent
+	, const VkFormat format
+	, const VkImageUsageFlagBits usage
+	, const VkImageAspectFlagBits aspect) const
+{
+	CreateImage(extent.width, extent.height
+		, 1
+		, VK_SAMPLE_COUNT_1_BIT
+		, format
+		, VK_IMAGE_TILING_OPTIMAL
+		, VK_IMAGE_USAGE_SAMPLED_BIT
+		| usage
+		, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+		, allocatedImage.image
+		, allocatedImage.allocation
+	);
+
+	allocatedImage.imageView = CreateImageView(allocatedImage.image
+		, format
+		, aspect
+		, 1
+	);
+}
+
 void GContext::GenerateMipmaps(VkImage image, VkFormat imageFormat, i32 texWidth, i32 texHeight, u32 mipLevels)
 {
 	VkFormatProperties formatProperties;

@@ -55,8 +55,8 @@ void GFrameContextBuffer::UpdateBuffer(const u32 frameIndex)
         .transformBufferAddress = TransformBuffer.GetAddress(frameIndex),
         .parametersBufferAddress = ParametersBuffer.GetAddress(frameIndex),
 
-        .directionalLightBufferAdress = LightBuffers.GetDirectionalLightAddress(),
-        .pointLightBufferAddress = LightBuffers.GetPointLightAddress(),
+        .directionalLightBufferAdress = LightBuffers.GetDirectionalLightAddress(frameIndex),
+        .pointLightBufferAddress = LightBuffers.GetPointLightAddress(frameIndex),
         .directionalLightCount = LightBuffers.GetDirectionalLightCount(),
         .pointLightCount = LightBuffers.GetPointLightCount(),
 

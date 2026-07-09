@@ -18,5 +18,4 @@ public:
 private:
 	SERIALIZE ReadonlyProperty(UColor, color_, Color);
 	SERIALIZE ReadonlyProperty(f32, intensity_, Intensity);
-	u32 shadowMap_;
 };
