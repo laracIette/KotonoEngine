@@ -2,7 +2,6 @@
 #include <kotono_common/types.h>
 #include <vector>
 #include <vulkan/vulkan_core.h>
-
 struct UPushConstants
 {
 	VkDeviceAddress frameContextBufferAddress;
@@ -10,7 +9,6 @@ struct UPushConstants
 	u32 drawIndex;
 	u32 directionalIndex;
 };
-
 class GPipelineResourceManager final
 {
 public:

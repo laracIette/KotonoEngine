@@ -1,13 +1,18 @@
 #include "LightBuffers.h"
 #include <kotono_common/AssetManager.h>
+#include <kotono_common/log.h>
 #include <kotono_graphics/PipelineResourceManager.h>
 #include <kotono_graphics/Renderer.h>
 #include <kotono_graphics/Sampler.h>
 #include <kotono_platform/Context.h>
 #include <kotono_platform/vk_utils.h>
+#include <ranges>
+
+#include "Camera.h"
 
 static constexpr u32 MAX_DIRECTIONAL_LIGHTS{ 16 };
 static constexpr u32 MAX_POINT_LIGHTS{ 1024 };
+static constexpr u32 SHADOW_MAP_RESOLUTION{ 1024 }; // todo: make variable
 
 void GLightBuffers::Init()
 {
@@ -35,7 +40,7 @@ void GLightBuffers::RegisterDirectionalLight(const DirectionalLightData& directi
     static UAsset sampler{ SAssetManager<USampler>::Get("${ENGINE_DIRECTORY}/Graphics/assets/samplers/shadow.kasset") };
     if (!sampler)
     {
-        return;
+        KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Graphics", "couldn't load sampler {0}", sampler.Path().ToString());
     }
 
     directionalLights_.push_back({
@@ -93,6 +98,77 @@ u32 GLightBuffers::GetPointLightCount() const
     return pointLights_.size();
 }
 
+void GLightBuffers::CmdBarrierShadowMapsNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+    const auto images{ frameDatas_[frameIndex].directionalLightShadowMapTargets
+        | std::views::transform(&ShadowMapTarget::allocatedImage)
+        | std::views::transform(&UAllocatedImage::image)
+        | std::ranges::to<std::vector>()
+    };
+
+    Renderer.CmdTransitionImages(commandBuffer
+        , images.data(), images.size()
+        , VK_PIPELINE_STAGE_2_NONE // top of pipe ?
+        , VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT 
+        | VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT
+        , VK_ACCESS_2_NONE
+        , VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
+        , VK_IMAGE_LAYOUT_UNDEFINED
+        , VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL
+        , { VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1 }
+    );
+}
+
+void GLightBuffers::CmdBeginRenderingShadowMapTarget(VkCommandBuffer commandBuffer, const u32 index, const u32 frameIndex) const
+{
+    const auto& shadowMapTarget{ frameDatas_[frameIndex].directionalLightShadowMapTargets[index] };
+    
+    const VkRenderingAttachmentInfo depthAttachment{
+        .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+
+        .imageView = shadowMapTarget.allocatedImage.imageView,
+        .imageLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
+
+        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+        .clearValue{
+            .depthStencil = { 0.0f, 0 }, // 0.0f instead of 1.0f because of reverse depth
+        },
+    };
+    const VkRenderingInfo renderInfo{
+        .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
+        .renderArea{
+            .offset = { 0, 0 },
+            .extent = { SHADOW_MAP_RESOLUTION, SHADOW_MAP_RESOLUTION },
+        },
+        .layerCount = 1,
+        .colorAttachmentCount = 0,
+        .pDepthAttachment = &depthAttachment,
+    };
+    vkCmdBeginRendering(commandBuffer, &renderInfo);
+}
+
+void GLightBuffers::CmdBarrierShadowMapsWriteToShaderRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+    const auto images{ frameDatas_[frameIndex].directionalLightShadowMapTargets
+        | std::views::transform(&ShadowMapTarget::allocatedImage)
+        | std::views::transform(&UAllocatedImage::image)
+        | std::ranges::to<std::vector>()
+    };
+
+    Renderer.CmdTransitionImages(commandBuffer
+        , images.data(), images.size()
+        , VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT
+        | VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT
+        , VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT
+        , VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
+        , VK_ACCESS_2_SHADER_SAMPLED_READ_BIT
+        , VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL
+        , VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL
+        , { VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1 }
+    );
+}
+
 void GLightBuffers::CreateBuffers()
 {
     for (auto& frameData : frameDatas_)
@@ -108,12 +184,12 @@ void GLightBuffers::CreateBuffer(LightBuffer& lightBuffer, const VkDeviceSize si
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
         .size = size,
         .usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
-            | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
-            | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+               | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
     };
+
     const VmaAllocationCreateInfo allocInfo{
         .flags = VMA_ALLOCATION_CREATE_MAPPED_BIT
-                | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
+               | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
         .usage = VMA_MEMORY_USAGE_AUTO
     };
 
@@ -139,8 +215,6 @@ void GLightBuffers::CreateBuffer(LightBuffer& lightBuffer, const VkDeviceSize si
 
 void GLightBuffers::CreateShadowMapResources()
 {
-    constexpr u32 SHADOW_MAP_RESOLUTION{ 1024 };
-
     for (auto& frameData : frameDatas_)
     {
         frameData.directionalLightShadowMapTargets.resize(MAX_DIRECTIONAL_LIGHTS);

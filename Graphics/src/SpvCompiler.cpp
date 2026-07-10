@@ -139,7 +139,12 @@ bool SSpvCompiler::DependenciesUpdated()
 bool SSpvCompiler::Compile(const std::filesystem::path& path)
 {
     // user must have vulkan bin in environment variables path
-    const auto command{ std::format("glslc \"{0}\" -o \"{0}\".spv", path.string()) };
+    std::string command;
+#ifdef NDEBUG
+    command = std::format("glslc \"{0}\" -o \"{0}\".spv", path.string());
+#else
+    command = std::format("glslc \"{0}\" -o \"{0}\".spv -g", path.string());
+#endif
     const bool result{ std::system(command.c_str()) == 0 };
 
     if (result)

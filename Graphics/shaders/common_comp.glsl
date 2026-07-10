@@ -3,6 +3,7 @@
 // Helpers
 #define UNPACK_PUSH_CONSTANTS                                \
     FrameContext    frame           = pc.frameContext.data;  \
+    float           time            = frame.time;            \
     PointLightBuf   pointLights     = frame.pointLights;     \
     uint            pointLightCount = frame.pointLightCount; \
     ClusterAABBBuf  clusterAABBs    = frame.clusterAABBs;    \

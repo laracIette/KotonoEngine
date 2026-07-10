@@ -505,7 +505,6 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 	BeginCommandBuffer(commandBuffer);
 
 	PipelineResourceManager.CmdBindDescriptorSet(commandBuffer);
-	WindowViewport.CmdUse(commandBuffer);
 
 	static bool isClusterAABBDirty{ true };
 	if (isClusterAABBDirty)
@@ -527,6 +526,12 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 	CmdBarrierComputeWriteToFragmentRead(commandBuffer);
 
 	// Shadow-maps
+	// - Make shadow maps writable
+	LightBuffers.CmdBarrierShadowMapsNoneToWrite(commandBuffer, frameIndex);
+	// - Generate shadow-maps
+	CmdDrawFrameShadowMaps(commandBuffer, frameIndex);
+
+	WindowViewport.CmdUse(commandBuffer);
 
 	// Depth pre-pass
 	// - Make depth writable
@@ -550,7 +555,7 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 
 	// Deferred lighting
 	// - Make shadow-maps shader-readable
-	CmdBarrierShadowMapWriteToShaderRead(commandBuffer, frameIndex);
+	LightBuffers.CmdBarrierShadowMapsWriteToShaderRead(commandBuffer, frameIndex);
 	// - Make depth shader-readable (reconstruct world pos)
 	CmdBarrierDepthReadToShaderRead(commandBuffer, frameIndex);
 	// - Make color target writable
@@ -648,6 +653,72 @@ void GRenderer::CmdBarrierComputeWriteToFragmentRead(VkCommandBuffer commandBuff
 		, VK_ACCESS_2_SHADER_WRITE_BIT
 		, VK_ACCESS_2_SHADER_READ_BIT
 	);
+}
+
+void GRenderer::CmdDrawFrameShadowMaps(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	static UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/shadowPrePass.kasset") };
+	if (!shader)
+	{
+		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Graphics", "couldn't load shader {0}", shader.Path().ToString());
+	}
+
+	const VkRect2D scissor{
+		.offset = { 0, 0 },
+		.extent = { 1024, 1024 },
+	};
+	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+	const VkViewport viewport{
+		.x = 0.0f,
+		.y = 0.0f,
+		.width = 1024.0f,
+		.height = 1024.0f,
+		.minDepth = 0.0f,
+		.maxDepth = 1.0f,
+	};
+	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
+
+	for (u32 i{ 0 }; i < LightBuffers.GetDirectionalLightCount(); ++i)
+	{
+		LightBuffers.CmdBeginRenderingShadowMapTarget(commandBuffer, i, frameIndex);
+		// todo: add cast shadow check
+		for (const auto* drawCall : drawCalls_)
+		{
+			if (drawCall->renderBucket != ERenderBucket::Opaque)
+			{
+				continue;
+			}
+
+			const UPushConstants pc{
+				.frameContextBufferAddress = FrameContextBuffer.GetAddress(frameIndex),
+				.vertexBufferAddress = drawCall->vertexBufferAdress,
+				.drawIndex = drawCall->index,
+				.directionalIndex = i,
+			};
+
+			vkCmdPushConstants(commandBuffer
+				, PipelineResourceManager.GetPipelineLayout()
+				, VK_SHADER_STAGE_ALL
+				, 0
+				, sizeof(UPushConstants)
+				, &pc
+			);
+
+			vkCmdBindIndexBuffer(commandBuffer, drawCall->indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+			vkCmdDrawIndexed(commandBuffer
+				, drawCall->indexCount
+				, 1
+				, drawCall->firstIndex
+				, 0
+				, 0
+			);
+		}
+
+		CmdEndRendering(commandBuffer);
+	}
 }
 
 void GRenderer::CmdBarrierDepthNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
@@ -833,9 +904,6 @@ void GRenderer::CmdBarrierGBufferWriteToRead(VkCommandBuffer commandBuffer, cons
 	);
 }
 
-void GRenderer::CmdBarrierShadowMapWriteToShaderRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
-{}
-
 void GRenderer::CmdBarrierDepthReadToShaderRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	CmdTransitionImages(commandBuffer
@@ -984,6 +1052,7 @@ void GRenderer::CmdPushConstants(VkCommandBuffer commandBuffer, const UDrawCall*
 		.frameContextBufferAddress = FrameContextBuffer.GetAddress(frameIndex),
 		.vertexBufferAddress = drawCall ? drawCall->vertexBufferAdress : 0,
 		.drawIndex = drawCall ? drawCall->index : 0,
+		.directionalIndex = 0,
 	};
 
 	vkCmdPushConstants(commandBuffer

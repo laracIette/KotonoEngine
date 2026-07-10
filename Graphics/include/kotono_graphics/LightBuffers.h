@@ -55,6 +55,10 @@ public:
 	u32 GetDirectionalLightCount() const;
 	u32 GetPointLightCount() const;
 
+	void CmdBarrierShadowMapsNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	void CmdBeginRenderingShadowMapTarget(VkCommandBuffer commandBuffer, const u32 index, const u32 frameIndex) const;
+	void CmdBarrierShadowMapsWriteToShaderRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+
 private:
 	void CreateBuffers();
 	void CreateBuffer(LightBuffer& lightBuffer, const VkDeviceSize size);

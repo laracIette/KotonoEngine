@@ -1,8 +1,11 @@
 #pragma once
 #include <array>
-#include <glm/vec3.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
 #include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
 #include <kotono_common/types.h>
+
 inline constexpr glm::vec3 WorldRightVector{ 1.0f, 0.0f, 0.0f };
 inline constexpr glm::vec3 WorldUpVector{ 0.0f, 1.0f, 0.0f };
 inline constexpr glm::vec3 WorldForwardVector{ 0.0f, 0.0f, -1.0f };
@@ -21,67 +24,87 @@ inline glm::mat4 calculate_reverse_z_infinite_perspective(const f32 fovY, const 
     return result;
 }
 
-inline std::array<glm::vec4, 8> get_frustum_corners_world_space(const glm::mat4& proj, const glm::mat4& view)
+inline std::array<glm::vec3, 8> get_frustum_corners_world_space(const glm::mat4& proj, const glm::mat4& view)
 {
-    const auto inv{ glm::inverse(proj * view) };
+    std::array<glm::vec3, 8> corners{};
 
-    std::array<glm::vec4, 8> frustumCorners{};
-    size index{ 0 };
-    for (u32 x{ 0 }; x < 2; ++x)
+    // pass as args
+    const f32 zNear{ 0.1f };
+    const f32 zFar{ 2.0f }; // todo: sync with shader ?
+    const f32 fovYRadians{ 90.0f };
+    const f32 aspect{ 16.0f / 9.0f };
+
+    // Half-dimensions of the near and far planes in view space
+    const f32 tanHalfFOV{ std::tan(fovYRadians * 0.5f) };
+
+    const f32 nearHeight{ zNear * tanHalfFOV };
+    const f32 nearWidth{ nearHeight * aspect };
+
+    const f32 farHeight{ zFar * tanHalfFOV };
+    const f32 farWidth{ farHeight * aspect };
+
+    // Define the 8 corners in view space
+    // - Near plane corners
+    corners[0] = { -nearWidth, -nearHeight, zNear };
+    corners[1] = { nearWidth, -nearHeight, zNear };
+    corners[2] = { -nearWidth, nearHeight, zNear };
+    corners[3] = { nearWidth, nearHeight, zNear };
+    // - Far plane corners
+    corners[4] = { -farWidth, -farHeight, zFar };
+    corners[5] = { farWidth, -farHeight, zFar };
+    corners[6] = { -farWidth, farHeight, zFar };
+    corners[7] = { farWidth, farHeight, zFar };
+
+    // Transform the view space corners into world space
+    const glm::mat4 invView{ glm::inverse(view) };
+    for (auto& corner : corners)
     {
-        for (u32 y{ 0 }; y < 2; ++y)
-        {
-            for (u32 z{ 0 }; z < 2; ++z)
-            {
-                // NDC coordinates range from -1 to 1
-                const glm::vec4 pt{ 
-                    inv * glm::vec4{
-                        2.0f * x - 1.0f,
-                        2.0f * y - 1.0f,
-                        2.0f * z - 1.0f,
-                        1.0f
-                    } 
-                };
-
-                // Perspective divide is crucial here!
-                frustumCorners[index++] = pt / pt.w;
-            }
-        }
+        const glm::vec4 worldPos{ invView * glm::vec4{ corner, 1.0f} };
+        corner = glm::vec3{ worldPos };
     }
 
-    return frustumCorners;
+    return corners;
 }
 
 inline glm::mat4 get_light_space_matrix(const glm::mat4& cameraProj, const glm::mat4& cameraView, const glm::vec3& lightDir)
 {
     const auto corners{ get_frustum_corners_world_space(cameraProj, cameraView) };
-    
-    // Find the center of the frustum
-    glm::vec3 center{ 0, 0, 0 };
+
+    // Calculate the geometric center of the camera frustum
+    glm::vec3 center{ 0.0f };
     for (const auto& v : corners)
     {
-        center += glm::vec3{ v };
+        center += v;
     }
-    center /= corners.size();
+    center /= static_cast<f32>(corners.size());
 
-    // Create the Light View Matrix
+    const glm::vec3 normLightDir{ glm::normalize(lightDir) };
+
+    // Fix parallel vector (normalize(0) == NaN)
+    glm::vec3 safeUp{ WorldUpVector };
+    if (std::abs(glm::dot(normLightDir, WorldUpVector)) > 0.999f)
+    {
+        // If the light matches your WorldUp vector, fallback to an alternate axis
+        safeUp = (std::abs(WorldUpVector.z) > 0.9f) ? glm::vec3{ 0.0f, 1.0f, 0.0f } : glm::vec3{ 0.0f, 0.0f, 1.0f };
+    }
+
+    // Create Left-Handed Light View Matrix
     const glm::mat4 lightView{ glm::lookAt(
-        center - (glm::normalize(lightDir) * 1.0f), // Arbitrary step back to position outside of scene, scale doesn't matter yet
+        center - normLightDir,
         center,
-        WorldUpVector
+        safeUp
     ) };
 
-    // Transform corners to Light Space and find min/max boundaries
+    // Transform corners into Light View Space and find the AABB bounds
     f32 minX{ std::numeric_limits<f32>::max() };
     f32 maxX{ std::numeric_limits<f32>::lowest() };
     f32 minY{ std::numeric_limits<f32>::max() };
     f32 maxY{ std::numeric_limits<f32>::lowest() };
     f32 minZ{ std::numeric_limits<f32>::max() };
     f32 maxZ{ std::numeric_limits<f32>::lowest() };
-
     for (const auto& v : corners)
     {
-        const auto trf{ lightView * v };
+        const glm::vec4 trf{ lightView * glm::vec4{ v, 1.0f } };
         minX = std::min(minX, trf.x);
         maxX = std::max(maxX, trf.x);
         minY = std::min(minY, trf.y);
@@ -90,29 +113,13 @@ inline glm::mat4 get_light_space_matrix(const glm::mat4& cameraProj, const glm::
         maxZ = std::max(maxZ, trf.z);
     }
 
-    // Extend the Z-bounds to capture objects behind the camera (objects slightly off-camera cast shadows)
-    constexpr f32 Z_MULTIPLIER{ 10.0f };
+    // Allow geometry slightly off camera to cast shadows
+    constexpr f32 Z_PADDING{ 5.0f };
+    f32 nearDistance = minZ - Z_PADDING;
+    f32 farDistance = maxZ + Z_PADDING;
 
-    if (minZ < 0)
-    {
-        minZ *= Z_MULTIPLIER;
-    }
-    else
-    {
-        minZ /= Z_MULTIPLIER;
-    }
-    if (maxZ < 0)
-    {
-        maxZ /= Z_MULTIPLIER;
-    }
-    else
-    {
-        maxZ *= Z_MULTIPLIER;
-    }
+    // Reverse Y and reverse Z 
+    const glm::mat4 lightProjection{ glm::ortho(minX, maxX, maxY, minY, farDistance, nearDistance) };
 
-    // 6. Create the Orthographic Projection Matrix
-    const glm::mat4 lightProjection{ glm::ortho(minX, maxX, minY, maxY, minZ, maxZ) };
-
-    // 7. Combine and return
     return lightProjection * lightView;
 }

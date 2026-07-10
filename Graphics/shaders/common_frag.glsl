@@ -17,6 +17,7 @@ layout(location = 0) out vec4 outColor;
 // Helpers
 #define UNPACK_PUSH_CONSTANTS                                                                    \
     FrameContext        frame                 = pc.frameContext.data;                            \
+    float               time                  = frame.time;                                      \
     DrawData            drawData              = frame.drawDatas.data[pc.drawIndex];              \
     Material            material              = frame.materials.data[drawData.materialIndex];    \
     Transform           transform             = frame.transforms.data[drawData.transformIndex];  \
@@ -26,14 +27,16 @@ layout(location = 0) out vec4 outColor;
     PointLightBuf       pointLights           = frame.pointLights;                               \
     uint                pointLightCount       = frame.pointLightCount;
 
-vec4 sampleTex(uint texIdx, uint sampIdx, vec2 uv) {
+vec4 sampleTex(uint texIdx, uint sampIdx, vec2 uv) 
+{
     return texture(
         sampler2D(gTextures[nonuniformEXT(texIdx)], gSamplers[nonuniformEXT(sampIdx)]),
         uv
     );
 }
 
-vec4 sampleTexLod(uint texIdx, uint sampIdx, vec2 uv, float lod) {
+vec4 sampleTexLod(uint texIdx, uint sampIdx, vec2 uv, float lod) 
+{
     return textureLod(
         sampler2D(gTextures[nonuniformEXT(texIdx)], gSamplers[nonuniformEXT(sampIdx)]), 
         uv, lod
@@ -44,7 +47,8 @@ vec4 sampleTexLod(uint texIdx, uint sampIdx, vec2 uv, float lod) {
 
 
 
-vec3 getNormalFromMap(Material mat, vec2 uv) {
+vec3 getNormalFromMap(Material mat, vec2 uv) 
+{
     vec3 N = normalize(inNormal);
     vec3 T = normalize(inTangent.xyz - N * dot(inTangent.xyz, N));
     vec3 B = cross(N, T) * inTangent.w;
@@ -54,7 +58,8 @@ vec3 getNormalFromMap(Material mat, vec2 uv) {
     return normalize(TBN * tangentNormal);
 }
 
-void unpackORM(Material mat, vec2 uv, out float occlusion, out float roughness, out float metallic) {
+void unpackORM(Material mat, vec2 uv, out float occlusion, out float roughness, out float metallic) 
+{
     vec4 orm = sampleTex(mat.ormIndex, mat.samplerIndex, uv);
     occlusion = orm.r;
     roughness = orm.g;
@@ -71,10 +76,7 @@ vec3 reconstructWorldPos(vec2 uv, float depth, mat4 invViewProj)
     return worldSpace.xyz / worldSpace.w;
 }
 
-// Doom-2016-style logarithmic Z slicing.
-// CPU side, per frame:
-//   scale = numZSlices / log2(far / near)
-//   bias  = -numZSlices * log2(near) / log2(far / near)
+// Doom-2016-style logarithmic Z slicing
 uint computeClusterIndex(vec2 fragCoordPx, float viewSpaceZ, float tilePxSize, vec2 clusterScaleBias, uvec3 clusterGridDim)
 {
     uvec3 c;
@@ -141,6 +143,27 @@ vec3 calculateLight(vec3 N, vec3 V, vec3 F0, vec3 L, vec3 H, vec3 albedo, float 
     return (kD * albedo / PI + specular) * radiance * NdotL;
 }
 
+// Returns 1.0 when fully lit, 0.0 when fully shadowed
+float calculateShadow(vec4 fragPosLightSpace, uint shadowMapIdx, uint shadowSamplerIdx)
+{
+    // Perspective divide (unnecessary for directional, but reusable by spotlight)
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+
+    // Transform XY from NDC to UV range
+    projCoords.x = projCoords.x * 0.5 + 0.5;
+    projCoords.y = projCoords.y * -0.5 + 0.5;
+
+    if (projCoords.z > 1.0 || projCoords.x < 0.0 || projCoords.x > 1.0 || projCoords.y < 0.0 || projCoords.y > 1.0) {
+        return 1.0; // No shadow outside the frustum
+    }
+    
+    float visibility = texture(
+        sampler2DShadow(gTextures[nonuniformEXT(shadowMapIdx)], gSamplerShadows[nonuniformEXT(shadowSamplerIdx)]),
+        projCoords
+    );
+    
+    return visibility;
+}
 
 
 // Post-process

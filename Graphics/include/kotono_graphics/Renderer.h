@@ -57,10 +57,10 @@ public:
 	VkImageView GetGBufferDepthImageView(const u32 frameIndex) const;
 	VkImageView GetColorTargetImageView(const u32 frameIndex) const;
 
-private:
 	void CmdTransitionImages(VkCommandBuffer commandBuffer, const VkImage* image, const u32 count, const VkPipelineStageFlags2 srcStage, const VkPipelineStageFlags2 dstStage, const VkAccessFlags2 srcAccess, const VkAccessFlags2 dstAccess, const VkImageLayout oldLayout, const VkImageLayout newLayout, const VkImageSubresourceRange subresourceRange) const;
 	void CmdTransitionCompute(VkCommandBuffer commandBuffer, const VkPipelineStageFlags2 srcStage, const VkPipelineStageFlags2 dstStage, const VkAccessFlags2 srcAccess, const VkAccessFlags2 dstAccess) const;
 
+private:
 	void CreateSwapChain();
 	void CleanupSwapChain();
 	void RecreateSwapChain();
@@ -89,6 +89,8 @@ private:
 	void CmdBarrierComputeClearWriteToReadWrite(VkCommandBuffer commandBuffer) const;
 	void CmdDispatchLightBinning(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBarrierComputeWriteToFragmentRead(VkCommandBuffer commandBuffer) const;
+
+	void CmdDrawFrameShadowMaps(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	
 	void CmdBarrierDepthNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBeginRenderingDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
@@ -100,7 +102,6 @@ private:
 	void CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBarrierGBufferWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 
-	void CmdBarrierShadowMapWriteToShaderRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBarrierDepthReadToShaderRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBarrierColorNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBeginRenderingDeferredLighting(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
