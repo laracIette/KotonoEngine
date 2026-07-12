@@ -1,7 +1,9 @@
 #pragma once
+#include <array>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include <kotono_common/types.h>
+inline constexpr u32 NUM_DIRECTIONAL_CASCADES{ 4 };
 struct UDirectionalLight
 {
 	glm::vec3 direction;
@@ -10,7 +12,8 @@ struct UDirectionalLight
 	u32 castShadow;
 	u32 shadowMap;
 	u32 shadowSampler;
-	glm::mat4 lightViewProj;
+	std::array<glm::mat4, NUM_DIRECTIONAL_CASCADES> lightViewProjs;
+	std::array<f32, NUM_DIRECTIONAL_CASCADES> cascadeSplits;
 };
 struct UPointLight
 {

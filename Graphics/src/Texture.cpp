@@ -67,10 +67,9 @@ void UTexture::CreateImage()
 
 	stbi_image_free(pixels);
 
-	Context.CreateImage(
-		texWidth,
-		texHeight,
+	Context.CreateImage(texWidth, texHeight,
 		mipLevels_,
+		1,
 		VK_SAMPLE_COUNT_1_BIT,
 		VK_FORMAT_R8G8B8A8_SRGB,
 		VK_IMAGE_TILING_OPTIMAL,
@@ -104,7 +103,7 @@ void UTexture::CreateImage()
 
 void UTexture::CreateImageView()
 {
-	imageView_ = Context.CreateImageView(image_, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels_);
+	imageView_ = Context.CreateImageView(image_, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels_, 1);
 }
 
 void UTexture::DestroyStagingBuffer() const

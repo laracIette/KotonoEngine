@@ -1,8 +1,5 @@
 #include "DirectionalLightComponent.h"
-#include <kotono_graphics/Camera.h>
 #include <kotono_graphics/LightBuffers.h>
-#include <kotono_platform/glm_utils.h>
-#include <kotono_platform/WindowViewport.h>
 
 KDirectionalLightComponent::KDirectionalLightComponent()
 	: color_{ Colors::White }
@@ -24,13 +21,6 @@ void KDirectionalLightComponent::Spawn()
 		.color = color_,
 		.intensity = intensity_,
 		.castShadow = true,
-		.lightViewProj = get_light_space_matrix(SCamera::GetViewMatrix()
-			, SCamera::GetDepthNear()
-			, 16.0f
-			, SCamera::GetFOV()
-			, WindowViewport.GetAspectRatio()
-			, direction
-		),
 	});
 }
 

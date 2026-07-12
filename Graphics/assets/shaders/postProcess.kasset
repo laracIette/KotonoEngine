@@ -50,5 +50,6 @@
       "alphaBlendOp": 0
     }
   ],
+  "viewMask": 0,
   "pipelinePass": 5
 }

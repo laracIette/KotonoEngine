@@ -35,5 +35,6 @@
     "stencilTestEnable": false
   },
   "colorBlendAttachments": [],
+  "viewMask": 15,
   "pipelinePass": 1
 }

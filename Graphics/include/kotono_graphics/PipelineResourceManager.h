@@ -28,9 +28,11 @@ public:
 	VkDescriptorSet GetDescriptorSet() const;
 
 	u32 RegisterTexture(VkImageView imageView);
+	u32 RegisterTextureArray(VkImageView imageView);
 	u32 RegisterSampler(VkSampler sampler);
 	u32 RegisterShadowSampler(VkSampler sampler);
 	void UnregisterTexture(const u32 slot);
+	void UnregisterTextureArray(const u32 slot);
 	void UnregisterSampler(const u32 slot);
 	void UnregisterShadowSampler(const u32 slot);
 
@@ -44,6 +46,8 @@ private:
 
 	u32 AllocateSlot(ResourcePool& resourcePool) const;
 
+	void WriteDescriptorSet(VkSampler sampler, VkImageView imageView, const VkImageLayout imageLayout, const u32 binding, const u32 slot, const VkDescriptorType descriptorType) const;
+
 private:
 	VkDescriptorSetLayout descriptorSetLayout_;
 	VkDescriptorPool descriptorPool_;
@@ -51,6 +55,7 @@ private:
 	VkDescriptorSet descriptorSet_;
 
 	ResourcePool texturePool_;
+	ResourcePool textureArrayPool_;
 	ResourcePool samplerPool_;
 	ResourcePool shadowSamplerPool_;
 };

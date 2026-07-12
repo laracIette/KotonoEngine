@@ -144,11 +144,10 @@ vec3 calculateLight(vec3 N, vec3 V, vec3 F0, vec3 L, vec3 H, vec3 albedo, float 
 }
 
 // Returns 1.0 when fully lit, 0.0 when fully shadowed
-float calculateShadow(vec4 fragPosLightSpace, uint shadowMapIdx, uint shadowSamplerIdx)
+float calculateShadow(vec4 fragPosLightSpace, uint cascadeIndex, uint shadowMapIdx, uint shadowSamplerIdx)
 {
     // Perspective divide (unnecessary for directional, but reusable by spotlight)
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-
     // Transform XY from NDC to UV range
     projCoords.xy = projCoords.xy * 0.5 + 0.5;
     
@@ -159,10 +158,12 @@ float calculateShadow(vec4 fragPosLightSpace, uint shadowMapIdx, uint shadowSamp
     {
         return 1.0;
     }
+
+    vec4 shadowCoords = vec4(projCoords.xy, float(cascadeIndex), projCoords.z);
     
     return texture(
-        sampler2DShadow(gTextures[nonuniformEXT(shadowMapIdx)], gShadowSamplers[nonuniformEXT(shadowSamplerIdx)]),
-        projCoords
+        sampler2DArrayShadow(gTextureArrays[nonuniformEXT(shadowMapIdx)], gShadowSamplers[nonuniformEXT(shadowSamplerIdx)]),
+        shadowCoords
     );
 }
 

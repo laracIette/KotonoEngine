@@ -5,6 +5,7 @@
 #include <kotono_platform/vk_utils.h>
 
 static constexpr u32 MAX_TEXTURES{ 65536 };
+static constexpr u32 MAX_TEXTURE_ARRAYS{ 1024 };
 static constexpr u32 MAX_SAMPLERS{ 4096 };
 static constexpr u32 MAX_SHADOW_SAMPLERS{ 1024 };
 static constexpr u32 MAX_STORAGE_IMAGES{ 1024 };
@@ -22,6 +23,7 @@ void GPipelineResourceManager::Init()
 	CreateDescriptorSet();
 
 	texturePool_.maxSlots = MAX_TEXTURES;
+	textureArrayPool_.maxSlots = MAX_TEXTURE_ARRAYS;
 	samplerPool_.maxSlots = MAX_SAMPLERS;
 	shadowSamplerPool_.maxSlots = MAX_SHADOW_SAMPLERS;
 }
@@ -52,23 +54,26 @@ u32 GPipelineResourceManager::RegisterTexture(VkImageView imageView)
 {
 	const u32 slot{ AllocateSlot(texturePool_) };
 
-	const VkDescriptorImageInfo imageInfo{
-		.sampler = VK_NULL_HANDLE,
-		.imageView = imageView,
-		.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-	};
-	const VkWriteDescriptorSet write{
-		.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-		.dstSet = descriptorSet_,
-		.dstBinding = 0,
-		.dstArrayElement = slot,
-		.descriptorCount = 1,
-		.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-		.pImageInfo = &imageInfo,
-	};
+	WriteDescriptorSet(VK_NULL_HANDLE, imageView
+		, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+		, 0
+		, slot
+		, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE
+	);
 
-	// This is safe mid-frame as long as the slot isn't in active use by in-flight command buffers
-	vkUpdateDescriptorSets(Context.GetDevice(), 1, &write, 0, nullptr);
+	return slot;
+}
+
+u32 GPipelineResourceManager::RegisterTextureArray(VkImageView imageView)
+{
+	const u32 slot{ AllocateSlot(textureArrayPool_) };
+
+	WriteDescriptorSet(VK_NULL_HANDLE, imageView
+		, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+		, 1
+		, slot
+		, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE
+	);
 
 	return slot;
 }
@@ -77,23 +82,12 @@ u32 GPipelineResourceManager::RegisterSampler(VkSampler sampler)
 {
 	const u32 slot{ AllocateSlot(samplerPool_) };
 
-	const VkDescriptorImageInfo samplerInfo{
-		.sampler = sampler,
-		.imageView = VK_NULL_HANDLE,
-		.imageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-	};
-	const VkWriteDescriptorSet write{
-		.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-		.dstSet = descriptorSet_,
-		.dstBinding = 1,
-		.dstArrayElement = slot,
-		.descriptorCount = 1,
-		.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
-		.pImageInfo = &samplerInfo,
-	};
-
-	// This is safe mid-frame as long as the slot isn't in active use by in-flight command buffers
-	vkUpdateDescriptorSets(Context.GetDevice(), 1, &write, 0, nullptr);
+	WriteDescriptorSet(sampler, VK_NULL_HANDLE
+		, VK_IMAGE_LAYOUT_UNDEFINED
+		, 2
+		, slot
+		, VK_DESCRIPTOR_TYPE_SAMPLER
+	);
 
 	return slot;
 }
@@ -102,23 +96,12 @@ u32 GPipelineResourceManager::RegisterShadowSampler(VkSampler sampler)
 {
 	const u32 slot{ AllocateSlot(shadowSamplerPool_) };
 
-	const VkDescriptorImageInfo samplerInfo{
-		.sampler = sampler,
-		.imageView = VK_NULL_HANDLE,
-		.imageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-	};
-	const VkWriteDescriptorSet write{
-		.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-		.dstSet = descriptorSet_,
-		.dstBinding = 2,
-		.dstArrayElement = slot,
-		.descriptorCount = 1,
-		.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
-		.pImageInfo = &samplerInfo,
-	};
-
-	// This is safe mid-frame as long as the slot isn't in active use by in-flight command buffers
-	vkUpdateDescriptorSets(Context.GetDevice(), 1, &write, 0, nullptr);
+	WriteDescriptorSet(sampler, VK_NULL_HANDLE
+		, VK_IMAGE_LAYOUT_UNDEFINED
+		, 3
+		, slot
+		, VK_DESCRIPTOR_TYPE_SAMPLER
+	);
 
 	return slot;
 }
@@ -126,6 +109,11 @@ u32 GPipelineResourceManager::RegisterShadowSampler(VkSampler sampler)
 void GPipelineResourceManager::UnregisterTexture(const u32 slot)
 {
 	texturePool_.freeSlots.push_back(slot);
+}
+
+void GPipelineResourceManager::UnregisterTextureArray(const u32 slot)
+{
+	textureArrayPool_.freeSlots.push_back(slot);
 }
 
 void GPipelineResourceManager::UnregisterSampler(const u32 slot)
@@ -153,15 +141,17 @@ void GPipelineResourceManager::CmdBindDescriptorSet(VkCommandBuffer commandBuffe
 
 void GPipelineResourceManager::CreateDescriptorSetLayout()
 {
-	constexpr std::array<VkDescriptorSetLayoutBinding, 4> BINDINGS{ {
+	constexpr std::array<VkDescriptorSetLayoutBinding, 5> BINDINGS{ {
 		{ 0, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURES,			VK_SHADER_STAGE_ALL, nullptr },
-		{ 1, VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SAMPLERS,			VK_SHADER_STAGE_ALL, nullptr },
-		{ 2, VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SHADOW_SAMPLERS,	VK_SHADER_STAGE_ALL, nullptr },
-		{ 3, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,	MAX_STORAGE_IMAGES,		VK_SHADER_STAGE_ALL, nullptr },
+		{ 1, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURE_ARRAYS,		VK_SHADER_STAGE_ALL, nullptr },
+		{ 2, VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SAMPLERS,			VK_SHADER_STAGE_ALL, nullptr },
+		{ 3, VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SHADOW_SAMPLERS,	VK_SHADER_STAGE_ALL, nullptr },
+		{ 4, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,	MAX_STORAGE_IMAGES,		VK_SHADER_STAGE_ALL, nullptr },
 	} };
 
 	// Add VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT to the last binding (only) to make it resizeable
 	constexpr std::array BINDING_FLAGS{
+		BINDLESS_FLAGS,
 		BINDLESS_FLAGS,
 		BINDLESS_FLAGS,
 		BINDLESS_FLAGS,
@@ -217,8 +207,9 @@ void GPipelineResourceManager::CreatePipelineLayout()
 
 void GPipelineResourceManager::CreateDescriptorPool()
 {
-	constexpr std::array<VkDescriptorPoolSize, 4> POOL_SIZES{ {
+	constexpr std::array<VkDescriptorPoolSize, 5> POOL_SIZES{ {
 		{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURES		},
+		{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURE_ARRAYS	},
 		{ VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SAMPLERS		},
 		{ VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SHADOW_SAMPLERS	},
 		{ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,	MAX_STORAGE_IMAGES	},
@@ -259,4 +250,29 @@ u32 GPipelineResourceManager::AllocateSlot(ResourcePool& resourcePool) const
 	}
 	assert(resourcePool.nextSlot < resourcePool.maxSlots);
 	return resourcePool.nextSlot++;
+}
+
+void GPipelineResourceManager::WriteDescriptorSet(VkSampler sampler, VkImageView imageView
+	, const VkImageLayout imageLayout
+	, const u32 binding
+	, const u32 slot
+	, const VkDescriptorType descriptorType) const
+{
+	const VkDescriptorImageInfo imageInfo{
+		.sampler = sampler,
+		.imageView = imageView,
+		.imageLayout = imageLayout,
+	};
+	const VkWriteDescriptorSet write{
+		.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+		.dstSet = descriptorSet_,
+		.dstBinding = binding,
+		.dstArrayElement = slot,
+		.descriptorCount = 1,
+		.descriptorType = descriptorType,
+		.pImageInfo = &imageInfo,
+	};
+
+	// This is safe mid-frame as long as the slot isn't in active use by in-flight command buffers
+	vkUpdateDescriptorSets(Context.GetDevice(), 1, &write, 0, nullptr);
 }

@@ -3,6 +3,7 @@
 #extension GL_EXT_buffer_reference2           : require
 #extension GL_EXT_scalar_block_layout         : require
 #extension GL_EXT_shader_image_load_formatted : require
+#extension GL_EXT_multiview                   : require
 
 // Define all buffers' access mode,
 // forces to specify a valid mode or leave readonly
@@ -20,10 +21,11 @@
 #endif
 
 // Global bindless resources, not buffer_reference cause incompatible types
-layout(set = 0, binding = 0) uniform texture2D     gTextures[];
-layout(set = 0, binding = 1) uniform sampler       gSamplers[];
-layout(set = 0, binding = 2) uniform samplerShadow gShadowSamplers[];
-layout(set = 0, binding = 3) uniform image2D       gImages[];
+layout(set = 0, binding = 0) uniform texture2D      gTextures[];
+layout(set = 0, binding = 1) uniform texture2DArray gTextureArrays[];
+layout(set = 0, binding = 2) uniform sampler        gSamplers[];
+layout(set = 0, binding = 3) uniform samplerShadow  gShadowSamplers[];
+layout(set = 0, binding = 4) uniform image2D        gImages[];
 
 
 struct DrawData {
@@ -59,6 +61,8 @@ struct Vertex {
     vec4 tangent;
 };
 
+const uint NUM_DIRECTIONAL_CASCADES = 4;
+
 struct DirectionalLight {
     vec3  direction;
 	vec3  color;
@@ -66,7 +70,8 @@ struct DirectionalLight {
     uint  castShadow;
     uint  shadowMap;
 	uint  shadowSampler;
-	mat4  lightViewProj;
+	mat4  lightViewProjs[NUM_DIRECTIONAL_CASCADES];
+    float cascadeSplits[NUM_DIRECTIONAL_CASCADES];
 };
 
 struct PointLight {

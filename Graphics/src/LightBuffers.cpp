@@ -1,11 +1,14 @@
 #include "LightBuffers.h"
+#include "Camera.h"
+#include "PipelineResourceManager.h"
+#include "Renderer.h"
+#include "Sampler.h"
 #include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
-#include <kotono_graphics/PipelineResourceManager.h>
-#include <kotono_graphics/Renderer.h>
-#include <kotono_graphics/Sampler.h>
 #include <kotono_platform/Context.h>
+#include <kotono_platform/glm_utils.h>
 #include <kotono_platform/vk_utils.h>
+#include <kotono_platform/WindowViewport.h>
 #include <ranges>
 
 static constexpr u32 MAX_DIRECTIONAL_LIGHTS{ 8 };
@@ -46,9 +49,10 @@ void GLightBuffers::RegisterDirectionalLight(const DirectionalLightData& directi
         .color = directionalLight.color,
         .intensity = directionalLight.intensity,
         .castShadow = static_cast<u32>(directionalLight.castShadow),
-        .shadowMap = 0, // updated each frame
+        .shadowMap = {}, // updated each frame
         .shadowSampler = sampler->GetIndex(),
-        .lightViewProj = directionalLight.lightViewProj,
+        .lightViewProjs = {}, // updated each frame
+        .cascadeSplits = { 5.0f, 15.0f, 50.0f, 200.0f },
     });
 }
 
@@ -59,11 +63,41 @@ void GLightBuffers::RegisterPointLight(const UPointLight& pointLight)
 
 void GLightBuffers::UpdateBuffers(const u32 frameIndex)
 {
+    const std::array<f32, NUM_DIRECTIONAL_CASCADES + 1> cascadeSplits{
+       SCamera::GetDepthNear(),
+       5.0f,
+       15.0f,
+       50.0f,
+       200.0f,
+    };
+
+    constexpr auto makeLightViewProj{ [](const UDirectionalLight& light, const f32 zFar) {
+        return get_light_space_matrix(light.direction
+            , SCamera::GetViewMatrix()
+            , SCamera::GetDepthNear()
+            , zFar
+            , SCamera::GetFOV()
+            , WindowViewport.GetAspectRatio()
+        );
+    } };
+
     for (size i{ 0 }; i < directionalLights_.size(); ++i)
     {
         auto& directionalLight{ directionalLights_[i] };
         auto& shadowMapTarget{ frameDatas_[frameIndex].directionalLightShadowMapTargets[i] };
         directionalLight.shadowMap = shadowMapTarget.textureIndex;
+
+        for (u32 i{ 0 }; i < NUM_DIRECTIONAL_CASCADES; ++i)
+        {
+            directionalLight.lightViewProjs[i] = get_light_space_matrix(
+                directionalLight.direction,
+                SCamera::GetViewMatrix(),
+                cascadeSplits[i],
+                cascadeSplits[i + 1],
+                SCamera::GetFOV(),
+                WindowViewport.GetAspectRatio()
+            );
+        }
     }
 
     std::memcpy(frameDatas_[frameIndex].directionalLightBuffer.mapped
@@ -132,7 +166,7 @@ void GLightBuffers::CmdBarrierShadowMapsNoneToWrite(VkCommandBuffer commandBuffe
         , VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
         , VK_IMAGE_LAYOUT_UNDEFINED
         , VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL
-        , { VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1 }
+        , { VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, NUM_DIRECTIONAL_CASCADES }
     );
 }
 
@@ -158,7 +192,8 @@ void GLightBuffers::CmdBeginRenderingShadowMapTarget(VkCommandBuffer commandBuff
             .offset = { 0, 0 },
             .extent = { SHADOW_MAP_RESOLUTION, SHADOW_MAP_RESOLUTION },
         },
-        .layerCount = 1,
+        .layerCount = 1, // only 1 because multimask
+        .viewMask = (1 << NUM_DIRECTIONAL_CASCADES) - 1,
         .colorAttachmentCount = 0,
         .pDepthAttachment = &depthAttachment,
     };
@@ -182,7 +217,7 @@ void GLightBuffers::CmdBarrierShadowMapsWriteToShaderRead(VkCommandBuffer comman
         , VK_ACCESS_2_SHADER_SAMPLED_READ_BIT
         , VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL
         , VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL
-        , { VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1 }
+        , { VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, NUM_DIRECTIONAL_CASCADES }
     );
 }
 
@@ -239,11 +274,13 @@ void GLightBuffers::CreateShadowMapResources()
         {
             Context.CreateSampledImageAndImageView(shadowMapTarget.allocatedImage
                 , { SHADOW_MAP_RESOLUTION , SHADOW_MAP_RESOLUTION }
+                , NUM_DIRECTIONAL_CASCADES
                 , Renderer.GetDepthFormat()
                 , VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+                , VK_IMAGE_VIEW_TYPE_2D_ARRAY
                 , VK_IMAGE_ASPECT_DEPTH_BIT
             );
-            shadowMapTarget.textureIndex = PipelineResourceManager.RegisterTexture(shadowMapTarget.allocatedImage.imageView);
+            shadowMapTarget.textureIndex = PipelineResourceManager.RegisterTextureArray(shadowMapTarget.allocatedImage.imageView);
         }
     }
 }

@@ -200,6 +200,7 @@ void UShader::CreateGraphicsPipeline()
 	const VkPipelineRenderingCreateInfo pipelineRenderingInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
 		.pNext = VK_NULL_HANDLE,
+		.viewMask = json["viewMask"],
 		.colorAttachmentCount = static_cast<u32>(colorAttachmentFormats.size()),
 		.pColorAttachmentFormats = colorAttachmentFormats.data(),
 		.depthAttachmentFormat = Renderer.GetDepthFormat(),

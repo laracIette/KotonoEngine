@@ -37,7 +37,6 @@ public:
 		glm::vec3 color;
 		f32 intensity;
 		bool castShadow;
-		glm::mat4 lightViewProj;
 	};
 
 public:

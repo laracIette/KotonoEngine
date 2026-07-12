@@ -363,7 +363,7 @@ void GRenderer::CreateSwapChainImageViews()
 {
 	for (auto& swapChainData : swapChainDatas_)
 	{
-		swapChainData.imageView = Context.CreateImageView(swapChainData.image, swapChainFormat_, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+		swapChainData.imageView = Context.CreateImageView(swapChainData.image, VK_IMAGE_VIEW_TYPE_2D, swapChainFormat_, VK_IMAGE_ASPECT_COLOR_BIT, 1, 1);
 	}
 }
 
@@ -373,11 +373,11 @@ void GRenderer::CreateImageResources()
 
 	for (auto& frameData : frameDatas_)
 	{
-		Context.CreateSampledImageAndImageView(frameData.colorTarget,	swapChainExtent_, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
-		Context.CreateSampledImageAndImageView(frameData.albedoTarget,	swapChainExtent_, VK_FORMAT_R8G8B8A8_SRGB,			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
-		Context.CreateSampledImageAndImageView(frameData.normalTarget,	swapChainExtent_, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
-		Context.CreateSampledImageAndImageView(frameData.ormTarget,		swapChainExtent_, VK_FORMAT_R8G8B8A8_UNORM,			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT);
-		Context.CreateSampledImageAndImageView(frameData.depthTarget,	swapChainExtent_, depthFormat_,						VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,	VK_IMAGE_ASPECT_DEPTH_BIT);
+		Context.CreateSampledImageAndImageView(frameData.colorTarget,	swapChainExtent_, 1, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
+		Context.CreateSampledImageAndImageView(frameData.albedoTarget,	swapChainExtent_, 1, VK_FORMAT_R8G8B8A8_SRGB,		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
+		Context.CreateSampledImageAndImageView(frameData.normalTarget,	swapChainExtent_, 1, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
+		Context.CreateSampledImageAndImageView(frameData.ormTarget,		swapChainExtent_, 1, VK_FORMAT_R8G8B8A8_UNORM,		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
+		Context.CreateSampledImageAndImageView(frameData.depthTarget,	swapChainExtent_, 1, depthFormat_,					VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,	VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_DEPTH_BIT);
 	}
 }
 
@@ -525,12 +525,16 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 	// - Make light binning accessible to fragment
 	CmdBarrierComputeWriteToFragmentRead(commandBuffer);
 
+
 	// Shadow-maps
+	// - Set rendering area to fit shadow-maps
+	LightBuffers.CmdSetViewportAndScissor(commandBuffer);
 	// - Make shadow maps writable
 	LightBuffers.CmdBarrierShadowMapsNoneToWrite(commandBuffer, frameIndex);
 	// - Generate shadow-maps
 	CmdDrawFrameShadowMaps(commandBuffer, frameIndex);
 
+	// Reset the rendering area to full screen
 	WindowViewport.CmdUse(commandBuffer);
 
 	// Depth pre-pass
@@ -662,8 +666,6 @@ void GRenderer::CmdDrawFrameShadowMaps(VkCommandBuffer commandBuffer, const u32 
 	{
 		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Graphics", "couldn't load shader {0}", shader.Path().ToString());
 	}
-
-	LightBuffers.CmdSetViewportAndScissor(commandBuffer);
 
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
 

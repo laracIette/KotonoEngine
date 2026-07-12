@@ -26,12 +26,12 @@ public:
 
 	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VmaAllocationCreateFlags flags, UAllocatedBuffer& buffer, VmaMemoryUsage vmaUsage = VMA_MEMORY_USAGE_UNKNOWN) const;
 	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-	void CreateImage(u32 width, u32 height, u32 mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VmaAllocation& imageAllocation) const;
+	void CreateImage(const u32 width, const  u32 height, const  u32 mipLevels, const u32 arrayLayers, const VkSampleCountFlagBits numSamples, const VkFormat format, const VkImageTiling tiling, const VkImageUsageFlags usage, const VkMemoryPropertyFlags properties, VkImage& image, VmaAllocation& imageAllocation) const;
 	void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, u32 mipLevels);
 	void CopyBufferToImage(VkBuffer buffer, VkImage image, u32 width, u32 height);
 	void GenerateMipmaps(VkImage image, VkFormat imageFormat, i32 texWidth, i32 texHeight, u32 mipLevels);
-	VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, u32 mipLevels) const;
-	void CreateSampledImageAndImageView(UAllocatedImage& allocatedImage, const VkExtent2D extent, const VkFormat format, const VkImageUsageFlagBits usage, const VkImageAspectFlagBits aspect) const;
+	VkImageView CreateImageView(VkImage image, const VkImageViewType viewType, const VkFormat format, const VkImageAspectFlags aspectFlags, const u32 mipLevels, const u32 layerCount) const;
+	void CreateSampledImageAndImageView(UAllocatedImage& allocatedImage, const VkExtent2D extent, const u32 arrayLayers, const VkFormat format, const VkImageUsageFlagBits usage, const VkImageViewType viewType, const VkImageAspectFlagBits aspect) const;
 	KtQueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const;
 	KtSwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
 

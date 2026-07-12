@@ -342,14 +342,16 @@ bool GContext::CheckDeviceFeatureSupport(VkPhysicalDevice device)
 	};
 	vkGetPhysicalDeviceFeatures2(device, &features2);
 
-	const bool coreFeaturesSupported{ features2.features.samplerAnisotropy
+	const bool features2Supported{ features2.features.samplerAnisotropy
 		&& features2.features.fillModeNonSolid
 		&& features2.features.sampleRateShading
 	};
 
-	const bool drawParametersSupported{ features11.shaderDrawParameters == VK_TRUE };
+	const bool features11Supported{ features11.multiview 
+		&& features11.shaderDrawParameters
+	};
 
-	const bool bindlessSupported{ features12.shaderSampledImageArrayNonUniformIndexing
+	const bool features12Supported{ features12.shaderSampledImageArrayNonUniformIndexing
 		&& features12.shaderStorageBufferArrayNonUniformIndexing
 		&& features12.descriptorBindingSampledImageUpdateAfterBind 
 		&& features12.descriptorBindingStorageImageUpdateAfterBind 
@@ -357,22 +359,21 @@ bool GContext::CheckDeviceFeatureSupport(VkPhysicalDevice device)
 		&& features12.descriptorBindingPartiallyBound
 		&& features12.descriptorBindingVariableDescriptorCount
 		&& features12.runtimeDescriptorArray
-		// BDA
 		&& features12.scalarBlockLayout
 		&& features12.bufferDeviceAddress
 	};
 
-	const bool dynamicRenderingSupported{ features13.dynamicRendering
+	const bool features13Supported{ features13.dynamicRendering
 		&& features13.synchronization2 
 	};
 
-	const bool pushDescriptorEnabled{ features14.pushDescriptor == VK_TRUE };
+	const bool features14Supported{ features14.pushDescriptor == VK_TRUE };
 
-    return coreFeaturesSupported 
-		&& drawParametersSupported
-		&& bindlessSupported 
-		&& dynamicRenderingSupported
-		&& pushDescriptorEnabled;
+    return features2Supported 
+		&& features11Supported
+		&& features12Supported 
+		&& features13Supported
+		&& features14Supported;
 }
 
 KtQueueFamilyIndices GContext::FindQueueFamilies(VkPhysicalDevice device) const
@@ -464,6 +465,7 @@ void GContext::CreateLogicalDevice()
 	VkPhysicalDeviceVulkan11Features features11{
 		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES,
 		.pNext = &features12,
+		.multiview = VK_TRUE,
 		.shaderDrawParameters = VK_TRUE,
 	};
 
@@ -827,7 +829,16 @@ u32 GContext::FindMemoryType(u32 typeFilter, VkMemoryPropertyFlags properties) c
 	throw std::runtime_error("failed to find suitable memory type!");
 }
 
-void GContext::CreateImage(u32 width, u32 height, u32 mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VmaAllocation& imageAllocation) const
+void GContext::CreateImage(const u32 width, const u32 height
+	, const u32 mipLevels
+	, const u32 arrayLayers
+	, const VkSampleCountFlagBits numSamples
+	, const VkFormat format
+	, const VkImageTiling tiling
+	, const VkImageUsageFlags usage
+	, const VkMemoryPropertyFlags properties
+	, VkImage& image
+	, VmaAllocation& imageAllocation) const
 {
 	const VkImageCreateInfo imageInfo{
 		.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
@@ -839,7 +850,7 @@ void GContext::CreateImage(u32 width, u32 height, u32 mipLevels, VkSampleCountFl
 			.depth = 1,
 		},
 		.mipLevels = mipLevels,
-		.arrayLayers = 1,
+		.arrayLayers = arrayLayers,
 		.samples = numSamples,
 		.tiling = tiling,
 		.usage = usage,
@@ -998,19 +1009,24 @@ void GContext::CopyBufferToImage(VkBuffer buffer, VkImage image, u32 width, u32 
 	EndSingleTimeCommands(commandBuffer);
 }
 
-VkImageView GContext::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, u32 mipLevels) const
+VkImageView GContext::CreateImageView(VkImage image
+	, const VkImageViewType viewType
+	, const VkFormat format
+	, const VkImageAspectFlags aspectFlags
+	, const u32 mipLevels
+	, const u32 layerCount) const
 {
 	const VkImageViewCreateInfo viewInfo{
 		.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 		.image = image,
-		.viewType = VK_IMAGE_VIEW_TYPE_2D,
+		.viewType = viewType,
 		.format = format,
 		.subresourceRange{
 			.aspectMask = aspectFlags,
 			.baseMipLevel = 0,
 			.levelCount = mipLevels,
 			.baseArrayLayer = 0,
-			.layerCount = 1,
+			.layerCount = layerCount,
 		},
 	};
 
@@ -1025,12 +1041,15 @@ VkImageView GContext::CreateImageView(VkImage image, VkFormat format, VkImageAsp
 
 void GContext::CreateSampledImageAndImageView(UAllocatedImage& allocatedImage
 	, const VkExtent2D extent
+	, const u32 arrayLayers
 	, const VkFormat format
 	, const VkImageUsageFlagBits usage
+	, const VkImageViewType viewType
 	, const VkImageAspectFlagBits aspect) const
 {
 	CreateImage(extent.width, extent.height
 		, 1
+		, arrayLayers
 		, VK_SAMPLE_COUNT_1_BIT
 		, format
 		, VK_IMAGE_TILING_OPTIMAL
@@ -1042,9 +1061,11 @@ void GContext::CreateSampledImageAndImageView(UAllocatedImage& allocatedImage
 	);
 
 	allocatedImage.imageView = CreateImageView(allocatedImage.image
+		, viewType
 		, format
 		, aspect
 		, 1
+		, arrayLayers
 	);
 }
 

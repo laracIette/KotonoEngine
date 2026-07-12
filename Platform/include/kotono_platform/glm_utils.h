@@ -64,12 +64,12 @@ inline std::array<glm::vec3, 8> get_frustum_corners_world_space(const glm::mat4&
     return corners;
 }
 
-inline glm::mat4 get_light_space_matrix(const glm::mat4& cameraView
+inline glm::mat4 get_light_space_matrix(const glm::vec3& lightDir
+    , const glm::mat4& cameraView
     , const f32 zNear
     , const f32 zFar
     , const f32 fovYRadians
-    , const f32 aspect
-    , const glm::vec3& lightDir)
+    , const f32 aspect)
 {
     const auto corners{ get_frustum_corners_world_space(cameraView, zNear, zFar, fovYRadians, aspect) };
 

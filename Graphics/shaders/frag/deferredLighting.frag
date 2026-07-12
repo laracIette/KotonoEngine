@@ -34,11 +34,14 @@ void main() {
     float roughness = clamp(orm.g, 0.045, 1.0);
     float metallic  = orm.b;
 
-    vec3 worldPos = reconstructWorldPos(inUV, depth, frame.invViewProj);
-    vec3 viewPos  = (frame.view * vec4(worldPos, 1.0)).xyz;
-    vec3 camPos   = frame.viewPos;
-    vec3 V        = normalize(camPos - worldPos); // view vector
-   
+    vec3 worldPos    = reconstructWorldPos(inUV, depth, frame.invViewProj);
+    vec3 viewPos     = (frame.view * vec4(worldPos, 1.0)).xyz;
+    vec3 camPos      = frame.viewPos;
+    vec3 V           = normalize(camPos - worldPos); // view vector
+
+    vec3  worldOffset = worldPos - camPos;
+    float worldDepth  = length(worldOffset);
+
     uint clusterIndex = computeClusterIndex(gl_FragCoord.xy, viewPos.z, tilePxSize, clusterScaleBias, clusterGridDim);
     LightGrid lightGrid = frame.clusterGrids.data[clusterIndex];
 
@@ -55,13 +58,22 @@ void main() {
         // Linear intensity
         vec3 radiance = directionalLight.color * directionalLight.intensity;
         vec3 light = calculateLight(N, V, F0, L, H, albedo, roughness, metallic, radiance);
-        
+
+        uint cascadeSplit = 0;
+        for(uint j = 0; j < NUM_DIRECTIONAL_CASCADES - 1; ++j)
+        {
+            if (worldDepth > directionalLight.cascadeSplits[j])
+            {
+                cascadeSplit = j + 1;
+            }
+        }
+
         // Shadow
         float visibility = 1.0;
         if (directionalLight.castShadow == 1u)
         {
-            vec4 fragPosLightSpace = directionalLight.lightViewProj * vec4(worldPos, 1.0);
-            visibility = calculateShadow(fragPosLightSpace, directionalLight.shadowMap, directionalLight.shadowSampler);
+            vec4 fragPosLightSpace = directionalLight.lightViewProjs[cascadeSplit] * vec4(worldPos, 1.0);
+            visibility = calculateShadow(fragPosLightSpace, cascadeSplit, directionalLight.shadowMap, directionalLight.shadowSampler);
         }
 
         Lo += light * visibility;
