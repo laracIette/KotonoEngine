@@ -24,15 +24,13 @@ inline glm::mat4 calculate_reverse_z_infinite_perspective(const f32 fovY, const 
     return result;
 }
 
-inline std::array<glm::vec3, 8> get_frustum_corners_world_space(const glm::mat4& proj, const glm::mat4& view)
+inline std::array<glm::vec3, 8> get_frustum_corners_world_space(const glm::mat4& view
+    , const f32 zNear
+    , const f32 zFar
+    , const f32 fovYRadians
+    , const f32 aspect)
 {
     std::array<glm::vec3, 8> corners{};
-
-    // pass as args
-    const f32 zNear{ 0.1f };
-    const f32 zFar{ 2.0f }; // todo: sync with shader ?
-    const f32 fovYRadians{ 90.0f };
-    const f32 aspect{ 16.0f / 9.0f };
 
     // Half-dimensions of the near and far planes in view space
     const f32 tanHalfFOV{ std::tan(fovYRadians * 0.5f) };
@@ -66,9 +64,14 @@ inline std::array<glm::vec3, 8> get_frustum_corners_world_space(const glm::mat4&
     return corners;
 }
 
-inline glm::mat4 get_light_space_matrix(const glm::mat4& cameraProj, const glm::mat4& cameraView, const glm::vec3& lightDir)
+inline glm::mat4 get_light_space_matrix(const glm::mat4& cameraView
+    , const f32 zNear
+    , const f32 zFar
+    , const f32 fovYRadians
+    , const f32 aspect
+    , const glm::vec3& lightDir)
 {
-    const auto corners{ get_frustum_corners_world_space(cameraProj, cameraView) };
+    const auto corners{ get_frustum_corners_world_space(cameraView, zNear, zFar, fovYRadians, aspect) };
 
     // Calculate the geometric center of the camera frustum
     glm::vec3 center{ 0.0f };

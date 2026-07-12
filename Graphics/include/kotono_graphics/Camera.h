@@ -8,6 +8,8 @@ class SCamera final
 public:
 	static const glm::vec3& GetPosition();
 	static const glm::quat& GetRotation();
+	static f32 GetFOV();
+	static f32 GetDepthNear();
 	 
 	static glm::vec3 GetRightVector();
 	static glm::vec3 GetUpVector();
@@ -18,7 +20,6 @@ public:
 	 
 	static void SetPosition(const glm::vec3& position);
 	static void SetRotation(const glm::quat& rotation);
-
 	static void SetFOV(const f32 yDegFOV);
 	static void SetDepthNear(const f32 depthNear);
 

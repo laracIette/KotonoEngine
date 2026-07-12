@@ -6,7 +6,7 @@
 
 static constexpr u32 MAX_TEXTURES{ 65536 };
 static constexpr u32 MAX_SAMPLERS{ 4096 };
-static constexpr u32 MAX_SAMPLER_SHADOWS{ 1024 };
+static constexpr u32 MAX_SHADOW_SAMPLERS{ 1024 };
 static constexpr u32 MAX_STORAGE_IMAGES{ 1024 };
 
 static constexpr VkDescriptorBindingFlags BINDLESS_FLAGS{
@@ -20,6 +20,10 @@ void GPipelineResourceManager::Init()
 	CreatePipelineLayout();
 	CreateDescriptorPool();
 	CreateDescriptorSet();
+
+	texturePool_.maxSlots = MAX_TEXTURES;
+	samplerPool_.maxSlots = MAX_SAMPLERS;
+	shadowSamplerPool_.maxSlots = MAX_SHADOW_SAMPLERS;
 }
 
 void GPipelineResourceManager::Cleanup() const
@@ -46,7 +50,7 @@ VkDescriptorSet GPipelineResourceManager::GetDescriptorSet() const
 
 u32 GPipelineResourceManager::RegisterTexture(VkImageView imageView)
 {
-	const u32 slot{ AllocateTextureSlot() };
+	const u32 slot{ AllocateSlot(texturePool_) };
 
 	const VkDescriptorImageInfo imageInfo{
 		.sampler = VK_NULL_HANDLE,
@@ -71,7 +75,7 @@ u32 GPipelineResourceManager::RegisterTexture(VkImageView imageView)
 
 u32 GPipelineResourceManager::RegisterSampler(VkSampler sampler)
 {
-	const u32 slot{ AllocateSamplerSlot() };
+	const u32 slot{ AllocateSlot(samplerPool_) };
 
 	const VkDescriptorImageInfo samplerInfo{
 		.sampler = sampler,
@@ -94,9 +98,9 @@ u32 GPipelineResourceManager::RegisterSampler(VkSampler sampler)
 	return slot;
 }
 
-u32 GPipelineResourceManager::RegisterSamplerShadow(VkSampler sampler)
+u32 GPipelineResourceManager::RegisterShadowSampler(VkSampler sampler)
 {
-	const u32 slot{ AllocateSamplerShadowSlot() };
+	const u32 slot{ AllocateSlot(shadowSamplerPool_) };
 
 	const VkDescriptorImageInfo samplerInfo{
 		.sampler = sampler,
@@ -121,17 +125,17 @@ u32 GPipelineResourceManager::RegisterSamplerShadow(VkSampler sampler)
 
 void GPipelineResourceManager::UnregisterTexture(const u32 slot)
 {
-	freeTextureSlots_.push_back(slot);
+	texturePool_.freeSlots.push_back(slot);
 }
 
 void GPipelineResourceManager::UnregisterSampler(const u32 slot)
 {
-	freeSamplerSlots_.push_back(slot);
+	samplerPool_.freeSlots.push_back(slot);
 }
 
-void GPipelineResourceManager::UnregisterSamplerShadow(const u32 slot)
+void GPipelineResourceManager::UnregisterShadowSampler(const u32 slot)
 {
-	freeSamplerShadowSlots_.push_back(slot);
+	shadowSamplerPool_.freeSlots.push_back(slot);
 }
 
 void GPipelineResourceManager::CmdBindDescriptorSet(VkCommandBuffer commandBuffer) const
@@ -152,11 +156,11 @@ void GPipelineResourceManager::CreateDescriptorSetLayout()
 	constexpr std::array<VkDescriptorSetLayoutBinding, 4> BINDINGS{ {
 		{ 0, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURES,			VK_SHADER_STAGE_ALL, nullptr },
 		{ 1, VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SAMPLERS,			VK_SHADER_STAGE_ALL, nullptr },
-		{ 2, VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SAMPLER_SHADOWS,	VK_SHADER_STAGE_ALL, nullptr },
+		{ 2, VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SHADOW_SAMPLERS,	VK_SHADER_STAGE_ALL, nullptr },
 		{ 3, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,	MAX_STORAGE_IMAGES,		VK_SHADER_STAGE_ALL, nullptr },
 	} };
 
-	/// Add VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT to the last binding (only) to make it resizeable
+	// Add VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT to the last binding (only) to make it resizeable
 	constexpr std::array BINDING_FLAGS{
 		BINDLESS_FLAGS,
 		BINDLESS_FLAGS,
@@ -216,7 +220,7 @@ void GPipelineResourceManager::CreateDescriptorPool()
 	constexpr std::array<VkDescriptorPoolSize, 4> POOL_SIZES{ {
 		{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURES		},
 		{ VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SAMPLERS		},
-		{ VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SAMPLER_SHADOWS	},
+		{ VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SHADOW_SAMPLERS	},
 		{ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,	MAX_STORAGE_IMAGES	},
 	} };
 
@@ -245,38 +249,14 @@ void GPipelineResourceManager::CreateDescriptorSet()
 	vkAllocateDescriptorSets(Context.GetDevice(), &allocInfo, &descriptorSet_);
 }
 
-u32 GPipelineResourceManager::AllocateTextureSlot()
+u32 GPipelineResourceManager::AllocateSlot(ResourcePool& resourcePool) const
 {
-	if (!freeTextureSlots_.empty())
+	if (!resourcePool.freeSlots.empty())
 	{
-		const u32 slot{ freeTextureSlots_.back() };
-		freeTextureSlots_.pop_back();
+		const u32 slot{ resourcePool.freeSlots.back() };
+		resourcePool.freeSlots.pop_back();
 		return slot;
 	}
-	assert(nextTextureSlot_ < MAX_TEXTURES);
-	return nextTextureSlot_++;
-}
-
-u32 GPipelineResourceManager::AllocateSamplerSlot()
-{
-	if (!freeSamplerSlots_.empty())
-	{
-		const u32 slot{ freeSamplerSlots_.back() };
-		freeSamplerSlots_.pop_back();
-		return slot;
-	}
-	assert(nextSamplerSlot_ < MAX_SAMPLERS);
-	return nextSamplerSlot_++;
-}
-
-u32 GPipelineResourceManager::AllocateSamplerShadowSlot()
-{
-	if (!freeSamplerShadowSlots_.empty())
-	{
-		const u32 slot{ freeSamplerShadowSlots_.back() };
-		freeSamplerShadowSlots_.pop_back();
-		return slot;
-	}
-	assert(nextSamplerShadowSlot_ < MAX_SAMPLER_SHADOWS);
-	return nextSamplerShadowSlot_++;
+	assert(resourcePool.nextSlot < resourcePool.maxSlots);
+	return resourcePool.nextSlot++;
 }

@@ -22,7 +22,7 @@
 // Global bindless resources, not buffer_reference cause incompatible types
 layout(set = 0, binding = 0) uniform texture2D     gTextures[];
 layout(set = 0, binding = 1) uniform sampler       gSamplers[];
-layout(set = 0, binding = 2) uniform samplerShadow gSamplerShadows[];
+layout(set = 0, binding = 2) uniform samplerShadow gShadowSamplers[];
 layout(set = 0, binding = 3) uniform image2D       gImages[];
 
 

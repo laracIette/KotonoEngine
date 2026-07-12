@@ -8,11 +8,9 @@
 #include <kotono_platform/vk_utils.h>
 #include <ranges>
 
-#include "Camera.h"
-
-static constexpr u32 MAX_DIRECTIONAL_LIGHTS{ 16 };
+static constexpr u32 MAX_DIRECTIONAL_LIGHTS{ 8 };
 static constexpr u32 MAX_POINT_LIGHTS{ 1024 };
-static constexpr u32 SHADOW_MAP_RESOLUTION{ 1024 }; // todo: make variable
+static constexpr u32 SHADOW_MAP_RESOLUTION{ 4096 }; // todo: make variable
 
 void GLightBuffers::Init()
 {
@@ -96,6 +94,25 @@ u32 GLightBuffers::GetDirectionalLightCount() const
 u32 GLightBuffers::GetPointLightCount() const
 {
     return pointLights_.size();
+}
+
+void GLightBuffers::CmdSetViewportAndScissor(VkCommandBuffer commandBuffer) const
+{
+    const VkRect2D scissor{
+        .offset = { 0, 0 },
+        .extent = { static_cast<i32>(SHADOW_MAP_RESOLUTION), static_cast<i32>(SHADOW_MAP_RESOLUTION) },
+    };
+    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+    const VkViewport viewport{
+        .x = 0.0f,
+        .y = 0.0f,
+        .width = static_cast<f32>(SHADOW_MAP_RESOLUTION),
+        .height = static_cast<f32>(SHADOW_MAP_RESOLUTION),
+        .minDepth = 0.0f,
+        .maxDepth = 1.0f,
+    };
+    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 }
 
 void GLightBuffers::CmdBarrierShadowMapsNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const

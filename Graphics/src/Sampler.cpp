@@ -20,7 +20,7 @@ USampler::USampler(const UPath& path)
 	}
 	else
 	{
-		index_ = PipelineResourceManager.RegisterSamplerShadow(sampler_);
+		index_ = PipelineResourceManager.RegisterShadowSampler(sampler_);
 	}
 
 }

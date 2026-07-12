@@ -12,6 +12,14 @@ struct UPushConstants
 class GPipelineResourceManager final
 {
 public:
+	struct ResourcePool
+	{
+		std::vector<u32> freeSlots;
+		u32 nextSlot;
+		u32 maxSlots;
+	};
+
+public:
 	void Init();
 	void Cleanup() const;
 
@@ -21,10 +29,10 @@ public:
 
 	u32 RegisterTexture(VkImageView imageView);
 	u32 RegisterSampler(VkSampler sampler);
-	u32 RegisterSamplerShadow(VkSampler sampler);
+	u32 RegisterShadowSampler(VkSampler sampler);
 	void UnregisterTexture(const u32 slot);
 	void UnregisterSampler(const u32 slot);
-	void UnregisterSamplerShadow(const u32 slot);
+	void UnregisterShadowSampler(const u32 slot);
 
 	void CmdBindDescriptorSet(VkCommandBuffer commandBuffer) const;
 
@@ -34,9 +42,7 @@ private:
 	void CreateDescriptorPool();
 	void CreateDescriptorSet();
 
-	u32 AllocateTextureSlot();
-	u32 AllocateSamplerSlot();
-	u32 AllocateSamplerShadowSlot();
+	u32 AllocateSlot(ResourcePool& resourcePool) const;
 
 private:
 	VkDescriptorSetLayout descriptorSetLayout_;
@@ -44,12 +50,9 @@ private:
 	VkPipelineLayout pipelineLayout_;
 	VkDescriptorSet descriptorSet_;
 
-	std::vector<u32> freeTextureSlots_;
-	u32 nextTextureSlot_;
-	std::vector<u32> freeSamplerSlots_;
-	u32 nextSamplerSlot_;
-	std::vector<u32> freeSamplerShadowSlots_;
-	u32 nextSamplerShadowSlot_;
+	ResourcePool texturePool_;
+	ResourcePool samplerPool_;
+	ResourcePool shadowSamplerPool_;
 };
 
 inline GPipelineResourceManager PipelineResourceManager;

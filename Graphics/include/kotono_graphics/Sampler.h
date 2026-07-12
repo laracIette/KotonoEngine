@@ -5,7 +5,7 @@
 enum class ESamplerType : u8
 {
 	Sampler,
-	SamplerShadow,
+	ShadowSampler,
 };
 class USampler final
 {

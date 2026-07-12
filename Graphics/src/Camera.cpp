@@ -18,6 +18,16 @@ const glm::quat& SCamera::GetRotation()
 	return rotation_;
 }
 
+f32 SCamera::GetFOV()
+{
+	return fov_;
+}
+
+f32 SCamera::GetDepthNear()
+{
+	return depthNear_;
+}
+
 glm::vec3 SCamera::GetRightVector()
 {
 	return rotation_ * WorldRightVector;

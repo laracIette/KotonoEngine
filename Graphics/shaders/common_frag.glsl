@@ -161,7 +161,7 @@ float calculateShadow(vec4 fragPosLightSpace, uint shadowMapIdx, uint shadowSamp
     }
     
     return texture(
-        sampler2DShadow(gTextures[nonuniformEXT(shadowMapIdx)], gSamplerShadows[nonuniformEXT(shadowSamplerIdx)]),
+        sampler2DShadow(gTextures[nonuniformEXT(shadowMapIdx)], gShadowSamplers[nonuniformEXT(shadowSamplerIdx)]),
         projCoords
     );
 }

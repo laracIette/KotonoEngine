@@ -663,21 +663,7 @@ void GRenderer::CmdDrawFrameShadowMaps(VkCommandBuffer commandBuffer, const u32 
 		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Graphics", "couldn't load shader {0}", shader.Path().ToString());
 	}
 
-	const VkRect2D scissor{
-		.offset = { 0, 0 },
-		.extent = { 1024, 1024 },
-	};
-	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-
-	const VkViewport viewport{
-		.x = 0.0f,
-		.y = 0.0f,
-		.width = 1024.0f,
-		.height = 1024.0f,
-		.minDepth = 0.0f,
-		.maxDepth = 1.0f,
-	};
-	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+	LightBuffers.CmdSetViewportAndScissor(commandBuffer);
 
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
 
