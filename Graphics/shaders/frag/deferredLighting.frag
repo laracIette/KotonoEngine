@@ -90,15 +90,4 @@ void main() {
 
     vec3 ambient = vec3(0.03) * albedo * ao;
     outColor = vec4(ambient + Lo, 1.0);
-
-    // debug directional shadow
-    //DirectionalLight l = directionalLights.data[0];
-    //vec4 fragPosLightSpace = l.lightViewProj * vec4(worldPos, 1.0);
-    //vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    //projCoords.x = projCoords.x * 0.5 + 0.5;
-    //projCoords.y = projCoords.y * -0.5 + 0.5;
-    //outColor = vec4(vec3(texture(
-    //    sampler2DShadow(gTextures[nonuniformEXT(l.shadowMap)], gSamplerShadows[nonuniformEXT(l.shadowSampler)]),
-    //    projCoords
-    //)), 1.0);
 }

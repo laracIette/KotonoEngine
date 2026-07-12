@@ -150,19 +150,20 @@ float calculateShadow(vec4 fragPosLightSpace, uint shadowMapIdx, uint shadowSamp
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 
     // Transform XY from NDC to UV range
-    projCoords.x = projCoords.x * 0.5 + 0.5;
-    projCoords.y = projCoords.y * -0.5 + 0.5;
-
-    if (projCoords.z > 1.0 || projCoords.x < 0.0 || projCoords.x > 1.0 || projCoords.y < 0.0 || projCoords.y > 1.0) {
-        return 1.0; // No shadow outside the frustum
+    projCoords.xy = projCoords.xy * 0.5 + 0.5;
+    
+    // No shadow outside the frustum
+    if (projCoords.z < 0.0 || projCoords.z > 1.0 
+     || projCoords.x < 0.0 || projCoords.x > 1.0 
+     || projCoords.y < 0.0 || projCoords.y > 1.0) 
+    {
+        return 1.0;
     }
     
-    float visibility = texture(
+    return texture(
         sampler2DShadow(gTextures[nonuniformEXT(shadowMapIdx)], gSamplerShadows[nonuniformEXT(shadowSamplerIdx)]),
         projCoords
     );
-    
-    return visibility;
 }
 
 
