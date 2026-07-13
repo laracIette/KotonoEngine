@@ -109,7 +109,7 @@ void KSceneMeshComponent::SetMobility(const EMobility mobility)
 
 void KSceneMeshComponent::RegisterDrawCall()
 {
-    drawCallBuilder_.Register();
+    drawCallBuilder_.Register(ERenderBucket::Opaque);
 }
 
 void KSceneMeshComponent::UnregisterDrawCall()
@@ -119,8 +119,6 @@ void KSceneMeshComponent::UnregisterDrawCall()
 
 void KSceneMeshComponent::RefreshDrawCall() const
 {
-    drawCallBuilder_.GetDrawCall()->renderBucket = ERenderBucket::Opaque;
-
     RefreshDrawCallScissor();
     RefreshDrawCallShaderData();
     RefreshDrawCallModelData();

@@ -25,13 +25,12 @@ void WColor::Remove()
 
 void WColor::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
-	drawCallBuilder_.Register();
+	drawCallBuilder_.Register(ERenderBucket::Interface);
 
 	drawCallBuilder_.GetDrawCall()->scissor = {
 		.offset = { displaySettings.scissor.offset.x, displaySettings.scissor.offset.y },
 		.extent = { displaySettings.scissor.extent.x, displaySettings.scissor.extent.y },
 	};
-	drawCallBuilder_.GetDrawCall()->renderBucket = ERenderBucket::Interface;
 	drawCallBuilder_.GetDrawCall()->sortKey = GetLayer();
 
 	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/flatColor2D.kasset") })

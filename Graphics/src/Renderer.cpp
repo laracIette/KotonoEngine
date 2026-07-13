@@ -125,18 +125,18 @@ VkFormat GRenderer::GetDepthFormat() const
 	return depthFormat_;
 }
 
-void GRenderer::RegisterDrawCall(UDrawCall* drawCall)
+void GRenderer::RegisterOpaqueDrawCall(UDrawCall* drawCall)
 {
 	if (!drawCall)
 	{
 		return;
 	}
 
-	drawCalls_.Add(drawCall);
-	drawCall->poolIndex = drawCalls_.LastIndex();
+	opaqueDrawCalls_.Add(drawCall);
+	drawCall->poolIndex = opaqueDrawCalls_.LastIndex();
 }
 
-void GRenderer::UnregisterDrawCall(UDrawCall* drawCall)
+void GRenderer::UnregisterOpaqueDrawCall(UDrawCall* drawCall)
 {
 	if (!drawCall)
 	{
@@ -144,9 +144,9 @@ void GRenderer::UnregisterDrawCall(UDrawCall* drawCall)
 	}
 
 	const auto index{ drawCall->poolIndex };
-	if (drawCalls_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
+	if (opaqueDrawCalls_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
 	{
-		drawCalls_[index]->poolIndex = index;
+		opaqueDrawCalls_[index]->poolIndex = index;
 	}
 }
 
@@ -673,13 +673,8 @@ void GRenderer::CmdDrawFrameShadowMaps(VkCommandBuffer commandBuffer, const u32 
 	{
 		LightBuffers.CmdBeginRenderingShadowMapTarget(commandBuffer, i, frameIndex);
 		// todo: add cast shadow check
-		for (const auto* drawCall : drawCalls_)
+		for (const auto* drawCall : opaqueDrawCalls_)
 		{
-			if (drawCall->renderBucket != ERenderBucket::Opaque)
-			{
-				continue;
-			}
-
 			const UPushConstants pc{
 				.frameContextBufferAddress = FrameContextBuffer.GetAddress(frameIndex),
 				.vertexBufferAddress = drawCall->vertexBufferAdress,
@@ -756,13 +751,9 @@ void GRenderer::CmdDrawFrameDepthPrePass(VkCommandBuffer commandBuffer, const u3
 	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/depthPrePass.kasset") })
 	{
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
-		for (const auto* drawCall : drawCalls_)
-		{
-			if (drawCall->renderBucket != ERenderBucket::Opaque)
-			{
-				continue;
-			}
 
+		for (const auto* drawCall : opaqueDrawCalls_)
+		{
 			CmdPushConstants(commandBuffer, drawCall, frameIndex);
 			CmdDraw(commandBuffer, drawCall);
 		}
@@ -860,13 +851,8 @@ void GRenderer::CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 fra
 	{
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
 		
-		for (const auto* drawCall : drawCalls_)
+		for (const auto* drawCall : opaqueDrawCalls_)
 		{
-			if (drawCall->renderBucket != ERenderBucket::Opaque)
-			{
-				continue;
-			}
-
 			CmdPushConstants(commandBuffer, drawCall, frameIndex);
 			CmdDraw(commandBuffer, drawCall);
 		}

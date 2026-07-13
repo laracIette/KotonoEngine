@@ -48,8 +48,8 @@ public:
 	VkFormat GetSwapChainFormat() const;
 	VkFormat GetDepthFormat() const;
 
-	void RegisterDrawCall(UDrawCall* drawCall);
-	void UnregisterDrawCall(UDrawCall* drawCall);
+	void RegisterOpaqueDrawCall(UDrawCall* drawCall);
+	void UnregisterOpaqueDrawCall(UDrawCall* drawCall);
 
 	VkImageView GetGBufferAlbedoImageView(const u32 frameIndex) const;
 	VkImageView GetGBufferNormalImageView(const u32 frameIndex) const;
@@ -144,7 +144,7 @@ private:
 
 	u32 frameCount_;
 
-	UPool<UDrawCall*> drawCalls_;
+	UPool<UDrawCall*> opaqueDrawCalls_;
 };
 
 inline GRenderer Renderer;

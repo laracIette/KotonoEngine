@@ -1,13 +1,6 @@
 #pragma once
 #include <kotono_common/types.h>
 #include <vulkan/vulkan_core.h>
-enum class ERenderBucket : u8
-{
-	Shadow,
-	Opaque,
-	Transparent,
-	Interface,
-};
 struct UDrawCall
 {
 	// Push constants
@@ -22,7 +15,6 @@ struct UDrawCall
 	VkRect2D scissor;
 
 	// Ordering
-	ERenderBucket renderBucket;
 	f32 sortKey; // Depth for 3D translucent, layer for 2D
 
 	size poolIndex;

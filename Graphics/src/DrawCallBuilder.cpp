@@ -26,21 +26,38 @@ UDrawCallBuilder::~UDrawCallBuilder()
 	delete drawCall_;
 }
 
-void UDrawCallBuilder::Register()
+void UDrawCallBuilder::Register(const ERenderBucket renderBucket)
 {
-	if (!isRegistered_)
+	if (isRegistered_)
 	{
-		isRegistered_ = true;
-		Renderer.RegisterDrawCall(drawCall_);
+		return;
+	}
+
+	isRegistered_ = true;
+	renderBucket_ = renderBucket;
+
+	switch (renderBucket_)
+	{
+	case ERenderBucket::Opaque:			return Renderer.RegisterOpaqueDrawCall(drawCall_);
+	case ERenderBucket::Transparent:	return;
+	case ERenderBucket::Interface:		return;
 	}
 }
 
 void UDrawCallBuilder::Unregister()
 {
-	if (isRegistered_)
+	if (!isRegistered_)
 	{
-		isRegistered_ = false;
-		Renderer.UnregisterDrawCall(drawCall_);
+		return;
+	}
+
+	isRegistered_ = false;
+
+	switch (renderBucket_)
+	{
+	case ERenderBucket::Opaque:			return Renderer.UnregisterOpaqueDrawCall(drawCall_);
+	case ERenderBucket::Transparent:	return;
+	case ERenderBucket::Interface:		return;
 	}
 }
 

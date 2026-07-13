@@ -1,15 +1,22 @@
 #pragma once
+#include <kotono_common/types.h>
 struct UDrawCall;
 struct UDrawDataBufferData;
 struct UTransformBufferData;
 struct UParametersBufferData;
+enum class ERenderBucket : u8
+{
+	Opaque,
+	Transparent,
+	Interface,
+};
 struct UDrawCallBuilder final
 {
 public:
 	UDrawCallBuilder();
 	~UDrawCallBuilder();
 
-	void Register();
+	void Register(const ERenderBucket renderBucket);
 	void Unregister();
 
 	UDrawCall* GetDrawCall() const;
@@ -20,6 +27,7 @@ public:
 private:
 	UDrawCall* drawCall_;
 	bool isRegistered_;
+	ERenderBucket renderBucket_;
 
 	UDrawDataBufferData* drawData_;
 	UTransformBufferData* transform_;

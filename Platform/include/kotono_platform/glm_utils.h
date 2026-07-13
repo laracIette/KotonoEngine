@@ -117,9 +117,9 @@ inline glm::mat4 get_light_space_matrix(const glm::vec3& lightDir
     }
 
     // Allow geometry slightly off camera to cast shadows
-    constexpr f32 Z_PADDING{ 5.0f };
-    f32 nearDistance = minZ - Z_PADDING;
-    f32 farDistance = maxZ + Z_PADDING;
+    constexpr f32 Z_PADDING{ 15.0f };
+    const f32 nearDistance{ minZ - Z_PADDING };
+    const f32 farDistance{ maxZ + Z_PADDING };
 
     // Reverse Y and reverse Z 
     const glm::mat4 lightProjection{ glm::ortho(minX, maxX, maxY, minY, farDistance, nearDistance) };
