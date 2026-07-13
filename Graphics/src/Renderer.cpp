@@ -878,15 +878,24 @@ void GRenderer::CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer, const u3
 
 void GRenderer::CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/gbuffer.kasset") })
-	{
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
+	auto sortedDrawCalls{ opaqueDrawCalls_ };
+
+	std::ranges::sort(sortedDrawCalls, std::less{}, [](const UDrawCall* dc) {
+		return std::tie(dc->pipeline);
+	});
+
+	VkPipeline currentPipeline{ VK_NULL_HANDLE };
 		
-		for (const auto* drawCall : opaqueDrawCalls_)
+	for (const auto* drawCall : sortedDrawCalls)
+	{
+		if (currentPipeline != drawCall->pipeline)
 		{
-			CmdPushConstants(commandBuffer, drawCall, frameIndex);
-			CmdDraw(commandBuffer, drawCall);
+			currentPipeline = drawCall->pipeline;
+			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, drawCall->pipeline);
 		}
+
+		CmdPushConstants(commandBuffer, drawCall, frameIndex);
+		CmdDraw(commandBuffer, drawCall);
 	}
 }
 

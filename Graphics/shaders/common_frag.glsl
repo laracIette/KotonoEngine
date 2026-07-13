@@ -1,18 +1,4 @@
 #include "common.glsl"
-#extension GL_EXT_samplerless_texture_functions : require
-
-layout(location = 0) in vec3 inWorldPos;
-layout(location = 1) in vec3 inNormal;
-layout(location = 2) in vec2 inUV;
-layout(location = 3) in vec4 inTangent;
-
-#ifdef OUTPUT_GBUFFER
-layout(location = 0) out vec4 outAlbedo;
-layout(location = 1) out vec4 outNormal;
-layout(location = 2) out vec4 outORM;
-#else
-layout(location = 0) out vec4 outColor;
-#endif
 
 // Helpers
 #define UNPACK_PUSH_CONSTANTS                                                                    \
@@ -42,31 +28,6 @@ vec4 sampleTexLod(uint texIdx, uint sampIdx, vec2 uv, float lod)
         uv, lod
     );
 }
-
-
-
-
-
-vec3 getNormalFromMap(Material mat, vec2 uv) 
-{
-    vec3 N = normalize(inNormal);
-    vec3 T = normalize(inTangent.xyz - N * dot(inTangent.xyz, N));
-    vec3 B = cross(N, T) * inTangent.w;
-    mat3 TBN = mat3(T, B, N);
-
-    vec3 tangentNormal = sampleTex(mat.normalIndex, mat.samplerIndex, uv).xyz * 2.0 - 1.0;
-    return normalize(TBN * tangentNormal);
-}
-
-void unpackORM(Material mat, vec2 uv, out float occlusion, out float roughness, out float metallic) 
-{
-    vec4 orm = sampleTex(mat.ormIndex, mat.samplerIndex, uv);
-    occlusion = orm.r;
-    roughness = orm.g;
-    metallic  = orm.b;
-}
-
-
 
 // Reconstruct World Position from Depth Buffer
 vec3 reconstructWorldPos(vec2 uv, float depth, mat4 invViewProj) 
@@ -168,8 +129,3 @@ float calculateShadow(vec4 fragPosLightSpace, uint cascadeIndex, uint shadowMapI
 }
 
 
-// Post-process
-vec3 reinhard(vec3 hdrColor)
-{
-    return hdrColor / (hdrColor + vec3(1.0));
-}

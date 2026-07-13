@@ -1,6 +1,8 @@
 #version 460
 #include "../common_vert.glsl"
 
+layout(location = 0) out vec2 outUV;
+
 void main() 
 {
     UNPACK_PUSH_CONSTANTS

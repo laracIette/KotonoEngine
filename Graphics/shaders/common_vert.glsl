@@ -1,10 +1,5 @@
 #include "common.glsl"
 
-layout(location = 0) out vec3 outWorldPos;
-layout(location = 1) out vec3 outNormal;
-layout(location = 2) out vec2 outUV;
-layout(location = 3) out vec4 outTangent;
-
 // Helpers
 #define UNPACK_PUSH_CONSTANTS                                                                   \
     FrameContext     frame            = pc.frameContext.data;                                   \
