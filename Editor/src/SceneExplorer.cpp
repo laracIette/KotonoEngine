@@ -78,7 +78,7 @@ void WSceneExplorer::Display(UWidgetDisplaySettings displaySettings)
 {
 	Base::Display(displaySettings);
 
-	Game.EventStateChanged().AddListener(this, &Self::OnGameStateChanged);
+	Game.GetEventStateChanged().AddListener(this, &Self::OnGameStateChanged);
 	
 	if (UPtr scene{ Game.GetOpenedScene() })
 	{
@@ -90,7 +90,7 @@ void WSceneExplorer::Remove()
 {
 	Base::Remove();
 
-	Game.EventStateChanged().RemoveListener(this, &Self::OnGameStateChanged);
+	Game.GetEventStateChanged().RemoveListener(this, &Self::OnGameStateChanged);
 	
 	if (UPtr scene{ Game.GetOpenedScene() })
 	{

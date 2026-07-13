@@ -88,7 +88,7 @@ void KMeshComponent::Spawn()
     RefreshDrawCall();
     RegisterDrawCall();
 
-    EventTransformUpdated().AddListener(this, &KMeshComponent::RefreshDrawCallTransformData);
+    GetEventTransformUpdated().AddListener(this, &KMeshComponent::RefreshDrawCallTransformData);
     RegisterDelegate(&Window, Window.GetEventWindowResized(), this, &KMeshComponent::RefreshDrawCallScissor);
 
     RegisterDelegate(&Keyboard, Keyboard.EventKey(EKey::N, EInputState::Pressed), this, &KMeshComponent::SetMobilityStatic);
@@ -174,7 +174,7 @@ void KMeshComponent::RefreshDrawCallTransformData() const
 void KMeshComponent::Spin()
 {
     const float speed{ 10.0f * TimeManager.GameTime().lastDelta };
-    const glm::quat rotation{ glm::quat(glm::radians(glm::vec3(0.0f, speed, 0.0f))) };
+    const glm::quat rotation{ glm::radians(glm::vec3{ 0.0f, speed, 0.0f }) };
     Rotate(rotation);
 }
 
@@ -187,7 +187,7 @@ void KMeshComponent::SetMobilityStatic()
 void KMeshComponent::SetMobilityDynamic()
 {
     SetMobility(EMobility::Dynamic);
-    KT_LOG(ELogImportanceLevel::High, "Core", "{}", GetName());
+    KT_LOG(ELogImportanceLevel::High, "Core", "{0}", GetName());
 }
 
 #include "generated/MeshComponent.generated.inl"

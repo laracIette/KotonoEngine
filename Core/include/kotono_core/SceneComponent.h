@@ -33,7 +33,7 @@ public:
 	EVisibility GetVisibility() const;
 	EMobility GetMobility() const;
 	bool CanSetTransform() const;
-	UEvent<>& EventTransformUpdated();
+	UEvent<>& GetEventTransformUpdated();
 
 	const glm::vec3& GetRelativePosition() const;
 	const glm::quat& GetRelativeRotation() const;
@@ -54,7 +54,6 @@ public:
 
 	glm::vec3 GetScreenPosition() const;
 
-	void SetOwner(const UPtr<TSceneObject>& owner);
 	void SetCanUpdate(const bool canUpdate);
 	virtual void SetVisibility(const EVisibility visibility, const bool propagateToChildren = false);
 	virtual void SetMobility(const EMobility mobility);
@@ -79,6 +78,10 @@ public:
 	void Deserialize() override;
 
 	virtual void Spawn();
+
+private:
+	void AddChild(const UPtr<KSceneComponent>& component);
+	void RemoveChild(const UPtr<KSceneComponent>& component);
 
 private:
 	bool isInit_;

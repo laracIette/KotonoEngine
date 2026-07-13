@@ -6,7 +6,8 @@
 #include <stdexcept>
 
 KSceneComponent::KSceneComponent() 
-    : visibility_{ EVisibility::Visible }
+    : owner_{}
+    , visibility_{ EVisibility::Visible }
     , canUpdate_{ true }
     , isInit_{ false }
     , mobility_{ EMobility::Dynamic }
@@ -15,8 +16,14 @@ KSceneComponent::KSceneComponent()
 
 KSceneComponent::~KSceneComponent()
 {
-    SetParent(nullptr, ECoordinateSpace::Relative);
-    SetOwner(nullptr);
+    if (owner_)
+    {
+        owner_->RemoveComponent(Ptr());
+    }
+    if (parent_)
+    {
+        parent_->RemoveChild(Ptr());
+    }
 }
 
 void KSceneComponent::Init()
@@ -62,31 +69,9 @@ bool KSceneComponent::CanSetTransform() const
     return mobility_ == EMobility::Dynamic || Game.GetState() == EGameState::Stopped;
 }
 
-UEvent<>& KSceneComponent::EventTransformUpdated()
+UEvent<>& KSceneComponent::GetEventTransformUpdated()
 {
     return eventTransformUpdated_;
-}
-
-void KSceneComponent::SetOwner(const UPtr<TSceneObject>& owner)
-{
-    if (owner == owner_)
-    {
-        return;
-	}
-
-    if (owner_)
-    {
-        owner_->RemoveComponent(Ptr());
-	}
-
-	owner_ = owner;
-
-    if (!owner_)
-    {
-        return;
-	}
-
-	owner_->AddComponent(Ptr());
 }
 
 void KSceneComponent::SetCanUpdate(const bool canUpdate)
@@ -197,35 +182,31 @@ void KSceneComponent::SetParent(const UPtr<KSceneComponent>& parent, const ECoor
 {
 	if (!parent && !parent_)
     {
+        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {0}, it's already null", GetName());
         return;
     }
 
     if (parent == this)
     {
-        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {} to itself", GetName());
+        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {0} to itself", GetName());
         return;
     }
 
     if (parent == parent_)
     {
-        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {} to its current parent", GetName());
+        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {0} to its current parent", GetName());
         return;
     }
 
     if (!CanSetTransform())
     {
-        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {}, its mobility is static", GetName());
+        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {0}, its mobility is static", GetName());
         return;
     }
 
     if (parent_)
     {
-        const size index{ childrenIndex_ };
-        if (parent_->children_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
-        {
-            parent_->children_[index]->childrenIndex_ = index;
-        }
-        parent_->EventTransformUpdated().RemoveListener(&eventTransformUpdated_, &UEvent<>::Broadcast<>);
+        parent_->RemoveChild(Ptr());
     }
 
     switch (keepTransform)
@@ -250,10 +231,10 @@ void KSceneComponent::SetParent(const UPtr<KSceneComponent>& parent, const ECoor
 
     if (parent_)
     {
-        parent_->children_.Add(Ptr());
-        childrenIndex_ = parent_->children_.LastIndex();
-        parent_->EventTransformUpdated().AddListener(&eventTransformUpdated_, &UEvent<>::Broadcast<>);
+        parent_->AddChild(Ptr());
     }
+
+    owner_ = parent_ ? parent_->owner_ : nullptr;
 }
 
 void KSceneComponent::SetRelativePosition(const glm::vec3& relativePosition)
@@ -366,18 +347,47 @@ void KSceneComponent::Deserialize()
 {
 	Base::Deserialize();
 
-    for (auto& sceneComponent : children_)
+    for (const auto& sceneComponent : children_)
     {
         if (sceneComponent)
         {
             sceneComponent->parent_ = Ptr();
-            eventTransformUpdated_.AddListener(&sceneComponent->EventTransformUpdated(), &UEvent<>::Broadcast<>);
+            eventTransformUpdated_.AddListener(&sceneComponent->GetEventTransformUpdated(), &UEvent<>::Broadcast<>);
         }
     }
 }
 
 void KSceneComponent::Spawn()
 {
+}
+
+void KSceneComponent::AddChild(const UPtr<KSceneComponent>& component)
+{
+    if (!component)
+    {
+        KT_LOG(ELogImportanceLevel::High, "Core", "can't add a null scene component");
+        return;
+    }
+
+    children_.Add(component);
+    component->childrenIndex_ = children_.LastIndex();
+    eventTransformUpdated_.AddListener(&component->GetEventTransformUpdated(), &UEvent<>::Broadcast<>);
+}
+
+void KSceneComponent::RemoveChild(const UPtr<KSceneComponent>& component)
+{
+    if (!component)
+    {
+        KT_LOG(ELogImportanceLevel::High, "Core", "can't add a null scene component");
+        return;
+    }
+
+    const size index{ component->childrenIndex_ };
+    if (children_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
+    {
+        children_[index]->childrenIndex_ = index;
+    }
+    eventTransformUpdated_.RemoveListener(&component->GetEventTransformUpdated(), &UEvent<>::Broadcast<>);
 }
 
 #include "generated/SceneComponent.generated.inl"

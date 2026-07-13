@@ -4,15 +4,18 @@
 #include "SceneComponent.h"
 
 TSceneObject::TSceneObject()
+	: viewport_{ &WindowViewport }
 {
-	viewport_ = &WindowViewport;
 }
 
 TSceneObject::~TSceneObject()
 {
 	for (i64 i{ sceneComponents_.LastIndex() }; sceneComponents_.IsValidIndex(i); --i)
 	{
-		sceneComponents_[i]->Delete();
+		if (UPtr sceneComponent{ sceneComponents_[i] })
+		{
+			sceneComponent->Delete();
+		}
 	}
 
 	SetParent(nullptr, ECoordinateSpace::Relative);
@@ -41,9 +44,9 @@ UPtr<TSceneObject>& TSceneObject::GetParent()
 	return parent_;
 }
 
-UPtr<KSceneComponent>& TSceneObject::RootComponent()
+UPtr<KSceneComponent> TSceneObject::GetRootComponent()
 {
-	return rootComponent_;
+	return sceneComponents_.empty() ? nullptr : sceneComponents_[0];
 }
 
 void TSceneObject::SetCanUpdate(const bool canUpdate)
@@ -65,13 +68,13 @@ void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinate
 
 	if (parent == this)
 	{
-		KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {} to itself", GetName());
+		KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {0} to itself", GetName());
 		return;
 	}
 
 	if (parent == parent_)
 	{
-		KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {} to its current parent", GetName());
+		KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {0} to its current parent", GetName());
 		return;
 	}
 
@@ -92,21 +95,27 @@ void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinate
 		childrenIndex_ = parent_->children_.LastIndex();
 	}
 
-	if (rootComponent_)
+	if (UPtr rootComponent{ GetRootComponent() })
 	{
-		rootComponent_->SetParent(parent_ ? parent_->RootComponent() : nullptr, keepTransform);
+		rootComponent->SetParent(parent_ ? parent_->GetRootComponent() : nullptr, keepTransform);
 	}
 }
 
 void TSceneObject::AddComponent(const UPtr<KSceneComponent>& component)
 {
-	if (sceneComponents_.empty())
+	if (!component)
 	{
-		rootComponent_ = component;
+		KT_LOG(ELogImportanceLevel::High, "Core", "can't add a null scene component");
+		return;
 	}
-	else
+
+	if (UPtr rootComponent{ GetRootComponent() })
 	{
-		component->SetParent(rootComponent_, ECoordinateSpace::Relative);
+		component->SetParent(rootComponent, ECoordinateSpace::Relative);
+	}
+	else // component becomes root
+	{
+		component->owner_ = Ptr();
 	}
 	sceneComponents_.Add(component);
 	component->componentIndex_ = sceneComponents_.LastIndex();
@@ -114,23 +123,24 @@ void TSceneObject::AddComponent(const UPtr<KSceneComponent>& component)
 
 void TSceneObject::RemoveComponent(const UPtr<KSceneComponent>& component)
 {
+	if (!component)
+	{
+		KT_LOG(ELogImportanceLevel::High, "Core", "can't remove a null scene component");
+		return;
+	}
+
 	const size index{ component->componentIndex_ };
 	if (sceneComponents_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
 	{
 		sceneComponents_[index]->componentIndex_ = index;
-		if (component == rootComponent_)
+	}
+
+	for (const auto& sceneComponent : sceneComponents_)
+	{
+		if (sceneComponent->GetParent() == component)
 		{
-			rootComponent_ = sceneComponents_[index];
+			sceneComponent->SetParent(component->GetParent(), ECoordinateSpace::Relative);
 		}
-	}
-	else if (component == rootComponent_)
-	{
-		rootComponent_ = nullptr;
-	}
-	
-	for (size i{ 1 }; i < sceneComponents_.size(); ++i)
-	{
-		sceneComponents_[i]->SetParent(rootComponent_, ECoordinateSpace::Relative);
 	}
 }
 

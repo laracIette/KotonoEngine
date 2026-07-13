@@ -57,21 +57,27 @@ public:
 	using PointerType = T;
 
 public:
-	UPtr() : owner_(nullptr), index_(0) {}
+	UPtr() : owner_{ nullptr }, index_{ 0 } 
+	{
+	}
 
-	UPtr(Owner* owner) : UPtr()
+	UPtr(std::nullptr_t) : UPtr{} 
+	{
+	}
+
+	UPtr(Owner* owner) : UPtr{}
 	{
 		SetOwner(owner);
 	}
 	
-	UPtr(const UPtr& other) : UPtr()
+	UPtr(const UPtr& other) : UPtr{}
 	{
 		SetOwner(other.owner_);
 	}
 
 	template <typename From>
 		requires std::is_convertible_v<From*, PointerType*>
-	UPtr(const UPtr<From>& other) : UPtr()
+	UPtr(const UPtr<From>& other) : UPtr{}
 	{
 		SetOwner(other.owner_);
 	}
@@ -84,6 +90,12 @@ public:
 	void Invalidate() noexcept override
 	{
 		owner_ = nullptr;
+	}
+
+	UPtr& operator=(std::nullptr_t)
+	{
+		SetOwner(nullptr);
+		return *this;
 	}
 
 	template <typename From>

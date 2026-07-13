@@ -28,15 +28,15 @@ WidgetPtr WSceneExplorerAddButton::Build()
 			UPtr meshComponent1{ UCreate<KMeshComponent>{}() };
 			UPtr meshComponent2{ UCreate<KMeshComponent>{}() };
 													
-			rootComponent->SetOwner(mesh);
+			mesh->AddComponent(rootComponent);
 			rootComponent->SetRelativePosition(glm::vec3(0.0f));
 													
-			meshComponent1->SetOwner(mesh);	
+			mesh->AddComponent(meshComponent1);
 			meshComponent1->SetShader(shader);
 			meshComponent1->SetModel(model1);
 			meshComponent1->SetParent(rootComponent, ECoordinateSpace::Relative);
 													
-			meshComponent2->SetOwner(mesh);	
+			mesh->AddComponent(meshComponent2);
 			meshComponent2->SetShader(shader);
 			meshComponent2->SetModel(model2);
 			meshComponent2->SetParent(meshComponent1, ECoordinateSpace::Relative);

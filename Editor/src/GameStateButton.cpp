@@ -63,7 +63,7 @@ void WGameStateButton::Display(UWidgetDisplaySettings displaySettings)
     Base::Display(displaySettings);
 
     Keyboard.EventKey(EKey::Space, EInputState::Pressed).AddListener(this, &WGameStateButton::OnKeyboardSpaceKeyPressed);
-    Game.EventStateChanged().AddListener(this, &Self::OnGameStateChanged);
+    Game.GetEventStateChanged().AddListener(this, &Self::OnGameStateChanged);
 }
 
 void WGameStateButton::Remove()
@@ -71,7 +71,7 @@ void WGameStateButton::Remove()
     Base::Remove();
 
     Keyboard.EventKey(EKey::Space, EInputState::Pressed).RemoveListener(this, &WGameStateButton::OnKeyboardSpaceKeyPressed);
-    Game.EventStateChanged().RemoveListener(this, &Self::OnGameStateChanged);
+    Game.GetEventStateChanged().RemoveListener(this, &Self::OnGameStateChanged);
 }
 
 void WGameStateButton::OnKeyboardSpaceKeyPressed() const

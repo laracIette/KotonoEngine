@@ -23,18 +23,17 @@ public:
 	void Stop();
 
 	EGameState GetState() const;
-	void SetState(const EGameState state);
-
-	UEvent<EGameState>& EventStateChanged();
-
-public:
-	void OpenScene(const UPtr<KScene>& scene);
-
-	void OpenStartupScene();
-
+	UEvent<EGameState>& GetEventStateChanged();
 	const UPtr<KScene>& GetOpenedScene() const;
 
+	void SetState(const EGameState state);
+
+	void OpenScene(const UPtr<KScene>& scene);
+
 private:
+	void OpenStartupScene();
+	void OpenTestScene() const;
+
 	void OnKeySPressed() const;
 
 private:

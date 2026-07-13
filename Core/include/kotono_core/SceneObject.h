@@ -27,7 +27,7 @@ public:
 	bool GetCanUpdate() const;
 	GWindowViewport* GetViewport() const;
 	UPtr<TSceneObject>& GetParent();
-	UPtr<KSceneComponent>& RootComponent();
+	UPtr<KSceneComponent> GetRootComponent();
 
 	void SetCanUpdate(const bool canUpdate);
 	void SetViewport(GWindowViewport* viewport);
@@ -57,7 +57,6 @@ private:
 	bool canUpdate_;
 	GWindowViewport* viewport_;
 	UPtr<TSceneObject> parent_;
-	SERIALIZE UPtr<KSceneComponent> rootComponent_;
 	SERIALIZE UPool<UPtr<KSceneComponent>> sceneComponents_;
 	SERIALIZE UPool<UPtr<TSceneObject>> children_;
 	SERIALIZE size childrenIndex_;
