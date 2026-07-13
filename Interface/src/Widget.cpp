@@ -166,7 +166,7 @@ u32 WWidget::GetLayer() const
 	return displaySettings_.layer;
 }
 
-const KtScissor& WWidget::GetScissor() const
+const UScissor& WWidget::GetScissor() const
 {
 	return displaySettings_.scissor;
 }

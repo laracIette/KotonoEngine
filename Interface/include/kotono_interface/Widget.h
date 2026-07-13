@@ -17,7 +17,7 @@ struct UWidgetDisplaySettings
 	glm::vec2 position;
 	glm::vec2 bounds;
 	i32 layer;
-	KtScissor scissor;
+	UScissor scissor;
 };
 
 class WWidget;
@@ -71,7 +71,7 @@ public:
 	const glm::vec2& GetPosition() const;
 	const glm::vec2& GetSize() const;
 	u32 GetLayer() const;
-	const KtScissor& GetScissor() const;
+	const UScissor& GetScissor() const;
 
 protected:
 	void SetState(const StateFunction& function);

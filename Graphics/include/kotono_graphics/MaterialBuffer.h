@@ -1,6 +1,6 @@
 #pragma once
 #include <kotono_common/types.h>
-#include <vma/vk_mem_alloc.h>
+#include <kotono_platform/AllocatedBuffer.h>
 #include <vulkan/vulkan_core.h>
 class GMaterialBuffer final
 {
@@ -23,10 +23,7 @@ public:
 	VkDeviceAddress GetAddress() const;
 
 private:
-	VkBuffer buffer_;
-	VmaAllocation allocation_;
-	VkDeviceAddress bda_;
-
+	UAllocatedBuffer dataBuffer_;
 	u32 materialCount_;
 };
 

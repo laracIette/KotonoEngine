@@ -2,7 +2,7 @@
 #include "FrameContextBufferData.h"
 #include "frames_in_flight.h"
 #include <kotono_common/types.h>
-#include <vma/vk_mem_alloc.h>
+#include <kotono_platform/AllocatedBuffer.h>
 #include <vulkan/vulkan_core.h>
 class GFrameContextBuffer final
 {
@@ -11,10 +11,7 @@ class GFrameContextBuffer final
 public:
     struct FrameData
     {
-        VkBuffer buffer;
-        VmaAllocation allocation;
-        Data* mapped;
-        VkDeviceAddress bda;
+        UAllocatedBuffer dataBuffer;
 
         u32 gBufferAlbedo;
         u32 gBufferNormal;

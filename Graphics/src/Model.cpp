@@ -126,24 +126,21 @@ void UModel::CreateVertexBuffer()
 {
 	const VkDeviceSize bufferSize{ sizeof(UVertex) * vertices_.size() };
 
-	Context.CreateBuffer(bufferSize
+	Context.CreateBuffer(stagingVertexBuffer_
+		, bufferSize
 		, VK_BUFFER_USAGE_TRANSFER_SRC_BIT
-		, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT 
-		| VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-		, VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT 
-		| VMA_ALLOCATION_CREATE_MAPPED_BIT
-		, stagingVertexBuffer_
+		, VMA_ALLOCATION_CREATE_MAPPED_BIT
+		| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
 	);
-
+	
 	std::memcpy(stagingVertexBuffer_.allocationInfo.pMappedData, vertices_.data(), static_cast<size>(bufferSize));
 
-	Context.CreateBuffer(bufferSize
-		, VK_BUFFER_USAGE_TRANSFER_DST_BIT 
+	Context.CreateBuffer(vertexBuffer_
+		, bufferSize
+		, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 		| VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
 		| VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
-		, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 		, VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT
-		, vertexBuffer_
 	);
 
 	Context.CopyBuffer(stagingVertexBuffer_.buffer, vertexBuffer_.buffer, bufferSize);
@@ -154,22 +151,20 @@ void UModel::CreateIndexBuffer()
 {
 	const VkDeviceSize bufferSize{ sizeof(u32) * indices_.size() };
 
-	Context.CreateBuffer(
-		bufferSize,
-		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
-		stagingIndexBuffer_
+	Context.CreateBuffer(stagingIndexBuffer_
+		, bufferSize
+		, VK_BUFFER_USAGE_TRANSFER_SRC_BIT
+		, VMA_ALLOCATION_CREATE_MAPPED_BIT
+		| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
 	);
 
 	std::memcpy(stagingIndexBuffer_.allocationInfo.pMappedData, indices_.data(), static_cast<size>(bufferSize));
-
-	Context.CreateBuffer(
-		bufferSize,
-		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
-		indexBuffer_
+	
+	Context.CreateBuffer(indexBuffer_
+		, bufferSize
+		, VK_BUFFER_USAGE_TRANSFER_DST_BIT
+		| VK_BUFFER_USAGE_INDEX_BUFFER_BIT
+		, VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT
 	);
 
 	Context.CopyBuffer(stagingIndexBuffer_.buffer, indexBuffer_.buffer, bufferSize);

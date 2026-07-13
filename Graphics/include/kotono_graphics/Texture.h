@@ -2,6 +2,7 @@
 #include <glm/vec2.hpp>
 #include <kotono_common/Path.h>
 #include <kotono_platform/AllocatedBuffer.h>
+#include <kotono_platform/AllocatedImage.h>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
 class UTexture final
@@ -26,20 +27,11 @@ private:
     // File path of the texture
     const UPath path_;
 
-    // Vulkan image handle
-    VkImage image_;
-    // Vulkan memory allocation handle
-    VmaAllocation allocation_;
-    // Image view for rendering
-    VkImageView imageView_;
-    // Descriptor set for binding image in shaders
-    VkDescriptorSet descriptorSet_;
-    // Width and height of the texture
+    UAllocatedImage allocatedImage_;
+    UAllocatedBuffer stagingBuffer_;
+
     glm::uvec2 size_;
-    // Number of levels of mipmaps
     u32 mipLevels_;
 
     u32 index_;
-
-    UAllocatedBuffer stagingBuffer_;
 };

@@ -693,7 +693,13 @@ void GContext::StagingUpload(const void* data
 {
 	// Create a temporary host-visible staging buffer
 	UAllocatedBuffer stagingBuffer;
-	CreateStagingBuffer(stagingBuffer, dataSize);
+	CreateBuffer(stagingBuffer
+		, dataSize
+		, VK_BUFFER_USAGE_TRANSFER_SRC_BIT
+		, VMA_ALLOCATION_CREATE_MAPPED_BIT
+		| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
+		, VMA_MEMORY_USAGE_AUTO
+	);
 
 	// Copy CPU data into the staging buffer
 	std::memcpy(stagingBuffer.allocationInfo.pMappedData, data, dataSize);
@@ -753,51 +759,46 @@ void GContext::CreateCommandPool()
 	);
 }
 
-void GContext::CreateBuffer(VkDeviceSize size
-	, VkBufferUsageFlags usage
-	, VkMemoryPropertyFlags properties
-	, VmaAllocationCreateFlags flags
-	, UAllocatedBuffer& buffer
-	, VmaMemoryUsage vmaUsage) const
+void GContext::CreateBuffer(UAllocatedBuffer& allocatedBuffer
+	, const VkDeviceSize size
+	, const VkBufferUsageFlags usage
+	, const VmaAllocationCreateFlags allocFlags
+	, const VmaMemoryUsage memUsage) const
 {
-	const VkBufferCreateInfo bufferInfo{
+	const VkBufferCreateInfo bufInfo{
 		.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
 		.size = size,
 		.usage = usage,
-		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
 	};
 
-	VmaAllocationCreateInfo allocCreateInfo{};
-	if (vmaUsage != VMA_MEMORY_USAGE_UNKNOWN)
-	{
-		allocCreateInfo.usage = vmaUsage;
-	}
-	else if (properties & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
-	{
-		if (properties & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
-		{
-			allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE; // Covers hybrid cases
-		}
-		else
-		{
-			allocCreateInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY; // Pure GPU memory
-		}
-	}
-	else
-	{
-		allocCreateInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU; // Staging buffers
-	}
-	allocCreateInfo.requiredFlags = properties;
-	allocCreateInfo.flags = flags;
+	const VmaAllocationCreateInfo allocInfo{
+		.flags = allocFlags,
+		.usage = memUsage,
+	};
 
 	VK_CHECK_THROW(
-		vmaCreateBuffer(allocator_, &bufferInfo, &allocCreateInfo, &buffer.buffer, &buffer.allocation, &buffer.allocationInfo),
+		vmaCreateBuffer(allocator_
+			, &bufInfo
+			, &allocInfo
+			, &allocatedBuffer.buffer
+			, &allocatedBuffer.allocation
+			, &allocatedBuffer.allocationInfo
+		),
 		"failed to create buffer with VMA!"
 	);
 
-	if ((flags & VMA_ALLOCATION_CREATE_MAPPED_BIT) && !buffer.allocationInfo.pMappedData)
+	if ((allocFlags & VMA_ALLOCATION_CREATE_MAPPED_BIT) && !allocatedBuffer.allocationInfo.pMappedData)
 	{
-		throw std::runtime_error("Staging buffer was not mapped as expected!");
+		throw "Staging buffer was not mapped as expected!";
+	}
+
+	if (usage & VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT)
+	{
+		const VkBufferDeviceAddressInfo addrInfo{
+			.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
+			.buffer = allocatedBuffer.buffer,
+		};
+		allocatedBuffer.bda = vkGetBufferDeviceAddress(device_, &addrInfo);
 	}
 }
 
@@ -1230,31 +1231,6 @@ bool GContext::GetIsComputerPluggedIn()
 	SYSTEM_POWER_STATUS powerStatus;
 	return GetSystemPowerStatus(&powerStatus) 
 		&& powerStatus.ACLineStatus == AC_LINE_ONLINE;
-}
-
-void GContext::CreateStagingBuffer(UAllocatedBuffer& stagingBuffer, const VkDeviceSize bufSize) const
-{
-	const VkBufferCreateInfo stagingInfo{
-		.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-		.size = bufSize,
-		.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-	};
-	const VmaAllocationCreateInfo allocInfo{
-		.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT
-			| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
-		.usage = VMA_MEMORY_USAGE_AUTO,
-	};
-
-	VK_CHECK_THROW(
-		vmaCreateBuffer(allocator_
-			, &stagingInfo
-			, &allocInfo
-			, &stagingBuffer.buffer
-			, &stagingBuffer.allocation
-			, &stagingBuffer.allocationInfo
-		),
-		"failed to create buffer!"
-	);
 }
 
 void GContext::ClearDeletionQueue()

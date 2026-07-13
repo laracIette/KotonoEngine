@@ -84,7 +84,6 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/ParametersBufferData.h"
     "include/kotono_graphics/PipelineResourceManager.h"
     "include/kotono_graphics/Renderer.h"
-    "include/kotono_graphics/RendererFrameStats.h"
     "include/kotono_graphics/Sampler.h"
     "include/kotono_graphics/Scissor.h"
     "include/kotono_graphics/Shader.h"

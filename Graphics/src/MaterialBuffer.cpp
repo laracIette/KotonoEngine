@@ -6,41 +6,25 @@ static constexpr u32 MAX_MATERIALS{ 4096 };
 
 void GMaterialBuffer::Init()
 {
-    const VkBufferCreateInfo bufInfo{
-        .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = sizeof(Material) * MAX_MATERIALS,
-        .usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
-            | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
-            | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-    };
-    const VmaAllocationCreateInfo allocInfo{
-        .usage = VMA_MEMORY_USAGE_GPU_ONLY
-    };
-    vmaCreateBuffer(Context.GetAllocator()
-        , &bufInfo
-        , &allocInfo
-        , &buffer_
-        , &allocation_
-        , nullptr
+    Context.CreateBuffer(dataBuffer_
+        , sizeof(Material) * MAX_MATERIALS
+        , VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
+        | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
+        | VK_BUFFER_USAGE_TRANSFER_DST_BIT
+        , 0
     );
-
-    const VkBufferDeviceAddressInfo addrInfo{
-        .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
-        .buffer = buffer_,
-    };
-    bda_ = vkGetBufferDeviceAddress(Context.GetDevice(), &addrInfo);
 }
 
 void GMaterialBuffer::Cleanup() const
 {
-    vmaDestroyBuffer(Context.GetAllocator(), buffer_, allocation_);
+    vmaDestroyBuffer(Context.GetAllocator(), dataBuffer_.buffer, dataBuffer_.allocation);
 }
 
 u32 GMaterialBuffer::RegisterMaterial(const Material& material)
 {
     Context.StagingUpload(&material
         , sizeof(Material)
-        , buffer_
+        , dataBuffer_.buffer
         , materialCount_ * sizeof(Material)
     );
     assert(materialCount_ < MAX_MATERIALS);
@@ -49,5 +33,5 @@ u32 GMaterialBuffer::RegisterMaterial(const Material& material)
 
 VkDeviceAddress GMaterialBuffer::GetAddress() const
 {
-    return bda_;
+    return dataBuffer_.bda;
 }

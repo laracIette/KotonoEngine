@@ -24,7 +24,7 @@ public:
 	VkQueue& GetPresentQueue();
 	VkSurfaceKHR& GetSurface();
 
-	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VmaAllocationCreateFlags flags, UAllocatedBuffer& buffer, VmaMemoryUsage vmaUsage = VMA_MEMORY_USAGE_UNKNOWN) const;
+	void CreateBuffer(UAllocatedBuffer& allocatedBuffer, const VkDeviceSize size, const VkBufferUsageFlags usage, const VmaAllocationCreateFlags allocFlags, const VmaMemoryUsage memUsage = VMA_MEMORY_USAGE_AUTO) const;
 	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 	void CreateImage(const u32 width, const  u32 height, const  u32 mipLevels, const u32 arrayLayers, const VkSampleCountFlagBits numSamples, const VkFormat format, const VkImageTiling tiling, const VkImageUsageFlags usage, const VkMemoryPropertyFlags properties, VkImage& image, VmaAllocation& imageAllocation) const;
 	void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, u32 mipLevels);
@@ -73,7 +73,6 @@ private:
 
 	bool GetIsComputerPluggedIn();
 
-	void CreateStagingBuffer(UAllocatedBuffer& stagingBuffer, const VkDeviceSize bufSize) const;
 	void ClearDeletionQueue();
 
 private:

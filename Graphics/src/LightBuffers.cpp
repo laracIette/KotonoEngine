@@ -100,11 +100,11 @@ void GLightBuffers::UpdateBuffers(const u32 frameIndex)
         }
     }
 
-    std::memcpy(frameDatas_[frameIndex].directionalLightBuffer.mapped
+    std::memcpy(frameDatas_[frameIndex].directionalLightBuffer.allocationInfo.pMappedData
         , directionalLights_.data()
         , directionalLights_.size() * sizeof(UDirectionalLight)
     );
-    std::memcpy(frameDatas_[frameIndex].pointLightBuffer.mapped
+    std::memcpy(frameDatas_[frameIndex].pointLightBuffer.allocationInfo.pMappedData
         , pointLights_.data()
         , pointLights_.size() * sizeof(UPointLight)
     );
@@ -225,44 +225,21 @@ void GLightBuffers::CreateBuffers()
 {
     for (auto& frameData : frameDatas_)
     {
-        CreateBuffer(frameData.directionalLightBuffer, sizeof(UDirectionalLight) * MAX_DIRECTIONAL_LIGHTS);
-        CreateBuffer(frameData.pointLightBuffer, sizeof(UPointLight) * MAX_POINT_LIGHTS);
+        Context.CreateBuffer(frameData.directionalLightBuffer
+            , sizeof(UDirectionalLight) * MAX_DIRECTIONAL_LIGHTS
+            , VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
+            | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
+            , VMA_ALLOCATION_CREATE_MAPPED_BIT
+            | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
+        );
+        Context.CreateBuffer(frameData.pointLightBuffer
+            , sizeof(UPointLight) * MAX_POINT_LIGHTS
+            , VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
+            | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
+            , VMA_ALLOCATION_CREATE_MAPPED_BIT
+            | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
+        );
     }
-}
-
-void GLightBuffers::CreateBuffer(LightBuffer& lightBuffer, const VkDeviceSize size)
-{
-    const VkBufferCreateInfo bufInfo{
-        .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = size,
-        .usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
-               | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
-    };
-
-    const VmaAllocationCreateInfo allocInfo{
-        .flags = VMA_ALLOCATION_CREATE_MAPPED_BIT
-               | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
-        .usage = VMA_MEMORY_USAGE_AUTO
-    };
-
-    VmaAllocationInfo allocationInfo;
-    VK_CHECK_THROW(
-        vmaCreateBuffer(Context.GetAllocator()
-            , &bufInfo
-            , &allocInfo
-            , &lightBuffer.buffer
-            , &lightBuffer.allocation
-            , &allocationInfo
-        ),
-        "failed to create buffer!"
-    );
-    lightBuffer.mapped = allocationInfo.pMappedData;
-
-    const VkBufferDeviceAddressInfo addrInfo{
-        .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
-        .buffer = lightBuffer.buffer,
-    };
-    lightBuffer.bda = vkGetBufferDeviceAddress(Context.GetDevice(), &addrInfo);
 }
 
 void GLightBuffers::CreateShadowMapResources()

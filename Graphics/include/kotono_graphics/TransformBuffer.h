@@ -2,8 +2,8 @@
 #include "frames_in_flight.h"
 #include "TransformBufferData.h"
 #include <kotono_common/types.h>
+#include <kotono_platform/AllocatedBuffer.h>
 #include <vector>
-#include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
 class GTransformBuffer final
 {
@@ -12,10 +12,7 @@ class GTransformBuffer final
 public:
     struct FrameData
     {
-        VkBuffer buffer;
-        VmaAllocation allocation;
-        Data* mapped;
-        VkDeviceAddress bda;
+        UAllocatedBuffer dataBuffer;
     };
 
 public:

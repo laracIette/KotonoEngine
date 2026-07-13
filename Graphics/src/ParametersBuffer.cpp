@@ -14,7 +14,7 @@ void GParametersBuffer::Cleanup() const
 {
     for (const auto& frameData : frameDatas_)
     {
-        vmaDestroyBuffer(Context.GetAllocator(), frameData.buffer, frameData.allocation);
+        vmaDestroyBuffer(Context.GetAllocator(), frameData.dataBuffer.buffer, frameData.dataBuffer.allocation);
     }
 }
 
@@ -35,7 +35,7 @@ u32 GParametersBuffer::GetIndex(const Data* slot) const
 
 void GParametersBuffer::UpdateBuffer(const u32 frameIndex)
 {
-    std::memcpy(frameDatas_[frameIndex].mapped
+    std::memcpy(frameDatas_[frameIndex].dataBuffer.allocationInfo.pMappedData
         , datas_.data()
         , dataCount_ * sizeof(Data)
     );
@@ -43,46 +43,20 @@ void GParametersBuffer::UpdateBuffer(const u32 frameIndex)
 
 VkDeviceAddress GParametersBuffer::GetAddress(const u32 frameIndex) const
 {
-    return frameDatas_[frameIndex].bda;
+    return frameDatas_[frameIndex].dataBuffer.bda;
 }
 
 void GParametersBuffer::CreateBuffers()
 {
     for (auto& frameData : frameDatas_)
     {
-        const VkBufferCreateInfo bufInfo{
-        .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = sizeof(Data) * MAX_PARAMETERS,
-        .usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
-            | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
-        };
-
-        // HOST_VISIBLE so CPU can write directly each frame
-        const VmaAllocationCreateInfo allocInfo{
-            .flags = VMA_ALLOCATION_CREATE_MAPPED_BIT
-                | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
-            .usage = VMA_MEMORY_USAGE_AUTO,
-        };
-
-        VmaAllocationInfo allocationInfo;
-        VK_CHECK_THROW(
-            vmaCreateBuffer(Context.GetAllocator()
-                , &bufInfo
-                , &allocInfo
-                , &frameData.buffer
-                , &frameData.allocation
-                , &allocationInfo
-            ),
-            "failed to create buffer with VMA!"
+        Context.CreateBuffer(frameData.dataBuffer
+            , sizeof(Data) * MAX_PARAMETERS
+            , VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
+            | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
+            , VMA_ALLOCATION_CREATE_MAPPED_BIT
+            | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
         );
-
-        frameData.mapped = static_cast<Data*>(allocationInfo.pMappedData);
-
-        const VkBufferDeviceAddressInfo addrInfo{
-            .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
-            .buffer = frameData.buffer,
-        };
-        frameData.bda = vkGetBufferDeviceAddress(Context.GetDevice(), &addrInfo);
     }
 }
 

@@ -2,9 +2,9 @@
 #include "frames_in_flight.h"
 #include "Lights.h"
 #include <kotono_common/types.h>
+#include <kotono_platform/AllocatedBuffer.h>
 #include <kotono_platform/AllocatedImage.h>
 #include <vector>
-#include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
 class GLightBuffers final
 {
@@ -14,21 +14,12 @@ public:
 		UAllocatedImage allocatedImage;
 		u32 textureIndex;
 	};
-
-	struct LightBuffer
-	{
-		VkBuffer buffer;
-		VmaAllocation allocation;
-		void* mapped;
-		VkDeviceAddress bda;
-	};
 	
 	struct FrameData
 	{
-		LightBuffer directionalLightBuffer;
+		UAllocatedBuffer directionalLightBuffer;
+		UAllocatedBuffer pointLightBuffer;
 		std::vector<ShadowMapTarget> directionalLightShadowMapTargets;
-
-		LightBuffer pointLightBuffer;
 	};
 
 	struct DirectionalLightData
@@ -61,7 +52,6 @@ public:
 
 private:
 	void CreateBuffers();
-	void CreateBuffer(LightBuffer& lightBuffer, const VkDeviceSize size);
 	void CreateShadowMapResources();
 
 private:

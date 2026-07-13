@@ -11,15 +11,15 @@ UTexture::UTexture(const UPath& path)
 	CreateImage();
 	CreateImageView();
 
-	index_ = PipelineResourceManager.RegisterTexture(imageView_);
+	index_ = PipelineResourceManager.RegisterTexture(allocatedImage_.imageView);
 }
 
 UTexture::~UTexture()
 {
 	PipelineResourceManager.UnregisterTexture(index_);
 
-	vkDestroyImageView(Context.GetDevice(), imageView_, nullptr);
-	vmaDestroyImage(Context.GetAllocator(), image_, allocation_);
+	vkDestroyImageView(Context.GetDevice(), allocatedImage_.imageView, nullptr);
+	vmaDestroyImage(Context.GetAllocator(), allocatedImage_.image, allocatedImage_.allocation);
 	KT_LOG(ELogImportanceLevel::Low, "Graphics", "cleaned up {0}", Path().ToString());
 }
 
@@ -55,32 +55,33 @@ void UTexture::CreateImage()
 		throw std::runtime_error("failed to load texture image!");
 	}
 
-	Context.CreateBuffer(
-		imageSize,
-		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
-		stagingBuffer_
+	Context.CreateBuffer(stagingBuffer_
+		, imageSize
+		, VK_BUFFER_USAGE_TRANSFER_SRC_BIT
+		, VMA_ALLOCATION_CREATE_MAPPED_BIT
+		| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
 	);
 
 	std::memcpy(stagingBuffer_.allocationInfo.pMappedData, pixels, static_cast<size>(imageSize));
 
 	stbi_image_free(pixels);
 
-	Context.CreateImage(texWidth, texHeight,
-		mipLevels_,
-		1,
-		VK_SAMPLE_COUNT_1_BIT,
-		VK_FORMAT_R8G8B8A8_SRGB,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		image_,
-		allocation_
+	Context.CreateImage(texWidth, texHeight
+		, mipLevels_
+		, 1
+		, VK_SAMPLE_COUNT_1_BIT
+		, VK_FORMAT_R8G8B8A8_SRGB
+		, VK_IMAGE_TILING_OPTIMAL
+		, VK_IMAGE_USAGE_TRANSFER_SRC_BIT 
+		| VK_IMAGE_USAGE_TRANSFER_DST_BIT 
+		| VK_IMAGE_USAGE_SAMPLED_BIT
+		, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+		, allocatedImage_.image
+		, allocatedImage_.allocation
 	);
 
 	Context.TransitionImageLayout(
-		image_,
+		allocatedImage_.image,
 		VK_FORMAT_R8G8B8A8_SRGB,
 		VK_IMAGE_LAYOUT_UNDEFINED,
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
@@ -89,21 +90,27 @@ void UTexture::CreateImage()
 
 	Context.CopyBufferToImage(
 		stagingBuffer_.buffer,
-		image_,
+		allocatedImage_.image,
 		static_cast<u32>(texWidth),
 		static_cast<u32>(texHeight)
 	);
 
 	Context.GetEventExecuteSingleTimeCommands().AddListener(this, &UTexture::DestroyStagingBuffer);
 
-	Context.GenerateMipmaps(image_, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels_);
+	Context.GenerateMipmaps(allocatedImage_.image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels_);
 
-	size_ = glm::uvec2(static_cast<u32>(texWidth), static_cast<u32>(texHeight));
+	size_ = { static_cast<u32>(texWidth), static_cast<u32>(texHeight) };
 }
 
 void UTexture::CreateImageView()
 {
-	imageView_ = Context.CreateImageView(image_, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels_, 1);
+	allocatedImage_.imageView = Context.CreateImageView(allocatedImage_.image
+		, VK_IMAGE_VIEW_TYPE_2D
+		, VK_FORMAT_R8G8B8A8_SRGB
+		, VK_IMAGE_ASPECT_COLOR_BIT
+		, mipLevels_
+		, 1
+	);
 }
 
 void UTexture::DestroyStagingBuffer() const
