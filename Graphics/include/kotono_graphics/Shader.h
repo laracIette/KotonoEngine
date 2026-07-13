@@ -10,6 +10,7 @@ enum class EPipelinePass : u8
 	GBuffer,
 	DeferredLighting,
 	PostProcess,
+	Interface,
 };
 class UShader final
 {

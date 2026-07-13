@@ -136,6 +136,17 @@ void GRenderer::RegisterOpaqueDrawCall(UDrawCall* drawCall)
 	drawCall->poolIndex = opaqueDrawCalls_.LastIndex();
 }
 
+void GRenderer::RegisterInterfaceDrawCall(UDrawCall* drawCall)
+{
+	if (!drawCall)
+	{
+		return;
+	}
+
+	interfaceDrawCalls_.Add(drawCall);
+	drawCall->poolIndex = interfaceDrawCalls_.LastIndex();
+}
+
 void GRenderer::UnregisterOpaqueDrawCall(UDrawCall* drawCall)
 {
 	if (!drawCall)
@@ -147,6 +158,20 @@ void GRenderer::UnregisterOpaqueDrawCall(UDrawCall* drawCall)
 	if (opaqueDrawCalls_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
 	{
 		opaqueDrawCalls_[index]->poolIndex = index;
+	}
+}
+
+void GRenderer::UnregisterInterfaceDrawCall(UDrawCall* drawCall)
+{
+	if (!drawCall)
+	{
+		return;
+	}
+
+	const auto index{ drawCall->poolIndex };
+	if (interfaceDrawCalls_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
+	{
+		interfaceDrawCalls_[index]->poolIndex = index;
 	}
 }
 
@@ -572,13 +597,19 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 	CmdBarrierColorWriteToRead(commandBuffer, frameIndex);
 
 	// Post process
-	// - Make swapchain writable
+	// - Make swapchain image writable
 	CmdBarrierSwapchainNoneToWrite(commandBuffer, frameIndex);
-	// - Write swapchain
+	// - Write swapchain image
 	CmdBeginRenderingPostProcess(commandBuffer, frameIndex);
 	CmdDrawFramePostProcess(commandBuffer, frameIndex);
 	CmdEndRendering(commandBuffer);
-	// - Reset swapchain image
+
+	// Interface
+	// - Write swapchain image
+	CmdBeginRenderingInterface(commandBuffer, frameIndex);
+	CmdDrawFrameInterface(commandBuffer, frameIndex);
+	CmdEndRendering(commandBuffer);
+	// - Make swapchain image presentable
 	CmdBarrierSwapchainWriteToPresent(commandBuffer, frameIndex);
 
 	EndCommandBuffer(commandBuffer);
@@ -973,7 +1004,7 @@ void GRenderer::CmdBarrierSwapchainNoneToWrite(VkCommandBuffer commandBuffer, co
 
 void GRenderer::CmdBeginRenderingPostProcess(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	const VkRenderingAttachmentInfo finalAttachment{
+	const VkRenderingAttachmentInfo swapchainAttachment{
 		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
 		.imageView = swapChainDatas_[frameDatas_[frameIndex].imageIndex].imageView,
 		.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
@@ -982,7 +1013,7 @@ void GRenderer::CmdBeginRenderingPostProcess(VkCommandBuffer commandBuffer, cons
 		.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
 	};
 
-	const VkRenderingInfo finalRenderingInfo{
+	const VkRenderingInfo swapchainRenderingInfo{
 		.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
 		.renderArea{
 			.offset = { 0, 0 },
@@ -990,10 +1021,10 @@ void GRenderer::CmdBeginRenderingPostProcess(VkCommandBuffer commandBuffer, cons
 		},
 		.layerCount = 1,
 		.colorAttachmentCount = 1,
-		.pColorAttachments = &finalAttachment,
+		.pColorAttachments = &swapchainAttachment,
 	};
 
-	vkCmdBeginRendering(commandBuffer, &finalRenderingInfo);
+	vkCmdBeginRendering(commandBuffer, &swapchainRenderingInfo);
 }
 
 void GRenderer::CmdDrawFramePostProcess(VkCommandBuffer commandBuffer, const u32 frameIndex) const
@@ -1003,6 +1034,54 @@ void GRenderer::CmdDrawFramePostProcess(VkCommandBuffer commandBuffer, const u32
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
 		CmdPushConstants(commandBuffer, nullptr, frameIndex);
 		vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+	}
+}
+
+void GRenderer::CmdBeginRenderingInterface(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	const VkRenderingAttachmentInfo swapchainAttachment{
+		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+		.imageView = swapChainDatas_[frameDatas_[frameIndex].imageIndex].imageView,
+		.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+
+		.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
+		.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+	};
+
+	const VkRenderingInfo swapchainRenderingInfo{
+		.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
+		.renderArea{
+			.offset = { 0, 0 },
+			.extent = swapChainExtent_
+		},
+		.layerCount = 1,
+		.colorAttachmentCount = 1,
+		.pColorAttachments = &swapchainAttachment,
+	};
+
+	vkCmdBeginRendering(commandBuffer, &swapchainRenderingInfo);
+}
+
+void GRenderer::CmdDrawFrameInterface(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+{
+	auto sortedDrawCalls{ interfaceDrawCalls_ };
+
+	std::ranges::sort(sortedDrawCalls, std::less{}, [](const UDrawCall* dc) {
+		return std::tie(dc->sortKey, dc->pipeline);
+	});
+
+	VkPipeline currentPipeline{ VK_NULL_HANDLE };
+
+	for (const auto* drawCall : sortedDrawCalls)
+	{
+		if (currentPipeline != drawCall->pipeline)
+		{
+			currentPipeline = drawCall->pipeline;
+			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, drawCall->pipeline);
+		}
+
+		CmdPushConstants(commandBuffer, drawCall, frameIndex);
+		CmdDraw(commandBuffer, drawCall);
 	}
 }
 
@@ -1040,6 +1119,11 @@ void GRenderer::CmdPushConstants(VkCommandBuffer commandBuffer, const UDrawCall*
 
 void GRenderer::CmdDraw(VkCommandBuffer commandBuffer, const UDrawCall* drawCall) const
 {
+	if (!drawCall)
+	{
+		return;
+	}
+
 	vkCmdSetScissor(commandBuffer, 0, 1, &drawCall->scissor);
 
 	vkCmdBindIndexBuffer(commandBuffer, drawCall->indexBuffer, 0, VK_INDEX_TYPE_UINT32);

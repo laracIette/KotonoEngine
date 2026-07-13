@@ -49,7 +49,9 @@ public:
 	VkFormat GetDepthFormat() const;
 
 	void RegisterOpaqueDrawCall(UDrawCall* drawCall);
+	void RegisterInterfaceDrawCall(UDrawCall* drawCall);
 	void UnregisterOpaqueDrawCall(UDrawCall* drawCall);
+	void UnregisterInterfaceDrawCall(UDrawCall* drawCall);
 
 	VkImageView GetGBufferAlbedoImageView(const u32 frameIndex) const;
 	VkImageView GetGBufferNormalImageView(const u32 frameIndex) const;
@@ -111,6 +113,10 @@ private:
 	void CmdBarrierSwapchainNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBeginRenderingPostProcess(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdDrawFramePostProcess(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	
+	void CmdBeginRenderingInterface(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	void CmdDrawFrameInterface(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
+	
 	void CmdBarrierSwapchainWriteToPresent(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	
 	void CmdPushConstants(VkCommandBuffer commandBuffer, const UDrawCall* drawCall, const u32 frameIndex) const;
@@ -145,6 +151,7 @@ private:
 	u32 frameCount_;
 
 	UPool<UDrawCall*> opaqueDrawCalls_;
+	UPool<UDrawCall*> interfaceDrawCalls_;
 };
 
 inline GRenderer Renderer;

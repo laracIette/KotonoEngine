@@ -40,7 +40,7 @@ void UDrawCallBuilder::Register(const ERenderBucket renderBucket)
 	{
 	case ERenderBucket::Opaque:			return Renderer.RegisterOpaqueDrawCall(drawCall_);
 	case ERenderBucket::Transparent:	return;
-	case ERenderBucket::Interface:		return;
+	case ERenderBucket::Interface:		return Renderer.RegisterInterfaceDrawCall(drawCall_);
 	}
 }
 
@@ -57,7 +57,7 @@ void UDrawCallBuilder::Unregister()
 	{
 	case ERenderBucket::Opaque:			return Renderer.UnregisterOpaqueDrawCall(drawCall_);
 	case ERenderBucket::Transparent:	return;
-	case ERenderBucket::Interface:		return;
+	case ERenderBucket::Interface:		return Renderer.UnregisterInterfaceDrawCall(drawCall_);
 	}
 }
 
