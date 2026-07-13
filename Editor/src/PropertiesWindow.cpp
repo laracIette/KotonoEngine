@@ -1,8 +1,6 @@
 #include "PropertiesWindow.h"
 #include "ObjectProperties.h"
 #include <kotono_common/log.h>
-#include <kotono_core/InterfaceComponent.h>
-#include <kotono_core/InterfaceObject.h>
 #include <kotono_core/SceneComponent.h>
 #include <kotono_core/SceneObject.h>
 #include <kotono_input/Mouse.h>
@@ -16,11 +14,8 @@ WidgetPtr WPropertiesWindow::Build()
     propertiesText->SetText("Properties");
     propertiesText->SetSpacing(-20.0f);
 
-    UPtr propertiesTextBg{ UCreate<WColor>{}() };
-    propertiesTextBg->SetColor(Colors::Black.WithAlpha(0.5f));
-
     UPtr propertiesTextStack{ UCreate<WStack>{}() };
-    propertiesTextStack->SetChildren({ propertiesTextBg, propertiesText });
+    propertiesTextStack->SetChildren({ UCreate<WColor>{}(Colors::Black.WithAlpha(0.5f)), propertiesText });
 
     UPtr propertiesTextWrap{ UCreate<WWrap>{}() };
     propertiesTextWrap->SetChild(propertiesTextStack);
@@ -49,23 +44,6 @@ WidgetPtr WPropertiesWindow::Build()
     widgetTree.Link();
 
     return widgetTree.Widget();
-
-    //const auto widgetTree{ UChildOwnerTree{ UCreate<WWrap>{}(),
-    //    new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-    //        new UWidgetTreeLeaf{ mainListBg },
-    //        new UChildOwnerTree{ mainListPadding,
-    //            new UChildrenOwnerTree{ mainList, {
-    //                new UChildOwnerTree{ UCreate<WWrap>{}(),
-    //                    new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-    //                        new UWidgetTreeLeaf{ propertiesTextBg },
-    //                        new UWidgetTreeLeaf{ propertiesText },
-    //                    } }
-    //                },
-    //                new UWidgetTreeLeaf{ UCreate<WObjectProperties>{}(selectedObject) },
-    //            } }
-    //        },
-    //    } }
-    //} };
 }
 
 void WPropertiesWindow::Display(UWidgetDisplaySettings displaySettings)

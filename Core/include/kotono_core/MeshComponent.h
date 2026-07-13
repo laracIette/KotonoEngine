@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/SceneMeshComponent.generated.h"
+#include "generated/MeshComponent.generated.h"
 #include "SceneComponent.h"
 #include "Task.h"
 #include <kotono_graphics/DrawCallBuilder.h>
@@ -8,13 +8,13 @@ class UModel;
 class UMaterial;
 struct UDrawCall;
 
-class KSceneMeshComponent : public KSceneComponent
+class KMeshComponent : public KSceneComponent
 {
-	GENERATED_KSCENEMESHCOMPONENT()
+	GENERATED_KMESHCOMPONENT()
 
 public:
-	KSceneMeshComponent();
-	~KSceneMeshComponent() override;
+	KMeshComponent();
+	~KMeshComponent() override;
 
 protected:
 	void Init() override;

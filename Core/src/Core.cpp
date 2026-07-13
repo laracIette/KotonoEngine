@@ -1,7 +1,6 @@
 #include "Core.h"
 #include "DirectionalLightComponent.h"
 #include "Game.h"
-#include "InterfacePhysicsManager.h"
 #include "PointLightComponent.h"
 #include "TimeManager.h"
 #include <kotono_audio/AudioManager.h>
@@ -49,7 +48,6 @@ void GCore::Update()
     Keyboard.Update();
     Mouse.Update();
     TimeManager.Update();
-    InterfacePhysicsManager.Update();
 }
 
 void GCore::Cleanup()

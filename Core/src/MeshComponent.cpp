@@ -1,4 +1,4 @@
-#include "SceneMeshComponent.h"
+#include "MeshComponent.h"
 #include "SceneObject.h"
 #include "Task.h"
 #include "TimeManager.h"
@@ -17,7 +17,7 @@
 
 static UAsset<UShader> WireframeShader;
 
-KSceneMeshComponent::KSceneMeshComponent() 
+KMeshComponent::KMeshComponent() 
     : drawCallBuilder_{}
 {
     if (!WireframeShader)
@@ -28,11 +28,11 @@ KSceneMeshComponent::KSceneMeshComponent()
     spinTask_.duration = 5.0f;
 }
 
-KSceneMeshComponent::~KSceneMeshComponent()
+KMeshComponent::~KMeshComponent()
 {
 }
 
-void KSceneMeshComponent::Init()
+void KMeshComponent::Init()
 {
     Base::Init();
 
@@ -41,83 +41,83 @@ void KSceneMeshComponent::Init()
     spinTask_.Start();
 }
 
-void KSceneMeshComponent::Update(const float deltaTime)
+void KMeshComponent::Update(const float deltaTime)
 {
     Base::Update(deltaTime);
 
     spinTask_.Update(deltaTime);
 }
 
-const UAsset<UShader>& KSceneMeshComponent::GetShader() const
+const UAsset<UShader>& KMeshComponent::GetShader() const
 {
     return shader_;
 }
 
-const UAsset<UModel>& KSceneMeshComponent::GetModel() const
+const UAsset<UModel>& KMeshComponent::GetModel() const
 {
     return model_;
 }
 
-const UAsset<UMaterial>& KSceneMeshComponent::GetMaterial() const
+const UAsset<UMaterial>& KMeshComponent::GetMaterial() const
 {
     return material_;
 }
 
-void KSceneMeshComponent::SetShader(const UAsset<UShader>& shader)
+void KMeshComponent::SetShader(const UAsset<UShader>& shader)
 {
     shader_ = shader;
     RefreshDrawCallShaderData();
 }
 
-void KSceneMeshComponent::SetModel(const UAsset<UModel>& model)
+void KMeshComponent::SetModel(const UAsset<UModel>& model)
 {
     model_ = model;
     RefreshDrawCallModelData();
 }
 
-void KSceneMeshComponent::SetMaterial(const UAsset<UMaterial>& material)
+void KMeshComponent::SetMaterial(const UAsset<UMaterial>& material)
 {
     material_ = material;
     RefreshDrawCallMaterialData();
 }
 
-void KSceneMeshComponent::Spawn()
+void KMeshComponent::Spawn()
 {
     Base::Spawn();
 
     RefreshDrawCall();
     RegisterDrawCall();
 
-    EventTransformUpdated().AddListener(this, &KSceneMeshComponent::RefreshDrawCallTransformData);
-    RegisterDelegate(&Window, Window.GetEventWindowResized(), this, &KSceneMeshComponent::RefreshDrawCallScissor);
+    EventTransformUpdated().AddListener(this, &KMeshComponent::RefreshDrawCallTransformData);
+    RegisterDelegate(&Window, Window.GetEventWindowResized(), this, &KMeshComponent::RefreshDrawCallScissor);
 
-    RegisterDelegate(&Keyboard, Keyboard.EventKey(EKey::N, EInputState::Pressed), this, &KSceneMeshComponent::SetMobilityStatic);
-    RegisterDelegate(&Keyboard, Keyboard.EventKey(EKey::M, EInputState::Pressed), this, &KSceneMeshComponent::SetMobilityDynamic);
+    RegisterDelegate(&Keyboard, Keyboard.EventKey(EKey::N, EInputState::Pressed), this, &KMeshComponent::SetMobilityStatic);
+    RegisterDelegate(&Keyboard, Keyboard.EventKey(EKey::M, EInputState::Pressed), this, &KMeshComponent::SetMobilityDynamic);
     
-    spinTask_.eventUpdate.AddListener(this, &KSceneMeshComponent::Spin);
+    spinTask_.eventUpdate.AddListener(this, &KMeshComponent::Spin);
 }
 
-void KSceneMeshComponent::SetVisibility(const EVisibility visibility, const bool propagateToChildren)
+void KMeshComponent::SetVisibility(const EVisibility visibility, const bool propagateToChildren)
 {
     Base::SetVisibility(visibility, propagateToChildren);
 }
 
-void KSceneMeshComponent::SetMobility(const EMobility mobility)
+void KMeshComponent::SetMobility(const EMobility mobility)
 {
     Base::SetMobility(mobility);
 }
 
-void KSceneMeshComponent::RegisterDrawCall()
+void KMeshComponent::RegisterDrawCall()
 {
     drawCallBuilder_.Register(ERenderBucket::Opaque);
 }
 
-void KSceneMeshComponent::UnregisterDrawCall()
+void KMeshComponent::UnregisterDrawCall()
 {
     drawCallBuilder_.Unregister();
 }
 
-void KSceneMeshComponent::RefreshDrawCall() const
+void KMeshComponent::RefreshDrawCall() const
 {
     RefreshDrawCallScissor();
     RefreshDrawCallShaderData();
@@ -126,7 +126,7 @@ void KSceneMeshComponent::RefreshDrawCall() const
     RefreshDrawCallTransformData();
 }
 
-void KSceneMeshComponent::RefreshDrawCallScissor() const
+void KMeshComponent::RefreshDrawCallScissor() const
 {
     const auto& offset{ GetOwner()->GetViewport()->GetOffset() };
     const auto& extent{ GetOwner()->GetViewport()->GetExtent() };
@@ -137,7 +137,7 @@ void KSceneMeshComponent::RefreshDrawCallScissor() const
     };
 }
 
-void KSceneMeshComponent::RefreshDrawCallShaderData() const
+void KMeshComponent::RefreshDrawCallShaderData() const
 {
     if (shader_)
     {
@@ -145,7 +145,7 @@ void KSceneMeshComponent::RefreshDrawCallShaderData() const
     }
 }
 
-void KSceneMeshComponent::RefreshDrawCallModelData() const
+void KMeshComponent::RefreshDrawCallModelData() const
 {
     if (model_)
     {
@@ -156,7 +156,7 @@ void KSceneMeshComponent::RefreshDrawCallModelData() const
     }
 }
 
-void KSceneMeshComponent::RefreshDrawCallMaterialData() const
+void KMeshComponent::RefreshDrawCallMaterialData() const
 {
     if (material_)
     {
@@ -164,30 +164,30 @@ void KSceneMeshComponent::RefreshDrawCallMaterialData() const
     }
 }
 
-void KSceneMeshComponent::RefreshDrawCallTransformData() const
+void KMeshComponent::RefreshDrawCallTransformData() const
 {
     const auto modelMatrix{ ModelMatrix() };
     drawCallBuilder_.GetTransform()->modelMatrix = modelMatrix;
     drawCallBuilder_.GetTransform()->normalMatrix = glm::mat4{ glm::inverseTranspose(glm::mat3{ modelMatrix }) };
 }
 
-void KSceneMeshComponent::Spin()
+void KMeshComponent::Spin()
 {
     const float speed{ 10.0f * TimeManager.GameTime().lastDelta };
     const glm::quat rotation{ glm::quat(glm::radians(glm::vec3(0.0f, speed, 0.0f))) };
     Rotate(rotation);
 }
 
-void KSceneMeshComponent::SetMobilityStatic()
+void KMeshComponent::SetMobilityStatic()
 {
     SetMobility(EMobility::Static);
     KT_LOG(ELogImportanceLevel::High, "Core", "{0}", GetName());
 }
 
-void KSceneMeshComponent::SetMobilityDynamic()
+void KMeshComponent::SetMobilityDynamic()
 {
     SetMobility(EMobility::Dynamic);
     KT_LOG(ELogImportanceLevel::High, "Core", "{}", GetName());
 }
 
-#include "generated/SceneMeshComponent.generated.inl"
+#include "generated/MeshComponent.generated.inl"

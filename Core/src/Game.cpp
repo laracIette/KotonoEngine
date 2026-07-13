@@ -1,5 +1,4 @@
 #include "Game.h"
-#include "Interface.h"
 #include "ProjectSettings.h"
 #include "Scene.h"
 #include "TimeManager.h"
@@ -11,16 +10,11 @@ void GGame::Init()
 {
 	Keyboard.EventKey(EKey::S, EInputState::Pressed).AddListener(this, &GGame::OnKeySPressed);
 
-    //OpenStartupInterface();
     OpenStartupScene();
 }
 
 void GGame::Update(const float deltaTime)
 {
-    if (interface_)
-    {
-        interface_->Update(deltaTime);
-    }
     if (scene_)
     {
         scene_->Update(deltaTime);
@@ -29,10 +23,6 @@ void GGame::Update(const float deltaTime)
 
 void GGame::Cleanup()
 {
-    if (interface_)
-    {
-        interface_->Delete();
-    }
     if (scene_)
     {
         scene_->Delete();
@@ -69,20 +59,9 @@ void GGame::Stop()
     SetState(EGameState::Stopped);
 }
 
-void GGame::OpenInterface(const UPtr<KInterface>& interface)
-{
-    interface_ = interface;
-}
-
 void GGame::OpenScene(const UPtr<KScene>& scene)
 {
     scene_ = scene;
-}
-
-void GGame::OpenStartupInterface()
-{
-    interface_ = UCreate<KInterface>{}();
-    interface_->SpawnInterfaceObjects();
 }
 
 void GGame::OpenStartupScene()

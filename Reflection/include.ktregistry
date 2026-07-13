@@ -4,17 +4,10 @@
 
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/CameraComponent.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/DirectionalLightComponent.h",
-        "${ENGINE_DIRECTORY}/Core/include/kotono_core/Interface.h",
-        "${ENGINE_DIRECTORY}/Core/include/kotono_core/InterfaceBoxComponent.h",
-        "${ENGINE_DIRECTORY}/Core/include/kotono_core/InterfaceButtonComponent.h",
-        "${ENGINE_DIRECTORY}/Core/include/kotono_core/InterfaceColliderComponent.h",
-        "${ENGINE_DIRECTORY}/Core/include/kotono_core/InterfaceComponent.h",
-        "${ENGINE_DIRECTORY}/Core/include/kotono_core/InterfaceImageComponent.h",
-        "${ENGINE_DIRECTORY}/Core/include/kotono_core/InterfaceObject.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/PointLightComponent.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/Scene.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/SceneComponent.h",
-        "${ENGINE_DIRECTORY}/Core/include/kotono_core/SceneMeshComponent.h",
+        "${ENGINE_DIRECTORY}/Core/include/kotono_core/MeshComponent.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/SceneObject.h",
 
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Box.h",

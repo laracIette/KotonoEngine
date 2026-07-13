@@ -2,8 +2,6 @@
 #include "GameState.h"
 #include <kotono_common/Event.h>
 #include <kotono_object/Ptr.h>
-#undef interface
-class KInterface;
 class KScene;
 class GGame final
 {
@@ -30,10 +28,8 @@ public:
 	UEvent<EGameState>& EventStateChanged();
 
 public:
-	void OpenInterface(const UPtr<KInterface>& interface);
 	void OpenScene(const UPtr<KScene>& scene);
 
-	void OpenStartupInterface();
 	void OpenStartupScene();
 
 	const UPtr<KScene>& GetOpenedScene() const;
@@ -46,7 +42,6 @@ private:
 	UEvent<EGameState> eventStateChanged_;
 
 	UPtr<KScene> scene_;
-	UPtr<KInterface> interface_;
 };
 
 inline GGame Game;

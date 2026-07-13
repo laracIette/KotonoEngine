@@ -3,7 +3,7 @@
 #include <kotono_core/Game.h>
 #include <kotono_core/Scene.h>
 #include <kotono_core/SceneComponent.h>
-#include <kotono_core/SceneMeshComponent.h>
+#include <kotono_core/MeshComponent.h>
 #include <kotono_core/SceneObject.h>
 #include <kotono_graphics/Model.h>
 #include <kotono_graphics/Shader.h>
@@ -25,8 +25,8 @@ WidgetPtr WSceneExplorerAddButton::Build()
 
 			UPtr mesh{ UCreate<TSceneObject>{}() };
 			UPtr rootComponent{ UCreate<KSceneComponent>{}() };
-			UPtr meshComponent1{ UCreate<KSceneMeshComponent>{}() };
-			UPtr meshComponent2{ UCreate<KSceneMeshComponent>{}() };
+			UPtr meshComponent1{ UCreate<KMeshComponent>{}() };
+			UPtr meshComponent2{ UCreate<KMeshComponent>{}() };
 													
 			rootComponent->SetOwner(mesh);
 			rootComponent->SetRelativePosition(glm::vec3(0.0f));
