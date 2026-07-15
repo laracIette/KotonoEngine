@@ -15,6 +15,7 @@
 #include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
 #include <kotono_platform/vk_utils.h>
+#include <unordered_map>
 
 void GRenderer::Init()
 {
@@ -878,24 +879,20 @@ void GRenderer::CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer, const u3
 
 void GRenderer::CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	auto sortedDrawCalls{ opaqueDrawCalls_ };
-
-	std::ranges::sort(sortedDrawCalls, std::less{}, [](const UDrawCall* dc) {
-		return std::tie(dc->pipeline);
-	});
-
-	VkPipeline currentPipeline{ VK_NULL_HANDLE };
-		
-	for (const auto* drawCall : sortedDrawCalls)
+	std::unordered_map<VkPipeline, std::vector<const UDrawCall*>> pipelineDrawCalls{};
+	for (const auto* drawCall : opaqueDrawCalls_)
 	{
-		if (currentPipeline != drawCall->pipeline)
-		{
-			currentPipeline = drawCall->pipeline;
-			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, drawCall->pipeline);
-		}
+		pipelineDrawCalls[drawCall->pipeline].push_back(drawCall);
+	}
 
-		CmdPushConstants(commandBuffer, drawCall, frameIndex);
-		CmdDraw(commandBuffer, drawCall);
+	for (const auto& [pipeline, drawCalls] : pipelineDrawCalls)
+	{
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+		for (const auto* drawCall : drawCalls)
+		{
+			CmdPushConstants(commandBuffer, drawCall, frameIndex);
+			CmdDraw(commandBuffer, drawCall);
+		}
 	}
 }
 
