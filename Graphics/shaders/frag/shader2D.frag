@@ -10,8 +10,9 @@ void main()
     UNPACK_PUSH_CONSTANTS
 
     const uint textureParam = parameters.textures[0];
+    const vec4 tingParam    = parameters.vectors[0];
     
     const vec4 albedo = sampleTex(textureParam, 0, inUV);
 
-    outColor = albedo;
+    outColor = albedo * tingParam;
 }

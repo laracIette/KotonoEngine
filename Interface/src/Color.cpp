@@ -33,7 +33,7 @@ void WColor::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	};
 	drawCallBuilder_.GetDrawCall()->sortKey = GetLayer();
 
-	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/flatColor2D.kasset") })
+	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/shader2D.kasset") })
 	{
 		drawCallBuilder_.GetDrawCall()->pipeline = shader->GetPipeline();
 	}
@@ -42,12 +42,16 @@ void WColor::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	{
 		drawCallBuilder_.GetDrawData()->vertexBufferAddress = model->GetVertexBufferAddress();
 		drawCallBuilder_.GetDrawCall()->indexCount = model->GetIndexCount();
-		drawCallBuilder_.GetDrawCall()->firstIndex = 0;
+		drawCallBuilder_.GetDrawCall()->firstIndex = model->GetFirstIndex();
 	}
 
 	drawCallBuilder_.GetTransform()->modelMatrix = ModelMatrix();
 	drawCallBuilder_.GetTransform()->normalMatrix = glm::identity<glm::mat4>();
-
+	
+	if (UAsset texture{ SAssetManager<UTexture>::Get("${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg") })
+	{
+		drawCallBuilder_.GetParameters()->textures = { texture->GetIndex() };
+	}
 	drawCallBuilder_.GetParameters()->vectors = { color_ };
 }
 

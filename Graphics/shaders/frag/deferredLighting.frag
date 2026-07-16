@@ -11,7 +11,7 @@ void main() {
     ivec2 px = ivec2(gl_FragCoord.xy);
 
     uvec3 clusterGridDim = uvec3(16, 9, 24);
-    float tilePxSize = 32;
+    float tilePxSize = 100.0;
 
     float numZSlices = clusterGridDim.z;
     float scale = float(numZSlices) / log2(Z_FAR / Z_NEAR);
@@ -74,7 +74,7 @@ void main() {
 
         // Shadow
         float visibility = 1.0;
-        if (directionalLight.castShadow == 1u)
+        if (directionalLight.castShadow == 1)
         {
             vec4 fragPosLightSpace = directionalLight.lightViewProjs[cascadeSplit] * vec4(worldPos, 1.0);
             visibility = calculateShadow(fragPosLightSpace, cascadeSplit, directionalLight.shadowMap, directionalLight.shadowSampler);
@@ -83,10 +83,11 @@ void main() {
         Lo += light * visibility;
     }
 
-    for (uint i = 0u; i < lightGrid.count; ++i)
+    for (uint i = 0; i < lightGrid.count; ++i)
     {
         // Point lights only
-        PointLight pointLight = pointLights.data[frame.lightIndices.data[lightGrid.offset + i]];
+        uint lightIndex = frame.lightIndices.data[lightGrid.offset + i];
+        PointLight pointLight = pointLights.data[lightIndex];
 
         vec3  toLight = pointLight.position - worldPos;
         float dist    = length(toLight);

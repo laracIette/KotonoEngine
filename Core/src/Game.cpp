@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "MeshComponent.h"
+#include "PointLightComponent.h"
 #include "ProjectSettings.h"
 #include "Scene.h"
 #include "SceneObject.h"
@@ -160,11 +161,19 @@ void GGame::OpenTestScene() const
         meshComponent->SetShader(shader);
         meshComponent->SetMaterial(isModel1 ? material1 : material2);
 
-        const glm::vec3 position{ std::cos(i) * i * 0.1f, i * 0.01f - 2.0f, std::sin(i) * i * 0.1f };
+        const glm::vec3 position{ std::cos(i) * i * 0.1f, -0.9f, std::sin(i) * i * 0.1f };
         meshComponent->SetWorldPosition(position);
         meshComponent->SetWorldRotation(glm::angleAxis(std::cos((float)i), WorldUpVector));
 
-        TestSceneObject->AddComponent(meshComponent);
+        if (isModel1)
+        {
+            UPtr pointLight{ UCreate<KPointLightComponent>{}() };
+            TestSceneObject->AddComponent(pointLight);
+            pointLight->SetParent(meshComponent, ECoordinateSpace::Relative);
+            pointLight->SetRelativePosition({ 0.0f, 2.0f, 0.0f });
+        }
+
+        TestSceneObject->AddComponent(meshComponent); // todo: set component children owner on scene object add component
 
         isModel1 = !isModel1;
     }

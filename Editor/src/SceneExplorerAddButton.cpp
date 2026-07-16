@@ -8,12 +8,15 @@
 #include <kotono_graphics/Model.h>
 #include <kotono_graphics/Shader.h>
 #include <kotono_interface/widgets.h>
-#include <kotono_object/ObjectManager.h>
 
 WidgetPtr WSceneExplorerAddButton::Build()
 {
 	UPtr color{ UCreate<WColor>{}() };
-	color->SetColor(Colors::Green);
+	color->SetColor(Colors::Green.WithValue(0.8f));
+
+	UPtr text{ UCreate<WText>{}() };
+	text->SetFontSize({ 22.0f, 26.0f });
+	text->SetText("Add");
 
 	UPtr button{ UCreate<WButton>{}() };
 	button->SetOnPressed([]() {
@@ -47,10 +50,16 @@ WidgetPtr WSceneExplorerAddButton::Build()
 		}
 	});
 
-	UPtr stack{ UCreate<WStack>{}() };
-	stack->SetChildren({ color, button });
+	const auto widgetTree{ UChildrenOwnerTree{ UCreate<WStack>{ "Add Button Stack" }(), {
+		new UWidgetTreeLeaf{ button },
+		new UChildOwnerTree{ UCreate<WCenter>{}(),
+			new UWidgetTreeLeaf{ text },
+		},
+		new UWidgetTreeLeaf{ color },
+	} } };
+	widgetTree.Link();
 
-	return stack;
+	return widgetTree.Widget();
 }
 
 #include "generated/SceneExplorerAddButton.generated.inl"

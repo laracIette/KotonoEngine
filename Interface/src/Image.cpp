@@ -2,6 +2,7 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
+#include <kotono_graphics/Color.h>
 #include <kotono_graphics/DrawDataBufferData.h>
 #include <kotono_graphics/DrawCall.h>
 #include <kotono_graphics/Model.h>
@@ -42,7 +43,7 @@ void WImage::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	{
 		drawCallBuilder_.GetDrawData()->vertexBufferAddress = model->GetVertexBufferAddress();
 		drawCallBuilder_.GetDrawCall()->indexCount = model->GetIndexCount();
-		drawCallBuilder_.GetDrawCall()->firstIndex = 0;
+		drawCallBuilder_.GetDrawCall()->firstIndex = model->GetFirstIndex();
 	}
 
 	drawCallBuilder_.GetTransform()->modelMatrix = ModelMatrix();
@@ -52,6 +53,7 @@ void WImage::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	{
 		drawCallBuilder_.GetParameters()->textures = { texture->GetIndex() };
 	}
+	drawCallBuilder_.GetParameters()->vectors = { Colors::White };
 }
 
 #include "generated/Image.generated.inl"

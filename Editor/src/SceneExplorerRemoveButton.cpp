@@ -14,6 +14,10 @@ WidgetPtr WSceneExplorerRemoveButton::Build()
         : Colors::Red.WithValue(0.1f)
     );
 
+    UPtr text{ UCreate<WText>{}() };
+    text->SetFontSize({ 14.0f, 18.0f });
+    text->SetText("Remove");
+
     button_ = UCreate<WButton>{}();
     button_->SetIsEnabled(false);
     button_->SetOnClicked([]() {
@@ -23,15 +27,21 @@ WidgetPtr WSceneExplorerRemoveButton::Build()
             {
                 scene->Remove(selectedObject);
             }
-            ObjectManager.SetSelectedObject({});
+            ObjectManager.SetSelectedObject(nullptr);
             selectedObject->Delete();
         }
     });
 
-    UPtr stack{ UCreate<WStack>{}() };
-    stack->SetChildren({ bg_, button_ });
+    const auto widgetTree{ UChildrenOwnerTree{ UCreate<WStack>{ "Remove Button Stack" }(), {
+        new UWidgetTreeLeaf{ button_ },
+        new UChildOwnerTree{ UCreate<WCenter>{}(),
+            new UWidgetTreeLeaf{ text },
+        },
+        new UWidgetTreeLeaf{ bg_ },
+    } } };
+    widgetTree.Link();
 
-    return stack;
+    return widgetTree.Widget();
 }
 
 void WSceneExplorerRemoveButton::Display(UWidgetDisplaySettings displaySettings)

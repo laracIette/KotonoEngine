@@ -16,6 +16,8 @@
 #include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
 #include <kotono_platform/vk_utils.h>
+#include <map>
+#include <ranges>
 #include <unordered_map>
 
 void GRenderer::Init()
@@ -878,11 +880,20 @@ void GRenderer::CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer, const u3
 
 void GRenderer::CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/gbuffer.kasset") })
+	std::unordered_map<VkPipeline, std::vector<const UDrawCall*>> pipelineDrawCalls{};
+
+	for (const auto* drawCall : opaqueDrawCalls_)
 	{
-		IndexBuffer.CmdBind(commandBuffer);
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
-		for (const auto* drawCall : opaqueDrawCalls_)
+		pipelineDrawCalls[drawCall->pipeline].push_back(drawCall);
+	}
+
+	IndexBuffer.CmdBind(commandBuffer);
+
+	for (const auto& [pipeline, drawCalls] : pipelineDrawCalls)
+	{
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+
+		for (const auto* drawCall : drawCalls)
 		{
 			CmdPushConstants(commandBuffer, drawCall, frameIndex);
 			CmdDraw(commandBuffer, drawCall);
@@ -1064,27 +1075,31 @@ void GRenderer::CmdBeginRenderingInterface(VkCommandBuffer commandBuffer, const 
 
 void GRenderer::CmdDrawFrameInterface(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	auto sortedDrawCalls{ interfaceDrawCalls_ };
+	std::map<i32, std::vector<const UDrawCall*>> layerDrawCalls{};
 
-	std::ranges::sort(sortedDrawCalls, std::less{}, [](const UDrawCall* dc) {
-		return std::tie(dc->sortKey, dc->pipeline);
-	});
+	for (const auto* drawCall : interfaceDrawCalls_)
+	{
+		layerDrawCalls[static_cast<i32>(drawCall->sortKey)].push_back(drawCall);
+	}
 
 	VkPipeline currentPipeline{ VK_NULL_HANDLE };
 
 	IndexBuffer.CmdBind(commandBuffer);
 
-	for (const auto* drawCall : sortedDrawCalls)
+	for (const auto& drawCalls : layerDrawCalls | std::views::values)
 	{
-		if (currentPipeline != drawCall->pipeline)
+		for (const auto* drawCall : drawCalls)
 		{
-			currentPipeline = drawCall->pipeline;
-			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, drawCall->pipeline);
-		}
+			if (currentPipeline != drawCall->pipeline)
+			{
+				currentPipeline = drawCall->pipeline;
+				vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, drawCall->pipeline);
+			}
 
-		CmdPushConstants(commandBuffer, drawCall, frameIndex);
-		vkCmdSetScissor(commandBuffer, 0, 1, &drawCall->scissor);
-		CmdDraw(commandBuffer, drawCall);
+			CmdPushConstants(commandBuffer, drawCall, frameIndex);
+			vkCmdSetScissor(commandBuffer, 0, 1, &drawCall->scissor);
+			CmdDraw(commandBuffer, drawCall);
+		}
 	}
 }
 

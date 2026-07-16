@@ -32,11 +32,10 @@ void main() {
     // Grab this cluster's AABB
     AABB aabb = clusterAABBs.data[clusterIndex];
 
-    // --- Cooperative Intersection Testing ---
-    // The 64 threads loop through all totalLights in parallel
+    // Cooperative Intersection Testing
     for (uint i = gl_LocalInvocationIndex; i < pointLightCount; i += gl_WorkGroupSize.x) {
         PointLight pointLight = pointLights.data[i];
-        
+        //vec3 viewSpacePos = (frame.view * vec4(pointLight.position, 1.0)).xyz;
         if (testSphereAABB(pointLight.position, pointLight.range, aabb.minPoint.xyz, aabb.maxPoint.xyz)) {
             // Light intersects! Atomically add to shared memory
             uint slot = atomicAdd(s_VisibleLightCount, 1);
@@ -50,8 +49,7 @@ void main() {
     // Cap the count just in case it exceeded the max
     uint visibleCount = min(s_VisibleLightCount, MAX_LIGHTS_PER_CLUSTER);
 
-    // --- Global Memory Allocation ---
-    // Thread 0 reserves a block in the global index list
+    // Global Memory Allocation
     if (gl_LocalInvocationIndex == 0) {
         s_GlobalOffset = atomicAdd(lightCounter.data, visibleCount);
         
@@ -61,8 +59,7 @@ void main() {
     }
     barrier();
 
-    // --- Copy Shared to Global ---
-    // Threads cooperatively copy the visible lights into the globally allocated chunk
+    // Copy Shared to Global
     for (uint i = gl_LocalInvocationIndex; i < visibleCount; i += gl_WorkGroupSize.x) {
         lightIndices.data[s_GlobalOffset + i] = s_VisibleLightIndices[i];
     }
