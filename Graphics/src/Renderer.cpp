@@ -57,6 +57,7 @@ void GRenderer::Cleanup()
 	FrameContextBuffer.Cleanup();
 	PipelineResourceManager.Cleanup();
 
+	CleanupImageResources();
 	CleanupSwapChain();
 
 	for (const auto& frameData : frameDatas_)
@@ -340,6 +341,18 @@ void GRenderer::CreateSwapChain()
 	swapChainExtent_ = extent;
 }
 
+void GRenderer::CleanupSwapChain()
+{
+	for (const auto& swapChainData : swapChainDatas_)
+	{
+		vkDestroyImageView(Context.GetDevice(), swapChainData.imageView, nullptr);
+	}
+	swapChainDatas_.clear();
+
+	vkDestroySwapchainKHR(Context.GetDevice(), swapChain_, nullptr);
+	swapChain_ = VK_NULL_HANDLE;
+}
+
 VkSurfaceFormatKHR GRenderer::ChooseSwapSurfaceFormat(const std::span<VkSurfaceFormatKHR> availableFormats) const
 {
 	for (const auto& availableFormat : availableFormats)
@@ -409,6 +422,25 @@ void GRenderer::CreateImageResources()
 		Context.CreateSampledImageAndImageView(frameData.normalTarget,	swapChainExtent_, 1, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
 		Context.CreateSampledImageAndImageView(frameData.ormTarget,		swapChainExtent_, 1, VK_FORMAT_R8G8B8A8_UNORM,		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
 		Context.CreateSampledImageAndImageView(frameData.depthTarget,	swapChainExtent_, 1, depthFormat_,					VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,	VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_DEPTH_BIT);
+	}
+}
+
+void GRenderer::CleanupImageResources() const
+{
+	for (const auto& frameData : frameDatas_)
+	{
+		vkDestroyImageView(Context.GetDevice(), frameData.colorTarget.imageView, nullptr);
+		vmaDestroyImage(Context.GetAllocator(), frameData.colorTarget.image, frameData.colorTarget.allocation);
+
+		vkDestroyImageView(Context.GetDevice(), frameData.albedoTarget.imageView, nullptr);
+		vmaDestroyImage(Context.GetAllocator(), frameData.albedoTarget.image, frameData.albedoTarget.allocation);
+		vkDestroyImageView(Context.GetDevice(), frameData.normalTarget.imageView, nullptr);
+		vmaDestroyImage(Context.GetAllocator(), frameData.normalTarget.image, frameData.normalTarget.allocation);
+		vkDestroyImageView(Context.GetDevice(), frameData.ormTarget.imageView, nullptr);
+		vmaDestroyImage(Context.GetAllocator(), frameData.ormTarget.image, frameData.ormTarget.allocation);
+
+		vkDestroyImageView(Context.GetDevice(), frameData.depthTarget.imageView, nullptr);
+		vmaDestroyImage(Context.GetAllocator(), frameData.depthTarget.image, frameData.depthTarget.allocation);
 	}
 }
 
@@ -1272,6 +1304,7 @@ void GRenderer::RecreateSwapChain()
 
 	FrameContextBuffer.UnregisterGBufferTextures();
 
+	CleanupImageResources();
 	CleanupSwapChain();
 
 	CreateSwapChain();
@@ -1284,32 +1317,4 @@ void GRenderer::RecreateSwapChain()
 	{
 		vkResetCommandPool(Context.GetDevice(), frameData.commandPool, 0);
 	}
-}
-
-void GRenderer::CleanupSwapChain()
-{
-	for (const auto& swapChainData : swapChainDatas_)
-	{
-		vkDestroyImageView(Context.GetDevice(), swapChainData.imageView, nullptr);
-	}
-	swapChainDatas_.clear();
-
-	for (const auto& frameData : frameDatas_)
-	{
-		vkDestroyImageView(Context.GetDevice(), frameData.colorTarget.imageView, nullptr);
-		vmaDestroyImage(Context.GetAllocator(), frameData.colorTarget.image, frameData.colorTarget.allocation);
-
-		vkDestroyImageView(Context.GetDevice(), frameData.albedoTarget.imageView, nullptr);
-		vmaDestroyImage(Context.GetAllocator(), frameData.albedoTarget.image, frameData.albedoTarget.allocation);
-		vkDestroyImageView(Context.GetDevice(), frameData.normalTarget.imageView, nullptr);
-		vmaDestroyImage(Context.GetAllocator(), frameData.normalTarget.image, frameData.normalTarget.allocation);
-		vkDestroyImageView(Context.GetDevice(), frameData.ormTarget.imageView, nullptr);
-		vmaDestroyImage(Context.GetAllocator(), frameData.ormTarget.image, frameData.ormTarget.allocation);
-
-		vkDestroyImageView(Context.GetDevice(), frameData.depthTarget.imageView, nullptr);
-		vmaDestroyImage(Context.GetAllocator(), frameData.depthTarget.image, frameData.depthTarget.allocation);
-	}
-
-	vkDestroySwapchainKHR(Context.GetDevice(), swapChain_, nullptr);
-	swapChain_ = VK_NULL_HANDLE;
 }

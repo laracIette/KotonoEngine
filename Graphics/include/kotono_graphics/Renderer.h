@@ -72,6 +72,7 @@ private:
 	void CreateSwapChainImageViews();
 
 	void CreateImageResources();
+	void CleanupImageResources() const;
 	VkFormat FindSupportedFormat(const std::span<VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const;
 	VkFormat FindDepthFormat() const;
 

@@ -11,7 +11,6 @@
 #include "TransformBuffer.h"
 #include <kotono_common/AssetManager.h>
 #include <kotono_platform/Context.h>
-#include <kotono_platform/vk_utils.h>
 #include <kotono_platform/WindowViewport.h>
 #include <kotono_timing/Clock.h>
 
