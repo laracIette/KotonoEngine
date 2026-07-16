@@ -38,7 +38,4 @@ struct UFrameContextBufferData
 
     u32 postProcessTarget;
     u32 postProcessSampler;
-
-    VkDeviceAddress drawCommandBufferAddress;
-    VkDeviceAddress drawCountBufferAddress;
 };

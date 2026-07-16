@@ -93,14 +93,6 @@ struct LightGrid {
     uint count;
 };
 
-struct DrawCommand {
-    uint indexCount;
-    uint instanceCount;
-    uint firstIndex;
-    int  vertexOffset;
-    uint firstInstance;
-};
-
 // BDA struct definitions
 layout(buffer_reference, scalar) readonly buffer DrawDataBuf {
     DrawData data[];
@@ -130,12 +122,6 @@ layout(buffer_reference, scalar) ACCESS_LIGHT_INDEX_BUF buffer LightIndexBuf {
     uint data[];
 };
 layout(buffer_reference, scalar) buffer LightCounterBuf {
-    uint data;
-};
-layout(buffer_reference, scalar) writeonly buffer DrawCommandBuf {
-    DrawCommand data[];
-};
-layout(buffer_reference, scalar) buffer DrawCountBuf {
     uint data;
 };
 
@@ -172,9 +158,6 @@ struct FrameContext {
          
     uint postProcessTarget;
     uint postProcessSampler;
-
-    DrawCommandBuf drawCommands;
-    DrawCountBuf   drawCount;
 };
 
 layout(buffer_reference, scalar) readonly buffer FrameContextBuf {
