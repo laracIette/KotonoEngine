@@ -17,9 +17,6 @@
 #ifndef ACCESS_LIGHT_INDEX_BUF
 #define ACCESS_LIGHT_INDEX_BUF readonly
 #endif
-#ifndef ACCESS_LIGHT_COUNTER_BUF
-#define ACCESS_LIGHT_COUNTER_BUF readonly
-#endif
 
 // Global bindless resources, not buffer_reference cause incompatible types
 layout(set = 0, binding = 0) uniform texture2D      gTextures[];
@@ -28,11 +25,22 @@ layout(set = 0, binding = 2) uniform sampler        gSamplers[];
 layout(set = 0, binding = 3) uniform samplerShadow  gShadowSamplers[];
 layout(set = 0, binding = 4) uniform image2D        gImages[];
 
+struct Vertex {
+    vec3 position;
+    vec3 normal;
+    vec2 uv;
+    vec4 tangent;
+};
+
+layout(buffer_reference, scalar) readonly buffer VertexBuf {
+    Vertex data[];
+};
 
 struct DrawData {
-    uint materialIndex;
-    uint transformIndex;
-    uint parametersIndex;
+    uint      materialIndex;
+    uint      transformIndex;
+    uint      parametersIndex;
+    VertexBuf vertices;
 };
 
 struct Material {
@@ -53,13 +61,6 @@ struct Parameters {
     float scalars[16];
     vec4  vectors[16];
     uint  textures[16]; // indices
-};
-
-struct Vertex {
-    vec3 position;
-    vec3 normal;
-    vec2 uv;
-    vec4 tangent;
 };
 
 const uint NUM_DIRECTIONAL_CASCADES = 4;
@@ -92,6 +93,14 @@ struct LightGrid {
     uint count;
 };
 
+struct DrawCommand {
+    uint indexCount;
+    uint instanceCount;
+    uint firstIndex;
+    int  vertexOffset;
+    uint firstInstance;
+};
+
 // BDA struct definitions
 layout(buffer_reference, scalar) readonly buffer DrawDataBuf {
     DrawData data[];
@@ -120,7 +129,13 @@ layout(buffer_reference, scalar) ACCESS_CLUSTER_GRID_BUF buffer ClusterGridBuf {
 layout(buffer_reference, scalar) ACCESS_LIGHT_INDEX_BUF buffer LightIndexBuf {
     uint data[];
 };
-layout(buffer_reference, scalar) ACCESS_LIGHT_COUNTER_BUF buffer LightCounterBuf {
+layout(buffer_reference, scalar) buffer LightCounterBuf {
+    uint data;
+};
+layout(buffer_reference, scalar) writeonly buffer DrawCommandBuf {
+    DrawCommand data[];
+};
+layout(buffer_reference, scalar) buffer DrawCountBuf {
     uint data;
 };
 
@@ -157,18 +172,17 @@ struct FrameContext {
          
     uint postProcessTarget;
     uint postProcessSampler;
+
+    DrawCommandBuf drawCommands;
+    DrawCountBuf   drawCount;
 };
 
 layout(buffer_reference, scalar) readonly buffer FrameContextBuf {
     FrameContext data;
 };
-layout(buffer_reference, scalar) readonly buffer VertexBuf {
-    Vertex data[];
-};
 
 layout(push_constant, scalar) uniform PC {
     FrameContextBuf frameContext;
-    VertexBuf       vertices;
     uint            drawIndex;
     uint            directionalLightIndex;
 } pc;

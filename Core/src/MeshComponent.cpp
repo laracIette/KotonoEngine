@@ -149,10 +149,9 @@ void KMeshComponent::RefreshDrawCallModelData() const
 {
     if (model_)
     {
-        drawCallBuilder_.GetDrawCall()->vertexBufferAdress = model_->GetVertexBufferAddress();
-        drawCallBuilder_.GetDrawCall()->indexBuffer = model_->GetIndexBuffer();
+        drawCallBuilder_.GetDrawData()->vertexBufferAddress = model_->GetVertexBufferAddress();
         drawCallBuilder_.GetDrawCall()->indexCount = model_->GetIndexCount();
-        drawCallBuilder_.GetDrawCall()->firstIndex = 0;
+        drawCallBuilder_.GetDrawCall()->firstIndex = model_->GetFirstIndex();
     }
 }
 

@@ -4,6 +4,7 @@
 #include "FrameContextBuffer.h"
 #include "GPUBuffers.h"
 #include "LightBuffers.h"
+#include "IndexBuffer.h"
 #include "MaterialBuffer.h"
 #include "ParametersBuffer.h"
 #include "PipelineResourceManager.h"
@@ -34,6 +35,7 @@ void GRenderer::Init()
 	ParametersBuffer.Init();
 	LightBuffers.Init();
 	GPUBuffers.Init();
+	IndexBuffer.Init();
 }
 
 void GRenderer::Cleanup()
@@ -43,6 +45,7 @@ void GRenderer::Cleanup()
 	JoinThread(renderThread_);
 	JoinThread(rhiThread_); 
 
+	IndexBuffer.Cleanup();
 	GPUBuffers.Cleanup();
 	LightBuffers.Cleanup();
 	ParametersBuffer.Cleanup();
@@ -543,7 +546,7 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 	// - Wait for fill buffer command to be executable
 	CmdBarrierComputeFragmentReadToClearWrite(commandBuffer);
 	// - Atomic reset light counter to 0
-	CmdResetLightCounter(commandBuffer);
+	CmdResetLightCounter(commandBuffer, frameIndex);
 	// - Make light counter accessible and light binning writable
 	CmdBarrierComputeClearWriteToReadWrite(commandBuffer);
 	// - Compute light binning
@@ -647,10 +650,10 @@ void GRenderer::CmdBarrierComputeFragmentReadToClearWrite(VkCommandBuffer comman
 	);
 }
 
-void GRenderer::CmdResetLightCounter(VkCommandBuffer commandBuffer) const
+void GRenderer::CmdResetLightCounter(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	vkCmdFillBuffer(commandBuffer
-		, GPUBuffers.GetLightCounterBuffer()
+		, GPUBuffers.GetLightCounterBuffer(frameIndex)
 		, 0
 		, sizeof(u32)
 		, 0
@@ -699,6 +702,8 @@ void GRenderer::CmdDrawFrameShadowMaps(VkCommandBuffer commandBuffer, const u32 
 		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Graphics", "couldn't load shader {0}", shader.Path().ToString());
 	}
 
+	IndexBuffer.CmdBind(commandBuffer);
+
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
 
 	for (u32 i{ 0 }; i < LightBuffers.GetDirectionalLightCount(); ++i)
@@ -709,7 +714,6 @@ void GRenderer::CmdDrawFrameShadowMaps(VkCommandBuffer commandBuffer, const u32 
 		{
 			const UPushConstants pc{
 				.frameContextBufferAddress = FrameContextBuffer.GetAddress(frameIndex),
-				.vertexBufferAddress = drawCall->vertexBufferAdress,
 				.drawIndex = drawCall->index,
 				.directionalIndex = i,
 			};
@@ -722,14 +726,7 @@ void GRenderer::CmdDrawFrameShadowMaps(VkCommandBuffer commandBuffer, const u32 
 				, &pc
 			);
 
-			vkCmdBindIndexBuffer(commandBuffer, drawCall->indexBuffer, 0, VK_INDEX_TYPE_UINT32);
-			vkCmdDrawIndexed(commandBuffer
-				, drawCall->indexCount
-				, 1
-				, drawCall->firstIndex
-				, 0
-				, 0
-			);
+			CmdDraw(commandBuffer, drawCall);
 		}
 
 		CmdEndRendering(commandBuffer);
@@ -782,6 +779,8 @@ void GRenderer::CmdDrawFrameDepthPrePass(VkCommandBuffer commandBuffer, const u3
 {
 	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/depthPrePass.kasset") })
 	{
+		IndexBuffer.CmdBind(commandBuffer);
+
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
 
 		for (const auto* drawCall : opaqueDrawCalls_)
@@ -879,16 +878,11 @@ void GRenderer::CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer, const u3
 
 void GRenderer::CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	std::unordered_map<VkPipeline, std::vector<const UDrawCall*>> pipelineDrawCalls{};
-	for (const auto* drawCall : opaqueDrawCalls_)
+	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/gbuffer.kasset") })
 	{
-		pipelineDrawCalls[drawCall->pipeline].push_back(drawCall);
-	}
-
-	for (const auto& [pipeline, drawCalls] : pipelineDrawCalls)
-	{
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-		for (const auto* drawCall : drawCalls)
+		IndexBuffer.CmdBind(commandBuffer);
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
+		for (const auto* drawCall : opaqueDrawCalls_)
 		{
 			CmdPushConstants(commandBuffer, drawCall, frameIndex);
 			CmdDraw(commandBuffer, drawCall);
@@ -1078,6 +1072,8 @@ void GRenderer::CmdDrawFrameInterface(VkCommandBuffer commandBuffer, const u32 f
 
 	VkPipeline currentPipeline{ VK_NULL_HANDLE };
 
+	IndexBuffer.CmdBind(commandBuffer);
+
 	for (const auto* drawCall : sortedDrawCalls)
 	{
 		if (currentPipeline != drawCall->pipeline)
@@ -1087,6 +1083,7 @@ void GRenderer::CmdDrawFrameInterface(VkCommandBuffer commandBuffer, const u32 f
 		}
 
 		CmdPushConstants(commandBuffer, drawCall, frameIndex);
+		vkCmdSetScissor(commandBuffer, 0, 1, &drawCall->scissor);
 		CmdDraw(commandBuffer, drawCall);
 	}
 }
@@ -1109,7 +1106,6 @@ void GRenderer::CmdPushConstants(VkCommandBuffer commandBuffer, const UDrawCall*
 {
 	const UPushConstants pc{
 		.frameContextBufferAddress = FrameContextBuffer.GetAddress(frameIndex),
-		.vertexBufferAddress = drawCall ? drawCall->vertexBufferAdress : 0,
 		.drawIndex = drawCall ? drawCall->index : 0,
 		.directionalIndex = 0,
 	};
@@ -1130,9 +1126,6 @@ void GRenderer::CmdDraw(VkCommandBuffer commandBuffer, const UDrawCall* drawCall
 		return;
 	}
 
-	vkCmdSetScissor(commandBuffer, 0, 1, &drawCall->scissor);
-
-	vkCmdBindIndexBuffer(commandBuffer, drawCall->indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 	vkCmdDrawIndexed(commandBuffer
 		, drawCall->indexCount
 		, 1

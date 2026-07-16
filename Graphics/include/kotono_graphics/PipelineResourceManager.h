@@ -5,7 +5,6 @@
 struct UPushConstants
 {
 	VkDeviceAddress frameContextBufferAddress;
-	VkDeviceAddress vertexBufferAddress;
 	u32 drawIndex;
 	u32 directionalIndex;
 };

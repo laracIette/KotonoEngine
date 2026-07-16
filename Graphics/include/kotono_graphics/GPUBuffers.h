@@ -1,4 +1,5 @@
 #pragma once
+#include "frames_in_flight.h"
 #include <glm/vec4.hpp>
 #include <kotono_common/types.h>
 #include <kotono_platform/AllocatedBuffer.h>
@@ -18,22 +19,27 @@ public:
 		u32 count;
 	};
 
+	struct FrameData
+	{
+		UAllocatedBuffer clusterGridBuffer;
+		UAllocatedBuffer lightIndexBuffer;
+		UAllocatedBuffer lightCounterBuffer;
+	};
+
 public:
 	void Init();
 	void Cleanup() const;
 
 	VkDeviceAddress GetClusterAABBAddress() const;
-	VkDeviceAddress GetClusterGridAddress() const;
-	VkDeviceAddress GetLightIndexAddress() const;
-	VkDeviceAddress GetLightCounterAddress() const;
+	VkDeviceAddress GetClusterGridAddress(const u32 frameIndex) const;
+	VkDeviceAddress GetLightIndexAddress(const u32 frameIndex) const;
+	VkDeviceAddress GetLightCounterAddress(const u32 frameIndex) const;
 
-	VkBuffer GetLightCounterBuffer() const;
+	VkBuffer GetLightCounterBuffer(const u32 frameIndex) const;
 
 private:
 	UAllocatedBuffer clusterAABBBuffer_;
-	UAllocatedBuffer clusterGridBuffer_;
-	UAllocatedBuffer lightIndexBuffer_;
-	UAllocatedBuffer lightCounterBuffer_;
+	UFramesInFlightArray<FrameData> frameDatas_;
 };
 
 inline GGPUBuffers GPUBuffers;

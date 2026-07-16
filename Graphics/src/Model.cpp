@@ -1,4 +1,5 @@
 #include "Model.h"
+#include "IndexBuffer.h"
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -14,12 +15,11 @@ UModel::UModel(const UPath& path)
 {
 	Load();
 	CreateVertexBuffer();
-	CreateIndexBuffer();
+	firstIndex_ = IndexBuffer.RegisterIndices(indices_);
 }
 
 UModel::~UModel()
 {
-	vmaDestroyBuffer(Context.GetAllocator(), indexBuffer_.buffer, indexBuffer_.allocation);
 	vmaDestroyBuffer(Context.GetAllocator(), vertexBuffer_.buffer, vertexBuffer_.allocation);
 	KT_LOG(ELogImportanceLevel::Low, "Graphics", "cleaned up {0}", Path().ToString());
 }
@@ -31,21 +31,17 @@ const UPath& UModel::Path() const
 
 VkDeviceAddress UModel::GetVertexBufferAddress() const
 {
-	const VkBufferDeviceAddressInfo addrInfo{
-		.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
-		.buffer = vertexBuffer_.buffer,
-	};
-	return vkGetBufferDeviceAddress(Context.GetDevice(), &addrInfo);
-}
-
-VkBuffer UModel::GetIndexBuffer() const
-{
-	return indexBuffer_.buffer;
+	return vertexBuffer_.bda;
 }
 
 u32 UModel::GetIndexCount() const
 {
 	return indices_.size();
+}
+
+u32 UModel::GetFirstIndex() const
+{
+	return firstIndex_;
 }
 
 void UModel::Load()
@@ -147,38 +143,9 @@ void UModel::CreateVertexBuffer()
 	Context.GetEventExecuteSingleTimeCommands().AddListener(this, &UModel::DestroyStagingVertexBuffer);
 }
 
-void UModel::CreateIndexBuffer()
-{
-	const VkDeviceSize bufferSize{ sizeof(u32) * indices_.size() };
-
-	Context.CreateBuffer(stagingIndexBuffer_
-		, bufferSize
-		, VK_BUFFER_USAGE_TRANSFER_SRC_BIT
-		, VMA_ALLOCATION_CREATE_MAPPED_BIT
-		| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
-	);
-
-	std::memcpy(stagingIndexBuffer_.allocationInfo.pMappedData, indices_.data(), static_cast<size>(bufferSize));
-	
-	Context.CreateBuffer(indexBuffer_
-		, bufferSize
-		, VK_BUFFER_USAGE_TRANSFER_DST_BIT
-		| VK_BUFFER_USAGE_INDEX_BUFFER_BIT
-		, VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT
-	);
-
-	Context.CopyBuffer(stagingIndexBuffer_.buffer, indexBuffer_.buffer, bufferSize);
-	Context.GetEventExecuteSingleTimeCommands().AddListener(this, &UModel::DestroyStagingIndexBuffer);
-}
-
 void UModel::DestroyStagingVertexBuffer() const
 {
 	vmaDestroyBuffer(Context.GetAllocator(), stagingVertexBuffer_.buffer, stagingVertexBuffer_.allocation);
-}
-
-void UModel::DestroyStagingIndexBuffer() const
-{
-	vmaDestroyBuffer(Context.GetAllocator(), stagingIndexBuffer_.buffer, stagingIndexBuffer_.allocation);
 }
 
 bool UVertex::operator==(const UVertex& other) const noexcept

@@ -11,12 +11,14 @@ public:
 private:
 	friend class SAssetManager<PointerType>;
 
-	UAsset(const UPath& path, PointerType* pointer) : path_(path), pointer_(pointer) {}
+	friend std::hash<UAsset>;
+
+	UAsset(const UPath& path, PointerType* pointer) : path_{ path }, pointer_{ pointer } {}
 
 public:
-	UAsset() : path_(), pointer_(nullptr) {}
+	UAsset() : UAsset{ {}, nullptr } {}
 
-	UAsset(const UAsset& asset) : path_(asset.path_), pointer_(asset.pointer_) {}
+	UAsset(const UAsset& asset) : UAsset{ asset.path_, asset.pointer_ } {}
 
 	UAsset& operator=(const UAsset& other)
 	{
@@ -61,4 +63,13 @@ public:
 private:
 	UPath path_;
 	PointerType* pointer_;
+};
+
+template <typename T>
+struct std::hash<UAsset<T>>
+{
+	::size operator()(const UAsset<T>& asset) const noexcept
+	{
+		return std::hash<void*>{}(asset.pointer_);
+	}
 };

@@ -9,4 +9,4 @@
     Transform        transform        = frame.transforms.data[drawData.transformIndex];         \
     Parameters       parameters       = frame.parameters.data[drawData.parametersIndex];        \
     DirectionalLight directionalLight = frame.directionalLights.data[pc.directionalLightIndex]; \
-    Vertex           vertex           = pc.vertices.data[gl_VertexIndex];
+    Vertex           vertex           = drawData.vertices.data[gl_VertexIndex];

@@ -87,7 +87,7 @@ private:
 	void CmdUpdateClusterAABB(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	
 	void CmdBarrierComputeFragmentReadToClearWrite(VkCommandBuffer commandBuffer) const;
-	void CmdResetLightCounter(VkCommandBuffer commandBuffer) const;
+	void CmdResetLightCounter(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBarrierComputeClearWriteToReadWrite(VkCommandBuffer commandBuffer) const;
 	void CmdDispatchLightBinning(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	void CmdBarrierComputeWriteToFragmentRead(VkCommandBuffer commandBuffer) const;

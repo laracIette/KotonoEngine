@@ -2,7 +2,6 @@
 #define ACCESS_CLUSTER_AABB_BUF readonly
 #define ACCESS_CLUSTER_GRID_BUF writeonly
 #define ACCESS_LIGHT_INDEX_BUF writeonly
-#define ACCESS_LIGHT_COUNTER_BUF // read and write
 #include "../common_comp.glsl"
 
 layout(local_size_x = 64, local_size_y = 1, local_size_z = 1) in;

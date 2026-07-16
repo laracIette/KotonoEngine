@@ -5,11 +5,9 @@ struct UDrawCall
 {
 	// Push constants
 	u32 index;
-	VkDeviceAddress vertexBufferAdress;
 
 	// Draw command
 	VkPipeline pipeline;
-	VkBuffer indexBuffer;
 	u32 indexCount;
 	u32 firstIndex;
 	VkRect2D scissor;

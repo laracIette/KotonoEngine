@@ -74,6 +74,7 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/FrameContextBufferData.h"
     "include/kotono_graphics/frames_in_flight.h"
     "include/kotono_graphics/GPUBuffers.h"
+    "include/kotono_graphics/IndexBuffer.h"
     "include/kotono_graphics/LightBuffers.h"
     "include/kotono_graphics/Lights.h"
     "include/kotono_graphics/Material.h"
@@ -101,6 +102,7 @@ set(KGRAPHICS_SOURCES
     "src/FrameContextBuffer.cpp"
     "src/GPUBuffers.cpp"
     "src/implementations.cpp"
+    "src/IndexBuffer.cpp"
     "src/LightBuffers.cpp"
     "src/Material.cpp"
     "src/MaterialBuffer.cpp"
@@ -140,8 +142,9 @@ target_link_libraries(KotonoGraphics PRIVATE
 )
 
 # Shader folder included for IDE visibility (not compiled)
-file(GLOB_RECURSE KGRAPHICS_SHADERS "${CMAKE_CURRENT_SOURCE_DIR}/shaders/*")
-source_group("Shaders" FILES ${KGRAPHICS_SHADERS})
+file(GLOB_RECURSE KGRAPHICS_SHADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/shaders/*")
+set_source_files_properties(${KGRAPHICS_SHADERS} PROPERTIES HEADER_FILE_ONLY TRUE)
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/shaders" PREFIX "Shaders" FILES ${KGRAPHICS_SHADERS})
 target_sources(KotonoGraphics PRIVATE ${KGRAPHICS_SHADERS})
 
 file(GLOB_RECURSE KGRAPHICS_ASSETS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/assets/*")

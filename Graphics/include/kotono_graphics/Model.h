@@ -24,25 +24,25 @@ public:
 	const UPath& Path() const;
 
 	VkDeviceAddress GetVertexBufferAddress() const;
-	VkBuffer GetIndexBuffer() const;
 	u32 GetIndexCount() const;
+	u32 GetFirstIndex() const;
 	
 private:
 	void Load();
 	void CreateVertexBuffer();
-	void CreateIndexBuffer();
 	void DestroyStagingVertexBuffer() const;
-	void DestroyStagingIndexBuffer() const;
 
 private:
 	const UPath path_;
 
 	std::vector<UVertex> vertices_;
+
 	std::vector<u32> indices_;
+	u32 firstIndex_;
+
 	UAllocatedBuffer vertexBuffer_;
-	UAllocatedBuffer indexBuffer_;
 	UAllocatedBuffer stagingVertexBuffer_;
-	UAllocatedBuffer stagingIndexBuffer_;
+
 };
 
 template<>

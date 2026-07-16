@@ -40,8 +40,7 @@ void WColor::DisplayInternal(UWidgetDisplaySettings displaySettings)
 
 	if (UAsset model{ SAssetManager<UModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/rectangle.obj") })
 	{
-		drawCallBuilder_.GetDrawCall()->vertexBufferAdress = model->GetVertexBufferAddress();
-		drawCallBuilder_.GetDrawCall()->indexBuffer = model->GetIndexBuffer();
+		drawCallBuilder_.GetDrawData()->vertexBufferAddress = model->GetVertexBufferAddress();
 		drawCallBuilder_.GetDrawCall()->indexCount = model->GetIndexCount();
 		drawCallBuilder_.GetDrawCall()->firstIndex = 0;
 	}

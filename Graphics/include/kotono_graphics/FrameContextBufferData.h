@@ -20,7 +20,7 @@ struct UFrameContextBufferData
     VkDeviceAddress transformBufferAddress;
     VkDeviceAddress parametersBufferAddress;
 
-    VkDeviceAddress directionalLightBufferAdress;
+    VkDeviceAddress directionalLightBufferAddress;
     VkDeviceAddress pointLightBufferAddress;
     u32             directionalLightCount;
     u32             pointLightCount;
@@ -38,4 +38,7 @@ struct UFrameContextBufferData
 
     u32 postProcessTarget;
     u32 postProcessSampler;
+
+    VkDeviceAddress drawCommandBufferAddress;
+    VkDeviceAddress drawCountBufferAddress;
 };
