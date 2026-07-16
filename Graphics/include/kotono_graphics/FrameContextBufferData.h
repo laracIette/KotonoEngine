@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <kotono_common/types.h>
@@ -12,6 +13,8 @@ struct UFrameContextBufferData
     glm::mat4 viewProj;
     glm::mat4 invViewProj;
     glm::vec3 viewPos;
+
+    glm::uvec2 windowSize;
 
     f32 time;
 

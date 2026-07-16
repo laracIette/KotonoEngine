@@ -25,12 +25,14 @@ public:
     void Init();
     void Cleanup() const;
 
+    void RegisterGBufferTextures();
+    void UnregisterGBufferTextures();
+
     void UpdateBuffer(const u32 frameIndex);
     VkDeviceAddress GetAddress(const u32 frameIndex) const;
 
 private:
     void CreateBuffers();
-    void RegisterGBufferTextures();
 
 private:
     UFramesInFlightArray<FrameData> frameDatas_;

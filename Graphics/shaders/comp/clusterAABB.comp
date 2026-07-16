@@ -4,15 +4,13 @@
 
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-const uint CLUSTER_AABB_COUNT = 16 * 9 * 24;
-
 void main() {
     UNPACK_PUSH_CONSTANTS
 
     uvec3 clusterID = gl_GlobalInvocationID;
 
     uvec3 gridDimensions = uvec3(16, 9, 24);
-    vec2 screenSize = vec2(1600, 900);
+    vec2 screenSize = vec2(frame.windowSize);
 
     // Bounds check
     if (clusterID.x >= gridDimensions.x

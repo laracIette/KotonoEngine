@@ -132,6 +132,8 @@ struct FrameContext {
     mat4 viewProj;
     mat4 invViewProj;
     vec3 viewPos;
+
+    uvec2 windowSize;
           
     float time;
                      

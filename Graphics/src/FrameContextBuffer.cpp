@@ -12,6 +12,7 @@
 #include <kotono_common/AssetManager.h>
 #include <kotono_platform/Context.h>
 #include <kotono_platform/vk_utils.h>
+#include <kotono_platform/WindowViewport.h>
 #include <kotono_timing/Clock.h>
 
 void GFrameContextBuffer::Init()
@@ -25,6 +26,31 @@ void GFrameContextBuffer::Cleanup() const
     for (const auto& frameData : frameDatas_)
     {
         vmaDestroyBuffer(Context.GetAllocator(), frameData.dataBuffer.buffer, frameData.dataBuffer.allocation);
+    }
+}
+
+void GFrameContextBuffer::RegisterGBufferTextures()
+{
+    for (u32 i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
+    {
+        auto& frameData{ frameDatas_[i] };
+        frameData.gBufferAlbedo = PipelineResourceManager.RegisterTexture(Renderer.GetGBufferAlbedoImageView(i));
+        frameData.gBufferNormal = PipelineResourceManager.RegisterTexture(Renderer.GetGBufferNormalImageView(i));
+        frameData.gBufferORM = PipelineResourceManager.RegisterTexture(Renderer.GetGBufferORMImageView(i));
+        frameData.gBufferDepth = PipelineResourceManager.RegisterTexture(Renderer.GetGBufferDepthImageView(i));
+        frameData.postProcessTarget = PipelineResourceManager.RegisterTexture(Renderer.GetColorTargetImageView(i));
+    }
+}
+
+void GFrameContextBuffer::UnregisterGBufferTextures()
+{
+    for (const auto& frameData : frameDatas_)
+    {
+        PipelineResourceManager.UnregisterTexture(frameData.gBufferAlbedo);
+        PipelineResourceManager.UnregisterTexture(frameData.gBufferNormal);
+        PipelineResourceManager.UnregisterTexture(frameData.gBufferORM);
+        PipelineResourceManager.UnregisterTexture(frameData.gBufferDepth);
+        PipelineResourceManager.UnregisterTexture(frameData.postProcessTarget);
     }
 }
 
@@ -47,6 +73,8 @@ void GFrameContextBuffer::UpdateBuffer(const u32 frameIndex)
         .viewProj = viewProj,
         .invViewProj = glm::inverse(viewProj),
         .viewPos = SCamera::GetPosition(),
+
+        .windowSize = WindowViewport.GetExtent(),
 
         .time = SClock::Now(),
 
@@ -97,18 +125,5 @@ void GFrameContextBuffer::CreateBuffers()
             , VMA_ALLOCATION_CREATE_MAPPED_BIT
             | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
         );
-    }
-}
-
-void GFrameContextBuffer::RegisterGBufferTextures()
-{
-    for (u32 i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
-    {
-        auto& frameData{ frameDatas_[i] };
-        frameData.gBufferAlbedo = PipelineResourceManager.RegisterTexture(Renderer.GetGBufferAlbedoImageView(i));
-        frameData.gBufferNormal = PipelineResourceManager.RegisterTexture(Renderer.GetGBufferNormalImageView(i));
-        frameData.gBufferORM = PipelineResourceManager.RegisterTexture(Renderer.GetGBufferORMImageView(i));
-        frameData.gBufferDepth = PipelineResourceManager.RegisterTexture(Renderer.GetGBufferDepthImageView(i));
-        frameData.postProcessTarget = PipelineResourceManager.RegisterTexture(Renderer.GetColorTargetImageView(i));
     }
 }

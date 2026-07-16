@@ -1270,13 +1270,17 @@ void GRenderer::RecreateSwapChain()
 	// Wait for GPU
 	vkDeviceWaitIdle(Context.GetDevice());
 
+	FrameContextBuffer.UnregisterGBufferTextures();
+
 	CleanupSwapChain();
 
 	CreateSwapChain();
 	CreateSwapChainImageViews();
 	CreateImageResources();
 
-	for (auto& frameData : frameDatas_)
+	FrameContextBuffer.RegisterGBufferTextures();
+
+	for (const auto& frameData : frameDatas_)
 	{
 		vkResetCommandPool(Context.GetDevice(), frameData.commandPool, 0);
 	}

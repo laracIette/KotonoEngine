@@ -38,11 +38,10 @@ vec3 reconstructWorldPos(vec2 uv, float depth, mat4 invViewProj)
 }
 
 // Doom-2016-style logarithmic Z slicing
-uint computeClusterIndex(vec2 fragCoordPx, float viewSpaceZ, float tilePxSize, vec2 clusterScaleBias, uvec3 clusterGridDim)
+uint computeClusterIndex(vec2 fragCoordPx, float viewSpaceZ, vec2 tilePxSize, vec2 clusterScaleBias, uvec3 clusterGridDim)
 {
     uvec3 c;
-    c.x = uint(fragCoordPx.x / tilePxSize);
-    c.y = uint(fragCoordPx.y / tilePxSize);
+    c.xy = uvec2(fragCoordPx / tilePxSize);
 
     float linearZ = -viewSpaceZ; // view space looks down -Z
     c.z = uint(clamp(

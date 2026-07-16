@@ -11,7 +11,7 @@ void main() {
     ivec2 px = ivec2(gl_FragCoord.xy);
 
     uvec3 clusterGridDim = uvec3(16, 9, 24);
-    float tilePxSize = 100.0;
+    vec2 tilePxSize = frame.windowSize / vec2(16.0, 9.0);
 
     float numZSlices = clusterGridDim.z;
     float scale = float(numZSlices) / log2(Z_FAR / Z_NEAR);
