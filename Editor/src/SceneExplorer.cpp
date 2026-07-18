@@ -22,7 +22,7 @@ WidgetPtr WSceneExplorer::Build()
 
 
 	UPtr itemListBg{ UCreate<WColor>{}() };
-	itemListBg->SetColor(Colors::Black.WithAlpha(0.2f));
+	itemListBg->SetColor(Colors::Black.WithAlpha(0.5f));
 
 	itemList_ = UCreate<WList>{ "Scene Explorer Item List" }();
 	PopulateItemList();
@@ -42,7 +42,7 @@ WidgetPtr WSceneExplorer::Build()
 
 
 	UPtr mainStackBg{ UCreate<WColor>{}() };
-	mainStackBg->SetColor(Colors::White.WithValue(0.5f).WithAlpha(0.8f));
+	mainStackBg->SetColor(Colors::White.WithValue(0.5f).WithAlpha(0.4f));
 
 	const UChildrenOwnerTree widgetTree(UCreate<WStack>{}(), {
 		new UWidgetTreeLeaf(mainStackBg),

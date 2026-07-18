@@ -69,7 +69,7 @@ WidgetPtr WAssetExplorer::Build()
 			},
 		} },
 		new UChildrenOwnerTree{ UCreate<WStack>{ "Item List Stack" }(), {
-			new UWidgetTreeLeaf{ UCreate<WColor>{ "Item List Background" }(Colors::White.WithValue(0.25f).WithAlpha(0.9f))},
+			new UWidgetTreeLeaf{ UCreate<WColor>{ "Item List Background" }(Colors::White.WithValue(0.5f).WithAlpha(0.4f))},
 			new UChildOwnerTree{ UCreate<WPadding>{ "Item List Padding" }(UPadding::All(8.0f)),
 				new UWidgetTreeLeaf{ itemList_ }
 			},

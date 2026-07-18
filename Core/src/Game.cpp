@@ -163,7 +163,7 @@ void GGame::OpenTestScene() const
 
         const glm::vec3 position{ std::cos(i) * i * 0.1f, -0.9f, std::sin(i) * i * 0.1f };
         meshComponent->SetWorldPosition(position);
-        meshComponent->SetWorldRotation(glm::angleAxis(std::cos((float)i), WorldUpVector));
+        meshComponent->SetWorldRotation(glm::angleAxis(std::cosf(i) + -glm::pi<f32>() * 0.5f, WorldUpVector));
 
         if (isModel1)
         {

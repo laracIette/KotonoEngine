@@ -14,6 +14,9 @@ WAssetExplorerItem::WAssetExplorerItem(const UPath& path, const OnClickedFunc& o
 
 WidgetPtr WAssetExplorerItem::Build()
 {
+    constexpr UColor SELECTED_COLOR{ Colors::White.WithValue(0.2f).WithAlpha(0.75f) };
+    constexpr UColor UNSELECTED_COLOR{ Colors::White.WithValue(0.1f).WithAlpha(0.75f) };
+
     UPtr text{ UCreate<WText>{ "Item Text" }() };
     text->SetText(path_.Name());
     text->SetFontSize({ 16.0f, 20.0f });
@@ -21,7 +24,7 @@ WidgetPtr WAssetExplorerItem::Build()
     text->SetShouldWrap(true);
 
     UPtr button{ UCreate<WButton>{ "Item Button" }() };
-    button->SetOnClicked([this]() { 
+    button->SetOnClicked([this, SELECTED_COLOR]() { 
         if (isSelected_ && TimeManager.Now() - lastClickedTime_ < doubleClickTreshold_) {
             if (onDoubleClicked_) {
                 onDoubleClicked_(path_);
@@ -30,17 +33,17 @@ WidgetPtr WAssetExplorerItem::Build()
         else {
             lastClickedTime_ = TimeManager.Now();
             isSelected_ = true;
-            background_->SetColor(Colors::White.WithValue(0.2f));
+            background_->SetColor(SELECTED_COLOR);
         }
     });
-    button->SetOnPressOut([this]() {  
+    button->SetOnPressOut([this, UNSELECTED_COLOR]() {
         isSelected_ = false;
-        background_->SetColor(Colors::White.WithValue(0.1f));
+        background_->SetColor(UNSELECTED_COLOR);
     });
 
     const auto widgetTree{ UChildOwnerTree{ UCreate<WBox>{ "Item Box" }(glm::vec2{ 128.0f }),
         new UChildrenOwnerTree{ UCreate<WStack>{ "Item Stack" }(), {
-            new UWidgetTreeLeaf{ background_ = UCreate<WColor>{ "Item Background" }(Colors::White.WithValue(0.1f)) },
+            new UWidgetTreeLeaf{ background_ = UCreate<WColor>{ "Item Background" }(UNSELECTED_COLOR) },
             new UChildOwnerTree{ UCreate<WCenter>{ "Item Center" }(EAxis::All), 
                 new UWidgetTreeLeaf{ text }
             },

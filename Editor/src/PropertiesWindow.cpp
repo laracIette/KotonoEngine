@@ -31,7 +31,7 @@ WidgetPtr WPropertiesWindow::Build()
     mainListPadding->SetPadding(UPadding::All(8.0f));
 
     UPtr mainListBg{ UCreate<WColor>{}() };
-    mainListBg->SetColor(Colors::Blue.WithAlpha(0.5f));
+    mainListBg->SetColor(Colors::Black.WithAlpha(0.5f));
 
     const auto widgetTree{ UChildOwnerTree{ UCreate<WWrap>{}(),
         new UChildrenOwnerTree{ UCreate<WStack>{}(), {
