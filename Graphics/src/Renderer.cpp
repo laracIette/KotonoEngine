@@ -10,6 +10,7 @@
 #include "PipelineResourceManager.h"
 #include "TransformBuffer.h"
 #include "Shader.h"
+#include "SwapChain.h"
 #include <kotono_platform/Context.h>
 #include <kotono_platform/Window.h>
 #include <kotono_platform/WindowViewport.h>
@@ -22,8 +23,8 @@
 
 void GRenderer::Init()
 {
-	CreateSwapChain();
-	CreateSwapChainImageViews();
+	SwapChain.Init();
+
 	CreateImageResources();
 	CreateCommandPools();
 	CreateCommandBuffers();
@@ -58,7 +59,8 @@ void GRenderer::Cleanup()
 	PipelineResourceManager.Cleanup();
 
 	CleanupImageResources();
-	CleanupSwapChain();
+	
+	SwapChain.Cleanup();
 
 	for (const auto& frameData : frameDatas_)
 	{
@@ -115,16 +117,6 @@ void GRenderer::DrawFrame()
 	}
 
 	frameCount_++;
-}
-
-VkExtent2D GRenderer::GetSwapChainExtent() const
-{
-	return swapChainExtent_;
-}
-
-VkFormat GRenderer::GetSwapChainFormat() const
-{
-	return swapChainFormat_;
 }
 
 VkFormat GRenderer::GetDepthFormat() const
@@ -263,165 +255,18 @@ void GRenderer::CmdTransitionCompute(VkCommandBuffer commandBuffer
 	vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
 }
 
-void GRenderer::CreateSwapChain()
-{
-	KtSwapChainSupportDetails swapChainSupport = Context.QuerySwapChainSupport(Context.GetPhysicalDevice());
-
-	const auto surfaceFormat{ ChooseSwapSurfaceFormat(swapChainSupport.formats) };
-	const auto presentMode{ ChooseSwapPresentMode(swapChainSupport.presentModes) };
-	const auto extent{ ChooseSwapExtent(swapChainSupport.capabilities) };
-
-	u32 imageCount{ swapChainSupport.capabilities.minImageCount + 1 };
-	if (swapChainSupport.capabilities.maxImageCount > 0 
-		&& imageCount > swapChainSupport.capabilities.maxImageCount)
-	{
-		imageCount = swapChainSupport.capabilities.maxImageCount;
-	}
-
-	KT_LOG(ELogImportanceLevel::High, "Graphics", "swap chain image count: {0}", imageCount);
-
-	const KtQueueFamilyIndices indices{ Context.FindQueueFamilies(Context.GetPhysicalDevice()) };
-	const std::array queueFamilyIndices{ indices.graphicsFamily.value(), indices.presentFamily.value() };
-
-	VkSharingMode imageSharingMode;
-	u32 queueFamilyIndexCount;
-	const u32* pQueueFamilyIndices;
-	if (indices.graphicsFamily != indices.presentFamily)
-	{
-		imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-		queueFamilyIndexCount = static_cast<u32>(queueFamilyIndices.size());
-		pQueueFamilyIndices = queueFamilyIndices.data();
-	}
-	else
-	{
-		imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		queueFamilyIndexCount = 0;
-		pQueueFamilyIndices = VK_NULL_HANDLE;
-	}
-
-	const VkSwapchainCreateInfoKHR createInfo{
-		.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
-		.surface = Context.GetSurface(),
-
-		.minImageCount = imageCount,
-		.imageFormat = surfaceFormat.format,
-		.imageColorSpace = surfaceFormat.colorSpace,
-
-		.imageExtent = extent,
-		.imageArrayLayers = 1,
-		.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-
-		.imageSharingMode = imageSharingMode,
-		.queueFamilyIndexCount = queueFamilyIndexCount,
-		.pQueueFamilyIndices = pQueueFamilyIndices,
-
-		.preTransform = swapChainSupport.capabilities.currentTransform,
-		
-		.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR, // Used for blending window (here opaque)
-		.presentMode = presentMode,
-		.clipped = VK_TRUE, // Discard pixels that are hidden by other windows
-		.oldSwapchain = VK_NULL_HANDLE,
-	};
-	VK_CHECK_THROW(
-		vkCreateSwapchainKHR(Context.GetDevice(), &createInfo, nullptr, &swapChain_),
-		"failed to create swap chain!"
-	);
-
-	vkGetSwapchainImagesKHR(Context.GetDevice(), swapChain_, &imageCount, nullptr);
-	std::vector<VkImage> swapChainImages{ imageCount };
-	vkGetSwapchainImagesKHR(Context.GetDevice(), swapChain_, &imageCount, swapChainImages.data());
-
-	swapChainDatas_.resize(imageCount);
-	for (size i{ 0 }; i < imageCount; ++i)
-	{
-		swapChainDatas_[i].image = swapChainImages[i];
-	}
-
-	swapChainFormat_ = surfaceFormat.format;
-	swapChainExtent_ = extent;
-}
-
-void GRenderer::CleanupSwapChain()
-{
-	for (const auto& swapChainData : swapChainDatas_)
-	{
-		vkDestroyImageView(Context.GetDevice(), swapChainData.imageView, nullptr);
-	}
-	swapChainDatas_.clear();
-
-	vkDestroySwapchainKHR(Context.GetDevice(), swapChain_, nullptr);
-	swapChain_ = VK_NULL_HANDLE;
-}
-
-VkSurfaceFormatKHR GRenderer::ChooseSwapSurfaceFormat(const std::span<VkSurfaceFormatKHR> availableFormats) const
-{
-	for (const auto& availableFormat : availableFormats)
-	{
-		if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
-		{
-			return availableFormat;
-		}
-	}
-
-	return availableFormats[0];
-}
-
-VkPresentModeKHR GRenderer::ChooseSwapPresentMode(const std::span<VkPresentModeKHR> availablePresentModes) const
-{
-	for (const auto& availablePresentMode : availablePresentModes)
-	{
-		if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
-		{
-			return availablePresentMode;
-		}
-	}
-
-	return VK_PRESENT_MODE_FIFO_KHR;
-}
-
-VkExtent2D GRenderer::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const
-{
-	if (capabilities.currentExtent.width != std::numeric_limits<u32>::max())
-	{
-		return capabilities.currentExtent;
-	}
-	else
-	{
-		int width, height;
-		glfwGetFramebufferSize(Window.GetGLFWWindow(), &width, &height);
-
-		VkExtent2D actualExtent
-		{
-			static_cast<u32>(width),
-			static_cast<u32>(height)
-		};
-
-		actualExtent.width = glm::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-		actualExtent.height = glm::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
-
-		return actualExtent;
-	}
-}
-
-void GRenderer::CreateSwapChainImageViews()
-{
-	for (auto& swapChainData : swapChainDatas_)
-	{
-		swapChainData.imageView = Context.CreateImageView(swapChainData.image, VK_IMAGE_VIEW_TYPE_2D, swapChainFormat_, VK_IMAGE_ASPECT_COLOR_BIT, 1, 1);
-	}
-}
-
 void GRenderer::CreateImageResources()
 {
 	depthFormat_ = FindDepthFormat();
+	const auto extent{ SwapChain.GetExtent() };
 
 	for (auto& frameData : frameDatas_)
 	{
-		Context.CreateSampledImageAndImageView(frameData.colorTarget,	swapChainExtent_, 1, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
-		Context.CreateSampledImageAndImageView(frameData.albedoTarget,	swapChainExtent_, 1, VK_FORMAT_R8G8B8A8_SRGB,		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
-		Context.CreateSampledImageAndImageView(frameData.normalTarget,	swapChainExtent_, 1, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
-		Context.CreateSampledImageAndImageView(frameData.ormTarget,		swapChainExtent_, 1, VK_FORMAT_R8G8B8A8_UNORM,		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
-		Context.CreateSampledImageAndImageView(frameData.depthTarget,	swapChainExtent_, 1, depthFormat_,					VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,	VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_DEPTH_BIT);
+		Context.CreateSampledImageAndImageView(frameData.colorTarget,	extent, 1, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
+		Context.CreateSampledImageAndImageView(frameData.albedoTarget,	extent, 1, VK_FORMAT_R8G8B8A8_SRGB,			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
+		Context.CreateSampledImageAndImageView(frameData.normalTarget,	extent, 1, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
+		Context.CreateSampledImageAndImageView(frameData.ormTarget,		extent, 1, VK_FORMAT_R8G8B8A8_UNORM,		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
+		Context.CreateSampledImageAndImageView(frameData.depthTarget,	extent, 1, depthFormat_,					VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,	VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_DEPTH_BIT);
 	}
 }
 
@@ -444,30 +289,10 @@ void GRenderer::CleanupImageResources() const
 	}
 }
 
-VkFormat GRenderer::FindSupportedFormat(const std::span<VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const
-{
-	for (const VkFormat format : candidates)
-	{
-		VkFormatProperties props;
-		vkGetPhysicalDeviceFormatProperties(Context.GetPhysicalDevice(), format, &props);
-
-		if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
-		{
-			return format;
-		}
-		else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
-		{
-			return format;
-		}
-	}
-
-	throw std::runtime_error("failed to find supported format!");
-}
-
 VkFormat GRenderer::FindDepthFormat() const
 {
-	std::array formats{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT };
-	return FindSupportedFormat(formats, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+	constexpr std::array formats{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT };
+	return Context.FindSupportedFormat(formats, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
 
 bool GRenderer::TryAcquireNextImage(const u32 frameIndex)
@@ -479,10 +304,10 @@ bool GRenderer::TryAcquireNextImage(const u32 frameIndex)
 	);
 
 	// Set image index for current frame
-	const VkResult result{ vkAcquireNextImageKHR(Context.GetDevice(), swapChain_, UINT64_MAX, frameDatas_[frameIndex].imageAvailableSemaphore, VK_NULL_HANDLE, &frameDatas_[frameIndex].imageIndex) };
+	const VkResult result{ vkAcquireNextImageKHR(Context.GetDevice(), SwapChain.GetSwapChain(), UINT64_MAX, frameDatas_[frameIndex].imageAvailableSemaphore, VK_NULL_HANDLE, &frameDatas_[frameIndex].imageIndex)};
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
-		RecreateSwapChain();
+		RecreateFrame();
 		return false;
 	}
 	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
@@ -800,7 +625,7 @@ void GRenderer::CmdBeginRenderingDepthPrePass(VkCommandBuffer commandBuffer, con
 		.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
 		.renderArea{
 			.offset = { 0, 0 },
-			.extent = swapChainExtent_
+			.extent = SwapChain.GetExtent()
 		},
 		.layerCount = 1,
 		.colorAttachmentCount = 0,
@@ -899,7 +724,7 @@ void GRenderer::CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer, const u3
 		.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
 		.renderArea{
 			.offset = { 0, 0 },
-			.extent = swapChainExtent_
+			.extent = SwapChain.GetExtent()
 		},
 		.layerCount = 1,
 		.colorAttachmentCount = static_cast<u32>(colorAttachments.size()),
@@ -995,7 +820,7 @@ void GRenderer::CmdBeginRenderingDeferredLighting(VkCommandBuffer commandBuffer,
 		.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
 		.renderArea{
 			.offset = { 0, 0 },
-			.extent = swapChainExtent_
+			.extent = SwapChain.GetExtent()
 		},
 		.layerCount = 1,
 		.colorAttachmentCount = 1,
@@ -1032,7 +857,7 @@ void GRenderer::CmdBarrierColorWriteToRead(VkCommandBuffer commandBuffer, const 
 void GRenderer::CmdBarrierSwapchainNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	CmdTransitionImages(commandBuffer
-		, &swapChainDatas_[frameDatas_[frameIndex].imageIndex].image, 1
+		, &SwapChain.GetData(frameDatas_[frameIndex].imageIndex).image, 1
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 		| VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT
 		| VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT
@@ -1049,7 +874,7 @@ void GRenderer::CmdBeginRenderingPostProcess(VkCommandBuffer commandBuffer, cons
 {
 	const VkRenderingAttachmentInfo swapchainAttachment{
 		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-		.imageView = swapChainDatas_[frameDatas_[frameIndex].imageIndex].imageView,
+		.imageView = SwapChain.GetData(frameDatas_[frameIndex].imageIndex).imageView,
 		.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 
 		.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -1060,7 +885,7 @@ void GRenderer::CmdBeginRenderingPostProcess(VkCommandBuffer commandBuffer, cons
 		.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
 		.renderArea{
 			.offset = { 0, 0 },
-			.extent = swapChainExtent_
+			.extent = SwapChain.GetExtent()
 		},
 		.layerCount = 1,
 		.colorAttachmentCount = 1,
@@ -1084,7 +909,7 @@ void GRenderer::CmdBeginRenderingInterface(VkCommandBuffer commandBuffer, const 
 {
 	const VkRenderingAttachmentInfo swapchainAttachment{
 		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-		.imageView = swapChainDatas_[frameDatas_[frameIndex].imageIndex].imageView,
+		.imageView = SwapChain.GetData(frameDatas_[frameIndex].imageIndex).imageView,
 		.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 
 		.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
@@ -1095,7 +920,7 @@ void GRenderer::CmdBeginRenderingInterface(VkCommandBuffer commandBuffer, const 
 		.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
 		.renderArea{
 			.offset = { 0, 0 },
-			.extent = swapChainExtent_
+			.extent = SwapChain.GetExtent()
 		},
 		.layerCount = 1,
 		.colorAttachmentCount = 1,
@@ -1138,7 +963,7 @@ void GRenderer::CmdDrawFrameInterface(VkCommandBuffer commandBuffer, const u32 f
 void GRenderer::CmdBarrierSwapchainWriteToPresent(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	CmdTransitionImages(commandBuffer
-		, &swapChainDatas_[frameDatas_[frameIndex].imageIndex].image, 1
+		, &SwapChain.GetData(frameDatas_[frameIndex].imageIndex).image, 1
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 		, VK_PIPELINE_STAGE_2_NONE
 		, VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT
@@ -1243,14 +1068,14 @@ void GRenderer::SubmitCommandBuffer(const u32 frameIndex)
 		.pWaitSemaphores = &frameDatas_[frameIndex].renderFinishedSemaphore,
 
 		.swapchainCount = 1,
-		.pSwapchains = &swapChain_,
+		.pSwapchains = &SwapChain.GetSwapChain(),
 		.pImageIndices = &frameDatas_[frameIndex].imageIndex,
 	};
 	const VkResult result{ vkQueuePresentKHR(Context.GetPresentQueue(), &presentInfo) };
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 	{
-		RecreateSwapChain();
+		RecreateFrame();
 	}
 	else VK_CHECK_THROW(
 		result,
@@ -1293,7 +1118,7 @@ u32 GRenderer::GetRHIThreadFrame() const
 	return ((frameCount_ + KT_FRAMES_IN_FLIGHT) - 2) % static_cast<u32>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
 }
 
-void GRenderer::RecreateSwapChain()
+void GRenderer::RecreateFrame()
 {
 	// Wait for CPU
 	JoinThread(renderThread_);
@@ -1305,10 +1130,10 @@ void GRenderer::RecreateSwapChain()
 	FrameContextBuffer.UnregisterGBufferTextures();
 
 	CleanupImageResources();
-	CleanupSwapChain();
+	
+	SwapChain.Cleanup();
+	SwapChain.Init();
 
-	CreateSwapChain();
-	CreateSwapChainImageViews();
 	CreateImageResources();
 
 	FrameContextBuffer.RegisterGBufferTextures();

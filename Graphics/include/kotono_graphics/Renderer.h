@@ -4,7 +4,6 @@
 #include <kotono_platform/AllocatedImage.h>
 #include <span>
 #include <thread>
-#include <vector>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
 struct UDrawCall;
@@ -13,12 +12,6 @@ class GRenderer final
 	friend class GCore;
 
 public:
-	struct SwapChainData
-	{
-		VkImage image;
-		VkImageView imageView;
-	};
-
 	struct FrameData
 	{
 		VkCommandPool	commandPool;
@@ -44,8 +37,6 @@ private:
 public:
 	void DrawFrame();
 
-	VkExtent2D GetSwapChainExtent() const;
-	VkFormat GetSwapChainFormat() const;
 	VkFormat GetDepthFormat() const;
 
 	void RegisterOpaqueDrawCall(UDrawCall* drawCall);
@@ -63,17 +54,11 @@ public:
 	void CmdTransitionCompute(VkCommandBuffer commandBuffer, const VkPipelineStageFlags2 srcStage, const VkPipelineStageFlags2 dstStage, const VkAccessFlags2 srcAccess, const VkAccessFlags2 dstAccess) const;
 
 private:
-	void CreateSwapChain();
-	void CleanupSwapChain();
-	void RecreateSwapChain();
-	VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::span<VkSurfaceFormatKHR> availableFormats) const;
-	VkPresentModeKHR ChooseSwapPresentMode(const std::span<VkPresentModeKHR> availablePresentModes) const;
-	VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
-	void CreateSwapChainImageViews();
+	void RecreateFrame();
 
 	void CreateImageResources();
 	void CleanupImageResources() const;
-	VkFormat FindSupportedFormat(const std::span<VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const;
+
 	VkFormat FindDepthFormat() const;
 
 	bool TryAcquireNextImage(const u32 frameIndex);
@@ -137,11 +122,6 @@ private:
 	u32 GetRHIThreadFrame() const;
 
 private:
-	std::vector<SwapChainData> swapChainDatas_;
-	VkSwapchainKHR swapChain_;
-	VkFormat swapChainFormat_;
-	VkExtent2D swapChainExtent_;
-
 	VkFormat depthFormat_;
 
 	UFramesInFlightArray<FrameData> frameDatas_;

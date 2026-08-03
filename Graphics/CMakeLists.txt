@@ -89,6 +89,7 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/Scissor.h"
     "include/kotono_graphics/Shader.h"
     "include/kotono_graphics/SpvCompiler.h"
+    "include/kotono_graphics/SwapChain.h"
     "include/kotono_graphics/Texture.h"
     "include/kotono_graphics/TransformBuffer.h"
     "include/kotono_graphics/TransformBufferData.h"
@@ -113,6 +114,7 @@ set(KGRAPHICS_SOURCES
     "src/Sampler.cpp"
     "src/Shader.cpp"
     "src/SpvCompiler.cpp"
+    "src/SwapChain.cpp"
     "src/Texture.cpp"
     "src/TransformBuffer.cpp"
 )

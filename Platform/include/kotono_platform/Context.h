@@ -4,6 +4,7 @@
 #include "QueueFamilyIndices.h"
 #include "SwapChainSupportDetails.h"
 #include <kotono_common/Event.h>
+#include <span>
 #include <vector>
 #include <vma/vk_mem_alloc.h> 
 
@@ -40,6 +41,8 @@ public:
 	void ExecuteSingleTimeCommands();
 	UEvent<>& GetEventExecuteSingleTimeCommands();
 	void StagingUpload(const void* data, const VkDeviceSize size, VkBuffer dstBuffer, const VkDeviceSize dstOffset);
+	
+	VkFormat FindSupportedFormat(const std::span<const VkFormat> candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
 
 private:
 	void CreateInstance();
@@ -48,25 +51,25 @@ private:
 	void SetupDebugMessenger();
 	VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) const;
 	void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) const;
+	
 	bool CheckValidationLayerSupport();
+	
 	std::vector<const char*> GetRequiredExtensions();
+	
 	void PickPhysicalDevice();
 	bool IsDeviceSuitable(VkPhysicalDevice device);
 	bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
 	bool CheckDeviceFeatureSupport(VkPhysicalDevice device);
 	void CreateLogicalDevice();
+	
 	void CreateSurface();
-	VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
-	VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const;
-	VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
 
 	void CreateAllocator();
 
 	void CreateCommandPool();
 
 	u32 FindMemoryType(u32 typeFilter, VkMemoryPropertyFlags properties) const;
-	VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
-	VkFormat FindDepthFormat() const;
+
 	bool HasStencilComponent(VkFormat format) const;
 
 	VkSampleCountFlagBits GetMaxUsableSampleCount() const;

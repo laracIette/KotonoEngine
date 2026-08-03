@@ -1,7 +1,8 @@
 ﻿#include "Shader.h"
+#include "PipelineResourceManager.h"
 #include "Renderer.h"
+#include "SwapChain.h"
 #include <kotono_common/log.h>
-#include <kotono_graphics/PipelineResourceManager.h>
 #include <kotono_io/File.h>
 #include <kotono_io/Serializer.h>
 #include <kotono_platform/Context.h>
@@ -157,15 +158,15 @@ void UShader::CreateGraphicsPipeline()
 	const VkViewport viewport{
 		.x = 0.0f,
 		.y = 0.0f,
-		.width = static_cast<float>(Renderer.GetSwapChainExtent().width),
-		.height = static_cast<float>(Renderer.GetSwapChainExtent().height),
+		.width = static_cast<float>(SwapChain.GetExtent().width),
+		.height = static_cast<float>(SwapChain.GetExtent().height),
 		.minDepth = 0.0f,
 		.maxDepth = 1.0f,
 	};
 
 	const VkRect2D scissor{
 		.offset = { 0, 0 },
-		.extent = Renderer.GetSwapChainExtent(),
+		.extent = SwapChain.GetExtent(),
 	};
 
 	const VkPipelineViewportStateCreateInfo viewportState{
@@ -287,7 +288,7 @@ std::vector<VkFormat> UShader::GetOutputColorAttachmentFormats(const EPipelinePa
 	};
 	case EPipelinePass::DeferredLighting:	return { VK_FORMAT_R16G16B16A16_SFLOAT };
 	case EPipelinePass::PostProcess:
-	case EPipelinePass::Interface:			return { Renderer.GetSwapChainFormat() };
+	case EPipelinePass::Interface:			return { SwapChain.GetFormat() };
 	default:								return {};
 	}
 }

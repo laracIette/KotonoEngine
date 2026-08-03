@@ -558,56 +558,6 @@ void GContext::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMe
 	}
 }
 
-VkSurfaceFormatKHR GContext::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const
-{
-	for (const auto& availableFormat : availableFormats)
-	{
-		if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
-		{
-			return availableFormat;
-		}
-	}
-
-	return availableFormats[0];
-}
-
-VkPresentModeKHR GContext::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const
-{
-	for (const auto& availablePresentMode : availablePresentModes)
-	{
-		if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
-		{
-			return availablePresentMode;
-		}
-	}
-
-	return VK_PRESENT_MODE_FIFO_KHR;
-}
-
-VkExtent2D GContext::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const
-{
-	if (capabilities.currentExtent.width != std::numeric_limits<u32>::max())
-	{
-		return capabilities.currentExtent;
-	}
-	else
-	{
-		int width, height;
-		glfwGetFramebufferSize(Window.GetGLFWWindow(), &width, &height);
-
-		VkExtent2D actualExtent
-		{
-			static_cast<u32>(width),
-			static_cast<u32>(height)
-		};
-
-		actualExtent.width = glm::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-		actualExtent.height = glm::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
-
-		return actualExtent;
-	}
-}
-
 void GContext::CreateAllocator()
 {
 	const VmaAllocatorCreateInfo allocatorInfo{
@@ -870,7 +820,7 @@ void GContext::CreateImage(const u32 width, const u32 height
 	);
 }
 
-VkFormat GContext::FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const
+VkFormat GContext::FindSupportedFormat(const std::span<const VkFormat> candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const
 {
 	for (VkFormat format : candidates)
 	{
@@ -887,16 +837,7 @@ VkFormat GContext::FindSupportedFormat(const std::vector<VkFormat>& candidates, 
 		}
 	}
 
-	throw std::runtime_error("failed to find supported format!");
-}
-
-VkFormat GContext::FindDepthFormat() const
-{
-	return FindSupportedFormat(
-		{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-	);
+	throw "failed to find supported format!";
 }
 
 bool GContext::HasStencilComponent(VkFormat format) const
@@ -1189,7 +1130,6 @@ VkSampleCountFlagBits GContext::GetMaxUsableSampleCount() const
 	if (counts & VK_SAMPLE_COUNT_2_BIT) return VK_SAMPLE_COUNT_2_BIT; 
 	else return VK_SAMPLE_COUNT_1_BIT;
 }
-
 
 VkPhysicalDevice& GContext::GetPhysicalDevice()
 {
