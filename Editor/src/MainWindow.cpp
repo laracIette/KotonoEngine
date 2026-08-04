@@ -13,9 +13,9 @@ void WMainWindow::BeginDraw()
 {
 	Display({
 		.position = { 0.0f, 0.0f },
-		.bounds = static_cast<glm::vec2>(WindowViewport.GetExtent()),
+		.bounds = static_cast<glm::vec2>(SWindowViewport::GetExtent()),
 		.layer = 0,
-		.scissor = { { 0, 0 }, WindowViewport.GetExtent()},
+		.scissor = { { 0, 0 }, SWindowViewport::GetExtent()},
 	});
 }
 

@@ -30,6 +30,7 @@ KMeshComponent::KMeshComponent()
 
 KMeshComponent::~KMeshComponent()
 {
+    drawCallBuilder_.Unregister();
 }
 
 void KMeshComponent::Init()
@@ -86,7 +87,7 @@ void KMeshComponent::Spawn()
     Base::Spawn();
 
     RefreshDrawCall();
-    RegisterDrawCall();
+    drawCallBuilder_.Register(ERenderBucket::Opaque);
 
     GetEventTransformUpdated().AddListener(this, &KMeshComponent::RefreshDrawCallTransformData);
     RegisterDelegate(&Window, Window.GetEventWindowResized(), this, &KMeshComponent::RefreshDrawCallScissor);
@@ -95,26 +96,6 @@ void KMeshComponent::Spawn()
     RegisterDelegate(&Keyboard, Keyboard.EventKey(EKey::M, EInputState::Pressed), this, &KMeshComponent::SetMobilityDynamic);
     
     spinTask_.eventUpdate.AddListener(this, &KMeshComponent::Spin);
-}
-
-void KMeshComponent::SetVisibility(const EVisibility visibility, const bool propagateToChildren)
-{
-    Base::SetVisibility(visibility, propagateToChildren);
-}
-
-void KMeshComponent::SetMobility(const EMobility mobility)
-{
-    Base::SetMobility(mobility);
-}
-
-void KMeshComponent::RegisterDrawCall()
-{
-    drawCallBuilder_.Register(ERenderBucket::Opaque);
-}
-
-void KMeshComponent::UnregisterDrawCall()
-{
-    drawCallBuilder_.Unregister();
 }
 
 void KMeshComponent::RefreshDrawCall() const
@@ -128,8 +109,8 @@ void KMeshComponent::RefreshDrawCall() const
 
 void KMeshComponent::RefreshDrawCallScissor() const
 {
-    const auto& offset{ GetOwner()->GetViewport()->GetOffset() };
-    const auto& extent{ GetOwner()->GetViewport()->GetExtent() };
+    const auto& offset{ SWindowViewport::GetOffset() };
+    const auto& extent{ SWindowViewport::GetExtent() };
 
     drawCallBuilder_.GetDrawCall()->scissor = {
         .offset = { offset.x, offset.y },

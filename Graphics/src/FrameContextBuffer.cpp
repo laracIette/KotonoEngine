@@ -1,26 +1,15 @@
 #include "FrameContextBuffer.h"
-#include "Camera.h"
-#include "GPUBuffers.h"
-#include "DrawDataBuffer.h"
-#include "LightBuffers.h"
-#include "MaterialBuffer.h"
-#include "ParametersBuffer.h"
 #include "PipelineResourceManager.h"
 #include "Renderer.h"
-#include "Sampler.h"
-#include "TransformBuffer.h"
-#include <kotono_common/AssetManager.h>
 #include <kotono_platform/Context.h>
-#include <kotono_platform/WindowViewport.h>
-#include <kotono_timing/Clock.h>
 
-void GFrameContextBuffer::Init()
+void UFrameContextBuffer::Init()
 {
     CreateBuffers();
     RegisterGBufferTextures();
 }
 
-void GFrameContextBuffer::Cleanup() const
+void UFrameContextBuffer::Cleanup() const
 {
     for (const auto& frameData : frameDatas_)
     {
@@ -28,7 +17,7 @@ void GFrameContextBuffer::Cleanup() const
     }
 }
 
-void GFrameContextBuffer::RegisterGBufferTextures()
+void UFrameContextBuffer::RegisterGBufferTextures()
 {
     for (u32 i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
     {
@@ -41,7 +30,7 @@ void GFrameContextBuffer::RegisterGBufferTextures()
     }
 }
 
-void GFrameContextBuffer::UnregisterGBufferTextures()
+void UFrameContextBuffer::UnregisterGBufferTextures()
 {
     for (const auto& frameData : frameDatas_)
     {
@@ -53,53 +42,49 @@ void GFrameContextBuffer::UnregisterGBufferTextures()
     }
 }
 
-void GFrameContextBuffer::UpdateBuffer(const u32 frameIndex)
-{
-    static UAsset sampler{ SAssetManager<USampler>::Get("${ENGINE_DIRECTORY}/Graphics/assets/samplers/default.kasset") };
-    if (!sampler)
-    {
-        return;
-    }
-    
-    const auto view{ SCamera::GetViewMatrix() };
-    const auto proj{ SCamera::GetProjectionMatrix() };
-    const auto viewProj{ proj * view };
+void UFrameContextBuffer::UpdateBuffer(const u32 frameIndex
+    , const UFrameContextSceneView& sceneView
+    , const UFrameContextAddresses& addresses
+    , const u32 samplerIndex
+)
+{    
+    const auto viewProj{ sceneView.proj * sceneView.view };
 
     const Data data{
-        .view = view,
-        .proj = proj,
-        .invProj = glm::inverse(proj),
+        .view = sceneView.view,
+        .proj = sceneView.proj,
+        .invProj = glm::inverse(sceneView.proj),
         .viewProj = viewProj,
         .invViewProj = glm::inverse(viewProj),
-        .viewPos = SCamera::GetPosition(),
+        .viewPos = sceneView.viewPos,
 
-        .windowSize = WindowViewport.GetExtent(),
+        .windowSize = sceneView.windowSize,
 
-        .time = SClock::Now(),
+        .time = sceneView.time,
 
-        .drawDataBufferAddress = DrawDataBuffer.GetAddress(frameIndex),
-        .materialBufferAddress = MaterialBuffer.GetAddress(),
-        .transformBufferAddress = TransformBuffer.GetAddress(frameIndex),
-        .parametersBufferAddress = ParametersBuffer.GetAddress(frameIndex),
+        .drawDataBufferAddress = addresses.drawDataBufferAddress,
+        .materialBufferAddress = addresses.materialBufferAddress,
+        .transformBufferAddress = addresses.transformBufferAddress,
+        .parametersBufferAddress = addresses.parametersBufferAddress,
 
-        .directionalLightBufferAddress = LightBuffers.GetDirectionalLightAddress(frameIndex),
-        .pointLightBufferAddress = LightBuffers.GetPointLightAddress(frameIndex),
-        .directionalLightCount = LightBuffers.GetDirectionalLightCount(),
-        .pointLightCount = LightBuffers.GetPointLightCount(),
+        .directionalLightBufferAddress = addresses.directionalLightBufferAddress,
+        .pointLightBufferAddress = addresses.pointLightBufferAddress,
+        .directionalLightCount = addresses.directionalLightCount,
+        .pointLightCount = addresses.pointLightCount,
 
-        .clusterAABBBufferAddress = GPUBuffers.GetClusterAABBAddress(),
-        .clusterGridBufferAddress = GPUBuffers.GetClusterGridAddress(frameIndex),
-        .lightIndexBufferAddress = GPUBuffers.GetLightIndexAddress(frameIndex),
-        .lightCounterBufferAddress = GPUBuffers.GetLightCounterAddress(frameIndex),
+        .clusterAABBBufferAddress = addresses.clusterAABBBufferAddress,
+        .clusterGridBufferAddress = addresses.clusterGridBufferAddress,
+        .lightIndexBufferAddress = addresses.lightIndexBufferAddress,
+        .lightCounterBufferAddress = addresses.lightCounterBufferAddress,
 
         .gBufferAlbedo = frameDatas_[frameIndex].gBufferAlbedo,
         .gBufferNormal = frameDatas_[frameIndex].gBufferNormal,
         .gBufferORM = frameDatas_[frameIndex].gBufferORM,
         .gBufferDepth = frameDatas_[frameIndex].gBufferDepth,
-        .gBufferSampler = sampler->GetIndex(),
+        .gBufferSampler = samplerIndex,
 
         .postProcessTarget = frameDatas_[frameIndex].postProcessTarget,
-        .postProcessSampler = sampler->GetIndex(),
+        .postProcessSampler = samplerIndex,
     };
 
     std::memcpy(frameDatas_[frameIndex].dataBuffer.allocationInfo.pMappedData
@@ -108,12 +93,12 @@ void GFrameContextBuffer::UpdateBuffer(const u32 frameIndex)
     );
 }
 
-VkDeviceAddress GFrameContextBuffer::GetAddress(const u32 frameIndex) const
+VkDeviceAddress UFrameContextBuffer::GetAddress(const u32 frameIndex) const
 {
     return frameDatas_[frameIndex].dataBuffer.bda;
 }
 
-void GFrameContextBuffer::CreateBuffers()
+void UFrameContextBuffer::CreateBuffers()
 {
     for (auto& frameData : frameDatas_)
     {

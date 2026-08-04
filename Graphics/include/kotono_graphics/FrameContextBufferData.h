@@ -42,3 +42,30 @@ struct UFrameContextBufferData
     u32 postProcessTarget;
     u32 postProcessSampler;
 };
+
+struct UFrameContextSceneView
+{ 
+    glm::mat4 view;
+    glm::mat4 proj;
+    glm::vec3 viewPos;
+    glm::vec2 windowSize;
+    f32 time;
+};
+
+struct UFrameContextAddresses
+{
+    VkDeviceAddress drawDataBufferAddress;
+    VkDeviceAddress materialBufferAddress;
+    VkDeviceAddress transformBufferAddress;
+    VkDeviceAddress parametersBufferAddress;
+
+    VkDeviceAddress directionalLightBufferAddress;
+    VkDeviceAddress pointLightBufferAddress;
+    u32             directionalLightCount;
+    u32             pointLightCount;
+
+    VkDeviceAddress clusterAABBBufferAddress;
+    VkDeviceAddress clusterGridBufferAddress;
+    VkDeviceAddress lightIndexBufferAddress;
+    VkDeviceAddress lightCounterBufferAddress;
+};

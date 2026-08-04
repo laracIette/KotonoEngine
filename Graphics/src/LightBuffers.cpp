@@ -15,13 +15,13 @@ static constexpr u32 MAX_DIRECTIONAL_LIGHTS{ 8 };
 static constexpr u32 MAX_POINT_LIGHTS{ 1024 };
 static constexpr u32 SHADOW_MAP_RESOLUTION{ 4096 }; // todo: make variable
 
-void GLightBuffers::Init()
+void ULightBuffers::Init()
 {
     CreateBuffers();
     CreateShadowMapResources();
 }
 
-void GLightBuffers::Cleanup() const
+void ULightBuffers::Cleanup() const
 {
     for (const auto& frameData : frameDatas_)
     {
@@ -36,7 +36,7 @@ void GLightBuffers::Cleanup() const
     }
 }
 
-void GLightBuffers::RegisterDirectionalLight(const DirectionalLightData& directionalLight) // todo: add way to update / delete
+void ULightBuffers::RegisterDirectionalLight(const DirectionalLightData& directionalLight) // todo: add way to update / delete
 {
     static UAsset sampler{ SAssetManager<USampler>::Get("${ENGINE_DIRECTORY}/Graphics/assets/samplers/shadow.kasset") };
     if (!sampler)
@@ -56,12 +56,12 @@ void GLightBuffers::RegisterDirectionalLight(const DirectionalLightData& directi
     });
 }
 
-void GLightBuffers::RegisterPointLight(const UPointLight& pointLight)
+void ULightBuffers::RegisterPointLight(const UPointLight& pointLight)
 {
     pointLights_.push_back(pointLight);
 }
 
-void GLightBuffers::UpdateBuffers(const u32 frameIndex)
+void ULightBuffers::UpdateBuffers(const u32 frameIndex)
 {
     const std::array<f32, NUM_DIRECTIONAL_CASCADES + 1> cascadeSplits{
        SCamera::GetDepthNear(),
@@ -77,7 +77,7 @@ void GLightBuffers::UpdateBuffers(const u32 frameIndex)
             , SCamera::GetDepthNear()
             , zFar
             , SCamera::GetFOV()
-            , WindowViewport.GetAspectRatio()
+            , SWindowViewport::GetAspectRatio()
         );
     } };
 
@@ -95,7 +95,7 @@ void GLightBuffers::UpdateBuffers(const u32 frameIndex)
                 cascadeSplits[i],
                 cascadeSplits[i + 1],
                 SCamera::GetFOV(),
-                WindowViewport.GetAspectRatio()
+                SWindowViewport::GetAspectRatio()
             );
         }
     }
@@ -110,27 +110,27 @@ void GLightBuffers::UpdateBuffers(const u32 frameIndex)
     );
 }
 
-VkDeviceAddress GLightBuffers::GetDirectionalLightAddress(const u32 frameIndex) const
+VkDeviceAddress ULightBuffers::GetDirectionalLightAddress(const u32 frameIndex) const
 {
     return frameDatas_[frameIndex].directionalLightBuffer.bda;
 }
 
-VkDeviceAddress GLightBuffers::GetPointLightAddress(const u32 frameIndex) const
+VkDeviceAddress ULightBuffers::GetPointLightAddress(const u32 frameIndex) const
 {
     return frameDatas_[frameIndex].pointLightBuffer.bda;
 }
 
-u32 GLightBuffers::GetDirectionalLightCount() const
+u32 ULightBuffers::GetDirectionalLightCount() const
 {
     return directionalLights_.size();
 }
 
-u32 GLightBuffers::GetPointLightCount() const
+u32 ULightBuffers::GetPointLightCount() const
 {
     return pointLights_.size();
 }
 
-void GLightBuffers::CmdSetViewportAndScissor(VkCommandBuffer commandBuffer) const
+void ULightBuffers::CmdSetViewportAndScissor(VkCommandBuffer commandBuffer) const
 {
     const VkRect2D scissor{
         .offset = { 0, 0 },
@@ -149,7 +149,7 @@ void GLightBuffers::CmdSetViewportAndScissor(VkCommandBuffer commandBuffer) cons
     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 }
 
-void GLightBuffers::CmdBarrierShadowMapsNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void ULightBuffers::CmdBarrierShadowMapsNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
     const auto images{ frameDatas_[frameIndex].directionalLightShadowMapTargets
         | std::views::transform(&ShadowMapTarget::allocatedImage)
@@ -170,7 +170,7 @@ void GLightBuffers::CmdBarrierShadowMapsNoneToWrite(VkCommandBuffer commandBuffe
     );
 }
 
-void GLightBuffers::CmdBeginRenderingShadowMapTarget(VkCommandBuffer commandBuffer, const u32 index, const u32 frameIndex) const
+void ULightBuffers::CmdBeginRenderingShadowMapTarget(VkCommandBuffer commandBuffer, const u32 index, const u32 frameIndex) const
 {
     const auto& shadowMapTarget{ frameDatas_[frameIndex].directionalLightShadowMapTargets[index] };
     
@@ -200,7 +200,7 @@ void GLightBuffers::CmdBeginRenderingShadowMapTarget(VkCommandBuffer commandBuff
     vkCmdBeginRendering(commandBuffer, &renderInfo);
 }
 
-void GLightBuffers::CmdBarrierShadowMapsWriteToShaderRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void ULightBuffers::CmdBarrierShadowMapsWriteToShaderRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
     const auto images{ frameDatas_[frameIndex].directionalLightShadowMapTargets
         | std::views::transform(&ShadowMapTarget::allocatedImage)
@@ -221,7 +221,7 @@ void GLightBuffers::CmdBarrierShadowMapsWriteToShaderRead(VkCommandBuffer comman
     );
 }
 
-void GLightBuffers::CreateBuffers()
+void ULightBuffers::CreateBuffers()
 {
     for (auto& frameData : frameDatas_)
     {
@@ -242,7 +242,7 @@ void GLightBuffers::CreateBuffers()
     }
 }
 
-void GLightBuffers::CreateShadowMapResources()
+void ULightBuffers::CreateShadowMapResources()
 {
     for (auto& frameData : frameDatas_)
     {

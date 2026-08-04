@@ -4,7 +4,7 @@
 #include <kotono_common/types.h>
 #include <kotono_platform/AllocatedBuffer.h>
 #include <vulkan/vulkan_core.h>
-class GFrameContextBuffer final
+class UFrameContextBuffer final
 {
     using Data = UFrameContextBufferData;
 
@@ -28,7 +28,7 @@ public:
     void RegisterGBufferTextures();
     void UnregisterGBufferTextures();
 
-    void UpdateBuffer(const u32 frameIndex);
+    void UpdateBuffer(const u32 frameIndex, const UFrameContextSceneView& sceneView, const UFrameContextAddresses& addresses, const u32 samplerIndex);
     VkDeviceAddress GetAddress(const u32 frameIndex) const;
 
 private:
@@ -37,5 +37,3 @@ private:
 private:
     UFramesInFlightArray<FrameData> frameDatas_;
 };
-
-inline GFrameContextBuffer FrameContextBuffer;

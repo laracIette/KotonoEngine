@@ -3,7 +3,7 @@
 
 static constexpr u32 CLUSTER_AABB_COUNT{ 16 * 9 * 24 };
 
-void GGPUBuffers::Init()
+void UGPUBuffers::Init()
 {
     Context.CreateBuffer(clusterAABBBuffer_
         , sizeof(ClusterAABB) * CLUSTER_AABB_COUNT
@@ -35,7 +35,7 @@ void GGPUBuffers::Init()
     }
 }
 
-void GGPUBuffers::Cleanup() const
+void UGPUBuffers::Cleanup() const
 {
     vmaDestroyBuffer(Context.GetAllocator(), clusterAABBBuffer_.buffer, clusterAABBBuffer_.allocation);
     for (const auto& frameData : frameDatas_)
@@ -46,27 +46,27 @@ void GGPUBuffers::Cleanup() const
     }
 }
 
-VkDeviceAddress GGPUBuffers::GetClusterAABBAddress() const
+VkDeviceAddress UGPUBuffers::GetClusterAABBAddress() const
 {
     return clusterAABBBuffer_.bda;
 }
 
-VkDeviceAddress GGPUBuffers::GetClusterGridAddress(const u32 frameIndex) const
+VkDeviceAddress UGPUBuffers::GetClusterGridAddress(const u32 frameIndex) const
 {
     return frameDatas_[frameIndex].clusterGridBuffer.bda;
 }
 
-VkDeviceAddress GGPUBuffers::GetLightIndexAddress(const u32 frameIndex) const
+VkDeviceAddress UGPUBuffers::GetLightIndexAddress(const u32 frameIndex) const
 {
     return frameDatas_[frameIndex].lightIndexBuffer.bda;
 }
 
-VkDeviceAddress GGPUBuffers::GetLightCounterAddress(const u32 frameIndex) const
+VkDeviceAddress UGPUBuffers::GetLightCounterAddress(const u32 frameIndex) const
 {
     return frameDatas_[frameIndex].lightCounterBuffer.bda;
 }
 
-VkBuffer GGPUBuffers::GetLightCounterBuffer(const u32 frameIndex) const
+VkBuffer UGPUBuffers::GetLightCounterBuffer(const u32 frameIndex) const
 {
     return frameDatas_[frameIndex].lightCounterBuffer.buffer;
 }

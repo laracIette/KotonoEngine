@@ -1,6 +1,7 @@
 #include "TimeManager.h"
+#include <kotono_graphics/Camera.h>
 #include <kotono_graphics/Renderer.h>
-#include <kotono_common/Delegate.h>
+#include <kotono_platform/WindowViewport.h>
 #include <kotono_timing/TimerManager.h>
 #include <kotono_timing/TimeContext.h>
 #include <kotono_timing/Stopwatch.h>
@@ -40,13 +41,23 @@ void GTimeManager::Update()
 
 	if (gameTime_.Update(delta_))
 	{
-		const float gameTime{ UStopwatch::Time([this]() { Game.Update(gameTime_.lastDelta); }) };
+		const float gameTime{ UStopwatch::Time([delta = gameTime_.lastDelta]() {
+			Game.Update(delta); 
+		}) };
 		averageGameTime_.Add(gameTime);
 	}
 
 	if (renderTime_.Update(delta_))
 	{
-		const float renderTime{ UStopwatch::Time([]() { Renderer.DrawFrame(); }) };
+		const float renderTime{ UStopwatch::Time([]() { 
+			Renderer.DrawFrame({
+				.view = SCamera::GetViewMatrix(),
+				.proj = SCamera::GetProjectionMatrix(),
+				.viewPos = SCamera::GetPosition(),
+				.windowSize = SWindowViewport::GetExtent(),
+				.time = SClock::Now(),
+			});
+		}) };
 		averageRenderTime_.Add(renderTime);
 	}
 }

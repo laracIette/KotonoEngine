@@ -9,8 +9,8 @@ void GWindow::Init()
 {
     size_ = { 1600, 900 };
 
-    WindowViewport.SetIsKeepAspectRatio(false);
-    WindowViewport.SetAspectRatio(static_cast<float>(size_.x) / size_.y);
+    SWindowViewport::SetIsKeepAspectRatio(false);
+    SWindowViewport::SetAspectRatio(static_cast<float>(size_.x) / size_.y);
 
     // Initialize GLFW
     if (!glfwInit())
@@ -92,7 +92,7 @@ void framebuffersize_callback_(GLFWwindow* window, int width, int height)
         glfwWaitEvents();
     }
 
-    WindowViewport.SetExtent({ width, height });
+    SWindowViewport::SetExtent({ width, height });
 
     Window.GetEventWindowResized().Broadcast();
 

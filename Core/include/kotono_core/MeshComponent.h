@@ -29,14 +29,9 @@ public:
 	void SetModel(const UAsset<UModel>& model);
 	void SetMaterial(const UAsset<UMaterial>& material);
 
-	void SetVisibility(const EVisibility visibility, const bool propagateToChildren = false) override;
-	void SetMobility(const EMobility mobility) override;
-
 	void Spawn() override;
 
 private:
-	void RegisterDrawCall();
-	void UnregisterDrawCall();
 	void RefreshDrawCall() const;
 
 	void RefreshDrawCallScissor() const;

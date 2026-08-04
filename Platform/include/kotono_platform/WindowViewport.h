@@ -1,34 +1,28 @@
 #pragma once
-#include <vulkan/vulkan_core.h>
 #include <glm/vec2.hpp>
-#include <kotono_common/Event.h>
-class GWindowViewport final
+#include <kotono_common/types.h>
+#include <vulkan/vulkan_core.h>
+class SWindowViewport final
 {
 public:
-	const glm::uvec2& GetExtent() const;
-	const glm::ivec2& GetOffset() const;
+	static const glm::uvec2& GetExtent();
+	static const glm::ivec2& GetOffset();
 
-	bool GetIsKeepAspectRatio() const;
-	float GetAspectRatio() const;
+	static bool GetIsKeepAspectRatio();
+	static f32 GetAspectRatio();
 
-	void SetExtent(const glm::uvec2& extent);
-	void SetOffset(const glm::ivec2& offset);
+	static void SetExtent(const glm::uvec2& extent);
+	static void SetOffset(const glm::ivec2& offset);
 
-	void SetIsKeepAspectRatio(const bool isKeepAspectRatio);
-	void SetAspectRatio(const float aspectRatio);
+	static void SetIsKeepAspectRatio(const bool isKeepAspectRatio);
+	static void SetAspectRatio(const f32 aspectRatio);
 
-	void CmdUse(VkCommandBuffer commandBuffer) const;
-
-	UEvent<>& EventExtentChanged();
+	static void CmdUse(VkCommandBuffer commandBuffer);
 
 private:
-	glm::uvec2 extent_;
-	glm::ivec2 offset_;
+	static glm::uvec2 extent_;
+	static glm::ivec2 offset_;
 
-	bool isKeepAspectRatio_;
-	float aspectRatio_;
-
-	UEvent<> eventExtentChanged_;
+	static bool isKeepAspectRatio_;
+	static f32 aspectRatio_;
 };
-
-inline GWindowViewport WindowViewport;

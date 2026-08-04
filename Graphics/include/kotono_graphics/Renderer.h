@@ -1,5 +1,8 @@
 #pragma once
 #include "frames_in_flight.h"
+#include "FrameContextBuffer.h"
+#include "GPUBuffers.h"
+#include "LightBuffers.h"
 #include <kotono_common/Pool.h>
 #include <kotono_platform/AllocatedImage.h>
 #include <span>
@@ -35,7 +38,7 @@ private:
 	void Cleanup();
 
 public:
-	void DrawFrame();
+	void DrawFrame(const UFrameContextSceneView& sceneView);
 
 	VkFormat GetDepthFormat() const;
 
@@ -43,6 +46,9 @@ public:
 	void RegisterInterfaceDrawCall(UDrawCall* drawCall);
 	void UnregisterOpaqueDrawCall(UDrawCall* drawCall);
 	void UnregisterInterfaceDrawCall(UDrawCall* drawCall);
+
+	void RegisterDirectionalLight(const ULightBuffers::DirectionalLightData& directionalLight);
+	void RegisterPointLight(const UPointLight& pointLight);
 
 	VkImageView GetGBufferAlbedoImageView(const u32 frameIndex) const;
 	VkImageView GetGBufferNormalImageView(const u32 frameIndex) const;
@@ -60,6 +66,8 @@ private:
 	void CleanupImageResources() const;
 
 	VkFormat FindDepthFormat() const;
+
+	void CreateSampler();
 
 	bool TryAcquireNextImage(const u32 frameIndex);
 
@@ -122,9 +130,9 @@ private:
 	u32 GetRHIThreadFrame() const;
 
 private:
-	VkFormat depthFormat_;
-
 	UFramesInFlightArray<FrameData> frameDatas_;
+	VkFormat depthFormat_;
+	u32 samplerIndex_;
 
 	std::thread renderThread_;
 	std::thread rhiThread_;
@@ -133,6 +141,10 @@ private:
 
 	UPool<UDrawCall*> opaqueDrawCalls_;
 	UPool<UDrawCall*> interfaceDrawCalls_;
+
+	UFrameContextBuffer frameContextBuffer_;
+	ULightBuffers lightBuffers_;
+	UGPUBuffers gpuBuffers_;
 };
 
 inline GRenderer Renderer;

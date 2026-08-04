@@ -50,7 +50,7 @@ glm::mat4 SCamera::GetViewMatrix()
 
 glm::mat4 SCamera::GetProjectionMatrix()
 {
-	return calculate_reverse_z_infinite_perspective(glm::radians(fov_), WindowViewport.GetAspectRatio(), depthNear_);
+	return calculate_reverse_z_infinite_perspective(glm::radians(fov_), SWindowViewport::GetAspectRatio(), depthNear_);
 }
 
 void SCamera::SetPosition(const glm::vec3& position)

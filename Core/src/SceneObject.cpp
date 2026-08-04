@@ -1,10 +1,8 @@
 #include "SceneObject.h"
 #include <kotono_common/log.h>
-#include <kotono_platform/WindowViewport.h>
 #include "SceneComponent.h"
 
 TSceneObject::TSceneObject()
-	: viewport_{ &WindowViewport }
 {
 }
 
@@ -34,11 +32,6 @@ bool TSceneObject::GetCanUpdate() const
 	return canUpdate_;
 }
 
-GWindowViewport* TSceneObject::GetViewport() const
-{
-	return viewport_;
-}
-
 UPtr<TSceneObject>& TSceneObject::GetParent()
 {
 	return parent_;
@@ -52,11 +45,6 @@ UPtr<KSceneComponent> TSceneObject::GetRootComponent()
 void TSceneObject::SetCanUpdate(const bool canUpdate)
 {
 	canUpdate_ = canUpdate;
-}
-
-void TSceneObject::SetViewport(GWindowViewport* viewport)
-{
-	viewport_ = viewport;
 }
 
 void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinateSpace keepTransform)

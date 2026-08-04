@@ -25,12 +25,10 @@ protected:
 
 public:
 	bool GetCanUpdate() const;
-	GWindowViewport* GetViewport() const;
 	UPtr<TSceneObject>& GetParent();
 	UPtr<KSceneComponent> GetRootComponent();
 
 	void SetCanUpdate(const bool canUpdate);
-	void SetViewport(GWindowViewport* viewport);
 	void SetParent(const UPtr<TSceneObject>& parent, const ECoordinateSpace keepTransform);
 
 	template <std::derived_from<KSceneComponent> T>
@@ -55,7 +53,6 @@ private:
 private:
 	bool isInit_;
 	bool canUpdate_;
-	GWindowViewport* viewport_;
 	UPtr<TSceneObject> parent_;
 	SERIALIZE UPool<UPtr<KSceneComponent>> sceneComponents_;
 	SERIALIZE UPool<UPtr<TSceneObject>> children_;

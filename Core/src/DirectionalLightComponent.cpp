@@ -1,5 +1,5 @@
 #include "DirectionalLightComponent.h"
-#include <kotono_graphics/LightBuffers.h>
+#include <kotono_graphics/Renderer.h>
 
 KDirectionalLightComponent::KDirectionalLightComponent()
 	: color_{ Colors::White }
@@ -14,10 +14,9 @@ KDirectionalLightComponent::~KDirectionalLightComponent()
 void KDirectionalLightComponent::Spawn()
 {
 	Base::Spawn();
-	const auto direction{ ForwardVector() };
 
-	LightBuffers.RegisterDirectionalLight({
-		.direction = direction,
+	Renderer.RegisterDirectionalLight({
+		.direction = ForwardVector(),
 		.color = color_,
 		.intensity = intensity_,
 		.castShadow = true,

@@ -1,26 +1,32 @@
 #include "WindowViewport.h"
 
-const glm::uvec2& GWindowViewport::GetExtent() const
+glm::uvec2 SWindowViewport::extent_{};
+glm::ivec2 SWindowViewport::offset_{};
+
+bool SWindowViewport::isKeepAspectRatio_{};
+f32 SWindowViewport::aspectRatio_{};
+
+const glm::uvec2& SWindowViewport::GetExtent()
 {
 	return extent_;
 }
 
-const glm::ivec2& GWindowViewport::GetOffset() const
+const glm::ivec2& SWindowViewport::GetOffset()
 {
     return offset_;
 }
 
-bool GWindowViewport::GetIsKeepAspectRatio() const
+bool SWindowViewport::GetIsKeepAspectRatio()
 {
 	return isKeepAspectRatio_;
 }
 
-float GWindowViewport::GetAspectRatio() const
+f32 SWindowViewport::GetAspectRatio()
 {
 	return aspectRatio_;
 }
 
-void GWindowViewport::SetExtent(const glm::uvec2& extent)
+void SWindowViewport::SetExtent(const glm::uvec2& extent)
 {
 	if (isKeepAspectRatio_)
 	{
@@ -46,33 +52,32 @@ void GWindowViewport::SetExtent(const glm::uvec2& extent)
 	}
 
     extent_ = extent;
-	aspectRatio_ = static_cast<float>(extent.x) / extent.y;
-	eventExtentChanged_.Broadcast();
+	aspectRatio_ = static_cast<f32>(extent.x) / extent.y;
 }
 
-void GWindowViewport::SetOffset(const glm::ivec2& offset)
+void SWindowViewport::SetOffset(const glm::ivec2& offset)
 {
     offset_ = offset;
 }
 
-void GWindowViewport::SetIsKeepAspectRatio(const bool isKeepAspectRatio)
+void SWindowViewport::SetIsKeepAspectRatio(const bool isKeepAspectRatio)
 {
 	isKeepAspectRatio_ = isKeepAspectRatio;
 }
 
-void GWindowViewport::SetAspectRatio(const float aspectRatio)
+void SWindowViewport::SetAspectRatio(const f32 aspectRatio)
 {
 	aspectRatio_ = aspectRatio;
 }
 
-void GWindowViewport::CmdUse(VkCommandBuffer commandBuffer) const
+void SWindowViewport::CmdUse(VkCommandBuffer commandBuffer)
 {
 	// Sets the render region
 	const VkViewport vkViewport{
-		.x = static_cast<float>(offset_.x),
-		.y = static_cast<float>(offset_.y),
-		.width = static_cast<float>(extent_.x),
-		.height = static_cast<float>(extent_.y),
+		.x = static_cast<f32>(offset_.x),
+		.y = static_cast<f32>(offset_.y),
+		.width = static_cast<f32>(extent_.x),
+		.height = static_cast<f32>(extent_.y),
 		.minDepth = 0.0f,
 		.maxDepth = 1.0f,
 	};
@@ -90,9 +95,4 @@ void GWindowViewport::CmdUse(VkCommandBuffer commandBuffer) const
 		},
 	};
 	vkCmdSetScissor(commandBuffer, 0, 1, &vkScissor);
-}
-
-UEvent<>& GWindowViewport::EventExtentChanged()
-{
-	return eventExtentChanged_;
 }

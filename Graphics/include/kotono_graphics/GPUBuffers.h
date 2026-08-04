@@ -4,7 +4,7 @@
 #include <kotono_common/types.h>
 #include <kotono_platform/AllocatedBuffer.h>
 #include <vulkan/vulkan_core.h>
-class GGPUBuffers final
+class UGPUBuffers final
 {
 public:
 	struct ClusterAABB
@@ -41,5 +41,3 @@ private:
 	UAllocatedBuffer clusterAABBBuffer_;
 	UFramesInFlightArray<FrameData> frameDatas_;
 };
-
-inline GGPUBuffers GPUBuffers;

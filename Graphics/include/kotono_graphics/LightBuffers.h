@@ -6,7 +6,7 @@
 #include <kotono_platform/AllocatedImage.h>
 #include <vector>
 #include <vulkan/vulkan_core.h>
-class GLightBuffers final
+class ULightBuffers final
 {
 public:
 	struct ShadowMapTarget
@@ -60,5 +60,3 @@ private:
 	std::vector<UDirectionalLight> directionalLights_;
 	std::vector<UPointLight> pointLights_;
 };
-
-inline GLightBuffers LightBuffers;

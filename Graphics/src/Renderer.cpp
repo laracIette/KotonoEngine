@@ -1,24 +1,26 @@
 #include "Renderer.h"
+#include "Camera.h"
 #include "DrawCall.h"
 #include "DrawDataBuffer.h"
-#include "FrameContextBuffer.h"
-#include "GPUBuffers.h"
-#include "LightBuffers.h"
 #include "IndexBuffer.h"
 #include "MaterialBuffer.h"
 #include "ParametersBuffer.h"
 #include "PipelineResourceManager.h"
 #include "TransformBuffer.h"
+#include "Sampler.h"
 #include "Shader.h"
 #include "SwapChain.h"
-#include <kotono_platform/Context.h>
-#include <kotono_platform/WindowViewport.h>
 #include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
+#include <kotono_platform/Context.h>
 #include <kotono_platform/vk_utils.h>
+#include <kotono_platform/WindowViewport.h>
+#include <kotono_timing/Clock.h>
 #include <map>
 #include <ranges>
 #include <unordered_map>
+
+static constexpr bool IS_MULTI_THREADED{ false };
 
 void GRenderer::Init()
 {
@@ -30,13 +32,15 @@ void GRenderer::Init()
 	CreateSyncObjects();
 
 	PipelineResourceManager.Init();
-	FrameContextBuffer.Init();
+
+	frameContextBuffer_.Init();
+
 	DrawDataBuffer.Init();
 	MaterialBuffer.Init();
 	TransformBuffer.Init();
 	ParametersBuffer.Init();
-	LightBuffers.Init();
-	GPUBuffers.Init();
+	lightBuffers_.Init();
+	gpuBuffers_.Init();
 	IndexBuffer.Init();
 }
 
@@ -45,16 +49,18 @@ void GRenderer::Cleanup()
 	KT_LOG(ELogImportanceLevel::High, "Graphics", "cleaning up renderer");
 
 	JoinThread(renderThread_);
-	JoinThread(rhiThread_); 
+	JoinThread(rhiThread_);
 
 	IndexBuffer.Cleanup();
-	GPUBuffers.Cleanup();
-	LightBuffers.Cleanup();
+	gpuBuffers_.Cleanup();
+	lightBuffers_.Cleanup();
 	ParametersBuffer.Cleanup();
 	TransformBuffer.Cleanup();
 	MaterialBuffer.Cleanup();
 	DrawDataBuffer.Cleanup();
-	FrameContextBuffer.Cleanup();
+
+	frameContextBuffer_.Cleanup();
+
 	PipelineResourceManager.Cleanup();
 
 	CleanupImageResources();
@@ -72,16 +78,32 @@ void GRenderer::Cleanup()
 	KT_LOG(ELogImportanceLevel::High, "Graphics", "cleaned up renderer");
 }
 
-static constexpr bool IS_MULTI_THREADED{ false };
-void GRenderer::DrawFrame()
+void GRenderer::DrawFrame(const UFrameContextSceneView& sceneView)
 {
 	const u32 frameIndex{ GetGameThreadFrame() };
 
-	FrameContextBuffer.UpdateBuffer(frameIndex);
+	const UFrameContextAddresses addresses{
+		.drawDataBufferAddress = DrawDataBuffer.GetAddress(frameIndex),
+		.materialBufferAddress = MaterialBuffer.GetAddress(),
+		.transformBufferAddress = TransformBuffer.GetAddress(frameIndex),
+		.parametersBufferAddress = ParametersBuffer.GetAddress(frameIndex),
+
+		.directionalLightBufferAddress = lightBuffers_.GetDirectionalLightAddress(frameIndex),
+		.pointLightBufferAddress = lightBuffers_.GetPointLightAddress(frameIndex),
+		.directionalLightCount = lightBuffers_.GetDirectionalLightCount(),
+		.pointLightCount = lightBuffers_.GetPointLightCount(),
+
+		.clusterAABBBufferAddress = gpuBuffers_.GetClusterAABBAddress(),
+		.clusterGridBufferAddress = gpuBuffers_.GetClusterGridAddress(frameIndex),
+		.lightIndexBufferAddress = gpuBuffers_.GetLightIndexAddress(frameIndex),
+		.lightCounterBufferAddress = gpuBuffers_.GetLightCounterAddress(frameIndex),
+	};
+
+	frameContextBuffer_.UpdateBuffer(frameIndex, sceneView, addresses, samplerIndex_);
 	DrawDataBuffer.UpdateBuffer(frameIndex);
 	TransformBuffer.UpdateBuffer(frameIndex);
 	ParametersBuffer.UpdateBuffer(frameIndex);
-	LightBuffers.UpdateBuffers(frameIndex);
+	lightBuffers_.UpdateBuffers(frameIndex);
 
 	if constexpr (IS_MULTI_THREADED)
 	{
@@ -89,7 +111,7 @@ void GRenderer::DrawFrame()
 		{
 			JoinThread(renderThread_);
 			const u32 renderThreadFrame{ GetRenderThreadFrame() };
-			renderThread_ = std::thread(&GRenderer::RecordCommandBuffer, this, renderThreadFrame);
+			renderThread_ = std::thread{ &GRenderer::RecordCommandBuffer, this, renderThreadFrame };
 		}
 
 		if (frameCount_ >= 2)
@@ -99,7 +121,7 @@ void GRenderer::DrawFrame()
 			JoinThread(rhiThread_);
 			Context.ExecuteSingleTimeCommands();
 			const u32 renderRHIFrame{ GetRHIThreadFrame() };
-			rhiThread_ = std::thread(&GRenderer::SubmitCommandBuffer, this, renderRHIFrame);
+			rhiThread_ = std::thread{ &GRenderer::SubmitCommandBuffer, this, renderRHIFrame };
 		}
 	}
 	else
@@ -171,6 +193,16 @@ void GRenderer::UnregisterInterfaceDrawCall(UDrawCall* drawCall)
 	{
 		interfaceDrawCalls_[index]->poolIndex = index;
 	}
+}
+
+void GRenderer::RegisterDirectionalLight(const ULightBuffers::DirectionalLightData& directionalLight)
+{
+	lightBuffers_.RegisterDirectionalLight(directionalLight);
+}
+
+void GRenderer::RegisterPointLight(const UPointLight& pointLight)
+{
+	lightBuffers_.RegisterPointLight(pointLight);
 }
 
 VkImageView GRenderer::GetGBufferAlbedoImageView(const u32 frameIndex) const
@@ -294,6 +326,18 @@ VkFormat GRenderer::FindDepthFormat() const
 	return Context.FindSupportedFormat(formats, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
 
+void GRenderer::CreateSampler()
+{
+	if (UAsset sampler{ SAssetManager<USampler>::Get("${ENGINE_DIRECTORY}/Graphics/assets/samplers/default.kasset") })
+	{
+		samplerIndex_ = sampler->GetIndex();
+	}
+	else
+	{
+		throw "failed to load sampler!";
+	}
+}
+
 bool GRenderer::TryAcquireNextImage(const u32 frameIndex)
 {
 	// Wait for current frame to be rendered
@@ -311,7 +355,7 @@ bool GRenderer::TryAcquireNextImage(const u32 frameIndex)
 	}
 	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
 	{
-		throw std::runtime_error("failed to acquire swap chain image!");
+		throw "failed to acquire swap chain image!";
 	}
 
 	vkResetFences(Context.GetDevice(), 1, &frameDatas_[frameIndex].inFlightFence);
@@ -415,14 +459,14 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 
 	// Shadow-maps
 	// - Set rendering area to fit shadow-maps
-	LightBuffers.CmdSetViewportAndScissor(commandBuffer);
+	lightBuffers_.CmdSetViewportAndScissor(commandBuffer);
 	// - Make shadow maps writable
-	LightBuffers.CmdBarrierShadowMapsNoneToWrite(commandBuffer, frameIndex);
+	lightBuffers_.CmdBarrierShadowMapsNoneToWrite(commandBuffer, frameIndex);
 	// - Generate shadow-maps
 	CmdDrawFrameShadowMaps(commandBuffer, frameIndex);
 
 	// Reset the rendering area to full screen
-	WindowViewport.CmdUse(commandBuffer);
+	SWindowViewport::CmdUse(commandBuffer);
 
 	// Depth pre-pass
 	// - Make depth writable
@@ -446,7 +490,7 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 
 	// Deferred lighting
 	// - Make shadow-maps shader-readable
-	LightBuffers.CmdBarrierShadowMapsWriteToShaderRead(commandBuffer, frameIndex);
+	lightBuffers_.CmdBarrierShadowMapsWriteToShaderRead(commandBuffer, frameIndex);
 	// - Make depth shader-readable (reconstruct world pos)
 	CmdBarrierDepthReadToShaderRead(commandBuffer, frameIndex);
 	// - Make color target writable
@@ -511,7 +555,7 @@ void GRenderer::CmdBarrierComputeFragmentReadToClearWrite(VkCommandBuffer comman
 void GRenderer::CmdResetLightCounter(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	vkCmdFillBuffer(commandBuffer
-		, GPUBuffers.GetLightCounterBuffer(frameIndex)
+		, gpuBuffers_.GetLightCounterBuffer(frameIndex)
 		, 0
 		, sizeof(u32)
 		, 0
@@ -564,14 +608,14 @@ void GRenderer::CmdDrawFrameShadowMaps(VkCommandBuffer commandBuffer, const u32 
 
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
 
-	for (u32 i{ 0 }; i < LightBuffers.GetDirectionalLightCount(); ++i)
+	for (u32 i{ 0 }; i < lightBuffers_.GetDirectionalLightCount(); ++i)
 	{
-		LightBuffers.CmdBeginRenderingShadowMapTarget(commandBuffer, i, frameIndex);
+		lightBuffers_.CmdBeginRenderingShadowMapTarget(commandBuffer, i, frameIndex);
 		// todo: add cast shadow check
 		for (const auto* drawCall : opaqueDrawCalls_)
 		{
 			const UPushConstants pc{
-				.frameContextBufferAddress = FrameContextBuffer.GetAddress(frameIndex),
+				.frameContextBufferAddress = frameContextBuffer_.GetAddress(frameIndex),
 				.drawIndex = drawCall->index,
 				.directionalIndex = i,
 			};
@@ -976,7 +1020,7 @@ void GRenderer::CmdBarrierSwapchainWriteToPresent(VkCommandBuffer commandBuffer,
 void GRenderer::CmdPushConstants(VkCommandBuffer commandBuffer, const UDrawCall* drawCall, const u32 frameIndex) const
 {
 	const UPushConstants pc{
-		.frameContextBufferAddress = FrameContextBuffer.GetAddress(frameIndex),
+		.frameContextBufferAddress = frameContextBuffer_.GetAddress(frameIndex),
 		.drawIndex = drawCall ? drawCall->index : 0,
 		.directionalIndex = 0,
 	};
@@ -1126,16 +1170,13 @@ void GRenderer::RecreateFrame()
 	// Wait for GPU
 	vkDeviceWaitIdle(Context.GetDevice());
 
-	FrameContextBuffer.UnregisterGBufferTextures();
-
+	frameContextBuffer_.UnregisterGBufferTextures();
 	CleanupImageResources();
-	
 	SwapChain.Cleanup();
+
 	SwapChain.Init();
-
 	CreateImageResources();
-
-	FrameContextBuffer.RegisterGBufferTextures();
+	frameContextBuffer_.RegisterGBufferTextures();
 
 	for (const auto& frameData : frameDatas_)
 	{
