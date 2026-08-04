@@ -780,42 +780,33 @@ u32 GContext::FindMemoryType(u32 typeFilter, VkMemoryPropertyFlags properties) c
 	throw std::runtime_error("failed to find suitable memory type!");
 }
 
-void GContext::CreateImage(const u32 width, const u32 height
-	, const u32 mipLevels
-	, const u32 arrayLayers
-	, const VkSampleCountFlagBits numSamples
-	, const VkFormat format
-	, const VkImageTiling tiling
-	, const VkImageUsageFlags usage
-	, const VkMemoryPropertyFlags properties
-	, VkImage& image
-	, VmaAllocation& imageAllocation) const
+void GContext::CreateImage(UAllocatedImage& allocatedImage, const UAllocatedImageCreateInfo& createInfo) const
 {
 	const VkImageCreateInfo imageInfo{
 		.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-		.imageType = VK_IMAGE_TYPE_2D,
-		.format = format,
+		.imageType = createInfo.imageType,
+		.format = createInfo.format,
 		.extent{
-			.width = width,
-			.height = height,
+			.width = createInfo.extentX,
+			.height = createInfo.extentY,
 			.depth = 1,
 		},
-		.mipLevels = mipLevels,
-		.arrayLayers = arrayLayers,
-		.samples = numSamples,
-		.tiling = tiling,
-		.usage = usage,
+		.mipLevels = createInfo.mipLevels,
+		.arrayLayers = createInfo.arrayLayers,
+		.samples = createInfo.numSamples,
+		.tiling = createInfo.tiling,
+		.usage = createInfo.usage,
 		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
 		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
 	};
 
 	const VmaAllocationCreateInfo allocCreateInfo{
 		.usage = VMA_MEMORY_USAGE_AUTO,
-		.requiredFlags = properties,
+		.requiredFlags = createInfo.properties,
 	};
 
 	VK_CHECK_THROW(
-		vmaCreateImage(allocator_, &imageInfo, &allocCreateInfo, &image, &imageAllocation, nullptr),
+		vmaCreateImage(allocator_, &imageInfo, &allocCreateInfo, &allocatedImage.image, &allocatedImage.allocation, nullptr),
 		"failed to create image with memory allocation!"
 	);
 }
@@ -951,64 +942,32 @@ void GContext::CopyBufferToImage(VkBuffer buffer, VkImage image, u32 width, u32 
 	EndSingleTimeCommands(commandBuffer);
 }
 
-VkImageView GContext::CreateImageView(VkImage image
-	, const VkImageViewType viewType
-	, const VkFormat format
-	, const VkImageAspectFlags aspectFlags
-	, const u32 mipLevels
-	, const u32 layerCount) const
+void GContext::CreateImageView(UAllocatedImage& allocatedImage, const UAllocatedImageCreateInfo& createInfo) const
 {
 	const VkImageViewCreateInfo viewInfo{
 		.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-		.image = image,
-		.viewType = viewType,
-		.format = format,
+		.image = allocatedImage.image,
+		.viewType = createInfo.viewType,
+		.format = createInfo.format,
 		.subresourceRange{
-			.aspectMask = aspectFlags,
+			.aspectMask = createInfo.aspect,
 			.baseMipLevel = 0,
-			.levelCount = mipLevels,
+			.levelCount = createInfo.mipLevels,
 			.baseArrayLayer = 0,
-			.layerCount = layerCount,
+			.layerCount = createInfo.arrayLayers,
 		},
 	};
 
-	VkImageView imageView;
 	VK_CHECK_THROW(
-		vkCreateImageView(device_, &viewInfo, nullptr, &imageView),
+		vkCreateImageView(device_, &viewInfo, nullptr, &allocatedImage.imageView),
 		"failed to create texture image view!"
 	);
-
-	return imageView;
 }
 
-void GContext::CreateSampledImageAndImageView(UAllocatedImage& allocatedImage
-	, const VkExtent2D extent
-	, const u32 arrayLayers
-	, const VkFormat format
-	, const VkImageUsageFlagBits usage
-	, const VkImageViewType viewType
-	, const VkImageAspectFlagBits aspect) const
+void GContext::CreateImageAndImageView(UAllocatedImage& allocatedImage, const UAllocatedImageCreateInfo& createInfo) const
 {
-	CreateImage(extent.width, extent.height
-		, 1
-		, arrayLayers
-		, VK_SAMPLE_COUNT_1_BIT
-		, format
-		, VK_IMAGE_TILING_OPTIMAL
-		, VK_IMAGE_USAGE_SAMPLED_BIT
-		| usage
-		, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-		, allocatedImage.image
-		, allocatedImage.allocation
-	);
-
-	allocatedImage.imageView = CreateImageView(allocatedImage.image
-		, viewType
-		, format
-		, aspect
-		, 1
-		, arrayLayers
-	);
+	CreateImage(allocatedImage, createInfo);
+	CreateImageView(allocatedImage, createInfo);
 }
 
 void GContext::GenerateMipmaps(VkImage image, VkFormat imageFormat, i32 texWidth, i32 texHeight, u32 mipLevels)

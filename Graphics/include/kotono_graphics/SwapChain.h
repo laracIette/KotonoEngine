@@ -1,17 +1,11 @@
 #pragma once
 #include <kotono_common/types.h>
+#include <kotono_platform/AllocatedImage.h>
 #include <span>
 #include <vector>
 #include <vulkan/vulkan_core.h>
 class GSwapChain final
 {
-public:
-	struct Data
-	{
-		VkImage image;
-		VkImageView imageView;
-	};
-
 public:
 	void Init();
 	void Cleanup();
@@ -19,7 +13,7 @@ public:
 	const VkSwapchainKHR& GetSwapChain() const;
 	VkFormat GetFormat() const;
 	VkExtent2D GetExtent() const;
-	const Data& GetData(const u32 imageIndex) const;
+	const UAllocatedImage& GetAllocatedImage(const u32 imageIndex) const;
 
 private:
 	void Create();
@@ -32,7 +26,7 @@ private:
 	VkSwapchainKHR swapChain_;
 	VkFormat format_;
 	VkExtent2D extent_;
-	std::vector<Data> datas_;
+	std::vector<UAllocatedImage> allocatedImages_;
 };
 
 inline GSwapChain SwapChain;

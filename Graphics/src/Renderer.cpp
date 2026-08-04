@@ -12,7 +12,6 @@
 #include "Shader.h"
 #include "SwapChain.h"
 #include <kotono_platform/Context.h>
-#include <kotono_platform/Window.h>
 #include <kotono_platform/WindowViewport.h>
 #include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
@@ -262,11 +261,11 @@ void GRenderer::CreateImageResources()
 
 	for (auto& frameData : frameDatas_)
 	{
-		Context.CreateSampledImageAndImageView(frameData.colorTarget,	extent, 1, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
-		Context.CreateSampledImageAndImageView(frameData.albedoTarget,	extent, 1, VK_FORMAT_R8G8B8A8_SRGB,			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
-		Context.CreateSampledImageAndImageView(frameData.normalTarget,	extent, 1, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
-		Context.CreateSampledImageAndImageView(frameData.ormTarget,		extent, 1, VK_FORMAT_R8G8B8A8_UNORM,		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
-		Context.CreateSampledImageAndImageView(frameData.depthTarget,	extent, 1, depthFormat_,					VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,	VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_DEPTH_BIT);
+		Context.CreateImageAndImageView(frameData.colorTarget,	UAllocatedImageCreateInfo::CreateSampled2D(extent.width, extent.height, 1, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
+		Context.CreateImageAndImageView(frameData.albedoTarget,	UAllocatedImageCreateInfo::CreateSampled2D(extent.width, extent.height, 1, VK_FORMAT_R8G8B8A8_SRGB,			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
+		Context.CreateImageAndImageView(frameData.normalTarget,	UAllocatedImageCreateInfo::CreateSampled2D(extent.width, extent.height, 1, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
+		Context.CreateImageAndImageView(frameData.ormTarget,	UAllocatedImageCreateInfo::CreateSampled2D(extent.width, extent.height, 1, VK_FORMAT_R8G8B8A8_UNORM,		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
+		Context.CreateImageAndImageView(frameData.depthTarget,	UAllocatedImageCreateInfo::CreateSampled2D(extent.width, extent.height, 1, depthFormat_,					VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,	VK_IMAGE_ASPECT_DEPTH_BIT));
 	}
 }
 
@@ -857,7 +856,7 @@ void GRenderer::CmdBarrierColorWriteToRead(VkCommandBuffer commandBuffer, const 
 void GRenderer::CmdBarrierSwapchainNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	CmdTransitionImages(commandBuffer
-		, &SwapChain.GetData(frameDatas_[frameIndex].imageIndex).image, 1
+		, &SwapChain.GetAllocatedImage(frameDatas_[frameIndex].imageIndex).image, 1
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 		| VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT
 		| VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT
@@ -874,7 +873,7 @@ void GRenderer::CmdBeginRenderingPostProcess(VkCommandBuffer commandBuffer, cons
 {
 	const VkRenderingAttachmentInfo swapchainAttachment{
 		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-		.imageView = SwapChain.GetData(frameDatas_[frameIndex].imageIndex).imageView,
+		.imageView = SwapChain.GetAllocatedImage(frameDatas_[frameIndex].imageIndex).imageView,
 		.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 
 		.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -909,7 +908,7 @@ void GRenderer::CmdBeginRenderingInterface(VkCommandBuffer commandBuffer, const 
 {
 	const VkRenderingAttachmentInfo swapchainAttachment{
 		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-		.imageView = SwapChain.GetData(frameDatas_[frameIndex].imageIndex).imageView,
+		.imageView = SwapChain.GetAllocatedImage(frameDatas_[frameIndex].imageIndex).imageView,
 		.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 
 		.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
@@ -963,7 +962,7 @@ void GRenderer::CmdDrawFrameInterface(VkCommandBuffer commandBuffer, const u32 f
 void GRenderer::CmdBarrierSwapchainWriteToPresent(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	CmdTransitionImages(commandBuffer
-		, &SwapChain.GetData(frameDatas_[frameIndex].imageIndex).image, 1
+		, &SwapChain.GetAllocatedImage(frameDatas_[frameIndex].imageIndex).image, 1
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 		, VK_PIPELINE_STAGE_2_NONE
 		, VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT

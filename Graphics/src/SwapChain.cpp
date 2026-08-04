@@ -14,11 +14,11 @@ void GSwapChain::Init()
 
 void GSwapChain::Cleanup()
 {
-	for (const auto& data : datas_)
+	for (const auto& allocatedImage : allocatedImages_)
 	{
-		vkDestroyImageView(Context.GetDevice(), data.imageView, nullptr);
+		vkDestroyImageView(Context.GetDevice(), allocatedImage.imageView, nullptr);
 	}
-	datas_.clear();
+	allocatedImages_.clear();
 
 	vkDestroySwapchainKHR(Context.GetDevice(), swapChain_, nullptr);
 	swapChain_ = VK_NULL_HANDLE;
@@ -39,9 +39,9 @@ VkExtent2D GSwapChain::GetExtent() const
 	return extent_;
 }
 
-const GSwapChain::Data& GSwapChain::GetData(const u32 imageIndex) const
+const UAllocatedImage& GSwapChain::GetAllocatedImage(const u32 imageIndex) const
 {
-	return datas_[imageIndex];
+	return allocatedImages_[imageIndex];
 }
 
 void GSwapChain::Create()
@@ -112,10 +112,10 @@ void GSwapChain::Create()
 	std::vector<VkImage> swapChainImages{ imageCount };
 	vkGetSwapchainImagesKHR(Context.GetDevice(), swapChain_, &imageCount, swapChainImages.data());
 
-	datas_.resize(imageCount);
+	allocatedImages_.resize(imageCount);
 	for (size i{ 0 }; i < imageCount; ++i)
 	{
-		datas_[i].image = swapChainImages[i];
+		allocatedImages_[i].image = swapChainImages[i];
 	}
 
 	format_ = surfaceFormat.format;
@@ -174,8 +174,14 @@ VkExtent2D GSwapChain::ChooseExtent(const VkSurfaceCapabilitiesKHR& capabilities
 
 void GSwapChain::CreateImageViews()
 {
-	for (auto& data : datas_)
+	for (auto& allocatedImage : allocatedImages_)
 	{
-		data.imageView = Context.CreateImageView(data.image, VK_IMAGE_VIEW_TYPE_2D, format_, VK_IMAGE_ASPECT_COLOR_BIT, 1, 1);
+		Context.CreateImageView(allocatedImage, {
+			.arrayLayers = 1,
+			.mipLevels = 1,
+			.format = format_,
+			.viewType = VK_IMAGE_VIEW_TYPE_2D,
+			.aspect = VK_IMAGE_ASPECT_COLOR_BIT,
+		});
 	}
 }

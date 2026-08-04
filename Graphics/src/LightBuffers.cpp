@@ -249,13 +249,16 @@ void GLightBuffers::CreateShadowMapResources()
         frameData.directionalLightShadowMapTargets.resize(MAX_DIRECTIONAL_LIGHTS);
         for (auto& shadowMapTarget : frameData.directionalLightShadowMapTargets)
         {
-            Context.CreateSampledImageAndImageView(shadowMapTarget.allocatedImage
-                , { SHADOW_MAP_RESOLUTION , SHADOW_MAP_RESOLUTION }
-                , NUM_DIRECTIONAL_CASCADES
+            Context.CreateImageAndImageView(shadowMapTarget.allocatedImage, UAllocatedImageCreateInfo::CreateSampled2D(
+                  SHADOW_MAP_RESOLUTION
+                , SHADOW_MAP_RESOLUTION
+                , 1
                 , Renderer.GetDepthFormat()
                 , VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
-                , VK_IMAGE_VIEW_TYPE_2D_ARRAY
                 , VK_IMAGE_ASPECT_DEPTH_BIT
+                , VK_IMAGE_VIEW_TYPE_2D_ARRAY
+                , NUM_DIRECTIONAL_CASCADES
+            )
             );
             shadowMapTarget.textureIndex = PipelineResourceManager.RegisterTextureArray(shadowMapTarget.allocatedImage.imageView);
         }

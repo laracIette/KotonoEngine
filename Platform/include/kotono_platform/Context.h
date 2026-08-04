@@ -6,7 +6,7 @@
 #include <kotono_common/Event.h>
 #include <span>
 #include <vector>
-#include <vma/vk_mem_alloc.h> 
+#include <vma/vk_mem_alloc.h>
 
 class GContext final
 {
@@ -27,12 +27,12 @@ public:
 
 	void CreateBuffer(UAllocatedBuffer& allocatedBuffer, const VkDeviceSize size, const VkBufferUsageFlags usage, const VmaAllocationCreateFlags allocFlags, const VmaMemoryUsage memUsage = VMA_MEMORY_USAGE_AUTO) const;
 	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-	void CreateImage(const u32 width, const  u32 height, const  u32 mipLevels, const u32 arrayLayers, const VkSampleCountFlagBits numSamples, const VkFormat format, const VkImageTiling tiling, const VkImageUsageFlags usage, const VkMemoryPropertyFlags properties, VkImage& image, VmaAllocation& imageAllocation) const;
+	void CreateImage(UAllocatedImage& allocatedImage, const UAllocatedImageCreateInfo& createInfo) const;
 	void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, u32 mipLevels);
 	void CopyBufferToImage(VkBuffer buffer, VkImage image, u32 width, u32 height);
 	void GenerateMipmaps(VkImage image, VkFormat imageFormat, i32 texWidth, i32 texHeight, u32 mipLevels);
-	VkImageView CreateImageView(VkImage image, const VkImageViewType viewType, const VkFormat format, const VkImageAspectFlags aspectFlags, const u32 mipLevels, const u32 layerCount) const;
-	void CreateSampledImageAndImageView(UAllocatedImage& allocatedImage, const VkExtent2D extent, const u32 arrayLayers, const VkFormat format, const VkImageUsageFlagBits usage, const VkImageViewType viewType, const VkImageAspectFlagBits aspect) const;
+	void CreateImageView(UAllocatedImage& allocatedImage, const UAllocatedImageCreateInfo& createInfo) const;
+	void CreateImageAndImageView(UAllocatedImage& allocatedImage, const UAllocatedImageCreateInfo& createInfo) const;
 	KtQueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const;
 	KtSwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
 

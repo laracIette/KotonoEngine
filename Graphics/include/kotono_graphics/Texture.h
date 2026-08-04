@@ -19,7 +19,6 @@ public:
 
 private:
     void CreateImage();
-    void CreateImageView();
 
     void DestroyStagingBuffer() const;
 
