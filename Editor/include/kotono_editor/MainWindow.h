@@ -9,7 +9,13 @@ public:
 	void BeginDraw();
 	void EndDraw();
 
+	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Remove() override;
+
 protected:
 	WidgetPtr Build() override;
+
+private:
+	void OnWindowResized(const glm::uvec2 extent);
 };
 

@@ -32,6 +32,9 @@ public:
 	void Spawn() override;
 
 private:
+	void RegisterDrawCall();
+	void UnregisterDrawCall();
+
 	void RefreshDrawCall() const;
 
 	void RefreshDrawCallScissor() const;
@@ -39,6 +42,8 @@ private:
 	void RefreshDrawCallModelData() const;
 	void RefreshDrawCallMaterialData() const;
 	void RefreshDrawCallTransformData() const;
+
+	void OnViewportExtentUpdated(const glm::uvec2 extent) const;
 
 	// temp
 	void Spin();

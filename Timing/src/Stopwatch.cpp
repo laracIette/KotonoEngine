@@ -11,12 +11,12 @@ void UStopwatch::Stop()
     end_ = SClock::Now();
 }
 
-float UStopwatch::ElapsedSeconds() const
+f32 UStopwatch::ElapsedSeconds() const
 {
     return end_ - start_;
 }
 
-float UStopwatch::Time(const TimeFunction& timeFunction)
+f32 UStopwatch::Time(const TimeFunction& timeFunction)
 {
     UStopwatch stopwatch{};
     stopwatch.Start();

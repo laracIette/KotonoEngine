@@ -5,9 +5,7 @@ struct ALCcontext;
 
 class GAudioManager final
 {
-	friend class GCore;
-
-private:
+public:
 	void Init();
 	void Cleanup();
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include <kotono_common/types.h>
 class UStopwatch final
 {
 public:
@@ -9,11 +10,11 @@ public:
     void Start();
     void Stop();
 
-    float ElapsedSeconds() const;
+    f32 ElapsedSeconds() const;
 
-    static float Time(const TimeFunction& timeFunction);
+    static f32 Time(const TimeFunction& timeFunction);
 
 private:
-    float start_;
-    float end_;
+    f32 start_;
+    f32 end_;
 };

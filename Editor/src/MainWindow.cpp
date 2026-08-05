@@ -6,22 +6,37 @@
 #include "SceneExplorer.h"
 #include "UpdateTimeText.h"
 #include "VisualizerWindow.h"
+#include <kotono_graphics/RenderContext.h>
 #include <kotono_interface/widgets.h>
-#include <kotono_platform/WindowViewport.h>
+#include <kotono_platform/Window.h>
 
 void WMainWindow::BeginDraw()
 {
 	Display({
 		.position = { 0.0f, 0.0f },
-		.bounds = static_cast<glm::vec2>(SWindowViewport::GetExtent()),
+		.bounds = static_cast<glm::vec2>(GetRenderContext().GetViewport().GetExtent()),
 		.layer = 0,
-		.scissor = { { 0, 0 }, SWindowViewport::GetExtent()},
+		.scissor = { { 0, 0 }, GetRenderContext().GetViewport().GetExtent() },
 	});
 }
 
 void WMainWindow::EndDraw()
 {
 	Remove();
+}
+
+void WMainWindow::Display(UWidgetDisplaySettings displaySettings)
+{
+	Base::Display(displaySettings);
+
+	Window.GetEventWindowResized().AddListener(this, &WMainWindow::OnWindowResized);
+}
+
+void WMainWindow::Remove()
+{
+	Base::Remove(); 
+	
+	Window.GetEventWindowResized().RemoveListener(this, &WMainWindow::OnWindowResized);
 }
 
 WidgetPtr WMainWindow::Build()
@@ -82,6 +97,12 @@ WidgetPtr WMainWindow::Build()
 	widgetTree.Link();
 	
 	return widgetTree.Widget();
+}
+
+void WMainWindow::OnWindowResized(const glm::uvec2 extent)
+{
+	EndDraw();
+	BeginDraw();
 }
 
 #include "generated/MainWindow.generated.inl"

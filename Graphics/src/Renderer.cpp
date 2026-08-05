@@ -1,28 +1,27 @@
 #include "Renderer.h"
-#include "Camera.h"
+#include "Barriers.h"
 #include "DrawCall.h"
 #include "DrawDataBuffer.h"
 #include "IndexBuffer.h"
 #include "MaterialBuffer.h"
 #include "ParametersBuffer.h"
 #include "PipelineResourceManager.h"
-#include "TransformBuffer.h"
 #include "Sampler.h"
 #include "Shader.h"
 #include "SwapChain.h"
+#include "TransformBuffer.h"
 #include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
 #include <kotono_platform/Context.h>
 #include <kotono_platform/vk_utils.h>
-#include <kotono_platform/WindowViewport.h>
-#include <kotono_timing/Clock.h>
+#include <kotono_platform/Window.h>
 #include <map>
 #include <ranges>
 #include <unordered_map>
 
 static constexpr bool IS_MULTI_THREADED{ false };
 
-void GRenderer::Init()
+void URenderer::Init()
 {
 	SwapChain.Init();
 
@@ -32,35 +31,35 @@ void GRenderer::Init()
 	CreateSyncObjects();
 
 	PipelineResourceManager.Init();
-
 	frameContextBuffer_.Init();
+	RegisterFrameContextBufferTextures();
 
+	IndexBuffer.Init();
 	DrawDataBuffer.Init();
 	MaterialBuffer.Init();
 	TransformBuffer.Init();
 	ParametersBuffer.Init();
 	lightBuffers_.Init();
 	gpuBuffers_.Init();
-	IndexBuffer.Init();
 }
 
-void GRenderer::Cleanup()
+void URenderer::Cleanup()
 {
 	KT_LOG(ELogImportanceLevel::High, "Graphics", "cleaning up renderer");
 
 	JoinThread(renderThread_);
 	JoinThread(rhiThread_);
 
-	IndexBuffer.Cleanup();
 	gpuBuffers_.Cleanup();
 	lightBuffers_.Cleanup();
 	ParametersBuffer.Cleanup();
 	TransformBuffer.Cleanup();
 	MaterialBuffer.Cleanup();
 	DrawDataBuffer.Cleanup();
+	IndexBuffer.Cleanup();
 
+	UnregisterFrameContextBufferTextures();
 	frameContextBuffer_.Cleanup();
-
 	PipelineResourceManager.Cleanup();
 
 	CleanupImageResources();
@@ -78,7 +77,7 @@ void GRenderer::Cleanup()
 	KT_LOG(ELogImportanceLevel::High, "Graphics", "cleaned up renderer");
 }
 
-void GRenderer::DrawFrame(const UFrameContextSceneView& sceneView)
+void URenderer::DrawFrame(const UFrameContextSceneView& sceneView)
 {
 	const u32 frameIndex{ GetGameThreadFrame() };
 
@@ -99,11 +98,12 @@ void GRenderer::DrawFrame(const UFrameContextSceneView& sceneView)
 		.lightCounterBufferAddress = gpuBuffers_.GetLightCounterAddress(frameIndex),
 	};
 
-	frameContextBuffer_.UpdateBuffer(frameIndex, sceneView, addresses, samplerIndex_);
 	DrawDataBuffer.UpdateBuffer(frameIndex);
 	TransformBuffer.UpdateBuffer(frameIndex);
 	ParametersBuffer.UpdateBuffer(frameIndex);
-	lightBuffers_.UpdateBuffers(frameIndex);
+
+	lightBuffers_.UpdateBuffers(frameIndex, sceneView);
+	frameContextBuffer_.UpdateBuffer(frameIndex, sceneView, addresses, samplerIndex_);
 
 	if constexpr (IS_MULTI_THREADED)
 	{
@@ -111,7 +111,7 @@ void GRenderer::DrawFrame(const UFrameContextSceneView& sceneView)
 		{
 			JoinThread(renderThread_);
 			const u32 renderThreadFrame{ GetRenderThreadFrame() };
-			renderThread_ = std::thread{ &GRenderer::RecordCommandBuffer, this, renderThreadFrame };
+			renderThread_ = std::thread{ &URenderer::RecordCommandBuffer, this, renderThreadFrame };
 		}
 
 		if (frameCount_ >= 2)
@@ -121,7 +121,7 @@ void GRenderer::DrawFrame(const UFrameContextSceneView& sceneView)
 			JoinThread(rhiThread_);
 			Context.ExecuteSingleTimeCommands();
 			const u32 renderRHIFrame{ GetRHIThreadFrame() };
-			rhiThread_ = std::thread{ &GRenderer::SubmitCommandBuffer, this, renderRHIFrame };
+			rhiThread_ = std::thread{ &URenderer::SubmitCommandBuffer, this, renderRHIFrame };
 		}
 	}
 	else
@@ -140,12 +140,7 @@ void GRenderer::DrawFrame(const UFrameContextSceneView& sceneView)
 	frameCount_++;
 }
 
-VkFormat GRenderer::GetDepthFormat() const
-{
-	return depthFormat_;
-}
-
-void GRenderer::RegisterOpaqueDrawCall(UDrawCall* drawCall)
+void URenderer::RegisterOpaqueDrawCall(UDrawCall* drawCall)
 {
 	if (!drawCall)
 	{
@@ -156,7 +151,7 @@ void GRenderer::RegisterOpaqueDrawCall(UDrawCall* drawCall)
 	drawCall->poolIndex = opaqueDrawCalls_.LastIndex();
 }
 
-void GRenderer::RegisterInterfaceDrawCall(UDrawCall* drawCall)
+void URenderer::RegisterInterfaceDrawCall(UDrawCall* drawCall)
 {
 	if (!drawCall)
 	{
@@ -167,7 +162,7 @@ void GRenderer::RegisterInterfaceDrawCall(UDrawCall* drawCall)
 	drawCall->poolIndex = interfaceDrawCalls_.LastIndex();
 }
 
-void GRenderer::UnregisterOpaqueDrawCall(UDrawCall* drawCall)
+void URenderer::UnregisterOpaqueDrawCall(UDrawCall* drawCall)
 {
 	if (!drawCall)
 	{
@@ -181,7 +176,7 @@ void GRenderer::UnregisterOpaqueDrawCall(UDrawCall* drawCall)
 	}
 }
 
-void GRenderer::UnregisterInterfaceDrawCall(UDrawCall* drawCall)
+void URenderer::UnregisterInterfaceDrawCall(UDrawCall* drawCall)
 {
 	if (!drawCall)
 	{
@@ -195,113 +190,30 @@ void GRenderer::UnregisterInterfaceDrawCall(UDrawCall* drawCall)
 	}
 }
 
-void GRenderer::RegisterDirectionalLight(const ULightBuffers::DirectionalLightData& directionalLight)
+void URenderer::RegisterDirectionalLight(const ULightBuffers::DirectionalLightData& directionalLight)
 {
 	lightBuffers_.RegisterDirectionalLight(directionalLight);
 }
 
-void GRenderer::RegisterPointLight(const UPointLight& pointLight)
+void URenderer::RegisterPointLight(const UPointLight& pointLight)
 {
 	lightBuffers_.RegisterPointLight(pointLight);
 }
 
-VkImageView GRenderer::GetGBufferAlbedoImageView(const u32 frameIndex) const
+void URenderer::CreateImageResources()
 {
-	return frameDatas_[frameIndex].albedoTarget.imageView;
-}
-
-VkImageView GRenderer::GetGBufferNormalImageView(const u32 frameIndex) const
-{
-	return frameDatas_[frameIndex].normalTarget.imageView;
-}
-
-VkImageView GRenderer::GetGBufferORMImageView(const u32 frameIndex) const
-{
-	return frameDatas_[frameIndex].ormTarget.imageView;
-}
-
-VkImageView GRenderer::GetGBufferDepthImageView(const u32 frameIndex) const
-{
-	return frameDatas_[frameIndex].depthTarget.imageView;
-}
-
-VkImageView GRenderer::GetColorTargetImageView(const u32 frameIndex) const
-{
-	return frameDatas_[frameIndex].colorTarget.imageView;
-}
-
-void GRenderer::CmdTransitionImages(VkCommandBuffer commandBuffer
-	, const VkImage* image
-	, const u32 count
-	, const VkPipelineStageFlags2 srcStage
-	, const VkPipelineStageFlags2 dstStage
-	, const VkAccessFlags2 srcAccess
-	, const VkAccessFlags2 dstAccess
-	, const VkImageLayout oldLayout
-	, const VkImageLayout newLayout
-	, const VkImageSubresourceRange subresourceRange) const
-{
-	std::vector<VkImageMemoryBarrier2> barriers{};
-	barriers.reserve(count);
-	for (u32 i{ 0 }; i < count; ++i)
-	{
-		barriers.push_back({
-			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
-			.srcStageMask = srcStage,
-			.srcAccessMask = srcAccess,
-			.dstStageMask = dstStage,
-			.dstAccessMask = dstAccess,
-			.oldLayout = oldLayout,
-			.newLayout = newLayout,
-			.image = image[i],
-			.subresourceRange = subresourceRange
-		});
-	}
-	const VkDependencyInfo dependencyInfo{
-		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
-		.imageMemoryBarrierCount = static_cast<u32>(barriers.size()),
-		.pImageMemoryBarriers = barriers.data(),
-	};
-	vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
-}
-
-void GRenderer::CmdTransitionCompute(VkCommandBuffer commandBuffer
-	, const VkPipelineStageFlags2 srcStage
-	, const VkPipelineStageFlags2 dstStage
-	, const VkAccessFlags2 srcAccess
-	, const VkAccessFlags2 dstAccess) const
-{
-	const VkMemoryBarrier2 barrier{
-		.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER_2,
-		.srcStageMask = srcStage,
-		.srcAccessMask = srcAccess,
-		.dstStageMask = dstStage,
-		.dstAccessMask = dstAccess,
-	};
-	const VkDependencyInfo dependencyInfo{
-		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
-		.memoryBarrierCount = 1,
-		.pMemoryBarriers = &barrier,
-	};
-	vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
-}
-
-void GRenderer::CreateImageResources()
-{
-	depthFormat_ = FindDepthFormat();
 	const auto extent{ SwapChain.GetExtent() };
-
 	for (auto& frameData : frameDatas_)
 	{
 		Context.CreateImageAndImageView(frameData.colorTarget,	UAllocatedImageCreateInfo::CreateSampled2D(extent.width, extent.height, 1, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
 		Context.CreateImageAndImageView(frameData.albedoTarget,	UAllocatedImageCreateInfo::CreateSampled2D(extent.width, extent.height, 1, VK_FORMAT_R8G8B8A8_SRGB,			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
 		Context.CreateImageAndImageView(frameData.normalTarget,	UAllocatedImageCreateInfo::CreateSampled2D(extent.width, extent.height, 1, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
 		Context.CreateImageAndImageView(frameData.ormTarget,	UAllocatedImageCreateInfo::CreateSampled2D(extent.width, extent.height, 1, VK_FORMAT_R8G8B8A8_UNORM,		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
-		Context.CreateImageAndImageView(frameData.depthTarget,	UAllocatedImageCreateInfo::CreateSampled2D(extent.width, extent.height, 1, depthFormat_,					VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,	VK_IMAGE_ASPECT_DEPTH_BIT));
+		Context.CreateImageAndImageView(frameData.depthTarget,	UAllocatedImageCreateInfo::CreateSampled2D(extent.width, extent.height, 1, Context.GetDepthFormat(),		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,	VK_IMAGE_ASPECT_DEPTH_BIT));
 	}
 }
 
-void GRenderer::CleanupImageResources() const
+void URenderer::CleanupImageResources() const
 {
 	for (const auto& frameData : frameDatas_)
 	{
@@ -320,13 +232,29 @@ void GRenderer::CleanupImageResources() const
 	}
 }
 
-VkFormat GRenderer::FindDepthFormat() const
+void URenderer::RegisterFrameContextBufferTextures()
 {
-	constexpr std::array formats{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT };
-	return Context.FindSupportedFormat(formats, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+	frameContextBuffer_.RegisterTextures(PipelineResourceManager, frameDatas_
+		| std::views::transform([](const FrameData& frameData)
+			{
+				return UFrameContextBuffer::FrameViews{
+					.albedo = frameData.albedoTarget.imageView,
+					.normal = frameData.normalTarget.imageView,
+					.orm = frameData.ormTarget.imageView,
+					.depth = frameData.depthTarget.imageView,
+					.postProcessTarget = frameData.colorTarget.imageView,
+				};
+			})
+		| std::ranges::to<std::vector>()
+	);
 }
 
-void GRenderer::CreateSampler()
+void URenderer::UnregisterFrameContextBufferTextures() const
+{
+	frameContextBuffer_.UnregisterTextures(PipelineResourceManager);
+}
+
+void URenderer::CreateSampler()
 {
 	if (UAsset sampler{ SAssetManager<USampler>::Get("${ENGINE_DIRECTORY}/Graphics/assets/samplers/default.kasset") })
 	{
@@ -338,7 +266,7 @@ void GRenderer::CreateSampler()
 	}
 }
 
-bool GRenderer::TryAcquireNextImage(const u32 frameIndex)
+bool URenderer::TryAcquireNextImage(const u32 frameIndex)
 {
 	// Wait for current frame to be rendered
 	VK_CHECK_THROW(
@@ -363,7 +291,7 @@ bool GRenderer::TryAcquireNextImage(const u32 frameIndex)
 	return true;
 }
 
-void GRenderer::CreateCommandPools()
+void URenderer::CreateCommandPools()
 {
 	for (size i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
 	{
@@ -371,7 +299,7 @@ void GRenderer::CreateCommandPools()
 	}
 }
 
-void GRenderer::CreateCommandPool(const u32 frameIndex)
+void URenderer::CreateCommandPool(const u32 frameIndex)
 {
 	const KtQueueFamilyIndices queueFamilyIndices{ Context.FindQueueFamilies(Context.GetPhysicalDevice()) };
 
@@ -386,7 +314,7 @@ void GRenderer::CreateCommandPool(const u32 frameIndex)
 	);
 }
 
-void GRenderer::CreateCommandBuffers()
+void URenderer::CreateCommandBuffers()
 {
 	for (size i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
 	{
@@ -394,7 +322,7 @@ void GRenderer::CreateCommandBuffers()
 	}
 }
 
-void GRenderer::CreateCommandBuffer(const u32 frameIndex)
+void URenderer::CreateCommandBuffer(const u32 frameIndex)
 {
 	const VkCommandBufferAllocateInfo allocInfo{
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
@@ -408,7 +336,7 @@ void GRenderer::CreateCommandBuffer(const u32 frameIndex)
 	);
 }
 
-void GRenderer::CreateSyncObjects()
+void URenderer::CreateSyncObjects()
 {
 	const VkSemaphoreCreateInfo semaphoreInfo{
 		.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
@@ -428,7 +356,7 @@ void GRenderer::CreateSyncObjects()
 	}
 }
 
-void GRenderer::RecordCommandBuffer(const u32 frameIndex)
+void URenderer::RecordCommandBuffer(const u32 frameIndex)
 {
 	VkCommandBuffer commandBuffer{ frameDatas_[frameIndex].commandBuffer };
 	vkResetCommandBuffer(commandBuffer, 0);
@@ -466,7 +394,7 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 	CmdDrawFrameShadowMaps(commandBuffer, frameIndex);
 
 	// Reset the rendering area to full screen
-	SWindowViewport::CmdUse(commandBuffer);
+	CmdUseWindowViewport(commandBuffer);
 
 	// Depth pre-pass
 	// - Make depth writable
@@ -521,7 +449,7 @@ void GRenderer::RecordCommandBuffer(const u32 frameIndex)
 	EndCommandBuffer(commandBuffer);
 }
 
-void GRenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer)
+void URenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer)
 {
 	const VkCommandBufferBeginInfo beginInfo{
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -532,7 +460,28 @@ void GRenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer)
 	);
 }
 
-void GRenderer::CmdUpdateClusterAABB(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdUseWindowViewport(VkCommandBuffer commandBuffer) const
+{
+	const auto& extent{ Window.GetSize() };
+
+	const VkViewport viewport{
+		.x = 0.0f,
+		.y = 0.0f,
+		.width = static_cast<f32>(extent.x),
+		.height = static_cast<f32>(extent.y),
+		.minDepth = 0.0f,
+		.maxDepth = 1.0f,
+	};
+	const VkRect2D scissor{
+		.offset = { 0, 0 },
+		.extent = { extent.x, extent.y },
+	};
+	
+	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+}
+
+void URenderer::CmdUpdateClusterAABB(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/clusterAABB.kasset") })
 	{
@@ -542,9 +491,9 @@ void GRenderer::CmdUpdateClusterAABB(VkCommandBuffer commandBuffer, const u32 fr
 	}
 }
 
-void GRenderer::CmdBarrierComputeFragmentReadToClearWrite(VkCommandBuffer commandBuffer) const
+void URenderer::CmdBarrierComputeFragmentReadToClearWrite(VkCommandBuffer commandBuffer) const
 {
-	CmdTransitionCompute(commandBuffer
+	Barriers::CmdTransitionCompute(commandBuffer
 		, VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT
 		, VK_PIPELINE_STAGE_2_CLEAR_BIT
 		, VK_ACCESS_2_SHADER_READ_BIT
@@ -552,7 +501,7 @@ void GRenderer::CmdBarrierComputeFragmentReadToClearWrite(VkCommandBuffer comman
 	);
 }
 
-void GRenderer::CmdResetLightCounter(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdResetLightCounter(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	vkCmdFillBuffer(commandBuffer
 		, gpuBuffers_.GetLightCounterBuffer(frameIndex)
@@ -562,9 +511,9 @@ void GRenderer::CmdResetLightCounter(VkCommandBuffer commandBuffer, const u32 fr
 	);
 }
 
-void GRenderer::CmdBarrierComputeClearWriteToReadWrite(VkCommandBuffer commandBuffer) const
+void URenderer::CmdBarrierComputeClearWriteToReadWrite(VkCommandBuffer commandBuffer) const
 {
-	CmdTransitionCompute(commandBuffer
+	Barriers::CmdTransitionCompute(commandBuffer
 		, VK_PIPELINE_STAGE_2_TRANSFER_BIT
 		| VK_PIPELINE_STAGE_2_CLEAR_BIT
 		| VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT
@@ -576,7 +525,7 @@ void GRenderer::CmdBarrierComputeClearWriteToReadWrite(VkCommandBuffer commandBu
 	);
 }
 
-void GRenderer::CmdDispatchLightBinning(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdDispatchLightBinning(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	if (UAsset binningShader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/lightBinning.kasset") })
 	{
@@ -586,9 +535,9 @@ void GRenderer::CmdDispatchLightBinning(VkCommandBuffer commandBuffer, const u32
 	}
 }
 
-void GRenderer::CmdBarrierComputeWriteToFragmentRead(VkCommandBuffer commandBuffer) const
+void URenderer::CmdBarrierComputeWriteToFragmentRead(VkCommandBuffer commandBuffer) const
 {
-	CmdTransitionCompute(commandBuffer
+	Barriers::CmdTransitionCompute(commandBuffer
 		, VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT
 		, VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT
 		, VK_ACCESS_2_SHADER_WRITE_BIT
@@ -596,7 +545,7 @@ void GRenderer::CmdBarrierComputeWriteToFragmentRead(VkCommandBuffer commandBuff
 	);
 }
 
-void GRenderer::CmdDrawFrameShadowMaps(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdDrawFrameShadowMaps(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	static UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/shadowPrePass.kasset") };
 	if (!shader)
@@ -635,9 +584,9 @@ void GRenderer::CmdDrawFrameShadowMaps(VkCommandBuffer commandBuffer, const u32 
 	}
 }
 
-void GRenderer::CmdBarrierDepthNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdBarrierDepthNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	CmdTransitionImages(commandBuffer
+	Barriers::CmdTransitionImages(commandBuffer
 		, &frameDatas_[frameIndex].depthTarget.image, 1
 		, VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT
 		, VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT
@@ -650,7 +599,7 @@ void GRenderer::CmdBarrierDepthNoneToWrite(VkCommandBuffer commandBuffer, const 
 	);
 }
 
-void GRenderer::CmdBeginRenderingDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdBeginRenderingDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	const VkRenderingAttachmentInfo depthAttachment{
 		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
@@ -677,7 +626,7 @@ void GRenderer::CmdBeginRenderingDepthPrePass(VkCommandBuffer commandBuffer, con
 	vkCmdBeginRendering(commandBuffer, &renderInfo);
 }
 
-void GRenderer::CmdDrawFrameDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdDrawFrameDepthPrePass(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/depthPrePass.kasset") })
 	{
@@ -693,9 +642,9 @@ void GRenderer::CmdDrawFrameDepthPrePass(VkCommandBuffer commandBuffer, const u3
 	}	
 }
 
-void GRenderer::CmdBarrierDepthWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdBarrierDepthWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	CmdTransitionImages(commandBuffer
+	Barriers::CmdTransitionImages(commandBuffer
 		, &frameDatas_[frameIndex].depthTarget.image, 1
 		, VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT
 		| VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT
@@ -709,14 +658,14 @@ void GRenderer::CmdBarrierDepthWriteToRead(VkCommandBuffer commandBuffer, const 
 	);
 }
 
-void GRenderer::CmdBarrierGBufferNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdBarrierGBufferNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	const std::array images{ 
 		frameDatas_[frameIndex].albedoTarget.image,
 		frameDatas_[frameIndex].normalTarget.image,
 		frameDatas_[frameIndex].ormTarget.image,
 	};
-	CmdTransitionImages(commandBuffer
+	Barriers::CmdTransitionImages(commandBuffer
 		, images.data(), 3
 		, VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
@@ -728,7 +677,7 @@ void GRenderer::CmdBarrierGBufferNoneToWrite(VkCommandBuffer commandBuffer, cons
 	);
 }
 
-void GRenderer::CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	const auto makeRenderingAttachmentInfo{ [](VkImageView imageView) {
 		return VkRenderingAttachmentInfo{
@@ -778,7 +727,7 @@ void GRenderer::CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer, const u3
 	vkCmdBeginRendering(commandBuffer, &renderingInfo);
 }
 
-void GRenderer::CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	std::unordered_map<VkPipeline, std::vector<const UDrawCall*>> pipelineDrawCalls{};
 
@@ -801,14 +750,14 @@ void GRenderer::CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, const u32 fra
 	}
 }
 
-void GRenderer::CmdBarrierGBufferWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdBarrierGBufferWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	const std::array images{
 		frameDatas_[frameIndex].albedoTarget.image,
 		frameDatas_[frameIndex].normalTarget.image,
 		frameDatas_[frameIndex].ormTarget.image,
 	};
-	CmdTransitionImages(commandBuffer
+	Barriers::CmdTransitionImages(commandBuffer
 		, images.data(), 3
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 		, VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT
@@ -820,9 +769,9 @@ void GRenderer::CmdBarrierGBufferWriteToRead(VkCommandBuffer commandBuffer, cons
 	);
 }
 
-void GRenderer::CmdBarrierDepthReadToShaderRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdBarrierDepthReadToShaderRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	CmdTransitionImages(commandBuffer
+	Barriers::CmdTransitionImages(commandBuffer
 		, &frameDatas_[frameIndex].depthTarget.image, 1
 		, VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT 
 		| VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT
@@ -835,9 +784,9 @@ void GRenderer::CmdBarrierDepthReadToShaderRead(VkCommandBuffer commandBuffer, c
 	);
 }
 
-void GRenderer::CmdBarrierColorNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdBarrierColorNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	CmdTransitionImages(commandBuffer
+	Barriers::CmdTransitionImages(commandBuffer
 		, &frameDatas_[frameIndex].colorTarget.image, 1
 		, VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
@@ -849,7 +798,7 @@ void GRenderer::CmdBarrierColorNoneToWrite(VkCommandBuffer commandBuffer, const 
 	);
 }
 
-void GRenderer::CmdBeginRenderingDeferredLighting(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdBeginRenderingDeferredLighting(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	const VkRenderingAttachmentInfo colorAttachment{
 		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
@@ -873,7 +822,7 @@ void GRenderer::CmdBeginRenderingDeferredLighting(VkCommandBuffer commandBuffer,
 	vkCmdBeginRendering(commandBuffer, &renderInfo);
 }
 
-void GRenderer::CmdDrawFrameDeferredLighting(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdDrawFrameDeferredLighting(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/deferredLighting.kasset") })
 	{
@@ -883,9 +832,9 @@ void GRenderer::CmdDrawFrameDeferredLighting(VkCommandBuffer commandBuffer, cons
 	}
 }
 
-void GRenderer::CmdBarrierColorWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdBarrierColorWriteToRead(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	CmdTransitionImages(commandBuffer
+	Barriers::CmdTransitionImages(commandBuffer
 		, &frameDatas_[frameIndex].colorTarget.image, 1
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 		, VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT
@@ -897,9 +846,9 @@ void GRenderer::CmdBarrierColorWriteToRead(VkCommandBuffer commandBuffer, const 
 	);
 }
 
-void GRenderer::CmdBarrierSwapchainNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdBarrierSwapchainNoneToWrite(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	CmdTransitionImages(commandBuffer
+	Barriers::CmdTransitionImages(commandBuffer
 		, &SwapChain.GetAllocatedImage(frameDatas_[frameIndex].imageIndex).image, 1
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 		| VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT
@@ -913,7 +862,7 @@ void GRenderer::CmdBarrierSwapchainNoneToWrite(VkCommandBuffer commandBuffer, co
 	);
 }
 
-void GRenderer::CmdBeginRenderingPostProcess(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdBeginRenderingPostProcess(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	const VkRenderingAttachmentInfo swapchainAttachment{
 		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
@@ -938,7 +887,7 @@ void GRenderer::CmdBeginRenderingPostProcess(VkCommandBuffer commandBuffer, cons
 	vkCmdBeginRendering(commandBuffer, &swapchainRenderingInfo);
 }
 
-void GRenderer::CmdDrawFramePostProcess(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdDrawFramePostProcess(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	if (UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/postProcess.kasset") })
 	{
@@ -948,7 +897,7 @@ void GRenderer::CmdDrawFramePostProcess(VkCommandBuffer commandBuffer, const u32
 	}
 }
 
-void GRenderer::CmdBeginRenderingInterface(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdBeginRenderingInterface(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	const VkRenderingAttachmentInfo swapchainAttachment{
 		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
@@ -973,7 +922,7 @@ void GRenderer::CmdBeginRenderingInterface(VkCommandBuffer commandBuffer, const 
 	vkCmdBeginRendering(commandBuffer, &swapchainRenderingInfo);
 }
 
-void GRenderer::CmdDrawFrameInterface(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdDrawFrameInterface(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
 	std::map<i32, std::vector<const UDrawCall*>> layerDrawCalls{};
 
@@ -1003,9 +952,9 @@ void GRenderer::CmdDrawFrameInterface(VkCommandBuffer commandBuffer, const u32 f
 	}
 }
 
-void GRenderer::CmdBarrierSwapchainWriteToPresent(VkCommandBuffer commandBuffer, const u32 frameIndex) const
+void URenderer::CmdBarrierSwapchainWriteToPresent(VkCommandBuffer commandBuffer, const u32 frameIndex) const
 {
-	CmdTransitionImages(commandBuffer
+	Barriers::CmdTransitionImages(commandBuffer
 		, &SwapChain.GetAllocatedImage(frameDatas_[frameIndex].imageIndex).image, 1
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 		, VK_PIPELINE_STAGE_2_NONE
@@ -1017,7 +966,7 @@ void GRenderer::CmdBarrierSwapchainWriteToPresent(VkCommandBuffer commandBuffer,
 	);
 }
 
-void GRenderer::CmdPushConstants(VkCommandBuffer commandBuffer, const UDrawCall* drawCall, const u32 frameIndex) const
+void URenderer::CmdPushConstants(VkCommandBuffer commandBuffer, const UDrawCall* drawCall, const u32 frameIndex) const
 {
 	const UPushConstants pc{
 		.frameContextBufferAddress = frameContextBuffer_.GetAddress(frameIndex),
@@ -1034,7 +983,7 @@ void GRenderer::CmdPushConstants(VkCommandBuffer commandBuffer, const UDrawCall*
 	);
 }
 
-void GRenderer::CmdDraw(VkCommandBuffer commandBuffer, const UDrawCall* drawCall) const
+void URenderer::CmdDraw(VkCommandBuffer commandBuffer, const UDrawCall* drawCall) const
 {
 	if (!drawCall)
 	{
@@ -1050,12 +999,12 @@ void GRenderer::CmdDraw(VkCommandBuffer commandBuffer, const UDrawCall* drawCall
 	);
 }
 
-void GRenderer::CmdEndRendering(VkCommandBuffer commandBuffer) const
+void URenderer::CmdEndRendering(VkCommandBuffer commandBuffer) const
 {
 	vkCmdEndRendering(commandBuffer);
 }
 
-void GRenderer::EndCommandBuffer(VkCommandBuffer commandBuffer) const
+void URenderer::EndCommandBuffer(VkCommandBuffer commandBuffer) const
 {
 	VK_CHECK_THROW(
 		vkEndCommandBuffer(commandBuffer),
@@ -1063,7 +1012,7 @@ void GRenderer::EndCommandBuffer(VkCommandBuffer commandBuffer) const
 	);
 }
 
-void GRenderer::SubmitCommandBuffer(const u32 frameIndex)
+void URenderer::SubmitCommandBuffer(const u32 frameIndex)
 {
 	const VkCommandBufferSubmitInfo cmdBufInfo{
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO,
@@ -1135,7 +1084,7 @@ void GRenderer::SubmitCommandBuffer(const u32 frameIndex)
 	}
 }
 
-void GRenderer::JoinThread(std::thread& thread) const
+void URenderer::JoinThread(std::thread& thread) const
 {
 	if (thread.joinable())
 	{
@@ -1143,25 +1092,25 @@ void GRenderer::JoinThread(std::thread& thread) const
 	}
 }
 
-u32 GRenderer::GetGameThreadFrame() const
+u32 URenderer::GetGameThreadFrame() const
 {
 	// Prepare game thread for render thread
 	return frameCount_ % static_cast<u32>(KT_FRAMES_IN_FLIGHT);
 }
 
-u32 GRenderer::GetRenderThreadFrame() const
+u32 URenderer::GetRenderThreadFrame() const
 {
 	// Prepare render thread for RHI thread
 	return ((frameCount_ + KT_FRAMES_IN_FLIGHT) - 1) % static_cast<u32>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
 }
 
-u32 GRenderer::GetRHIThreadFrame() const
+u32 URenderer::GetRHIThreadFrame() const
 {
 	// Prepare RHI thread for game thread
 	return ((frameCount_ + KT_FRAMES_IN_FLIGHT) - 2) % static_cast<u32>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
 }
 
-void GRenderer::RecreateFrame()
+void URenderer::RecreateFrame()
 {
 	// Wait for CPU
 	JoinThread(renderThread_);
@@ -1170,13 +1119,13 @@ void GRenderer::RecreateFrame()
 	// Wait for GPU
 	vkDeviceWaitIdle(Context.GetDevice());
 
-	frameContextBuffer_.UnregisterGBufferTextures();
+	UnregisterFrameContextBufferTextures();
 	CleanupImageResources();
 	SwapChain.Cleanup();
 
 	SwapChain.Init();
 	CreateImageResources();
-	frameContextBuffer_.RegisterGBufferTextures();
+	RegisterFrameContextBufferTextures();
 
 	for (const auto& frameData : frameDatas_)
 	{

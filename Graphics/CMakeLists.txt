@@ -63,7 +63,7 @@ target_compile_features(KotonoGraphics PUBLIC cxx_std_23)
 set_target_properties(KotonoGraphics PROPERTIES FOLDER "KotonoEngine")
 
 set(KGRAPHICS_HEADERS
-    "include/kotono_graphics/Camera.h"
+    "include/kotono_graphics/Barriers.h"
     "include/kotono_graphics/Color.h"
     "include/kotono_graphics/DrawCall.h"
     "include/kotono_graphics/DrawDataBuffer.h"
@@ -84,6 +84,7 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/ParametersBuffer.h"
     "include/kotono_graphics/ParametersBufferData.h"
     "include/kotono_graphics/PipelineResourceManager.h"
+    "include/kotono_graphics/RenderContext.h"
     "include/kotono_graphics/Renderer.h"
     "include/kotono_graphics/Sampler.h"
     "include/kotono_graphics/Scissor.h"
@@ -93,10 +94,12 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/Texture.h"
     "include/kotono_graphics/TransformBuffer.h"
     "include/kotono_graphics/TransformBufferData.h"
+    "include/kotono_graphics/ViewPoint.h"
+    "include/kotono_graphics/Viewport.h"
     "include/kotono_graphics/Visibility.h"
 )
 set(KGRAPHICS_SOURCES
-    "src/Camera.cpp"
+    "src/Barriers.cpp"
     "src/DrawCallBuilder.cpp"
     "src/DrawDataBuffer.cpp"
     "src/Font.cpp"
@@ -110,6 +113,7 @@ set(KGRAPHICS_SOURCES
     "src/Model.cpp"
     "src/ParametersBuffer.cpp"
     "src/PipelineResourceManager.cpp"
+    "src/RenderContext.cpp"
     "src/Renderer.cpp"
     "src/Sampler.cpp"
     "src/Shader.cpp"
@@ -117,6 +121,8 @@ set(KGRAPHICS_SOURCES
     "src/SwapChain.cpp"
     "src/Texture.cpp"
     "src/TransformBuffer.cpp"
+    "src/ViewPoint.cpp"
+    "src/Viewport.cpp"
 )
 
 target_sources(KotonoGraphics

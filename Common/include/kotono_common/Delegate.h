@@ -1,12 +1,11 @@
 #pragma once
 #include <functional>
+#include <string_view>
 #include <type_traits>
-#include <memory>
-#include <iostream>
 #include "hash_utils.h"
 #include "types.h"
 
-#define _MAKE_DELEGATE(Inst, Func) UDelegate(Inst, Func, combine(hash_ptr(static_cast<void*>(Inst)), ce_hash_str(#Func)))
+#define _MAKE_DELEGATE(Inst, Func) UDelegate(Inst, Func, #Func, combine(hash_ptr(static_cast<const void*>(Inst)), ce_hash_str(#Func)))
 
 template <typename... Args>
 class UDelegate final
@@ -19,18 +18,22 @@ private:
 public:
     template <typename Tinst, typename Tfunc>
         requires std::is_base_of_v<Tfunc, Tinst>
-    UDelegate(Tinst* instance, void (Tfunc::* function)(Args...), const size hash)
+    UDelegate(Tinst* instance, void (Tfunc::* function)(Args...), const char* func, const size hash)
     {
+        callbackFunction_ = [instance, function](Args... args) { (instance->*function)(std::forward<Args>(args)...); };
+        inst_ = instance;
+        func_ = func;
         hash_ = hash;
-        callbackFunction_ = [instance, function](Args... args) { (instance->*function)(std::move(args)...); };
     }
 
     template <typename Tinst, typename Tfunc>
         requires std::is_base_of_v<Tfunc, Tinst>
-    UDelegate(const Tinst* instance, void (Tfunc::* function)(Args...) const, const size hash)
+    UDelegate(const Tinst* instance, void (Tfunc::* function)(Args...) const, const char* func, const size hash)
     {
+        callbackFunction_ = [instance, function](Args... args) { (instance->*function)(std::forward<Args>(args)...); };
+        inst_ = instance;
+        func_ = func;
         hash_ = hash;
-        callbackFunction_ = [instance, function](Args... args) { (instance->*function)(std::move(args)...); };
     }
 
     template <typename... CallArgs>
@@ -42,12 +45,15 @@ public:
 
     bool operator==(const UDelegate& other) const noexcept
     {
-        return other.hash_ == hash_;
+        return other.inst_ == inst_
+            && std::string_view{ other.func_ } == std::string_view{ func_ };
     }
 
 private:
-    size hash_;
     CallbackFunction callbackFunction_;
+    const void* inst_;
+    const char* func_;
+    size hash_;
 };
 
 template <typename... Args>

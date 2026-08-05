@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <glm/glm.hpp>
 #include <kotono_core/TimeManager.h>
-#include <kotono_graphics/Camera.h>
+#include <kotono_graphics/RenderContext.h>
 #include <kotono_input/Keyboard.h>
 #include <kotono_input/Mouse.h>
 #include <kotono_platform/glm_utils.h>
@@ -41,30 +41,26 @@ void GCamera::Cleanup()
 
 void GCamera::OnKeyboardWKeyDown() const
 {
-	const auto direction{ SCamera::GetForwardVector() };
-	const auto delta{ direction * TimeManager.Delta() };
-	Translate(delta * speed_);
+	const auto direction{ RenderContext.GetViewPoint().GetForwardVector() };
+	Translate(direction * TimeManager.Delta() * speed_);
 }
 
 void GCamera::OnKeyboardAKeyDown() const
 {
-	const auto direction{ SCamera::GetRightVector() };
-	const auto delta{ direction * TimeManager.Delta() };
-	Translate(delta * speed_);
+	const auto direction{ RenderContext.GetViewPoint().GetRightVector() };
+	Translate(direction * TimeManager.Delta() * speed_);
 }
 
 void GCamera::OnKeyboardSKeyDown() const
 {
-	const auto direction{ -SCamera::GetForwardVector() };
-	const auto delta{ direction * TimeManager.Delta() };
-	Translate(delta * speed_);
+	const auto direction{ -RenderContext.GetViewPoint().GetForwardVector() };
+	Translate(direction * TimeManager.Delta() * speed_);
 }
 
 void GCamera::OnKeyboardDKeyDown() const
 {
-	const auto direction{ -SCamera::GetRightVector() };
-	const auto delta{ direction * TimeManager.Delta() };
-	Translate(delta * speed_);
+	const auto direction{ -RenderContext.GetViewPoint().GetRightVector() };
+	Translate(direction * TimeManager.Delta() * speed_);
 }
 
 void GCamera::OnKeyboardQKeyDown() const
@@ -104,7 +100,7 @@ void GCamera::OnMouseMove(const glm::vec2 delta)
 	const glm::quat qYaw{ glm::angleAxis(yaw_, WorldUpVector) };
 	
 	const glm::quat rotation{ qYaw * qPitch };
-	SCamera::SetRotation(rotation);
+	RenderContext.GetViewPoint().SetRotation(rotation);
 }
 
 void GCamera::OnMouseVerticalScroll(const f32 delta)
@@ -124,5 +120,7 @@ void GCamera::Translate(const glm::vec3& delta) const
 	{
 		return;
 	}
-	SCamera::SetPosition(SCamera::GetPosition() + delta);
+
+	const auto& position{ RenderContext.GetViewPoint().GetPosition() };
+	RenderContext.GetViewPoint().SetPosition(position + delta);
 }

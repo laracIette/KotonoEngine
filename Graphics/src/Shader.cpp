@@ -1,6 +1,5 @@
 ﻿#include "Shader.h"
 #include "PipelineResourceManager.h"
-#include "Renderer.h"
 #include "SwapChain.h"
 #include <kotono_common/log.h>
 #include <kotono_io/File.h>
@@ -204,7 +203,7 @@ void UShader::CreateGraphicsPipeline()
 		.viewMask = json["viewMask"],
 		.colorAttachmentCount = static_cast<u32>(colorAttachmentFormats.size()),
 		.pColorAttachmentFormats = colorAttachmentFormats.data(),
-		.depthAttachmentFormat = Renderer.GetDepthFormat(),
+		.depthAttachmentFormat = Context.GetDepthFormat(),
 	};
 
 	const VkGraphicsPipelineCreateInfo pipelineInfo{

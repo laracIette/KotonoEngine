@@ -5,9 +5,10 @@
 #include <kotono_graphics/TransformBuffer.h>
 #include <kotono_graphics/ParametersBuffer.h>
 
-UDrawCallBuilder::UDrawCallBuilder() 
+UDrawCallBuilder::UDrawCallBuilder()
 	: drawCall_{ new UDrawCall{} }
 	, isRegistered_{ false }
+	, renderBucket_{}
 	, drawData_{ DrawDataBuffer.RegisterDrawData() }
 	, transform_{ TransformBuffer.RegisterTransform() }
 	, parameters_{ ParametersBuffer.RegisterParameters() }
@@ -22,11 +23,10 @@ UDrawCallBuilder::~UDrawCallBuilder()
 	DrawDataBuffer.UnregisterDrawData(drawData_);
 	TransformBuffer.UnregisterTransform(transform_);
 	ParametersBuffer.UnregisterParameters(parameters_);
-	Unregister();
 	delete drawCall_;
 }
 
-void UDrawCallBuilder::Register(const ERenderBucket renderBucket)
+void UDrawCallBuilder::Register(URenderer& renderer, const ERenderBucket renderBucket)
 {
 	if (isRegistered_)
 	{
@@ -38,13 +38,13 @@ void UDrawCallBuilder::Register(const ERenderBucket renderBucket)
 
 	switch (renderBucket_)
 	{
-	case ERenderBucket::Opaque:			return Renderer.RegisterOpaqueDrawCall(drawCall_);
+	case ERenderBucket::Opaque:			return renderer.RegisterOpaqueDrawCall(drawCall_);
 	case ERenderBucket::Transparent:	return;
-	case ERenderBucket::Interface:		return Renderer.RegisterInterfaceDrawCall(drawCall_);
+	case ERenderBucket::Interface:		return renderer.RegisterInterfaceDrawCall(drawCall_);
 	}
 }
 
-void UDrawCallBuilder::Unregister()
+void UDrawCallBuilder::Unregister(URenderer& renderer)
 {
 	if (!isRegistered_)
 	{
@@ -55,9 +55,9 @@ void UDrawCallBuilder::Unregister()
 
 	switch (renderBucket_)
 	{
-	case ERenderBucket::Opaque:			return Renderer.UnregisterOpaqueDrawCall(drawCall_);
+	case ERenderBucket::Opaque:			return renderer.UnregisterOpaqueDrawCall(drawCall_);
 	case ERenderBucket::Transparent:	return;
-	case ERenderBucket::Interface:		return Renderer.UnregisterInterfaceDrawCall(drawCall_);
+	case ERenderBucket::Interface:		return renderer.UnregisterInterfaceDrawCall(drawCall_);
 	}
 }
 

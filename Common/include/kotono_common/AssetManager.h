@@ -5,12 +5,19 @@
 template <typename T>
 class SAssetManager final
 {
-private:
-	friend class GCore;
-
+public:
 	using Asset = UAsset<T>;
 
 public:
+	static void Cleanup()
+	{
+		for (auto& [path, asset] : assets_)
+		{
+			delete asset.Get();
+		}
+		assets_.clear();
+	}
+
 	static Asset Get(const UPath& path)
 	{
 		const auto it{ assets_.find(path) };
@@ -23,15 +30,6 @@ private:
 		Asset asset(path, new T{ path });
 		assets_[path] = asset;
 		return asset;
-	}
-
-	static void Cleanup()
-	{
-		for (auto& [path, asset] : assets_)
-		{
-			delete asset.Get();
-		}
-		assets_.clear();
 	}
 
 private:

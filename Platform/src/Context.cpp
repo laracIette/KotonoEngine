@@ -2,7 +2,6 @@
 #include "vk_utils.h"
 #include "Window.h"
 #include <array>
-#include <glm/common.hpp>
 #include <kotono_common/log.h>
 #include <print>
 #include <set>
@@ -45,6 +44,8 @@ void GContext::Init()
 	CreateLogicalDevice();
 	CreateAllocator();
 	CreateCommandPool();
+
+	depthFormat_ = FindDepthFormat();
 }
 
 void GContext::Cleanup()
@@ -693,6 +694,11 @@ void GContext::StagingUpload(const void* data
 	GetEventExecuteSingleTimeCommands().AddListener(this, &GContext::ClearDeletionQueue);
 }
 
+VkFormat GContext::GetDepthFormat() const
+{
+	return depthFormat_;
+}
+
 void GContext::CreateCommandPool()
 {
 	const KtQueueFamilyIndices queueFamilyIndices{ FindQueueFamilies(physicalDevice_) };
@@ -809,26 +815,6 @@ void GContext::CreateImage(UAllocatedImage& allocatedImage, const UAllocatedImag
 		vmaCreateImage(allocator_, &imageInfo, &allocCreateInfo, &allocatedImage.image, &allocatedImage.allocation, nullptr),
 		"failed to create image with memory allocation!"
 	);
-}
-
-VkFormat GContext::FindSupportedFormat(const std::span<const VkFormat> candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const
-{
-	for (VkFormat format : candidates)
-	{
-		VkFormatProperties props;
-		vkGetPhysicalDeviceFormatProperties(physicalDevice_, format, &props);
-
-		if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
-		{
-			return format;
-		}
-		else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
-		{
-			return format;
-		}
-	}
-
-	throw "failed to find supported format!";
 }
 
 bool GContext::HasStencilComponent(VkFormat format) const
@@ -1130,6 +1116,32 @@ bool GContext::GetIsComputerPluggedIn()
 	SYSTEM_POWER_STATUS powerStatus;
 	return GetSystemPowerStatus(&powerStatus) 
 		&& powerStatus.ACLineStatus == AC_LINE_ONLINE;
+}
+
+VkFormat GContext::FindSupportedFormat(const std::span<const VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const
+{
+	for (VkFormat format : candidates)
+	{
+		VkFormatProperties props;
+		vkGetPhysicalDeviceFormatProperties(physicalDevice_, format, &props);
+
+		if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
+		{
+			return format;
+		}
+		else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
+		{
+			return format;
+		}
+	}
+
+	throw "failed to find supported format!";
+}
+
+VkFormat GContext::FindDepthFormat() const
+{
+	constexpr std::array formats{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT };
+	return FindSupportedFormat(formats, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
 
 void GContext::ClearDeletionQueue()

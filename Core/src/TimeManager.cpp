@@ -1,7 +1,5 @@
 #include "TimeManager.h"
-#include <kotono_graphics/Camera.h>
-#include <kotono_graphics/Renderer.h>
-#include <kotono_platform/WindowViewport.h>
+#include <kotono_graphics/RenderContext.h>
 #include <kotono_timing/TimerManager.h>
 #include <kotono_timing/TimeContext.h>
 #include <kotono_timing/Stopwatch.h>
@@ -31,7 +29,7 @@ void GTimeManager::Init()
 
 void GTimeManager::Update()
 {
-	const float now{ SClock::Now() };
+	const f32 now{ SClock::Now() };
 	delta_ = now - now_;
 	now_ = now;
 
@@ -41,7 +39,7 @@ void GTimeManager::Update()
 
 	if (gameTime_.Update(delta_))
 	{
-		const float gameTime{ UStopwatch::Time([delta = gameTime_.lastDelta]() {
+		const f32 gameTime{ UStopwatch::Time([delta = gameTime_.lastDelta]() {
 			Game.Update(delta); 
 		}) };
 		averageGameTime_.Add(gameTime);
@@ -49,25 +47,19 @@ void GTimeManager::Update()
 
 	if (renderTime_.Update(delta_))
 	{
-		const float renderTime{ UStopwatch::Time([]() { 
-			Renderer.DrawFrame({
-				.view = SCamera::GetViewMatrix(),
-				.proj = SCamera::GetProjectionMatrix(),
-				.viewPos = SCamera::GetPosition(),
-				.windowSize = SWindowViewport::GetExtent(),
-				.time = SClock::Now(),
-			});
+		const f32 renderTime{ UStopwatch::Time([]() {
+			RenderContext.DrawFrame();
 		}) };
 		averageRenderTime_.Add(renderTime);
 	}
 }
 
-float GTimeManager::Now() const
+f32 GTimeManager::Now() const
 {
 	return now_;
 }
 
-float GTimeManager::Delta() const
+f32 GTimeManager::Delta() const
 {
 	return delta_;
 }
@@ -82,17 +74,17 @@ UTimeContext& GTimeManager::RenderTime()
 	return renderTime_;
 }
 
-float GTimeManager::AverageUpdateTime() const
+f32 GTimeManager::AverageUpdateTime() const
 {
 	return averageUpdateTime_.Get();
 }
 
-float GTimeManager::AverageGameTime() const
+f32 GTimeManager::AverageGameTime() const
 {
 	return averageGameTime_.Get();
 }
 
-float GTimeManager::AverageRenderTime() const
+f32 GTimeManager::AverageRenderTime() const
 {
 	return averageRenderTime_.Get();
 }

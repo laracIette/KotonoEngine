@@ -1,36 +1,29 @@
 #include "MeshComponent.h"
-#include "SceneObject.h"
 #include "Task.h"
 #include "TimeManager.h"
 #include <glm/gtc/matrix_inverse.hpp>
-#include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
 #include <kotono_graphics/DrawCall.h>
 #include <kotono_graphics/DrawDataBufferData.h>
 #include <kotono_graphics/Material.h>
 #include <kotono_graphics/Model.h>
+#include <kotono_graphics/RenderContext.h>
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/TransformBufferData.h>
 #include <kotono_input/Keyboard.h>
 #include <kotono_platform/Window.h>
-#include <kotono_platform/WindowViewport.h>
-
-static UAsset<UShader> WireframeShader;
 
 KMeshComponent::KMeshComponent() 
     : drawCallBuilder_{}
 {
-    if (!WireframeShader)
-    {
-        //WireframeShader = SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/wireframe3D.kasset");
-    }
-
     spinTask_.duration = 5.0f;
 }
 
 KMeshComponent::~KMeshComponent()
 {
-    drawCallBuilder_.Unregister();
+    UnregisterDrawCall();
+
+    GetRenderContext().GetViewport().GetEventExtentUpdated().AddListener(this, &KMeshComponent::OnViewportExtentUpdated);
 }
 
 void KMeshComponent::Init()
@@ -87,15 +80,26 @@ void KMeshComponent::Spawn()
     Base::Spawn();
 
     RefreshDrawCall();
-    drawCallBuilder_.Register(ERenderBucket::Opaque);
+    RegisterDrawCall();
 
     GetEventTransformUpdated().AddListener(this, &KMeshComponent::RefreshDrawCallTransformData);
-    RegisterDelegate(&Window, Window.GetEventWindowResized(), this, &KMeshComponent::RefreshDrawCallScissor);
+
+    GetRenderContext().GetViewport().GetEventExtentUpdated().AddListener(this, &KMeshComponent::OnViewportExtentUpdated);
 
     RegisterDelegate(&Keyboard, Keyboard.EventKey(EKey::N, EInputState::Pressed), this, &KMeshComponent::SetMobilityStatic);
     RegisterDelegate(&Keyboard, Keyboard.EventKey(EKey::M, EInputState::Pressed), this, &KMeshComponent::SetMobilityDynamic);
     
     spinTask_.eventUpdate.AddListener(this, &KMeshComponent::Spin);
+}
+
+void KMeshComponent::RegisterDrawCall()
+{
+    drawCallBuilder_.Register(GetRenderContext().GetRenderer(), ERenderBucket::Opaque);
+}
+
+void KMeshComponent::UnregisterDrawCall()
+{
+    drawCallBuilder_.Unregister(GetRenderContext().GetRenderer());
 }
 
 void KMeshComponent::RefreshDrawCall() const
@@ -109,8 +113,8 @@ void KMeshComponent::RefreshDrawCall() const
 
 void KMeshComponent::RefreshDrawCallScissor() const
 {
-    const auto& offset{ SWindowViewport::GetOffset() };
-    const auto& extent{ SWindowViewport::GetExtent() };
+    const auto& offset{ GetRenderContext().GetViewport().GetOffset() };
+    const auto& extent{ GetRenderContext().GetViewport().GetExtent() };
 
     drawCallBuilder_.GetDrawCall()->scissor = {
         .offset = { offset.x, offset.y },
@@ -149,6 +153,11 @@ void KMeshComponent::RefreshDrawCallTransformData() const
     const auto modelMatrix{ ModelMatrix() };
     drawCallBuilder_.GetTransform()->modelMatrix = modelMatrix;
     drawCallBuilder_.GetTransform()->normalMatrix = glm::mat4{ glm::inverseTranspose(glm::mat3{ modelMatrix }) };
+}
+
+void KMeshComponent::OnViewportExtentUpdated(const glm::uvec2 extent) const
+{
+    RefreshDrawCallScissor();
 }
 
 void KMeshComponent::Spin()

@@ -1,14 +1,12 @@
 #include "LightBuffers.h"
-#include "Camera.h"
+#include "Barriers.h"
 #include "PipelineResourceManager.h"
-#include "Renderer.h"
 #include "Sampler.h"
 #include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
 #include <kotono_platform/Context.h>
 #include <kotono_platform/glm_utils.h>
 #include <kotono_platform/vk_utils.h>
-#include <kotono_platform/WindowViewport.h>
 #include <ranges>
 
 static constexpr u32 MAX_DIRECTIONAL_LIGHTS{ 8 };
@@ -61,23 +59,21 @@ void ULightBuffers::RegisterPointLight(const UPointLight& pointLight)
     pointLights_.push_back(pointLight);
 }
 
-void ULightBuffers::UpdateBuffers(const u32 frameIndex)
+void ULightBuffers::UpdateBuffers(const u32 frameIndex, const UFrameContextSceneView& sceneView)
 {
     const std::array<f32, NUM_DIRECTIONAL_CASCADES + 1> cascadeSplits{
-       SCamera::GetDepthNear(),
-       5.0f,
-       15.0f,
-       50.0f,
-       200.0f,
+       sceneView.depthNear,
+       5.0f, 15.0f, 50.0f, 200.0f,
     };
 
-    constexpr auto makeLightViewProj{ [](const UDirectionalLight& light, const f32 zFar) {
-        return get_light_space_matrix(light.direction
-            , SCamera::GetViewMatrix()
-            , SCamera::GetDepthNear()
+    const auto makeLightViewProj{ [sceneView](const UDirectionalLight& light, const f32 zFar) {
+        return get_light_space_matrix(
+              light.direction
+            , sceneView.view
+            , sceneView.depthNear
             , zFar
-            , SCamera::GetFOV()
-            , SWindowViewport::GetAspectRatio()
+            , sceneView.fov
+            , sceneView.aspectRatio
         );
     } };
 
@@ -90,12 +86,12 @@ void ULightBuffers::UpdateBuffers(const u32 frameIndex)
         for (u32 i{ 0 }; i < NUM_DIRECTIONAL_CASCADES; ++i)
         {
             directionalLight.lightViewProjs[i] = get_light_space_matrix(
-                directionalLight.direction,
-                SCamera::GetViewMatrix(),
-                cascadeSplits[i],
-                cascadeSplits[i + 1],
-                SCamera::GetFOV(),
-                SWindowViewport::GetAspectRatio()
+                  directionalLight.direction
+                , sceneView.view
+                , cascadeSplits[i]
+                , cascadeSplits[i + 1]
+                , sceneView.fov
+                , sceneView.aspectRatio
             );
         }
     }
@@ -157,7 +153,7 @@ void ULightBuffers::CmdBarrierShadowMapsNoneToWrite(VkCommandBuffer commandBuffe
         | std::ranges::to<std::vector>()
     };
 
-    Renderer.CmdTransitionImages(commandBuffer
+    Barriers::CmdTransitionImages(commandBuffer
         , images.data(), images.size()
         , VK_PIPELINE_STAGE_2_NONE // top of pipe ?
         , VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT 
@@ -208,7 +204,7 @@ void ULightBuffers::CmdBarrierShadowMapsWriteToShaderRead(VkCommandBuffer comman
         | std::ranges::to<std::vector>()
     };
 
-    Renderer.CmdTransitionImages(commandBuffer
+    Barriers::CmdTransitionImages(commandBuffer
         , images.data(), images.size()
         , VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT
         | VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT
@@ -253,7 +249,7 @@ void ULightBuffers::CreateShadowMapResources()
                   SHADOW_MAP_RESOLUTION
                 , SHADOW_MAP_RESOLUTION
                 , 1
-                , Renderer.GetDepthFormat()
+                , Context.GetDepthFormat()
                 , VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
                 , VK_IMAGE_ASPECT_DEPTH_BIT
                 , VK_IMAGE_VIEW_TYPE_2D_ARRAY

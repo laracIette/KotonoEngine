@@ -3,9 +3,10 @@
 #include "utils.h"
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <kotono_common/enum_utils.h>
+#include <kotono_graphics/RenderContext.h>
 #include <kotono_input/Mouse.h>
 #include <kotono_math/math_utils.h>
-#include <kotono_common/enum_utils.h>
 #include <kotono_platform/glm_utils.h>
 
 #ifndef NDEBUG
@@ -169,6 +170,11 @@ u32 WWidget::GetLayer() const
 const UScissor& WWidget::GetScissor() const
 {
 	return displaySettings_.scissor;
+}
+
+URenderContext& WWidget::GetRenderContext() const
+{
+	return RenderContext;
 }
 
 void WWidget::SetState(const StateFunction& function)

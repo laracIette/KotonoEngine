@@ -4,13 +4,12 @@
 #include <kotono_common/Event.h>
 class GWindow final
 {
-	friend class GCore;
+	friend void framebuffersize_callback_(GLFWwindow*, int, int);
 
-private:
+public:
 	void Init(); 
 	void Cleanup();
 
-public:
 	// Executes vkDeviceWaitIdle(VkDevice) if true, else executes glfwPollEvents()
 	bool GetShouldClose() const;
 	// Sets whether the window should close at the end of the main loop
@@ -18,15 +17,13 @@ public:
 
 	GLFWwindow* GetGLFWWindow() const;
 	const glm::uvec2& GetSize() const;
-	UEvent<>& GetEventWindowResized();
-
-	void SetSize(const glm::uvec2& size);
+	UEvent<glm::uvec2>& GetEventWindowResized();
 
 private:
 	GLFWwindow* window_;
 	bool shouldClose_;
 	glm::uvec2 size_;
-	UEvent<> eventWindowResized_;
+	UEvent<glm::uvec2> eventWindowResized_;
 };
 
 inline GWindow Window;

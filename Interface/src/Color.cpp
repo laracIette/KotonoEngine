@@ -5,7 +5,7 @@
 #include <kotono_graphics/DrawCall.h>
 #include <kotono_graphics/Model.h>
 #include <kotono_graphics/ParametersBufferData.h>
-#include <kotono_graphics/Renderer.h>
+#include <kotono_graphics/RenderContext.h>
 #include <kotono_graphics/Shader.h>
 #include <kotono_graphics/Texture.h>
 #include <kotono_graphics/TransformBufferData.h>
@@ -20,12 +20,12 @@ void WColor::Remove()
 {
 	Base::Remove();
 
-	drawCallBuilder_.Unregister();
+	drawCallBuilder_.Unregister(GetRenderContext().GetRenderer());
 }
 
 void WColor::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
-	drawCallBuilder_.Register(ERenderBucket::Interface);
+	drawCallBuilder_.Register(GetRenderContext().GetRenderer(), ERenderBucket::Interface);
 
 	drawCallBuilder_.GetDrawCall()->scissor = {
 		.offset = { displaySettings.scissor.offset.x, displaySettings.scissor.offset.y },

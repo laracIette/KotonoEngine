@@ -50,6 +50,9 @@ struct UFrameContextSceneView
     glm::vec3 viewPos;
     glm::vec2 windowSize;
     f32 time;
+    f32 fov;
+    f32 aspectRatio;
+    f32 depthNear;
 };
 
 struct UFrameContextAddresses

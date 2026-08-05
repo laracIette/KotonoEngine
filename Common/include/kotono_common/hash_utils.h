@@ -35,7 +35,7 @@ constexpr size FNV_PRIME{ 0x100000001b3ULL };
     return hash_str(str);
 }
 
-[[nodiscard]] inline size hash_ptr(void* ptr) noexcept
+[[nodiscard]] inline size hash_ptr(const void* ptr) noexcept
 {
     size x{ static_cast<size>(reinterpret_cast<std::uintptr_t>(ptr)) };
 

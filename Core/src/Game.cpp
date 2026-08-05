@@ -15,7 +15,7 @@
 #include <kotono_object/ObjectFactory.h>
 #include <kotono_platform/glm_utils.h>
 
-static UPtr<TSceneObject> TestSceneObject;
+static UPtr<KScene> TestScene;
 
 void GGame::Init()
 {
@@ -39,9 +39,9 @@ void GGame::Cleanup()
     {
         scene_->Delete();
     }
-    if (TestSceneObject)
+    if (TestScene)
     {
-        TestSceneObject->Delete();
+        TestScene->Delete();
     }
 }
 
@@ -150,8 +150,10 @@ void GGame::OpenTestScene() const
     UAsset material1{ SAssetManager<UMaterial>::Get("${ENGINE_DIRECTORY}/Graphics/assets/materials/viking_room.kasset") };
     UAsset material2{ SAssetManager<UMaterial>::Get("${ENGINE_DIRECTORY}/Graphics/assets/materials/uv_grid.kasset") };
 
-    TestSceneObject = UCreate<TSceneObject>{}();
-    TestSceneObject->AddComponent(UCreate<KSceneComponent>{}());
+    TestScene = UCreate<KScene>{}();
+
+    UPtr sceneObject{ UCreate<TSceneObject>{}() };
+    sceneObject->AddComponent(UCreate<KSceneComponent>{}());
 
     for (size i{ 100 }; i < 600; i++)
     {
@@ -168,17 +170,18 @@ void GGame::OpenTestScene() const
         if (isModel1)
         {
             UPtr pointLight{ UCreate<KPointLightComponent>{}() };
-            TestSceneObject->AddComponent(pointLight);
+            sceneObject->AddComponent(pointLight);
             pointLight->SetParent(meshComponent, ECoordinateSpace::Relative);
             pointLight->SetRelativePosition({ 0.0f, 2.0f, 0.0f });
         }
 
-        TestSceneObject->AddComponent(meshComponent); // todo: set component children owner on scene object add component
+        sceneObject->AddComponent(meshComponent);
 
         isModel1 = !isModel1;
     }
 
-    TestSceneObject->Spawn();
+    TestScene->Add(sceneObject);
+    TestScene->SpawnSceneObjects();
 }
 
 void GGame::OnKeySPressed() const

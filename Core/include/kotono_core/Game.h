@@ -5,15 +5,13 @@
 class KScene;
 class GGame final
 {
-	friend class GCore;
 	friend class GTimeManager;
 
-private:
+public:
 	void Init();
 	void Update(const float deltaTime);
 	void Cleanup();
 
-public:
 	bool IsPlaying() const;
 	bool IsPaused() const;
 	bool IsStopped() const;

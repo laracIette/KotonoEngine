@@ -10,13 +10,10 @@
 
 class GContext final
 {
-	friend class GCore;
-
-private:
+public:
 	void Init();
 	void Cleanup();
 
-public:
 	VkSampleCountFlagBits GetMSAASamples() const;
 	VkPhysicalDevice& GetPhysicalDevice();
 	VkDevice& GetDevice();
@@ -42,7 +39,7 @@ public:
 	UEvent<>& GetEventExecuteSingleTimeCommands();
 	void StagingUpload(const void* data, const VkDeviceSize size, VkBuffer dstBuffer, const VkDeviceSize dstOffset);
 	
-	VkFormat FindSupportedFormat(const std::span<const VkFormat> candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
+	VkFormat GetDepthFormat() const;
 
 private:
 	void CreateInstance();
@@ -63,18 +60,16 @@ private:
 	void CreateLogicalDevice();
 	
 	void CreateSurface();
-
 	void CreateAllocator();
-
 	void CreateCommandPool();
 
 	u32 FindMemoryType(u32 typeFilter, VkMemoryPropertyFlags properties) const;
-
 	bool HasStencilComponent(VkFormat format) const;
-
 	VkSampleCountFlagBits GetMaxUsableSampleCount() const;
-
 	bool GetIsComputerPluggedIn();
+
+	VkFormat FindSupportedFormat(const std::span<const VkFormat> candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const;
+	VkFormat FindDepthFormat() const;
 
 	void ClearDeletionQueue();
 
@@ -98,6 +93,8 @@ private:
 	std::vector<VkCommandBuffer> singleTimeCommands_;
 	UEvent<> eventExecuteSingleTimeCommands_;
 	std::vector<UAllocatedBuffer> deletionQueue_;
+
+	VkFormat depthFormat_;
 };
 
 inline GContext Context;

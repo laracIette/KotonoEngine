@@ -56,13 +56,11 @@ set(KPLATFORM_HEADERS
     "include/kotono_platform/SwapChainSupportDetails.h"
     "include/kotono_platform/vk_utils.h"
     "include/kotono_platform/Window.h"
-    "include/kotono_platform/WindowViewport.h"
 )
 set(KPLATFORM_SOURCES
     "src/Context.cpp"
     "src/vk_utils.cpp"
     "src/Window.cpp"
-    "src/WindowViewport.cpp"
 )
 
 target_sources(KotonoPlatform

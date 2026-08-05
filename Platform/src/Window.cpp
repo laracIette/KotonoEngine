@@ -1,16 +1,13 @@
 #include "Window.h"
 #include "Context.h"
-#include "WindowViewport.h"
 #include <kotono_common/log.h>
+#include <stdexcept>
 
 void framebuffersize_callback_(GLFWwindow* window, int width, int height);
 
 void GWindow::Init()
 {
     size_ = { 1600, 900 };
-
-    SWindowViewport::SetIsKeepAspectRatio(false);
-    SWindowViewport::SetAspectRatio(static_cast<float>(size_.x) / size_.y);
 
     // Initialize GLFW
     if (!glfwInit())
@@ -73,14 +70,9 @@ const glm::uvec2& GWindow::GetSize() const
     return size_;
 }
 
-UEvent<>& GWindow::GetEventWindowResized()
+UEvent<glm::uvec2>& GWindow::GetEventWindowResized()
 {
     return eventWindowResized_;
-}
-
-void GWindow::SetSize(const glm::uvec2& size)
-{
-    size_ = size;
 }
 
 void framebuffersize_callback_(GLFWwindow* window, int width, int height)
@@ -92,9 +84,8 @@ void framebuffersize_callback_(GLFWwindow* window, int width, int height)
         glfwWaitEvents();
     }
 
-    SWindowViewport::SetExtent({ width, height });
-
-    Window.GetEventWindowResized().Broadcast();
+    Window.size_ = { width, height };
+    Window.GetEventWindowResized().Broadcast(Window.size_);
 
     KT_LOG(ELogImportanceLevel::High, "Platform", "window resized: {} x {}", width, height);
 }

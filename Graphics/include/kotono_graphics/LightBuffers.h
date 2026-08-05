@@ -1,4 +1,5 @@
 #pragma once
+#include "FrameContextBufferData.h"
 #include "frames_in_flight.h"
 #include "Lights.h"
 #include <kotono_common/types.h>
@@ -37,7 +38,7 @@ public:
 	void RegisterDirectionalLight(const DirectionalLightData& directionalLight);
 	void RegisterPointLight(const UPointLight& pointLight);
 
-	void UpdateBuffers(const u32 frameIndex);
+	void UpdateBuffers(const u32 frameIndex, const UFrameContextSceneView& sceneView);
 
 	VkDeviceAddress GetDirectionalLightAddress(const u32 frameIndex) const;
 	VkDeviceAddress GetPointLightAddress(const u32 frameIndex) const;

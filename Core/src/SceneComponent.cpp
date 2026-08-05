@@ -361,6 +361,12 @@ void KSceneComponent::Spawn()
 {
 }
 
+URenderContext& KSceneComponent::GetRenderContext() const
+{
+    assert(GetOwner());
+    return GetOwner()->GetRenderContext();
+}
+
 void KSceneComponent::AddChild(const UPtr<KSceneComponent>& component)
 {
     if (!component)

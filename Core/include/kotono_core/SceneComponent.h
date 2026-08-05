@@ -8,6 +8,7 @@
 #include <kotono_common/Pool.h>
 #include <kotono_graphics/Mobility.h>
 
+class URenderContext;
 class TSceneObject;
 
 class KSceneComponent : public KObject
@@ -78,6 +79,8 @@ public:
 	void Deserialize() override;
 
 	virtual void Spawn();
+
+	URenderContext& GetRenderContext() const;
 
 private:
 	void AddChild(const UPtr<KSceneComponent>& component);

@@ -18,7 +18,6 @@ set(KCORE_HEADERS
     "include/kotono_core/Anchor.h"
     "include/kotono_core/CameraComponent.h"
     "include/kotono_core/CoordinateSpace.h"
-    "include/kotono_core/Core.h"
     "include/kotono_core/DirectionalLightComponent.h"
     "include/kotono_core/Game.h"
     "include/kotono_core/GameState.h"
@@ -38,7 +37,6 @@ set(KCORE_HEADERS
 )
 set(KCORE_SOURCES
     "src/CameraComponent.cpp"
-    "src/Core.cpp"
     "src/DirectionalLightComponent.cpp"
     "src/Game.cpp"
     "src/PointLightComponent.cpp"

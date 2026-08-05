@@ -4,6 +4,7 @@ struct UDrawCall;
 struct UDrawDataBufferData;
 struct UTransformBufferData;
 struct UParametersBufferData;
+class URenderer;
 enum class ERenderBucket : u8
 {
 	Opaque,
@@ -16,8 +17,8 @@ public:
 	UDrawCallBuilder();
 	~UDrawCallBuilder();
 
-	void Register(const ERenderBucket renderBucket);
-	void Unregister();
+	void Register(URenderer& renderer, const ERenderBucket renderBucket);
+	void Unregister(URenderer& renderer);
 
 	UDrawCall* GetDrawCall() const;
 	UDrawDataBufferData* GetDrawData() const;

@@ -1,6 +1,7 @@
 #include "SceneObject.h"
-#include <kotono_common/log.h>
+#include "Scene.h"
 #include "SceneComponent.h"
+#include <kotono_common/log.h>
 
 TSceneObject::TSceneObject()
 {
@@ -27,11 +28,6 @@ void TSceneObject::Update(const float deltaTime)
 {
 }
 
-bool TSceneObject::GetCanUpdate() const
-{
-	return canUpdate_;
-}
-
 UPtr<TSceneObject>& TSceneObject::GetParent()
 {
 	return parent_;
@@ -40,11 +36,6 @@ UPtr<TSceneObject>& TSceneObject::GetParent()
 UPtr<KSceneComponent> TSceneObject::GetRootComponent()
 {
 	return sceneComponents_.empty() ? nullptr : sceneComponents_[0];
-}
-
-void TSceneObject::SetCanUpdate(const bool canUpdate)
-{
-	canUpdate_ = canUpdate;
 }
 
 void TSceneObject::SetParent(const UPtr<TSceneObject>& parent, const ECoordinateSpace keepTransform)
@@ -107,6 +98,14 @@ void TSceneObject::AddComponent(const UPtr<KSceneComponent>& component)
 	}
 	sceneComponents_.Add(component);
 	component->componentIndex_ = sceneComponents_.LastIndex();
+
+	for (const auto& child : component->children_)
+	{
+		if (child)
+		{
+			child->owner_ = Ptr();
+		}
+	}
 }
 
 void TSceneObject::RemoveComponent(const UPtr<KSceneComponent>& component)
@@ -162,6 +161,12 @@ void TSceneObject::Spawn()
 			sceneComponent->Spawn();
 		}
 	}
+}
+
+URenderContext& TSceneObject::GetRenderContext() const
+{
+	assert(GetScene());
+	return GetScene()->GetRenderContext();
 }
 
 void TSceneObject::InitSceneComponents()

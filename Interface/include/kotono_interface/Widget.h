@@ -20,6 +20,7 @@ struct UWidgetDisplaySettings
 	UScissor scissor;
 };
 
+class URenderContext;
 class WWidget;
 using WidgetPtr = UPtr<WWidget>;
 using WidgetVector = std::vector<WidgetPtr>;
@@ -72,6 +73,8 @@ public:
 	const glm::vec2& GetSize() const;
 	u32 GetLayer() const;
 	const UScissor& GetScissor() const;
+
+	URenderContext& GetRenderContext() const;
 
 protected:
 	void SetState(const StateFunction& function);

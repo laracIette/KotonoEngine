@@ -1,5 +1,5 @@
 #include "PointLightComponent.h"
-#include <kotono_graphics/Renderer.h>
+#include <kotono_graphics/RenderContext.h>
 
 KPointLightComponent::KPointLightComponent()
 	: range_{ 3.0f }
@@ -12,7 +12,7 @@ void KPointLightComponent::Spawn()
 {
 	Base::Spawn();
 
-	Renderer.RegisterPointLight({
+	GetRenderContext().GetRenderer().RegisterPointLight({
 		.position = GetWorldPosition(),
 		.range = range_,
 		.color = color_,

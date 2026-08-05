@@ -10,10 +10,8 @@
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
 struct UDrawCall;
-class GRenderer final
+class URenderer final
 {
-	friend class GCore;
-
 public:
 	struct FrameData
 	{
@@ -33,14 +31,11 @@ public:
 		UAllocatedImage depthTarget;
 	};
 
-private:
+public:
 	void Init();
 	void Cleanup();
 
-public:
 	void DrawFrame(const UFrameContextSceneView& sceneView);
-
-	VkFormat GetDepthFormat() const;
 
 	void RegisterOpaqueDrawCall(UDrawCall* drawCall);
 	void RegisterInterfaceDrawCall(UDrawCall* drawCall);
@@ -50,22 +45,14 @@ public:
 	void RegisterDirectionalLight(const ULightBuffers::DirectionalLightData& directionalLight);
 	void RegisterPointLight(const UPointLight& pointLight);
 
-	VkImageView GetGBufferAlbedoImageView(const u32 frameIndex) const;
-	VkImageView GetGBufferNormalImageView(const u32 frameIndex) const;
-	VkImageView GetGBufferORMImageView(const u32 frameIndex) const;
-	VkImageView GetGBufferDepthImageView(const u32 frameIndex) const;
-	VkImageView GetColorTargetImageView(const u32 frameIndex) const;
-
-	void CmdTransitionImages(VkCommandBuffer commandBuffer, const VkImage* image, const u32 count, const VkPipelineStageFlags2 srcStage, const VkPipelineStageFlags2 dstStage, const VkAccessFlags2 srcAccess, const VkAccessFlags2 dstAccess, const VkImageLayout oldLayout, const VkImageLayout newLayout, const VkImageSubresourceRange subresourceRange) const;
-	void CmdTransitionCompute(VkCommandBuffer commandBuffer, const VkPipelineStageFlags2 srcStage, const VkPipelineStageFlags2 dstStage, const VkAccessFlags2 srcAccess, const VkAccessFlags2 dstAccess) const;
-
 private:
 	void RecreateFrame();
 
 	void CreateImageResources();
 	void CleanupImageResources() const;
 
-	VkFormat FindDepthFormat() const;
+	void RegisterFrameContextBufferTextures();
+	void UnregisterFrameContextBufferTextures() const;
 
 	void CreateSampler();
 
@@ -77,6 +64,8 @@ private:
 	void CreateCommandBuffer(const u32 frameIndex);
 	void RecordCommandBuffer(const u32 frameIndex);
 	void BeginCommandBuffer(VkCommandBuffer commandBuffer);
+
+	void CmdUseWindowViewport(VkCommandBuffer commandBuffer) const;
 
 	void CmdUpdateClusterAABB(VkCommandBuffer commandBuffer, const u32 frameIndex) const;
 	
@@ -131,7 +120,6 @@ private:
 
 private:
 	UFramesInFlightArray<FrameData> frameDatas_;
-	VkFormat depthFormat_;
 	u32 samplerIndex_;
 
 	std::thread renderThread_;
@@ -146,5 +134,3 @@ private:
 	ULightBuffers lightBuffers_;
 	UGPUBuffers gpuBuffers_;
 };
-
-inline GRenderer Renderer;

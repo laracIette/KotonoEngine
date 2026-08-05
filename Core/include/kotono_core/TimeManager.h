@@ -1,28 +1,26 @@
 #pragma once
 #include <kotono_common/Average.h>
+#include <kotono_common/types.h>
 #include <kotono_timing/TimeContext.h>
 class GTimeManager final
 {
-	friend class GCore;
-
-private:
+public:
 	void Init();
 	void Update();
 
-public:
-	float Now() const;
-	float Delta() const;
+	f32 Now() const;
+	f32 Delta() const;
 
 	UTimeContext& GameTime();
 	UTimeContext& RenderTime();
 
-	float AverageUpdateTime() const;
-	float AverageGameTime() const;
-	float AverageRenderTime() const;
+	f32 AverageUpdateTime() const;
+	f32 AverageGameTime() const;
+	f32 AverageRenderTime() const;
 
 private:
-	float now_;
-	float delta_;
+	f32 now_;
+	f32 delta_;
 
 	UTimeContext gameTime_;
 	UTimeContext renderTime_;

@@ -3,7 +3,6 @@
 #include "MainWindow.h"
 #include "Visualizer.h"
 #include <kotono_interface/Interface.h>
-#include <kotono_platform/Window.h>
 #include <kotono_timing/Timer.h>
 #include <kotono_timing/TimerManager.h>
 
@@ -18,39 +17,17 @@ void GEditor::Init()
 	updateTimer.SetIsRepeat(true);
 	updateTimer.Start();
 
-	CreateWidget();
-	Window.GetEventWindowResized().AddListener(this, &GEditor::RefreshMainWindowWidget);
-}
-
-void GEditor::Update()
-{
+	mainWindow_ = UCreate<WMainWindow>{ "Main Window" }();
+	mainWindow_->BeginDraw();
 }
 
 void GEditor::Cleanup()
 {
 	Camera.Cleanup();
 
-	Window.GetEventWindowResized().RemoveListener(this, &GEditor::RefreshMainWindowWidget);
-	DeleteWidget();
-}
-
-void GEditor::CreateWidget()
-{
-	mainWindow_ = UCreate<WMainWindow>{ "Main Window" }();
-	mainWindow_->BeginDraw();
-}
-
-void GEditor::DeleteWidget()
-{
 	if (mainWindow_)
 	{
 		mainWindow_->EndDraw();
 		mainWindow_->Delete();
 	}
-}
-
-void GEditor::RefreshMainWindowWidget()
-{
-	DeleteWidget();
-	CreateWidget();
 }

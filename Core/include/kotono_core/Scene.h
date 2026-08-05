@@ -4,6 +4,7 @@
 #include <kotono_common/Event.h>
 #include <kotono_common/Pool.h>
 
+class URenderContext;
 class TSceneObject;
 
 class KScene : public KObject
@@ -25,6 +26,10 @@ public:
 	const UPool<UPtr<TSceneObject>>& SceneObjects() const;
 
 	UEvent<>& EventSceneObjectsUpdated();
+
+	void Deserialize() override;
+
+	URenderContext& GetRenderContext() const;
 
 private:
 	void Update(const float deltaTime);

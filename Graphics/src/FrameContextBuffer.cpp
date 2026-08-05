@@ -1,12 +1,11 @@
 #include "FrameContextBuffer.h"
 #include "PipelineResourceManager.h"
-#include "Renderer.h"
 #include <kotono_platform/Context.h>
+#include <ranges>
 
 void UFrameContextBuffer::Init()
 {
     CreateBuffers();
-    RegisterGBufferTextures();
 }
 
 void UFrameContextBuffer::Cleanup() const
@@ -17,28 +16,27 @@ void UFrameContextBuffer::Cleanup() const
     }
 }
 
-void UFrameContextBuffer::RegisterGBufferTextures()
+void UFrameContextBuffer::RegisterTextures(GPipelineResourceManager& pipelineResourceManager, const std::span<const FrameViews> frameViewsArray)
 {
-    for (u32 i{ 0 }; i < KT_FRAMES_IN_FLIGHT; ++i)
+    for (auto&& [frameData, frameViews] : std::views::zip(frameDatas_, frameViewsArray))
     {
-        auto& frameData{ frameDatas_[i] };
-        frameData.gBufferAlbedo = PipelineResourceManager.RegisterTexture(Renderer.GetGBufferAlbedoImageView(i));
-        frameData.gBufferNormal = PipelineResourceManager.RegisterTexture(Renderer.GetGBufferNormalImageView(i));
-        frameData.gBufferORM = PipelineResourceManager.RegisterTexture(Renderer.GetGBufferORMImageView(i));
-        frameData.gBufferDepth = PipelineResourceManager.RegisterTexture(Renderer.GetGBufferDepthImageView(i));
-        frameData.postProcessTarget = PipelineResourceManager.RegisterTexture(Renderer.GetColorTargetImageView(i));
+        frameData.gBufferAlbedo = pipelineResourceManager.RegisterTexture(frameViews.albedo);
+        frameData.gBufferNormal = pipelineResourceManager.RegisterTexture(frameViews.normal);
+        frameData.gBufferORM = pipelineResourceManager.RegisterTexture(frameViews.orm);
+        frameData.gBufferDepth = pipelineResourceManager.RegisterTexture(frameViews.depth);
+        frameData.postProcessTarget = pipelineResourceManager.RegisterTexture(frameViews.postProcessTarget);
     }
 }
 
-void UFrameContextBuffer::UnregisterGBufferTextures()
+void UFrameContextBuffer::UnregisterTextures(GPipelineResourceManager& pipelineResourceManager) const
 {
     for (const auto& frameData : frameDatas_)
     {
-        PipelineResourceManager.UnregisterTexture(frameData.gBufferAlbedo);
-        PipelineResourceManager.UnregisterTexture(frameData.gBufferNormal);
-        PipelineResourceManager.UnregisterTexture(frameData.gBufferORM);
-        PipelineResourceManager.UnregisterTexture(frameData.gBufferDepth);
-        PipelineResourceManager.UnregisterTexture(frameData.postProcessTarget);
+        pipelineResourceManager.UnregisterTexture(frameData.gBufferAlbedo);
+        pipelineResourceManager.UnregisterTexture(frameData.gBufferNormal);
+        pipelineResourceManager.UnregisterTexture(frameData.gBufferORM);
+        pipelineResourceManager.UnregisterTexture(frameData.gBufferDepth);
+        pipelineResourceManager.UnregisterTexture(frameData.postProcessTarget);
     }
 }
 
