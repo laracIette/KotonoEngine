@@ -16,7 +16,7 @@ class UPtrOwner final
 	friend class UPtr;
 
 public:
-	UPtrOwner() : pointer_(nullptr), children_() {}
+	UPtrOwner() : pointer_{ nullptr }, children_{} {}
 
 	~UPtrOwner()
 	{
@@ -49,7 +49,7 @@ private:
 	friend class UPtr;
 
 	using Owner = UPtrOwner;
-	friend class Owner;
+	friend Owner;
 
 	friend std::hash<UPtr>;
 

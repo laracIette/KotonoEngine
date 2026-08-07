@@ -15,19 +15,6 @@
 #include <string>
 #include <unordered_set>
 
-#define RegisterDelegate(Owner, Event, Instance, Function)				\
-static_assert(std::string_view(#Owner) != std::string_view("Ptr()") && std::string_view(#Owner) != std::string_view("this->Ptr()"), "Please use the event's AddListener when registering an event owned by this object.");	\
-Event._AddListener(_MAKE_DELEGATE(Instance, Function));					\
-unregisterDelegates_.push_back(											\
-	[=]()																\
-	{																	\
-		if (Owner)														\
-		{																\
-			Event._RemoveListener(_MAKE_DELEGATE(Instance, Function));	\
-		}																\
-	}																	\
-)
-
 using VoidCallback = std::function<void()>;
 
 #define ReadonlyProperty(Type, Name, PropertyName) private:			\
@@ -81,26 +68,7 @@ public:
 	static UPtr<KObject> Deserialize(const nlohmann::json& json);
 
 protected:
-	template <typename TObj, typename ...Args>
-	void _RegisterDelegate(const UPtr<TObj>& owner, UEvent<Args...>& event, const std::function<UDelegate<Args...>()>& makeDelegateFunc)
-	{
-		event._AddListener(makeDelegateFunc());
-
-		unregisterDelegates_.push_back(
-			[owner, event, makeDelegateFunc]()
-			{
-				if (owner)
-				{
-					event._RemoveListener(makeDelegateFunc());
-				}
-			}
-		);
-	}
-
-protected:
 	UPtrOwner* const ptrOwner_;
-
-	std::vector<VoidCallback> unregisterDelegates_;
 
 private:
 	SERIALIZE std::string type_;

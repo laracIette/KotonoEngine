@@ -4,8 +4,10 @@
 #include "types.h"
 #include "hash_utils.h"
 
-#define AddListener(Inst, Func) _AddListener(_MAKE_DELEGATE(Inst, Func))
-#define RemoveListener(Inst, Func) _RemoveListener(_MAKE_DELEGATE(Inst, Func))
+#define _DELEGATE_ARGS(Inst, Func) Inst, Func, #Func, combine(hash_ptr(static_cast<const void*>(Inst)), ce_hash_str(#Func))
+
+#define AddListener(Inst, Func) _AddListener(_DELEGATE_ARGS(Inst, Func))
+#define RemoveListener(Inst, Func) _RemoveListener(_DELEGATE_ARGS(Inst, Func))
 
 template<typename... Args>
 class UEvent final
@@ -14,14 +16,20 @@ private:
     using Delegate = UDelegate<Args...>;
 
 public:
-    void _AddListener(Delegate&& delegate)
+    template <typename Inst, typename MemFn>
+        requires std::is_member_function_pointer_v<MemFn>
+            && (std::is_invocable_v<MemFn, Inst*, Args...> || std::is_invocable_v<MemFn, Inst*>)
+    void _AddListener(Inst* instance, MemFn function, const char* func, const size hash)
     {
-        delegates_.Add(std::move(delegate));
+        delegates_.Add(Delegate{ instance, function, func, hash });
     }
 
-    void _RemoveListener(const Delegate& delegate)
+    template <typename Inst, typename MemFn>
+        requires std::is_member_function_pointer_v<MemFn>
+            && (std::is_invocable_v<MemFn, Inst*, Args...> || std::is_invocable_v<MemFn, Inst*>)
+    void _RemoveListener(Inst* instance, MemFn function, const char* func, const size hash)
     {
-        delegates_.Remove(delegate);
+        delegates_.Remove(Delegate{ instance, function, func, hash });
     }
 
     template <typename... CallArgs>

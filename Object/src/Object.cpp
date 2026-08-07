@@ -22,14 +22,6 @@ KObject::KObject()
 
 KObject::~KObject()
 {
-    for (const auto& function : unregisterDelegates_)
-    {
-        if (function)
-        {
-            function();
-        }
-    }
-
 #ifndef NDEBUG
     debugRegistry_.erase(Ptr());
 #endif
@@ -51,7 +43,7 @@ const std::type_info& KObject::Type() const
 std::string KObject::TypeName() const
 {
     std::string_view name{ Type().name() };
-    return std::string(name.substr(6));
+    return std::string{ name.substr(6) };
 }
 
 UPath KObject::InstancePath() const

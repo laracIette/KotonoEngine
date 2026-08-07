@@ -15,7 +15,7 @@ private:
 	void Cleanup() const;
 
 	void LogUPS() const;
-	void OnWindowResized(const glm::uvec2 extent) const;
+	void OnWindowResized(const glm::uvec2& extent) const;
 
 private:
 #	ifdef EDITOR

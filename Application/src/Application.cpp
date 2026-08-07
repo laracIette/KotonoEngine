@@ -127,7 +127,7 @@ void UApplication::LogUPS() const
     KT_LOG(ELogImportanceLevel::High, "Application", "{0:.2f} ups", 1.0f / TimeManager.AverageUpdateTime());
 }
 
-void UApplication::OnWindowResized(const glm::uvec2 extent) const
+void UApplication::OnWindowResized(const glm::uvec2& extent) const
 {
     RenderContext.GetViewport().SetExtent(extent);
 }

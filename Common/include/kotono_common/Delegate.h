@@ -5,8 +5,6 @@
 #include "hash_utils.h"
 #include "types.h"
 
-#define _MAKE_DELEGATE(Inst, Func) UDelegate(Inst, Func, #Func, combine(hash_ptr(static_cast<const void*>(Inst)), ce_hash_str(#Func)))
-
 template <typename... Args>
 class UDelegate final
 {
@@ -16,25 +14,29 @@ private:
     using CallbackFunction = std::function<void(Args...)>;
 
 public:
-    template <typename Tinst, typename Tfunc>
-        requires std::is_base_of_v<Tfunc, Tinst>
-    UDelegate(Tinst* instance, void (Tfunc::* function)(Args...), const char* func, const size hash)
-    {
-        callbackFunction_ = [instance, function](Args... args) { (instance->*function)(std::forward<Args>(args)...); };
-        inst_ = instance;
-        func_ = func;
-        hash_ = hash;
-    }
+    UDelegate(const void* inst, const char* func, size hash, CallbackFunction callbackFunction)
+        : inst_{ inst }
+        , func_{ func }
+        , hash_{ hash }
+        , callbackFunction_{ callbackFunction }
+    {}
 
-    template <typename Tinst, typename Tfunc>
-        requires std::is_base_of_v<Tfunc, Tinst>
-    UDelegate(const Tinst* instance, void (Tfunc::* function)(Args...) const, const char* func, const size hash)
-    {
-        callbackFunction_ = [instance, function](Args... args) { (instance->*function)(std::forward<Args>(args)...); };
-        inst_ = instance;
-        func_ = func;
-        hash_ = hash;
-    }
+    template <typename Inst, typename MemFn>
+        requires std::is_member_function_pointer_v<MemFn>
+            && (std::is_invocable_v<MemFn, Inst*, Args...> || std::is_invocable_v<MemFn, Inst*>)
+    UDelegate(Inst* instance, MemFn function, const char* func, const size hash)
+        : UDelegate{ instance, func, hash
+        , [instance, function](Args... args) {
+            if constexpr (std::is_invocable_v<MemFn, Inst*, Args...>)
+            {
+                std::invoke(function, instance, std::forward<Args>(args)...);
+            }
+            else if constexpr (std::is_invocable_v<MemFn, Inst*>)
+            {
+                std::invoke(function, instance);
+            }
+        } }
+    {}
 
     template <typename... CallArgs>
         requires (std::is_convertible_v<CallArgs, Args> && ...)
@@ -50,10 +52,10 @@ public:
     }
 
 private:
-    CallbackFunction callbackFunction_;
     const void* inst_;
     const char* func_;
     size hash_;
+    CallbackFunction callbackFunction_;
 };
 
 template <typename... Args>

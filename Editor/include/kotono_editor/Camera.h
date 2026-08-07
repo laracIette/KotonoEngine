@@ -16,7 +16,7 @@ private:
 	void OnKeyboardEKeyDown() const;
 	void OnMouseRightButtonPressed();
 	void OnMouseRightButtonReleased();
-	void OnMouseMove(const glm::vec2 delta);
+	void OnMouseMove(const glm::vec2& delta);
 	void OnMouseVerticalScroll(const f32 delta);
 
 	void Translate(const glm::vec3& delta) const;

@@ -43,8 +43,6 @@ private:
 	void RefreshDrawCallMaterialData() const;
 	void RefreshDrawCallTransformData() const;
 
-	void OnViewportExtentUpdated(const glm::uvec2 extent) const;
-
 	// temp
 	void Spin();
 	void SetMobilityStatic();

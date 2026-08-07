@@ -83,7 +83,7 @@ void GCamera::OnMouseRightButtonReleased()
 	isFocused_ = false;
 }
 
-void GCamera::OnMouseMove(const glm::vec2 delta)
+void GCamera::OnMouseMove(const glm::vec2& delta)
 {
 	if (!isFocused_)
 	{

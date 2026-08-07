@@ -23,7 +23,10 @@ KMeshComponent::~KMeshComponent()
 {
     UnregisterDrawCall();
 
-    GetRenderContext().GetViewport().GetEventExtentUpdated().AddListener(this, &KMeshComponent::OnViewportExtentUpdated);
+    Keyboard.EventKey(EKey::N, EInputState::Pressed).RemoveListener(this, &KMeshComponent::SetMobilityStatic);
+    Keyboard.EventKey(EKey::M, EInputState::Pressed).RemoveListener(this, &KMeshComponent::SetMobilityDynamic);
+
+    GetRenderContext().GetViewport().GetEventExtentUpdated().AddListener(this, &KMeshComponent::RefreshDrawCallScissor);
 }
 
 void KMeshComponent::Init()
@@ -84,10 +87,10 @@ void KMeshComponent::Spawn()
 
     GetEventTransformUpdated().AddListener(this, &KMeshComponent::RefreshDrawCallTransformData);
 
-    GetRenderContext().GetViewport().GetEventExtentUpdated().AddListener(this, &KMeshComponent::OnViewportExtentUpdated);
+    GetRenderContext().GetViewport().GetEventExtentUpdated().AddListener(this, &KMeshComponent::RefreshDrawCallScissor);
 
-    RegisterDelegate(&Keyboard, Keyboard.EventKey(EKey::N, EInputState::Pressed), this, &KMeshComponent::SetMobilityStatic);
-    RegisterDelegate(&Keyboard, Keyboard.EventKey(EKey::M, EInputState::Pressed), this, &KMeshComponent::SetMobilityDynamic);
+    Keyboard.EventKey(EKey::N, EInputState::Pressed).AddListener(this, &KMeshComponent::SetMobilityStatic);
+    Keyboard.EventKey(EKey::M, EInputState::Pressed).AddListener(this, &KMeshComponent::SetMobilityDynamic);
     
     spinTask_.eventUpdate.AddListener(this, &KMeshComponent::Spin);
 }
@@ -153,11 +156,6 @@ void KMeshComponent::RefreshDrawCallTransformData() const
     const auto modelMatrix{ ModelMatrix() };
     drawCallBuilder_.GetTransform()->modelMatrix = modelMatrix;
     drawCallBuilder_.GetTransform()->normalMatrix = glm::mat4{ glm::inverseTranspose(glm::mat3{ modelMatrix }) };
-}
-
-void KMeshComponent::OnViewportExtentUpdated(const glm::uvec2 extent) const
-{
-    RefreshDrawCallScissor();
 }
 
 void KMeshComponent::Spin()
