@@ -4,12 +4,9 @@
 #include <unordered_map>
 class GVisualizer final
 {
-	friend class GEditor;
-
-private:
+public:
 	void Init();
 
-public:
 	bool GetIsFieldVisible(const EVisualizationField field) const; 
 	void SetIsFieldVisible(const EVisualizationField field, const bool isVisible);
 

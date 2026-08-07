@@ -3,9 +3,7 @@
 #include <kotono_common/types.h>
 class GCamera final
 {
-	friend class GEditor;
-
-private:
+public:
 	void Init();
 	void Cleanup();
 
