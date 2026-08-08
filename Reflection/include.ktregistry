@@ -52,6 +52,7 @@
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/ValueBox.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/ValueSlider.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/ValueSliderFloat.h",
+        "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/ViewController.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/VisualizerWindow.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/VisualizerWindowItem.h"
     ]

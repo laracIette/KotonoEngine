@@ -78,7 +78,7 @@ void KScene::Deserialize()
 	}
 }
 
-URenderContext& KScene::GetRenderContext() const
+URenderContext* KScene::GetRenderContext() const
 {
 	return RenderContext;
 }

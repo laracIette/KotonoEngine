@@ -29,8 +29,10 @@ public:
 	void OpenScene(const UPtr<KScene>& scene);
 
 private:
-	void OpenStartupScene();
-	void OpenTestScene() const;
+	UPtr<KScene> GetStartupScene() const;
+	void LoadScene();
+
+	void AddTestSceneObject() const;
 
 	void OnKeySPressed() const;
 

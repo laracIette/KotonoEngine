@@ -29,7 +29,7 @@ public:
 
 	void Deserialize() override;
 
-	URenderContext& GetRenderContext() const;
+	URenderContext* GetRenderContext() const;
 
 private:
 	void Update(const float deltaTime);

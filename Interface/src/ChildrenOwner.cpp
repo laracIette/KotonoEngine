@@ -79,8 +79,8 @@ size WChildrenOwner::GetValidChildrenCount() const
 }
 
 UChildrenOwnerTree::UChildrenOwnerTree(const UPtr<WChildrenOwner>& widget, const std::vector<UWidgetTree*>& children)
-	: widget_(widget)
-	, children_(children)
+	: widget_{ widget }
+	, children_{ children }
 {
 }
 
@@ -109,12 +109,12 @@ void UChildrenOwnerTree::Link() const
 
 	if (widget_)
 	{
-		WidgetPool widgets{};
-		std::ranges::copy(children_
+		const WidgetPool widgets{ children_
 			| std::views::filter([](const UWidgetTree* child) { return child != nullptr; })
 			| std::views::transform([](const UWidgetTree* child) { return child->Widget(); })
-			, std::back_inserter(widgets)
-		);
+			| std::ranges::to<WidgetPool>() 
+		};
+
 		widget_->SetChildren(widgets);
 	}
 }

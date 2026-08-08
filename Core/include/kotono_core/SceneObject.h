@@ -45,7 +45,7 @@ public:
 
 	virtual void Spawn();
 
-	URenderContext& GetRenderContext() const;
+	URenderContext* GetRenderContext() const;
 
 private:
 	void InitSceneComponents();

@@ -1,11 +1,19 @@
 #pragma once
-#include <glm/fwd.hpp>
-#include <kotono_common/types.h>
-class GCamera final
+#include "generated/ViewController.generated.h"
+#include <kotono_interface/Widget.h>
+class WViewController final : public WWidget
 {
+	GENERATED_WVIEWCONTROLLER()
+
 public:
-	void Init();
-	void Cleanup();
+	WViewController();
+
+protected:
+	WidgetPtr Build() override;
+
+public:
+	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Remove() override;
 
 private:
 	void OnKeyboardWKeyDown() const;
@@ -14,8 +22,6 @@ private:
 	void OnKeyboardDKeyDown() const;
 	void OnKeyboardQKeyDown() const;
 	void OnKeyboardEKeyDown() const;
-	void OnMouseRightButtonPressed();
-	void OnMouseRightButtonReleased();
 	void OnMouseMove(const glm::vec2& delta);
 	void OnMouseVerticalScroll(const f32 delta);
 
@@ -23,11 +29,8 @@ private:
 
 private:
 	bool isFocused_;
-
 	f32 speed_;
 	f32 sensitivity_;
 	f32 pitch_;
 	f32 yaw_;
 };
-
-inline GCamera Camera;

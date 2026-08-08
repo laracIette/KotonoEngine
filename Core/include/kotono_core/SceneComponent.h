@@ -80,7 +80,7 @@ public:
 
 	virtual void Spawn();
 
-	URenderContext& GetRenderContext() const;
+	URenderContext* GetRenderContext() const;
 
 private:
 	void AddChild(const UPtr<KSceneComponent>& component);

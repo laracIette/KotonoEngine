@@ -15,14 +15,11 @@
 #include <kotono_object/ObjectFactory.h>
 #include <kotono_platform/glm_utils.h>
 
-static UPtr<KScene> TestScene;
-
 void GGame::Init()
 {
 	Keyboard.EventKey(EKey::S, EInputState::Pressed).AddListener(this, &GGame::OnKeySPressed);
 
-    OpenStartupScene();
-    OpenTestScene();
+    LoadScene();
 }
 
 void GGame::Update(const float deltaTime)
@@ -38,10 +35,6 @@ void GGame::Cleanup()
     if (scene_)
     {
         scene_->Delete();
-    }
-    if (TestScene)
-    {
-        TestScene->Delete();
     }
 }
 
@@ -104,16 +97,16 @@ void GGame::SetState(const EGameState state)
     case EGameState::Playing:
     {
         TimeManager.GameTime().state = ETimeContextState::Playing;
-        if (UPtr scene{ GetOpenedScene() })
-        {
-            scene->Serialize();
-        }
+        //if (UPtr scene{ GetOpenedScene() })
+        //{
+        //    scene->Serialize();
+        //}
         break;
     }
     case EGameState::Stopped:
         TimeManager.GameTime().total = 0.0f;
         TimeManager.GameTime().currentDelta = 0.0f;
-        OpenStartupScene();
+        LoadScene();
         [[fallthrough]];
     case EGameState::Paused:
         TimeManager.GameTime().state = ETimeContextState::Paused;
@@ -128,20 +121,27 @@ void GGame::OpenScene(const UPtr<KScene>& scene)
     scene_ = scene;
 }
 
-void GGame::OpenStartupScene()
+UPtr<KScene> GGame::GetStartupScene() const
+{
+    const auto startupScene{ SProjectSettings::Get<std::string>("/startupScene") };
+    return TryCast<KScene>(SObjectFactory::Get().Get(startupScene));
+}
+
+void GGame::LoadScene()
 {
     if (scene_)
     {
         scene_->Delete();
     }
-    const auto startupScene{ SProjectSettings::Get<std::string>("/startupScene") };
-    if (scene_ = TryCast<KScene>(SObjectFactory::Get().Get(startupScene)))
+
+    if (scene_ = GetStartupScene())
     {
+        AddTestSceneObject();
         scene_->SpawnSceneObjects();
     }
 }
 
-void GGame::OpenTestScene() const
+void GGame::AddTestSceneObject() const
 {
     bool isModel1{ true };
     UAsset model1{ SAssetManager<UModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.obj") };
@@ -149,8 +149,6 @@ void GGame::OpenTestScene() const
     UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/gbuffer.kasset") };
     UAsset material1{ SAssetManager<UMaterial>::Get("${ENGINE_DIRECTORY}/Graphics/assets/materials/viking_room.kasset") };
     UAsset material2{ SAssetManager<UMaterial>::Get("${ENGINE_DIRECTORY}/Graphics/assets/materials/uv_grid.kasset") };
-
-    TestScene = UCreate<KScene>{}();
 
     UPtr sceneObject{ UCreate<TSceneObject>{}() };
     sceneObject->AddComponent(UCreate<KSceneComponent>{}());
@@ -180,8 +178,10 @@ void GGame::OpenTestScene() const
         isModel1 = !isModel1;
     }
 
-    TestScene->Add(sceneObject);
-    TestScene->SpawnSceneObjects();
+    if (UPtr scene{ GetOpenedScene() })
+    {
+        scene->Add(sceneObject);
+    }
 }
 
 void GGame::OnKeySPressed() const

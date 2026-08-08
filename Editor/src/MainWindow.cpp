@@ -5,51 +5,14 @@
 #include "PropertiesWindow.h"
 #include "SceneExplorer.h"
 #include "UpdateTimeText.h"
+#include "ViewController.h"
 #include "VisualizerWindow.h"
 #include <kotono_graphics/RenderContext.h>
 #include <kotono_interface/widgets.h>
 #include <kotono_platform/Window.h>
 
-void WMainWindow::BeginDraw()
-{
-	Display({
-		.position = { 0.0f, 0.0f },
-		.bounds = static_cast<glm::vec2>(GetRenderContext().GetViewport().GetExtent()),
-		.layer = 0,
-		.scissor = { { 0, 0 }, GetRenderContext().GetViewport().GetExtent() },
-	});
-}
-
-void WMainWindow::EndDraw()
-{
-	Remove();
-}
-
-void WMainWindow::Display(UWidgetDisplaySettings displaySettings)
-{
-	Base::Display(displaySettings);
-
-	Window.GetEventWindowResized().AddListener(this, &WMainWindow::OnWindowResized);
-}
-
-void WMainWindow::Remove()
-{
-	Base::Remove(); 
-	
-	Window.GetEventWindowResized().RemoveListener(this, &WMainWindow::OnWindowResized);
-}
-
 WidgetPtr WMainWindow::Build()
-{	
-	UPtr sceneExplorerConstraint{ UCreate<WConstraint>{ "Scene Explorer Constraint" }() };
-	sceneExplorerConstraint->SetAxis(EAxis::Horizontal);
-	sceneExplorerConstraint->SetSize(300.0f);
-	
-	UPtr assetExplorerConstraint{ UCreate<WConstraint>{ "Asset Explorer Constraint" }() };
-	assetExplorerConstraint->SetAxis(EAxis::Vertical);
-	assetExplorerConstraint->SetSize(200.0f);
-
-
+{		
 	const auto widgetTree{ UChildOwnerTree{ UCreate<WPadding>{ "Main Window Padding" }(UPadding::All(16.0f)),
 		new UChildrenOwnerTree{ UCreate<WColumn>{ "Main Window Column" }(5.0f), {
 			new UChildrenOwnerTree{ UCreate<WRow>{ "Top Row" }(), {
@@ -71,13 +34,16 @@ WidgetPtr WMainWindow::Build()
 			new UChildrenOwnerTree{ UCreate<WRow>{ "Center Row" }(10.0f), {
 				new UChildOwnerTree{ UCreate<WExpanded>{ "Left Panel Expanded" }(), {
 					new UChildrenOwnerTree{ UCreate<WColumn>{ "Left Panel Column" }(10.0f), {
-						new UChildOwnerTree{ sceneExplorerConstraint,
-							new UWidgetTreeLeaf{ UCreate<WSceneExplorer>{ "Scene Explorer" }()}
+						new UChildOwnerTree{ UCreate<WConstraint>{ "Left Panel Constraint" }(EAxis::Vertical, 500.0f),
+							new UChildrenOwnerTree{ UCreate<WRow>{}(), {
+								new UChildOwnerTree{ UCreate<WConstraint>{ "Scene Explorer Constraint" }(EAxis::Horizontal, 300.0f),
+									new UWidgetTreeLeaf{ UCreate<WSceneExplorer>{ "Scene Explorer" }() }
+								},
+								new UWidgetTreeLeaf{ UCreate<WViewController>{ "Scene View Controller" }() },
+							} }
 						},
-						new UChildOwnerTree{ assetExplorerConstraint,
-							new UWidgetTreeLeaf{ UCreate<WAssetExplorer>{ "Asset Explorer" }() }
-						},
-					} }
+						new UWidgetTreeLeaf{ UCreate<WAssetExplorer>{ "Asset Explorer" }() },
+					} },
 				} },
 
 				new UChildOwnerTree{ UCreate<WWrap>{ "Right Panel Wrap" }(EAxis::Horizontal),
@@ -97,6 +63,35 @@ WidgetPtr WMainWindow::Build()
 	widgetTree.Link();
 	
 	return widgetTree.Widget();
+}
+
+void WMainWindow::BeginDraw()
+{
+	Display({
+		.position = { 0.0f, 0.0f },
+		.bounds = static_cast<glm::vec2>(GetRenderContext()->GetViewport().GetExtent()),
+		.layer = 0,
+		.scissor = { { 0, 0 }, GetRenderContext()->GetViewport().GetExtent() },
+		});
+}
+
+void WMainWindow::EndDraw()
+{
+	Remove();
+}
+
+void WMainWindow::Display(UWidgetDisplaySettings displaySettings)
+{
+	Base::Display(displaySettings);
+
+	Window.GetEventWindowResized().AddListener(this, &WMainWindow::OnWindowResized);
+}
+
+void WMainWindow::Remove()
+{
+	Base::Remove(); 
+	
+	Window.GetEventWindowResized().RemoveListener(this, &WMainWindow::OnWindowResized);
 }
 
 void WMainWindow::OnWindowResized(const glm::uvec2 extent)

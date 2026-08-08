@@ -361,7 +361,7 @@ void KSceneComponent::Spawn()
 {
 }
 
-URenderContext& KSceneComponent::GetRenderContext() const
+URenderContext* KSceneComponent::GetRenderContext() const
 {
     assert(GetOwner());
     return GetOwner()->GetRenderContext();

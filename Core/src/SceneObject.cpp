@@ -163,7 +163,7 @@ void TSceneObject::Spawn()
 	}
 }
 
-URenderContext& TSceneObject::GetRenderContext() const
+URenderContext* TSceneObject::GetRenderContext() const
 {
 	assert(GetScene());
 	return GetScene()->GetRenderContext();

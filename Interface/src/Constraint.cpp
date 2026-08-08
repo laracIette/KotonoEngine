@@ -1,5 +1,16 @@
 #include "Constraint.h"
 
+WConstraint::WConstraint(const EAxis axis, const f32 size)
+	: axis_{ axis }
+	, size_{ size }
+{
+}
+
+WConstraint::WConstraint()
+	: Self{ EAxis::All, 64.0f }
+{
+}
+
 UWidgetDisplaySettings WConstraint::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
 	switch (axis_)

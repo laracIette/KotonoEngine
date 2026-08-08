@@ -20,7 +20,6 @@
 #include <kotono_platform/Window.h>
 #include <kotono_timing/TimerManager.h>
 #ifdef EDITOR
-    #include <kotono_editor/Camera.h>
     #include <kotono_editor/Visualizer.h>
     #include <kotono_editor/MainWindow.h>
 #endif
@@ -42,19 +41,21 @@ void UApplication::Run()
 
 void UApplication::Init()
 {
+    RenderContext = new URenderContext{};
+
     SSpvCompiler::CompileUpdated();
 
     Window.Init();
     Context.Init();
-    RenderContext.Init();
+    RenderContext->Init();
     AudioManager.Init();
     Keyboard.Init();
     Mouse.Init();
     TimeManager.Init();
     Interface.Init();
 
-    RenderContext.GetViewport().SetKeepAspectRatio(false);
-    RenderContext.GetViewport().SetExtent(Window.GetSize());
+    RenderContext->GetViewport().SetKeepAspectRatio(false);
+    RenderContext->GetViewport().SetExtent(Window.GetSize());
 
     auto& logUPSTimer{ TimerManager.GetTimer("log ups timer") };
     logUPSTimer.SetDuration(1.0f);
@@ -66,7 +67,6 @@ void UApplication::Init()
 
 #   ifdef EDITOR
         Visualizer.Init();
-        Camera.Init();
 
         auto& updateTimer{ TimerManager.GetTimer("update time text") };
         updateTimer.SetDuration(1.0f / 20.0f);
@@ -98,8 +98,6 @@ void UApplication::Cleanup() const
     Game.Cleanup();
 
 #   ifdef EDITOR
-        Camera.Cleanup();
-
         if (mainWindow_)
         {
             mainWindow_->EndDraw();
@@ -113,9 +111,12 @@ void UApplication::Cleanup() const
     SAssetManager<UModel>::Cleanup();
 
     AudioManager.Cleanup();
-    RenderContext.Cleanup();
+    RenderContext->Cleanup();
     Context.Cleanup();
     Window.Cleanup();
+
+    delete RenderContext;
+    RenderContext = nullptr;
 
 #   ifndef NDEBUG
         KObject::CheckDebugRegistry();
@@ -129,5 +130,5 @@ void UApplication::LogUPS() const
 
 void UApplication::OnWindowResized(const glm::uvec2& extent) const
 {
-    RenderContext.GetViewport().SetExtent(extent);
+    RenderContext->GetViewport().SetExtent(extent);
 }

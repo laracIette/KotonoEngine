@@ -77,7 +77,9 @@ void WWidget::Display(UWidgetDisplaySettings displaySettings)
 		DisplayInternal(displaySettings);
 	}
 
-	Mouse.EventMove().AddListener(this, &WWidget::OnMouseMove);
+#	ifndef NDEBUG
+		Mouse.EventMove().AddListener(this, &WWidget::_OnMouseMove);
+#	endif
 }
 
 void WWidget::Remove()
@@ -89,7 +91,9 @@ void WWidget::Remove()
 		build_->Remove();
 	}
 
-	Mouse.EventMove().RemoveListener(this, &WWidget::OnMouseMove);
+#	ifndef NDEBUG
+		Mouse.EventMove().RemoveListener(this, &WWidget::_OnMouseMove);
+#	endif
 }
 
 UWidgetDisplaySettings WWidget::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
@@ -172,7 +176,7 @@ const UScissor& WWidget::GetScissor() const
 	return displaySettings_.scissor;
 }
 
-URenderContext& WWidget::GetRenderContext() const
+URenderContext* WWidget::GetRenderContext() const
 {
 	return RenderContext;
 }
@@ -257,7 +261,8 @@ bool WWidget::IsRenderable(const UWidgetDisplaySettings& displaySettings) const
 	return is_overlapping(displaySettings.position, displaySettings.bounds, displaySettings.scissor.offset, displaySettings.scissor.extent);
 }
 
-void WWidget::OnMouseMove(const glm::vec2 delta)
+#ifndef NDEBUG
+void WWidget::_OnMouseMove(const glm::vec2& delta)
 {
 	if (!IsMouseHovering())
 	{
@@ -271,6 +276,7 @@ void WWidget::OnMouseMove(const glm::vec2 delta)
 		KT_LOG(ELogImportanceLevel::Medium, "Interface", "overlapping {0:30} | {1:100} | | position: {2:30} | size: {3:30} | | slot | position: {4:30} | bounds: {5:30}", GetName(), GetClassPath(), glm::to_string(GetPosition()), glm::to_string(GetSize()), glm::to_string(slotDisplaySettings_.position), glm::to_string(slotDisplaySettings_.bounds));
 	}
 }
+#endif
 
 WidgetPtr WWidget::FindNonFlexAncestor(const EFlex flex) const
 {

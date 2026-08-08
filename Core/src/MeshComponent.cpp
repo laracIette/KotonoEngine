@@ -26,7 +26,7 @@ KMeshComponent::~KMeshComponent()
     Keyboard.EventKey(EKey::N, EInputState::Pressed).RemoveListener(this, &KMeshComponent::SetMobilityStatic);
     Keyboard.EventKey(EKey::M, EInputState::Pressed).RemoveListener(this, &KMeshComponent::SetMobilityDynamic);
 
-    GetRenderContext().GetViewport().GetEventExtentUpdated().AddListener(this, &KMeshComponent::RefreshDrawCallScissor);
+    GetRenderContext()->GetViewport().GetEventExtentUpdated().AddListener(this, &KMeshComponent::RefreshDrawCallScissor);
 }
 
 void KMeshComponent::Init()
@@ -87,7 +87,7 @@ void KMeshComponent::Spawn()
 
     GetEventTransformUpdated().AddListener(this, &KMeshComponent::RefreshDrawCallTransformData);
 
-    GetRenderContext().GetViewport().GetEventExtentUpdated().AddListener(this, &KMeshComponent::RefreshDrawCallScissor);
+    GetRenderContext()->GetViewport().GetEventExtentUpdated().AddListener(this, &KMeshComponent::RefreshDrawCallScissor);
 
     Keyboard.EventKey(EKey::N, EInputState::Pressed).AddListener(this, &KMeshComponent::SetMobilityStatic);
     Keyboard.EventKey(EKey::M, EInputState::Pressed).AddListener(this, &KMeshComponent::SetMobilityDynamic);
@@ -97,12 +97,12 @@ void KMeshComponent::Spawn()
 
 void KMeshComponent::RegisterDrawCall()
 {
-    drawCallBuilder_.Register(GetRenderContext().GetRenderer(), ERenderBucket::Opaque);
+    drawCallBuilder_.Register(GetRenderContext()->GetRenderer(), ERenderBucket::Opaque);
 }
 
 void KMeshComponent::UnregisterDrawCall()
 {
-    drawCallBuilder_.Unregister(GetRenderContext().GetRenderer());
+    drawCallBuilder_.Unregister(GetRenderContext()->GetRenderer());
 }
 
 void KMeshComponent::RefreshDrawCall() const
@@ -116,8 +116,8 @@ void KMeshComponent::RefreshDrawCall() const
 
 void KMeshComponent::RefreshDrawCallScissor() const
 {
-    const auto& offset{ GetRenderContext().GetViewport().GetOffset() };
-    const auto& extent{ GetRenderContext().GetViewport().GetExtent() };
+    const auto& offset{ GetRenderContext()->GetViewport().GetOffset() };
+    const auto& extent{ GetRenderContext()->GetViewport().GetExtent() };
 
     drawCallBuilder_.GetDrawCall()->scissor = {
         .offset = { offset.x, offset.y },

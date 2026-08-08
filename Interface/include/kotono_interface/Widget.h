@@ -74,7 +74,7 @@ public:
 	u32 GetLayer() const;
 	const UScissor& GetScissor() const;
 
-	URenderContext& GetRenderContext() const;
+	URenderContext* GetRenderContext() const;
 
 protected:
 	void SetState(const StateFunction& function);
@@ -93,7 +93,9 @@ private:
 	bool HasBuild() const;
 	bool IsRenderable(const UWidgetDisplaySettings& displaySettings) const;
 
-	void OnMouseMove(const glm::vec2 delta);
+#	ifndef NDEBUG
+		void _OnMouseMove(const glm::vec2& delta);
+#	endif
 	WidgetPtr FindNonFlexAncestor(const EFlex flex) const;
 
 private:

@@ -12,7 +12,7 @@ void KPointLightComponent::Spawn()
 {
 	Base::Spawn();
 
-	GetRenderContext().GetRenderer().RegisterPointLight({
+	GetRenderContext()->GetRenderer().RegisterPointLight({
 		.position = GetWorldPosition(),
 		.range = range_,
 		.color = color_,

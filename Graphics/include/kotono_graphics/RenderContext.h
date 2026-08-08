@@ -20,4 +20,4 @@ private:
 	UViewport viewport_;
 };
 
-inline URenderContext RenderContext;
+inline URenderContext* RenderContext{ nullptr };

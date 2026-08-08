@@ -15,7 +15,7 @@ void KDirectionalLightComponent::Spawn()
 {
 	Base::Spawn();
 
-	GetRenderContext().GetRenderer().RegisterDirectionalLight({
+	GetRenderContext()->GetRenderer().RegisterDirectionalLight({
 		.direction = ForwardVector(),
 		.color = color_,
 		.intensity = intensity_,

@@ -20,12 +20,12 @@ void WImage::Remove()
 {
 	Base::Remove();
 
-	drawCallBuilder_.Unregister(GetRenderContext().GetRenderer());
+	drawCallBuilder_.Unregister(GetRenderContext()->GetRenderer());
 }
 
 void WImage::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
-	drawCallBuilder_.Register(GetRenderContext().GetRenderer(), ERenderBucket::Interface);
+	drawCallBuilder_.Register(GetRenderContext()->GetRenderer(), ERenderBucket::Interface);
 
 	drawCallBuilder_.GetDrawCall()->scissor = { 
 		.offset = { displaySettings.scissor.offset.x, displaySettings.scissor.offset.y },

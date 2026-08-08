@@ -48,7 +48,7 @@ void GTimeManager::Update()
 	if (renderTime_.Update(delta_))
 	{
 		const f32 renderTime{ UStopwatch::Time([]() {
-			RenderContext.DrawFrame();
+			RenderContext->DrawFrame();
 		}) };
 		averageRenderTime_.Add(renderTime);
 	}

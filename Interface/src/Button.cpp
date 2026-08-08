@@ -6,13 +6,23 @@ WButton::WButton()
 	: isEnabled_{ true }
 {
 	Interface.AddButton(Ptr());
-
-	Mouse.EventButton(EButton::Left, EInputState::Down).AddListener(this, &WButton::OnMouseLeftButtonDown);
 }
 
 WButton::~WButton()
 {
 	Interface.RemoveButton(Ptr());
+}
+
+void WButton::Display(UWidgetDisplaySettings displaySettings)
+{
+	Base::Display(displaySettings);
+
+	Mouse.EventButton(EButton::Left, EInputState::Down).AddListener(this, &WButton::OnMouseLeftButtonDown);
+}
+
+void WButton::Remove()
+{
+	Base::Remove();
 
 	Mouse.EventButton(EButton::Left, EInputState::Down).RemoveListener(this, &WButton::OnMouseLeftButtonDown);
 }
@@ -31,6 +41,11 @@ bool WButton::ReceiveMouseLeftButtonPressed()
 
 	isPressed_ = true;
 
+	if (onActive_)
+	{
+		onActive_();
+	}
+
 	if (onPressed_)
 	{
 		onPressed_();
@@ -47,6 +62,11 @@ bool WButton::ReceiveMouseLeftButtonReleased()
 	}
 
 	isPressed_ = false;
+
+	if (onInactive_)
+	{
+		onInactive_();
+	}
 
 	if (!IsMouseHovering())
 	{

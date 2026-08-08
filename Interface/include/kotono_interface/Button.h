@@ -10,6 +10,9 @@ public:
 	WButton();
 	~WButton() override;
 
+	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Remove() override;
+
 public:
 	/// Returns whether the mouse was over the button
 	bool ReceiveMouseLeftButtonPressed();
@@ -27,6 +30,8 @@ private:
 	WritableProperty(VoidCallback, onPressed_, OnPressed);
 	WritableProperty(VoidCallback, onDown_, OnDown);
 	WritableProperty(VoidCallback, onPressOut_, OnPressOut);
+	WritableProperty(VoidCallback, onActive_, OnActive);
+	WritableProperty(VoidCallback, onInactive_, OnInactive);
 
 	bool isPressed_;
 };
