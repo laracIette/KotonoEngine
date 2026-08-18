@@ -7,7 +7,7 @@ class WConstraint final : public WChildOwner
 	GENERATED_WCONSTRAINT()
 
 public:
-	WConstraint(const EAxis axis, const f32 size);
+	WConstraint(EAxis axis, f32 size);
 	WConstraint();
 
 	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;

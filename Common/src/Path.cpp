@@ -3,7 +3,7 @@
 #include <ranges>
 #include <algorithm>
 
-static void replace(std::string& str, const std::string& from, const std::string& to)
+static constexpr void replace(std::string& str, std::string_view from, std::string_view to)
 {
     const size start_pos{ str.find(from) };
     if (start_pos != std::string::npos)
@@ -12,28 +12,23 @@ static void replace(std::string& str, const std::string& from, const std::string
     }
 }
 
-UPath::UPath() 
-    : source_("")
-{
-}
-
-UPath::UPath(const std::string& source) 
-    : source_(source)
+UPath::UPath(std::string const& source) 
+    : source_{ source }
 {
 }
 
 UPath::UPath(std::string&& source) 
-    : source_(std::move(source))
+    : source_{ std::move(source) }
 {
 }
 
-UPath::UPath(const char* source) 
-    : source_(source)
+UPath::UPath(char const* source)
+    : source_{ source }
 {
 }
 
-UPath::UPath(const std::filesystem::path& source)
-    : source_(source.string())
+UPath::UPath(std::filesystem::path const& source)
+    : source_{ source.string() }
 {
 }
 
@@ -57,17 +52,17 @@ std::string UPath::Stem() const
     return ToPath().stem().string();
 }
 
-bool UPath::IsEmpty() const
+b8 UPath::IsEmpty() const
 {
     return ToPath().empty();
 }
 
-bool UPath::IsFile() const
+b8 UPath::IsFile() const
 {
     return is_regular_file(ToPath());
 }
 
-std::string UPath::ToString() const
+std::string const& UPath::ToString() const
 {
     return source_;
 }
@@ -90,17 +85,17 @@ UPath::operator std::filesystem::path() const
     return ToPath();
 }
 
-bool UPath::operator==(const UPath& other) const noexcept
+bool UPath::operator==(UPath const& other) const noexcept
 {
     return source_ == other.source_;
 }
 
-size std::hash<UPath>::operator()(const UPath& p) const noexcept
+size std::hash<UPath>::operator()(UPath const& p) const noexcept
 {
     return std::hash<std::string>{}(p.source_);
 }
 
-UPath operator/(const UPath& r, const UPath& l)
+UPath operator/(UPath const& r, UPath const& l)
 {
     return std::format("{0}/{1}", r.source_, l.source_);
 }

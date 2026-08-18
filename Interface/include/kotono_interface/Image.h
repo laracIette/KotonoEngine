@@ -1,8 +1,7 @@
 #pragma once
 #include "generated/Image.generated.h"
-#include "Widget.h"
+#include <kotono_object/Widget.h>
 #include <kotono_common/Path.h>
-#include <kotono_graphics/DrawCallBuilder.h>
 /// Display an image over the widget's bounds
 class WImage final : public WWidget
 {
@@ -11,14 +10,14 @@ class WImage final : public WWidget
 public:
 	WImage(const UPath& path = "");
 
-public:
 	void Remove() override;
 
+	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
+
+protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 
 private:
 	StateProperty(UPath, path_, Path);
-
-	UDrawCallBuilder drawCallBuilder_;
 };
 

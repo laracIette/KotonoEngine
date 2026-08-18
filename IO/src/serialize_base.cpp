@@ -1,6 +1,6 @@
 #include "serialize_base.h"
-#include <nlohmann/json.hpp>
 #include <kotono_common/Path.h>
+#include <nlohmann/json.hpp>
 
 bool contains(const nlohmann::json& json, const std::string_view name)
 {

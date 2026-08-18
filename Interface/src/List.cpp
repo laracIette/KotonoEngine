@@ -1,6 +1,7 @@
 #include "List.h"
-#include "widgets.h"
+
 #include "ListBody.h"
+#include "widgets.h"
 
 WidgetPtr WList::Build()
 {
@@ -12,22 +13,22 @@ WidgetPtr WList::Build()
 	return widgetTree.Widget();
 }
 
-float WList::GetSpacing() const
+f32 WList::GetSpacing() const
 {
 	return body_->GetSpacing();
 }
 
-const WidgetPool& WList::GetChildren() const
+WidgetSet const& WList::GetChildren() const
 {
 	return body_->GetChildren();
 }
 
-void WList::SetSpacing(const float spacing)
+void WList::SetSpacing(f32 spacing)
 {
 	body_->SetSpacing(spacing);
 }
 
-void WList::SetChildren(const WidgetPool& children)
+void WList::SetChildren(WidgetSet const& children)
 {
 	body_->SetChildren(children);
 }

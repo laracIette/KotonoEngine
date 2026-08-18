@@ -1,9 +1,9 @@
 #pragma once
 #include "generated/SceneExplorer.generated.h"
-#include <kotono_interface/Widget.h>
+#include <kotono_object/SceneWidget.h>
 class WList;
 enum class EGameState : u8;
-class WSceneExplorer : public WWidget
+class WSceneExplorer : public WSceneWidget
 {
 	GENERATED_WSCENEEXPLORER()
 
@@ -11,11 +11,11 @@ protected:
 	WidgetPtr Build() override;
 
 public:
-	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Display(UWidgetDisplaySettings const& displaySettings) override;
 	void Remove() override;
 
 private:
-	void OnGameStateChanged(const EGameState gameState);
+	void OnGameStateChanged(EGameState gameState) const;
 	void PopulateItemList() const;
 
 private: 

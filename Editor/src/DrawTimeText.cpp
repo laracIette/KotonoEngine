@@ -1,8 +1,8 @@
 #include "DrawTimeText.h"
-#include <kotono_timing/TimerManager.h>
-#include <kotono_timing/Timer.h>
-#include <kotono_core/TimeManager.h>
 #include <kotono_interface/widgets.h>
+#include <kotono_object/Interface.h>
+#include <kotono_timing/Timer.h>
+#include <kotono_timing/TimerManager.h>
 
 WidgetPtr WDrawTimeText::Build()
 {
@@ -15,7 +15,7 @@ WidgetPtr WDrawTimeText::Build()
     return text_;
 }
 
-void WDrawTimeText::Display(UWidgetDisplaySettings displaySettings)
+void WDrawTimeText::Display(UWidgetDisplaySettings const& displaySettings)
 {
     Base::Display(displaySettings);
 
@@ -31,7 +31,7 @@ void WDrawTimeText::Remove()
 
 void WDrawTimeText::UpdateText() const
 {
-    text_->SetText(std::format("D {:.8f}s", TimeManager.AverageRenderTime()));
+    text_->SetText("not implemented!");
 }
 
 #include "generated/DrawTimeText.generated.inl"

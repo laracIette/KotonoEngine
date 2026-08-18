@@ -12,32 +12,32 @@ WidgetPtr WHorizontalWrapList::Build()
 	return widgetTree.Widget();
 }
 
-float WHorizontalWrapList::GetItemSpacing() const
+f32 WHorizontalWrapList::GetItemSpacing() const
 {
 	return body_->GetItemSpacing();
 }
 
-float WHorizontalWrapList::GetRowSpacing() const
+f32 WHorizontalWrapList::GetRowSpacing() const
 {
 	return body_->GetRowSpacing();
 }
 
-const WidgetPool& WHorizontalWrapList::GetChildren() const
+WidgetSet const& WHorizontalWrapList::GetChildren() const
 {
 	return body_->GetChildren();
 }
 
-void WHorizontalWrapList::SetItemSpacing(const float itemSpacing)
+void WHorizontalWrapList::SetItemSpacing(f32 itemSpacing)
 {
 	body_->SetItemSpacing(itemSpacing);
 }
 
-void WHorizontalWrapList::SetRowSpacing(const float rowSpacing)
+void WHorizontalWrapList::SetRowSpacing(f32 rowSpacing)
 {
 	body_->SetRowSpacing(rowSpacing);
 }
 
-void WHorizontalWrapList::SetChildren(const WidgetPool& children)
+void WHorizontalWrapList::SetChildren(WidgetSet const& children)
 {
 	body_->SetChildren(children);
 }

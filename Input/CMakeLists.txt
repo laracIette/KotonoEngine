@@ -1,15 +1,8 @@
 cmake_minimum_required(VERSION 4.2)
 project(KotonoInput LANGUAGES C CXX)
 
-if (MSVC)
-    # Enable SDL security checks
-    add_compile_options(/sdl)
-endif()
-
-# Static library
 add_library(KotonoInput STATIC)
 
-# Require C++20
 target_compile_features(KotonoInput PUBLIC cxx_std_23)
 
 set_target_properties(KotonoInput PROPERTIES FOLDER "KotonoEngine")

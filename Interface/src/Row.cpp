@@ -13,7 +13,7 @@ UWidgetDisplaySettings WRow::GetContentDisplaySettings(UWidgetDisplaySettings di
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
-	for (auto& child : children_)
+	for (auto const& child : GetChildren())
 	{
 		if (child)
 		{
@@ -36,7 +36,7 @@ glm::vec2 WRow::GetDesiredSize(const glm::vec2& bounds) const
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
-	for (auto& child : children_)
+	for (auto const& child : GetChildren())
 	{
 		if (child)
 		{
@@ -68,7 +68,7 @@ void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	// Get non-expand width
 	float nonExpandWidth{ 0.0f };
-	for (auto& child : children_)
+	for (auto const& child : GetChildren())
 	{
 		// Check if not horizontal expand
 		if (child && !has_flag(child->GetExpand(), EExpand::Horizontal))
@@ -79,9 +79,9 @@ void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 
 	// Get expand width
 	float expandWidth{ displaySettings.bounds.x - nonExpandWidth };
-	if (!children_.empty())
+	if (!GetChildren().empty())
 	{
-		expandWidth -= spacing_ * static_cast<float>(children_.size() - 1);
+		expandWidth -= spacing_ * static_cast<float>(GetChildren().size() - 1);
 	}
 	if (const size expandCount{ GetExpandCount() })
 	{
@@ -90,7 +90,7 @@ void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 
 	++displaySettings.layer;
 
-	for (auto& child : children_)
+	for (auto const& child : GetChildren())
 	{
 		if (child)
 		{
@@ -115,7 +115,7 @@ void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
  
 size WRow::GetExpandCount() const
 {
-	return std::ranges::count_if(children_.begin(), children_.end(),
+	return std::ranges::count_if(GetChildren(),
 		[](const WidgetPtr& child) { return child && has_flag(child->GetExpand(), EExpand::Horizontal); }
 	);
 }

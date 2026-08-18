@@ -1,9 +1,10 @@
 #include "ViewController.h"
-#include <kotono_core/TimeManager.h>
-#include <kotono_graphics/RenderContext.h>
+
+#include <glm/ext/quaternion_trigonometric.hpp>
 #include <kotono_input/Keyboard.h>
 #include <kotono_input/Mouse.h>
 #include <kotono_interface/widgets.h>
+#include <kotono_object/Interface.h>
 #include <kotono_platform/glm_utils.h>
 
 WViewController::WViewController()
@@ -21,10 +22,16 @@ WidgetPtr WViewController::Build()
     button->SetOnActive([this]() { isFocused_ = true; });
     button->SetOnInactive([this]() { isFocused_ = false; });
 
-    return button;
+	auto const widgetTree{ UChildrenOwnerTree{ UCreate<WStack>{}(), {
+		new UWidgetTreeLeaf{ sceneRenderer_ = UCreate<WSceneRenderer>{ "Scene Renderer" }() },
+		new UWidgetTreeLeaf{ button },
+	} } };
+	widgetTree.Link();
+
+    return widgetTree.Widget();
 }
 
-void WViewController::Display(UWidgetDisplaySettings displaySettings)
+void WViewController::Display(UWidgetDisplaySettings const& displaySettings)
 {
     Base::Display(displaySettings);
 
@@ -55,39 +62,51 @@ void WViewController::Remove()
 
 void WViewController::OnKeyboardWKeyDown() const
 {
-	const auto direction{ GetRenderContext()->GetViewPoint().GetForwardVector() };
-	Translate(direction * TimeManager.Delta() * speed_);
+	if (sceneRenderer_)
+	{
+		auto const direction{ sceneRenderer_->GetForwardVector() };
+		Translate(direction * GetInterface()->GetTimeContext().lastDelta * speed_);
+	}
 }
 
 void WViewController::OnKeyboardAKeyDown() const
 {
-	const auto direction{ GetRenderContext()->GetViewPoint().GetRightVector() };
-	Translate(direction * TimeManager.Delta() * speed_);
+	if (sceneRenderer_)
+	{
+		auto const direction{ sceneRenderer_->GetRightVector() };
+		Translate(direction * GetInterface()->GetTimeContext().lastDelta * speed_);
+	}
 }
 
 void WViewController::OnKeyboardSKeyDown() const
 {
-	const auto direction{ -GetRenderContext()->GetViewPoint().GetForwardVector() };
-	Translate(direction * TimeManager.Delta() * speed_);
+	if (sceneRenderer_)
+	{
+		auto const direction{ -sceneRenderer_->GetForwardVector() };
+		Translate(direction * GetInterface()->GetTimeContext().lastDelta * speed_);
+	}
 }
 
 void WViewController::OnKeyboardDKeyDown() const
 {
-	const auto direction{ -GetRenderContext()->GetViewPoint().GetRightVector() };
-	Translate(direction * TimeManager.Delta() * speed_);
+	if (sceneRenderer_)
+	{
+		auto const direction{ -sceneRenderer_->GetRightVector() };
+		Translate(direction * GetInterface()->GetTimeContext().lastDelta * speed_);
+	}
 }
 
 void WViewController::OnKeyboardQKeyDown() const
 {
-	Translate(-WorldUpVector * TimeManager.Delta() * speed_);
+	Translate(-WorldUpVector * GetInterface()->GetTimeContext().lastDelta * speed_);
 }
 
 void WViewController::OnKeyboardEKeyDown() const
 {
-	Translate(WorldUpVector * TimeManager.Delta() * speed_);
+	Translate(WorldUpVector * GetInterface()->GetTimeContext().lastDelta * speed_);
 }
 
-void WViewController::OnMouseMove(const glm::vec2& delta)
+void WViewController::OnMouseMove(glm::vec2 const& delta)
 {
 	if (!isFocused_)
 	{
@@ -100,14 +119,17 @@ void WViewController::OnMouseMove(const glm::vec2& delta)
 	// Clamp pitch to avoid flipping
 	pitch_ = glm::clamp(pitch_, -glm::half_pi<f32>(), glm::half_pi<f32>());
 
-	const glm::quat qPitch{ glm::angleAxis(pitch_, WorldRightVector) };
-	const glm::quat qYaw{ glm::angleAxis(yaw_, WorldUpVector) };
-
-	const glm::quat rotation{ qYaw * qPitch };
-	GetRenderContext()->GetViewPoint().SetRotation(rotation);
+	glm::quat const qPitch{ glm::angleAxis(pitch_, WorldRightVector) };
+	glm::quat const qYaw{ glm::angleAxis(yaw_, WorldUpVector) };
+	
+	if (sceneRenderer_)
+	{
+		glm::quat const rotation{ qYaw * qPitch };
+		sceneRenderer_->SetViewRotation(rotation);
+	}
 }
 
-void WViewController::OnMouseVerticalScroll(const f32 delta)
+void WViewController::OnMouseVerticalScroll(f32 delta)
 {
 	if (!isFocused_)
 	{
@@ -118,15 +140,18 @@ void WViewController::OnMouseVerticalScroll(const f32 delta)
 	speed_ = std::clamp(speed_, 0.1f, 100.0f);
 }
 
-void WViewController::Translate(const glm::vec3& delta) const
+void WViewController::Translate(glm::vec3 const& delta) const
 {
 	if (!isFocused_)
 	{
 		return;
 	}
 
-	const auto& position{ GetRenderContext()->GetViewPoint().GetPosition() };
-	GetRenderContext()->GetViewPoint().SetPosition(position + delta);
+	if (sceneRenderer_)
+	{
+		auto const& position{ sceneRenderer_->GetViewPosition() };
+		sceneRenderer_->SetViewPosition(position + delta);
+	}
 }
 
 #include "generated/ViewController.generated.inl"

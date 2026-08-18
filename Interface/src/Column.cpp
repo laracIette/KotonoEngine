@@ -12,7 +12,7 @@ UWidgetDisplaySettings WColumn::GetContentDisplaySettings(UWidgetDisplaySettings
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
-	for (auto& child : children_)
+	for (auto const& child : GetChildren())
 	{
 		if (child)
 		{
@@ -24,7 +24,7 @@ UWidgetDisplaySettings WColumn::GetContentDisplaySettings(UWidgetDisplaySettings
 
 	if (GetValidChildrenCount() > 1)
 	{
-		size.y += spacing_ * static_cast<float>(GetValidChildrenCount() - 1);
+		size.y += spacing_ * static_cast<f32>(GetValidChildrenCount() - 1);
 	}
 
 	displaySettings.bounds = glm::min(displaySettings.bounds, size);
@@ -35,7 +35,7 @@ glm::vec2 WColumn::GetDesiredSize(const glm::vec2& bounds) const
 {
 	glm::vec2 size{};
 
-	for (auto& child : children_)
+	for (auto const& child : GetChildren())
 	{
 		if (child)
 		{
@@ -47,7 +47,7 @@ glm::vec2 WColumn::GetDesiredSize(const glm::vec2& bounds) const
 
 	if (GetValidChildrenCount() > 1)
 	{
-		size.y += spacing_ * static_cast<float>(GetValidChildrenCount() - 1);
+		size.y += spacing_ * static_cast<f32>(GetValidChildrenCount() - 1);
 	}
 	
 	return size;
@@ -66,8 +66,8 @@ EFlex WColumn::GetFlex() const
 void WColumn::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	// Get non-expand height
-	float nonExpandHeight{ 0.0f };
-	for (const auto& child : children_)
+	f32 nonExpandHeight{ 0.0f };
+	for (const auto& child : GetChildren())
 	{
 		// Check if not vertical expand
 		if (child && !has_flag(child->GetExpand(), EExpand::Vertical))
@@ -77,19 +77,19 @@ void WColumn::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	}
 
 	// Get expand height
-	float expandHeight{ displaySettings.bounds.y - nonExpandHeight };
-	if (!children_.empty())
+	f32 expandHeight{ displaySettings.bounds.y - nonExpandHeight };
+	if (!GetChildren().empty())
 	{
-		expandHeight -= spacing_ * static_cast<float>(children_.size() - 1);
+		expandHeight -= spacing_ * static_cast<f32>(GetChildren().size() - 1);
 	}
 	if (const size expandCount{ GetExpandCount() })
 	{
-		expandHeight /= static_cast<float>(expandCount);
+		expandHeight /= static_cast<f32>(expandCount);
 	}
 
 	++displaySettings.layer;
 
-	for (auto& child : children_)
+	for (auto const& child : GetChildren())
 	{
 		if (child)
 		{
@@ -114,7 +114,7 @@ void WColumn::DisplayInternal(UWidgetDisplaySettings displaySettings)
 
 size WColumn::GetExpandCount() const
 {
-	return std::count_if(children_.begin(), children_.end(),
+	return std::ranges::count_if(GetChildren(),
 		[](const WidgetPtr& child) { return child && has_flag(child->GetExpand(), EExpand::Vertical); }
 	);
 }

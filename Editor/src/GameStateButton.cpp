@@ -1,7 +1,8 @@
 #include "GameStateButton.h"
-#include <kotono_core/Game.h>
-#include <kotono_interface/widgets.h>
+
 #include <kotono_input/Keyboard.h>
+#include <kotono_interface/widgets.h>
+#include <kotono_object/Scene.h>
 
 static void SwitchPlayPause();
 
@@ -14,29 +15,29 @@ WidgetPtr WGameStateButton::Build()
     playPauseBox->SetSize({ 64.0f, 64.0f });
 
     playPauseBg_ = UCreate<WColor>{}();
-    playPauseBg_->SetColor(Game.IsPlaying()
+    playPauseBg_->SetColor(GetScene()->GetIsGamePlaying()
         ? Colors::White.WithValue(0.5f)
         : Colors::Green
     );
 
     UPtr playPauseButton{ UCreate<WButton>{}() };
-    playPauseButton->SetOnPressed([]() { SwitchPlayPause(); });
+    playPauseButton->SetOnPressed([this]() { SwitchPlayPause(); });
 
 
     UPtr stopBox{ UCreate<WBox>{}() };
     stopBox->SetSize({ 64.0f, 64.0f });
 
     stopBg_ = UCreate<WColor>{}();
-    stopBg_->SetColor(Game.IsStopped()
+    stopBg_->SetColor(GetScene()->GetIsGameStopped()
         ? Colors::Red.WithAlpha(0.1f)
         : Colors::Red
     );
 
     UPtr stopButton{ UCreate<WButton>{}() };
-    stopButton->SetOnPressed([]() {
-        if (!Game.IsStopped())
+    stopButton->SetOnPressed([this]() {
+        if (!GetScene()->GetIsGameStopped())
         {
-            Game.Stop();
+            GetScene()->StopGame();
         }
     });
 
@@ -58,12 +59,12 @@ WidgetPtr WGameStateButton::Build()
     return mainRow;
 }
 
-void WGameStateButton::Display(UWidgetDisplaySettings displaySettings)
+void WGameStateButton::Display(UWidgetDisplaySettings const& displaySettings)
 {
     Base::Display(displaySettings);
 
     Keyboard.EventKey(EKey::Space, EInputState::Pressed).AddListener(this, &WGameStateButton::OnKeyboardSpaceKeyPressed);
-    Game.GetEventStateChanged().AddListener(this, &Self::OnGameStateChanged);
+    GetScene()->GetEventGameStateUpdated().AddListener(this, &Self::OnGameStateChanged);
 }
 
 void WGameStateButton::Remove()
@@ -71,7 +72,7 @@ void WGameStateButton::Remove()
     Base::Remove();
 
     Keyboard.EventKey(EKey::Space, EInputState::Pressed).RemoveListener(this, &WGameStateButton::OnKeyboardSpaceKeyPressed);
-    Game.GetEventStateChanged().RemoveListener(this, &Self::OnGameStateChanged);
+    GetScene()->GetEventGameStateUpdated().RemoveListener(this, &Self::OnGameStateChanged);
 }
 
 void WGameStateButton::OnKeyboardSpaceKeyPressed() const
@@ -79,27 +80,27 @@ void WGameStateButton::OnKeyboardSpaceKeyPressed() const
     SwitchPlayPause();
 }
 
-void WGameStateButton::OnGameStateChanged(const EGameState gameState) const
+void WGameStateButton::OnGameStateChanged(EGameState gameState) const
 {
-    playPauseBg_->SetColor(Game.IsPlaying()
+    playPauseBg_->SetColor(GetScene()->GetIsGamePlaying()
         ? Colors::White.WithValue(0.5f)
         : Colors::Green
     );
-    stopBg_->SetColor(Game.IsStopped()
+    stopBg_->SetColor(GetScene()->GetIsGameStopped()
         ? Colors::Red.WithAlpha(0.1f)
         : Colors::Red
     );
 }
 
-void SwitchPlayPause()
+void WGameStateButton::SwitchPlayPause() const
 {
-    if (Game.IsPlaying())
+    if (GetScene()->GetIsGamePlaying())
     {
-        Game.Stop();
+        GetScene()->StopGame();
     }
     else
     {
-        Game.Play();
+        GetScene()->PlayGame();
     }
 }
 

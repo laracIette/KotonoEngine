@@ -1,31 +1,25 @@
 #pragma once
-#include <filesystem>
-#include <vector>
 #include <kotono_common/Path.h>
-
-template <typename T>
-class UAsset;
-class UTexture;
-
-class KtFont final
+#include <kotono_common/types.h>
+#include <vector>
+class UFont final
 {
 public:
-	KtFont(const UPath& path);
+	UFont(UPath const& path);
 
-	const UPath& Path() const;
-	float GetSize() const;
-	float GetSpacing() const;
+	UPath const& Path() const;
+	f32 GetSize() const;
+	f32 GetSpacing() const;
 
-	void SetSize(const float size);
-	void SetSpacing(const float spacing);
+	void SetSize(f32 size);
+	void SetSpacing(f32 spacing);
 
-	std::vector<UPath> GetTextPaths(const std::string_view text) const;
-	std::vector<UAsset<UTexture>> GetTextTextures(const std::string_view text) const;
+	std::vector<UPath> GetTextPaths(std::string_view text) const;
 
 private:
-	const UPath path_;
+	UPath const path_;
 	// todo: unused yet, for sdf
-	float size_;
-	float spacing_;
+	f32 size_;
+	f32 spacing_;
 };
 

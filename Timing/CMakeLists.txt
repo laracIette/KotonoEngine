@@ -1,15 +1,8 @@
 cmake_minimum_required(VERSION 4.2)
 project(KotonoTiming LANGUAGES C CXX)
 
-if (MSVC)
-    # Enable SDL security checks
-    add_compile_options(/sdl)
-endif()
-
-# Static library
 add_library(KotonoTiming STATIC)
 
-# Require C++20
 target_compile_features(KotonoTiming PUBLIC cxx_std_23)
 
 set_target_properties(KotonoTiming PROPERTIES FOLDER "KotonoEngine")

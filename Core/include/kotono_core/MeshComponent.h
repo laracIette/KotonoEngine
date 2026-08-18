@@ -1,13 +1,7 @@
 #pragma once
 #include "generated/MeshComponent.generated.h"
-#include "SceneComponent.h"
+#include <kotono_object/SceneComponent.h>
 #include "Task.h"
-#include <kotono_graphics/DrawCallBuilder.h>
-class UShader;
-class UModel;
-class UMaterial;
-struct UDrawCall;
-
 class KMeshComponent : public KSceneComponent
 {
 	GENERATED_KMESHCOMPONENT()
@@ -18,42 +12,31 @@ public:
 
 protected:
 	void Init() override;
-	void Update(const float deltaTime) override;
+	void Update(const f32 deltaTime) override;
 
 public:
-	const UAsset<UShader>& GetShader() const;
-	const UAsset<UModel>& GetModel() const;
-	const UAsset<UMaterial>& GetMaterial() const;
+	const UPath& GetShader() const;
+	const UPath& GetModel() const;
+	const UPath& GetMaterial() const;
 
-	void SetShader(const UAsset<UShader>& shader);
-	void SetModel(const UAsset<UModel>& model);
-	void SetMaterial(const UAsset<UMaterial>& material);
+	void SetShader(const UPath& shader);
+	void SetModel(const UPath& model);
+	void SetMaterial(const UPath& material);
 
 	void Spawn() override;
 
+	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const override;
+
 private:
-	void RegisterDrawCall();
-	void UnregisterDrawCall();
-
-	void RefreshDrawCall() const;
-
-	void RefreshDrawCallScissor() const;
-	void RefreshDrawCallShaderData() const;
-	void RefreshDrawCallModelData() const;
-	void RefreshDrawCallMaterialData() const;
-	void RefreshDrawCallTransformData() const;
-
 	// temp
-	void Spin();
+	void Spin(const f32 deltaTime);
 	void SetMobilityStatic();
 	void SetMobilityDynamic();
 
 private:
-	SERIALIZE UAsset<UShader> shader_;
-	SERIALIZE UAsset<UModel> model_;
-	SERIALIZE UAsset<UMaterial> material_;
+	SERIALIZE UPath shader_;
+	SERIALIZE UPath model_;
+	SERIALIZE UPath material_;
 	UTask spinTask_;
-
-	UDrawCallBuilder drawCallBuilder_;
 };
 

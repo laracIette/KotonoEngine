@@ -2,16 +2,16 @@
 #include <glm/common.hpp>
 #include <kotono_common/enum_utils.h>
 
-WWrap::WWrap(const EAxis axis)
-	: axis_(axis)
+WWrap::WWrap(EAxis axis)
+	: axis_{ axis }
 {
 }
 
 UWidgetDisplaySettings WWrap::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
-	if (child_)
+	if (GetChild())
 	{
-		auto childDesiredSize{ child_->GetDesiredSize(displaySettings.bounds) };
+		auto const childDesiredSize{ GetChild()->GetDesiredSize(displaySettings.bounds) };
 		if (has_flag(axis_, EAxis::Horizontal))
 		{
 			displaySettings.bounds.x = std::min(displaySettings.bounds.x, childDesiredSize.x);
@@ -20,7 +20,7 @@ UWidgetDisplaySettings WWrap::GetContentDisplaySettings(UWidgetDisplaySettings d
 		{
 			displaySettings.bounds.y = std::min(displaySettings.bounds.y, childDesiredSize.y);
 		}
-		return child_->GetContentDisplaySettings(displaySettings);
+		return GetChild()->GetContentDisplaySettings(displaySettings);
 	}
 
 	return displaySettings;

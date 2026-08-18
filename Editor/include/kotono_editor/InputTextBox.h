@@ -1,6 +1,7 @@
 #pragma once
 #include "generated/InputTextBox.generated.h"
-#include <kotono_interface/Widget.h>
+#include <kotono_object/Widget.h>
+
 #include <kotono_input/InputHoldAction.h>
 enum class EKey : u8;
 enum class EInputState : u8;
@@ -8,7 +9,7 @@ class WInputTextBox : public WWidget
 {
 	GENERATED_WINPUTTEXTBOX()
 
-	using TextChangedFunction = std::function<void(const std::string&)>;
+	using TextChangedFunction = std::function<void(std::string const&)>;
 
 public:
 	WInputTextBox();
@@ -17,35 +18,35 @@ protected:
 	WidgetPtr Build() override;
 
 public:
-	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Display(UWidgetDisplaySettings const& displaySettings) override;
 	void Remove() override;
 
 public:
-	const std::string& GetText() const;
-	const TextChangedFunction& GetOnTextChanged() const;
-	float GetActuationTime() const;
-	float GetRepeatTime() const;
+	std::string_view GetText() const;
+	TextChangedFunction const& GetOnTextChanged() const;
+	f32 GetActuationTime() const;
+	f32 GetRepeatTime() const;
 
-	void SetText(const std::string& text);
-	void SetOnTextChanged(const TextChangedFunction& onTextChanged);
-	void SetActuationTime(const float actuationTime);
-	void SetRepeatTime(const float repeatTime);
+	void SetText(std::string_view text);
+	void SetOnTextChanged(TextChangedFunction const& onTextChanged);
+	void SetActuationTime(f32 actuationTime);
+	void SetRepeatTime(f32 repeatTime);
 
 private:
 	void OnKeyBackspacePressed();
 	void OnKeyBackspaceDown();
 
-	void OnAnyKeyPressed(const EKey key);
-	void OnAnyKeyReleased(const EKey key);
-	void OnAnyKeyDown(const EKey key);
+	void OnAnyKeyPressed(EKey key);
+	void OnAnyKeyReleased(EKey key);
+	void OnAnyKeyDown(EKey key);
 
 private:
 	std::string text_;
 	TextChangedFunction onTextChanged_;
-	float actuationTime_;
-	float repeatTime_;
+	f32 actuationTime_;
+	f32 repeatTime_;
 
-	bool isSelected_;
+	b8 isSelected_;
 	UInputHoldAction holdAction_;
 	char currentWriteCharacter_;
 };

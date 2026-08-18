@@ -1,15 +1,15 @@
 #include "InputTextBox.h"
-#include <kotono_core/TimeManager.h>
 #include <kotono_input/Keyboard.h>
 #include <kotono_interface/widgets.h>
+#include <kotono_object/Interface.h>
 
 WInputTextBox::WInputTextBox() 
-	: text_("")
-	, onTextChanged_({})
-	, actuationTime_(0.5f)
-	, repeatTime_(0.05f)
-	, isSelected_(false)
-	, currentWriteCharacter_(0)
+	: text_{ "" }
+	, onTextChanged_{}
+	, actuationTime_{ 0.5f }
+	, repeatTime_{ 0.05f }
+	, isSelected_{ false }
+	, currentWriteCharacter_{ 0 }
 {
 }
 
@@ -47,7 +47,7 @@ WidgetPtr WInputTextBox::Build()
 	return stack;
 }
 
-void WInputTextBox::Display(UWidgetDisplaySettings displaySettings)
+void WInputTextBox::Display(UWidgetDisplaySettings const& displaySettings)
 {
 	Base::Display(displaySettings);
 
@@ -74,42 +74,42 @@ void WInputTextBox::Remove()
 	Keyboard.EventKey(EKey::Backspace, EInputState::Down).RemoveListener(this, &WInputTextBox::OnKeyBackspaceDown);
 }
 
-const std::string& WInputTextBox::GetText() const
+std::string_view WInputTextBox::GetText() const
 {
 	return text_;
 }
 
-const WInputTextBox::TextChangedFunction& WInputTextBox::GetOnTextChanged() const
+WInputTextBox::TextChangedFunction const& WInputTextBox::GetOnTextChanged() const
 {
 	return onTextChanged_;
 }
 
-float WInputTextBox::GetActuationTime() const
+f32 WInputTextBox::GetActuationTime() const
 {
 	return actuationTime_;
 }
 
-float WInputTextBox::GetRepeatTime() const
+f32 WInputTextBox::GetRepeatTime() const
 {
 	return repeatTime_;
 }
 
-void WInputTextBox::SetText(const std::string& text)
+void WInputTextBox::SetText(std::string_view text)
 {
 	text_ = text;
 }
 
-void WInputTextBox::SetOnTextChanged(const TextChangedFunction& onTextChanged)
+void WInputTextBox::SetOnTextChanged(TextChangedFunction const& onTextChanged)
 {
 	onTextChanged_ = onTextChanged;
 }
 
-void WInputTextBox::SetActuationTime(const float actuationTime)
+void WInputTextBox::SetActuationTime(f32 actuationTime)
 {
 	actuationTime_ = actuationTime;
 }
 
-void WInputTextBox::SetRepeatTime(const float repeatTime)
+void WInputTextBox::SetRepeatTime(f32 repeatTime)
 {
 	repeatTime_ = repeatTime;
 }
@@ -131,7 +131,7 @@ void WInputTextBox::OnKeyBackspaceDown()
 		return;
 	}
 
-	if (holdAction_.Update(TimeManager.Delta()))
+	if (holdAction_.Update(GetInterface()->GetTimeContext().lastDelta))
 	{
 		SetState([this]()
 		{
@@ -147,7 +147,7 @@ void WInputTextBox::OnKeyBackspaceDown()
 	}
 }
 
-void WInputTextBox::OnAnyKeyPressed(const EKey key)
+void WInputTextBox::OnAnyKeyPressed(EKey key)
 {
 	if (!isSelected_)
 	{
@@ -163,7 +163,7 @@ void WInputTextBox::OnAnyKeyPressed(const EKey key)
 	}
 }
 
-void WInputTextBox::OnAnyKeyReleased(const EKey key)
+void WInputTextBox::OnAnyKeyReleased(EKey key)
 {
 	if (!isSelected_)
 	{
@@ -178,7 +178,7 @@ void WInputTextBox::OnAnyKeyReleased(const EKey key)
 	}
 }
 
-void WInputTextBox::OnAnyKeyDown(const EKey key)
+void WInputTextBox::OnAnyKeyDown(EKey key)
 {
 	const char character{ keyToChar(key) };
 
@@ -197,7 +197,7 @@ void WInputTextBox::OnAnyKeyDown(const EKey key)
 		return;
 	}
 
-	if (holdAction_.Update(TimeManager.Delta()))
+	if (holdAction_.Update(GetInterface()->GetTimeContext().lastDelta))
 	{
 		SetState([this, character]()
 		{

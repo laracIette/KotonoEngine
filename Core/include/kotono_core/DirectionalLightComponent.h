@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/DirectionalLightComponent.generated.h"
-#include "SceneComponent.h"
+#include <kotono_object/SceneComponent.h>
 #include <kotono_graphics/Color.h>
 class KDirectionalLightComponent : public KSceneComponent
 {
@@ -8,14 +8,13 @@ class KDirectionalLightComponent : public KSceneComponent
 
 public:
 	KDirectionalLightComponent();
-	~KDirectionalLightComponent();
+	~KDirectionalLightComponent() override;
 
 	void Spawn() override;
 
-	void SetColor(const UColor& color);
-	void SetIntensity(const f32 intensity);
+	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const override;
 
 private:
-	SERIALIZE ReadonlyProperty(UColor, color_, Color);
-	SERIALIZE ReadonlyProperty(f32, intensity_, Intensity);
+	SERIALIZE WritableProperty(UColor, color_, Color);
+	SERIALIZE WritableProperty(f32, intensity_, Intensity);
 };

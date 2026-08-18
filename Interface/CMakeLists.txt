@@ -1,21 +1,13 @@
 cmake_minimum_required(VERSION 4.2)
 project(KotonoInterface LANGUAGES C CXX)
 
-if (MSVC)
-    # Enable SDL security checks
-    add_compile_options(/sdl)
-endif()
-
-# Static library
 add_library(KotonoInterface STATIC)
 
-# Require C++20
 target_compile_features(KotonoInterface PUBLIC cxx_std_23)
 
 set_target_properties(KotonoInterface PROPERTIES FOLDER "KotonoEngine")
 
 set(KINTERFACE_HEADERS
-    "include/kotono_interface/Axis.h"
     "include/kotono_interface/Box.h"
     "include/kotono_interface/Button.h"
     "include/kotono_interface/Center.h"
@@ -24,9 +16,7 @@ set(KINTERFACE_HEADERS
     "include/kotono_interface/Color.h"
     "include/kotono_interface/Column.h"
     "include/kotono_interface/Constraint.h"
-    "include/kotono_interface/Expand.h"
     "include/kotono_interface/Expanded.h"
-    "include/kotono_interface/Flex.h"
     "include/kotono_interface/HorizontalWrapList.h"
     "include/kotono_interface/HorizontalWrapListBody.h"
     "include/kotono_interface/Image.h"
@@ -36,12 +26,11 @@ set(KINTERFACE_HEADERS
     "include/kotono_interface/Offset.h"
     "include/kotono_interface/Padding.h"
     "include/kotono_interface/Row.h"
+    "include/kotono_interface/SceneRenderer.h"
     "include/kotono_interface/Scrollable.h"
     "include/kotono_interface/Spacer.h"
     "include/kotono_interface/Stack.h"
     "include/kotono_interface/Text.h"
-    "include/kotono_interface/utils.h"
-    "include/kotono_interface/Widget.h"
     "include/kotono_interface/widgets.h"
     "include/kotono_interface/Wrap.h"
 )
@@ -64,12 +53,11 @@ set(KINTERFACE_SOURCES
     "src/Offset.cpp"
     "src/Padding.cpp"
     "src/Row.cpp"
+    "src/SceneRenderer.cpp"
     "src/Scrollable.cpp"
     "src/Spacer.cpp"
     "src/Stack.cpp"
     "src/Text.cpp"
-    "src/utils.cpp"
-    "src/Widget.cpp"
     "src/Wrap.cpp"
 )
 

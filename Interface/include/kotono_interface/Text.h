@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/Text.generated.h"
-#include "Widget.h"
+#include <kotono_object/Widget.h>
 /// Display a text
 class WText final : public WWidget
 {
@@ -10,26 +10,26 @@ protected:
 	WidgetPtr Build() override;
 
 public:
-	const std::string& GetText() const;
-	const glm::vec2& GetFontSize() const;
-	float GetSpacing() const;
-	bool GetShouldWrap() const;
+	std::string_view GetText() const;
+	glm::vec2 const& GetFontSize() const;
+	f32 GetSpacing() const;
+	b8 GetShouldWrap() const;
 
-	void SetText(const std::string& text);
-	void SetFontSize(const glm::vec2& fontSize);
-	void SetSpacing(const float spacing);
-	void SetShouldWrap(const bool shouldWrap);
+	void SetText(std::string_view text);
+	void SetFontSize(glm::vec2 const& fontSize);
+	void SetSpacing(f32 spacing);
+	void SetShouldWrap(b8 shouldWrap);
 
 private:
 	void UpdateTextBody() const;
-	WidgetPool GetCharacters() const;
+	WidgetSet GetCharacters() const;
 
 private:
 	UPtr<WWidget> textBody_;
 
 	std::string text_;
 	glm::vec2 fontSize_;
-	float spacing_;
-	bool shouldWrap_;
+	f32 spacing_;
+	b8 shouldWrap_;
 };
 

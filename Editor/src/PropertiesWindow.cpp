@@ -1,11 +1,11 @@
 #include "PropertiesWindow.h"
 #include "ObjectProperties.h"
 #include <kotono_common/log.h>
-#include <kotono_core/SceneComponent.h>
-#include <kotono_core/SceneObject.h>
 #include <kotono_input/Mouse.h>
 #include <kotono_interface/widgets.h>
 #include <kotono_object/ObjectManager.h>
+#include <kotono_object/SceneComponent.h>
+#include <kotono_object/SceneObject.h>
 #include <kotono_platform/glm_utils.h>
 
 WidgetPtr WPropertiesWindow::Build()
@@ -46,7 +46,7 @@ WidgetPtr WPropertiesWindow::Build()
     return widgetTree.Widget();
 }
 
-void WPropertiesWindow::Display(UWidgetDisplaySettings displaySettings)
+void WPropertiesWindow::Display(UWidgetDisplaySettings const& displaySettings)
 {
     Base::Display(displaySettings);
 
@@ -60,7 +60,7 @@ void WPropertiesWindow::Remove()
     ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &Self::OnSelectedObjectChanged);
 }
 
-void WPropertiesWindow::OnSelectedObjectChanged(const UPtr<KObject> object)
+void WPropertiesWindow::OnSelectedObjectChanged(UPtr<KObject> const& object)
 {
     if (mainList_)
     {

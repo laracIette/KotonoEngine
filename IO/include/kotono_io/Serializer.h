@@ -1,11 +1,10 @@
 #pragma once
 #include <nlohmann/json_fwd.hpp>
-#include <filesystem>
 class UPath;
 class SSerializer final
 {
 public:
-	static void Serialize(const nlohmann::json& json, const UPath& path);
-	static void Deserialize(nlohmann::json& json, const UPath& path);
+	static void Serialize(nlohmann::json const& json, UPath const& path);
+	static void Deserialize(nlohmann::json& json, UPath const& path);
 };
 

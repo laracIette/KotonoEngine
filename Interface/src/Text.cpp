@@ -25,45 +25,45 @@ WidgetPtr WText::Build()
 	return textBody_;
 }
 
-const std::string& WText::GetText() const
+std::string_view WText::GetText() const
 {
 	return text_;
 }
 
-const glm::vec2& WText::GetFontSize() const
+glm::vec2 const& WText::GetFontSize() const
 {
 	return fontSize_;
 }
 
-float WText::GetSpacing() const
+f32 WText::GetSpacing() const
 {
 	return spacing_;
 }
 
-bool WText::GetShouldWrap() const
+b8 WText::GetShouldWrap() const
 {
 	return shouldWrap_;
 }
 
-void WText::SetText(const std::string& text)
+void WText::SetText(std::string_view text)
 {
 	text_ = text;
 	UpdateTextBody();
 }
 
-void WText::SetFontSize(const glm::vec2& fontSize)
+void WText::SetFontSize(glm::vec2 const& fontSize)
 {
 	fontSize_ = fontSize;
 	UpdateTextBody();
 }
 
-void WText::SetSpacing(const float spacing)
+void WText::SetSpacing(f32 spacing)
 {
 	spacing_ = spacing;
 	UpdateTextBody();
 }
 
-void WText::SetShouldWrap(const bool shouldWrap)
+void WText::SetShouldWrap(b8 shouldWrap)
 {
 	shouldWrap_ = shouldWrap;
 }
@@ -72,21 +72,21 @@ void WText::UpdateTextBody() const
 {
 	if (UPtr row{ TryCast<WRow>(textBody_) })
 	{
-		const UAutoDelete itemListChildren{ row->GetChildren() };
+		UAutoDelete<WWidget> const itemListChildren{ row->GetChildren() };
 		row->SetChildren(GetCharacters());
 	}
 	else if (UPtr horizontalWrapList{ TryCast<WHorizontalWrapList>(textBody_) })
 	{
-		const UAutoDelete itemListChildren{ horizontalWrapList->GetChildren() };
+		UAutoDelete<WWidget> const itemListChildren{ horizontalWrapList->GetChildren() };
 		horizontalWrapList->SetChildren(GetCharacters());
 	}
 }
 
-WidgetPool WText::GetCharacters() const
+WidgetSet WText::GetCharacters() const
 {
-	WidgetPool result{};
+	WidgetSet result{};
 
-	const KtFont font("${ENGINE_DIRECTORY}/Graphics/assets/fonts/default");
+	const UFont font{ "${ENGINE_DIRECTORY}/Graphics/assets/fonts/default" };
 
 	const auto characterPaths{ font.GetTextPaths(text_) };
 	result.reserve(characterPaths.size());

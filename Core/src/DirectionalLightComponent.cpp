@@ -1,5 +1,6 @@
 #include "DirectionalLightComponent.h"
-#include <kotono_graphics/RenderContext.h>
+
+#include <kotono_graphics/SceneRenderGraph.h>
 
 KDirectionalLightComponent::KDirectionalLightComponent()
 	: color_{ Colors::White }
@@ -14,23 +15,16 @@ KDirectionalLightComponent::~KDirectionalLightComponent()
 void KDirectionalLightComponent::Spawn()
 {
 	Base::Spawn();
+}
 
-	GetRenderContext()->GetRenderer().RegisterDirectionalLight({
+void KDirectionalLightComponent::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const
+{
+	sceneRenderGraph.directionalLightDatas.push_back({
 		.direction = ForwardVector(),
 		.color = color_,
 		.intensity = intensity_,
 		.castShadow = true,
 	});
-}
-
-void KDirectionalLightComponent::SetColor(const UColor& color)
-{
-	color_ = color;
-}
-
-void KDirectionalLightComponent::SetIntensity(const f32 intensity)
-{
-	intensity_ = intensity;
 }
 
 #include "generated/DirectionalLightComponent.generated.inl"

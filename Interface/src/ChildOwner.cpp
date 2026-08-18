@@ -40,9 +40,12 @@ WidgetVector WChildOwner::WidgetTree() const
 	return result;
 }
 
-const WidgetPtr& WChildOwner::GetChild() const
+void WChildOwner::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
 {
-	return child_;
+	if (child_ && child_->GetIsDisplayed())
+	{
+		child_->PopulateRenderGraph(interfaceRenderGraph);
+	}
 }
 
 void WChildOwner::SetChild(const WidgetPtr& widget)

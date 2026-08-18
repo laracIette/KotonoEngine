@@ -1,24 +1,24 @@
 #pragma once
 #include "generated/SceneExplorerItem.generated.h"
-#include <kotono_interface/Widget.h>
-#include <kotono_core/SceneObject.h>
+#include <kotono_object/Widget.h>
 class WColor;
+class TSceneObject;
 class WSceneExplorerItem : public WWidget
 {
 	GENERATED_WSCENEEXPLORERITEM()
 
 public:
-	WSceneExplorerItem(const UPtr<TSceneObject>& sceneObject);
+	WSceneExplorerItem(UPtr<TSceneObject> const& sceneObject);
 	
 protected:
 	WidgetPtr Build() override;
 
 public:
-	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Display(UWidgetDisplaySettings const& displaySettings) override;
 	void Remove() override;
 
 private:
-	void OnSelectedObjectChanged(const UPtr<KObject> object);
+	void OnSelectedObjectChanged(UPtr<KObject> const& object);
 
 private:
 	UPtr<WColor> bg_;

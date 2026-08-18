@@ -1,13 +1,10 @@
 #include "SceneExplorerAddButton.h"
-#include <kotono_common/AssetManager.h>
-#include <kotono_core/Game.h>
-#include <kotono_core/Scene.h>
-#include <kotono_core/SceneComponent.h>
+
 #include <kotono_core/MeshComponent.h>
-#include <kotono_core/SceneObject.h>
-#include <kotono_graphics/Model.h>
-#include <kotono_graphics/Shader.h>
 #include <kotono_interface/widgets.h>
+#include <kotono_object/Scene.h>
+#include <kotono_object/SceneComponent.h>
+#include <kotono_object/SceneObject.h>
 
 WidgetPtr WSceneExplorerAddButton::Build()
 {
@@ -19,35 +16,32 @@ WidgetPtr WSceneExplorerAddButton::Build()
 	text->SetText("Add");
 
 	UPtr button{ UCreate<WButton>{}() };
-	button->SetOnPressed([]() {
-		if (UPtr scene{ Game.GetOpenedScene() })
-		{
-			UAsset shader{ SAssetManager<UShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/shader3D.kasset") };
-			UAsset model1{ SAssetManager<UModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.obj") };
-			UAsset model2{ SAssetManager<UModel>::Get("${ENGINE_DIRECTORY}/Graphics/assets/models/column.obj") };
+	button->SetOnPressed([this]() {
+		UPath const shader{ "${ENGINE_DIRECTORY}/Graphics/assets/shaders/gbuffer.kasset" };
+		UPath const model1{ "${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.obj" };
+		UPath const model2{ "${ENGINE_DIRECTORY}/Graphics/assets/models/column.obj" };
 
-			UPtr mesh{ UCreate<TSceneObject>{}() };
-			UPtr rootComponent{ UCreate<KSceneComponent>{}() };
-			UPtr meshComponent1{ UCreate<KMeshComponent>{}() };
-			UPtr meshComponent2{ UCreate<KMeshComponent>{}() };
+		UPtr mesh{ UCreate<TSceneObject>{}() };
+		UPtr rootComponent{ UCreate<KSceneComponent>{}() };
+		UPtr meshComponent1{ UCreate<KMeshComponent>{}() };
+		UPtr meshComponent2{ UCreate<KMeshComponent>{}() };
 													
-			mesh->AddComponent(rootComponent);
-			rootComponent->SetRelativePosition(glm::vec3(0.0f));
+		mesh->AddComponent(rootComponent);
+		rootComponent->SetRelativePosition(glm::vec3(0.0f));
 													
-			mesh->AddComponent(meshComponent1);
-			meshComponent1->SetShader(shader);
-			meshComponent1->SetModel(model1);
-			meshComponent1->SetParent(rootComponent, ECoordinateSpace::Relative);
+		mesh->AddComponent(meshComponent1);
+		meshComponent1->SetShader(shader);
+		meshComponent1->SetModel(model1);
+		meshComponent1->SetParent(rootComponent, ECoordinateSpace::Relative);
 													
-			mesh->AddComponent(meshComponent2);
-			meshComponent2->SetShader(shader);
-			meshComponent2->SetModel(model2);
-			meshComponent2->SetParent(meshComponent1, ECoordinateSpace::Relative);
-			meshComponent2->SetRelativePosition({ 1.0f, 1.0f, 1.0f });
+		mesh->AddComponent(meshComponent2);
+		meshComponent2->SetShader(shader);
+		meshComponent2->SetModel(model2);
+		meshComponent2->SetParent(meshComponent1, ECoordinateSpace::Relative);
+		meshComponent2->SetRelativePosition({ 1.0f, 1.0f, 1.0f });
 
-			scene->Add(mesh);
-			mesh->Spawn();
-		}
+		GetScene()->Add(mesh);
+		mesh->Spawn();
 	});
 
 	const auto widgetTree{ UChildrenOwnerTree{ UCreate<WStack>{ "Add Button Stack" }(), {

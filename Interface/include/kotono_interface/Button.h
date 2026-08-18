@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/Button.generated.h"
-#include "Widget.h"
+#include <kotono_object/Widget.h>
 /// Set the widget's bounds as pressable
 class WButton final : public WWidget
 {
@@ -10,7 +10,7 @@ public:
 	WButton();
 	~WButton() override;
 
-	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Display(UWidgetDisplaySettings const& displaySettings) override;
 	void Remove() override;
 
 public:

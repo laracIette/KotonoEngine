@@ -1,10 +1,10 @@
 #include "SceneExplorerItem.h"
-#include <kotono_core/SceneObject.h>
 #include <kotono_interface/widgets.h>
 #include <kotono_object/ObjectManager.h>
+#include <kotono_object/SceneObject.h>
 
-WSceneExplorerItem::WSceneExplorerItem(const UPtr<TSceneObject>& sceneObject)
-	: sceneObject_(sceneObject)
+WSceneExplorerItem::WSceneExplorerItem(UPtr<TSceneObject> const& sceneObject)
+	: sceneObject_{ sceneObject }
 {
 }
 
@@ -36,7 +36,7 @@ WidgetPtr WSceneExplorerItem::Build()
 	return widgetTree.Widget();
 }
 
-void WSceneExplorerItem::Display(UWidgetDisplaySettings displaySettings)
+void WSceneExplorerItem::Display(UWidgetDisplaySettings const& displaySettings)
 {
 	Base::Display(displaySettings);
 
@@ -50,7 +50,7 @@ void WSceneExplorerItem::Remove()
 	ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &Self::OnSelectedObjectChanged);
 }
 
-void WSceneExplorerItem::OnSelectedObjectChanged(const UPtr<KObject> object)
+void WSceneExplorerItem::OnSelectedObjectChanged(UPtr<KObject> const& object)
 {
 	if (bg_)
 	{

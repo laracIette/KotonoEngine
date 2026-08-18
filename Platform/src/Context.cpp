@@ -29,7 +29,12 @@ static constexpr bool ENABLE_VALIDATION_LAYERS{ false };
 static constexpr bool ENABLE_VALIDATION_LAYERS{ true };
 #endif
 
-static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
+static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+	  VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+	, VkDebugUtilsMessageTypeFlagsEXT messageType
+	, VkDebugUtilsMessengerCallbackDataEXT const* pCallbackData
+	, void* pUserData
+)
 {
 	std::println("[Vulkan Validation Layer] {0}", pCallbackData->pMessage);
 	return VK_FALSE;

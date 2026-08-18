@@ -1,13 +1,14 @@
 #include "FileExplorer.h"
+
 #include "File.h"
 
 UFileExplorer::UFileExplorer() :
-    directoryPath_(ENGINE_DIRECTORY)
+    directoryPath_{ ENGINE_DIRECTORY }
 {
 }
 
 UFileExplorer::UFileExplorer(const UPath& path) :
-    directoryPath_(path)
+    directoryPath_{ path }
 {
 }
 

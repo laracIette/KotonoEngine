@@ -1,4 +1,5 @@
 #include "Serializer.h"
+
 #include "File.h"
 #include <kotono_common/log.h>
 #include <kotono_common/Path.h>
@@ -6,7 +7,7 @@
 
 #define KT_LOG_IMPORTANCE_LEVEL_SERIALIZER ELogImportanceLevel::High
 
-void SSerializer::Serialize(const nlohmann::json& json, const UPath& path)
+void SSerializer::Serialize(nlohmann::json const& json, UPath const& path)
 {
 	if (path.IsEmpty())
 	{
@@ -16,17 +17,17 @@ void SSerializer::Serialize(const nlohmann::json& json, const UPath& path)
 
 	if (json.is_null())
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO", "can't write null json to {}", path.ToString());
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO", "can't write null json to {0}", path.ToString());
 		return;
 	}
 
-	const UFile file(path);
+	const UFile file{ path };
 	const std::string jsonString{ json.dump(4) };
 
 	file.WriteString(jsonString);
 }
 
-void SSerializer::Deserialize(nlohmann::json& json, const UPath& path)
+void SSerializer::Deserialize(nlohmann::json& json, UPath const& path)
 {
 	if (path.IsEmpty())
 	{
@@ -34,13 +35,13 @@ void SSerializer::Deserialize(nlohmann::json& json, const UPath& path)
 		return;
 	}
 
-	const UFile file(path);
+	const UFile file{ path };
 	if (!file.Exists())
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO", "file at path {} doesn't exist", path.ToString());
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO", "file at path {0} doesn't exist", path.ToString());
 		return;
 	}
 
-	std::istringstream stream(file.ReadString());
+	std::istringstream stream{ file.ReadString() };
 	stream >> json;
 }

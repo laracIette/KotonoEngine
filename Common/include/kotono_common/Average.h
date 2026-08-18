@@ -1,11 +1,12 @@
 #pragma once
-#include <array>
 #include "types.h"
-template <size Size = 64, std::floating_point T = float>
-class KtAverage final
+#include <array>
+#include <concepts>
+template <std::floating_point T, size Size>
+class UAverage final
 {
 public:
-	constexpr void Add(const T time) noexcept
+	constexpr void Add(T time) noexcept
 	{
 		sum_ -= values_[index_];
 		values_[index_] = time;

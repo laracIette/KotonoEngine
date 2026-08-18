@@ -18,5 +18,5 @@ struct UTimeContext final
 	/// <summary>
 	/// Returns true if the time context updated, else false.
 	/// </summary>
-	bool Update(const float deltaTime);
+	bool Update(f32 deltaTime);
 };

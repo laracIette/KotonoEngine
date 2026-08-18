@@ -11,7 +11,7 @@ public:
 	WScrollable(const EAxis axis = EAxis::All);
 
 public:
-	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Display(UWidgetDisplaySettings const& displaySettings) override;
 	void Remove() override;
 
 	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;

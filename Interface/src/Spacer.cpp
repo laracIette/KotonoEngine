@@ -1,8 +1,8 @@
 #include "Spacer.h"
 #include <kotono_common/enum_utils.h>
 
-WSpacer::WSpacer(const EAxis axis)
-	: axis_(axis)
+WSpacer::WSpacer(EAxis axis)
+	: axis_{ axis }
 {
 }
 

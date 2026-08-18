@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/ChildrenOwner.generated.h"
-#include "Widget.h"
+#include <kotono_object/Widget.h>
 class WChildrenOwner : public WWidget
 {
 	GENERATED_WCHILDRENOWNER()
@@ -8,27 +8,26 @@ class WChildrenOwner : public WWidget
 public:
 	~WChildrenOwner() override;
 
-public:
 	void Remove() override;
 
 	WidgetVector WidgetTree() const override;
 
-public:
-	const WidgetPool& GetChildren() const;
+	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
 
-	void SetChildren(const WidgetPool& widgets);
+	void SetChildren(WidgetSet const& widgets);
 
 protected:
 	size GetValidChildrenCount() const;
 
-protected:
-	WidgetPool children_;
+private:
+	ReadonlyProperty(WidgetSet, children_, Children);
 };
 
 class UChildrenOwnerTree final : public UWidgetTree
 {
 public:
-	UChildrenOwnerTree(const UPtr<WChildrenOwner>& widget, const std::vector<UWidgetTree*>& children);
+	UChildrenOwnerTree(UPtr<WChildrenOwner> const& widget, std::span<UWidgetTree* const> children);
+	UChildrenOwnerTree(UPtr<WChildrenOwner> const& widget, std::initializer_list<UWidgetTree*> children);
 	~UChildrenOwnerTree() override;
 	
 	WidgetPtr Widget() const override;

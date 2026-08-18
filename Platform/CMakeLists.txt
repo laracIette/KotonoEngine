@@ -1,14 +1,9 @@
 cmake_minimum_required(VERSION 4.2)
 project(KotonoPlatform LANGUAGES C CXX)
 
-if (MSVC)
-    # Enable SDL security checks
-    add_compile_options(/sdl)
-endif()
-
+##############
 include(FetchContent)
 
-##############
 # --- glfw ---
 FetchContent_Declare(
     glfw
@@ -39,10 +34,8 @@ endforeach()
 
 find_package(Vulkan 1.4 REQUIRED)
 
-# Static library
 add_library(KotonoPlatform STATIC)
 
-# Require C++20
 target_compile_features(KotonoPlatform PUBLIC cxx_std_23)
 
 set_target_properties(KotonoPlatform PROPERTIES FOLDER "KotonoEngine")

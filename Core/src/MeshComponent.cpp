@@ -1,32 +1,21 @@
 #include "MeshComponent.h"
+
 #include "Task.h"
-#include "TimeManager.h"
 #include <glm/gtc/matrix_inverse.hpp>
 #include <kotono_common/log.h>
-#include <kotono_graphics/DrawCall.h>
-#include <kotono_graphics/DrawDataBufferData.h>
-#include <kotono_graphics/Material.h>
-#include <kotono_graphics/Model.h>
-#include <kotono_graphics/RenderContext.h>
-#include <kotono_graphics/Shader.h>
-#include <kotono_graphics/TransformBufferData.h>
+#include <kotono_graphics/SceneRenderGraph.h>
 #include <kotono_input/Keyboard.h>
-#include <kotono_platform/Window.h>
+#include <kotono_object/Scene.h>
 
 KMeshComponent::KMeshComponent() 
-    : drawCallBuilder_{}
 {
     spinTask_.duration = 5.0f;
 }
 
 KMeshComponent::~KMeshComponent()
 {
-    UnregisterDrawCall();
-
     Keyboard.EventKey(EKey::N, EInputState::Pressed).RemoveListener(this, &KMeshComponent::SetMobilityStatic);
     Keyboard.EventKey(EKey::M, EInputState::Pressed).RemoveListener(this, &KMeshComponent::SetMobilityDynamic);
-
-    GetRenderContext()->GetViewport().GetEventExtentUpdated().AddListener(this, &KMeshComponent::RefreshDrawCallScissor);
 }
 
 void KMeshComponent::Init()
@@ -38,56 +27,46 @@ void KMeshComponent::Init()
     spinTask_.Start();
 }
 
-void KMeshComponent::Update(const float deltaTime)
+void KMeshComponent::Update(const f32 deltaTime)
 {
     Base::Update(deltaTime);
 
     spinTask_.Update(deltaTime);
 }
 
-const UAsset<UShader>& KMeshComponent::GetShader() const
+const UPath& KMeshComponent::GetShader() const
 {
     return shader_;
 }
 
-const UAsset<UModel>& KMeshComponent::GetModel() const
+const UPath& KMeshComponent::GetModel() const
 {
     return model_;
 }
 
-const UAsset<UMaterial>& KMeshComponent::GetMaterial() const
+const UPath& KMeshComponent::GetMaterial() const
 {
     return material_;
 }
 
-void KMeshComponent::SetShader(const UAsset<UShader>& shader)
+void KMeshComponent::SetShader(const UPath& shader)
 {
     shader_ = shader;
-    RefreshDrawCallShaderData();
 }
 
-void KMeshComponent::SetModel(const UAsset<UModel>& model)
+void KMeshComponent::SetModel(const UPath& model)
 {
     model_ = model;
-    RefreshDrawCallModelData();
 }
 
-void KMeshComponent::SetMaterial(const UAsset<UMaterial>& material)
+void KMeshComponent::SetMaterial(const UPath& material)
 {
     material_ = material;
-    RefreshDrawCallMaterialData();
 }
 
 void KMeshComponent::Spawn()
 {
     Base::Spawn();
-
-    RefreshDrawCall();
-    RegisterDrawCall();
-
-    GetEventTransformUpdated().AddListener(this, &KMeshComponent::RefreshDrawCallTransformData);
-
-    GetRenderContext()->GetViewport().GetEventExtentUpdated().AddListener(this, &KMeshComponent::RefreshDrawCallScissor);
 
     Keyboard.EventKey(EKey::N, EInputState::Pressed).AddListener(this, &KMeshComponent::SetMobilityStatic);
     Keyboard.EventKey(EKey::M, EInputState::Pressed).AddListener(this, &KMeshComponent::SetMobilityDynamic);
@@ -95,72 +74,27 @@ void KMeshComponent::Spawn()
     spinTask_.eventUpdate.AddListener(this, &KMeshComponent::Spin);
 }
 
-void KMeshComponent::RegisterDrawCall()
-{
-    drawCallBuilder_.Register(GetRenderContext()->GetRenderer(), ERenderBucket::Opaque);
-}
-
-void KMeshComponent::UnregisterDrawCall()
-{
-    drawCallBuilder_.Unregister(GetRenderContext()->GetRenderer());
-}
-
-void KMeshComponent::RefreshDrawCall() const
-{
-    RefreshDrawCallScissor();
-    RefreshDrawCallShaderData();
-    RefreshDrawCallModelData();
-    RefreshDrawCallMaterialData();
-    RefreshDrawCallTransformData();
-}
-
-void KMeshComponent::RefreshDrawCallScissor() const
-{
-    const auto& offset{ GetRenderContext()->GetViewport().GetOffset() };
-    const auto& extent{ GetRenderContext()->GetViewport().GetExtent() };
-
-    drawCallBuilder_.GetDrawCall()->scissor = {
-        .offset = { offset.x, offset.y },
-        .extent = { extent.x, extent.y },
-    };
-}
-
-void KMeshComponent::RefreshDrawCallShaderData() const
-{
-    if (shader_)
-    {
-        drawCallBuilder_.GetDrawCall()->pipeline = shader_->GetPipeline();
-    }
-}
-
-void KMeshComponent::RefreshDrawCallModelData() const
-{
-    if (model_)
-    {
-        drawCallBuilder_.GetDrawData()->vertexBufferAddress = model_->GetVertexBufferAddress();
-        drawCallBuilder_.GetDrawCall()->indexCount = model_->GetIndexCount();
-        drawCallBuilder_.GetDrawCall()->firstIndex = model_->GetFirstIndex();
-    }
-}
-
-void KMeshComponent::RefreshDrawCallMaterialData() const
-{
-    if (material_)
-    {
-        drawCallBuilder_.GetDrawData()->materialIndex = material_->GetIndex();
-    }
-}
-
-void KMeshComponent::RefreshDrawCallTransformData() const
+void KMeshComponent::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const
 {
     const auto modelMatrix{ ModelMatrix() };
-    drawCallBuilder_.GetTransform()->modelMatrix = modelMatrix;
-    drawCallBuilder_.GetTransform()->normalMatrix = glm::mat4{ glm::inverseTranspose(glm::mat3{ modelMatrix }) };
+    sceneRenderGraph.drawDatas.push_back({
+        .scissor = {},
+        .sortKey = {},
+        .modelMatrix = modelMatrix,
+        .normalMatrix = glm::mat4{ glm::inverseTranspose(glm::mat3{ modelMatrix }) },
+        .shader = shader_,
+        .material = material_,
+        .model = model_,
+        .scalars = {},
+        .vectors = {},
+        .textures = {},
+        .isVisible = true,
+    });
 }
 
-void KMeshComponent::Spin()
+void KMeshComponent::Spin(const f32 deltaTime)
 {
-    const float speed{ 10.0f * TimeManager.GameTime().lastDelta };
+    const f32 speed{ 10.0f * GetScene()->GetGameTime().lastDelta };
     const glm::quat rotation{ glm::radians(glm::vec3{ 0.0f, speed, 0.0f }) };
     Rotate(rotation);
 }

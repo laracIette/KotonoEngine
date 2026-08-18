@@ -1,6 +1,6 @@
 #pragma once
 #include "Delegate.h"
-#include "Pool.h"
+#include "Set.h"
 #include "types.h"
 #include "hash_utils.h"
 
@@ -49,5 +49,5 @@ public:
     }
 
 private:
-    UPool<Delegate> delegates_;
+    USet<Delegate> delegates_;
 };

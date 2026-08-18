@@ -1,8 +1,8 @@
 #pragma once
-#include <nlohmann/json_fwd.hpp>
 #include <kotono_common/Asset.h>
 #include <kotono_common/AssetManager.h>
 #include <kotono_common/types.h>
+#include <nlohmann/json_fwd.hpp>
 #include <ranges>
 #include <type_traits>
 
@@ -130,14 +130,14 @@ struct USerialize<T>
 	}
 };
 
-template<typename T>
-struct USerialize<UAsset<T>>
+template<std::derived_from<AAsset> T>
+struct USerialize<T>
 {
-	void operator()(nlohmann::json& json, const UAsset<T>& v) const
+	void operator()(nlohmann::json& json, T const* v) const
 	{
 		if (v)
 		{
-			USerialize<UPath>{}(json, v.Path());
+			USerialize<UPath>{}(json, v->GetPath());
 		}
 	}
 };
@@ -237,25 +237,48 @@ struct UDeserialize<T>
 	}
 };
 
+template <typename T>
+concept Reservable = requires(T & v, std::size_t n)
+{
+	v.reserve(n);
+};
+
+template <typename T>
+concept BackInsertable = requires(T & v, std::ranges::range_value_t<T> val)
+{
+	v.push_back(val);
+};
+
 template<typename T>
-	requires std::ranges::range<T> && (!std::convertible_to<T, std::string>)
+	requires std::ranges::range<T>
+          && requires(T& container, std::ranges::range_value_t<T> val) { container.push_back(val); }
+          && (!std::convertible_to<T, std::string>)
 struct UDeserialize<T>
 {
 	void operator()(const nlohmann::json& json, T& v) const
 	{
 		using item_t = std::ranges::range_value_t<T>;
-		v.resize(get_size(json));
-		for (size i{ 0 }; i < v.size(); ++i)
+
+		size const rangeSize{ get_size(json) };
+
+		if constexpr (requires { v.reserve(rangeSize); })
 		{
-			UDeserialize<item_t>{}(get_at(json, i), v[i]);
+			v.reserve(rangeSize);
+		}
+
+		for (size i{ 0 }; i < rangeSize; ++i)
+		{
+			item_t value{};
+			UDeserialize<item_t>{}(get_at(json, i), value);
+			v.push_back(std::move(value));
 		}
 	}
 }; 
 
-template<typename T>
-struct UDeserialize<UAsset<T>>
+template<std::derived_from<AAsset> T>
+struct UDeserialize<T>
 {
-	void operator()(const nlohmann::json& json, UAsset<T>& v) const
+	void operator()(const nlohmann::json& json, T* v) const
 	{
 		UPath path{};
 		UDeserialize<UPath>{}(json, path);

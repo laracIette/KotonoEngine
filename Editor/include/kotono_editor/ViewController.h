@@ -1,6 +1,7 @@
 #pragma once
 #include "generated/ViewController.generated.h"
-#include <kotono_interface/Widget.h>
+#include <kotono_object/Widget.h>
+class WSceneRenderer;
 class WViewController final : public WWidget
 {
 	GENERATED_WVIEWCONTROLLER()
@@ -12,7 +13,7 @@ protected:
 	WidgetPtr Build() override;
 
 public:
-	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Display(UWidgetDisplaySettings const& displaySettings) override;
 	void Remove() override;
 
 private:
@@ -22,10 +23,10 @@ private:
 	void OnKeyboardDKeyDown() const;
 	void OnKeyboardQKeyDown() const;
 	void OnKeyboardEKeyDown() const;
-	void OnMouseMove(const glm::vec2& delta);
-	void OnMouseVerticalScroll(const f32 delta);
+	void OnMouseMove(glm::vec2 const& delta);
+	void OnMouseVerticalScroll(f32 delta);
 
-	void Translate(const glm::vec3& delta) const;
+	void Translate(glm::vec3 const& delta) const;
 
 private:
 	bool isFocused_;
@@ -33,4 +34,6 @@ private:
 	f32 sensitivity_;
 	f32 pitch_;
 	f32 yaw_;
+
+	UPtr<WSceneRenderer> sceneRenderer_;
 };

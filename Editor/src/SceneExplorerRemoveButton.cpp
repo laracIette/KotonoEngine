@@ -1,10 +1,10 @@
 #include "SceneExplorerRemoveButton.h"
+
 #include <kotono_interface/widgets.h>
-#include <kotono_core/Game.h>
-#include <kotono_core/Scene.h>
-#include <kotono_core/SceneObject.h>
 #include <kotono_object/Object.h>
 #include <kotono_object/ObjectManager.h>
+#include <kotono_object/Scene.h>
+#include <kotono_object/SceneObject.h>
 
 WidgetPtr WSceneExplorerRemoveButton::Build()
 {
@@ -20,13 +20,10 @@ WidgetPtr WSceneExplorerRemoveButton::Build()
 
     button_ = UCreate<WButton>{}();
     button_->SetIsEnabled(false);
-    button_->SetOnClicked([]() {
+    button_->SetOnClicked([this]() {
         if (UPtr selectedObject{ TryCast<TSceneObject>(ObjectManager.GetSelectedObject()) })
         {
-            if (UPtr scene{ Game.GetOpenedScene() })
-            {
-                scene->Remove(selectedObject);
-            }
+            GetScene()->Remove(selectedObject);
             ObjectManager.SetSelectedObject(nullptr);
             selectedObject->Delete();
         }
@@ -44,7 +41,7 @@ WidgetPtr WSceneExplorerRemoveButton::Build()
     return widgetTree.Widget();
 }
 
-void WSceneExplorerRemoveButton::Display(UWidgetDisplaySettings displaySettings)
+void WSceneExplorerRemoveButton::Display(UWidgetDisplaySettings const& displaySettings)
 {
     Base::Display(displaySettings);
 

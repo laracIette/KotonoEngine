@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/ChildOwner.generated.h"
-#include "Widget.h"
+#include <kotono_object/Widget.h>
 class WChildOwner : public WWidget
 {
 	GENERATED_WCHILDOWNER()
@@ -15,16 +15,16 @@ public:
 
 	WidgetVector WidgetTree() const override;
 
-public:
-	const WidgetPtr& GetChild() const;
+	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
 
+public:
 	void SetChild(const WidgetPtr& widget);
 
 protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) final;
 
-protected:
-	WidgetPtr child_;
+private:
+	ReadonlyProperty(WidgetPtr, child_, Child);
 };
 
 class UChildOwnerTree final : public UWidgetTree

@@ -7,19 +7,18 @@
 #include "UpdateTimeText.h"
 #include "ViewController.h"
 #include "VisualizerWindow.h"
-#include <kotono_graphics/RenderContext.h>
 #include <kotono_interface/widgets.h>
-#include <kotono_platform/Window.h>
+#include <kotono_object/Scene.h>
 
 WidgetPtr WMainWindow::Build()
-{		
+{
 	const auto widgetTree{ UChildOwnerTree{ UCreate<WPadding>{ "Main Window Padding" }(UPadding::All(16.0f)),
 		new UChildrenOwnerTree{ UCreate<WColumn>{ "Main Window Column" }(5.0f), {
 			new UChildrenOwnerTree{ UCreate<WRow>{ "Top Row" }(), {
 				new UWidgetTreeLeaf{ UCreate<WSpacer>{ "Top Row Spacer" }(EAxis::Horizontal) },
 				new UChildOwnerTree{ UCreate<WWrap>{ "Times Wrap" }(),
 					new UChildrenOwnerTree{ UCreate<WColumn>{ "Times Column" }(), {
-						new UWidgetTreeLeaf{ UCreate<WUpdateTimeText>{ "Update Time Text" }() },
+						new UWidgetTreeLeaf{ UCreate<WUpdateTimeText>{ "Update Time Text" }(Ptr()) },
 						new UWidgetTreeLeaf{ UCreate<WDrawTimeText>{ "Draw Time Text" }() },
 					} },
 				},
@@ -27,7 +26,7 @@ WidgetPtr WMainWindow::Build()
 			new UChildOwnerTree{ UCreate<WWrap>{ "Game State Wrap" }(EAxis::Vertical),
 				new UChildrenOwnerTree{ UCreate<WRow>{ "Game State Row" }(), {
 					new UChildOwnerTree{ UCreate<WCenter>{ "Game State Center" }(EAxis::Horizontal),
-						new UWidgetTreeLeaf{ UCreate<WGameStateButton>{ "Game State Button" }() }
+						new UWidgetTreeLeaf{ UCreate<WGameStateButton>{ "Game State Button" }(Ptr()) }
 					},
 				} }
 			},
@@ -37,7 +36,7 @@ WidgetPtr WMainWindow::Build()
 						new UChildOwnerTree{ UCreate<WConstraint>{ "Left Panel Constraint" }(EAxis::Vertical, 500.0f),
 							new UChildrenOwnerTree{ UCreate<WRow>{}(), {
 								new UChildOwnerTree{ UCreate<WConstraint>{ "Scene Explorer Constraint" }(EAxis::Horizontal, 300.0f),
-									new UWidgetTreeLeaf{ UCreate<WSceneExplorer>{ "Scene Explorer" }() }
+									new UWidgetTreeLeaf{ UCreate<WSceneExplorer>{ "Scene Explorer" }(Ptr()) }
 								},
 								new UWidgetTreeLeaf{ UCreate<WViewController>{ "Scene View Controller" }() },
 							} }
@@ -65,14 +64,17 @@ WidgetPtr WMainWindow::Build()
 	return widgetTree.Widget();
 }
 
-void WMainWindow::BeginDraw()
+void WMainWindow::BeginDraw(glm::uvec2 const& extent)
 {
 	Display({
 		.position = { 0.0f, 0.0f },
-		.bounds = static_cast<glm::vec2>(GetRenderContext()->GetViewport().GetExtent()),
+		.bounds = glm::vec2{ extent },
 		.layer = 0,
-		.scissor = { { 0, 0 }, GetRenderContext()->GetViewport().GetExtent() },
-		});
+		.scissor{ 
+			.offset = { 0, 0 }, 
+			.extent = extent
+		},
+	});
 }
 
 void WMainWindow::EndDraw()
@@ -80,24 +82,31 @@ void WMainWindow::EndDraw()
 	Remove();
 }
 
-void WMainWindow::Display(UWidgetDisplaySettings displaySettings)
+void WMainWindow::Update(f32 deltaTime)
 {
-	Base::Display(displaySettings);
-
-	Window.GetEventWindowResized().AddListener(this, &WMainWindow::OnWindowResized);
+	if (GetScene())
+	{
+		GetScene()->Update(deltaTime);
+	}
 }
 
-void WMainWindow::Remove()
+void WMainWindow::PopulateSceneRenderGraph(USceneRenderGraph& sceneRenderGraph) const
 {
-	Base::Remove(); 
-	
-	Window.GetEventWindowResized().RemoveListener(this, &WMainWindow::OnWindowResized);
+	if (GetScene())
+	{
+		GetScene()->PopulateRenderGraph(sceneRenderGraph);
+	}
 }
 
-void WMainWindow::OnWindowResized(const glm::uvec2 extent)
+void WMainWindow::SetInterface(UInterface* newInterface)
 {
-	EndDraw();
-	BeginDraw();
+	interface_ = newInterface;
+}
+
+UInterface* WMainWindow::GetInterface() const
+{
+	assert(interface_);
+	return interface_;
 }
 
 #include "generated/MainWindow.generated.inl"

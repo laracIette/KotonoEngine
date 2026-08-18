@@ -1,9 +1,9 @@
 #pragma once
-#include <vector>
-#include <functional>
-#include <concepts>
 #include "types.h"
-
+#include <concepts>
+#include <functional>
+#include <ranges>
+#include <vector>
 enum class EPoolRemoveResult : u8
 {
 	IndexOutOfRange,
@@ -11,40 +11,44 @@ enum class EPoolRemoveResult : u8
 	ItemRemoved,
 	ItemSwappedAndRemoved,
 };
-
 /// <summary>
-/// std::vector wrapper with O(1) item removal
+/// std::vector wrapper with O(1) item removal.
 /// </summary>
 template <typename ValueType>
 class UPool final
 {
 private:
 	using VectorType = std::vector<ValueType>;
-	using IteratorType = VectorType::iterator;
-	using ConstIteratorType = VectorType::const_iterator;
-	using ConditionFunction = std::function<bool(const ValueType&)>;
+	using ConditionFunction = std::function<b8(ValueType const&)>;
 	using IndexType = ::size;
 
 public:
 	using value_type = ValueType;
+	using index_type = IndexType;
 
 public:
-	UPool() : data_() {}
+	constexpr UPool() noexcept = default;
 
-	UPool(IteratorType begin, IteratorType end) : data_(begin, end) {}
+	template <std::input_iterator It, std::sentinel_for<It> Sentinel>
+	constexpr UPool(It begin, Sentinel end)
+		: data_(std::ranges::subrange(begin, end) | std::ranges::to<VectorType>())
+	{}
 
-	UPool(ConstIteratorType begin, ConstIteratorType end) : data_(begin, end) {}
+	constexpr UPool(std::initializer_list<ValueType> data) 
+		: UPool(data.begin(), data.end())
+	{}
 
-	template <std::input_iterator CustomIteratorType>
-	UPool(CustomIteratorType begin, CustomIteratorType end) : data_(begin, end) {}
-
-	UPool(std::initializer_list<ValueType> data) : data_(data) {}
+	template <std::ranges::input_range R>
+		requires (!std::derived_from<std::remove_cvref_t<R>, UPool>)
+	constexpr UPool(R&& range)
+		: UPool(std::ranges::begin(range), std::ranges::end(range))
+	{}
 	
 	template <typename T>
 		requires std::constructible_from<ValueType, T>
-	UPool(const UPool<T>& pool)
+	constexpr UPool(UPool<T> const& pool)
 	{
-		for (auto& item : pool)
+		for (auto const& item : pool)
 		{
 			data_.push_back(item);
 		}
@@ -57,25 +61,8 @@ public:
 		data_.push_back(std::forward<T>(value));
 	}
 
-	constexpr void Add(const ValueType& value)
-	{
-		data_.push_back(value);
-	}
-
-	// Remove the specified item with O(n) complexity
-	constexpr EPoolRemoveResult Remove(const ValueType& value)
-	{
-		const i64 index{ FindIndex(value) };
-		if (index == -1)
-		{
-			return EPoolRemoveResult::ItemNotFound;
-		}
-
-		return RemoveAt(index);
-	}
-
 	// Remove the item at the specified index with O(1) complexity
-	constexpr EPoolRemoveResult RemoveAt(const IndexType index) noexcept
+	constexpr EPoolRemoveResult RemoveAt(IndexType index) noexcept
 	{
 		if (!IsValidIndex(index))
 		{
@@ -93,7 +80,7 @@ public:
 		return result;
 	}
 
-	constexpr void RemoveIf(const ConditionFunction& condition) noexcept
+	constexpr void RemoveIf(ConditionFunction const& condition) noexcept
 	{
 		// Have to check backwards to avoid skipping condition checks
 		for (i64 i{ LastIndex() }; IsValidIndex(i); --i)
@@ -110,38 +97,32 @@ public:
 		data_.clear();
 	}
 
-	constexpr ConstIteratorType Find(const ValueType& value) const
-	{
-		return std::find(data_.begin(), data_.end(), value);
-	}
-
-	constexpr i64 FindIndex(const ValueType& value) const
-	{
-		const auto it{ Find(value) };
-		if (it == end())
-		{
-			return -1;
-		}
-
-		return static_cast<IndexType>(std::distance(data_.begin(), it));
-	}
-
-	constexpr void reserve(const IndexType size)
+	constexpr void reserve(IndexType size)
 	{
 		data_.reserve(size);
 	}
 
-	constexpr void resize(const IndexType size)
+	constexpr void resize(IndexType size)
 	{
 		data_.resize(size);
 	}
 
-	constexpr void Append(const UPool& pool)
+	constexpr IndexType size() const noexcept
+	{
+		return data_.size();
+	}
+
+	constexpr b8 empty() const noexcept
+	{
+		return data_.empty();
+	}
+
+	constexpr void Append(UPool const& pool)
 	{
 		data_.insert(end(), pool.begin(), pool.end());
 	}
 
-	constexpr void Append(const std::initializer_list<ValueType>& values)
+	constexpr void Append(std::initializer_list<ValueType> const& values)
 	{
 		data_.insert(end(), values.begin(), values.end());
 	}
@@ -152,67 +133,48 @@ public:
 		pool.Clear();
 	}
 
-	constexpr IteratorType begin() noexcept
+	constexpr auto begin(this auto&& self) noexcept(noexcept(std::ranges::begin(self.data_)))
 	{
-		return data_.begin();
+		return std::ranges::begin(self.data_);
 	}
 
-	constexpr IteratorType end() noexcept
+	constexpr auto end(this auto&& self) noexcept(noexcept(std::ranges::end(self.data_)))
 	{
-		return data_.end();
+		return std::ranges::end(self.data_);
 	}
 
-	constexpr ConstIteratorType begin() const noexcept
+	constexpr auto back(this auto&& self) noexcept(noexcept(self.data_.back()))
 	{
-		return data_.begin();
+		return self.data_.back();
 	}
 
-	constexpr ConstIteratorType end() const noexcept
+	constexpr auto operator[](this auto&& self, IndexType index) noexcept(noexcept(self.data_[index]))
 	{
-		return data_.end();
-	}
-
-	constexpr size size() const noexcept
-	{
-		return data_.size();
+		return self.data_[index];
 	}
 
 	// Returns -1 if size == 0
 	constexpr i64 LastIndex() const noexcept
 	{
-		return static_cast<i64>(size()) - 1;
+		return static_cast<i64>(data_.size()) - 1;
 	}
 
-	constexpr bool IsValidIndex(const IndexType index) const noexcept
+	constexpr b8 IsValidIndex(IndexType index) const noexcept
 	{
-		return index >= 0 && index < size();
+		return index >= 0 && index < data_.size();
 	}
 
-	constexpr bool IsValidIndex(const i64 index) const noexcept
+	constexpr b8 IsValidIndex(i64 index) const noexcept
 	{
-		return index >= 0 && index < size();
+		return index >= 0 && index < data_.size();
 	}
 
-	constexpr bool empty() const noexcept
-	{
-		return data_.empty();
-	}
-
-	const ValueType& operator[](const IndexType index) const noexcept
-	{
-		return data_[index];
-	}
-
-	ValueType& operator[](const IndexType index) noexcept
-	{
-		return data_[index];
-	}
-
-	void push_back(const value_type& item)
+	constexpr void push_back(ValueType const& item)
 	{
 		data_.push_back(item);
 	}
-	void push_back(value_type&& item)
+
+	constexpr void push_back(ValueType&& item)
 	{
 		data_.push_back(std::move(item));
 	}
@@ -221,3 +183,5 @@ private:
 	VectorType data_;
 };
 
+template <std::ranges::input_range R>
+UPool(R&&) -> UPool<std::ranges::range_value_t<R>>;

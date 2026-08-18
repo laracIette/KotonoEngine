@@ -1,7 +1,7 @@
 #include "File.h"
-#include <sstream>
 #include <iostream>
 #include <kotono_common/log.h>
+#include <sstream>
 
 #define KT_LOG_IMPORTANCE_LEVEL_FILE ELogImportanceLevel::High
 
@@ -20,7 +20,7 @@ bool UFile::Exists() const
     return std::filesystem::exists(path_.ToPath());
 }
 
-const UPath& UFile::Path() const
+UPath const& UFile::Path() const
 {
     return path_;
 }
@@ -104,7 +104,7 @@ std::vector<u8> UFile::ReadBinary() const
     return buffer;
 }
 
-void UFile::WriteString(const std::string_view data) const
+void UFile::WriteString(std::string_view data) const
 {
     // Open file for writing
     auto file{ OpenFile() };
@@ -122,7 +122,7 @@ void UFile::WriteString(const std::string_view data) const
     file.close();
 }
 
-void UFile::WriteBinary(const std::span<u32> data) const
+void UFile::WriteBinary(std::span<u32 const> data) const
 {
     // Open file for writing in binary mode
     auto file{ OpenFile() };

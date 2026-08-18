@@ -61,23 +61,23 @@ public:
 	{
 	}
 
-	UPtr(std::nullptr_t) : UPtr{} 
+	UPtr(std::nullptr_t) : UPtr()
 	{
 	}
 
-	UPtr(Owner* owner) : UPtr{}
+	UPtr(Owner* owner) : UPtr()
 	{
 		SetOwner(owner);
 	}
 	
-	UPtr(const UPtr& other) : UPtr{}
+	UPtr(UPtr const& other) : UPtr()
 	{
 		SetOwner(other.owner_);
 	}
 
 	template <typename From>
 		requires std::is_convertible_v<From*, PointerType*>
-	UPtr(const UPtr<From>& other) : UPtr{}
+	UPtr(UPtr<From> const& other) : UPtr()
 	{
 		SetOwner(other.owner_);
 	}
@@ -100,13 +100,13 @@ public:
 
 	template <typename From>
 		requires std::is_convertible_v<From*, PointerType*>
-	UPtr& operator=(const UPtr<From>& other)
+	UPtr& operator=(UPtr<From> const& other)
 	{
 		SetOwner(other.owner_);
 		return *this;
 	}
 
-	UPtr& operator=(const UPtr& other)
+	UPtr& operator=(UPtr const& other)
 	{
 		if (this != &other)
 		{
@@ -115,14 +115,14 @@ public:
 		return *this;
 	}
 
-	constexpr bool operator==(const UPtr& other) const noexcept
+	constexpr bool operator==(UPtr const& other) const noexcept
 	{
 		return owner_ == other.owner_;
 	}
 
 	template <typename From>
 		requires std::is_convertible_v<From*, PointerType*>
-	constexpr bool operator==(const UPtr<From>& other) const noexcept
+	constexpr bool operator==(UPtr<From> const& other) const noexcept
 	{
 		return owner_ == other.owner_;
 	}
@@ -189,7 +189,7 @@ private:
 
 template <typename Derived, typename Base>
 	requires std::is_base_of_v<Base, Derived>
-inline UPtr<Derived> TryCast(const UPtr<Base>& ptr)
+inline UPtr<Derived> TryCast(UPtr<Base> const& ptr)
 {
 	if (ptr && dynamic_cast<Derived*>(ptr.Get()))
 	{
@@ -201,7 +201,7 @@ inline UPtr<Derived> TryCast(const UPtr<Base>& ptr)
 template <typename T>
 struct std::hash<UPtr<T>>
 {
-	::size operator()(const UPtr<T>& ptr) const noexcept
+	::size operator()(UPtr<T> const& ptr) const noexcept
 	{
 		return std::hash<void*>{}(ptr.owner_);
 	}

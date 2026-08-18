@@ -1,14 +1,17 @@
 {
     "files": [
         "${ENGINE_DIRECTORY}/Object/include/kotono_object/Object.h",
+        "${ENGINE_DIRECTORY}/Object/include/kotono_object/Scene.h",
+        "${ENGINE_DIRECTORY}/Object/include/kotono_object/SceneComponent.h",
+        "${ENGINE_DIRECTORY}/Object/include/kotono_object/SceneContext.h",
+        "${ENGINE_DIRECTORY}/Object/include/kotono_object/SceneObject.h",
+        "${ENGINE_DIRECTORY}/Object/include/kotono_object/SceneWidget.h",
+        "${ENGINE_DIRECTORY}/Object/include/kotono_object/Widget.h",
 
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/CameraComponent.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/DirectionalLightComponent.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/PointLightComponent.h",
-        "${ENGINE_DIRECTORY}/Core/include/kotono_core/Scene.h",
-        "${ENGINE_DIRECTORY}/Core/include/kotono_core/SceneComponent.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/MeshComponent.h",
-        "${ENGINE_DIRECTORY}/Core/include/kotono_core/SceneObject.h",
 
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Box.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Button.h",
@@ -27,11 +30,11 @@
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Offset.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Padding.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Row.h",
+        "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/SceneRenderer.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Scrollable.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Spacer.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Stack.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Text.h",
-        "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Widget.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Wrap.h",
 
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/AssetExplorer.h",

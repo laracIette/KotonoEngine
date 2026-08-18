@@ -1,5 +1,4 @@
 #pragma once
-#include "Widget.h"
 #include "Box.h"
 #include "Button.h"
 #include "Center.h"
@@ -13,6 +12,7 @@
 #include "Offset.h"
 #include "Padding.h"
 #include "Row.h"
+#include "SceneRenderer.h"
 #include "Scrollable.h"
 #include "Spacer.h"
 #include "Stack.h"

@@ -1,6 +1,6 @@
 #include "TimeContext.h"
 
-bool UTimeContext::Update(const float deltaTime)
+bool UTimeContext::Update(f32 deltaTime)
 {
 	if (state == ETimeContextState::Paused)
 	{
@@ -13,7 +13,7 @@ bool UTimeContext::Update(const float deltaTime)
 	if (currentDelta >= frequency)
 	{
 		lastDelta = currentDelta;
-		currentDelta = 0;
+		currentDelta = 0.0f;
 		return true;
 	}
 

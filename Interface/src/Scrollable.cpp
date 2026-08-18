@@ -10,7 +10,7 @@ WScrollable::WScrollable(const EAxis axis)
 {
 }
 
-void WScrollable::Display(UWidgetDisplaySettings displaySettings)
+void WScrollable::Display(UWidgetDisplaySettings const& displaySettings)
 {
 	Base::Display(displaySettings);
 
@@ -31,9 +31,9 @@ UWidgetDisplaySettings WScrollable::GetContentDisplaySettings(UWidgetDisplaySett
 
 	displaySettings.position += offset_;
 
-	if (child_)
+	if (GetChild())
 	{
-		return child_->GetContentDisplaySettings(displaySettings);
+		return GetChild()->GetContentDisplaySettings(displaySettings);
 	}
 	return displaySettings;
 }

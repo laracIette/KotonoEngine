@@ -7,9 +7,9 @@ WCenter::WCenter(const EAxis axis)
 
 UWidgetDisplaySettings WCenter::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
 {
-	if (child_)
+	if (GetChild())
 	{
-		const auto childSettings{ child_->GetContentDisplaySettings(displaySettings) };
+		const auto childSettings{ GetChild()->GetContentDisplaySettings(displaySettings) };
 
 		switch (axis_)
 		{

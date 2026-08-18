@@ -1,15 +1,8 @@
 cmake_minimum_required(VERSION 4.2)
 project(KotonoGenerator LANGUAGES C CXX)
 
-if (MSVC)
-    # Enable SDL security checks
-    add_compile_options(/sdl)
-endif()
-
-# Create executable
 add_executable(KotonoGenerator)
 
-# Enable C++20
 target_compile_features(KotonoGenerator PRIVATE cxx_std_23)
 
 set_target_properties(KotonoGenerator PROPERTIES FOLDER "KotonoEngine")

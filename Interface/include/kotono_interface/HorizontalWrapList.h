@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/HorizontalWrapList.generated.h"
-#include "Widget.h"
+#include <kotono_object/Widget.h>
 class WHorizontalWrapListBody;
 /// Defines an horizontal container for widgets that wraps the content to multiple rows
 class WHorizontalWrapList final : public WWidget
@@ -11,13 +11,13 @@ protected:
 	WidgetPtr Build() override;
 
 public:
-	float GetItemSpacing() const;
-	float GetRowSpacing() const;
-	const WidgetPool& GetChildren() const;
+	f32 GetItemSpacing() const;
+	f32 GetRowSpacing() const;
+	WidgetSet const& GetChildren() const;
 
-	void SetItemSpacing(const float itemSpacing);
-	void SetRowSpacing(const float rowSpacing);
-	void SetChildren(const WidgetPool& children);
+	void SetItemSpacing(f32 itemSpacing);
+	void SetRowSpacing(f32 rowSpacing);
+	void SetChildren(WidgetSet const& children);
 
 private:
 	UPtr<WHorizontalWrapListBody> body_;

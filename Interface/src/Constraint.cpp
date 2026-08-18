@@ -1,13 +1,13 @@
 #include "Constraint.h"
 
-WConstraint::WConstraint(const EAxis axis, const f32 size)
+WConstraint::WConstraint(EAxis axis, f32 size)
 	: axis_{ axis }
 	, size_{ size }
 {
 }
 
 WConstraint::WConstraint()
-	: Self{ EAxis::All, 64.0f }
+	: Self(EAxis::All, 64.0f)
 {
 }
 
@@ -23,9 +23,9 @@ UWidgetDisplaySettings WConstraint::GetContentDisplaySettings(UWidgetDisplaySett
 		break;
 	}
 
-	if (child_)
+	if (GetChild())
 	{
-		return child_->GetContentDisplaySettings(displaySettings);
+		return GetChild()->GetContentDisplaySettings(displaySettings);
 	}
 	return displaySettings;
 }

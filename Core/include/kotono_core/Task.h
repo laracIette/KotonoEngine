@@ -4,7 +4,7 @@ struct UTask final
 {
 	bool isPlaying;
 	float duration;
-	UEvent<> eventUpdate;
+	UEvent<f32> eventUpdate;
 	UEvent<> eventCompleted;
 
 	void Update(const float deltaTime);

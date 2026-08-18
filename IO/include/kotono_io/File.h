@@ -14,7 +14,7 @@ public:
 	/// Get whether the file exists
 	bool Exists() const;
 	/// Get the path to the file
-	const UPath& Path() const;
+	UPath const& Path() const;
 	/// Get the path to the directory of the file
 	std::filesystem::path Directory() const;
 	/// Get the name of the file with extension
@@ -30,9 +30,9 @@ public:
 	/// Get the content of the file, for binary files
 	std::vector<u8> ReadBinary() const;
 	/// Set the content of the file, for text files
-	void WriteString(const std::string_view data) const;
+	void WriteString(std::string_view data) const;
 	/// Set the content of the file, for binary files
-	void WriteBinary(const std::span<u32> data) const;
+	void WriteBinary(std::span<u32 const> data) const;
 
 private:
 	/// Create the file's directory if it doesn't exist, then return the opened file

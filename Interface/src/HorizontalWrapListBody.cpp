@@ -56,7 +56,7 @@ void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySett
 	glm::vec2 rowSize{ 0.0f, 0.0f };
 	auto isRowEmpty{ [&rowSize]() { return rowSize == glm::vec2{ 0.0f, 0.0f }; } };
 
-	for (auto& child : children_)
+	for (auto const& child : GetChildren())
 	{
 		if (child)
 		{
@@ -94,7 +94,7 @@ std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDisplaySizes(const UWidget
 
 	auto newDisplayBounds{ displaySettings.bounds };
 
-	for (auto& child : children_)
+	for (auto const& child : GetChildren())
 	{
 		if (child)
 		{
@@ -145,7 +145,7 @@ std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDesiredSizes(const glm::ve
 
 	auto isRowEmpty{ [&rowSize]() { return rowSize == glm::vec2{ 0.0f, 0.0f }; } };
 
-	for (auto& child : children_)
+	for (auto const& child : GetChildren())
 	{
 		if (child)
 		{

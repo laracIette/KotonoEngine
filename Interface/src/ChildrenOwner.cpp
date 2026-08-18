@@ -43,25 +43,31 @@ WidgetVector WChildrenOwner::WidgetTree() const
 	return result;
 }
 
-const WidgetPool& WChildrenOwner::GetChildren() const
+void WChildrenOwner::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
 {
-	return children_;
+	for (auto& child : children_)
+	{
+		if (child && child->GetIsDisplayed())
+		{
+			child->PopulateRenderGraph(interfaceRenderGraph);
+		}
+	}
 }
 
-void WChildrenOwner::SetChildren(const WidgetPool& widgets)
+void WChildrenOwner::SetChildren(const WidgetSet& widgets)
 {
 	SetState([this, widgets]() {
-		for (auto& child : children_)
+		for (auto const& child : children_)
 		{
 			if (child)
 			{
-				child->SetParent({});
+				child->SetParent(nullptr);
 			}
 		}
 
 		children_ = widgets;
 
-		for (auto& child : children_)
+		for (auto const& child : children_)
 		{
 			if (child)
 			{
@@ -73,20 +79,26 @@ void WChildrenOwner::SetChildren(const WidgetPool& widgets)
 
 size WChildrenOwner::GetValidChildrenCount() const
 {
-	return std::count_if(children_.begin(), children_.end(),
-		[](const WidgetPtr& child) { return child; }
+	return std::ranges::count_if(children_,
+		[](WidgetPtr const& child) { return child != nullptr; }
 	);
 }
 
-UChildrenOwnerTree::UChildrenOwnerTree(const UPtr<WChildrenOwner>& widget, const std::vector<UWidgetTree*>& children)
+UChildrenOwnerTree::UChildrenOwnerTree(UPtr<WChildrenOwner> const& widget, std::span<UWidgetTree* const> children)
 	: widget_{ widget }
-	, children_{ children }
+	, children_{ children | std::ranges::to<std::vector>() }
+{
+}
+
+UChildrenOwnerTree::UChildrenOwnerTree(UPtr<WChildrenOwner> const& widget, std::initializer_list<UWidgetTree*> children)
+	: widget_{ widget }
+	, children_{ children | std::ranges::to<std::vector>() }
 {
 }
 
 UChildrenOwnerTree::~UChildrenOwnerTree()
 {
-	for (const auto* widgetTree : children_)
+	for (auto const* widgetTree : children_)
 	{
 		delete widgetTree;
 	}
@@ -99,7 +111,7 @@ WidgetPtr UChildrenOwnerTree::Widget() const
 
 void UChildrenOwnerTree::Link() const
 {
-	for (const auto* child : children_)
+	for (auto const* child : children_)
 	{
 		if (child)
 		{
@@ -109,10 +121,10 @@ void UChildrenOwnerTree::Link() const
 
 	if (widget_)
 	{
-		const WidgetPool widgets{ children_
-			| std::views::filter([](const UWidgetTree* child) { return child != nullptr; })
-			| std::views::transform([](const UWidgetTree* child) { return child->Widget(); })
-			| std::ranges::to<WidgetPool>() 
+		auto const widgets{ children_
+			| std::views::filter([](UWidgetTree const* child) { return child != nullptr; })
+			| std::views::transform([](UWidgetTree const* child) { return child->Widget(); })
+			| std::ranges::to<USet>()
 		};
 
 		widget_->SetChildren(widgets);

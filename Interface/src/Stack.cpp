@@ -3,7 +3,7 @@
 
 void WStack::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
-	for (auto& child : children_)
+	for (auto const& child : GetChildren())
 	{
 		if (child)
 		{
@@ -17,7 +17,7 @@ UWidgetDisplaySettings WStack::GetContentDisplaySettings(UWidgetDisplaySettings 
 {
 	glm::vec2 bounds{ 0.0f, 0.0f };
 
-	for (auto& child : children_)
+	for (auto const& child : GetChildren())
 	{
 		if (child)
 		{
@@ -33,7 +33,7 @@ glm::vec2 WStack::GetDesiredSize(const glm::vec2& bounds) const
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
-	for (auto& child : children_)
+	for (auto const& child : GetChildren())
 	{
 		if (child)
 		{

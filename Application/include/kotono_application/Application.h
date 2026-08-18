@@ -1,8 +1,17 @@
 #pragma once
 #include <glm/ext/vector_uint2.hpp>
+#include <kotono_common/Average.h>
+#include <kotono_common/Handle.h>
+#include <kotono_rendering/Renderer.h>
+#include <span>
+#include <unordered_map>
+#include <vector>
 #ifdef EDITOR
-	#include <kotono_object/Ptr.h>
-	class WMainWindow;
+#include <kotono_object/Ptr.h>
+#endif
+class UInterface;
+#ifdef EDITOR
+class WMainWindow;
 #endif
 class UApplication final
 {
@@ -11,14 +20,24 @@ public:
 
 private:
 	void Init();
-	void Update() const;
-	void Cleanup() const;
+	void Update();
+	void Cleanup();
 
 	void LogUPS() const;
-	void OnWindowResized(const glm::uvec2& extent) const;
+	void OnWindowResized(glm::uvec2 const& extent);
 
 private:
+	URenderer renderer_;
+	UInterface* interface_;
+
+	std::unordered_map<EHandle, u32> textureHandles_;
+	std::unordered_map<EHandle, u32> sceneRenders_;
+
+	f32 now_;
+	f32 deltaTime_;
+	UAverage<f32, 256> averageUpdateTime_;
+
 #	ifdef EDITOR
-		UPtr<WMainWindow> mainWindow_;
+	UPtr<WMainWindow> mainWindow_;
 #	endif
 };

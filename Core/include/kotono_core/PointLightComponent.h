@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/PointLightComponent.generated.h"
-#include "SceneComponent.h"
+#include <kotono_object/SceneComponent.h>
 #include <kotono_graphics/Color.h>
 class KPointLightComponent : public KSceneComponent
 {
@@ -11,12 +11,10 @@ public:
 
 	void Spawn() override;
 
-	void SetRange(const f32 range);
-	void SetColor(const UColor& color);
-	void SetIntensity(const f32 intensity);
+	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const override;
 
 private:
-	SERIALIZE ReadonlyProperty(f32, range_, Range);
-	SERIALIZE ReadonlyProperty(UColor, color_, Color);
-	SERIALIZE ReadonlyProperty(f32, intensity_, Intensity);
+	SERIALIZE WritableProperty(f32, range_, Range);
+	SERIALIZE WritableProperty(UColor, color_, Color);
+	SERIALIZE WritableProperty(f32, intensity_, Intensity);
 };

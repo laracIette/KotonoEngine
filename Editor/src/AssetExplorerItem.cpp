@@ -1,6 +1,6 @@
 #include "AssetExplorerItem.h"
 #include <kotono_interface/widgets.h>
-#include <kotono_core/TimeManager.h>
+#include <kotono_object/Interface.h>
 
 WAssetExplorerItem::WAssetExplorerItem(const UPath& path, const OnClickedFunc& onDoubleClicked)
     : path_{ path }
@@ -25,13 +25,13 @@ WidgetPtr WAssetExplorerItem::Build()
 
     UPtr button{ UCreate<WButton>{ "Item Button" }() };
     button->SetOnClicked([this, SELECTED_COLOR]() { 
-        if (isSelected_ && TimeManager.Now() - lastClickedTime_ < doubleClickTreshold_) {
+        if (isSelected_ && GetInterface()->GetTimeContext().total - lastClickedTime_ < doubleClickTreshold_) {
             if (onDoubleClicked_) {
                 onDoubleClicked_(path_);
             }
         }
         else {
-            lastClickedTime_ = TimeManager.Now();
+            lastClickedTime_ = GetInterface()->GetTimeContext().total;
             isSelected_ = true;
             background_->SetColor(SELECTED_COLOR);
         }

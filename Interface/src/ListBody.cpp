@@ -7,7 +7,7 @@ UWidgetDisplaySettings WListBody::GetContentDisplaySettings(UWidgetDisplaySettin
 
 	glm::vec2 size{ 0.0f, 0.0f };
 
-	for (auto& child : children_)
+	for (auto const& child : GetChildren())
 	{
 		if (child)
 		{
@@ -17,9 +17,9 @@ UWidgetDisplaySettings WListBody::GetContentDisplaySettings(UWidgetDisplaySettin
 		}
 	}
 
-	if (!children_.empty())
+	if (!GetChildren().empty())
 	{
-		size.y += spacing_ * static_cast<float>(children_.size() - 1);
+		size.y += spacing_ * static_cast<float>(GetChildren().size() - 1);
 	}
 
 	displaySettings.bounds = glm::min(size, displaySettings.bounds);
@@ -30,7 +30,7 @@ glm::vec2 WListBody::GetDesiredSize(const glm::vec2& bounds) const
 {
 	glm::vec2 size{};
 
-	for (auto& child : children_)
+	for (auto const& child : GetChildren())
 	{
 		if (child)
 		{
@@ -57,7 +57,7 @@ void WListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	++displaySettings.layer;
 
-	for (auto& child : children_)
+	for (auto const& child : GetChildren())
 	{
 		if (child)
 		{

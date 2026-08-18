@@ -1,5 +1,6 @@
 #pragma once
 #include "generated/Object.generated.h"
+
 #include "Guid.h"
 #include "ObjectFactory.h"
 #include "Ptr.h"
@@ -155,15 +156,17 @@ struct UDeserialize<UPtr<T>> final
 	}
 };
 
+template <std::derived_from<KObject> T>
 struct UAutoDelete final
 {
 public:
-	template <std::derived_from<KObject> T>
-	UAutoDelete(const UPool<UPtr<T>> pool) : pool_(pool) {}
+	explicit UAutoDelete(std::span<UPtr<T> const> values) 
+		: values_(values.begin(), values.end())
+	{}
 
 	~UAutoDelete()
 	{
-		for (auto& object : pool_)
+		for (auto const& object : values_)
 		{
 			if (object)
 			{
@@ -173,5 +176,5 @@ public:
 	}
 
 private:
-	UPool<UPtr<KObject>> pool_;
+	std::vector<UPtr<T>> values_;
 };

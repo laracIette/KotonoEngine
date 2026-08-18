@@ -1,8 +1,9 @@
 #include "UpdateTimeText.h"
-#include <kotono_timing/TimerManager.h>
-#include <kotono_timing/Timer.h>
-#include <kotono_core/TimeManager.h>
+
 #include <kotono_interface/widgets.h>
+#include <kotono_object/Scene.h>
+#include <kotono_timing/Timer.h>
+#include <kotono_timing/TimerManager.h>
 
 WidgetPtr WUpdateTimeText::Build()
 {
@@ -14,7 +15,7 @@ WidgetPtr WUpdateTimeText::Build()
     return text_;
 }
 
-void WUpdateTimeText::Display(UWidgetDisplaySettings displaySettings)
+void WUpdateTimeText::Display(UWidgetDisplaySettings const& displaySettings)
 {
     Base::Display(displaySettings);
 
@@ -30,7 +31,7 @@ void WUpdateTimeText::Remove()
 
 void WUpdateTimeText::UpdateText() const
 {
-    text_->SetText(std::format("U {:.8f}s", TimeManager.AverageUpdateTime()));
+    text_->SetText(std::format("U {0:.8f}s", GetScene()->GetGameTime().lastDelta));
 }
 
 #include "generated/UpdateTimeText.generated.inl"

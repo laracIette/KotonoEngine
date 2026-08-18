@@ -152,14 +152,14 @@ struct FrameContext {
     LightIndexBuf   lightIndices;
     LightCounterBuf lightCounter;
                      
+    uint gBufferDepth;
     uint gBufferAlbedo;
     uint gBufferNormal;
     uint gBufferORM;
-    uint gBufferDepth;
     uint gBufferSampler;
          
-    uint postProcessTarget;
-    uint postProcessSampler;
+    uint colorTarget;
+    uint colorSampler;
 };
 
 layout(buffer_reference, scalar) readonly buffer FrameContextBuf {

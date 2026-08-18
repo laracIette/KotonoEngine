@@ -13,7 +13,7 @@ WButton::~WButton()
 	Interface.RemoveButton(Ptr());
 }
 
-void WButton::Display(UWidgetDisplaySettings displaySettings)
+void WButton::Display(UWidgetDisplaySettings const& displaySettings)
 {
 	Base::Display(displaySettings);
 

@@ -7,7 +7,7 @@ class WWrap final : public WChildOwner
 	GENERATED_WWRAP()
 
 public:
-	WWrap(const EAxis axis = EAxis::All);
+	WWrap(EAxis axis = EAxis::All);
 
 public:
 	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;

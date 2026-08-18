@@ -1,5 +1,4 @@
 #include "Task.h"
-#include "TimeManager.h"
 
 void UTask::Update(const float deltaTime)
 {
@@ -12,7 +11,7 @@ void UTask::Update(const float deltaTime)
 
     if (current_ < duration)
     {
-        eventUpdate.Broadcast();
+        eventUpdate.Broadcast(deltaTime);
     }
     else
     {

@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/AssetExplorerItem.generated.h"
-#include <kotono_interface/Widget.h>
+#include <kotono_object/Widget.h>
 #include <kotono_common/Path.h>
 class WColor;
 class WAssetExplorerItem : public WWidget

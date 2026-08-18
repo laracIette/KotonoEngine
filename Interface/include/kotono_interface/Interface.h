@@ -1,22 +1,21 @@
 #pragma once
-#include <kotono_common/Pool.h>
-template <typename T>
-class UPtr;
+#include <kotono_common/Set.h>
+#include "kotono_object/Ptr.h"
 class WButton;
 class GInterface final
 {
 public:
 	void Init();
 
-	void AddButton(const UPtr<WButton>& button);
-	void RemoveButton(const UPtr<WButton>& button);
+	void AddButton(UPtr<WButton> const& button);
+	void RemoveButton(UPtr<WButton> const& button);
 
 private:
 	void OnMouseLeftButtonPressed() const;
 	void OnMouseLeftButtonReleased() const;
 
 private:
-	UPool<UPtr<WButton>> buttons_;
+	USet<UPtr<WButton>> buttons_;
 };
 
 inline GInterface Interface;

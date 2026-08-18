@@ -1,6 +1,6 @@
 #include "ValueSlider.h"
 
-void WValueSlider::Display(UWidgetDisplaySettings displaySettings)
+void WValueSlider::Display(UWidgetDisplaySettings const& displaySettings)
 {
 	Base::Display(displaySettings);
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/List.generated.h"
-#include "Widget.h"
+#include <kotono_object/Widget.h>
 class WListBody;
 /// Defines a vertical container for widgets
 class WList final : public WWidget
@@ -11,11 +11,11 @@ protected:
 	WidgetPtr Build() override;
 
 public:
-	float GetSpacing() const;
-	const WidgetPool& GetChildren() const;
+	f32 GetSpacing() const;
+	WidgetSet const& GetChildren() const;
 
-	void SetSpacing(const float spacing);
-	void SetChildren(const WidgetPool& children);
+	void SetSpacing(f32 spacing);
+	void SetChildren(WidgetSet const& children);
 
 private:
 	UPtr<WListBody> body_;

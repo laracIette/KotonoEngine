@@ -6,7 +6,7 @@ class WValueSlider : public WValueBox
 	GENERATED_WVALUESLIDER()
 
 public:
-	void Display(UWidgetDisplaySettings displaySettings) override;
+	void Display(UWidgetDisplaySettings const& displaySettings) override;
 	void Remove() override;
 
 protected:

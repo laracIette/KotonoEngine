@@ -1,10 +1,11 @@
 #include "AssetExplorer.h"
+
 #include "AssetExplorerDirectory.h"
 #include "AssetExplorerFile.h"
+#include <kotono_input/Mouse.h>
 #include <kotono_interface/widgets.h>
 #include <kotono_io/File.h>
 #include <kotono_io/FileExplorer.h>
-#include <kotono_input/Mouse.h>
 
 WAssetExplorer::WAssetExplorer()
 	: path_{ "${ENGINE_DIRECTORY}" }
@@ -44,7 +45,7 @@ WidgetPtr WAssetExplorer::Build()
 	itemList_->SetRowSpacing(10.0f);
 	PopulateItemList();
 
-	const auto widgetTree{ UChildrenOwnerTree{ UCreate<WColumn>{ "Asset Explorer Main Column" }(4.0f), {
+	auto const widgetTree{ UChildrenOwnerTree{ UCreate<WColumn>{ "Asset Explorer Main Column" }(4.0f), {
 		new UChildrenOwnerTree{ UCreate<WRow>{ "Asset Explorer Navigation Row" }(4.0f), {
 			new UChildOwnerTree{ UCreate<WWrap>{}(),
 				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
@@ -80,7 +81,7 @@ WidgetPtr WAssetExplorer::Build()
 	return widgetTree.Widget();
 }
 
-void WAssetExplorer::Display(UWidgetDisplaySettings displaySettings)
+void WAssetExplorer::Display(UWidgetDisplaySettings const& displaySettings)
 {
 	Base::Display(displaySettings);
 
@@ -127,18 +128,18 @@ void WAssetExplorer::PopulateItemList()
 {
 	if (itemList_)
 	{
-		const UAutoDelete itemListChildren{ itemList_->GetChildren() };
+		UAutoDelete<WWidget> const itemListChildren{ itemList_->GetChildren() };
 
-		const UFileExplorer fileExplorer{ path_ };
-		const auto directories{ fileExplorer.GetDirectories() };
-		const auto files{ fileExplorer.GetFiles() };
+		UFileExplorer const fileExplorer{ path_ };
+		auto const directories{ fileExplorer.GetDirectories() };
+		auto const files{ fileExplorer.GetFiles() };
 
-		WidgetPool assets{};
-		for (const auto& directory : directories)
+		WidgetSet assets{};
+		for (auto const& directory : directories)
 		{
 			assets.Add(UCreate<WAssetExplorerDirectory>{}(directory, [this](const UPath& path) { Push(path); }));
 		}
-		for (const auto& file : files)
+		for (auto const& file : files)
 		{
 			assets.Add(UCreate<WAssetExplorerFile>{}(file.Path()));
 		}

@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 4.2)
 project(KotonoApplication LANGUAGES C CXX)
 
-if (MSVC)
-    add_compile_options(/sdl)
-endif()
-
-
 add_library(KotonoApplication STATIC)
 
 target_compile_features(KotonoApplication PUBLIC cxx_std_23)
@@ -30,10 +25,15 @@ target_include_directories(KotonoApplication
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_application"
 )
 
-
 if (TARGET KotonoEditor)
     target_compile_definitions(KotonoApplication PUBLIC EDITOR)
-    target_link_libraries(KotonoApplication PUBLIC KotonoEditor)
+    target_link_libraries(KotonoApplication PUBLIC
+        KotonoRendering
+        KotonoEditor
+    )
 else()
-    target_link_libraries(KotonoApplication PUBLIC KotonoCore)
+    target_link_libraries(KotonoApplication PUBLIC
+        KotonoRendering
+        KotonoCore
+    )
 endif()

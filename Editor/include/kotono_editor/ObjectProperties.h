@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/ObjectProperties.generated.h"
-#include <kotono_interface/Widget.h>
+#include <kotono_object/Widget.h>
 class WObjectProperties : public WWidget
 {
 	GENERATED_WOBJECTPROPERTIES()

@@ -4,9 +4,9 @@ UWidgetDisplaySettings WOffset::GetContentDisplaySettings(UWidgetDisplaySettings
 {
 	displaySettings.position += offset_;
 	
-	if (child_)
+	if (GetChild())
 	{
-		return child_->GetContentDisplaySettings(displaySettings);
+		return GetChild()->GetContentDisplaySettings(displaySettings);
 	}
 	return displaySettings;
 }
