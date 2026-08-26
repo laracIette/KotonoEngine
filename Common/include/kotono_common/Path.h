@@ -26,6 +26,7 @@ public:
 
 	operator std::string() const;
 	operator std::filesystem::path() const;
+	operator bool() const;
 
 	bool operator==(UPath const& other) const noexcept;
 

@@ -16,7 +16,7 @@ public:
 	void Cleanup() const;
 
 	void UpdateInterfaceBuffers(std::span<UDrawCommand const> drawCommands, u32 frameIndex);
-	void CmdDrawInterface(VkCommandBuffer commandBuffer, std::span<UDrawCommand const> drawCommands, u32 frameIndex) const;
+	void CmdDrawInterface(VkCommandBuffer commandBuffer, u32 frameIndex, VkPipelineLayout pipelineLayout, std::span<UDrawCommand const> drawCommands, UIndexBuffer const& indexBuffer) const;
 
 private:
 	UFramesInFlightArray<FrameData> frameDatas_;

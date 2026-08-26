@@ -2,7 +2,6 @@
 
 #include "DrawCommand.h"
 #include "IndexBuffer.h"
-#include "PipelineResourceManager.h"
 #include "PushConstants.h"
 #include <ranges>
 #include <vector>
@@ -39,9 +38,14 @@ void UInterfaceRender::UpdateBuffers(std::span<UDrawCommand const> drawCommands)
 	parametersBuffer_.UpdateBuffer(MakeParametersBuffer(drawCommands));
 }
 
-void UInterfaceRender::CmdDraw(VkCommandBuffer commandBuffer, std::span<UDrawCommand const> drawCommands) const
+void UInterfaceRender::CmdDraw(
+	  VkCommandBuffer commandBuffer
+	, VkPipelineLayout pipelineLayout
+	, std::span<UDrawCommand const> drawCommands
+	, UIndexBuffer const& indexBuffer
+) const
 {
-	CmdDrawFrameInterface(commandBuffer, drawCommands);
+	CmdDrawFrameInterface(commandBuffer, pipelineLayout, drawCommands, indexBuffer);
 }
 
 UFrameContextAddresses UInterfaceRender::MakeFrameContextAddresses() const
@@ -78,7 +82,7 @@ std::vector<UDrawDataBufferData> UInterfaceRender::MakeDrawDataBuffer(std::span<
 	return drawCommands
 		| std::views::transform([](UDrawCommand const& drawCommand) {
 			return UDrawDataBufferData{
-				.materialIndex = drawCommand.materialIndex,
+				.materialIndex = drawCommand.drawIndex,
 				.transformIndex = drawCommand.drawIndex,
 				.parametersIndex = drawCommand.drawIndex,
 				.vertexBufferAddress = drawCommand.vertexBufferAddress,
@@ -112,11 +116,16 @@ std::vector<UParametersBufferData> UInterfaceRender::MakeParametersBuffer(std::s
 		| std::ranges::to<std::vector>();
 }
 
-void UInterfaceRender::CmdDrawFrameInterface(VkCommandBuffer commandBuffer, std::span<UDrawCommand const> drawCommands) const
+void UInterfaceRender::CmdDrawFrameInterface(
+	  VkCommandBuffer commandBuffer
+	, VkPipelineLayout pipelineLayout
+	, std::span<UDrawCommand const> drawCommands
+	, UIndexBuffer const& indexBuffer
+) const
 {
 	VkPipeline currentPipeline{ VK_NULL_HANDLE };
 
-	IndexBuffer.CmdBind(commandBuffer);
+	indexBuffer.CmdBind(commandBuffer);
 	
 	for (auto const& drawCommand : drawCommands)
 	{
@@ -126,7 +135,7 @@ void UInterfaceRender::CmdDrawFrameInterface(VkCommandBuffer commandBuffer, std:
 			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, drawCommand.pipeline);
 		}
 
-		CmdPushConstants(commandBuffer, drawCommand.drawIndex, 0);
+		CmdPushConstants(commandBuffer, pipelineLayout, drawCommand.drawIndex, 0);
 
 		vkCmdSetScissor(commandBuffer, 0, 1, &drawCommand.scissor);
 
@@ -140,16 +149,21 @@ void UInterfaceRender::CmdDrawFrameInterface(VkCommandBuffer commandBuffer, std:
 	}
 }
 
-void UInterfaceRender::CmdPushConstants(VkCommandBuffer commandBuffer, u32 drawIndex, u32 directionalIndex) const
+void UInterfaceRender::CmdPushConstants(
+	  VkCommandBuffer commandBuffer
+	, VkPipelineLayout pipelineLayout
+	, u32 drawIndex
+	, u32 directionalIndex
+) const
 {
-	const UPushConstants pc{
+	UPushConstants const pc{
 		.frameContextBufferAddress = frameContextBuffer_.GetAddress(),
 		.drawIndex = drawIndex,
 		.directionalIndex = directionalIndex,
 	};
 
 	vkCmdPushConstants(commandBuffer
-		, PipelineResourceManager.GetPipelineLayout()
+		, pipelineLayout
 		, VK_SHADER_STAGE_ALL
 		, 0
 		, sizeof(UPushConstants)

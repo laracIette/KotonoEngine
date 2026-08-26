@@ -17,7 +17,7 @@ static constexpr VkDescriptorBindingFlags BINDLESS_FLAGS{
 	VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
 };
 
-void GPipelineResourceManager::Init()
+void UPipelineResourceManager::Init()
 {
 	CreateDescriptorSetLayout();
 	CreatePipelineLayout();
@@ -30,29 +30,29 @@ void GPipelineResourceManager::Init()
 	shadowSamplerPool_.maxSlots = MAX_SHADOW_SAMPLERS;
 }
 
-void GPipelineResourceManager::Cleanup() const
+void UPipelineResourceManager::Cleanup() const
 {
 	vkDestroyDescriptorPool(Context.GetDevice(), descriptorPool_, nullptr);
 	vkDestroyPipelineLayout(Context.GetDevice(), pipelineLayout_, nullptr);
 	vkDestroyDescriptorSetLayout(Context.GetDevice(), descriptorSetLayout_, nullptr);
 }
 
-VkDescriptorPool GPipelineResourceManager::GetDescriptorPool() const
+VkDescriptorPool UPipelineResourceManager::GetDescriptorPool() const
 {
 	return descriptorPool_;
 }
 
-VkPipelineLayout GPipelineResourceManager::GetPipelineLayout() const
+VkPipelineLayout UPipelineResourceManager::GetPipelineLayout() const
 {
 	return pipelineLayout_;
 }
 
-VkDescriptorSet GPipelineResourceManager::GetDescriptorSet() const
+VkDescriptorSet UPipelineResourceManager::GetDescriptorSet() const
 {
 	return descriptorSet_;
 }
 
-u32 GPipelineResourceManager::RegisterTexture(VkImageView imageView)
+u32 UPipelineResourceManager::RegisterTexture(VkImageView imageView)
 {
 	const u32 slot{ AllocateSlot(texturePool_) };
 
@@ -66,7 +66,7 @@ u32 GPipelineResourceManager::RegisterTexture(VkImageView imageView)
 	return slot;
 }
 
-u32 GPipelineResourceManager::RegisterTextureArray(VkImageView imageView)
+u32 UPipelineResourceManager::RegisterTextureArray(VkImageView imageView)
 {
 	const u32 slot{ AllocateSlot(textureArrayPool_) };
 
@@ -80,7 +80,7 @@ u32 GPipelineResourceManager::RegisterTextureArray(VkImageView imageView)
 	return slot;
 }
 
-u32 GPipelineResourceManager::RegisterSampler(VkSampler sampler)
+u32 UPipelineResourceManager::RegisterSampler(VkSampler sampler)
 {
 	const u32 slot{ AllocateSlot(samplerPool_) };
 
@@ -94,7 +94,7 @@ u32 GPipelineResourceManager::RegisterSampler(VkSampler sampler)
 	return slot;
 }
 
-u32 GPipelineResourceManager::RegisterShadowSampler(VkSampler sampler)
+u32 UPipelineResourceManager::RegisterShadowSampler(VkSampler sampler)
 {
 	const u32 slot{ AllocateSlot(shadowSamplerPool_) };
 
@@ -108,27 +108,27 @@ u32 GPipelineResourceManager::RegisterShadowSampler(VkSampler sampler)
 	return slot;
 }
 
-void GPipelineResourceManager::UnregisterTexture(const u32 slot)
+void UPipelineResourceManager::UnregisterTexture(u32 slot)
 {
 	texturePool_.freeSlots.push_back(slot);
 }
 
-void GPipelineResourceManager::UnregisterTextureArray(const u32 slot)
+void UPipelineResourceManager::UnregisterTextureArray(u32 slot)
 {
 	textureArrayPool_.freeSlots.push_back(slot);
 }
 
-void GPipelineResourceManager::UnregisterSampler(const u32 slot)
+void UPipelineResourceManager::UnregisterSampler(u32 slot)
 {
 	samplerPool_.freeSlots.push_back(slot);
 }
 
-void GPipelineResourceManager::UnregisterShadowSampler(const u32 slot)
+void UPipelineResourceManager::UnregisterShadowSampler(u32 slot)
 {
 	shadowSamplerPool_.freeSlots.push_back(slot);
 }
 
-void GPipelineResourceManager::CmdBindDescriptorSet(VkCommandBuffer commandBuffer) const
+void UPipelineResourceManager::CmdBindDescriptorSet(VkCommandBuffer commandBuffer) const
 {
 	vkCmdBindDescriptorSets(commandBuffer
 		, VK_PIPELINE_BIND_POINT_GRAPHICS
@@ -141,7 +141,7 @@ void GPipelineResourceManager::CmdBindDescriptorSet(VkCommandBuffer commandBuffe
 	);
 }
 
-void GPipelineResourceManager::CreateDescriptorSetLayout()
+void UPipelineResourceManager::CreateDescriptorSetLayout()
 {
 	constexpr std::array<VkDescriptorSetLayoutBinding, 5> BINDINGS{ {
 		{ 0, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURES,			VK_SHADER_STAGE_ALL, nullptr },
@@ -180,7 +180,7 @@ void GPipelineResourceManager::CreateDescriptorSetLayout()
 	);
 }
 
-void GPipelineResourceManager::CreatePipelineLayout()
+void UPipelineResourceManager::CreatePipelineLayout()
 {
 	const VkPushConstantRange pushConstantRange{
 	   .stageFlags = VK_SHADER_STAGE_ALL,
@@ -207,7 +207,7 @@ void GPipelineResourceManager::CreatePipelineLayout()
 	);
 }
 
-void GPipelineResourceManager::CreateDescriptorPool()
+void UPipelineResourceManager::CreateDescriptorPool()
 {
 	constexpr std::array<VkDescriptorPoolSize, 5> POOL_SIZES{ {
 		{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURES		},
@@ -231,7 +231,7 @@ void GPipelineResourceManager::CreateDescriptorPool()
 	);
 }
 
-void GPipelineResourceManager::CreateDescriptorSet()
+void UPipelineResourceManager::CreateDescriptorSet()
 {
 	const VkDescriptorSetAllocateInfo allocInfo{
 		.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
@@ -242,7 +242,7 @@ void GPipelineResourceManager::CreateDescriptorSet()
 	vkAllocateDescriptorSets(Context.GetDevice(), &allocInfo, &descriptorSet_);
 }
 
-u32 GPipelineResourceManager::AllocateSlot(ResourcePool& resourcePool) const
+u32 UPipelineResourceManager::AllocateSlot(ResourcePool& resourcePool) const
 {
 	if (!resourcePool.freeSlots.empty())
 	{
@@ -254,7 +254,7 @@ u32 GPipelineResourceManager::AllocateSlot(ResourcePool& resourcePool) const
 	return resourcePool.nextSlot++;
 }
 
-void GPipelineResourceManager::WriteDescriptorSet(VkSampler sampler, VkImageView imageView
+void UPipelineResourceManager::WriteDescriptorSet(VkSampler sampler, VkImageView imageView
 	, const VkImageLayout imageLayout
 	, const u32 binding
 	, const u32 slot

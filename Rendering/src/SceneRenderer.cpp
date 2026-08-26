@@ -5,42 +5,36 @@
 #include <array>
 #include <ranges>
 
-void USceneRenderer::Cleanup() const
+void USceneRenderer::Cleanup(UPipelineResourceManager& pipelineResourceManager) const
 {
-	for (auto const& frameData : frameDatas_)
+	for (auto const& sceneRenders : frameDatas_ | std::views::transform(&FrameData::sceneRenders))
 	{
-		std::ranges::for_each(frameData.sceneRenders | std::views::values, &USceneRender::Cleanup);
+		for (auto const& sceneRender : sceneRenders | std::views::values)
+		{
+			sceneRender.Cleanup(pipelineResourceManager);
+		}
 	}
 }
 
-u32 USceneRenderer::CreateScene(glm::uvec2 const& extent, VkFormat swapChainFormat)
+u32 USceneRenderer::CreateScene(glm::uvec2 const& extent, VkFormat swapChainFormat, UPipelineResourceManager& pipelineResourceManager)
 {
 	for (auto& frameData : frameDatas_)
 	{
 		USceneRender scene{};
-		scene.Init(extent, swapChainFormat);
+		scene.Init(extent, swapChainFormat, pipelineResourceManager);
 		frameData.sceneRenders[currentScene_] = scene;
 	}
 
 	return currentScene_++;
 }
 
-void USceneRenderer::DeleteScene(u32 handle)
+void USceneRenderer::DeleteScene(u32 handle, UPipelineResourceManager& pipelineResourceManager)
 {
 	for (auto& frameData : frameDatas_)
 	{
 		auto const& scene{ frameData.sceneRenders.at(handle) };
-		scene.Cleanup();
+		scene.Cleanup(pipelineResourceManager);
 		frameData.sceneRenders.erase(handle);
-	}
-}
-
-void USceneRenderer::SetSceneExtent(u32 handle, glm::uvec2 const& extent, VkFormat swapChainFormat)
-{
-	for (auto& frameData : frameDatas_)
-	{
-		auto& scene{ frameData.sceneRenders.at(handle) };
-		scene.SetExtent(extent, swapChainFormat);
 	}
 }
 
@@ -63,14 +57,20 @@ void USceneRenderer::UpdateSceneBuffers(
 	, std::span<UDrawCommand const> drawCommands
 	, std::span<UDirectionalLight const> directionalLights
 	, std::span<UPointLight const> pointLights
+	, u32 samplerIndex
 )
 {
-	auto const& scene{ frameDatas_[frameIndex].sceneRenders.at(handle) };
-	scene.UpdateBuffers(sceneView, drawCommands, directionalLights, pointLights);
+	frameDatas_[frameIndex].sceneRenders.at(handle)
+		.UpdateBuffers(sceneView, drawCommands, directionalLights, pointLights, samplerIndex);
 }
 
-void USceneRenderer::CmdDrawScene(VkCommandBuffer commandBuffer, u32 frameIndex, u32 handle, std::span<UDrawCommand const> drawCommands, u32 directionalLightCount) const
+void USceneRenderer::CmdDrawScene(
+	  u32 frameIndex
+	, u32 handle
+	, USceneRenderContext const& renderContext
+	, USceneRenderData const& renderData
+) const
 {
-	auto const& scene{ frameDatas_[frameIndex].sceneRenders.at(handle) };
-	scene.CmdDraw(commandBuffer, drawCommands, directionalLightCount);
+	frameDatas_[frameIndex].sceneRenders.at(handle)
+		.CmdDraw(renderContext, renderData);
 }

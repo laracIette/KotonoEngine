@@ -5,10 +5,18 @@
 class AMaterial final : public AAsset
 {
 public:
-	AMaterial(const UPath& path);
+	struct Data
+	{
+		UPath albedo;
+		UPath normal;
+		UPath orm;
+		UPath emissive;
+		u32 materialType;
+		UPath sampler;
+	};
 
-	u32 GetIndex() const;
+public:
+	AMaterial(UPath const& path);
 
-private:
-	u32 index_;
+	Data GetData() const;
 };

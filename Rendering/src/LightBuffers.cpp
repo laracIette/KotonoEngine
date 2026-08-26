@@ -9,12 +9,12 @@
 
 static constexpr u32 MAX_DIRECTIONAL_LIGHTS{ 8 };
 static constexpr u32 MAX_POINT_LIGHTS{ 1024 };
-static constexpr u32 SHADOW_MAP_RESOLUTION{ 4096 }; // todo: make variable
+static constexpr u32 SHADOW_MAP_RESOLUTION{ 2048 }; // todo: make variable
 
-void ULightBuffers::Init()
+void ULightBuffers::Init(UPipelineResourceManager& pipelineResourceManager)
 {
     CreateBuffers();
-    CreateShadowMapResources();
+    CreateShadowMapResources(pipelineResourceManager);
 }
 
 void ULightBuffers::Cleanup() const
@@ -169,7 +169,7 @@ void ULightBuffers::CreateBuffers()
     );
 }
 
-void ULightBuffers::CreateShadowMapResources()
+void ULightBuffers::CreateShadowMapResources(UPipelineResourceManager& pipelineResourceManager)
 {
     directionalLightShadowMapTargets_.resize(MAX_DIRECTIONAL_LIGHTS);
     for (auto& shadowMapTarget : directionalLightShadowMapTargets_)
@@ -185,6 +185,6 @@ void ULightBuffers::CreateShadowMapResources()
             , NUM_DIRECTIONAL_CASCADES
         )
         );
-        shadowMapTarget.textureIndex = PipelineResourceManager.RegisterTextureArray(shadowMapTarget.allocatedImage.imageView);
+        shadowMapTarget.textureIndex = pipelineResourceManager.RegisterTextureArray(shadowMapTarget.allocatedImage.imageView);
     }
 }

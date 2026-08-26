@@ -4,7 +4,7 @@
 
 static constexpr u32 MAX_INDICES{ 1 << 20 };
 
-void GIndexBuffer::Init()
+void UIndexBuffer::Init()
 {
     Context.CreateBuffer(dataBuffer_
         , sizeof(u32) * MAX_INDICES
@@ -14,12 +14,12 @@ void GIndexBuffer::Init()
     );
 }
 
-void GIndexBuffer::Cleanup() const
+void UIndexBuffer::Cleanup() const
 {
     vmaDestroyBuffer(Context.GetAllocator(), dataBuffer_.buffer, dataBuffer_.allocation);
 }
 
-void GIndexBuffer::CmdBind(VkCommandBuffer commandBuffer) const
+void UIndexBuffer::CmdBind(VkCommandBuffer commandBuffer) const
 {
     vkCmdBindIndexBuffer2(commandBuffer
         , dataBuffer_.buffer
@@ -29,10 +29,10 @@ void GIndexBuffer::CmdBind(VkCommandBuffer commandBuffer) const
     );
 }
 
-u32 GIndexBuffer::RegisterIndices(const std::span<u32> indices)
+u32 UIndexBuffer::RegisterIndices(std::span<u32 const> indices)
 {
-    const u32 oldIndex{ indexCount_ };
-    const u32 newIndex{ indexCount_ + static_cast<u32>(indices.size()) };
+    u32 const oldIndex{ indexCount_ };
+    u32 const newIndex{ indexCount_ + static_cast<u32>(indices.size()) };
     assert(newIndex <= MAX_INDICES);
 
     Context.StagingUpload(indices.data()

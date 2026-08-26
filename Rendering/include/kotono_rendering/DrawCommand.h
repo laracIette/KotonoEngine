@@ -14,7 +14,15 @@ struct UDrawCommand final
 	u32				firstIndex;
 	VkRect2D		scissor;
 
-	u32 materialIndex;
+	struct Material
+	{
+		u32 albedoIndex;
+		u32 normalIndex;
+		u32 ormIndex;
+		u32 emissiveIndex;
+		u32 materialType;
+		u32 samplerIndex;
+	} material;
 
 	glm::mat4 modelMatrix;
 	glm::mat4 normalMatrix;

@@ -1,7 +1,6 @@
 #include "Application.h"
 
 #include <kotono_audio/AudioManager.h>
-#include <kotono_common/AssetManager.h>
 #include <kotono_common/log.h>
 #include <kotono_core/DirectionalLightComponent.h>
 #include <kotono_core/PointLightComponent.h>
@@ -15,11 +14,6 @@
 #include <kotono_object/ProjectSettings.h>
 #include <kotono_platform/Context.h>
 #include <kotono_platform/Window.h>
-#include <kotono_rendering/Material.h>
-#include <kotono_rendering/Model.h>
-#include <kotono_rendering/Sampler.h>
-#include <kotono_rendering/Shader.h>
-#include <kotono_rendering/Texture.h>
 #include <kotono_timing/Clock.h>
 #include <kotono_timing/TimerManager.h>
 
@@ -85,71 +79,6 @@ void UApplication::Init()
         KDirectionalLightComponent{};
         KPointLightComponent{};
     }
-
-    // pre load resources
-    {
-        SAssetManager<ASampler>::Create("${ENGINE_DIRECTORY}/Graphics/assets/samplers/default.kasset");
-        SAssetManager<ASampler>::Create("${ENGINE_DIRECTORY}/Graphics/assets/samplers/shadow.kasset");
-
-        SAssetManager<ATexture>::Create("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.png");
-        SAssetManager<ATexture>::Create("${ENGINE_DIRECTORY}/Graphics/assets/textures/black_texture.jpg");
-        SAssetManager<ATexture>::Create("${ENGINE_DIRECTORY}/Graphics/assets/textures/default_normal.jpg");
-        SAssetManager<ATexture>::Create("${ENGINE_DIRECTORY}/Graphics/assets/textures/default_orm.jpg");
-        SAssetManager<ATexture>::Create("${ENGINE_DIRECTORY}/Graphics/assets/textures/default_texture.jpg");
-        SAssetManager<ATexture>::Create("${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg");
-        
-        SAssetManager<AMaterial>::Create("${ENGINE_DIRECTORY}/Graphics/assets/materials/ground.kasset");
-        SAssetManager<AMaterial>::Create("${ENGINE_DIRECTORY}/Graphics/assets/materials/uv_grid.kasset");
-        SAssetManager<AMaterial>::Create("${ENGINE_DIRECTORY}/Graphics/assets/materials/viking_room.kasset");
-        
-        SAssetManager<AModel>::Create("${ENGINE_DIRECTORY}/Graphics/assets/models/column.obj");
-        SAssetManager<AModel>::Create("${ENGINE_DIRECTORY}/Graphics/assets/models/floor.obj");
-        SAssetManager<AModel>::Create("${ENGINE_DIRECTORY}/Graphics/assets/models/rectangle.obj");
-        SAssetManager<AModel>::Create("${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.obj");
-        
-        SAssetManager<AShader>::Create("${ENGINE_DIRECTORY}/Graphics/assets/shaders/clusterAABB.kasset", renderer_.GetSwapChainFormat());
-        SAssetManager<AShader>::Create("${ENGINE_DIRECTORY}/Graphics/assets/shaders/deferredLighting.kasset", renderer_.GetSwapChainFormat());
-        SAssetManager<AShader>::Create("${ENGINE_DIRECTORY}/Graphics/assets/shaders/depthPrePass.kasset", renderer_.GetSwapChainFormat());
-        SAssetManager<AShader>::Create("${ENGINE_DIRECTORY}/Graphics/assets/shaders/flatColor2D.kasset", renderer_.GetSwapChainFormat());
-        SAssetManager<AShader>::Create("${ENGINE_DIRECTORY}/Graphics/assets/shaders/gbuffer.kasset", renderer_.GetSwapChainFormat());
-        SAssetManager<AShader>::Create("${ENGINE_DIRECTORY}/Graphics/assets/shaders/lightBinning.kasset", renderer_.GetSwapChainFormat());
-        SAssetManager<AShader>::Create("${ENGINE_DIRECTORY}/Graphics/assets/shaders/postProcess.kasset", renderer_.GetSwapChainFormat());
-        SAssetManager<AShader>::Create("${ENGINE_DIRECTORY}/Graphics/assets/shaders/shader2D.kasset", renderer_.GetSwapChainFormat());
-        SAssetManager<AShader>::Create("${ENGINE_DIRECTORY}/Graphics/assets/shaders/shadowPrePass.kasset", renderer_.GetSwapChainFormat());
-    }
-
-    {
-        constexpr std::array CHARACTER_NAMES
-        {
-            "a", "ua", "b", "ub",
-            "c", "uc", "d", "ud",
-            "e", "ue", "f", "uf",
-            "g", "ug", "h", "uh",
-            "i", "ui", "j", "uj",
-            "k", "uk", "l", "ul",
-            "m", "um", "n", "un",
-            "o", "uo", "p", "up",
-            "q", "uq", "r", "ur",
-            "s", "us", "t", "ut",
-            "u", "uu", "v", "uv",
-            "w", "uw", "x", "ux",
-            "y", "uy", "z", "uz",
-            "0", "1", "2", "3", "4",
-            "5", "6", "7", "8", "9",
-            "hash", "comma", "dot", "colon", "apostrophe",
-            "lbracket", "rbracket",
-            "fslash", "bslash",
-            "exclamation", "question",
-            "plus", "minus",
-            "space", "underscore",
-            "lesser", "greater",
-        };
-
-        for (auto const& character : CHARACTER_NAMES)
-        {
-            SAssetManager<ATexture>::Create(std::format("${{ENGINE_DIRECTORY}}/Graphics/assets/fonts/default/{0}.png", character));
-        }
-    }
 }
 
 void UApplication::Update()
@@ -198,11 +127,6 @@ void UApplication::Cleanup()
         mainWindow_->Delete();
     }
 #   endif
-
-    SAssetManager<ASampler>::Cleanup();
-    SAssetManager<ATexture>::Cleanup();
-    SAssetManager<AShader>::Cleanup();
-    SAssetManager<AModel>::Cleanup();
 
     AudioManager.Cleanup();
 

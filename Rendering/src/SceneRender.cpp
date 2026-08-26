@@ -6,60 +6,48 @@
 #include "MaterialBuffer.h"
 #include "PipelineResourceManager.h"
 #include "PushConstants.h"
-#include "Sampler.h"
-#include "Shader.h"
 #include <array>
-#include <kotono_common/AssetManager.h>
-#include <kotono_common/log.h>
 #include <kotono_platform/Context.h>
 #include <ranges>
 
-void USceneRender::Init(glm::uvec2 const& extent, VkFormat swapChainFormat)
+void USceneRender::Init(
+	  glm::uvec2 const& extent
+	, VkFormat swapChainFormat
+	, UPipelineResourceManager& pipelineResourceManager
+)
 {
 	extent_ = { extent.x, extent.y };
 
 	frameContextBuffer_.Init();
 
 	CreateImageResources(swapChainFormat);
-	RegisterFrameContextBufferTextures();
+	RegisterFrameContextBufferTextures(pipelineResourceManager);
 
 	drawDataBuffer_.Init();
 	transformBuffer_.Init();
 	parametersBuffer_.Init();
+	materialBuffer_.Init();
 
-	lightBuffers_.Init();
+	lightBuffers_.Init(pipelineResourceManager);
 	gpuBuffers_.Init();
 
 	isAABBDirty_ = true;
-
-	CreateSampler();
 }
 
-void USceneRender::Cleanup() const
+void USceneRender::Cleanup(UPipelineResourceManager& pipelineResourceManager) const
 {
 	frameContextBuffer_.Cleanup();
 
 	CleanupImageResources();
-	UnregisterFrameContextBufferTextures();
+	UnregisterFrameContextBufferTextures(pipelineResourceManager);
 
 	drawDataBuffer_.Cleanup();
 	transformBuffer_.Cleanup();
 	parametersBuffer_.Cleanup();
+	materialBuffer_.Cleanup();
 
 	lightBuffers_.Cleanup();
 	gpuBuffers_.Cleanup();
-}
-
-void USceneRender::SetExtent(glm::uvec2 const& extent, VkFormat swapChainFormat)
-{
-	extent_ = { extent.x, extent.y };
-	isAABBDirty_ = true;
-
-	UnregisterFrameContextBufferTextures();
-	CleanupImageResources();
-
-	CreateImageResources(swapChainFormat);
-	RegisterFrameContextBufferTextures();
 }
 
 u32 USceneRender::GetRenderTarget() const
@@ -77,6 +65,7 @@ void USceneRender::UpdateBuffers(
 	, std::span<UDrawCommand const> drawCommands
 	, std::span<UDirectionalLight const> directionalLights
 	, std::span<UPointLight const> pointLights
+	, u32 samplerIndex
 ) const
 {
 	frameContextBuffer_.UpdateBuffer(
@@ -85,103 +74,91 @@ void USceneRender::UpdateBuffers(
 		, MakeFrameContextTargets()
 		, directionalLights.size()
 		, pointLights.size()
-		, samplerIndex_
+		, samplerIndex
 	);
 
 	drawDataBuffer_.UpdateBuffer(MakeDrawDataBuffer(drawCommands));
 	transformBuffer_.UpdateBuffer(MakeTransformBuffer(drawCommands));
 	parametersBuffer_.UpdateBuffer(MakeParametersBuffer(drawCommands));
+	materialBuffer_.UpdateBuffer(MakeMaterialBuffer(drawCommands));
 
 	lightBuffers_.UpdateBuffers(sceneView, directionalLights, pointLights);
 }
 
-void USceneRender::CmdDraw(VkCommandBuffer commandBuffer, std::span<UDrawCommand const> drawCommands, u32 directionalLightCount) const
+void USceneRender::CmdDraw(USceneRenderContext const& renderContext, USceneRenderData const& renderData) const
 {
 	if (isAABBDirty_)
 	{
 		isAABBDirty_ = false;
-		CmdUpdateClusterAABB(commandBuffer);
+		CmdUpdateClusterAABB(renderContext);
 	}
 
 	// Light binning 
 	// - Wait for fill buffer command to be executable
-	CmdBarrierComputeFragmentReadToClearWrite(commandBuffer);
+	CmdBarrierComputeFragmentReadToClearWrite(renderContext.commandBuffer);
 	// - Atomic reset light counter to 0
-	CmdResetLightCounter(commandBuffer);
+	CmdResetLightCounter(renderContext.commandBuffer);
 	// - Make light counter accessible and light binning writable
-	CmdBarrierComputeClearWriteToReadWrite(commandBuffer);
+	CmdBarrierComputeClearWriteToReadWrite(renderContext.commandBuffer);
 	// - Compute light binning
-	CmdDispatchLightBinning(commandBuffer);
+	CmdDispatchLightBinning(renderContext);
 	// - Make light binning accessible to fragment
-	CmdBarrierComputeWriteToFragmentRead(commandBuffer);
+	CmdBarrierComputeWriteToFragmentRead(renderContext.commandBuffer);
 
 	// Shadow-maps
 	// - Set rendering area to fit shadow-maps
-	lightBuffers_.CmdSetViewportAndScissor(commandBuffer);
+	lightBuffers_.CmdSetViewportAndScissor(renderContext.commandBuffer);
 	// - Make shadow maps writable
-	lightBuffers_.CmdBarrierShadowMapsNoneToWrite(commandBuffer);
+	lightBuffers_.CmdBarrierShadowMapsNoneToWrite(renderContext.commandBuffer);
 	// - Generate shadow-maps
-	CmdDrawFrameShadowMaps(commandBuffer, drawCommands, directionalLightCount);
+	CmdDrawFrameShadowMaps(renderContext, renderData);
 
 	// Reset the rendering area to full screen
-	CmdUseViewport(commandBuffer);
+	CmdUseViewport(renderContext.commandBuffer);
 
 	// Depth pre-pass
 	// - Make depth writable
-	CmdBarrierDepthNoneToWrite(commandBuffer);
+	CmdBarrierDepthNoneToWrite(renderContext.commandBuffer);
 	// - Write depth
-	CmdBeginRenderingDepthPrePass(commandBuffer);
-	CmdDrawFrameDepthPrePass(commandBuffer, drawCommands);
-	CmdEndRendering(commandBuffer);
+	CmdBeginRenderingDepthPrePass(renderContext.commandBuffer);
+	CmdDrawFrameDepthPrePass(renderContext, renderData);
+	CmdEndRendering(renderContext.commandBuffer);
 
 	// G-Buffer
 	// - Make depth readable
-	CmdBarrierDepthWriteToRead(commandBuffer);
+	CmdBarrierDepthWriteToRead(renderContext.commandBuffer);
 	// - Make G-Buffer writable
-	CmdBarrierGBufferNoneToWrite(commandBuffer);
+	CmdBarrierGBufferNoneToWrite(renderContext.commandBuffer);
 	// - Write G-Buffer
-	CmdBeginRenderingGBuffer(commandBuffer);
-	CmdDrawFrameGBuffer(commandBuffer, drawCommands);
-	CmdEndRendering(commandBuffer);
+	CmdBeginRenderingGBuffer(renderContext.commandBuffer);
+	CmdDrawFrameGBuffer(renderContext, renderData);
+	CmdEndRendering(renderContext.commandBuffer);
 	// - Make G-Buffer readable
-	CmdBarrierGBufferWriteToRead(commandBuffer);
+	CmdBarrierGBufferWriteToRead(renderContext.commandBuffer);
 
 	// Deferred lighting
 	// - Make shadow-maps shader-readable
-	lightBuffers_.CmdBarrierShadowMapsWriteToShaderRead(commandBuffer);
+	lightBuffers_.CmdBarrierShadowMapsWriteToShaderRead(renderContext.commandBuffer);
 	// - Make depth shader-readable (reconstruct world pos)
-	CmdBarrierDepthReadToShaderRead(commandBuffer);
+	CmdBarrierDepthReadToShaderRead(renderContext.commandBuffer);
 	// - Make color target writable
-	CmdBarrierColorNoneToWrite(commandBuffer);
+	CmdBarrierColorNoneToWrite(renderContext.commandBuffer);
 	// - Write color target
-	CmdBeginRenderingDeferredLighting(commandBuffer);
-	CmdDrawFrameDeferredLighting(commandBuffer);
-	CmdEndRendering(commandBuffer);
+	CmdBeginRenderingDeferredLighting(renderContext.commandBuffer);
+	CmdDrawFrameDeferredLighting(renderContext);
+	CmdEndRendering(renderContext.commandBuffer);
 	// - Make color target readable
-	CmdBarrierColorWriteToRead(commandBuffer);
+	CmdBarrierColorWriteToRead(renderContext.commandBuffer);
 
 	// Post-process
 	// - Make post-process image writable
-	CmdBarrierPostProcessNoneToWrite(commandBuffer);
+	CmdBarrierPostProcessNoneToWrite(renderContext.commandBuffer);
 	// - Write post-process image
-	CmdBeginRenderingPostProcess(commandBuffer);
-	CmdDrawFramePostProcess(commandBuffer);
-	CmdEndRendering(commandBuffer);
+	CmdBeginRenderingPostProcess(renderContext.commandBuffer);
+	CmdDrawFramePostProcess(renderContext);
+	CmdEndRendering(renderContext.commandBuffer);
 	// - Make post-process image readable
-	CmdBarrierPostProcessWriteToRead(commandBuffer);
-}
-
-void USceneRender::CreateSampler()
-{
-	static auto const* sampler{ SAssetManager<ASampler>::Get("${ENGINE_DIRECTORY}/Graphics/assets/samplers/default.kasset") };
-	if (sampler)
-	{
-		samplerIndex_ = sampler->GetIndex();
-	}
-	else
-	{
-		throw "failed to load sampler!";
-	}
+	CmdBarrierPostProcessWriteToRead(renderContext.commandBuffer);
 }
 
 void USceneRender::CreateImageResources(VkFormat swapChainFormat)
@@ -212,31 +189,31 @@ void USceneRender::CleanupImageResources() const
 	vmaDestroyImage(Context.GetAllocator(), postProcessTarget_.image, postProcessTarget_.allocation);
 }
 
-void USceneRender::RegisterFrameContextBufferTextures()
+void USceneRender::RegisterFrameContextBufferTextures(UPipelineResourceManager& pipelineResourceManager)
 {
-	depthIndex_ = PipelineResourceManager.RegisterTexture(depthTarget_.imageView);
-	albedoIndex_ = PipelineResourceManager.RegisterTexture(albedoTarget_.imageView);
-	normalIndex_ = PipelineResourceManager.RegisterTexture(normalTarget_.imageView);
-	ormIndex_ = PipelineResourceManager.RegisterTexture(ormTarget_.imageView);
-	colorIndex_ = PipelineResourceManager.RegisterTexture(colorTarget_.imageView);
-	postProcessIndex_ = PipelineResourceManager.RegisterTexture(postProcessTarget_.imageView);
+	depthIndex_ = pipelineResourceManager.RegisterTexture(depthTarget_.imageView);
+	albedoIndex_ = pipelineResourceManager.RegisterTexture(albedoTarget_.imageView);
+	normalIndex_ = pipelineResourceManager.RegisterTexture(normalTarget_.imageView);
+	ormIndex_ = pipelineResourceManager.RegisterTexture(ormTarget_.imageView);
+	colorIndex_ = pipelineResourceManager.RegisterTexture(colorTarget_.imageView);
+	postProcessIndex_ = pipelineResourceManager.RegisterTexture(postProcessTarget_.imageView);
 }
 
-void USceneRender::UnregisterFrameContextBufferTextures() const
+void USceneRender::UnregisterFrameContextBufferTextures(UPipelineResourceManager& pipelineResourceManager) const
 {
-	PipelineResourceManager.UnregisterTexture(depthIndex_);
-	PipelineResourceManager.UnregisterTexture(albedoIndex_);
-	PipelineResourceManager.UnregisterTexture(normalIndex_);
-	PipelineResourceManager.UnregisterTexture(ormIndex_);
-	PipelineResourceManager.UnregisterTexture(colorIndex_);
-	PipelineResourceManager.UnregisterTexture(postProcessIndex_);
+	pipelineResourceManager.UnregisterTexture(depthIndex_);
+	pipelineResourceManager.UnregisterTexture(albedoIndex_);
+	pipelineResourceManager.UnregisterTexture(normalIndex_);
+	pipelineResourceManager.UnregisterTexture(ormIndex_);
+	pipelineResourceManager.UnregisterTexture(colorIndex_);
+	pipelineResourceManager.UnregisterTexture(postProcessIndex_);
 }
 
 UFrameContextAddresses USceneRender::MakeFrameContextAddresses() const
 {
 	return {
 		.drawDataBufferAddress = drawDataBuffer_.GetAddress(),
-		.materialBufferAddress = MaterialBuffer.GetAddress(),
+		.materialBufferAddress = materialBuffer_.GetAddress(),
 		.transformBufferAddress = transformBuffer_.GetAddress(),
 		.parametersBufferAddress = parametersBuffer_.GetAddress(),
 
@@ -266,7 +243,7 @@ std::vector<UDrawDataBufferData> USceneRender::MakeDrawDataBuffer(std::span<UDra
 	return drawCommands
 		| std::views::transform([](UDrawCommand const& drawCommand) {
 			return UDrawDataBufferData{
-				.materialIndex = drawCommand.materialIndex,
+				.materialIndex = drawCommand.drawIndex,
 				.transformIndex = drawCommand.drawIndex,
 				.parametersIndex = drawCommand.drawIndex,
 				.vertexBufferAddress = drawCommand.vertexBufferAddress,
@@ -300,15 +277,28 @@ std::vector<UParametersBufferData> USceneRender::MakeParametersBuffer(std::span<
 		| std::ranges::to<std::vector>();
 }
 
-void USceneRender::CmdUpdateClusterAABB(VkCommandBuffer commandBuffer) const
+std::vector<UMaterialBufferData> USceneRender::MakeMaterialBuffer(std::span<UDrawCommand const> drawCommands) const
 {
-	static auto const* shader{ SAssetManager<AShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/clusterAABB.kasset") };
-	if (shader)
-	{
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, shader->GetPipeline());
-		CmdPushConstants(commandBuffer, 0, 0);
-		vkCmdDispatch(commandBuffer, 16, 9, 24); // todo: variable
-	}
+	return drawCommands
+		| std::views::transform(&UDrawCommand::material)
+		| std::views::transform([](UDrawCommand::Material const& material) {
+			return UMaterialBufferData{
+				.albedoIndex = material.albedoIndex,
+				.normalIndex = material.normalIndex,
+				.ormIndex = material.ormIndex,
+				.emissiveIndex = material.emissiveIndex,
+				.materialType = material.materialType,
+				.samplerIndex = material.samplerIndex,
+			};
+		})
+		| std::ranges::to<std::vector>();
+}
+
+void USceneRender::CmdUpdateClusterAABB(USceneRenderContext const& renderContext) const
+{
+	vkCmdBindPipeline(renderContext.commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, renderContext.clusterAABBPipeline);
+	CmdPushConstants(renderContext.commandBuffer, renderContext.pipelineLayout, 0, 0);
+	vkCmdDispatch(renderContext.commandBuffer, 16, 9, 24); // todo: variable
 }
 
 void USceneRender::CmdBarrierComputeFragmentReadToClearWrite(VkCommandBuffer commandBuffer) const
@@ -345,15 +335,11 @@ void USceneRender::CmdBarrierComputeClearWriteToReadWrite(VkCommandBuffer comman
 	);
 }
 
-void USceneRender::CmdDispatchLightBinning(VkCommandBuffer commandBuffer) const
+void USceneRender::CmdDispatchLightBinning(USceneRenderContext const& renderContext) const
 {
-	static auto const* shader{ SAssetManager<AShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/lightBinning.kasset") };
-	if (shader)
-	{
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, shader->GetPipeline());
-		CmdPushConstants(commandBuffer, 0, 0);
-		vkCmdDispatch(commandBuffer, 16, 9, 24);
-	}
+	vkCmdBindPipeline(renderContext.commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, renderContext.lightBinningPipeline);
+	CmdPushConstants(renderContext.commandBuffer, renderContext.pipelineLayout, 0, 0);
+	vkCmdDispatch(renderContext.commandBuffer, 16, 9, 24);
 }
 
 void USceneRender::CmdBarrierComputeWriteToFragmentRead(VkCommandBuffer commandBuffer) const
@@ -366,26 +352,19 @@ void USceneRender::CmdBarrierComputeWriteToFragmentRead(VkCommandBuffer commandB
 	);
 }
 
-void USceneRender::CmdDrawFrameShadowMaps(VkCommandBuffer commandBuffer, std::span<UDrawCommand const> drawCommands, u32 directionalLightCount) const
+void USceneRender::CmdDrawFrameShadowMaps(USceneRenderContext const& renderContext, USceneRenderData const& renderData) const
 {
-	static auto const* shader{ SAssetManager<AShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/shadowPrePass.kasset") };
-	if (!shader)
+	renderContext.indexBuffer.CmdBind(renderContext.commandBuffer);
+
+	vkCmdBindPipeline(renderContext.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderContext.shadowPrePassPipeline);
+
+	for (u32 i{ 0 }; i < renderData.directionalLightCount; ++i)
 	{
-		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Graphics", "couldn't load shader {0}", "${ENGINE_DIRECTORY}/Graphics/assets/shaders/shadowPrePass.kasset");
-		return;
-	}
-
-	IndexBuffer.CmdBind(commandBuffer);
-
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
-
-	for (u32 i{ 0 }; i < directionalLightCount; ++i)
-	{
-		lightBuffers_.CmdBeginRenderingShadowMapTarget(commandBuffer, i);
+		lightBuffers_.CmdBeginRenderingShadowMapTarget(renderContext.commandBuffer, i);
 		// todo: add cast shadow check
-		CmdDrawFrame(commandBuffer, drawCommands, i);
+		CmdDrawFrame(renderContext.commandBuffer, renderContext.pipelineLayout, renderData.drawCommands, i);
 
-		CmdEndRendering(commandBuffer);
+		CmdEndRendering(renderContext.commandBuffer);
 	}
 }
 
@@ -431,17 +410,11 @@ void USceneRender::CmdBeginRenderingDepthPrePass(VkCommandBuffer commandBuffer) 
 	vkCmdBeginRendering(commandBuffer, &renderInfo);
 }
 
-void USceneRender::CmdDrawFrameDepthPrePass(VkCommandBuffer commandBuffer, std::span<UDrawCommand const> drawCommands) const
+void USceneRender::CmdDrawFrameDepthPrePass(USceneRenderContext const& renderContext, USceneRenderData const& renderData) const
 {
-	static auto const* shader{ SAssetManager<AShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/depthPrePass.kasset") };
-	if (shader)
-	{
-		IndexBuffer.CmdBind(commandBuffer);
-
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
-
-		CmdDrawFrame(commandBuffer, drawCommands, 0);
-	}
+	renderContext.indexBuffer.CmdBind(renderContext.commandBuffer);
+	vkCmdBindPipeline(renderContext.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderContext.depthPrePassPipeline);
+	CmdDrawFrame(renderContext.commandBuffer, renderContext.pipelineLayout, renderData.drawCommands, 0);
 }
 
 void USceneRender::CmdBarrierDepthWriteToRead(VkCommandBuffer commandBuffer) const
@@ -529,22 +502,21 @@ void USceneRender::CmdBeginRenderingGBuffer(VkCommandBuffer commandBuffer) const
 	vkCmdBeginRendering(commandBuffer, &renderingInfo);
 }
 
-void USceneRender::CmdDrawFrameGBuffer(VkCommandBuffer commandBuffer, std::span<UDrawCommand const> drawCommands) const
+void USceneRender::CmdDrawFrameGBuffer(USceneRenderContext const& renderContext, USceneRenderData const& renderData) const
 {
 	std::unordered_map<VkPipeline, std::vector<UDrawCommand>> pipelineDrawCommands{};
 
-	for (auto const& drawCommand : drawCommands)
+	for (auto const& drawCommand : renderData.drawCommands)
 	{
 		pipelineDrawCommands[drawCommand.pipeline].push_back(drawCommand);
 	}
 
-	IndexBuffer.CmdBind(commandBuffer);
+	renderContext.indexBuffer.CmdBind(renderContext.commandBuffer);
 
 	for (auto const& [pipeline, drawCommands] : pipelineDrawCommands)
 	{
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-
-		CmdDrawFrame(commandBuffer, drawCommands, 0);
+		vkCmdBindPipeline(renderContext.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+		CmdDrawFrame(renderContext.commandBuffer, renderContext.pipelineLayout, drawCommands, 0);
 	}
 }
 
@@ -620,15 +592,11 @@ void USceneRender::CmdBeginRenderingDeferredLighting(VkCommandBuffer commandBuff
 	vkCmdBeginRendering(commandBuffer, &renderInfo);
 }
 
-void USceneRender::CmdDrawFrameDeferredLighting(VkCommandBuffer commandBuffer) const
+void USceneRender::CmdDrawFrameDeferredLighting(USceneRenderContext const& renderContext) const
 {
-	auto const* shader{ SAssetManager<AShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/deferredLighting.kasset") };
-	if (shader)
-	{
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
-		CmdPushConstants(commandBuffer, 0, 0);
-		vkCmdDraw(commandBuffer, 3, 1, 0, 0);
-	}
+	vkCmdBindPipeline(renderContext.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderContext.deferredLightingPipeline);
+	CmdPushConstants(renderContext.commandBuffer, renderContext.pipelineLayout, 0, 0);
+	vkCmdDraw(renderContext.commandBuffer, 3, 1, 0, 0);
 }
 
 void USceneRender::CmdBarrierColorWriteToRead(VkCommandBuffer commandBuffer) const
@@ -684,15 +652,11 @@ void USceneRender::CmdBeginRenderingPostProcess(VkCommandBuffer commandBuffer) c
 	vkCmdBeginRendering(commandBuffer, &swapchainRenderingInfo);
 }
 
-void USceneRender::CmdDrawFramePostProcess(VkCommandBuffer commandBuffer) const
+void USceneRender::CmdDrawFramePostProcess(USceneRenderContext const& renderContext) const
 {
-	static auto const* shader{ SAssetManager<AShader>::Get("${ENGINE_DIRECTORY}/Graphics/assets/shaders/postProcess.kasset") };
-	if (shader)
-	{
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->GetPipeline());
-		CmdPushConstants(commandBuffer, 0, 0);
-		vkCmdDraw(commandBuffer, 3, 1, 0, 0);
-	}
+	vkCmdBindPipeline(renderContext.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderContext.postProcessPipeline);
+	CmdPushConstants(renderContext.commandBuffer, renderContext.pipelineLayout, 0, 0);
+	vkCmdDraw(renderContext.commandBuffer, 3, 1, 0, 0);
 }
 
 void USceneRender::CmdBarrierPostProcessWriteToRead(VkCommandBuffer commandBuffer) const
@@ -733,11 +697,11 @@ void USceneRender::CmdUseViewport(VkCommandBuffer commandBuffer) const
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 }
 
-void USceneRender::CmdDrawFrame(VkCommandBuffer commandBuffer, std::span<UDrawCommand const> drawCommands, u32 directionalIndex) const
+void USceneRender::CmdDrawFrame(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, std::span<UDrawCommand const> drawCommands, u32 directionalIndex) const
 {
 	for (auto const& drawCommand : drawCommands)
 	{
-		CmdPushConstants(commandBuffer, drawCommand.drawIndex, directionalIndex);
+		CmdPushConstants(commandBuffer, pipelineLayout, drawCommand.drawIndex, directionalIndex);
 		
 		vkCmdDrawIndexed(commandBuffer
 			, drawCommand.indexCount
@@ -749,7 +713,12 @@ void USceneRender::CmdDrawFrame(VkCommandBuffer commandBuffer, std::span<UDrawCo
 	}
 }
 
-void USceneRender::CmdPushConstants(VkCommandBuffer commandBuffer, u32 drawIndex, u32 directionalIndex) const
+void USceneRender::CmdPushConstants(
+	  VkCommandBuffer commandBuffer
+	, VkPipelineLayout pipelineLayout
+	, u32 drawIndex
+	, u32 directionalIndex
+) const
 {
 	const UPushConstants pc{
 		.frameContextBufferAddress = frameContextBuffer_.GetAddress(),
@@ -758,7 +727,7 @@ void USceneRender::CmdPushConstants(VkCommandBuffer commandBuffer, u32 drawIndex
 	};
 
 	vkCmdPushConstants(commandBuffer
-		, PipelineResourceManager.GetPipelineLayout()
+		, pipelineLayout
 		, VK_SHADER_STAGE_ALL
 		, 0
 		, sizeof(UPushConstants)

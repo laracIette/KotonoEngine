@@ -6,6 +6,8 @@
 #include <kotono_common/Path.h>
 #include <kotono_common/types.h>
 #include <kotono_platform/AllocatedBuffer.h>
+#include <span>
+class UIndexBuffer;
 struct UVertex
 {
 	glm::vec3 position;
@@ -13,17 +15,21 @@ struct UVertex
 	glm::vec2 uv;
 	glm::vec4 tangent;
 
-	bool operator==(const UVertex& other) const noexcept;
+	bool operator==(UVertex const& other) const noexcept;
 };
 class AModel final : public AAsset
 {
 public:
-	AModel(const UPath& path);
+	AModel(UPath const& path);
 	~AModel() override;
 
 	VkDeviceAddress GetVertexBufferAddress() const;
 	u32 GetIndexCount() const;
 	u32 GetFirstIndex() const;
+
+	void SetFirstIndex(u32 index);
+
+	std::span<u32 const> GetIndices() const;
 	
 private:
 	void Load();
@@ -38,11 +44,10 @@ private:
 
 	UAllocatedBuffer vertexBuffer_;
 	UAllocatedBuffer stagingVertexBuffer_;
-
 };
 
 template<>
 struct std::hash<UVertex>
 {
-	::size operator()(const UVertex& v) const noexcept;
+	::size operator()(UVertex const& v) const noexcept;
 };

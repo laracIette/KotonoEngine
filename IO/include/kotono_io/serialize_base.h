@@ -1,6 +1,4 @@
 #pragma once
-#include <kotono_common/Asset.h>
-#include <kotono_common/AssetManager.h>
 #include <kotono_common/types.h>
 #include <nlohmann/json_fwd.hpp>
 #include <ranges>
@@ -10,99 +8,61 @@
 
 class UPath;
 
-bool contains(const nlohmann::json& json, const std::string_view name);
+b8 contains(nlohmann::json const& json, std::string_view name);
 
-nlohmann::json& get(nlohmann::json& json, const std::string_view name);
-const nlohmann::json& get(const nlohmann::json& json, const std::string_view name);
+nlohmann::json& get(nlohmann::json& json, std::string_view name);
+nlohmann::json const& get(nlohmann::json const& json, std::string_view name);
 
 void make_array(nlohmann::json& json);
 nlohmann::json& get_next(nlohmann::json& json);
 
-size get_size(const nlohmann::json& json);
-const nlohmann::json& get_at(const nlohmann::json& json, size index);
+size get_size(nlohmann::json const& json);
+nlohmann::json const& get_at(nlohmann::json const& json, size index);
 
 template<typename T>
 struct USerialize
 {
+	void operator()(nlohmann::json& json, T const& v) const;
 };
 
 template<>
-struct USerialize<bool>
-{
-	void operator()(nlohmann::json& json, const bool v) const;
-};
+void USerialize<b8>::operator()(nlohmann::json& json, b8 const& v) const;
 
 template<>
-struct USerialize<i8>
-{
-	void operator()(nlohmann::json& json, const i8 v) const;
-};
+void USerialize<i8>::operator()(nlohmann::json& json, i8 const& v) const;
 
 template<>
-struct USerialize<i16>
-{
-	void operator()(nlohmann::json& json, const i16 v) const;
-};
+void USerialize<i16>::operator()(nlohmann::json& json, i16 const& v) const;
 
 template<>
-struct USerialize<i32>
-{
-	void operator()(nlohmann::json& json, const i32 v) const;
-};
+void USerialize<i32>::operator()(nlohmann::json& json, i32 const& v) const;
 
 template<>
-struct USerialize<i64>
-{
-	void operator()(nlohmann::json& json, const i64 v) const;
-};
+void USerialize<i64>::operator()(nlohmann::json& json, i64 const& v) const;
 
 template<>
-struct USerialize<u8>
-{
-	void operator()(nlohmann::json& json, const u8 v) const;
-};
+void USerialize<u8>::operator()(nlohmann::json& json, u8 const& v) const;
 
 template<>
-struct USerialize<u16>
-{
-	void operator()(nlohmann::json& json, const u16 v) const;
-};
+void USerialize<u16>::operator()(nlohmann::json& json, u16 const& v) const;
 
 template<>
-struct USerialize<u32>
-{
-	void operator()(nlohmann::json& json, const u32 v) const;
-};
+void USerialize<u32>::operator()(nlohmann::json& json, u32 const& v) const;
 
 template<>
-struct USerialize<u64>
-{
-	void operator()(nlohmann::json& json, const u64 v) const;
-};
+void USerialize<u64>::operator()(nlohmann::json& json, u64 const& v) const;
 
 template<>
-struct USerialize<f32>
-{
-	void operator()(nlohmann::json& json, const f32 v) const;
-};
+void USerialize<f32>::operator()(nlohmann::json& json, f32 const& v) const;
 
 template<>
-struct USerialize<f64>
-{
-	void operator()(nlohmann::json& json, const f64 v) const;
-};
+void USerialize<f64>::operator()(nlohmann::json& json, f64 const& v) const;
 
 template<>
-struct USerialize<std::string>
-{
-	void operator()(nlohmann::json& json, const std::string& v) const;
-};
+void USerialize<std::string>::operator()(nlohmann::json& json, std::string const& v) const;
 
 template<>
-struct USerialize<UPath>
-{
-	void operator()(nlohmann::json& json, const UPath& v) const;
-};
+void USerialize<UPath>::operator()(nlohmann::json& json, UPath const& v) const;
 
 template<typename T>
 	requires std::is_enum_v<T>
@@ -119,169 +79,93 @@ template<typename T>
 	requires std::ranges::range<T> && (!std::convertible_to<T, std::string>)
 struct USerialize<T>
 {
-	void operator()(nlohmann::json& json, const T& v) const
+	void operator()(nlohmann::json& json, T const& v) const
 	{
 		using item_t = std::ranges::range_value_t<T>;
 		make_array(json);
-		for (const item_t& item : v)
+		for (item_t const& item : v)
 		{
 			USerialize<item_t>{}(get_next(json), item);
 		}
 	}
 };
 
-template<std::derived_from<AAsset> T>
-struct USerialize<T>
-{
-	void operator()(nlohmann::json& json, T const* v) const
-	{
-		if (v)
-		{
-			USerialize<UPath>{}(json, v->GetPath());
-		}
-	}
-};
-
 template<typename T>
 struct UDeserialize
-{};
-
-template<>
-struct UDeserialize<bool>
 {
-	void operator()(const nlohmann::json& json, bool& v) const;
-};
-
-template<>
-struct UDeserialize<i8>
-{
-	void operator()(const nlohmann::json& json, i8& v) const;
-};
-
-template<>
-struct UDeserialize<i16>
-{
-	void operator()(const nlohmann::json& json, i16& v) const;
-};
-
-template<>
-struct UDeserialize<i32>
-{
-	void operator()(const nlohmann::json& json, i32& v) const;
-};
-
-template<>
-struct UDeserialize<i64>
-{
-	void operator()(const nlohmann::json& json, i64& v) const;
-};
-
-template<>
-struct UDeserialize<u8>
-{
-	void operator()(const nlohmann::json& json, u8& v) const;
-};
-
-template<>
-struct UDeserialize<u16>
-{
-	void operator()(const nlohmann::json& json, u16& v) const;
-};
-
-template<>
-struct UDeserialize<u32>
-{
-	void operator()(const nlohmann::json& json, u32& v) const;
-};
-
-template<>
-struct UDeserialize<u64>
-{
-	void operator()(const nlohmann::json& json, u64& v) const;
-};
-
-template<>
-struct UDeserialize<f32>
-{
-	void operator()(const nlohmann::json& json, f32& v) const;
-};
-
-template<>
-struct UDeserialize<f64>
-{
-	void operator()(const nlohmann::json& json, f64& v) const;
-};
-
-template<>
-struct UDeserialize<std::string>
-{
-	void operator()(const nlohmann::json& json, std::string& v) const;
-};
-
-template<>
-struct UDeserialize<UPath>
-{
-	void operator()(const nlohmann::json& json, UPath& v) const;
-};
-
-template<typename T>
-	requires std::is_enum_v<T>
-struct UDeserialize<T>
-{
-	void operator()(const nlohmann::json& json, T& v) const
+	void operator()(nlohmann::json const& json, T& v) const
 	{
-		using enum_t = std::underlying_type_t<T>;
-		enum_t value{ static_cast<enum_t>(v) };
-		UDeserialize<enum_t>{}(json, value);
-		v = static_cast<T>(value);
-	}
-};
-
-template <typename T>
-concept Reservable = requires(T & v, std::size_t n)
-{
-	v.reserve(n);
-};
-
-template <typename T>
-concept BackInsertable = requires(T & v, std::ranges::range_value_t<T> val)
-{
-	v.push_back(val);
-};
-
-template<typename T>
-	requires std::ranges::range<T>
-          && requires(T& container, std::ranges::range_value_t<T> val) { container.push_back(val); }
-          && (!std::convertible_to<T, std::string>)
-struct UDeserialize<T>
-{
-	void operator()(const nlohmann::json& json, T& v) const
-	{
-		using item_t = std::ranges::range_value_t<T>;
-
-		size const rangeSize{ get_size(json) };
-
-		if constexpr (requires { v.reserve(rangeSize); })
+		if constexpr (std::is_enum_v<T>)
 		{
-			v.reserve(rangeSize);
+			using enum_t = std::underlying_type_t<T>;
+			v = static_cast<T>(UDeserialize<enum_t>{}(json));
 		}
-
-		for (size i{ 0 }; i < rangeSize; ++i)
+		else if constexpr (std::ranges::range<T>
+			&& requires(T& container, std::ranges::range_value_t<T> item) { container.push_back(item); }
+			&& !std::convertible_to<T, std::string>
+		)
 		{
-			item_t value{};
-			UDeserialize<item_t>{}(get_at(json, i), value);
-			v.push_back(std::move(value));
+			using item_t = std::ranges::range_value_t<T>;
+
+			size const rangeSize{ get_size(json) };
+
+			if constexpr (requires { v.reserve(rangeSize); })
+			{
+				v.reserve(rangeSize);
+			}
+
+			for (size i{ 0 }; i < rangeSize; ++i)
+			{
+				item_t value{};
+				UDeserialize<item_t>{}(get_at(json, i), value);
+				v.push_back(std::move(value));
+			}
 		}
 	}
-}; 
 
-template<std::derived_from<AAsset> T>
-struct UDeserialize<T>
-{
-	void operator()(const nlohmann::json& json, T* v) const
+	T operator()(nlohmann::json const& json) const
 	{
-		UPath path{};
-		UDeserialize<UPath>{}(json, path);
-		v = SAssetManager<T>::Get(path);
+		T v{};
+		operator()(json, v);
+		return v;
 	}
 };
+
+template<>
+void UDeserialize<b8>::operator()(nlohmann::json const& json, b8& v) const;
+
+template<>
+void UDeserialize<i8>::operator()(nlohmann::json const& json, i8& v) const;
+
+template<>
+void UDeserialize<i16>::operator()(nlohmann::json const& json, i16& v) const;
+
+template<>
+void UDeserialize<i32>::operator()(nlohmann::json const& json, i32& v) const;
+
+template<>
+void UDeserialize<i64>::operator()(nlohmann::json const& json, i64& v) const;
+
+template<>
+void UDeserialize<u8>::operator()(nlohmann::json const& json, u8& v) const;
+
+template<>
+void UDeserialize<u16>::operator()(nlohmann::json const& json, u16& v) const;
+
+template<>
+void UDeserialize<u32>::operator()(nlohmann::json const& json, u32& v) const;
+
+template<>
+void UDeserialize<u64>::operator()(nlohmann::json const& json, u64& v) const;
+
+template<>
+void UDeserialize<f32>::operator()(nlohmann::json const& json, f32& v) const;
+
+template<>
+void UDeserialize<f64>::operator()(nlohmann::json const& json, f64& v) const;
+
+template<>
+void UDeserialize<std::string>::operator()(nlohmann::json const& json, std::string& v) const;
+
+template<>
+void UDeserialize<UPath>::operator()(nlohmann::json const& json, UPath& v) const;

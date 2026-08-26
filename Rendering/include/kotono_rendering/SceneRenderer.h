@@ -10,6 +10,9 @@ struct UDrawCommand;
 struct UDirectionalLight;
 struct UPointLight;
 struct UFrameContextSceneView;
+struct USceneRenderContext;
+struct USceneRenderData;
+class UPipelineResourceManager;
 class USceneRenderer final
 {
 public:
@@ -19,18 +22,16 @@ public:
 	};
 
 public:
-	void Cleanup() const;
+	void Cleanup(UPipelineResourceManager& pipelineResourceManager) const;
 
-	u32 CreateScene(glm::uvec2 const& extent, VkFormat swapChainFormat);
-	void DeleteScene(u32 handle);
-
-	void SetSceneExtent(u32 handle, glm::uvec2 const& extent, VkFormat swapChainFormat);
+	u32 CreateScene(glm::uvec2 const& extent, VkFormat swapChainFormat, UPipelineResourceManager& pipelineResourceManager);
+	void DeleteScene(u32 handle, UPipelineResourceManager& pipelineResourceManager);
 
 	u32 GetSceneRenderTarget(u32 frameIndex, u32 handle) const;
 	u32 GetSceneDirectionalLightShadowMapTargetIndex(u32 frameIndex, u32 handle, u32 index) const;
 
-	void UpdateSceneBuffers(u32 frameIndex, u32 handle, UFrameContextSceneView const& sceneView, std::span<UDrawCommand const> drawCommands, std::span<UDirectionalLight const> directionalLights, std::span<UPointLight const> pointLights);
-	void CmdDrawScene(VkCommandBuffer commandBuffer, u32 frameIndex, u32 handle, std::span<UDrawCommand const> drawCommands, u32 directionalLightCount) const;
+	void UpdateSceneBuffers(u32 frameIndex, u32 handle, UFrameContextSceneView const& sceneView, std::span<UDrawCommand const> drawCommands, std::span<UDirectionalLight const> directionalLights, std::span<UPointLight const> pointLights, u32 samplerIndex);
+	void CmdDrawScene(u32 frameIndex, u32 handle, USceneRenderContext const& renderContext, USceneRenderData const& renderData) const;
 
 private:
 	UFramesInFlightArray<FrameData> frameDatas_;

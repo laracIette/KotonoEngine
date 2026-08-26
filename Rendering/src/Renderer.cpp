@@ -5,7 +5,6 @@
 #include "DrawCommand.h"
 #include "IndexBuffer.h"
 #include "Material.h"
-#include "MaterialBuffer.h"
 #include "Model.h"
 #include "PipelineResourceManager.h"
 #include "PointLight.h"
@@ -13,7 +12,7 @@
 #include "Shader.h"
 #include "SwapChain.h"
 #include "Texture.h"
-#include <kotono_common/AssetManager.h>
+#include <assert.h>
 #include <kotono_common/log.h>
 #include <kotono_graphics/InterfacePendingResources.h>
 #include <kotono_graphics/InterfaceRenderGraph.h>
@@ -26,6 +25,37 @@
 
 static constexpr bool IS_MULTI_THREADED{ false };
 
+static void JoinThread(std::thread& thread)
+{
+	if (thread.joinable())
+	{
+		thread.join();
+	}
+}
+
+template <std::derived_from<AAsset> T>
+struct GetOrCreateResult
+{
+	b8 exists;
+	T* value;
+};
+
+template <std::derived_from<AAsset> T>
+static GetOrCreateResult<T> GetOrCreate(UPath const& path, std::unordered_map<UPath, T*>& registry)
+{
+	auto const it{ registry.find(path) };
+	if (it != registry.end())
+	{
+		return { true, it->second };
+	}
+
+	assert(path.IsFile());
+
+	T* texture{ new T{ path } };
+	registry[path] = texture;
+	return { false, texture };
+}
+
 void URenderer::Init()
 {
 	swapChain_.Init();
@@ -34,12 +64,12 @@ void URenderer::Init()
 	CreateCommandBuffers();
 	CreateSyncObjects();
 
-	PipelineResourceManager.Init();
-
-	IndexBuffer.Init();
-	MaterialBuffer.Init();
+	pipelineResourceManager_.Init();
+	indexBuffer_.Init();
 
 	interfaceRenderer_.Init();
+
+	InitSceneRendererResources();
 }
 
 void URenderer::Cleanup()
@@ -49,13 +79,28 @@ void URenderer::Cleanup()
 	JoinThread(renderThread_);
 	JoinThread(rhiThread_);
 
-	sceneRenderer_.Cleanup();
+	for (auto const* texture : textures_ | std::views::values)
+	{
+		delete texture;
+	}
+	for (auto const* material : materials_ | std::views::values)
+	{
+		delete material;
+	}
+	for (auto const* sampler : samplers_ | std::views::values)
+	{
+		delete sampler;
+	}
+	for (auto const* model : models_ | std::views::values)
+	{
+		delete model;
+	}
+
+	sceneRenderer_.Cleanup(pipelineResourceManager_);
 	interfaceRenderer_.Cleanup();
 
-	MaterialBuffer.Cleanup();
-	IndexBuffer.Cleanup();
-
-	PipelineResourceManager.Cleanup();
+	indexBuffer_.Cleanup();
+	pipelineResourceManager_.Cleanup();
 
 	swapChain_.Cleanup();
 
@@ -74,7 +119,7 @@ void URenderer::RegisterPendingTextures(std::span<UPendingTexture const> pending
 {
 	for (auto const& [path, handle] : pendingTextures)
 	{
-		textureHandles_[handle] = SAssetManager<ATexture>::Get(path)->GetIndex();
+		textureHandles_[handle] = GetOrCreateTexture(path)->GetIndex();
 	}
 }
 
@@ -82,7 +127,7 @@ void URenderer::RegisterPendingSceneRenders(std::span<UPendingSceneRender const>
 {
 	for (auto const& [handle, extent] : pendingSceneRenders)
 	{
-		u32 const renderTarget{ sceneRenderer_.CreateScene(extent, swapChain_.GetFormat()) };
+		u32 const renderTarget{ sceneRenderer_.CreateScene(extent, swapChain_.GetFormat(), pipelineResourceManager_) };
 		sceneRenders_[handle] = renderTarget;
 	}
 }
@@ -94,7 +139,7 @@ void URenderer::UnregisterUnusedSceneRenders(std::unordered_multimap<glm::uvec2,
 		auto const it{ sceneRenders_.find(handle) };
 		if (it != sceneRenders_.end())
 		{
-			sceneRenderer_.DeleteScene(it->second);
+			sceneRenderer_.DeleteScene(it->second, pipelineResourceManager_);
 			sceneRenders_.erase(it);
 		}
 	}
@@ -138,6 +183,7 @@ void URenderer::DrawFrame(
 			, sceneDrawCommands
 			, directionalLights
 			, pointLights
+			, defaultSampler_
 		);
 	}
 
@@ -189,9 +235,16 @@ void URenderer::DrawFrame(
 	frameCount_++;
 }
 
-VkFormat URenderer::GetSwapChainFormat() const
+void URenderer::InitSceneRendererResources()
 {
-	return swapChain_.GetFormat();
+	defaultSampler_ = GetOrCreateSampler("${ENGINE_DIRECTORY}/Graphics/assets/samplers/default.kasset")->GetIndex();
+
+	clusterAABBPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Graphics/assets/shaders/clusterAABB.kasset")->GetPipeline();
+	lightBinningPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Graphics/assets/shaders/lightBinning.kasset")->GetPipeline();
+	shadowPrePassPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Graphics/assets/shaders/shadowPrePass.kasset")->GetPipeline();
+	depthPrePassPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Graphics/assets/shaders/depthPrePass.kasset")->GetPipeline();
+	deferredLightingPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Graphics/assets/shaders/deferredLighting.kasset")->GetPipeline();
+	postProcessPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Graphics/assets/shaders/postProcess.kasset")->GetPipeline();
 }
 
 void URenderer::RecreateFrames()
@@ -315,12 +368,28 @@ void URenderer::RecordCommandBuffer(
 
 	BeginCommandBuffer(commandBuffer);
 
-	PipelineResourceManager.CmdBindDescriptorSet(commandBuffer);
+	pipelineResourceManager_.CmdBindDescriptorSet(commandBuffer);
 
 	// Scene
 	for (auto const handle : sceneRenderViews | std::views::transform(&USceneRenderView::sceneRender))
 	{
-		sceneRenderer_.CmdDrawScene(commandBuffer, frameIndex, handle, sceneDrawCommands, directionalLightCount);
+		sceneRenderer_.CmdDrawScene(frameIndex, handle
+			, {
+				.commandBuffer = commandBuffer,
+				.pipelineLayout = pipelineResourceManager_.GetPipelineLayout(),
+				.clusterAABBPipeline = clusterAABBPipeline_,
+				.lightBinningPipeline = lightBinningPipeline_,
+				.shadowPrePassPipeline = shadowPrePassPipeline_,
+				.depthPrePassPipeline = depthPrePassPipeline_,
+				.deferredLightingPipeline = deferredLightingPipeline_,
+				.postProcessPipeline = postProcessPipeline_,
+				.indexBuffer = indexBuffer_,
+			}
+			, {
+				.drawCommands = sceneDrawCommands,
+				.directionalLightCount = directionalLightCount,
+			}
+		);
 	}
 
 	VkViewport const viewport{
@@ -337,7 +406,12 @@ void URenderer::RecordCommandBuffer(
 	CmdBarrierSwapchainNoneToWrite(commandBuffer, frameIndex);
 	// - Write swapchain image
 	CmdBeginRenderingInterface(commandBuffer, frameIndex);
-	interfaceRenderer_.CmdDrawInterface(commandBuffer, interfaceDrawCommands, frameIndex);
+	interfaceRenderer_.CmdDrawInterface(commandBuffer
+		, frameIndex
+		, pipelineResourceManager_.GetPipelineLayout()
+		, interfaceDrawCommands
+		, indexBuffer_
+	);
 	CmdEndRendering(commandBuffer);
 	// - Make swapchain image presentable
 	CmdBarrierSwapchainWriteToPresent(commandBuffer, frameIndex);
@@ -497,14 +571,6 @@ void URenderer::SubmitCommandBuffer(u32 frameIndex)
 	}
 }
 
-void URenderer::JoinThread(std::thread& thread) const
-{
-	if (thread.joinable())
-	{
-		thread.join();
-	}
-}
-
 u32 URenderer::GetGameThreadFrame() const
 {
 	// Prepare game thread for render thread
@@ -537,7 +603,7 @@ UFrameContextSceneView URenderer::MakeFrameContextSceneView(USceneView const& sc
 	};
 }
 
-std::vector<UDrawCommand> URenderer::MakeDrawCommands(std::span<UDrawData const> drawDatas) const
+std::vector<UDrawCommand> URenderer::MakeDrawCommands(std::span<UDrawData const> drawDatas)
 {
 	return drawDatas
 		| std::views::filter(&UDrawData::isVisible)
@@ -545,9 +611,12 @@ std::vector<UDrawCommand> URenderer::MakeDrawCommands(std::span<UDrawData const>
 		| std::views::transform([this](auto&& tuple) {
 			auto const& [index, drawData] { tuple };
 
-			auto* shader{ SAssetManager<AShader>::Get(drawData.shader) };
-			auto* model{ SAssetManager<AModel>::Get(drawData.model) };
-			auto* material{ SAssetManager<AMaterial>::Get(drawData.material) };
+			auto const* shader{ GetOrCreateShader(drawData.shader) };
+			auto const* model{ GetOrCreateModel(drawData.model) };
+			auto const* material{ drawData.material ? GetOrCreateMaterial(drawData.material) : nullptr };
+			
+			// todo: temp fixes, split interface and scene
+			auto const materialData{ material ? material->GetData() : AMaterial::Data{} };
 
 			std::array<f32, 16> scalars{};
 			std::array<glm::vec4, 16> vectors{};
@@ -572,7 +641,14 @@ std::vector<UDrawCommand> URenderer::MakeDrawCommands(std::span<UDrawData const>
 					.offset = { drawData.scissor.offset.x, drawData.scissor.offset.y },
 					.extent = { drawData.scissor.extent.x, drawData.scissor.extent.y },
 				},
-				.materialIndex = material ? material->GetIndex() : 0, // todo: temp
+				.material = material ? UDrawCommand::Material{
+					.albedoIndex = GetOrCreateTexture(materialData.albedo)->GetIndex(),
+					.normalIndex = GetOrCreateTexture(materialData.normal)->GetIndex(),
+					.ormIndex = GetOrCreateTexture(materialData.orm)->GetIndex(),
+					.emissiveIndex = GetOrCreateTexture(materialData.emissive)->GetIndex(),
+					.materialType = materialData.materialType,
+					.samplerIndex = GetOrCreateSampler(materialData.sampler)->GetIndex(),
+				} : UDrawCommand::Material{},
 				.modelMatrix = drawData.modelMatrix,
 				.normalMatrix = drawData.normalMatrix,
 				.sortKey = drawData.sortKey,
@@ -589,9 +665,9 @@ std::vector<UDirectionalLight> URenderer::MakeDirectionalLights(
 	, UFrameContextSceneView const& sceneView
 	, u32 sceneRender
 	, u32 frameIndex
-) const
+)
 {
-	static auto* sampler{ SAssetManager<ASampler>::Get("${ENGINE_DIRECTORY}/Graphics/assets/samplers/shadow.kasset") };
+	static auto* sampler{ GetOrCreateSampler("${ENGINE_DIRECTORY}/Graphics/assets/samplers/shadow.kasset") };
 
 	std::array<f32, NUM_DIRECTIONAL_CASCADES + 1> const cascadeSplits{
 		sceneView.depthNear,
@@ -649,4 +725,67 @@ std::vector<UPointLight> URenderer::MakePointLights(std::span<UPointLightData co
 			};
 		})
 		| std::ranges::to<std::vector>();
+}
+
+ATexture* URenderer::GetOrCreateTexture(UPath const& path)
+{
+	auto const [exists, texture] { GetOrCreate(path, textures_) };
+	if (!exists)
+	{
+		auto const imageView{ texture->GetImageView() };
+		texture->SetIndex(pipelineResourceManager_.RegisterTexture(imageView));
+	}
+	return texture;
+}
+
+AMaterial* URenderer::GetOrCreateMaterial(UPath const& path)
+{
+	auto const [exists, material] { GetOrCreate(path, materials_) };
+	if (!exists)
+	{
+	}
+	return material;
+}
+
+ASampler* URenderer::GetOrCreateSampler(UPath const& path)
+{
+	auto const [exists, sampler] { GetOrCreate(path, samplers_) };
+	if (!exists)
+	{
+		auto const samplerType{ sampler->GetType() };
+		auto const vkSampler{ sampler->GetSampler() };
+		switch (samplerType)
+		{
+		case ASampler::EType::Sampler:
+			sampler->SetIndex(pipelineResourceManager_.RegisterSampler(vkSampler));
+			break;
+		case ASampler::EType::ShadowSampler:
+			sampler->SetIndex(pipelineResourceManager_.RegisterShadowSampler(vkSampler));
+			break;
+		default:
+			break;
+		}
+	}
+	return sampler;
+}
+
+AModel* URenderer::GetOrCreateModel(UPath const& path)
+{
+	auto const [exists, model] { GetOrCreate(path, models_) };
+	if (!exists)
+	{
+		auto const indices{ model->GetIndices() };
+		model->SetFirstIndex(indexBuffer_.RegisterIndices(indices));
+	}
+	return model;
+}
+
+AShader* URenderer::GetOrCreateShader(UPath const& path)
+{
+	auto const [exists, shader] { GetOrCreate(path, shaders_) };
+	if (!exists)
+	{
+		shader->Init(swapChain_.GetFormat(), pipelineResourceManager_.GetPipelineLayout());
+	}
+	return shader;
 }

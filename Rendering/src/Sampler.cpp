@@ -1,6 +1,6 @@
 #include "Sampler.h"
 
-#include "PipelineResourceManager.h"
+#include <kotono_io/serialize_base.h>
 #include <kotono_io/Serializer.h>
 #include <kotono_platform/Context.h>
 #include <kotono_platform/vk_utils.h>
@@ -11,18 +11,6 @@ ASampler::ASampler(UPath const& path)
 	, index_{}
 {
 	CreateSampler();
-
-	nlohmann::json json{};
-	SSerializer::Deserialize(json, path);
-
-	if (json["type"] == ESamplerType::Sampler)
-	{
-		index_ = PipelineResourceManager.RegisterSampler(sampler_);
-	}
-	else
-	{
-		index_ = PipelineResourceManager.RegisterShadowSampler(sampler_);
-	}
 }
 
 ASampler::~ASampler()
@@ -33,6 +21,24 @@ ASampler::~ASampler()
 u32 ASampler::GetIndex() const
 {
 	return index_;
+}
+
+void ASampler::SetIndex(u32 index)
+{
+	index_ = index;
+}
+
+VkSampler ASampler::GetSampler() const
+{
+	return sampler_;
+}
+
+ASampler::EType ASampler::GetType() const
+{
+	nlohmann::json json{};
+	SSerializer::Deserialize(json, GetPath());
+
+	return UDeserialize<EType>{}(json["type"]);
 }
 
 void ASampler::CreateSampler()

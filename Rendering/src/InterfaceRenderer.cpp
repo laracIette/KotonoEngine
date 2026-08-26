@@ -21,12 +21,18 @@ void UInterfaceRenderer::Cleanup() const
 
 void UInterfaceRenderer::UpdateInterfaceBuffers(std::span<UDrawCommand const> drawCommands, u32 frameIndex)
 {
-	auto const& interfaceRender{ frameDatas_[frameIndex].interfaceRender };
-	interfaceRender.UpdateBuffers(drawCommands);
+	frameDatas_[frameIndex].interfaceRender
+		.UpdateBuffers(drawCommands);
 }
 
-void UInterfaceRenderer::CmdDrawInterface(VkCommandBuffer commandBuffer, std::span<UDrawCommand const> drawCommands, u32 frameIndex) const
+void UInterfaceRenderer::CmdDrawInterface(
+	  VkCommandBuffer commandBuffer
+	, u32 frameIndex
+	, VkPipelineLayout pipelineLayout
+	, std::span<UDrawCommand const> drawCommands
+	, UIndexBuffer const& indexBuffer
+) const
 {
-	auto const& interfaceRender{ frameDatas_[frameIndex].interfaceRender };
-	interfaceRender.CmdDraw(commandBuffer, drawCommands);
+	frameDatas_[frameIndex].interfaceRender
+		.CmdDraw(commandBuffer, pipelineLayout, drawCommands, indexBuffer);
 }

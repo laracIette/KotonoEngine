@@ -1,37 +1,33 @@
 #include "MaterialBuffer.h"
-#include <assert.h>
 #include <kotono_platform/Context.h>
 
-static constexpr u32 MAX_MATERIALS{ 4096 };
+static constexpr u32 MAX_MATERIALS{ 2048 };
 
-void GMaterialBuffer::Init()
+void UMaterialBuffer::Init()
 {
     Context.CreateBuffer(dataBuffer_
-        , sizeof(Material) * MAX_MATERIALS
+        , sizeof(Data) * MAX_MATERIALS
         , VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
         | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
-        | VK_BUFFER_USAGE_TRANSFER_DST_BIT
-        , 0
+        , VMA_ALLOCATION_CREATE_MAPPED_BIT
+        | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
     );
 }
 
-void GMaterialBuffer::Cleanup() const
+void UMaterialBuffer::Cleanup() const
 {
     vmaDestroyBuffer(Context.GetAllocator(), dataBuffer_.buffer, dataBuffer_.allocation);
 }
 
-u32 GMaterialBuffer::RegisterMaterial(const Material& material)
+void UMaterialBuffer::UpdateBuffer(std::span<Data const> datas) const
 {
-    Context.StagingUpload(&material
-        , sizeof(Material)
-        , dataBuffer_.buffer
-        , materialCount_ * sizeof(Material)
+    std::memcpy(dataBuffer_.allocationInfo.pMappedData
+        , datas.data()
+        , datas.size() * sizeof(Data)
     );
-    assert(materialCount_ < MAX_MATERIALS);
-    return materialCount_++;
 }
 
-VkDeviceAddress GMaterialBuffer::GetAddress() const
+VkDeviceAddress UMaterialBuffer::GetAddress() const
 {
     return dataBuffer_.bda;
 }

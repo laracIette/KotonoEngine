@@ -3,7 +3,7 @@
 #include <kotono_common/types.h>
 #include <kotono_platform/AllocatedBuffer.h>
 #include <vulkan/vulkan_core.h>
-class GPipelineResourceManager;
+class UPipelineResourceManager;
 class UFrameContextBuffer final
 {
     using Data = UFrameContextBufferData;

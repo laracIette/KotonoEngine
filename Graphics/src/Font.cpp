@@ -1,5 +1,5 @@
 #include "Font.h"
-#include <kotono_common/AssetManager.h>
+
 #include <unordered_map>
 
 static std::unordered_map<char, std::string_view> const CHARACTER_NAMES =

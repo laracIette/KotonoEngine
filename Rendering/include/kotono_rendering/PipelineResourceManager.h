@@ -2,7 +2,7 @@
 #include <kotono_common/types.h>
 #include <vector>
 #include <vulkan/vulkan_core.h>
-class GPipelineResourceManager final
+class UPipelineResourceManager final
 {
 public:
 	struct ResourcePool
@@ -24,10 +24,10 @@ public:
 	u32 RegisterTextureArray(VkImageView imageView);
 	u32 RegisterSampler(VkSampler sampler);
 	u32 RegisterShadowSampler(VkSampler sampler);
-	void UnregisterTexture(const u32 slot);
-	void UnregisterTextureArray(const u32 slot);
-	void UnregisterSampler(const u32 slot);
-	void UnregisterShadowSampler(const u32 slot);
+	void UnregisterTexture(u32 slot);
+	void UnregisterTextureArray(u32 slot);
+	void UnregisterSampler(u32 slot);
+	void UnregisterShadowSampler(u32 slot);
 
 	void CmdBindDescriptorSet(VkCommandBuffer commandBuffer) const;
 
@@ -52,5 +52,3 @@ private:
 	ResourcePool samplerPool_;
 	ResourcePool shadowSamplerPool_;
 };
-
-inline GPipelineResourceManager PipelineResourceManager;

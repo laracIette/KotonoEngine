@@ -1,6 +1,5 @@
 #include "Model.h"
 
-#include "IndexBuffer.h"
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -18,7 +17,6 @@ AModel::AModel(UPath const& path)
 {
 	Load();
 	CreateVertexBuffer();
-	firstIndex_ = IndexBuffer.RegisterIndices(indices_);
 }
 
 AModel::~AModel()
@@ -40,6 +38,16 @@ u32 AModel::GetIndexCount() const
 u32 AModel::GetFirstIndex() const
 {
 	return firstIndex_;
+}
+
+void AModel::SetFirstIndex(u32 index)
+{
+	firstIndex_ = index;
+}
+
+std::span<u32 const> AModel::GetIndices() const
+{
+	return indices_;
 }
 
 void AModel::Load()
@@ -95,7 +103,7 @@ void AModel::Load()
 				const glm::vec3 T{ tan.x,   tan.y,   tan.z };
 				const glm::vec3 B{ bitan.x, bitan.y, bitan.z };
 
-				const float handedness{ glm::dot(glm::cross(N, T), B) < 0.0f ? -1.0f : 1.0f };
+				const f32 handedness{ glm::dot(glm::cross(N, T), B) < 0.0f ? -1.0f : 1.0f };
 
 				const UVertex vertex{ 
 					.position = { pos.x, pos.y, pos.z },
@@ -146,7 +154,7 @@ void AModel::DestroyStagingVertexBuffer() const
 	vmaDestroyBuffer(Context.GetAllocator(), stagingVertexBuffer_.buffer, stagingVertexBuffer_.allocation);
 }
 
-bool UVertex::operator==(const UVertex& other) const noexcept
+bool UVertex::operator==(UVertex const& other) const noexcept
 {
 	return position == other.position
 		&& normal == other.normal
@@ -154,7 +162,7 @@ bool UVertex::operator==(const UVertex& other) const noexcept
 		&& tangent == other.tangent;
 }
 
-size std::hash<UVertex>::operator()(const UVertex& v) const noexcept
+size std::hash<UVertex>::operator()(UVertex const& v) const noexcept
 {
 	::size h{};
 	h = combine(h, std::hash<glm::vec3>{}(v.position));

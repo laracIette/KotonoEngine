@@ -2,8 +2,10 @@
 #include "FrameContextBuffer.h"
 #include "frames_in_flight.h"
 #include "GPUBuffers.h"
+#include "IndexBuffer.h"
 #include "InterfaceRenderer.h"
 #include "LightBuffers.h"
+#include "PipelineResourceManager.h"
 #include "PushConstants.h"
 #include "SceneRenderer.h"
 #include "SwapChain.h"
@@ -34,6 +36,11 @@ struct UPointLight;
 struct UPointLightData;
 struct USceneRenderGraph;
 struct USceneView;
+class AMaterial;
+class AModel;
+class ASampler;
+class AShader;
+class ATexture;
 class URenderer final
 {
 public:
@@ -59,9 +66,9 @@ public:
 
 	void DrawFrame(std::unordered_map<EHandle, USceneView> const& interfaceSceneViews, USceneRenderGraph const& sceneRenderGraph, UInterfaceRenderGraph const& interfaceRenderGraph);
 
-	VkFormat GetSwapChainFormat() const;
-
 private:
+	void InitSceneRendererResources();
+
 	void RecreateFrames();
 
 	bool TryAcquireNextImage(u32 frameIndex);
@@ -83,16 +90,20 @@ private:
 
 	void CreateSyncObjects();
 
-	void JoinThread(std::thread& thread) const;
-
 	u32 GetGameThreadFrame() const;
 	u32 GetRenderThreadFrame() const;
 	u32 GetRHIThreadFrame() const;
 
 	UFrameContextSceneView MakeFrameContextSceneView(USceneView const& sceneView) const;
-	std::vector<UDrawCommand> MakeDrawCommands(std::span<UDrawData const> drawDatas) const;
-	std::vector<UDirectionalLight> MakeDirectionalLights(std::span<UDirectionalLightData const> directionalLightDatas, UFrameContextSceneView const& sceneView, u32 sceneRender, u32 frameIndex) const;
+	std::vector<UDrawCommand> MakeDrawCommands(std::span<UDrawData const> drawDatas);
+	std::vector<UDirectionalLight> MakeDirectionalLights(std::span<UDirectionalLightData const> directionalLightDatas, UFrameContextSceneView const& sceneView, u32 sceneRender, u32 frameIndex);
 	std::vector<UPointLight> MakePointLights(std::span<UPointLightData const> pointLightDatas) const;
+
+	ATexture* GetOrCreateTexture(UPath const& path);
+	AMaterial* GetOrCreateMaterial(UPath const& path);
+	ASampler* GetOrCreateSampler(UPath const& path);
+	AModel* GetOrCreateModel(UPath const& path);
+	AShader* GetOrCreateShader(UPath const& path);
 
 private:
 	USwapChain swapChain_;
@@ -105,6 +116,23 @@ private:
 
 	USceneRenderer sceneRenderer_;
 	UInterfaceRenderer interfaceRenderer_;
+
+	UPipelineResourceManager pipelineResourceManager_;
+	UIndexBuffer indexBuffer_;
+
+	VkPipeline clusterAABBPipeline_;
+	VkPipeline lightBinningPipeline_;
+	VkPipeline shadowPrePassPipeline_;
+	VkPipeline depthPrePassPipeline_;
+	VkPipeline deferredLightingPipeline_;
+	VkPipeline postProcessPipeline_;
+	u32 defaultSampler_;
+
+	std::unordered_map<UPath, ATexture*> textures_;
+	std::unordered_map<UPath, AMaterial*> materials_;
+	std::unordered_map<UPath, ASampler*> samplers_;
+	std::unordered_map<UPath, AModel*> models_;
+	std::unordered_map<UPath, AShader*> shaders_;
 
 	std::unordered_map<EHandle, u32> textureHandles_;
 	std::unordered_map<EHandle, u32> sceneRenders_;

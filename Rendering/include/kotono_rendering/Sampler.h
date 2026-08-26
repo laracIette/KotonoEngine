@@ -3,18 +3,24 @@
 #include <kotono_common/Path.h>
 #include <kotono_common/types.h>
 #include <vulkan/vulkan_core.h>
-enum class ESamplerType : u8
-{
-	Sampler,
-	ShadowSampler,
-};
 class ASampler final : public AAsset
 {
+public:
+	enum class EType : u8
+	{
+		Sampler,
+		ShadowSampler,
+	};
+
 public:
 	ASampler(UPath const& path);
 	~ASampler() override;
 
 	u32 GetIndex() const;
+	void SetIndex(u32 index);
+
+	VkSampler GetSampler() const;
+	EType GetType() const;
 
 private:
 	void CreateSampler();

@@ -1,6 +1,5 @@
 ﻿#include "Shader.h"
 
-#include "PipelineResourceManager.h"
 #include <kotono_common/log.h>
 #include <kotono_io/File.h>
 #include <kotono_io/Serializer.h>
@@ -10,22 +9,10 @@
 
 #define KT_LOG_IMPORTANCE_LEVEL_SHADER ELogImportanceLevel::High
 
-AShader::AShader(UPath const& path, VkFormat swapChainFormat)
+AShader::AShader(UPath const& path)
 	: AAsset(path)
 	, pipeline_{ VK_NULL_HANDLE }
 {
-	nlohmann::json json{};
-	SSerializer::Deserialize(json, path);
-
-	if (json["pipelinePass"] == EPipelinePass::Compute)
-	{
-		CreateComputePipeline();
-	}
-	else
-	{
-		CreateGraphicsPipeline(swapChainFormat);
-	}
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "initialized shader {0}", path.ToString());
 }
 
 AShader::~AShader()
@@ -34,12 +21,28 @@ AShader::~AShader()
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "cleaned up shader {0}", GetPath().ToString());
 }
 
+void AShader::Init(VkFormat swapChainFormat, VkPipelineLayout pipelineLayout)
+{
+	nlohmann::json json{};
+	SSerializer::Deserialize(json, GetPath());
+
+	if (json["pipelinePass"] == EPipelinePass::Compute)
+	{
+		CreateComputePipeline(pipelineLayout);
+	}
+	else
+	{
+		CreateGraphicsPipeline(swapChainFormat, pipelineLayout);
+	}
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "initialized shader {0}", GetPath().ToString());
+}
+
 VkPipeline AShader::GetPipeline() const
 {
 	return pipeline_;
 }
 
-void AShader::CreateShaderModule(VkShaderModule& shaderModule, std::span<u8 const> code)
+VkShaderModule AShader::CreateShaderModule(std::span<u8 const> code)
 {
 	const VkShaderModuleCreateInfo createInfo{
 		.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
@@ -47,13 +50,17 @@ void AShader::CreateShaderModule(VkShaderModule& shaderModule, std::span<u8 cons
 		.pCode = reinterpret_cast<const u32*>(code.data()),
 	};
 
+	VkShaderModule shaderModule;
+
 	VK_CHECK_THROW(
 		vkCreateShaderModule(Context.GetDevice(), &createInfo, nullptr, &shaderModule),
 		"failed to create shader module!"
 	);
+
+	return shaderModule;
 }
 
-void AShader::CreateGraphicsPipeline(VkFormat swapChainFormat)
+void AShader::CreateGraphicsPipeline(VkFormat swapChainFormat, VkPipelineLayout pipelineLayout)
 {
 	std::vector<VkShaderModule> shaderModules;
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
@@ -66,8 +73,7 @@ void AShader::CreateGraphicsPipeline(VkFormat swapChainFormat)
 		UPath const path{ shader["path"] };
 		std::vector const shaderCode{ UFile{ path }.ReadBinary() };
 
-		VkShaderModule shaderModule;
-		CreateShaderModule(shaderModule, shaderCode);
+		VkShaderModule const shaderModule{ CreateShaderModule(shaderCode) };
 		shaderModules.push_back(shaderModule);
 
 		const VkPipelineShaderStageCreateInfo shaderStageInfo{
@@ -202,7 +208,7 @@ void AShader::CreateGraphicsPipeline(VkFormat swapChainFormat)
 		.pColorBlendState = &colorBlending,
 		.pDynamicState = &dynamicState,
 
-		.layout = PipelineResourceManager.GetPipelineLayout(),
+		.layout = pipelineLayout,
 	};
 	VK_CHECK_THROW(
 		vkCreateGraphicsPipelines(Context.GetDevice(), nullptr, 1, &pipelineInfo, nullptr, &pipeline_),
@@ -215,7 +221,7 @@ void AShader::CreateGraphicsPipeline(VkFormat swapChainFormat)
 	}
 }
 
-void AShader::CreateComputePipeline()
+void AShader::CreateComputePipeline(VkPipelineLayout pipelineLayout)
 {
 	nlohmann::json json{};
 	SSerializer::Deserialize(json, GetPath());
@@ -223,8 +229,7 @@ void AShader::CreateComputePipeline()
 	UPath const path{ json["path"] };
 	std::vector const shaderCode{ UFile{ path }.ReadBinary() };
 
-	VkShaderModule shaderModule;
-	CreateShaderModule(shaderModule, shaderCode);
+	VkShaderModule const shaderModule{ CreateShaderModule(shaderCode) };
 
 	const VkPipelineShaderStageCreateInfo shaderStageInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
@@ -241,7 +246,7 @@ void AShader::CreateComputePipeline()
 		.pNext = VK_NULL_HANDLE,
 		.flags = 0,
 		.stage = shaderStageInfo,
-		.layout = PipelineResourceManager.GetPipelineLayout(),
+		.layout = pipelineLayout,
 		.basePipelineHandle = VK_NULL_HANDLE,
 		.basePipelineIndex = -1,
 	};

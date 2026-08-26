@@ -7,12 +7,15 @@
 class ATexture final : public AAsset
 {
 public:
-    ATexture(const UPath& path);
+    ATexture(UPath const& path);
     ~ATexture() override;
 
-    const glm::uvec2& GetSize() const;
+    glm::uvec2 const& GetSize() const;
 
     u32 GetIndex() const;
+    void SetIndex(u32 index);
+
+    VkImageView GetImageView() const;
 
 private:
     void CreateImage();
@@ -24,7 +27,6 @@ private:
     UAllocatedBuffer stagingBuffer_;
 
     glm::uvec2 size_;
-    u32 mipLevels_;
 
     u32 index_;
 };

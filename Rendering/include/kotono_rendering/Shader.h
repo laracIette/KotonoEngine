@@ -16,16 +16,18 @@ enum class EPipelinePass : u8
 class AShader final : public AAsset
 {
 public:	
-	AShader(UPath const& path, VkFormat swapChainFormat);
+	AShader(UPath const& path);
 	~AShader() override;
+
+	void Init(VkFormat swapChainFormat, VkPipelineLayout pipelineLayout);
 
 	VkPipeline GetPipeline() const;
 
 private:
-	void CreateGraphicsPipeline(VkFormat swapChainFormat);
-	void CreateComputePipeline();
+	void CreateGraphicsPipeline(VkFormat swapChainFormat, VkPipelineLayout pipelineLayout);
+	void CreateComputePipeline(VkPipelineLayout pipelineLayout);
 	std::vector<VkFormat> GetOutputColorAttachmentFormats(EPipelinePass pipelinePass, VkFormat swapChainFormat) const;
-	void CreateShaderModule(VkShaderModule& shaderModule, std::span<u8 const> code);
+	VkShaderModule CreateShaderModule(std::span<u8 const> code);
 
 private:
 	VkPipeline pipeline_;

@@ -8,6 +8,7 @@
 struct UDirectionalLight;
 struct UFrameContextSceneView;
 struct UPointLight;
+class UPipelineResourceManager;
 class ULightBuffers final
 {
 public:
@@ -18,7 +19,7 @@ public:
 	};
 
 public:
-	void Init();
+	void Init(UPipelineResourceManager& pipelineResourceManager);
 	void Cleanup() const;
 
 	void UpdateBuffers(UFrameContextSceneView const& sceneView, std::span<UDirectionalLight const> directionalLights, std::span<UPointLight const> pointLights) const;
@@ -35,7 +36,7 @@ public:
 
 private:
 	void CreateBuffers();
-	void CreateShadowMapResources();
+	void CreateShadowMapResources(UPipelineResourceManager& pipelineResourceManager);
 
 private:
 	UAllocatedBuffer directionalLightBuffer_;

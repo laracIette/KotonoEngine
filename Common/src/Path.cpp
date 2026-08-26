@@ -85,6 +85,11 @@ UPath::operator std::filesystem::path() const
     return ToPath();
 }
 
+UPath::operator bool() const
+{
+    return !IsEmpty();
+}
+
 bool UPath::operator==(UPath const& other) const noexcept
 {
     return source_ == other.source_;
