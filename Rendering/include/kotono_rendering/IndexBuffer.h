@@ -6,8 +6,8 @@
 class UIndexBuffer final
 {
 public:
-	void Init();
-	void Cleanup() const;
+	void Init(VkDevice device, VmaAllocator allocator);
+	void Cleanup(VmaAllocator allocator) const;
 
 	void CmdBind(VkCommandBuffer commandBuffer) const;
 

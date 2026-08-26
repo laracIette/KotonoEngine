@@ -1,12 +1,13 @@
 #include "IndexBuffer.h"
+
 #include <assert.h>
 #include <kotono_platform/Context.h>
 
 static constexpr u32 MAX_INDICES{ 1 << 20 };
 
-void UIndexBuffer::Init()
+void UIndexBuffer::Init(VkDevice device, VmaAllocator allocator)
 {
-    Context.CreateBuffer(dataBuffer_
+    dataBuffer_.Create(device, allocator
         , sizeof(u32) * MAX_INDICES
         , VK_BUFFER_USAGE_INDEX_BUFFER_BIT
         | VK_BUFFER_USAGE_TRANSFER_DST_BIT
@@ -14,9 +15,9 @@ void UIndexBuffer::Init()
     );
 }
 
-void UIndexBuffer::Cleanup() const
+void UIndexBuffer::Cleanup(VmaAllocator allocator) const
 {
-    vmaDestroyBuffer(Context.GetAllocator(), dataBuffer_.buffer, dataBuffer_.allocation);
+    dataBuffer_.Cleanup(allocator);
 }
 
 void UIndexBuffer::CmdBind(VkCommandBuffer commandBuffer) const
@@ -35,8 +36,9 @@ u32 UIndexBuffer::RegisterIndices(std::span<u32 const> indices)
     u32 const newIndex{ indexCount_ + static_cast<u32>(indices.size()) };
     assert(newIndex <= MAX_INDICES);
 
-    Context.StagingUpload(indices.data()
-        , sizeof(u32) * indices.size()
+    Context.StagingUpload(
+          indices.data()
+        , indices.size_bytes()
         , dataBuffer_.buffer
         , indexCount_ * sizeof(u32)
     );

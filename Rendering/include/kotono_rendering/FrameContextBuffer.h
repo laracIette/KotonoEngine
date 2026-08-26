@@ -9,14 +9,11 @@ class UFrameContextBuffer final
     using Data = UFrameContextBufferData;
 
 public:
-    void Init();
-    void Cleanup() const;
+    void Init(VkDevice device, VmaAllocator allocator);
+    void Cleanup(VmaAllocator allocator) const;
 
     void UpdateBuffer(UFrameContextSceneView const& sceneView, UFrameContextAddresses const& addresses, UFrameContextTargets const& targets, u32 directionalLightCount, u32 pointLightCount, u32 samplerIndex) const;
     VkDeviceAddress GetAddress() const;
-
-private:
-    void CreateBuffers();
 
 private:
     UAllocatedBuffer dataBuffer_;

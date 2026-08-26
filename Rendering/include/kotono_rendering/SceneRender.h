@@ -1,19 +1,20 @@
 #pragma once
-#include "DrawDataBuffer.h"
 #include "FrameContextBuffer.h"
 #include "GPUBuffers.h"
 #include "LightBuffers.h"
-#include "MaterialBuffer.h"
-#include "ParametersBuffer.h"
-#include "TransformBuffer.h"
 #include <glm/ext/vector_uint2.hpp>
 #include <kotono_common/types.h>
+#include <kotono_platform/AllocatedBuffer.h>
 #include <kotono_platform/AllocatedImage.h>
 #include <span>
 #include <vector>
 #include <vulkan/vulkan_core.h>
 struct UDrawCommand;
 struct UFrameContextSceneView;
+struct UDrawDataBufferData;
+struct UTransformBufferData;
+struct UParametersBufferData;
+struct UMaterialBufferData;
 class UIndexBuffer;
 class UPipelineResourceManager;
 struct USceneRenderContext final
@@ -38,8 +39,8 @@ struct USceneRenderData final
 class USceneRender final
 {
 public:
-	void Init(glm::uvec2 const& extent, VkFormat swapChainFormat, UPipelineResourceManager& pipelineResourceManager);
-	void Cleanup(UPipelineResourceManager& pipelineResourceManager) const;
+	void Init(glm::uvec2 const& extent, VkDevice device, VmaAllocator allocator, VkFormat depthFormat, VkFormat swapChainFormat, UPipelineResourceManager& pipelineResourceManager);
+	void Cleanup(VkDevice device, VmaAllocator allocator, UPipelineResourceManager& pipelineResourceManager) const;
 
 	u32 GetRenderTarget() const;
 	u32 GetDirectionalLightShadowMapTargetIndex(u32 index) const;
@@ -63,8 +64,8 @@ public:
 	void CmdDraw(USceneRenderContext const& renderContext, USceneRenderData const& renderData) const;
 
 private:
-	void CreateImageResources(VkFormat swapChainFormat);
-	void CleanupImageResources() const;
+	void CreateImageResources(VkDevice device, VmaAllocator allocator, VkFormat depthFormat, VkFormat swapChainFormat);
+	void CleanupImageResources(VkDevice device, VmaAllocator allocator) const;
 	void RegisterFrameContextBufferTextures(UPipelineResourceManager& pipelineResourceManager);
 	void UnregisterFrameContextBufferTextures(UPipelineResourceManager& pipelineResourceManager) const;
 
@@ -132,10 +133,10 @@ private:
 
 	UFrameContextBuffer frameContextBuffer_;
 
-	UDrawDataBuffer drawDataBuffer_;
-	UTransformBuffer transformBuffer_;
-	UParametersBuffer parametersBuffer_;
-	UMaterialBuffer materialBuffer_;
+	UAllocatedBuffer drawDataBuffer_;
+	UAllocatedBuffer transformBuffer_;
+	UAllocatedBuffer parametersBuffer_;
+	UAllocatedBuffer materialBuffer_;
 
 	ULightBuffers lightBuffers_;
 	UGPUBuffers gpuBuffers_;

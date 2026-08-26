@@ -5,35 +5,51 @@
 #include <array>
 #include <ranges>
 
-void USceneRenderer::Cleanup(UPipelineResourceManager& pipelineResourceManager) const
+void USceneRenderer::Cleanup(
+	  VkDevice device
+	, VmaAllocator allocator
+	, UPipelineResourceManager& pipelineResourceManager
+) const
 {
 	for (auto const& sceneRenders : frameDatas_ | std::views::transform(&FrameData::sceneRenders))
 	{
 		for (auto const& sceneRender : sceneRenders | std::views::values)
 		{
-			sceneRender.Cleanup(pipelineResourceManager);
+			sceneRender.Cleanup(device, allocator, pipelineResourceManager);
 		}
 	}
 }
 
-u32 USceneRenderer::CreateScene(glm::uvec2 const& extent, VkFormat swapChainFormat, UPipelineResourceManager& pipelineResourceManager)
+u32 USceneRenderer::CreateScene(
+	  glm::uvec2 const& extent
+	, VkDevice device
+	, VmaAllocator allocator
+	, VkFormat depthFormat
+	, VkFormat swapChainFormat
+	, UPipelineResourceManager& pipelineResourceManager
+)
 {
 	for (auto& frameData : frameDatas_)
 	{
 		USceneRender scene{};
-		scene.Init(extent, swapChainFormat, pipelineResourceManager);
+		scene.Init(extent, device, allocator, depthFormat, swapChainFormat, pipelineResourceManager);
 		frameData.sceneRenders[currentScene_] = scene;
 	}
 
 	return currentScene_++;
 }
 
-void USceneRenderer::DeleteScene(u32 handle, UPipelineResourceManager& pipelineResourceManager)
+void USceneRenderer::DeleteScene(
+	  u32 handle
+	, VkDevice device
+	, VmaAllocator allocator
+	, UPipelineResourceManager& pipelineResourceManager
+)
 {
 	for (auto& frameData : frameDatas_)
 	{
 		auto const& scene{ frameData.sceneRenders.at(handle) };
-		scene.Cleanup(pipelineResourceManager);
+		scene.Cleanup(device, allocator, pipelineResourceManager);
 		frameData.sceneRenders.erase(handle);
 	}
 }

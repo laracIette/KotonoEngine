@@ -15,12 +15,6 @@ AShader::AShader(UPath const& path)
 {
 }
 
-AShader::~AShader()
-{
-	vkDestroyPipeline(Context.GetDevice(), pipeline_, nullptr);
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "cleaned up shader {0}", GetPath().ToString());
-}
-
 void AShader::Init(VkFormat swapChainFormat, VkPipelineLayout pipelineLayout)
 {
 	nlohmann::json json{};
@@ -35,6 +29,12 @@ void AShader::Init(VkFormat swapChainFormat, VkPipelineLayout pipelineLayout)
 		CreateGraphicsPipeline(swapChainFormat, pipelineLayout);
 	}
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "initialized shader {0}", GetPath().ToString());
+}
+
+void AShader::Cleanup(VkDevice device) const
+{
+	vkDestroyPipeline(device, pipeline_, nullptr);
+	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "cleaned up shader {0}", GetPath().ToString());
 }
 
 VkPipeline AShader::GetPipeline() const

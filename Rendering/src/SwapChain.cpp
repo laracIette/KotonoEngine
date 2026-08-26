@@ -6,21 +6,21 @@
 #include <kotono_platform/vk_utils.h>
 #include <kotono_platform/Window.h>
 
-void USwapChain::Init()
+void USwapChain::Init(VkDevice device)
 {
 	Create();
-	CreateImageViews();
+	CreateImageViews(device);
 }
 
-void USwapChain::Cleanup()
+void USwapChain::Cleanup(VkDevice device)
 {
 	for (const auto& allocatedImage : allocatedImages_)
 	{
-		vkDestroyImageView(Context.GetDevice(), allocatedImage.imageView, nullptr);
+		allocatedImage.CleanupImageView(device);
 	}
 	allocatedImages_.clear();
 
-	vkDestroySwapchainKHR(Context.GetDevice(), swapChain_, nullptr);
+	vkDestroySwapchainKHR(device, swapChain_, nullptr);
 	swapChain_ = VK_NULL_HANDLE;
 }
 
@@ -172,11 +172,11 @@ VkExtent2D USwapChain::ChooseExtent(const VkSurfaceCapabilitiesKHR& capabilities
 	}
 }
 
-void USwapChain::CreateImageViews()
+void USwapChain::CreateImageViews(VkDevice device)
 {
 	for (auto& allocatedImage : allocatedImages_)
 	{
-		Context.CreateImageView(allocatedImage, {
+		allocatedImage.CreateImageView(device, {
 			.arrayLayers = 1,
 			.mipLevels = 1,
 			.format = format_,

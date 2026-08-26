@@ -2,47 +2,38 @@
 
 #include "Barriers.h"
 #include "DirectionalLight.h"
+
 #include "PipelineResourceManager.h"
 #include "PointLight.h"
-#include <kotono_platform/Context.h>
 #include <ranges>
 
 static constexpr u32 MAX_DIRECTIONAL_LIGHTS{ 8 };
 static constexpr u32 MAX_POINT_LIGHTS{ 1024 };
 static constexpr u32 SHADOW_MAP_RESOLUTION{ 2048 }; // todo: make variable
 
-void ULightBuffers::Init(UPipelineResourceManager& pipelineResourceManager)
+void ULightBuffers::Init(UPipelineResourceManager& pipelineResourceManager, VkDevice device, VmaAllocator allocator, VkFormat shadowMapFormat)
 {
-    CreateBuffers();
-    CreateShadowMapResources(pipelineResourceManager);
+    CreateBuffers(device, allocator);
+    CreateShadowMapResources(pipelineResourceManager, device, allocator, shadowMapFormat);
 }
 
-void ULightBuffers::Cleanup() const
+void ULightBuffers::Cleanup(VkDevice device, VmaAllocator allocator) const
 {
     for (const auto& shadowMapTarget : directionalLightShadowMapTargets_)
     {
-        vkDestroyImageView(Context.GetDevice(), shadowMapTarget.allocatedImage.imageView, nullptr);
-        vmaDestroyImage(Context.GetAllocator(), shadowMapTarget.allocatedImage.image, shadowMapTarget.allocatedImage.allocation);
+        shadowMapTarget.allocatedImage.Cleanup(device, allocator);
     }
-
-    vmaDestroyBuffer(Context.GetAllocator(), directionalLightBuffer_.buffer, directionalLightBuffer_.allocation);
-    vmaDestroyBuffer(Context.GetAllocator(), pointLightBuffer_.buffer, pointLightBuffer_.allocation);
+    directionalLightBuffer_.Cleanup(allocator);
+    pointLightBuffer_.Cleanup(allocator);
 }
 
 void ULightBuffers::UpdateBuffers(
-      UFrameContextSceneView const& sceneView
-    , std::span<UDirectionalLight const> directionalLights
+      std::span<UDirectionalLight const> directionalLights
     , std::span<UPointLight const> pointLights
 ) const
 {
-    std::memcpy(directionalLightBuffer_.allocationInfo.pMappedData
-        , directionalLights.data()
-        , directionalLights.size() * sizeof(UDirectionalLight)
-    );
-    std::memcpy(pointLightBuffer_.allocationInfo.pMappedData
-        , pointLights.data()
-        , pointLights.size() * sizeof(UPointLight)
-    );
+    directionalLightBuffer_.UpdateMappedData(directionalLights);
+    pointLightBuffer_.UpdateMappedData(pointLights);
 }
 
 VkDeviceAddress ULightBuffers::GetDirectionalLightAddress() const
@@ -151,16 +142,16 @@ void ULightBuffers::CmdBarrierShadowMapsWriteToShaderRead(VkCommandBuffer comman
     );
 }
 
-void ULightBuffers::CreateBuffers()
+void ULightBuffers::CreateBuffers(VkDevice device, VmaAllocator allocator)
 {
-    Context.CreateBuffer(directionalLightBuffer_
+    directionalLightBuffer_.Create(device, allocator
         , sizeof(UDirectionalLight) * MAX_DIRECTIONAL_LIGHTS
         , VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
         | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
         , VMA_ALLOCATION_CREATE_MAPPED_BIT
         | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
     );
-    Context.CreateBuffer(pointLightBuffer_
+    pointLightBuffer_.Create(device, allocator
         , sizeof(UPointLight) * MAX_POINT_LIGHTS
         , VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
         | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
@@ -169,22 +160,21 @@ void ULightBuffers::CreateBuffers()
     );
 }
 
-void ULightBuffers::CreateShadowMapResources(UPipelineResourceManager& pipelineResourceManager)
+void ULightBuffers::CreateShadowMapResources(UPipelineResourceManager& pipelineResourceManager, VkDevice device, VmaAllocator allocator, VkFormat shadowMapFormat)
 {
     directionalLightShadowMapTargets_.resize(MAX_DIRECTIONAL_LIGHTS);
     for (auto& shadowMapTarget : directionalLightShadowMapTargets_)
     {
-        Context.CreateImageAndImageView(shadowMapTarget.allocatedImage, UAllocatedImageCreateInfo::CreateSampled2D(
+        shadowMapTarget.allocatedImage.Create(device, allocator, UAllocatedImageCreateInfo::CreateSampled2D(
               SHADOW_MAP_RESOLUTION
             , SHADOW_MAP_RESOLUTION
             , 1
-            , Context.GetDepthFormat()
+            , shadowMapFormat
             , VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
             , VK_IMAGE_ASPECT_DEPTH_BIT
             , VK_IMAGE_VIEW_TYPE_2D_ARRAY
             , NUM_DIRECTIONAL_CASCADES
-        )
-        );
+        ));
         shadowMapTarget.textureIndex = pipelineResourceManager.RegisterTextureArray(shadowMapTarget.allocatedImage.imageView);
     }
 }

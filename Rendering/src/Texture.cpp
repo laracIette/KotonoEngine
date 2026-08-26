@@ -1,6 +1,5 @@
 #include "Texture.h"
 
-#include <kotono_common/log.h>
 #include <kotono_platform/Context.h>
 #include <stbimage/stb_image.h>
 
@@ -8,14 +7,16 @@ ATexture::ATexture(UPath const& path)
 	: AAsset(path)
 	, index_{}
 {
-	CreateImage();
 }
 
-ATexture::~ATexture()
+void ATexture::Init(VkDevice device, VmaAllocator allocator)
 {
-	vkDestroyImageView(Context.GetDevice(), allocatedImage_.imageView, nullptr);
-	vmaDestroyImage(Context.GetAllocator(), allocatedImage_.image, allocatedImage_.allocation);
-	KT_LOG(ELogImportanceLevel::Low, "Graphics", "cleaned up {0}", GetPath().ToString());
+	CreateImage(device, allocator);
+}
+
+void ATexture::Cleanup(VkDevice device, VmaAllocator allocator) const
+{
+	allocatedImage_.Cleanup(device, allocator);
 }
 
 glm::uvec2 const& ATexture::GetSize() const
@@ -38,7 +39,7 @@ VkImageView ATexture::GetImageView() const
 	return allocatedImage_.imageView;
 }
 
-void ATexture::CreateImage()
+void ATexture::CreateImage(VkDevice device, VmaAllocator allocator)
 {
 	i32 texWidth, texHeight, texChannels;
 	stbi_uc* pixels{ stbi_load(GetPath().ToPath().string().c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha)};
@@ -54,7 +55,7 @@ void ATexture::CreateImage()
 	VkDeviceSize const imageSize{ static_cast<VkDeviceSize>(texWidth) * texHeight * 4 };
 	u32 const mipLevels{ static_cast<u32>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1 };
 
-	Context.CreateBuffer(stagingBuffer_
+	stagingBuffer_.Create(device, allocator
 		, imageSize
 		, VK_BUFFER_USAGE_TRANSFER_SRC_BIT
 		, VMA_ALLOCATION_CREATE_MAPPED_BIT
@@ -65,7 +66,7 @@ void ATexture::CreateImage()
 
 	stbi_image_free(pixels);
 
-	Context.CreateImageAndImageView(allocatedImage_, UAllocatedImageCreateInfo::CreateSampled2D(
+	allocatedImage_.Create(device, allocator, UAllocatedImageCreateInfo::CreateSampled2D(
 		static_cast<u32>(texWidth),
 		static_cast<u32>(texHeight),
 		mipLevels,
@@ -98,5 +99,5 @@ void ATexture::CreateImage()
 
 void ATexture::DestroyStagingBuffer() const
 {
-	vmaDestroyBuffer(Context.GetAllocator(), stagingBuffer_.buffer, stagingBuffer_.allocation);
+	stagingBuffer_.Cleanup(Context.GetAllocator());
 }

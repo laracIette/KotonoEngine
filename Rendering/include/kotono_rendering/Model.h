@@ -21,7 +21,9 @@ class AModel final : public AAsset
 {
 public:
 	AModel(UPath const& path);
-	~AModel() override;
+
+	void Init(VkDevice device, VmaAllocator allocator);
+	void Cleanup(VmaAllocator allocator) const;
 
 	VkDeviceAddress GetVertexBufferAddress() const;
 	u32 GetIndexCount() const;
@@ -33,7 +35,7 @@ public:
 	
 private:
 	void Load();
-	void CreateVertexBuffer();
+	void CreateVertexBuffer(VkDevice device, VmaAllocator allocator);
 	void DestroyStagingVertexBuffer() const;
 
 private:

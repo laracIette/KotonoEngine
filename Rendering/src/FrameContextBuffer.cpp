@@ -1,14 +1,19 @@
 #include "FrameContextBuffer.h"
-#include <kotono_platform/Context.h>
 
-void UFrameContextBuffer::Init()
+void UFrameContextBuffer::Init(VkDevice device, VmaAllocator allocator)
 {
-    CreateBuffers();
+    dataBuffer_.Create(device, allocator
+        , sizeof(Data)
+        , VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
+        | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
+        , VMA_ALLOCATION_CREATE_MAPPED_BIT
+        | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
+    );
 }
 
-void UFrameContextBuffer::Cleanup() const
+void UFrameContextBuffer::Cleanup(VmaAllocator allocator) const
 {
-    vmaDestroyBuffer(Context.GetAllocator(), dataBuffer_.buffer, dataBuffer_.allocation);
+    dataBuffer_.Cleanup(allocator);
 }
 
 void UFrameContextBuffer::UpdateBuffer(
@@ -68,15 +73,4 @@ void UFrameContextBuffer::UpdateBuffer(
 VkDeviceAddress UFrameContextBuffer::GetAddress() const
 {
     return dataBuffer_.bda;
-}
-
-void UFrameContextBuffer::CreateBuffers()
-{
-    Context.CreateBuffer(dataBuffer_
-        , sizeof(Data)
-        , VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
-        | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
-        , VMA_ALLOCATION_CREATE_MAPPED_BIT
-        | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
-    );
 }

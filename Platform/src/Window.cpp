@@ -1,5 +1,5 @@
 #include "Window.h"
-#include "Context.h"
+
 #include <kotono_common/log.h>
 #include <stdexcept>
 
@@ -43,11 +43,11 @@ void GWindow::Cleanup()
     glfwTerminate();
 }
 
-bool GWindow::GetShouldClose() const
+bool GWindow::GetShouldClose(VkDevice device) const
 {
     if (shouldClose_ || glfwWindowShouldClose(window_))
     {
-        vkDeviceWaitIdle(Context.GetDevice());
+        vkDeviceWaitIdle(device);
         return true;
     }
 

@@ -59,7 +59,6 @@ set(KRENDERING_HEADERS
     "include/kotono_rendering/Barriers.h"
     "include/kotono_rendering/DirectionalLight.h"
     "include/kotono_rendering/DrawCommand.h"
-    "include/kotono_rendering/DrawDataBuffer.h"
     "include/kotono_rendering/DrawDataBufferData.h"
     "include/kotono_rendering/FrameContextBuffer.h"
     "include/kotono_rendering/FrameContextBufferData.h"
@@ -70,9 +69,8 @@ set(KRENDERING_HEADERS
     "include/kotono_rendering/InterfaceRenderer.h"
     "include/kotono_rendering/LightBuffers.h"
     "include/kotono_rendering/Material.h"
-    "include/kotono_rendering/MaterialBuffer.h"
+    "include/kotono_rendering/MaterialBufferData.h"
     "include/kotono_rendering/Model.h"
-    "include/kotono_rendering/ParametersBuffer.h"
     "include/kotono_rendering/ParametersBufferData.h"
     "include/kotono_rendering/PipelineResourceManager.h"
     "include/kotono_rendering/PointLight.h"
@@ -84,12 +82,10 @@ set(KRENDERING_HEADERS
     "include/kotono_rendering/Shader.h"
     "include/kotono_rendering/SwapChain.h"
     "include/kotono_rendering/Texture.h"
-    "include/kotono_rendering/TransformBuffer.h"
     "include/kotono_rendering/TransformBufferData.h"
 )
 set(KRENDERING_SOURCES
     "src/Barriers.cpp"
-    "src/DrawDataBuffer.cpp"
     "src/FrameContextBuffer.cpp"
     "src/GPUBuffers.cpp"
     "src/implementations.cpp"
@@ -98,9 +94,7 @@ set(KRENDERING_SOURCES
     "src/InterfaceRenderer.cpp"    
     "src/LightBuffers.cpp"
     "src/Material.cpp"
-    "src/MaterialBuffer.cpp"
     "src/Model.cpp"
-    "src/ParametersBuffer.cpp"
     "src/PipelineResourceManager.cpp"
     "src/Renderer.cpp"
     "src/Sampler.cpp"
@@ -109,7 +103,6 @@ set(KRENDERING_SOURCES
     "src/Shader.cpp"
     "src/SwapChain.cpp"
     "src/Texture.cpp"
-    "src/TransformBuffer.cpp"
 )
 
 target_sources(KotonoRendering

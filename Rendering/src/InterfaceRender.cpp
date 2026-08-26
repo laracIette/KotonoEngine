@@ -1,25 +1,49 @@
 #include "InterfaceRender.h"
 
 #include "DrawCommand.h"
+#include "DrawDataBufferData.h"
 #include "IndexBuffer.h"
+#include "ParametersBufferData.h"
 #include "PushConstants.h"
+#include "TransformBufferData.h"
 #include <ranges>
 #include <vector>
 
-void UInterfaceRender::Init()
+static constexpr u32 MAX_DRAW_DATAS{ 65536 };
+
+void UInterfaceRender::Init(VkDevice device, VmaAllocator allocator)
 {
-	frameContextBuffer_.Init();
-	drawDataBuffer_.Init();
-	transformBuffer_.Init();
-	parametersBuffer_.Init();
+	frameContextBuffer_.Init(device, allocator);
+
+	drawDataBuffer_.Create(device, allocator
+		, sizeof(UDrawDataBufferData) * MAX_DRAW_DATAS
+		, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
+		| VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
+		, VMA_ALLOCATION_CREATE_MAPPED_BIT
+		| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
+	);
+	transformBuffer_.Create(device, allocator
+		, sizeof(UTransformBufferData) * MAX_DRAW_DATAS
+		, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
+		| VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
+		, VMA_ALLOCATION_CREATE_MAPPED_BIT
+		| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
+	);
+	parametersBuffer_.Create(device, allocator
+		, sizeof(UParametersBufferData) * MAX_DRAW_DATAS
+		, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
+		| VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
+		, VMA_ALLOCATION_CREATE_MAPPED_BIT
+		| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
+	);
 }
 
-void UInterfaceRender::Cleanup() const
+void UInterfaceRender::Cleanup(VmaAllocator allocator) const
 {
-	frameContextBuffer_.Cleanup();
-	drawDataBuffer_.Cleanup();
-	transformBuffer_.Cleanup();
-	parametersBuffer_.Cleanup();
+	frameContextBuffer_.Cleanup(allocator);
+	drawDataBuffer_.Cleanup(allocator);
+	transformBuffer_.Cleanup(allocator);
+	parametersBuffer_.Cleanup(allocator);
 }
 
 void UInterfaceRender::UpdateBuffers(std::span<UDrawCommand const> drawCommands) const
@@ -27,15 +51,15 @@ void UInterfaceRender::UpdateBuffers(std::span<UDrawCommand const> drawCommands)
 	frameContextBuffer_.UpdateBuffer(
 		  {}
 		, MakeFrameContextAddresses()
-		, MakeFrameContextTargets()
+		, {}
 		, {}
 		, {}
 		, {}
 	);
 
-	drawDataBuffer_.UpdateBuffer(MakeDrawDataBuffer(drawCommands));
-	transformBuffer_.UpdateBuffer(MakeTransformBuffer(drawCommands));
-	parametersBuffer_.UpdateBuffer(MakeParametersBuffer(drawCommands));
+	drawDataBuffer_.UpdateMappedData<UDrawDataBufferData>(MakeDrawDataBuffer(drawCommands));
+	transformBuffer_.UpdateMappedData<UTransformBufferData>(MakeTransformBuffer(drawCommands));
+	parametersBuffer_.UpdateMappedData<UParametersBufferData>(MakeParametersBuffer(drawCommands));
 }
 
 void UInterfaceRender::CmdDraw(
@@ -51,10 +75,10 @@ void UInterfaceRender::CmdDraw(
 UFrameContextAddresses UInterfaceRender::MakeFrameContextAddresses() const
 {
 	return {
-		.drawDataBufferAddress = drawDataBuffer_.GetAddress(),
+		.drawDataBufferAddress = drawDataBuffer_.bda,
 		.materialBufferAddress = {},
-		.transformBufferAddress = transformBuffer_.GetAddress(),
-		.parametersBufferAddress = parametersBuffer_.GetAddress(),
+		.transformBufferAddress = transformBuffer_.bda,
+		.parametersBufferAddress = parametersBuffer_.bda,
 
 		.directionalLightBufferAddress = {},
 		.pointLightBufferAddress = {},
@@ -63,17 +87,6 @@ UFrameContextAddresses UInterfaceRender::MakeFrameContextAddresses() const
 		.clusterGridBufferAddress = {},
 		.lightIndexBufferAddress = {},
 		.lightCounterBufferAddress = {},
-	};
-}
-
-UFrameContextTargets UInterfaceRender::MakeFrameContextTargets() const
-{
-	return UFrameContextTargets{
-		.gBufferDepth = {},
-		.gBufferAlbedo = {},
-		.gBufferNormal = {},
-		.gBufferORM = {},
-		.colorTarget = {},
 	};
 }
 

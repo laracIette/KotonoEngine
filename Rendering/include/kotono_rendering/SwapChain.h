@@ -7,8 +7,8 @@
 class USwapChain final
 {
 public:
-	void Init();
-	void Cleanup();
+	void Init(VkDevice device);
+	void Cleanup(VkDevice device);
 
 	const VkSwapchainKHR& GetSwapChain() const;
 	VkFormat GetFormat() const;
@@ -20,7 +20,7 @@ private:
 	VkSurfaceFormatKHR ChooseSurfaceFormat(const std::span<const VkSurfaceFormatKHR> availableFormats) const;
 	VkPresentModeKHR ChoosePresentMode(const std::span<const VkPresentModeKHR> availablePresentModes) const;
 	VkExtent2D ChooseExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
-	void CreateImageViews();
+	void CreateImageViews(VkDevice device);
 
 private:
 	VkSwapchainKHR swapChain_;

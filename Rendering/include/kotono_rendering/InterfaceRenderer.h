@@ -12,8 +12,8 @@ public:
 		UInterfaceRender interfaceRender;
 	};
 public:
-	void Init();
-	void Cleanup() const;
+	void Init(VkDevice device, VmaAllocator allocator);
+	void Cleanup(VmaAllocator allocator) const;
 
 	void UpdateInterfaceBuffers(std::span<UDrawCommand const> drawCommands, u32 frameIndex);
 	void CmdDrawInterface(VkCommandBuffer commandBuffer, u32 frameIndex, VkPipelineLayout pipelineLayout, std::span<UDrawCommand const> drawCommands, UIndexBuffer const& indexBuffer) const;

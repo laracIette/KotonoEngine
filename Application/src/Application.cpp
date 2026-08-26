@@ -30,7 +30,7 @@ void UApplication::Run()
 {
     Init();
 
-    while (!Window.GetShouldClose())
+    while (!Window.GetShouldClose(Context.GetDevice()))
     {
         Update();
     }
@@ -85,14 +85,15 @@ void UApplication::Update()
 {
     // Game
     {
-        Keyboard.Update();
-        Mouse.Update();
-
         f32 const now{ SClock::Now() };
         deltaTime_ = now - now_;
         now_ = now;
         averageUpdateTime_.Add(deltaTime_);
 
+        Keyboard.Update();
+        Mouse.Update();
+
+        //TimerManager.Update(deltaTime_);
         interface_->Update(deltaTime_);
         mainWindow_->Update(deltaTime_);
     }

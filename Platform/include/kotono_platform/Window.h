@@ -11,7 +11,7 @@ public:
 	void Cleanup();
 
 	// Executes vkDeviceWaitIdle(VkDevice) if true, else executes glfwPollEvents()
-	bool GetShouldClose() const;
+	bool GetShouldClose(VkDevice device) const;
 	// Sets whether the window should close at the end of the main loop
 	void SetShouldClose(const bool shouldClose);
 

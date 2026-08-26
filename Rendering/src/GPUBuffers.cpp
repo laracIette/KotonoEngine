@@ -1,30 +1,29 @@
 #include "GPUBuffers.h"
-#include <kotono_platform/Context.h>
 
 static constexpr u32 CLUSTER_AABB_COUNT{ 16 * 9 * 24 };
 
-void UGPUBuffers::Init()
+void UGPUBuffers::Init(VkDevice device, VmaAllocator allocator)
 {
-    Context.CreateBuffer(clusterAABBBuffer_
+    clusterAABBBuffer_.Create(device, allocator
         , sizeof(ClusterAABB) * CLUSTER_AABB_COUNT
         , VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
         | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
         , 0
     );
    
-    Context.CreateBuffer(clusterGridBuffer_
+    clusterGridBuffer_.Create(device, allocator
         , sizeof(ClusterGrid) * CLUSTER_AABB_COUNT
         , VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
         | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
         , 0
     );
-    Context.CreateBuffer(lightIndexBuffer_
+    lightIndexBuffer_.Create(device, allocator
         , sizeof(u32) * CLUSTER_AABB_COUNT
         , VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
         | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
         , 0
     );
-    Context.CreateBuffer(lightCounterBuffer_
+    lightCounterBuffer_.Create(device, allocator
         , sizeof(u32)
         , VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
         | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
@@ -33,13 +32,12 @@ void UGPUBuffers::Init()
     );
 }
 
-void UGPUBuffers::Cleanup() const
+void UGPUBuffers::Cleanup(VmaAllocator allocator) const
 {
-    vmaDestroyBuffer(Context.GetAllocator(), clusterAABBBuffer_.buffer, clusterAABBBuffer_.allocation);
-
-    vmaDestroyBuffer(Context.GetAllocator(), clusterGridBuffer_.buffer, clusterGridBuffer_.allocation);
-    vmaDestroyBuffer(Context.GetAllocator(), lightIndexBuffer_.buffer, lightIndexBuffer_.allocation);
-    vmaDestroyBuffer(Context.GetAllocator(), lightCounterBuffer_.buffer, lightCounterBuffer_.allocation);
+    clusterAABBBuffer_.Cleanup(allocator);
+    clusterGridBuffer_.Cleanup(allocator);
+    lightIndexBuffer_.Cleanup(allocator);
+    lightCounterBuffer_.Cleanup(allocator);
 }
 
 VkDeviceAddress UGPUBuffers::GetClusterAABBAddress() const

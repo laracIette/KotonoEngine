@@ -8,7 +8,6 @@
 #include <glm/geometric.hpp>
 #include <glm/gtx/hash.hpp>
 #include <kotono_common/hash_utils.h>
-#include <kotono_common/log.h>
 #include <kotono_platform/Context.h>
 #include <unordered_map>
 
@@ -16,13 +15,16 @@ AModel::AModel(UPath const& path)
 	: AAsset(path)
 {
 	Load();
-	CreateVertexBuffer();
 }
 
-AModel::~AModel()
+void AModel::Init(VkDevice device, VmaAllocator allocator)
 {
-	vmaDestroyBuffer(Context.GetAllocator(), vertexBuffer_.buffer, vertexBuffer_.allocation);
-	KT_LOG(ELogImportanceLevel::Low, "Graphics", "cleaned up {0}", GetPath().ToString());
+	CreateVertexBuffer(device, allocator);
+}
+
+void AModel::Cleanup(VmaAllocator allocator) const
+{
+	vertexBuffer_.Cleanup(allocator);
 }
 
 VkDeviceAddress AModel::GetVertexBufferAddress() const
@@ -124,11 +126,11 @@ void AModel::Load()
 	}
 }
 
-void AModel::CreateVertexBuffer()
+void AModel::CreateVertexBuffer(VkDevice device, VmaAllocator allocator)
 {
-	const VkDeviceSize bufferSize{ sizeof(UVertex) * vertices_.size() };
+	VkDeviceSize const bufferSize{ sizeof(UVertex) * vertices_.size() };
 
-	Context.CreateBuffer(stagingVertexBuffer_
+	stagingVertexBuffer_.Create(device, allocator
 		, bufferSize
 		, VK_BUFFER_USAGE_TRANSFER_SRC_BIT
 		, VMA_ALLOCATION_CREATE_MAPPED_BIT
@@ -137,12 +139,12 @@ void AModel::CreateVertexBuffer()
 	
 	std::memcpy(stagingVertexBuffer_.allocationInfo.pMappedData, vertices_.data(), static_cast<size>(bufferSize));
 
-	Context.CreateBuffer(vertexBuffer_
+	vertexBuffer_.Create(device, allocator
 		, bufferSize
 		, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 		| VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
 		| VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
-		, VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT
+		, 0
 	);
 
 	Context.CopyBuffer(stagingVertexBuffer_.buffer, vertexBuffer_.buffer, bufferSize);

@@ -642,19 +642,20 @@ UEvent<>& GContext::GetEventExecuteSingleTimeCommands()
 	return eventExecuteSingleTimeCommands_;
 }
 
-void GContext::StagingUpload(const void* data
-	, const VkDeviceSize dataSize
+void GContext::StagingUpload(
+	  void const* data
+	, VkDeviceSize dataSize
 	, VkBuffer dstBuffer
-	, const VkDeviceSize dstOffset)
+	, VkDeviceSize dstOffset
+)
 {
 	// Create a temporary host-visible staging buffer
-	UAllocatedBuffer stagingBuffer;
-	CreateBuffer(stagingBuffer
+	UAllocatedBuffer stagingBuffer{};
+	stagingBuffer.Create(device_, allocator_
 		, dataSize
 		, VK_BUFFER_USAGE_TRANSFER_SRC_BIT
 		, VMA_ALLOCATION_CREATE_MAPPED_BIT
 		| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
-		, VMA_MEMORY_USAGE_AUTO
 	);
 
 	// Copy CPU data into the staging buffer
@@ -666,15 +667,23 @@ void GContext::StagingUpload(const void* data
 	VkCommandBuffer commandBuffer{ BeginSingleTimeCommands() };
 
 	// Record the GPU-side copy
-	const VkBufferCopy region{
+	VkBufferCopy2 const region{
+		.sType = VK_STRUCTURE_TYPE_BUFFER_COPY_2,
 		.srcOffset = 0,
 		.dstOffset = dstOffset,
 		.size = dataSize,
+	}; 
+	VkCopyBufferInfo2 const copyBufInfo{
+		.sType = VK_STRUCTURE_TYPE_COPY_BUFFER_INFO_2,
+		.srcBuffer = stagingBuffer.buffer,
+		.dstBuffer = dstBuffer,
+		.regionCount = 1,
+		.pRegions = &region,
 	};
-	vkCmdCopyBuffer(commandBuffer, stagingBuffer.buffer, dstBuffer, 1, &region);
+	vkCmdCopyBuffer2(commandBuffer, &copyBufInfo);
 
 	// Make the copy visible to shaders
-	const VkBufferMemoryBarrier2 barrier{
+	VkBufferMemoryBarrier2 const barrier{
 		.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2,
 		.srcStageMask = VK_PIPELINE_STAGE_2_COPY_BIT,
 		.srcAccessMask = VK_ACCESS_2_TRANSFER_WRITE_BIT,
@@ -684,7 +693,7 @@ void GContext::StagingUpload(const void* data
 		.offset = dstOffset,
 		.size = dataSize,
 	};
-	const VkDependencyInfo depInfo{
+	VkDependencyInfo const depInfo{
 		.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
 		.bufferMemoryBarrierCount = 1,
 		.pBufferMemoryBarriers = &barrier,
@@ -720,49 +729,6 @@ void GContext::CreateCommandPool()
 	);
 }
 
-void GContext::CreateBuffer(UAllocatedBuffer& allocatedBuffer
-	, const VkDeviceSize size
-	, const VkBufferUsageFlags usage
-	, const VmaAllocationCreateFlags allocFlags
-	, const VmaMemoryUsage memUsage) const
-{
-	const VkBufferCreateInfo bufInfo{
-		.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-		.size = size,
-		.usage = usage,
-	};
-
-	const VmaAllocationCreateInfo allocInfo{
-		.flags = allocFlags,
-		.usage = memUsage,
-	};
-
-	VK_CHECK_THROW(
-		vmaCreateBuffer(allocator_
-			, &bufInfo
-			, &allocInfo
-			, &allocatedBuffer.buffer
-			, &allocatedBuffer.allocation
-			, &allocatedBuffer.allocationInfo
-		),
-		"failed to create buffer with VMA!"
-	);
-
-	if ((allocFlags & VMA_ALLOCATION_CREATE_MAPPED_BIT) && !allocatedBuffer.allocationInfo.pMappedData)
-	{
-		throw "Staging buffer was not mapped as expected!";
-	}
-
-	if (usage & VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT)
-	{
-		const VkBufferDeviceAddressInfo addrInfo{
-			.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
-			.buffer = allocatedBuffer.buffer,
-		};
-		allocatedBuffer.bda = vkGetBufferDeviceAddress(device_, &addrInfo);
-	}
-}
-
 void GContext::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 {
 	VkCommandBuffer commandBuffer{ BeginSingleTimeCommands() };
@@ -789,37 +755,6 @@ u32 GContext::FindMemoryType(u32 typeFilter, VkMemoryPropertyFlags properties) c
 	}
 
 	throw std::runtime_error("failed to find suitable memory type!");
-}
-
-void GContext::CreateImage(UAllocatedImage& allocatedImage, const UAllocatedImageCreateInfo& createInfo) const
-{
-	const VkImageCreateInfo imageInfo{
-		.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-		.imageType = createInfo.imageType,
-		.format = createInfo.format,
-		.extent{
-			.width = createInfo.extentX,
-			.height = createInfo.extentY,
-			.depth = 1,
-		},
-		.mipLevels = createInfo.mipLevels,
-		.arrayLayers = createInfo.arrayLayers,
-		.samples = createInfo.numSamples,
-		.tiling = createInfo.tiling,
-		.usage = createInfo.usage,
-		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-	};
-
-	const VmaAllocationCreateInfo allocCreateInfo{
-		.usage = VMA_MEMORY_USAGE_AUTO,
-		.requiredFlags = createInfo.properties,
-	};
-
-	VK_CHECK_THROW(
-		vmaCreateImage(allocator_, &imageInfo, &allocCreateInfo, &allocatedImage.image, &allocatedImage.allocation, nullptr),
-		"failed to create image with memory allocation!"
-	);
 }
 
 bool GContext::HasStencilComponent(VkFormat format) const
@@ -931,34 +866,6 @@ void GContext::CopyBufferToImage(VkBuffer buffer, VkImage image, u32 width, u32 
 	);
 
 	EndSingleTimeCommands(commandBuffer);
-}
-
-void GContext::CreateImageView(UAllocatedImage& allocatedImage, const UAllocatedImageCreateInfo& createInfo) const
-{
-	const VkImageViewCreateInfo viewInfo{
-		.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-		.image = allocatedImage.image,
-		.viewType = createInfo.viewType,
-		.format = createInfo.format,
-		.subresourceRange{
-			.aspectMask = createInfo.aspect,
-			.baseMipLevel = 0,
-			.levelCount = createInfo.mipLevels,
-			.baseArrayLayer = 0,
-			.layerCount = createInfo.arrayLayers,
-		},
-	};
-
-	VK_CHECK_THROW(
-		vkCreateImageView(device_, &viewInfo, nullptr, &allocatedImage.imageView),
-		"failed to create texture image view!"
-	);
-}
-
-void GContext::CreateImageAndImageView(UAllocatedImage& allocatedImage, const UAllocatedImageCreateInfo& createInfo) const
-{
-	CreateImage(allocatedImage, createInfo);
-	CreateImageView(allocatedImage, createInfo);
 }
 
 void GContext::GenerateMipmaps(VkImage image, VkFormat imageFormat, i32 texWidth, i32 texHeight, u32 mipLevels)

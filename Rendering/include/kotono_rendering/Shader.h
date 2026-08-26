@@ -17,9 +17,9 @@ class AShader final : public AAsset
 {
 public:	
 	AShader(UPath const& path);
-	~AShader() override;
 
 	void Init(VkFormat swapChainFormat, VkPipelineLayout pipelineLayout);
+	void Cleanup(VkDevice device) const;
 
 	VkPipeline GetPipeline() const;
 

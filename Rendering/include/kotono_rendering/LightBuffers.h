@@ -19,10 +19,10 @@ public:
 	};
 
 public:
-	void Init(UPipelineResourceManager& pipelineResourceManager);
-	void Cleanup() const;
+	void Init(UPipelineResourceManager& pipelineResourceManager, VkDevice device, VmaAllocator allocator, VkFormat shadowMapFormat);
+	void Cleanup(VkDevice device, VmaAllocator allocator) const;
 
-	void UpdateBuffers(UFrameContextSceneView const& sceneView, std::span<UDirectionalLight const> directionalLights, std::span<UPointLight const> pointLights) const;
+	void UpdateBuffers(std::span<UDirectionalLight const> directionalLights, std::span<UPointLight const> pointLights) const;
 
 	VkDeviceAddress GetDirectionalLightAddress() const;
 	VkDeviceAddress GetPointLightAddress() const;
@@ -35,8 +35,8 @@ public:
 	void CmdBarrierShadowMapsWriteToShaderRead(VkCommandBuffer commandBuffer) const;
 
 private:
-	void CreateBuffers();
-	void CreateShadowMapResources(UPipelineResourceManager& pipelineResourceManager);
+	void CreateBuffers(VkDevice device, VmaAllocator allocator);
+	void CreateShadowMapResources(UPipelineResourceManager& pipelineResourceManager, VkDevice device, VmaAllocator allocator, VkFormat shadowMapFormat);
 
 private:
 	UAllocatedBuffer directionalLightBuffer_;

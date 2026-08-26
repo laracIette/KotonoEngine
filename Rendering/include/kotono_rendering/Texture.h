@@ -8,7 +8,9 @@ class ATexture final : public AAsset
 {
 public:
     ATexture(UPath const& path);
-    ~ATexture() override;
+
+    void Init(VkDevice device, VmaAllocator allocator);
+    void Cleanup(VkDevice device, VmaAllocator allocator) const;
 
     glm::uvec2 const& GetSize() const;
 
@@ -18,7 +20,7 @@ public:
     VkImageView GetImageView() const;
 
 private:
-    void CreateImage();
+    void CreateImage(VkDevice device, VmaAllocator allocator);
 
     void DestroyStagingBuffer() const;
 

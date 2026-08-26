@@ -1,5 +1,5 @@
 #pragma once
-#include <glm/vec4.hpp>
+#include <glm/ext/vector_float4.hpp>
 #include <kotono_common/types.h>
 #include <kotono_platform/AllocatedBuffer.h>
 #include <vulkan/vulkan_core.h>
@@ -19,8 +19,8 @@ public:
 	};
 
 public:
-	void Init();
-	void Cleanup() const;
+	void Init(VkDevice device, VmaAllocator allocator);
+	void Cleanup(VmaAllocator allocator) const;
 
 	VkDeviceAddress GetClusterAABBAddress() const;
 	VkDeviceAddress GetClusterGridAddress() const;

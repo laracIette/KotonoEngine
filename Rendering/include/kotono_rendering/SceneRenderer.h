@@ -22,10 +22,10 @@ public:
 	};
 
 public:
-	void Cleanup(UPipelineResourceManager& pipelineResourceManager) const;
+	void Cleanup(VkDevice device, VmaAllocator allocator, UPipelineResourceManager& pipelineResourceManager) const;
 
-	u32 CreateScene(glm::uvec2 const& extent, VkFormat swapChainFormat, UPipelineResourceManager& pipelineResourceManager);
-	void DeleteScene(u32 handle, UPipelineResourceManager& pipelineResourceManager);
+	u32 CreateScene(glm::uvec2 const& extent, VkDevice device, VmaAllocator allocator, VkFormat depthFormat, VkFormat swapChainFormat, UPipelineResourceManager& pipelineResourceManager);
+	void DeleteScene(u32 handle, VkDevice device, VmaAllocator allocator, UPipelineResourceManager& pipelineResourceManager);
 
 	u32 GetSceneRenderTarget(u32 frameIndex, u32 handle) const;
 	u32 GetSceneDirectionalLightShadowMapTargetIndex(u32 frameIndex, u32 handle, u32 index) const;

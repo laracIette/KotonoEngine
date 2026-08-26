@@ -1,26 +1,26 @@
 #pragma once
-#include "DrawDataBuffer.h"
 #include "FrameContextBuffer.h"
-#include "ParametersBuffer.h"
-#include "TransformBuffer.h"
 #include <kotono_common/types.h>
+#include <kotono_platform/AllocatedBuffer.h>
 #include <span>
 #include <vector>
 #include <vulkan/vulkan_core.h>
 struct UDrawCommand;
+struct UDrawDataBufferData;
+struct UTransformBufferData;
+struct UParametersBufferData;
 class UIndexBuffer;
 class UInterfaceRender final
 {
 public:
-	void Init();
-	void Cleanup() const;
+	void Init(VkDevice device, VmaAllocator allocator);
+	void Cleanup(VmaAllocator allocator) const;
 
 	void UpdateBuffers(std::span<UDrawCommand const> drawCommands) const;
 	void CmdDraw(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, std::span<UDrawCommand const> drawCommands, UIndexBuffer const& indexBuffer) const;
 
 private:
 	UFrameContextAddresses MakeFrameContextAddresses() const;
-	UFrameContextTargets MakeFrameContextTargets() const;
 
 	std::vector<UDrawDataBufferData> MakeDrawDataBuffer(std::span<UDrawCommand const> drawCommands) const;
 	std::vector<UTransformBufferData> MakeTransformBuffer(std::span<UDrawCommand const> drawCommands) const;
@@ -33,7 +33,7 @@ private:
 private:
 	UFrameContextBuffer frameContextBuffer_;
 
-	UDrawDataBuffer drawDataBuffer_;
-	UTransformBuffer transformBuffer_;
-	UParametersBuffer parametersBuffer_;
+	UAllocatedBuffer drawDataBuffer_;
+	UAllocatedBuffer transformBuffer_;
+	UAllocatedBuffer parametersBuffer_;
 };

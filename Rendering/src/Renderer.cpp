@@ -58,16 +58,16 @@ static GetOrCreateResult<T> GetOrCreate(UPath const& path, std::unordered_map<UP
 
 void URenderer::Init()
 {
-	swapChain_.Init();
+	swapChain_.Init(Context.GetDevice());
 
 	CreateCommandPools();
 	CreateCommandBuffers();
 	CreateSyncObjects();
 
 	pipelineResourceManager_.Init();
-	indexBuffer_.Init();
+	indexBuffer_.Init(Context.GetDevice(), Context.GetAllocator());
 
-	interfaceRenderer_.Init();
+	interfaceRenderer_.Init(Context.GetDevice(), Context.GetAllocator());
 
 	InitSceneRendererResources();
 }
@@ -81,6 +81,7 @@ void URenderer::Cleanup()
 
 	for (auto const* texture : textures_ | std::views::values)
 	{
+		texture->Cleanup(Context.GetDevice(), Context.GetAllocator());
 		delete texture;
 	}
 	for (auto const* material : materials_ | std::views::values)
@@ -89,20 +90,27 @@ void URenderer::Cleanup()
 	}
 	for (auto const* sampler : samplers_ | std::views::values)
 	{
+		sampler->Cleanup(Context.GetDevice());
 		delete sampler;
 	}
 	for (auto const* model : models_ | std::views::values)
 	{
+		model->Cleanup(Context.GetAllocator());
 		delete model;
 	}
+	for (auto const* shader : shaders_ | std::views::values)
+	{
+		shader->Cleanup(Context.GetDevice());
+		delete shader;
+	}
 
-	sceneRenderer_.Cleanup(pipelineResourceManager_);
-	interfaceRenderer_.Cleanup();
+	sceneRenderer_.Cleanup(Context.GetDevice(), Context.GetAllocator(), pipelineResourceManager_);
+	interfaceRenderer_.Cleanup(Context.GetAllocator());
 
-	indexBuffer_.Cleanup();
+	indexBuffer_.Cleanup(Context.GetAllocator());
 	pipelineResourceManager_.Cleanup();
 
-	swapChain_.Cleanup();
+	swapChain_.Cleanup(Context.GetDevice());
 
 	for (const auto& frameData : frameDatas_)
 	{
@@ -127,7 +135,14 @@ void URenderer::RegisterPendingSceneRenders(std::span<UPendingSceneRender const>
 {
 	for (auto const& [handle, extent] : pendingSceneRenders)
 	{
-		u32 const renderTarget{ sceneRenderer_.CreateScene(extent, swapChain_.GetFormat(), pipelineResourceManager_) };
+		u32 const renderTarget{ sceneRenderer_.CreateScene(
+			  extent
+			, Context.GetDevice()
+			, Context.GetAllocator()
+			, Context.GetDepthFormat()
+			, swapChain_.GetFormat()
+			, pipelineResourceManager_
+		) };
 		sceneRenders_[handle] = renderTarget;
 	}
 }
@@ -139,7 +154,7 @@ void URenderer::UnregisterUnusedSceneRenders(std::unordered_multimap<glm::uvec2,
 		auto const it{ sceneRenders_.find(handle) };
 		if (it != sceneRenders_.end())
 		{
-			sceneRenderer_.DeleteScene(it->second, pipelineResourceManager_);
+			sceneRenderer_.DeleteScene(it->second, Context.GetDevice(), Context.GetAllocator(), pipelineResourceManager_);
 			sceneRenders_.erase(it);
 		}
 	}
@@ -256,10 +271,10 @@ void URenderer::RecreateFrames()
 	// Wait for GPU
 	vkDeviceWaitIdle(Context.GetDevice());
 
-	swapChain_.Cleanup();
-	swapChain_.Init();
+	swapChain_.Cleanup(Context.GetDevice());
+	swapChain_.Init(Context.GetDevice());
 
-	for (const auto& frameData : frameDatas_)
+	for (auto const& frameData : frameDatas_)
 	{
 		vkResetCommandPool(Context.GetDevice(), frameData.commandPool, 0);
 	}
@@ -732,6 +747,8 @@ ATexture* URenderer::GetOrCreateTexture(UPath const& path)
 	auto const [exists, texture] { GetOrCreate(path, textures_) };
 	if (!exists)
 	{
+		texture->Init(Context.GetDevice(), Context.GetAllocator());
+
 		auto const imageView{ texture->GetImageView() };
 		texture->SetIndex(pipelineResourceManager_.RegisterTexture(imageView));
 	}
@@ -752,6 +769,10 @@ ASampler* URenderer::GetOrCreateSampler(UPath const& path)
 	auto const [exists, sampler] { GetOrCreate(path, samplers_) };
 	if (!exists)
 	{
+		VkPhysicalDeviceProperties properties;
+		vkGetPhysicalDeviceProperties(Context.GetPhysicalDevice(), &properties);
+		sampler->Init(Context.GetDevice(), properties.limits.maxSamplerAnisotropy);
+
 		auto const samplerType{ sampler->GetType() };
 		auto const vkSampler{ sampler->GetSampler() };
 		switch (samplerType)
@@ -774,6 +795,8 @@ AModel* URenderer::GetOrCreateModel(UPath const& path)
 	auto const [exists, model] { GetOrCreate(path, models_) };
 	if (!exists)
 	{
+		model->Init(Context.GetDevice(), Context.GetAllocator());
+
 		auto const indices{ model->GetIndices() };
 		model->SetFirstIndex(indexBuffer_.RegisterIndices(indices));
 	}

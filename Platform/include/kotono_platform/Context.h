@@ -22,14 +22,10 @@ public:
 	VkQueue& GetPresentQueue();
 	VkSurfaceKHR& GetSurface();
 
-	void CreateBuffer(UAllocatedBuffer& allocatedBuffer, const VkDeviceSize size, const VkBufferUsageFlags usage, const VmaAllocationCreateFlags allocFlags, const VmaMemoryUsage memUsage = VMA_MEMORY_USAGE_AUTO) const;
 	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-	void CreateImage(UAllocatedImage& allocatedImage, const UAllocatedImageCreateInfo& createInfo) const;
 	void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, u32 mipLevels);
 	void CopyBufferToImage(VkBuffer buffer, VkImage image, u32 width, u32 height);
 	void GenerateMipmaps(VkImage image, VkFormat imageFormat, i32 texWidth, i32 texHeight, u32 mipLevels);
-	void CreateImageView(UAllocatedImage& allocatedImage, const UAllocatedImageCreateInfo& createInfo) const;
-	void CreateImageAndImageView(UAllocatedImage& allocatedImage, const UAllocatedImageCreateInfo& createInfo) const;
 	KtQueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const;
 	KtSwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
 
@@ -37,7 +33,7 @@ public:
 	void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
 	void ExecuteSingleTimeCommands();
 	UEvent<>& GetEventExecuteSingleTimeCommands();
-	void StagingUpload(const void* data, const VkDeviceSize size, VkBuffer dstBuffer, const VkDeviceSize dstOffset);
+	void StagingUpload(void const* data, VkDeviceSize size, VkBuffer dstBuffer, VkDeviceSize dstOffset);
 	
 	VkFormat GetDepthFormat() const;
 

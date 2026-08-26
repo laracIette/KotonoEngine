@@ -3,19 +3,19 @@
 #include "DrawCommand.h"
 #include "InterfaceRender.h"
 
-void UInterfaceRenderer::Init()
+void UInterfaceRenderer::Init(VkDevice device, VmaAllocator allocator)
 {
 	for (auto& frameData : frameDatas_)
 	{
-		frameData.interfaceRender.Init();
+		frameData.interfaceRender.Init(device, allocator);
 	}
 }
 
-void UInterfaceRenderer::Cleanup() const
+void UInterfaceRenderer::Cleanup(VmaAllocator allocator) const
 {
 	for (auto const& frameData : frameDatas_)
 	{
-		frameData.interfaceRender.Cleanup();
+		frameData.interfaceRender.Cleanup(allocator);
 	}
 }
 
