@@ -35,28 +35,28 @@ void WViewController::Display(UWidgetDisplaySettings const& displaySettings)
 {
     Base::Display(displaySettings);
 
-    Keyboard.EventKey(EKey::W, EInputState::Down).AddListener(this, &WViewController::OnKeyboardWKeyDown);
-    Keyboard.EventKey(EKey::A, EInputState::Down).AddListener(this, &WViewController::OnKeyboardAKeyDown);
-    Keyboard.EventKey(EKey::S, EInputState::Down).AddListener(this, &WViewController::OnKeyboardSKeyDown);
-    Keyboard.EventKey(EKey::D, EInputState::Down).AddListener(this, &WViewController::OnKeyboardDKeyDown);
-    Keyboard.EventKey(EKey::Q, EInputState::Down).AddListener(this, &WViewController::OnKeyboardQKeyDown);
-    Keyboard.EventKey(EKey::E, EInputState::Down).AddListener(this, &WViewController::OnKeyboardEKeyDown);
-    Mouse.EventMove().AddListener(this, &WViewController::OnMouseMove);
-    Mouse.EventVerticalScroll().AddListener(this, &WViewController::OnMouseVerticalScroll);
+    Keyboard.GetEventKey(EKey::W, EInputState::Down).AddListener(this, &WViewController::OnKeyboardWKeyDown);
+    Keyboard.GetEventKey(EKey::A, EInputState::Down).AddListener(this, &WViewController::OnKeyboardAKeyDown);
+    Keyboard.GetEventKey(EKey::S, EInputState::Down).AddListener(this, &WViewController::OnKeyboardSKeyDown);
+    Keyboard.GetEventKey(EKey::D, EInputState::Down).AddListener(this, &WViewController::OnKeyboardDKeyDown);
+    Keyboard.GetEventKey(EKey::Q, EInputState::Down).AddListener(this, &WViewController::OnKeyboardQKeyDown);
+    Keyboard.GetEventKey(EKey::E, EInputState::Down).AddListener(this, &WViewController::OnKeyboardEKeyDown);
+    Mouse.GetEventMove().AddListener(this, &WViewController::OnMouseMove);
+    Mouse.GetEventVerticalScroll().AddListener(this, &WViewController::OnMouseVerticalScroll);
 }
 
 void WViewController::Remove()
 {
     Base::Remove();
 
-    Keyboard.EventKey(EKey::W, EInputState::Down).RemoveListener(this, &WViewController::OnKeyboardWKeyDown);
-    Keyboard.EventKey(EKey::A, EInputState::Down).RemoveListener(this, &WViewController::OnKeyboardAKeyDown);
-    Keyboard.EventKey(EKey::S, EInputState::Down).RemoveListener(this, &WViewController::OnKeyboardSKeyDown);
-    Keyboard.EventKey(EKey::D, EInputState::Down).RemoveListener(this, &WViewController::OnKeyboardDKeyDown);
-    Keyboard.EventKey(EKey::Q, EInputState::Down).RemoveListener(this, &WViewController::OnKeyboardQKeyDown);
-    Keyboard.EventKey(EKey::E, EInputState::Down).RemoveListener(this, &WViewController::OnKeyboardEKeyDown);
-    Mouse.EventMove().RemoveListener(this, &WViewController::OnMouseMove);
-    Mouse.EventVerticalScroll().RemoveListener(this, &WViewController::OnMouseVerticalScroll);
+    Keyboard.GetEventKey(EKey::W, EInputState::Down).RemoveListener(this, &WViewController::OnKeyboardWKeyDown);
+    Keyboard.GetEventKey(EKey::A, EInputState::Down).RemoveListener(this, &WViewController::OnKeyboardAKeyDown);
+    Keyboard.GetEventKey(EKey::S, EInputState::Down).RemoveListener(this, &WViewController::OnKeyboardSKeyDown);
+    Keyboard.GetEventKey(EKey::D, EInputState::Down).RemoveListener(this, &WViewController::OnKeyboardDKeyDown);
+    Keyboard.GetEventKey(EKey::Q, EInputState::Down).RemoveListener(this, &WViewController::OnKeyboardQKeyDown);
+    Keyboard.GetEventKey(EKey::E, EInputState::Down).RemoveListener(this, &WViewController::OnKeyboardEKeyDown);
+    Mouse.GetEventMove().RemoveListener(this, &WViewController::OnMouseMove);
+    Mouse.GetEventVerticalScroll().RemoveListener(this, &WViewController::OnMouseVerticalScroll);
 }
 
 

@@ -64,49 +64,4 @@ WidgetPtr WMainWindow::Build()
 	return widgetTree.Widget();
 }
 
-void WMainWindow::BeginDraw(glm::uvec2 const& extent)
-{
-	Display({
-		.position = { 0.0f, 0.0f },
-		.bounds = glm::vec2{ extent },
-		.layer = 0,
-		.scissor{ 
-			.offset = { 0, 0 }, 
-			.extent = extent
-		},
-	});
-}
-
-void WMainWindow::EndDraw()
-{
-	Remove();
-}
-
-void WMainWindow::Update(f32 deltaTime)
-{
-	if (GetScene())
-	{
-		GetScene()->Update(deltaTime);
-	}
-}
-
-void WMainWindow::PopulateSceneRenderGraph(USceneRenderGraph& sceneRenderGraph) const
-{
-	if (GetScene())
-	{
-		GetScene()->PopulateRenderGraph(sceneRenderGraph);
-	}
-}
-
-void WMainWindow::SetInterface(UInterface* newInterface)
-{
-	interface_ = newInterface;
-}
-
-UInterface* WMainWindow::GetInterface() const
-{
-	assert(interface_);
-	return interface_;
-}
-
 #include "generated/MainWindow.generated.inl"

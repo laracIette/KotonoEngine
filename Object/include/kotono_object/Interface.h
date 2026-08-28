@@ -11,27 +11,43 @@
 #include <vector>
 struct UPendingTexture;
 struct UPendingSceneRender;
+struct UInterfaceRenderGraph;
+struct USceneRenderGraph;
+class WSceneContext;
 class UInterface final
 {
 public:
 	UInterface();
+	~UInterface();
 
 	EHandle GetTextureHandle(UPath const& path);
-	std::span<UPendingTexture const> GetPendingTextures() const;
 	void ClearPendingTextures();
 
 	EHandle RegisterRenderTarget(glm::uvec2 const& extent);
 	void UnregisterRenderTarget(EHandle handle);
 	void SetRenderTargetData(EHandle handle, USceneView const& sceneView);
-	std::unordered_map<EHandle, USceneView> const& GetSceneViews();
 
-	std::span<UPendingSceneRender const> GetPendingSceneRenders() const;
-	std::unordered_multimap<glm::uvec2, EHandle> const& GetUnusedSceneRenders() const;
 	void ClearPendingSceneRenders();
 	void ClearUnusedSceneRenders();
 
+	void PopulateInterfaceRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const;
+	void PopulateSceneRenderGraph(USceneRenderGraph& sceneRenderGraph) const;
+
 	void Update(f32 deltaTime);
-	UTimeContext const& GetTimeContext() const;
+
+	void BeginDraw(glm::uvec2 const& bounds);
+	void EndDraw() const;
+
+	std::span<UPendingTexture const> GetPendingTextures() const;
+	std::span<UPendingSceneRender const> GetPendingSceneRenders() const;
+
+	std::unordered_map<EHandle, USceneView> const&		GetSceneViews() const { return sceneViews_; }
+	std::unordered_multimap<glm::uvec2, EHandle> const& GetUnusedSceneRenders() const { return unusedSceneRenders_; }
+
+	UTimeContext const&	GetTimeContext() const { return timeContext_; }
+	glm::uvec2 const&	GetBounds() const { return bounds_; }
+
+	void SetWidget(UPtr<WSceneContext> const& widget) { widget_ = widget; }
 
 private:
 	EHandle currentHandle_;
@@ -39,7 +55,7 @@ private:
 
 	std::unordered_map<UPath, EHandle> textures_;
 	std::vector<UPendingTexture> pendingTextures_;
-	
+
 	std::unordered_map<EHandle, glm::uvec2> sceneRenders_;
 	std::unordered_map<EHandle, USceneView> sceneViews_;
 
@@ -47,4 +63,7 @@ private:
 	std::unordered_multimap<glm::uvec2, EHandle> unusedSceneRenders_;
 
 	UTimeContext timeContext_;
+
+	UPtr<WSceneContext> widget_;
+	glm::uvec2 bounds_;
 };

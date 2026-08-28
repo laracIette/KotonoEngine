@@ -14,14 +14,14 @@ void WScrollable::Display(UWidgetDisplaySettings const& displaySettings)
 {
 	Base::Display(displaySettings);
 
-	Mouse.EventScroll().AddListener(this, &WScrollable::Scroll);
+	Mouse.GetEventScroll().AddListener(this, &WScrollable::Scroll);
 }
 
 void WScrollable::Remove()
 {
 	Base::Remove();
 
-	Mouse.EventScroll().RemoveListener(this, &WScrollable::Scroll);
+	Mouse.GetEventScroll().RemoveListener(this, &WScrollable::Scroll);
 }
 
 UWidgetDisplaySettings WScrollable::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const

@@ -9,13 +9,14 @@
 struct UAllocatedBuffer;
 struct UAllocatedImage;
 struct UAllocatedImageCreateInfo;
+class UContext;
 class USurface;
 class UDevice final
 {
 public:
-	explicit UDevice(USurface& surface);
+	explicit UDevice(UContext& context, USurface& surface);
 
-	void Init(VkInstance instance);
+	void Init();
 	void Cleanup() const;
 
 	void ExecuteSingleTimeCommands();
@@ -56,9 +57,9 @@ public:
 	USwapchainSupportDetails const&	GetSwapchainSupportDetails() const { return swapchainSupportDetails_; }
 
 private:
-	void CreatePhysicalDevice(VkInstance instance);
+	void CreatePhysicalDevice();
 	void CreateDevice();
-	void CreateAllocator(VkInstance instance);
+	void CreateAllocator();
 	void CreateCommandPool();
 
 	void CreateSingleTimeCommandBuffer();
@@ -73,6 +74,7 @@ private:
 	VkSampleCountFlagBits GetMaxUsableSampleCount() const;
 
 private:
+	UContext& context_;
 	USurface& surface_;
 
 	VkPhysicalDevice physicalDevice_;

@@ -5,21 +5,12 @@
 #include "Axis.h"
 #include "Expand.h"
 #include "Flex.h"
-#include <glm/ext/vector_float2.hpp>
+#include "WidgetDisplaySettings.h"
 #include <glm/fwd.hpp>
 #include <kotono_common/Set.h>
 #include <kotono_common/types.h>
-#include <kotono_graphics/Scissor.h>
 #include <string>
 #include <vector>
-
-struct UWidgetDisplaySettings
-{
-	glm::vec2 position;
-	glm::vec2 bounds;
-	i32 layer;
-	UScissor scissor;
-};
 
 class WWidget;
 using WidgetPtr = UPtr<WWidget>;
@@ -64,7 +55,7 @@ public:
 	virtual void Remove();
 
 	virtual UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const;
-	virtual glm::vec2 GetDesiredSize(const glm::vec2& bounds) const;
+	virtual glm::vec2 GetDesiredSize(glm::vec2 const& bounds) const;
 
 	virtual EExpand GetExpand() const;
 	virtual EFlex GetFlex() const;
@@ -72,20 +63,20 @@ public:
 	virtual WidgetVector WidgetTree() const;
 	std::string GetClassPath() const;
 
-	bool IsMouseHovering() const;
+	b8 IsMouseHovering() const;
 
-	const glm::vec2& GetPosition() const;
-	const glm::vec2& GetSize() const;
+	glm::vec2 const& GetPosition() const;
+	glm::vec2 const& GetSize() const;
 	f32 GetAspectRatio() const;
 	i32 GetLayer() const;
-	const UScissor& GetScissor() const;
+	UScissor const& GetScissor() const;
 
 	virtual UInterface* GetInterface() const;
 
 	virtual void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const;
 
 protected:
-	void SetState(const StateFunction& function);
+	void SetState(StateFunction const& function);
 
 	glm::mat4 TranslationMatrix() const;
 	glm::mat4 RotationMatrix() const;
@@ -102,9 +93,9 @@ private:
 	bool IsRenderable(UWidgetDisplaySettings const& displaySettings) const;
 
 #	ifndef NDEBUG
-		void _OnMouseMove(const glm::vec2& delta);
+		void _OnMouseMove(glm::vec2 const& delta);
 #	endif
-	WidgetPtr FindNonFlexAncestor(const EFlex flex) const;
+	WidgetPtr FindNonFlexAncestor(EFlex flex) const;
 
 private:
 	WritableProperty(WidgetPtr, parent_, Parent);
@@ -130,7 +121,7 @@ public:
 class UWidgetTreeLeaf final : public UWidgetTree
 {
 public:
-	UWidgetTreeLeaf(const WidgetPtr& widget);
+	UWidgetTreeLeaf(WidgetPtr const& widget);
 
 	WidgetPtr Widget() const override;
 	void Link() const override;

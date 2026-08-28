@@ -1,6 +1,6 @@
 #include "Interface.h"
 
-#include "Widget.h"
+#include "SceneContext.h"
 #include <kotono_common/enum_utils.h>
 #include <kotono_graphics/InterfacePendingResources.h>
 
@@ -16,6 +16,11 @@ UInterface::UInterface()
 {
 }
 
+UInterface::~UInterface()
+{
+	widget_->Delete();
+}
+
 EHandle UInterface::GetTextureHandle(UPath const& path)
 {
 	auto const it{ textures_.find(path) };
@@ -28,11 +33,6 @@ EHandle UInterface::GetTextureHandle(UPath const& path)
 	textures_[path] = handle;
 	pendingTextures_.push_back({ path, handle });
 	return handle;
-}
-
-std::span<UPendingTexture const> UInterface::GetPendingTextures() const
-{
-	return pendingTextures_;
 }
 
 void UInterface::ClearPendingTextures()
@@ -76,21 +76,6 @@ void UInterface::SetRenderTargetData(EHandle handle, USceneView const& sceneView
 	sceneViews_[handle] = sceneView;
 }
 
-std::unordered_map<EHandle, USceneView> const& UInterface::GetSceneViews()
-{
-	return sceneViews_;
-}
-
-std::span<UPendingSceneRender const> UInterface::GetPendingSceneRenders() const
-{
-	return pendingSceneRenders_;
-}
-
-std::unordered_multimap<glm::uvec2, EHandle> const& UInterface::GetUnusedSceneRenders() const
-{
-	return unusedSceneRenders_;
-}
-
 void UInterface::ClearPendingSceneRenders()
 {
 	pendingSceneRenders_.clear();
@@ -101,12 +86,60 @@ void UInterface::ClearUnusedSceneRenders()
 	unusedSceneRenders_.clear();
 }
 
+void UInterface::PopulateInterfaceRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
+{
+	if (widget_)
+	{
+		widget_->PopulateRenderGraph(interfaceRenderGraph);
+	}
+}
+
+void UInterface::PopulateSceneRenderGraph(USceneRenderGraph& sceneRenderGraph) const
+{
+	if (widget_)
+	{
+		widget_->PopulateSceneRenderGraph(sceneRenderGraph);
+	}
+}
+
 void UInterface::Update(f32 deltaTime)
 {
 	timeContext_.Update(deltaTime);
+	widget_->Update(deltaTime);
 }
 
-UTimeContext const& UInterface::GetTimeContext() const
+void UInterface::BeginDraw(glm::uvec2 const& bounds)
 {
-	return timeContext_;
+	bounds_ = bounds;
+	if (widget_)
+	{
+		widget_->Display({
+			.position = { 0.0f, 0.0f },
+			.bounds = glm::vec2{ bounds },
+			.layer = 0,
+			.scissor{
+				.offset = { 0, 0 },
+				.extent = bounds
+			},
+		});
+	}
 }
+
+void UInterface::EndDraw() const
+{
+	if (widget_)
+	{
+		widget_->Remove();
+	}
+}
+
+std::span<UPendingTexture const> UInterface::GetPendingTextures() const
+{ 
+	return pendingTextures_; 
+}
+
+std::span<UPendingSceneRender const> UInterface::GetPendingSceneRenders() const
+{ 
+	return pendingSceneRenders_;
+}
+

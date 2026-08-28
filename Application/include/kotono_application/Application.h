@@ -2,8 +2,10 @@
 #include <glm/ext/vector_uint2.hpp>
 #include <kotono_common/Average.h>
 #include <kotono_common/Handle.h>
+#include <kotono_platform/Context.h>
 #include <kotono_platform/Device.h>
 #include <kotono_platform/Surface.h>
+#include <kotono_platform/Window.h>
 #include <kotono_rendering/Renderer.h>
 #include <span>
 #include <unordered_map>
@@ -31,6 +33,8 @@ private:
 	void OnWindowResized(glm::uvec2 const& extent);
 
 private:
+	UWindow window_;
+	UContext context_;
 	USurface surface_;
 	UDevice device_;
 	URenderer renderer_;

@@ -1,18 +1,19 @@
 #include "Keyboard.h"
+
 #include <GLFW/glfw3.h>
 #include <kotono_common/log.h>
 #include <kotono_platform/Window.h>
 
 #define KT_LOG_IMPORTANCE_LEVEL_KEYBOARD ELogImportanceLevel::Low
 
-void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mods);
+void key_callback_(GLFWwindow* window, i32 key, i32 scancode, i32 action, i32 mods);
 
-constexpr int keyToGLFWKey(const EKey key);
-constexpr EKey GLFWKeyToKey(const int key);
+constexpr i32 keyToGLFWKey(EKey key);
+constexpr EKey GLFWKeyToKey(i32 key);
 
-void GKeyboard::Init()
+void GKeyboard::Init(UWindow& window)
 {
-    glfwSetKeyCallback(Window.GetGLFWWindow(), key_callback_);
+    glfwSetKeyCallback(window.GetGLFWWindow(), key_callback_);
 }
 
 void GKeyboard::Update()
@@ -39,7 +40,7 @@ void GKeyboard::Update()
     }
 }
 
-void GKeyboard::UpdateKey(const EKey key, const i32 action)
+void GKeyboard::UpdateKey(EKey key, i32 action)
 {
     const size keyIndex{ to_index(key) };
 
@@ -72,22 +73,22 @@ void GKeyboard::UpdateKey(const EKey key, const i32 action)
     }
 }
 
-UEvent<>& GKeyboard::EventKey(const EKey key, const EInputState inputState)
+UEvent<>& GKeyboard::GetEventKey(EKey key, EInputState inputState)
 {
     return keyEvents_[to_index(key)][to_index(inputState)];
 }
 
-bool GKeyboard::KeyState(const EKey key, const EInputState inputState) const
+b8 GKeyboard::GetKeyState(EKey key, EInputState inputState) const
 {
     return keyStates_[to_index(key)][to_index(inputState)];
 }
 
-UEvent<EKey>& GKeyboard::EventAnyKey(const EInputState inputState)
+UEvent<EKey>& GKeyboard::GetEventAnyKey(EInputState inputState)
 {
     return anyKeyEvents_[to_index(inputState)];
 }
 
-void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mods)
+void key_callback_(GLFWwindow* window, i32 key, i32 scancode, i32 action, i32 mods)
 {
     if (action == GLFW_REPEAT)
     {
@@ -97,7 +98,7 @@ void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mo
     Keyboard.UpdateKey(GLFWKeyToKey(key), action);
 }
 
-constexpr int keyToGLFWKey(const EKey key)
+constexpr i32 keyToGLFWKey(EKey key)
 {
     switch (key)
     {
@@ -226,7 +227,7 @@ constexpr int keyToGLFWKey(const EKey key)
     }
 }
 
-constexpr EKey GLFWKeyToKey(const int key)
+constexpr EKey GLFWKeyToKey(i32 key)
 {
     switch (key)
     {

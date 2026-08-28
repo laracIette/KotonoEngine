@@ -1,30 +1,30 @@
 #pragma once
-#include <map>
-#include <unordered_set>
+#include "InputState.h"
+#include "Key.h"
 #include <array>
 #include <kotono_common/Event.h>
-#include "Key.h"
-#include "InputState.h"
+#include <kotono_common/types.h>
 struct GLFWwindow;
+class UWindow;
 class GKeyboard final
 {
-	friend void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mods);
+	friend void key_callback_(GLFWwindow* window, i32 key, i32 scancode, i32 action, i32 mods);
 
 public:
-	void Init();
+	void Init(UWindow& window);
 	void Update();
 
-	UEvent<>& EventKey(const EKey key, const EInputState inputState);
-	bool KeyState(const EKey key, const EInputState inputState) const;
+	UEvent<>& GetEventKey(EKey key, EInputState inputState);
+	b8 GetKeyState(EKey key, EInputState inputState) const;
 
-	UEvent<EKey>& EventAnyKey(const EInputState inputState);
+	UEvent<EKey>& GetEventAnyKey(EInputState inputState);
 
 private:
-	void UpdateKey(const EKey key, const i32 action);
+	void UpdateKey(EKey key, i32 action);
 
 private:
 	std::array<std::array<UEvent<>, InputStateCount>, KeyCount> keyEvents_;
-	std::array<std::array<bool, InputStateCount>, KeyCount> keyStates_;
+	std::array<std::array<b8, InputStateCount>, KeyCount> keyStates_;
 
 	std::array<UEvent<EKey>, InputStateCount> anyKeyEvents_;
 };

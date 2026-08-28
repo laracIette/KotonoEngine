@@ -1,18 +1,34 @@
 #include "Window.h"
 
+#include <GLFW/glfw3.h>
 #include <kotono_common/log.h>
 #include <stdexcept>
 
-void framebuffersize_callback_(GLFWwindow* window, int width, int height);
+static UEvent<glm::uvec2> EventFramebufferSizeChanged{};
+
+static void framebuffersize_callback_(GLFWwindow* window, i32 width, i32 height)
+{
+    // Replace to only freeze render
+    while (width == 0 || height == 0)
+    {
+        glfwGetFramebufferSize(window, &width, &height);
+        glfwWaitEvents();
+    }
+
+    glm::uvec2 const size{ width, height };
+    EventFramebufferSizeChanged.Broadcast(size);
+
+    KT_LOG(ELogImportanceLevel::High, "Platform", "window resized: {} x {}", width, height);
+}
 
 void UWindow::Init()
 {
-    size_ = { 1600, 900 };
+    size_ = { 1600u, 900u };
 
     // Initialize GLFW
     if (!glfwInit())
     {
-        throw std::runtime_error("Failed to initialize GLFW");
+        throw std::runtime_error{ "Failed to initialize GLFW" };
     }
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -29,8 +45,9 @@ void UWindow::Init()
     glfwMakeContextCurrent(window_);
 
     glfwSetFramebufferSizeCallback(window_, framebuffersize_callback_);
+    //framebuffersize_callback_(window_, size_.x, size_.y);
 
-    framebuffersize_callback_(window_, size_.x, size_.y);
+    EventFramebufferSizeChanged.AddListener(this, &UWindow::OnFramebufferSizeChanged);
 
     // Show the window after initialization
     glfwShowWindow(window_);
@@ -45,7 +62,7 @@ void UWindow::Cleanup()
 
 bool UWindow::GetShouldClose(VkDevice device) const
 {
-    if (shouldClose_ || glfwWindowShouldClose(window_))
+    if (glfwWindowShouldClose(window_))
     {
         vkDeviceWaitIdle(device);
         return true;
@@ -55,37 +72,8 @@ bool UWindow::GetShouldClose(VkDevice device) const
     return false;
 }
 
-void UWindow::SetShouldClose(const bool shouldClose)
+void UWindow::OnFramebufferSizeChanged(glm::uvec2 const& size)
 {
-    shouldClose_ = shouldClose;
-}
-
-GLFWwindow* UWindow::GetGLFWWindow() const
-{
-    return window_;
-}
-
-const glm::uvec2& UWindow::GetSize() const
-{
-    return size_;
-}
-
-UEvent<glm::uvec2>& UWindow::GetEventWindowResized()
-{
-    return eventWindowResized_;
-}
-
-void framebuffersize_callback_(GLFWwindow* window, int width, int height)
-{   
-    // Replace to only freeze render
-    while (width == 0 || height == 0)
-    {
-        glfwGetFramebufferSize(window, &width, &height);
-        glfwWaitEvents();
-    }
-
-    Window.size_ = { width, height };
-    Window.GetEventWindowResized().Broadcast(Window.size_);
-
-    KT_LOG(ELogImportanceLevel::High, "Platform", "window resized: {} x {}", width, height);
+    size_ = size;
+    eventWindowResized_.Broadcast(size);
 }

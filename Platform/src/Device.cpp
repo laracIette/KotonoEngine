@@ -2,6 +2,7 @@
 
 #include "AllocatedBuffer.h"
 #include "AllocatedImage.h"
+#include "Context.h"
 #include "Surface.h"
 #include "vk_utils.h"
 #include <algorithm>
@@ -183,16 +184,17 @@ static b8 isDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
 		&& featuresSupported;
 }
 
-UDevice::UDevice(USurface& surface)
-	: surface_{ surface }
+UDevice::UDevice(UContext& context, USurface& surface)
+	: context_{ context }
+	, surface_{ surface }
 {
 }
 
-void UDevice::Init(VkInstance instance)
+void UDevice::Init()
 {
-	CreatePhysicalDevice(instance);
+	CreatePhysicalDevice();
 	CreateDevice();
-	CreateAllocator(instance);
+	CreateAllocator();
 	CreateCommandPool();
 
 	CreateSingleTimeCommandBuffer();
@@ -399,10 +401,10 @@ void UDevice::CleanupImageView(UAllocatedImage const& allocatedImage) const
 	allocatedImage.CleanupImageView(device_);
 }
 
-void UDevice::CreatePhysicalDevice(VkInstance instance)
+void UDevice::CreatePhysicalDevice()
 {
 	u32 deviceCount;
-	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+	vkEnumeratePhysicalDevices(context_.GetInstance(), &deviceCount, nullptr);
 
 	if (deviceCount == 0)
 	{
@@ -410,7 +412,7 @@ void UDevice::CreatePhysicalDevice(VkInstance instance)
 	}
 
 	std::vector<VkPhysicalDevice> devices{ deviceCount };
-	vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+	vkEnumeratePhysicalDevices(context_.GetInstance(), &deviceCount, devices.data());
 
 	VkPhysicalDevice bestDevice{ VK_NULL_HANDLE };
 	VkDeviceSize maxVRAM{ 0 };
@@ -553,13 +555,13 @@ void UDevice::CreateDevice()
 	vkGetDeviceQueue(device_, queueFamilyIndices_.presentFamily.value(), 0, &presentQueue_);
 }
 
-void UDevice::CreateAllocator(VkInstance instance)
+void UDevice::CreateAllocator()
 {
 	VmaAllocatorCreateInfo const allocatorInfo{
 		.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT,
 		.physicalDevice = physicalDevice_,
 		.device = device_,
-		.instance = instance,
+		.instance = context_.GetInstance(),
 		.vulkanApiVersion = VK_API_VERSION_1_4,
 	};
 	VK_CHECK_THROW(

@@ -16,6 +16,8 @@ private:
     using Delegate = UDelegate<Args...>;
 
 public:
+    UEvent() = default;
+
     template <typename Inst, typename MemFn>
         requires std::is_member_function_pointer_v<MemFn>
             && (std::is_invocable_v<MemFn, Inst*, Args...> || std::is_invocable_v<MemFn, Inst*>)

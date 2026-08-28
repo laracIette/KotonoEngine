@@ -1,10 +1,12 @@
 #pragma once
-#include <GLFW/glfw3.h>
-#include <glm/vec2.hpp>
+#include <glm/ext/vector_uint2.hpp>
 #include <kotono_common/Event.h>
+#include <kotono_common/types.h>
+#include <vulkan/vulkan_core.h>
+struct GLFWwindow;
 class UWindow final
 {
-	friend void framebuffersize_callback_(GLFWwindow*, int, int);
+	friend void framebuffersize_callback_(GLFWwindow*, i32, i32);
 
 public:
 	void Init(); 
@@ -12,18 +14,16 @@ public:
 
 	// Executes vkDeviceWaitIdle(VkDevice) if true, else executes glfwPollEvents()
 	bool GetShouldClose(VkDevice device) const;
-	// Sets whether the window should close at the end of the main loop
-	void SetShouldClose(const bool shouldClose);
 
-	GLFWwindow* GetGLFWWindow() const;
-	const glm::uvec2& GetSize() const;
-	UEvent<glm::uvec2>& GetEventWindowResized();
+	GLFWwindow*			GetGLFWWindow() const { return window_; }
+	glm::uvec2 const&	GetSize() const { return size_; }
+	UEvent<glm::uvec2>& GetEventWindowResized() { return eventWindowResized_; }
+
+private:
+	void OnFramebufferSizeChanged(glm::uvec2 const& size);
 
 private:
 	GLFWwindow* window_;
-	bool shouldClose_;
 	glm::uvec2 size_;
 	UEvent<glm::uvec2> eventWindowResized_;
 };
-
-inline UWindow Window;

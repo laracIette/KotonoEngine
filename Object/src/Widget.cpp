@@ -1,5 +1,6 @@
 #include "Widget.h"
-#include "widget_utils.h"
+
+#include "Interface.h"
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <kotono_common/enum_utils.h>
@@ -8,13 +9,7 @@
 #include <kotono_math/math_utils.h>
 #include <kotono_platform/glm_utils.h>
 
-#ifndef NDEBUG
-static constinit u32 Count{ 0 };
-#endif
-
-#define KT_LOG_IMPORTANCE_LEVEL_WIDGET ELogImportanceLevel::Medium
-
-static EFlex getUpdatedFlex(const glm::vec2& left, const glm::vec2& right) noexcept
+static EFlex getUpdatedFlex(glm::vec2 const& left, glm::vec2 const& right) noexcept
 {
 	if (left.x != right.x)
 	{
@@ -32,7 +27,6 @@ WWidget::WWidget()
 	, isDisplayed_{ false }
 	, wasMouseHovering_{ false }
 {
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_WIDGET, "Interface", "{0}", ++Count);
 }
 
 WWidget::~WWidget()
@@ -41,7 +35,6 @@ WWidget::~WWidget()
 	{
 		build_->Delete();
 	}
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_WIDGET, "Interface", "{0} {1}", --Count, GetName());
 }
 
 void WWidget::PostConstruct()
@@ -77,7 +70,7 @@ void WWidget::Display(UWidgetDisplaySettings const& displaySettings)
 	}
 
 #	ifndef NDEBUG
-		Mouse.EventMove().AddListener(this, &WWidget::_OnMouseMove);
+		Mouse.GetEventMove().AddListener(this, &WWidget::_OnMouseMove);
 #	endif
 }
 
@@ -91,7 +84,7 @@ void WWidget::Remove()
 	}
 
 #	ifndef NDEBUG
-		Mouse.EventMove().RemoveListener(this, &WWidget::_OnMouseMove);
+		Mouse.GetEventMove().RemoveListener(this, &WWidget::_OnMouseMove);
 #	endif
 }
 
@@ -123,7 +116,7 @@ EFlex WWidget::GetFlex() const
 	return EFlex::All;
 }
 
-glm::vec2 WWidget::GetDesiredSize(const glm::vec2& bounds) const
+glm::vec2 WWidget::GetDesiredSize(glm::vec2 const& bounds) const
 {
 	if (HasBuild())
 	{
@@ -150,17 +143,17 @@ std::string WWidget::GetClassPath() const
 	return TypeName();
 }
 
-bool WWidget::IsMouseHovering() const
+b8 WWidget::IsMouseHovering() const
 {
-	return is_point_in_rect(Mouse.CursorPosition(), GetPosition(), GetSize());
+	return is_point_in_rect(Mouse.GetCursorPosition(), GetPosition(), GetSize());
 }
 
-const glm::vec2& WWidget::GetPosition() const
+glm::vec2 const& WWidget::GetPosition() const
 {
 	return displaySettings_.position;
 }
 
-const glm::vec2& WWidget::GetSize() const
+glm::vec2 const& WWidget::GetSize() const
 {
 	return displaySettings_.bounds;
 }
@@ -228,7 +221,8 @@ void WWidget::SetState(const StateFunction& function)
 
 glm::mat4 WWidget::TranslationMatrix() const
 {
-	return glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(GetPosition() + GetSize() / 2.0f), 0.0f});
+	glm::vec2 const bounds{ GetInterface()->GetBounds() };
+	return glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(GetPosition() + GetSize() / 2.0f, bounds), 0.0f });
 }
 
 glm::mat4 WWidget::RotationMatrix() const
@@ -238,7 +232,8 @@ glm::mat4 WWidget::RotationMatrix() const
 
 glm::mat4 WWidget::ScaleMatrix() const
 {
-	return glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(GetSize()), 1.0f });
+	glm::vec2 const bounds{ GetInterface()->GetBounds() };
+	return glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(GetSize(), bounds), 1.0f });
 }
 
 glm::mat4 WWidget::ModelMatrix() const
@@ -275,7 +270,7 @@ bool WWidget::IsRenderable(UWidgetDisplaySettings const& displaySettings) const
 }
 
 #ifndef NDEBUG
-void WWidget::_OnMouseMove(const glm::vec2& delta)
+void WWidget::_OnMouseMove(glm::vec2 const& delta)
 {
 	if (!IsMouseHovering())
 	{
@@ -291,7 +286,7 @@ void WWidget::_OnMouseMove(const glm::vec2& delta)
 }
 #endif
 
-WidgetPtr WWidget::FindNonFlexAncestor(const EFlex flex) const
+WidgetPtr WWidget::FindNonFlexAncestor(EFlex flex) const
 {
 	if (!parent_)
 	{

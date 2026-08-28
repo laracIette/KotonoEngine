@@ -54,24 +54,24 @@ void WInputTextBox::Display(UWidgetDisplaySettings const& displaySettings)
 	holdAction_.SetActuationTime(actuationTime_);
 	holdAction_.SetRepeatTime(repeatTime_);
 
-	Keyboard.EventAnyKey(EInputState::Pressed).AddListener(this, &WInputTextBox::OnAnyKeyPressed);
-	Keyboard.EventAnyKey(EInputState::Released).AddListener(this, &WInputTextBox::OnAnyKeyReleased);
-	Keyboard.EventAnyKey(EInputState::Down).AddListener(this, &WInputTextBox::OnAnyKeyDown);
+	Keyboard.GetEventAnyKey(EInputState::Pressed).AddListener(this, &WInputTextBox::OnAnyKeyPressed);
+	Keyboard.GetEventAnyKey(EInputState::Released).AddListener(this, &WInputTextBox::OnAnyKeyReleased);
+	Keyboard.GetEventAnyKey(EInputState::Down).AddListener(this, &WInputTextBox::OnAnyKeyDown);
 
-	Keyboard.EventKey(EKey::Backspace, EInputState::Pressed).AddListener(this, &WInputTextBox::OnKeyBackspacePressed);
-	Keyboard.EventKey(EKey::Backspace, EInputState::Down).AddListener(this, &WInputTextBox::OnKeyBackspaceDown);
+	Keyboard.GetEventKey(EKey::Backspace, EInputState::Pressed).AddListener(this, &WInputTextBox::OnKeyBackspacePressed);
+	Keyboard.GetEventKey(EKey::Backspace, EInputState::Down).AddListener(this, &WInputTextBox::OnKeyBackspaceDown);
 }
 
 void WInputTextBox::Remove()
 {
 	Base::Remove();
 
-	Keyboard.EventAnyKey(EInputState::Pressed).RemoveListener(this, &WInputTextBox::OnAnyKeyPressed);
-	Keyboard.EventAnyKey(EInputState::Released).RemoveListener(this, &WInputTextBox::OnAnyKeyReleased);
-	Keyboard.EventAnyKey(EInputState::Down).RemoveListener(this, &WInputTextBox::OnAnyKeyDown);
+	Keyboard.GetEventAnyKey(EInputState::Pressed).RemoveListener(this, &WInputTextBox::OnAnyKeyPressed);
+	Keyboard.GetEventAnyKey(EInputState::Released).RemoveListener(this, &WInputTextBox::OnAnyKeyReleased);
+	Keyboard.GetEventAnyKey(EInputState::Down).RemoveListener(this, &WInputTextBox::OnAnyKeyDown);
 
-	Keyboard.EventKey(EKey::Backspace, EInputState::Pressed).RemoveListener(this, &WInputTextBox::OnKeyBackspacePressed);
-	Keyboard.EventKey(EKey::Backspace, EInputState::Down).RemoveListener(this, &WInputTextBox::OnKeyBackspaceDown);
+	Keyboard.GetEventKey(EKey::Backspace, EInputState::Pressed).RemoveListener(this, &WInputTextBox::OnKeyBackspacePressed);
+	Keyboard.GetEventKey(EKey::Backspace, EInputState::Down).RemoveListener(this, &WInputTextBox::OnKeyBackspaceDown);
 }
 
 std::string_view WInputTextBox::GetText() const

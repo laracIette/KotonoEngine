@@ -17,14 +17,14 @@ void WButton::Display(UWidgetDisplaySettings const& displaySettings)
 {
 	Base::Display(displaySettings);
 
-	Mouse.EventButton(EButton::Left, EInputState::Down).AddListener(this, &WButton::OnMouseLeftButtonDown);
+	Mouse.GetEventButton(EButton::Left, EInputState::Down).AddListener(this, &WButton::OnMouseLeftButtonDown);
 }
 
 void WButton::Remove()
 {
 	Base::Remove();
 
-	Mouse.EventButton(EButton::Left, EInputState::Down).RemoveListener(this, &WButton::OnMouseLeftButtonDown);
+	Mouse.GetEventButton(EButton::Left, EInputState::Down).RemoveListener(this, &WButton::OnMouseLeftButtonDown);
 }
 
 bool WButton::ReceiveMouseLeftButtonPressed()

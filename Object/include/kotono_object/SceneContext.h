@@ -1,6 +1,7 @@
 #pragma once
 #include "generated/SceneContext.generated.h"
 #include <kotono_object/Widget.h>
+struct USceneRenderGraph;
 class UScene;
 /// <summary>
 /// Base class for a widget managing a scene
@@ -13,9 +14,13 @@ public:
 	WSceneContext(UPath const& scenePath);
 	~WSceneContext() override;
 
-	UScene* GetScene() const;
-
 	void Deserialize() override;
+
+	void Update(f32 deltaTime) const;
+
+	void PopulateSceneRenderGraph(USceneRenderGraph& sceneRenderGraph) const;
+
+	UScene* GetScene() const { return scene_; }
 
 private:
 	SERIALIZE UPath scenePath_;

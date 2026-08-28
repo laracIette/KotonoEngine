@@ -29,7 +29,7 @@ set(KOBJECT_HEADERS
     "include/kotono_object/Transform.h"    
     "include/kotono_object/VariableInfo.h"
     "include/kotono_object/Widget.h"
-    "include/kotono_object/widget_utils.h"
+    "include/kotono_object/WidgetDisplaySettings.h"
 )
 set(KOBJECT_SOURCES
     "src/Guid.cpp"
@@ -46,7 +46,6 @@ set(KOBJECT_SOURCES
     "src/serialize_glm.cpp"
     "src/Transform.cpp"
     "src/Widget.cpp"
-    "src/widget_utils.cpp"
 )
 
 target_sources(KotonoObject

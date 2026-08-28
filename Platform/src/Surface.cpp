@@ -1,24 +1,27 @@
 #include "Surface.h"
 
+#include "Context.h"
 #include "vk_utils.h"
 #include "Window.h"
 #include <algorithm>
+#include <GLFW/glfw3.h>
 #include <kotono_common/types.h>
 #include <limits>
 
-USurface::USurface(UWindow& window)
+USurface::USurface(UWindow& window, UContext& context)
 	: window_{ window }
+	, context_{ context }
 {
 }
 
-void USurface::Init(VkInstance instance)
+void USurface::Init()
 {
-	CreateSurface(instance);
+	CreateSurface();
 }
 
-void USurface::Cleanup(VkInstance instance) const
+void USurface::Cleanup() const
 {
-	vkDestroySurfaceKHR(instance, surface_, nullptr);
+	vkDestroySurfaceKHR(context_.GetInstance(), surface_, nullptr);
 }
 
 VkExtent2D USurface::ChooseExtent(VkSurfaceCapabilitiesKHR const& capabilities) const
@@ -45,10 +48,10 @@ VkExtent2D USurface::ChooseExtent(VkSurfaceCapabilitiesKHR const& capabilities) 
 	}
 }
 
-void USurface::CreateSurface(VkInstance instance)
+void USurface::CreateSurface()
 {
 	VK_CHECK_THROW(
-		glfwCreateWindowSurface(instance, window_.GetGLFWWindow(), nullptr, &surface_),
+		glfwCreateWindowSurface(context_.GetInstance(), window_.GetGLFWWindow(), nullptr, &surface_),
 		"failed to create window surface!"
 	);
 }

@@ -1,12 +1,13 @@
 #include "Interface.h"
+
 #include "Button.h"
-#include <kotono_input/Mouse.h>
 #include <algorithm>
+#include <kotono_input/Mouse.h>
 
 void GInterface::Init()
 {
-	Mouse.EventButton(EButton::Left, EInputState::Pressed).AddListener(this, &GInterface::OnMouseLeftButtonPressed);
-	Mouse.EventButton(EButton::Left, EInputState::Released).AddListener(this, &GInterface::OnMouseLeftButtonReleased);
+	Mouse.GetEventButton(EButton::Left, EInputState::Pressed).AddListener(this, &GInterface::OnMouseLeftButtonPressed);
+	Mouse.GetEventButton(EButton::Left, EInputState::Released).AddListener(this, &GInterface::OnMouseLeftButtonReleased);
 }
 
 void GInterface::AddButton(UPtr<WButton> const& button)

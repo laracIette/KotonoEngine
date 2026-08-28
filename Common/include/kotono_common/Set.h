@@ -22,7 +22,7 @@ public:
 	using value_type = ValueType;
 
 public:
-	constexpr USet() = default;
+	USet() = default;
 
 	template <std::input_iterator It, std::sentinel_for<It> Sentinel>
 	constexpr USet(It begin, Sentinel end)

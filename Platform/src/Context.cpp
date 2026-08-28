@@ -4,7 +4,9 @@
 #include <array>
 #include <GLFW/glfw3.h>
 #include <kotono_common/log.h>
+#include <kotono_common/types.h>
 #include <print>
+#include <vector>
 
 static constexpr std::array VALIDATION_LAYERS
 {
@@ -17,9 +19,9 @@ static constexpr std::array VALIDATION_FEATURES
 };
 
 #ifdef NDEBUG
-static constexpr bool ENABLE_VALIDATION_LAYERS{ false };
+static constexpr b8 ENABLE_VALIDATION_LAYERS{ false };
 #else
-static constexpr bool ENABLE_VALIDATION_LAYERS{ true };
+static constexpr b8 ENABLE_VALIDATION_LAYERS{ true };
 #endif
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -46,7 +48,10 @@ static VkDebugUtilsMessengerCreateInfoEXT getDebugMessengerCreateInfo()
 
 static VkResult createDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
 {
-	const auto func{ (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT") };
+	const auto func{ reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
+		vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT")
+	) };
+
 	if (func != nullptr)
 	{
 		return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
@@ -59,23 +64,69 @@ static VkResult createDebugUtilsMessengerEXT(VkInstance instance, const VkDebugU
 
 static void destroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
 {
-	const auto func{ (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT") };
+	const auto func{ reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
+		vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT") 
+	) };
+
 	if (func != nullptr)
 	{
 		func(instance, debugMessenger, pAllocator);
 	}
 }
 
-void GContext::Init()
+static b8 checkValidationLayerSupport()
+{
+	u32 layerCount;
+	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+
+	std::vector<VkLayerProperties> availableLayers{ layerCount };
+	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+	for (const char* layerName : VALIDATION_LAYERS)
+	{
+		bool layerFound{ false };
+
+		for (const auto& layerProperties : availableLayers)
+		{
+			if (std::strcmp(layerName, layerProperties.layerName) == 0)
+			{
+				layerFound = true;
+				break;
+			}
+		}
+
+		if (!layerFound)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+static std::vector<const char*> getRequiredExtensions()
+{
+	u32 glfwExtensionCount{ 0 };
+	const char** glfwExtensions{ glfwGetRequiredInstanceExtensions(&glfwExtensionCount) };
+
+	std::vector<const char*> extensions{ glfwExtensions, glfwExtensions + glfwExtensionCount };
+
+	if constexpr (ENABLE_VALIDATION_LAYERS)
+	{
+		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+	}
+
+	return extensions;
+}
+
+void UContext::Init()
 {
 	CreateInstance();
 	SetupDebugMessenger();
 }
 
-void GContext::Cleanup() const
+void UContext::Cleanup() const
 {
-	KT_LOG(ELogImportanceLevel::High, "Platform", "cleaning up context");
-
 	if constexpr (ENABLE_VALIDATION_LAYERS)
 	{
 		destroyDebugUtilsMessengerEXT(instance_, debugMessenger_, nullptr);
@@ -86,9 +137,9 @@ void GContext::Cleanup() const
 	KT_LOG(ELogImportanceLevel::High, "Platform", "cleaned up context");
 }
 
-void GContext::CreateInstance()
+void UContext::CreateInstance()
 {
-	if (ENABLE_VALIDATION_LAYERS && !CheckValidationLayerSupport())
+	if (ENABLE_VALIDATION_LAYERS && !checkValidationLayerSupport())
 	{
 		throw std::runtime_error{ "validation layers requested, but not available!" };
 	}
@@ -127,7 +178,7 @@ void GContext::CreateInstance()
 		enabledLayerCount = 0;
 	}
 
-	const auto extensions{ GetRequiredExtensions() };
+	const auto extensions{ getRequiredExtensions() };
 
 	const VkInstanceCreateInfo createInfo{
 		.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
@@ -147,9 +198,7 @@ void GContext::CreateInstance()
 	);
 }
 
-
-
-void GContext::SetupDebugMessenger()
+void UContext::SetupDebugMessenger()
 {
 	if constexpr (!ENABLE_VALIDATION_LAYERS)
 	{
@@ -162,49 +211,4 @@ void GContext::SetupDebugMessenger()
 		createDebugUtilsMessengerEXT(instance_, &createInfo, nullptr, &debugMessenger_),
 		"failed to set up debug messenger!"
 	);
-}
-
-bool GContext::CheckValidationLayerSupport()
-{
-	u32 layerCount;
-	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-
-	std::vector<VkLayerProperties> availableLayers{ layerCount };
-	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
-
-	for (const char* layerName : VALIDATION_LAYERS)
-	{
-		bool layerFound{ false };
-
-		for (const auto& layerProperties : availableLayers)
-		{
-			if (std::strcmp(layerName, layerProperties.layerName) == 0)
-			{
-				layerFound = true;
-				break;
-			}
-		}
-
-		if (!layerFound)
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
-std::vector<const char*> GContext::GetRequiredExtensions()
-{
-	u32 glfwExtensionCount{ 0 };
-	const char** glfwExtensions{ glfwGetRequiredInstanceExtensions(&glfwExtensionCount) };
-
-	std::vector<const char*> extensions{ glfwExtensions, glfwExtensions + glfwExtensionCount };
-
-	if constexpr (ENABLE_VALIDATION_LAYERS)
-	{
-		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-	}
-
-	return extensions;
 }

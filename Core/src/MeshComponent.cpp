@@ -14,8 +14,8 @@ KMeshComponent::KMeshComponent()
 
 KMeshComponent::~KMeshComponent()
 {
-    Keyboard.EventKey(EKey::N, EInputState::Pressed).RemoveListener(this, &KMeshComponent::SetMobilityStatic);
-    Keyboard.EventKey(EKey::M, EInputState::Pressed).RemoveListener(this, &KMeshComponent::SetMobilityDynamic);
+    Keyboard.GetEventKey(EKey::N, EInputState::Pressed).RemoveListener(this, &KMeshComponent::SetMobilityStatic);
+    Keyboard.GetEventKey(EKey::M, EInputState::Pressed).RemoveListener(this, &KMeshComponent::SetMobilityDynamic);
 }
 
 void KMeshComponent::Init()
@@ -68,8 +68,8 @@ void KMeshComponent::Spawn()
 {
     Base::Spawn();
 
-    Keyboard.EventKey(EKey::N, EInputState::Pressed).AddListener(this, &KMeshComponent::SetMobilityStatic);
-    Keyboard.EventKey(EKey::M, EInputState::Pressed).AddListener(this, &KMeshComponent::SetMobilityDynamic);
+    Keyboard.GetEventKey(EKey::N, EInputState::Pressed).AddListener(this, &KMeshComponent::SetMobilityStatic);
+    Keyboard.GetEventKey(EKey::M, EInputState::Pressed).AddListener(this, &KMeshComponent::SetMobilityDynamic);
     
     spinTask_.eventUpdate.AddListener(this, &KMeshComponent::Spin);
 }

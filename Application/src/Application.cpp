@@ -12,8 +12,6 @@
 #include <kotono_interface/Interface.h>
 #include <kotono_object/Interface.h>
 #include <kotono_object/ProjectSettings.h>
-#include <kotono_platform/Context.h>
-#include <kotono_platform/Window.h>
 #include <kotono_timing/Clock.h>
 #include <kotono_timing/TimerManager.h>
 
@@ -27,8 +25,10 @@
 #endif
 
 UApplication::UApplication()
-    : surface_{ Window }
-    , device_{ surface_ }
+    : window_{}
+    , context_{}
+    , surface_{ window_, context_ }
+    , device_{ context_, surface_ }
     , renderer_{ device_, surface_ }
 {
 }
@@ -37,7 +37,7 @@ void UApplication::Run()
 {
     Init();
 
-    while (!Window.GetShouldClose(device_.GetDevice()))
+    while (!window_.GetShouldClose(device_.GetDevice()))
     {
         Update();
     }
@@ -49,15 +49,15 @@ void UApplication::Init()
 {
     SSpvCompiler::CompileUpdated();
 
-    Window.Init();
-    Context.Init();
-    surface_.Init(Context.GetInstance());
-    device_.Init(Context.GetInstance());
+    window_.Init();
+    context_.Init();
+    surface_.Init();
+    device_.Init();
     renderer_.Init();
 
     AudioManager.Init();
-    Keyboard.Init();
-    Mouse.Init();
+    Keyboard.Init(window_);
+    Mouse.Init(window_);
     Interface.Init();
 
     auto& logUPSTimer{ TimerManager.GetTimer("log ups timer") };
@@ -66,7 +66,7 @@ void UApplication::Init()
     logUPSTimer.EventCompleted().AddListener(this, &UApplication::LogUPS);
     logUPSTimer.Start();
 
-    Window.GetEventWindowResized().AddListener(this, &UApplication::OnWindowResized);
+    window_.GetEventWindowResized().AddListener(this, &UApplication::OnWindowResized);
 
     interface_ = new UInterface{};
 
@@ -80,8 +80,11 @@ void UApplication::Init()
 
     mainWindow_ = UCreate<WMainWindow>{ "Main Window" }(SProjectSettings::Get<std::string>("/startupScene"));
     mainWindow_->SetInterface(interface_);
-    mainWindow_->BeginDraw(Window.GetSize());
+
+    interface_->SetWidget(mainWindow_);
 #   endif
+
+    interface_->BeginDraw(window_.GetSize());
 
     // force unused classes to compile, for registry
     {
@@ -104,16 +107,15 @@ void UApplication::Update()
 
         //TimerManager.Update(deltaTime_);
         interface_->Update(deltaTime_);
-        mainWindow_->Update(deltaTime_);
     }
 
     // Rendering
     {
         UInterfaceRenderGraph interfaceRenderGraph{};
-        mainWindow_->PopulateRenderGraph(interfaceRenderGraph);
+        interface_->PopulateInterfaceRenderGraph(interfaceRenderGraph);
 
         USceneRenderGraph sceneRenderGraph{};
-        mainWindow_->PopulateSceneRenderGraph(sceneRenderGraph);
+        interface_->PopulateSceneRenderGraph(sceneRenderGraph);
 
         renderer_.RegisterPendingTextures(interface_->GetPendingTextures());
         interface_->ClearPendingTextures();
@@ -130,21 +132,16 @@ void UApplication::Update()
 
 void UApplication::Cleanup()
 {
-#   ifdef EDITOR
-    if (mainWindow_)
-    {
-        mainWindow_->EndDraw();
-        mainWindow_->Delete();
-    }
-#   endif
+    interface_->EndDraw();
+    delete interface_;
 
     AudioManager.Cleanup();
 
     renderer_.Cleanup();
     device_.Cleanup();
-    surface_.Cleanup(Context.GetInstance());
-    Context.Cleanup();
-    Window.Cleanup();
+    surface_.Cleanup();
+    context_.Cleanup();
+    window_.Cleanup();
 
 #   ifndef NDEBUG
     KObject::CheckDebugRegistry();
@@ -158,11 +155,6 @@ void UApplication::LogUPS() const
 
 void UApplication::OnWindowResized(glm::uvec2 const& extent)
 {
-#   ifdef EDITOR
-    if (mainWindow_)
-    {
-        mainWindow_->EndDraw();
-        mainWindow_->BeginDraw(extent);
-    }
-#   endif
+    interface_->EndDraw();
+    interface_->BeginDraw(extent);
 }

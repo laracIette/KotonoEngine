@@ -1,49 +1,52 @@
 #pragma once
 #include "Button.h"
-#include <kotono_common/Event.h>
 #include "InputState.h"
 #include <array>
-#include <unordered_set>
 #include <glm/vec2.hpp>
+#include <kotono_common/Event.h>
+#include <kotono_common/types.h>
 struct GLFWwindow;
+class UWindow;
 class GMouse final
 {
-	friend void mousebutton_callback_(GLFWwindow* window, int button, int action, int mods);
-	friend void cursorpos_callback_(GLFWwindow* window, double xpos, double ypos);
-	friend void scroll_callback_(GLFWwindow* window, double xoffset, double yoffset);
+	friend void mousebutton_callback_(GLFWwindow* window, i32 button, i32 action, i32 mods);
+	friend void cursorpos_callback_(GLFWwindow* window, f64 xpos, f64 ypos);
+	friend void scroll_callback_(GLFWwindow* window, f64 xoffset, f64 yoffset);
 
 public:
-	void Init();
+	void Init(UWindow& window);
 	void Update();
 
-	const glm::vec2& PreviousCursorPosition() const;
-	const glm::vec2& CursorPosition() const;
-	glm::vec2 CursorPositionNormalized() const;
-	glm::vec2 CursorPositionDelta() const;
-	float HorizontalScrollDelta() const;
-	float VerticalScrollDelta() const;
+	glm::vec2 GetCursorPositionDelta() const;
+	f32 GetHorizontalScrollDelta() const;
+	f32 GetVerticalScrollDelta() const;
 
-	UEvent<>& EventButton(const EButton button, const EInputState inputState);
-	bool ButtonState(const EButton button, const EInputState inputState) const;
-	UEvent<glm::vec2>& EventMove();
-	UEvent<glm::vec2>& EventScroll();
-	UEvent<float>& EventHorizontalScroll();
-	UEvent<float>& EventVerticalScroll();
+	UEvent<>& GetEventButton(EButton button, EInputState inputState);
+	b8 GetButtonState(EButton button, EInputState inputState) const;
+
+	glm::vec2 const& GetPreviousCursorPosition() const { return previousCursorPosition_; }
+	glm::vec2 const& GetCursorPosition() const { return cursorPosition_; }
+
+	UEvent<glm::vec2>&	GetEventMove() { return eventMove_; }
+	UEvent<glm::vec2>&	GetEventScroll() { return eventScroll_; }
+	UEvent<f32>&		GetEventHorizontalScroll() { return eventHorizontalScroll_; }
+	UEvent<f32>&		GetEventVerticalScroll() { return eventVerticalScroll_; }
 
 private:
 	glm::vec2 previousCursorPosition_;
 	glm::vec2 cursorPosition_;
-	UEvent<glm::vec2> eventMove_;
 
 	glm::vec2 scrollDelta_;
+
+	UEvent<glm::vec2> eventMove_;
 	UEvent<glm::vec2> eventScroll_;
-	UEvent<float> eventHorizontalScroll_;
-	UEvent<float> eventVerticalScroll_;
+	UEvent<f32> eventHorizontalScroll_;
+	UEvent<f32> eventVerticalScroll_;
 
 	std::array<std::array<UEvent<>, InputStateCount>, ButtonCount> buttonEvents_;
-	std::array<std::array<bool, InputStateCount>, ButtonCount> buttonStates_;
+	std::array<std::array<b8, InputStateCount>, ButtonCount> buttonStates_;
 
-	void UpdateButton(const EButton button, const int action);
+	void UpdateButton(EButton button, i32 action);
 };
 
 inline GMouse Mouse;

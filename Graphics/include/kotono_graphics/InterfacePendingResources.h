@@ -1,7 +1,7 @@
 #pragma once
 #include <glm/ext/vector_uint2.hpp>
+#include <kotono_common/Handle.h>
 #include <kotono_common/Path.h>
-#include <kotono_common/types.h>
 struct UPendingTexture final
 {
 	UPath path;

@@ -1,22 +1,24 @@
 #pragma once
 #include <vulkan/vulkan_core.h>
+class UContext;
 class UWindow;
 class USurface final
 {
 public:
-	explicit USurface(UWindow& window);
+	explicit USurface(UWindow& window, UContext& context);
 
-	void Init(VkInstance instance);
-	void Cleanup(VkInstance instance) const;
+	void Init();
+	void Cleanup() const;
 
 	VkExtent2D ChooseExtent(VkSurfaceCapabilitiesKHR const& capabilities) const;
 
 	VkSurfaceKHR GetSurface() const { return surface_; }
 
 private:
-	void CreateSurface(VkInstance instance);
+	void CreateSurface();
 
 private:
 	UWindow& window_;
+	UContext& context_;
 	VkSurfaceKHR surface_;
 };

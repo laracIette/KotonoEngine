@@ -29,6 +29,16 @@ constexpr void compute_intersect(glm::vec2 const& leftPos, glm::vec2 const& left
     intersectSize = glm::max(glm::vec2{ 0.0f }, intersectEnd - intersectPos);
 }
 
+constexpr glm::vec2 px_to_ndc_size(glm::vec2 const& px, glm::vec2 const& bounds) noexcept
+{
+    return px / glm::vec2{ bounds } * glm::vec2{ 1.0f, -1.0f } * 2.0f;
+}
+
+constexpr glm::vec2 px_to_ndc_pos(glm::vec2 const& px, glm::vec2 const& bounds) noexcept
+{
+    return px / glm::vec2{ bounds } * 2.0f - 1.0f;
+}
+
 template<std::floating_point T>
 T round(T v, int digits) noexcept
 {
