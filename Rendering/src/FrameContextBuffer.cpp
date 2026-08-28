@@ -1,9 +1,16 @@
 #include "FrameContextBuffer.h"
 
-void UFrameContextBuffer::Init(VkDevice device, VmaAllocator allocator)
+#include <kotono_platform/Device.h>
+
+UFrameContextBuffer::UFrameContextBuffer(UDevice& device)
+    : device_{ device }
 {
-    dataBuffer_.Create(device, allocator
-        , sizeof(Data)
+}
+
+void UFrameContextBuffer::Init()
+{
+    dataBuffer_ = device_.CreateAllocatedBuffer(
+          sizeof(Data)
         , VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
         | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
         , VMA_ALLOCATION_CREATE_MAPPED_BIT
@@ -11,9 +18,9 @@ void UFrameContextBuffer::Init(VkDevice device, VmaAllocator allocator)
     );
 }
 
-void UFrameContextBuffer::Cleanup(VmaAllocator allocator) const
+void UFrameContextBuffer::Cleanup() const
 {
-    dataBuffer_.Cleanup(allocator);
+    device_.CleanupAllocatedBuffer(dataBuffer_);
 }
 
 void UFrameContextBuffer::UpdateBuffer(

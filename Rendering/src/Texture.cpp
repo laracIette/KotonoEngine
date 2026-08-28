@@ -1,6 +1,7 @@
 #include "Texture.h"
 
-#include <kotono_platform/Context.h>
+#include <kotono_platform/AllocatedBuffer.h>
+#include <kotono_platform/Device.h>
 #include <stbimage/stb_image.h>
 
 ATexture::ATexture(UPath const& path) 
@@ -9,14 +10,14 @@ ATexture::ATexture(UPath const& path)
 {
 }
 
-void ATexture::Init(VkDevice device, VmaAllocator allocator)
+void ATexture::Init(UDevice& device)
 {
-	CreateImage(device, allocator);
+	CreateImage(device);
 }
 
-void ATexture::Cleanup(VkDevice device, VmaAllocator allocator) const
+void ATexture::Cleanup(UDevice& device) const
 {
-	allocatedImage_.Cleanup(device, allocator);
+	device.CleanupAllocatedImage(allocatedImage_);
 }
 
 glm::uvec2 const& ATexture::GetSize() const
@@ -39,7 +40,7 @@ VkImageView ATexture::GetImageView() const
 	return allocatedImage_.imageView;
 }
 
-void ATexture::CreateImage(VkDevice device, VmaAllocator allocator)
+void ATexture::CreateImage(UDevice& device)
 {
 	i32 texWidth, texHeight, texChannels;
 	stbi_uc* pixels{ stbi_load(GetPath().ToPath().string().c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha)};
@@ -55,18 +56,18 @@ void ATexture::CreateImage(VkDevice device, VmaAllocator allocator)
 	VkDeviceSize const imageSize{ static_cast<VkDeviceSize>(texWidth) * texHeight * 4 };
 	u32 const mipLevels{ static_cast<u32>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1 };
 
-	stagingBuffer_.Create(device, allocator
-		, imageSize
+	auto const stagingBuffer{ device.CreateAllocatedBuffer(
+		  imageSize
 		, VK_BUFFER_USAGE_TRANSFER_SRC_BIT
 		, VMA_ALLOCATION_CREATE_MAPPED_BIT
 		| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
-	);
+	) };
 
-	std::memcpy(stagingBuffer_.allocationInfo.pMappedData, pixels, static_cast<size>(imageSize));
+	std::memcpy(stagingBuffer.allocationInfo.pMappedData, pixels, static_cast<size>(imageSize));
 
 	stbi_image_free(pixels);
 
-	allocatedImage_.Create(device, allocator, UAllocatedImageCreateInfo::CreateSampled2D(
+	allocatedImage_ = device.CreateAllocatedImage(UAllocatedImageCreateInfo::CreateSampled2D(
 		static_cast<u32>(texWidth),
 		static_cast<u32>(texHeight),
 		mipLevels,
@@ -75,29 +76,24 @@ void ATexture::CreateImage(VkDevice device, VmaAllocator allocator)
 		VK_IMAGE_ASPECT_COLOR_BIT
 	));
 
-	Context.TransitionImageLayout(
-		allocatedImage_.image,
+	device.TransitionImageLayout(
+		allocatedImage_,
 		VK_FORMAT_R8G8B8A8_SRGB,
 		VK_IMAGE_LAYOUT_UNDEFINED,
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		mipLevels
 	);
 
-	Context.CopyBufferToImage(
-		stagingBuffer_.buffer,
-		allocatedImage_.image,
+	device.CopyBufferToImage(
+		stagingBuffer,
+		allocatedImage_,
 		static_cast<u32>(texWidth),
 		static_cast<u32>(texHeight)
 	);
 
-	Context.GetEventExecuteSingleTimeCommands().AddListener(this, &ATexture::DestroyStagingBuffer);
+	device.StageBufferForDeletion(stagingBuffer);
 
-	Context.GenerateMipmaps(allocatedImage_.image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels);
+	device.GenerateMipmaps(allocatedImage_, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels);
 
 	size_ = { static_cast<u32>(texWidth), static_cast<u32>(texHeight) };
-}
-
-void ATexture::DestroyStagingBuffer() const
-{
-	stagingBuffer_.Cleanup(Context.GetAllocator());
 }

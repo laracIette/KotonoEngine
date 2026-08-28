@@ -3,7 +3,7 @@
 #include "PushConstants.h"
 #include <array>
 #include <assert.h>
-#include <kotono_platform/Context.h>
+#include <kotono_platform/Device.h>
 #include <kotono_platform/vk_utils.h>
 
 static constexpr u32 MAX_TEXTURES{ 65536 };
@@ -16,6 +16,15 @@ static constexpr VkDescriptorBindingFlags BINDLESS_FLAGS{
 	VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT |
 	VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
 };
+
+UPipelineResourceManager::UPipelineResourceManager(UDevice& device)
+	: device_{ device }
+	, texturePool_{}
+	, textureArrayPool_{}
+	, samplerPool_{}
+	, shadowSamplerPool_{}
+{
+}
 
 void UPipelineResourceManager::Init()
 {
@@ -32,9 +41,9 @@ void UPipelineResourceManager::Init()
 
 void UPipelineResourceManager::Cleanup() const
 {
-	vkDestroyDescriptorPool(Context.GetDevice(), descriptorPool_, nullptr);
-	vkDestroyPipelineLayout(Context.GetDevice(), pipelineLayout_, nullptr);
-	vkDestroyDescriptorSetLayout(Context.GetDevice(), descriptorSetLayout_, nullptr);
+	vkDestroyDescriptorPool(device_.GetDevice(), descriptorPool_, nullptr);
+	vkDestroyPipelineLayout(device_.GetDevice(), pipelineLayout_, nullptr);
+	vkDestroyDescriptorSetLayout(device_.GetDevice(), descriptorSetLayout_, nullptr);
 }
 
 VkDescriptorPool UPipelineResourceManager::GetDescriptorPool() const
@@ -175,7 +184,7 @@ void UPipelineResourceManager::CreateDescriptorSetLayout()
 	};
 
 	VK_CHECK_THROW(
-		vkCreateDescriptorSetLayout(Context.GetDevice(), &layoutInfo, nullptr, &descriptorSetLayout_),
+		vkCreateDescriptorSetLayout(device_.GetDevice(), &layoutInfo, nullptr, &descriptorSetLayout_),
 		"failed to create descriptor set layout!"
 	);
 }
@@ -202,7 +211,7 @@ void UPipelineResourceManager::CreatePipelineLayout()
 	};
 
 	VK_CHECK_THROW(
-		vkCreatePipelineLayout(Context.GetDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout_),
+		vkCreatePipelineLayout(device_.GetDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout_),
 		"failed to create pipeline layout!"
 	);
 }
@@ -226,7 +235,7 @@ void UPipelineResourceManager::CreateDescriptorPool()
 	};
 
 	VK_CHECK_THROW(
-		vkCreateDescriptorPool(Context.GetDevice(), &poolInfo, nullptr, &descriptorPool_),
+		vkCreateDescriptorPool(device_.GetDevice(), &poolInfo, nullptr, &descriptorPool_),
 		"failed to create descriptor pool!"
 	);
 }
@@ -239,7 +248,7 @@ void UPipelineResourceManager::CreateDescriptorSet()
 		.descriptorSetCount = 1,
 		.pSetLayouts = &descriptorSetLayout_,
 	};
-	vkAllocateDescriptorSets(Context.GetDevice(), &allocInfo, &descriptorSet_);
+	vkAllocateDescriptorSets(device_.GetDevice(), &allocInfo, &descriptorSet_);
 }
 
 u32 UPipelineResourceManager::AllocateSlot(ResourcePool& resourcePool) const
@@ -276,5 +285,5 @@ void UPipelineResourceManager::WriteDescriptorSet(VkSampler sampler, VkImageView
 	};
 
 	// This is safe mid-frame as long as the slot isn't in active use by in-flight command buffers
-	vkUpdateDescriptorSets(Context.GetDevice(), 1, &write, 0, nullptr);
+	vkUpdateDescriptorSets(device_.GetDevice(), 1, &write, 0, nullptr);
 }

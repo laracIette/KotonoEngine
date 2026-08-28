@@ -10,7 +10,6 @@
 #include "PointLight.h"
 #include "Sampler.h"
 #include "Shader.h"
-#include "SwapChain.h"
 #include "Texture.h"
 #include <assert.h>
 #include <kotono_common/log.h>
@@ -18,8 +17,9 @@
 #include <kotono_graphics/InterfaceRenderGraph.h>
 #include <kotono_graphics/SceneRenderGraph.h>
 #include <kotono_graphics/SceneView.h>
-#include <kotono_platform/Context.h>
+#include <kotono_platform/Device.h>
 #include <kotono_platform/glm_utils.h>
+#include <kotono_platform/Swapchain.h>
 #include <kotono_platform/vk_utils.h>
 #include <ranges>
 
@@ -56,18 +56,27 @@ static GetOrCreateResult<T> GetOrCreate(UPath const& path, std::unordered_map<UP
 	return { false, texture };
 }
 
+URenderer::URenderer(UDevice& device, USurface& surface)
+	: device_{ device }
+	, swapchain_{ device, surface }
+	, sceneRenderer_{ device }
+	, interfaceRenderer_{ device }
+	, pipelineResourceManager_{ device }
+{
+}
+
 void URenderer::Init()
 {
-	swapChain_.Init(Context.GetDevice());
+	swapchain_.Init();
 
 	CreateCommandPools();
 	CreateCommandBuffers();
 	CreateSyncObjects();
 
 	pipelineResourceManager_.Init();
-	indexBuffer_.Init(Context.GetDevice(), Context.GetAllocator());
+	indexBuffer_.Init(device_);
 
-	interfaceRenderer_.Init(Context.GetDevice(), Context.GetAllocator());
+	interfaceRenderer_.Init();
 
 	InitSceneRendererResources();
 }
@@ -81,7 +90,7 @@ void URenderer::Cleanup()
 
 	for (auto const* texture : textures_ | std::views::values)
 	{
-		texture->Cleanup(Context.GetDevice(), Context.GetAllocator());
+		texture->Cleanup(device_);
 		delete texture;
 	}
 	for (auto const* material : materials_ | std::views::values)
@@ -90,34 +99,34 @@ void URenderer::Cleanup()
 	}
 	for (auto const* sampler : samplers_ | std::views::values)
 	{
-		sampler->Cleanup(Context.GetDevice());
+		sampler->Cleanup(device_);
 		delete sampler;
 	}
 	for (auto const* model : models_ | std::views::values)
 	{
-		model->Cleanup(Context.GetAllocator());
+		model->Cleanup(device_);
 		delete model;
 	}
 	for (auto const* shader : shaders_ | std::views::values)
 	{
-		shader->Cleanup(Context.GetDevice());
+		shader->Cleanup(device_);
 		delete shader;
 	}
 
-	sceneRenderer_.Cleanup(Context.GetDevice(), Context.GetAllocator(), pipelineResourceManager_);
-	interfaceRenderer_.Cleanup(Context.GetAllocator());
+	sceneRenderer_.Cleanup(pipelineResourceManager_);
+	interfaceRenderer_.Cleanup();
 
-	indexBuffer_.Cleanup(Context.GetAllocator());
+	indexBuffer_.Cleanup(device_);
 	pipelineResourceManager_.Cleanup();
 
-	swapChain_.Cleanup(Context.GetDevice());
+	swapchain_.Cleanup();
 
 	for (const auto& frameData : frameDatas_)
 	{
-		vkDestroySemaphore(Context.GetDevice(), frameData.renderFinishedSemaphore, nullptr);
-		vkDestroySemaphore(Context.GetDevice(), frameData.imageAvailableSemaphore, nullptr);
-		vkDestroyFence(Context.GetDevice(), frameData.inFlightFence, nullptr);
-		vkDestroyCommandPool(Context.GetDevice(), frameData.commandPool, nullptr);
+		vkDestroySemaphore(device_.GetDevice(), frameData.renderFinishedSemaphore, nullptr);
+		vkDestroySemaphore(device_.GetDevice(), frameData.imageAvailableSemaphore, nullptr);
+		vkDestroyFence(device_.GetDevice(), frameData.inFlightFence, nullptr);
+		vkDestroyCommandPool(device_.GetDevice(), frameData.commandPool, nullptr);
 	}
 
 	KT_LOG(ELogImportanceLevel::High, "Graphics", "cleaned up renderer");
@@ -137,10 +146,7 @@ void URenderer::RegisterPendingSceneRenders(std::span<UPendingSceneRender const>
 	{
 		u32 const renderTarget{ sceneRenderer_.CreateScene(
 			  extent
-			, Context.GetDevice()
-			, Context.GetAllocator()
-			, Context.GetDepthFormat()
-			, swapChain_.GetFormat()
+			, swapchain_.GetFormat()
 			, pipelineResourceManager_
 		) };
 		sceneRenders_[handle] = renderTarget;
@@ -154,7 +160,7 @@ void URenderer::UnregisterUnusedSceneRenders(std::unordered_multimap<glm::uvec2,
 		auto const it{ sceneRenders_.find(handle) };
 		if (it != sceneRenders_.end())
 		{
-			sceneRenderer_.DeleteScene(it->second, Context.GetDevice(), Context.GetAllocator(), pipelineResourceManager_);
+			sceneRenderer_.DeleteScene(it->second, pipelineResourceManager_);
 			sceneRenders_.erase(it);
 		}
 	}
@@ -221,7 +227,7 @@ void URenderer::DrawFrame(
 			KT_LOG(ELogImportanceLevel::High, "Graphics", "frame {0} rendered", frameCount_);
 
 			JoinThread(rhiThread_);
-			Context.ExecuteSingleTimeCommands();
+			device_.ExecuteSingleTimeCommands();
 			u32 const renderRHIFrame{ GetRHIThreadFrame() };
 			rhiThread_ = std::thread{ &URenderer::SubmitCommandBuffer, this, renderRHIFrame };
 		}
@@ -242,7 +248,7 @@ void URenderer::DrawFrame(
 			, sceneRenderGraph.directionalLightDatas.size()
 		);
 
-		Context.ExecuteSingleTimeCommands();
+		device_.ExecuteSingleTimeCommands();
 
 		SubmitCommandBuffer(frameIndex);
 	}
@@ -269,14 +275,14 @@ void URenderer::RecreateFrames()
 	JoinThread(rhiThread_);
 
 	// Wait for GPU
-	vkDeviceWaitIdle(Context.GetDevice());
+	vkDeviceWaitIdle(device_.GetDevice());
 
-	swapChain_.Cleanup(Context.GetDevice());
-	swapChain_.Init(Context.GetDevice());
+	swapchain_.Cleanup();
+	swapchain_.Init();
 
 	for (auto const& frameData : frameDatas_)
 	{
-		vkResetCommandPool(Context.GetDevice(), frameData.commandPool, 0);
+		vkResetCommandPool(device_.GetDevice(), frameData.commandPool, 0);
 	}
 }
 
@@ -284,12 +290,17 @@ bool URenderer::TryAcquireNextImage(u32 frameIndex)
 {
 	// Wait for current frame to be rendered
 	VK_CHECK_THROW(
-		vkWaitForFences(Context.GetDevice(), 1, &frameDatas_[frameIndex].inFlightFence, VK_TRUE, UINT64_MAX),
+		vkWaitForFences(device_.GetDevice(), 1, &frameDatas_[frameIndex].inFlightFence, VK_TRUE, UINT64_MAX),
 		"failed to wait for fences!"
 	);
 
 	// Set image index for current frame
-	const VkResult result{ vkAcquireNextImageKHR(Context.GetDevice(), swapChain_.GetSwapChain(), UINT64_MAX, frameDatas_[frameIndex].imageAvailableSemaphore, VK_NULL_HANDLE, &frameDatas_[frameIndex].imageIndex)};
+	VkResult const result{ swapchain_.AcquireNextImage(
+		  UINT64_MAX
+		, frameDatas_[frameIndex].imageAvailableSemaphore
+		, VK_NULL_HANDLE
+		, frameDatas_[frameIndex].imageIndex
+	) };
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
 		RecreateFrames();
@@ -300,7 +311,7 @@ bool URenderer::TryAcquireNextImage(u32 frameIndex)
 		throw "failed to acquire swap chain image!";
 	}
 
-	vkResetFences(Context.GetDevice(), 1, &frameDatas_[frameIndex].inFlightFence);
+	vkResetFences(device_.GetDevice(), 1, &frameDatas_[frameIndex].inFlightFence);
 
 	return true;
 }
@@ -315,7 +326,7 @@ void URenderer::CreateCommandPools()
 
 void URenderer::CreateCommandPool(u32 frameIndex)
 {
-	const KtQueueFamilyIndices queueFamilyIndices{ Context.FindQueueFamilies(Context.GetPhysicalDevice()) };
+	UQueueFamilyIndices const queueFamilyIndices{ device_.GetQueueFamilyIndices() };
 
 	const VkCommandPoolCreateInfo poolInfo{
 		.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
@@ -323,7 +334,7 @@ void URenderer::CreateCommandPool(u32 frameIndex)
 		.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value(),
 	};
 	VK_CHECK_THROW(
-		vkCreateCommandPool(Context.GetDevice(), &poolInfo, nullptr, &frameDatas_[frameIndex].commandPool),
+		vkCreateCommandPool(device_.GetDevice(), &poolInfo, nullptr, &frameDatas_[frameIndex].commandPool),
 		"failed to create command pool!"
 	);
 }
@@ -338,34 +349,34 @@ void URenderer::CreateCommandBuffers()
 
 void URenderer::CreateCommandBuffer(u32 frameIndex)
 {
-	const VkCommandBufferAllocateInfo allocInfo{
+	VkCommandBufferAllocateInfo const allocInfo{
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
 		.commandPool = frameDatas_[frameIndex].commandPool,
 		.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
 		.commandBufferCount = 1,
 	};
 	VK_CHECK_THROW(
-		vkAllocateCommandBuffers(Context.GetDevice(), &allocInfo, &frameDatas_[frameIndex].commandBuffer),
+		vkAllocateCommandBuffers(device_.GetDevice(), &allocInfo, &frameDatas_[frameIndex].commandBuffer),
 		"failed to allocate command buffers!"
 	);
 }
 
 void URenderer::CreateSyncObjects()
 {
-	const VkSemaphoreCreateInfo semaphoreInfo{
+	VkSemaphoreCreateInfo const semaphoreInfo{
 		.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
 	};
-	const VkFenceCreateInfo fenceInfo{
+	VkFenceCreateInfo const fenceInfo{
 		.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
 		.flags = VK_FENCE_CREATE_SIGNALED_BIT,
 	};
 	for (auto& frameData : frameDatas_)
 	{
-		if (vkCreateSemaphore(Context.GetDevice(), &semaphoreInfo, nullptr, &frameData.imageAvailableSemaphore) != VK_SUCCESS ||
-			vkCreateSemaphore(Context.GetDevice(), &semaphoreInfo, nullptr, &frameData.renderFinishedSemaphore) != VK_SUCCESS ||
-			vkCreateFence(Context.GetDevice(), &fenceInfo, nullptr, &frameData.inFlightFence) != VK_SUCCESS)
+		if (vkCreateSemaphore(device_.GetDevice(), &semaphoreInfo, nullptr, &frameData.imageAvailableSemaphore) != VK_SUCCESS ||
+			vkCreateSemaphore(device_.GetDevice(), &semaphoreInfo, nullptr, &frameData.renderFinishedSemaphore) != VK_SUCCESS ||
+			vkCreateFence(device_.GetDevice(), &fenceInfo, nullptr, &frameData.inFlightFence) != VK_SUCCESS)
 		{
-			throw std::runtime_error("failed to create synchronization objects for a frame!");
+			throw std::runtime_error{ "failed to create synchronization objects for a frame!" };
 		}
 	}
 }
@@ -436,7 +447,7 @@ void URenderer::RecordCommandBuffer(
 
 void URenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer) const
 {
-	const VkCommandBufferBeginInfo beginInfo{
+	VkCommandBufferBeginInfo const beginInfo{
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
 	};
 	VK_CHECK_THROW(
@@ -448,7 +459,7 @@ void URenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer) const
 void URenderer::CmdBarrierSwapchainNoneToWrite(VkCommandBuffer commandBuffer, u32 frameIndex) const
 {
 	Barriers::CmdTransitionImages(commandBuffer
-		, std::array{ swapChain_.GetAllocatedImage(frameDatas_[frameIndex].imageIndex).image }
+		, std::array{ swapchain_.GetAllocatedImage(frameDatas_[frameIndex].imageIndex).image }
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 		, VK_ACCESS_2_NONE
@@ -463,7 +474,7 @@ void URenderer::CmdBeginRenderingInterface(VkCommandBuffer commandBuffer, u32 fr
 {
 	const VkRenderingAttachmentInfo swapchainAttachment{
 		.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-		.imageView = swapChain_.GetAllocatedImage(frameDatas_[frameIndex].imageIndex).imageView,
+		.imageView = swapchain_.GetAllocatedImage(frameDatas_[frameIndex].imageIndex).imageView,
 		.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 
 		.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
@@ -477,7 +488,7 @@ void URenderer::CmdBeginRenderingInterface(VkCommandBuffer commandBuffer, u32 fr
 		.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
 		.renderArea{
 			.offset = { 0, 0 },
-			.extent = swapChain_.GetExtent()
+			.extent = swapchain_.GetExtent()
 		},
 		.layerCount = 1,
 		.colorAttachmentCount = 1,
@@ -490,7 +501,7 @@ void URenderer::CmdBeginRenderingInterface(VkCommandBuffer commandBuffer, u32 fr
 void URenderer::CmdBarrierSwapchainWriteToPresent(VkCommandBuffer commandBuffer, u32 frameIndex) const
 {
 	Barriers::CmdTransitionImages(commandBuffer
-		, std::array{ swapChain_.GetAllocatedImage(frameDatas_[frameIndex].imageIndex).image }
+		, std::array{ swapchain_.GetAllocatedImage(frameDatas_[frameIndex].imageIndex).image }
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 		, VK_PIPELINE_STAGE_2_NONE
 		, VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT
@@ -551,21 +562,14 @@ void URenderer::SubmitCommandBuffer(u32 frameIndex)
 		.pSignalSemaphoreInfos = &signalSemaphoreInfo
 	};
 	VK_CHECK_THROW(
-		vkQueueSubmit2(Context.GetGraphicsQueue(), 1, &submitInfo2, frameDatas_[frameIndex].inFlightFence),
+		vkQueueSubmit2(device_.GetGraphicsQueue(), 1, &submitInfo2, frameDatas_[frameIndex].inFlightFence),
 		"failed to submit draw command buffer!"
 	);
 
-	const VkPresentInfoKHR presentInfo{
-		.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-
-		.waitSemaphoreCount = 1,
-		.pWaitSemaphores = &frameDatas_[frameIndex].renderFinishedSemaphore,
-
-		.swapchainCount = 1,
-		.pSwapchains = &swapChain_.GetSwapChain(),
-		.pImageIndices = &frameDatas_[frameIndex].imageIndex,
-	};
-	const VkResult result{ vkQueuePresentKHR(Context.GetPresentQueue(), &presentInfo) };
+	VkResult const result{ swapchain_.QueuePresent(
+		  frameDatas_[frameIndex].renderFinishedSemaphore
+		, frameDatas_[frameIndex].imageIndex
+	) };
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 	{
@@ -747,7 +751,7 @@ ATexture* URenderer::GetOrCreateTexture(UPath const& path)
 	auto const [exists, texture] { GetOrCreate(path, textures_) };
 	if (!exists)
 	{
-		texture->Init(Context.GetDevice(), Context.GetAllocator());
+		texture->Init(device_);
 
 		auto const imageView{ texture->GetImageView() };
 		texture->SetIndex(pipelineResourceManager_.RegisterTexture(imageView));
@@ -769,9 +773,7 @@ ASampler* URenderer::GetOrCreateSampler(UPath const& path)
 	auto const [exists, sampler] { GetOrCreate(path, samplers_) };
 	if (!exists)
 	{
-		VkPhysicalDeviceProperties properties;
-		vkGetPhysicalDeviceProperties(Context.GetPhysicalDevice(), &properties);
-		sampler->Init(Context.GetDevice(), properties.limits.maxSamplerAnisotropy);
+		sampler->Init(device_);
 
 		auto const samplerType{ sampler->GetType() };
 		auto const vkSampler{ sampler->GetSampler() };
@@ -795,10 +797,10 @@ AModel* URenderer::GetOrCreateModel(UPath const& path)
 	auto const [exists, model] { GetOrCreate(path, models_) };
 	if (!exists)
 	{
-		model->Init(Context.GetDevice(), Context.GetAllocator());
+		model->Init(device_);
 
 		auto const indices{ model->GetIndices() };
-		model->SetFirstIndex(indexBuffer_.RegisterIndices(indices));
+		model->SetFirstIndex(indexBuffer_.RegisterIndices(device_, indices));
 	}
 	return model;
 }
@@ -808,7 +810,7 @@ AShader* URenderer::GetOrCreateShader(UPath const& path)
 	auto const [exists, shader] { GetOrCreate(path, shaders_) };
 	if (!exists)
 	{
-		shader->Init(swapChain_.GetFormat(), pipelineResourceManager_.GetPipelineLayout());
+		shader->Init(device_, pipelineResourceManager_.GetPipelineLayout(), swapchain_.GetFormat());
 	}
 	return shader;
 }

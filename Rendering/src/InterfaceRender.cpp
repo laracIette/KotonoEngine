@@ -6,31 +6,38 @@
 #include "ParametersBufferData.h"
 #include "PushConstants.h"
 #include "TransformBufferData.h"
+#include <kotono_platform/Device.h>
 #include <ranges>
 #include <vector>
 
 static constexpr u32 MAX_DRAW_DATAS{ 65536 };
 
-void UInterfaceRender::Init(VkDevice device, VmaAllocator allocator)
+UInterfaceRender::UInterfaceRender(UDevice& device)
+	: device_{ device }
+	, frameContextBuffer_{ device }
 {
-	frameContextBuffer_.Init(device, allocator);
+}
 
-	drawDataBuffer_.Create(device, allocator
-		, sizeof(UDrawDataBufferData) * MAX_DRAW_DATAS
+void UInterfaceRender::Init()
+{
+	frameContextBuffer_.Init();
+
+	drawDataBuffer_ = device_.CreateAllocatedBuffer(
+		  sizeof(UDrawDataBufferData) * MAX_DRAW_DATAS
 		, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
 		| VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
 		, VMA_ALLOCATION_CREATE_MAPPED_BIT
 		| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
 	);
-	transformBuffer_.Create(device, allocator
-		, sizeof(UTransformBufferData) * MAX_DRAW_DATAS
+	transformBuffer_ = device_.CreateAllocatedBuffer(
+		  sizeof(UTransformBufferData) * MAX_DRAW_DATAS
 		, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
 		| VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
 		, VMA_ALLOCATION_CREATE_MAPPED_BIT
 		| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
 	);
-	parametersBuffer_.Create(device, allocator
-		, sizeof(UParametersBufferData) * MAX_DRAW_DATAS
+	parametersBuffer_ = device_.CreateAllocatedBuffer(
+		  sizeof(UParametersBufferData) * MAX_DRAW_DATAS
 		, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
 		| VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
 		, VMA_ALLOCATION_CREATE_MAPPED_BIT
@@ -38,12 +45,12 @@ void UInterfaceRender::Init(VkDevice device, VmaAllocator allocator)
 	);
 }
 
-void UInterfaceRender::Cleanup(VmaAllocator allocator) const
+void UInterfaceRender::Cleanup() const
 {
-	frameContextBuffer_.Cleanup(allocator);
-	drawDataBuffer_.Cleanup(allocator);
-	transformBuffer_.Cleanup(allocator);
-	parametersBuffer_.Cleanup(allocator);
+	frameContextBuffer_.Cleanup();
+	device_.CleanupAllocatedBuffer(drawDataBuffer_);
+	device_.CleanupAllocatedBuffer(transformBuffer_);
+	device_.CleanupAllocatedBuffer(parametersBuffer_);
 }
 
 void UInterfaceRender::UpdateBuffers(std::span<UDrawCommand const> drawCommands) const

@@ -3,7 +3,7 @@
 #include <kotono_common/log.h>
 #include <kotono_io/File.h>
 #include <kotono_io/Serializer.h>
-#include <kotono_platform/Context.h>
+#include <kotono_platform/Device.h>
 #include <kotono_platform/vk_utils.h>
 #include <nlohmann/json.hpp>
 
@@ -15,25 +15,25 @@ AShader::AShader(UPath const& path)
 {
 }
 
-void AShader::Init(VkFormat swapChainFormat, VkPipelineLayout pipelineLayout)
+void AShader::Init(UDevice& device, VkPipelineLayout pipelineLayout, VkFormat swapchainFormat)
 {
 	nlohmann::json json{};
 	SSerializer::Deserialize(json, GetPath());
 
 	if (json["pipelinePass"] == EPipelinePass::Compute)
 	{
-		CreateComputePipeline(pipelineLayout);
+		CreateComputePipeline(device, pipelineLayout);
 	}
 	else
 	{
-		CreateGraphicsPipeline(swapChainFormat, pipelineLayout);
+		CreateGraphicsPipeline(device, pipelineLayout, swapchainFormat);
 	}
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "initialized shader {0}", GetPath().ToString());
 }
 
-void AShader::Cleanup(VkDevice device) const
+void AShader::Cleanup(UDevice& device) const
 {
-	vkDestroyPipeline(device, pipeline_, nullptr);
+	vkDestroyPipeline(device.GetDevice(), pipeline_, nullptr);
 	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "cleaned up shader {0}", GetPath().ToString());
 }
 
@@ -42,25 +42,24 @@ VkPipeline AShader::GetPipeline() const
 	return pipeline_;
 }
 
-VkShaderModule AShader::CreateShaderModule(std::span<u8 const> code)
+VkShaderModule AShader::CreateShaderModule(UDevice& device, std::span<u8 const> code)
 {
-	const VkShaderModuleCreateInfo createInfo{
+	VkShaderModuleCreateInfo const createInfo{
 		.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
 		.codeSize = code.size(),
 		.pCode = reinterpret_cast<const u32*>(code.data()),
 	};
 
 	VkShaderModule shaderModule;
-
 	VK_CHECK_THROW(
-		vkCreateShaderModule(Context.GetDevice(), &createInfo, nullptr, &shaderModule),
-		"failed to create shader module!"
+		vkCreateShaderModule(device.GetDevice(), &createInfo, nullptr, &shaderModule),
+		"failed to create graphics shader module!"
 	);
 
 	return shaderModule;
 }
 
-void AShader::CreateGraphicsPipeline(VkFormat swapChainFormat, VkPipelineLayout pipelineLayout)
+void AShader::CreateGraphicsPipeline(UDevice& device, VkPipelineLayout pipelineLayout, VkFormat swapchainFormat)
 {
 	std::vector<VkShaderModule> shaderModules;
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
@@ -73,7 +72,7 @@ void AShader::CreateGraphicsPipeline(VkFormat swapChainFormat, VkPipelineLayout 
 		UPath const path{ shader["path"] };
 		std::vector const shaderCode{ UFile{ path }.ReadBinary() };
 
-		VkShaderModule const shaderModule{ CreateShaderModule(shaderCode) };
+		VkShaderModule const shaderModule{ CreateShaderModule(device, shaderCode) };
 		shaderModules.push_back(shaderModule);
 
 		const VkPipelineShaderStageCreateInfo shaderStageInfo{
@@ -105,7 +104,7 @@ void AShader::CreateGraphicsPipeline(VkFormat swapChainFormat, VkPipelineLayout 
 	const VkSampleCountFlagBits rasterizationSamples{ dataMultisampling["rasterizationSamples"] };
 	const VkPipelineMultisampleStateCreateInfo multisampling{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-		.rasterizationSamples = useMSAASamples ? Context.GetMSAASamples() : rasterizationSamples,
+		.rasterizationSamples = useMSAASamples ? device.GetMSAASamples() : rasterizationSamples,
 		.sampleShadingEnable = dataMultisampling["sampleShadingEnable"], // enable sample shading in the pipeline
 		.minSampleShading = dataMultisampling["minSampleShading"], // min fraction for sample shading, closer to one is smoother
 		.pSampleMask = nullptr, // Optional
@@ -127,21 +126,21 @@ void AShader::CreateGraphicsPipeline(VkFormat swapChainFormat, VkPipelineLayout 
 		.maxDepthBounds = dataDepthStencil["maxDepthBounds"], // Optional
 	};
 
-	std::vector<VkPipelineColorBlendAttachmentState> colorBlendAttachments{};
-	for (const auto& dataColorBlendAttachment : json["colorBlendAttachments"])
-	{
-		const VkPipelineColorBlendAttachmentState colorBlendAttachment{
-		   .blendEnable = dataColorBlendAttachment["blendEnable"],
-		   .srcColorBlendFactor = dataColorBlendAttachment["srcColorBlendFactor"],
-		   .dstColorBlendFactor = dataColorBlendAttachment["dstColorBlendFactor"],
-		   .colorBlendOp = dataColorBlendAttachment["colorBlendOp"],
-		   .srcAlphaBlendFactor = dataColorBlendAttachment["srcAlphaBlendFactor"],
-		   .dstAlphaBlendFactor = dataColorBlendAttachment["dstAlphaBlendFactor"],
-		   .alphaBlendOp = dataColorBlendAttachment["alphaBlendOp"],
-		   .colorWriteMask = dataColorBlendAttachment["colorWriteMask"],
-		};
-		colorBlendAttachments.push_back(colorBlendAttachment);
-	}
+	auto const colorBlendAttachments{ json["colorBlendAttachments"]
+		| std::views::transform([](nlohmann::json const& dataColorBlendAttachment) {
+			return VkPipelineColorBlendAttachmentState{
+				.blendEnable = dataColorBlendAttachment["blendEnable"],
+				.srcColorBlendFactor = dataColorBlendAttachment["srcColorBlendFactor"],
+				.dstColorBlendFactor = dataColorBlendAttachment["dstColorBlendFactor"],
+				.colorBlendOp = dataColorBlendAttachment["colorBlendOp"],
+				.srcAlphaBlendFactor = dataColorBlendAttachment["srcAlphaBlendFactor"],
+				.dstAlphaBlendFactor = dataColorBlendAttachment["dstAlphaBlendFactor"],
+				.alphaBlendOp = dataColorBlendAttachment["alphaBlendOp"],
+				.colorWriteMask = dataColorBlendAttachment["colorWriteMask"],
+			};
+		})
+		| std::ranges::to<std::vector>()
+	};
 
 	const VkPipelineVertexInputStateCreateInfo vertexInputInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
@@ -183,14 +182,14 @@ void AShader::CreateGraphicsPipeline(VkFormat swapChainFormat, VkPipelineLayout 
 		.pDynamicStates = dynamicStates.data(),
 	};
 
-	const std::vector colorAttachmentFormats{ GetOutputColorAttachmentFormats(json["pipelinePass"], swapChainFormat) };
+	const std::vector colorAttachmentFormats{ GetOutputColorAttachmentFormats(json["pipelinePass"], swapchainFormat) };
 	const VkPipelineRenderingCreateInfo pipelineRenderingInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
 		.pNext = VK_NULL_HANDLE,
 		.viewMask = json["viewMask"],
 		.colorAttachmentCount = static_cast<u32>(colorAttachmentFormats.size()),
 		.pColorAttachmentFormats = colorAttachmentFormats.data(),
-		.depthAttachmentFormat = Context.GetDepthFormat(),
+		.depthAttachmentFormat = device.GetDepthFormat(),
 	};
 
 	const VkGraphicsPipelineCreateInfo pipelineInfo{
@@ -210,18 +209,19 @@ void AShader::CreateGraphicsPipeline(VkFormat swapChainFormat, VkPipelineLayout 
 
 		.layout = pipelineLayout,
 	};
+
 	VK_CHECK_THROW(
-		vkCreateGraphicsPipelines(Context.GetDevice(), nullptr, 1, &pipelineInfo, nullptr, &pipeline_),
+		vkCreateGraphicsPipelines(device.GetDevice(), nullptr, 1, &pipelineInfo, nullptr, &pipeline_),
 		"failed to create graphics pipeline!"
 	);
 
-	for (auto shaderModule : shaderModules)
+	for (auto const shaderModule : shaderModules)
 	{
-		vkDestroyShaderModule(Context.GetDevice(), shaderModule, nullptr);
+		vkDestroyShaderModule(device.GetDevice(), shaderModule, nullptr);
 	}
 }
 
-void AShader::CreateComputePipeline(VkPipelineLayout pipelineLayout)
+void AShader::CreateComputePipeline(UDevice& device, VkPipelineLayout pipelineLayout)
 {
 	nlohmann::json json{};
 	SSerializer::Deserialize(json, GetPath());
@@ -229,7 +229,7 @@ void AShader::CreateComputePipeline(VkPipelineLayout pipelineLayout)
 	UPath const path{ json["path"] };
 	std::vector const shaderCode{ UFile{ path }.ReadBinary() };
 
-	VkShaderModule const shaderModule{ CreateShaderModule(shaderCode) };
+	VkShaderModule const shaderModule{ CreateShaderModule(device, shaderCode) };
 
 	const VkPipelineShaderStageCreateInfo shaderStageInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
@@ -252,14 +252,14 @@ void AShader::CreateComputePipeline(VkPipelineLayout pipelineLayout)
 	};
 
 	VK_CHECK_THROW(
-		vkCreateComputePipelines(Context.GetDevice(), nullptr, 1, &pipelineInfo, nullptr, &pipeline_),
-		"failed to create compute pipeline!"
+		vkCreateComputePipelines(device.GetDevice(), nullptr, 1, &pipelineInfo, nullptr, &pipeline_),
+		"failed to create graphics pipeline!"
 	);
 
-	vkDestroyShaderModule(Context.GetDevice(), shaderModule, nullptr);
+	vkDestroyShaderModule(device.GetDevice(), shaderModule, nullptr);
 }
 
-std::vector<VkFormat> AShader::GetOutputColorAttachmentFormats(EPipelinePass pipelinePass, VkFormat swapChainFormat) const
+std::vector<VkFormat> AShader::GetOutputColorAttachmentFormats(EPipelinePass pipelinePass, VkFormat swapchainFormat) const
 {
 	switch (pipelinePass)
 	{
@@ -273,7 +273,7 @@ std::vector<VkFormat> AShader::GetOutputColorAttachmentFormats(EPipelinePass pip
 	};
 	case EPipelinePass::DeferredLighting:	return { VK_FORMAT_R16G16B16A16_SFLOAT };
 	case EPipelinePass::PostProcess:
-	case EPipelinePass::Interface:			return { swapChainFormat };
+	case EPipelinePass::Interface:			return { swapchainFormat };
 	default:								return {};
 	}
 }

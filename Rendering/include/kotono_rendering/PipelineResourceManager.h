@@ -2,6 +2,7 @@
 #include <kotono_common/types.h>
 #include <vector>
 #include <vulkan/vulkan_core.h>
+class UDevice;
 class UPipelineResourceManager final
 {
 public:
@@ -13,6 +14,8 @@ public:
 	};
 
 public:
+	explicit UPipelineResourceManager(UDevice& device);
+
 	void Init();
 	void Cleanup() const;
 
@@ -42,6 +45,8 @@ private:
 	void WriteDescriptorSet(VkSampler sampler, VkImageView imageView, const VkImageLayout imageLayout, const u32 binding, const u32 slot, const VkDescriptorType descriptorType) const;
 
 private:
+	UDevice& device_;
+
 	VkDescriptorSetLayout descriptorSetLayout_;
 	VkDescriptorPool descriptorPool_;
 	VkPipelineLayout pipelineLayout_;

@@ -8,7 +8,7 @@
 #include <glm/geometric.hpp>
 #include <glm/gtx/hash.hpp>
 #include <kotono_common/hash_utils.h>
-#include <kotono_platform/Context.h>
+#include <kotono_platform/Device.h>
 #include <unordered_map>
 
 AModel::AModel(UPath const& path) 
@@ -17,14 +17,14 @@ AModel::AModel(UPath const& path)
 	Load();
 }
 
-void AModel::Init(VkDevice device, VmaAllocator allocator)
+void AModel::Init(UDevice& device)
 {
-	CreateVertexBuffer(device, allocator);
+	CreateVertexBuffer(device);
 }
 
-void AModel::Cleanup(VmaAllocator allocator) const
+void AModel::Cleanup(UDevice& device) const
 {
-	vertexBuffer_.Cleanup(allocator);
+	device.CleanupAllocatedBuffer(vertexBuffer_);
 }
 
 VkDeviceAddress AModel::GetVertexBufferAddress() const
@@ -126,34 +126,19 @@ void AModel::Load()
 	}
 }
 
-void AModel::CreateVertexBuffer(VkDevice device, VmaAllocator allocator)
+void AModel::CreateVertexBuffer(UDevice& device)
 {
 	VkDeviceSize const bufferSize{ sizeof(UVertex) * vertices_.size() };
 
-	stagingVertexBuffer_.Create(device, allocator
-		, bufferSize
-		, VK_BUFFER_USAGE_TRANSFER_SRC_BIT
-		, VMA_ALLOCATION_CREATE_MAPPED_BIT
-		| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
-	);
-	
-	std::memcpy(stagingVertexBuffer_.allocationInfo.pMappedData, vertices_.data(), static_cast<size>(bufferSize));
-
-	vertexBuffer_.Create(device, allocator
-		, bufferSize
+	vertexBuffer_ = device.CreateAllocatedBuffer(
+		  bufferSize
 		, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 		| VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
 		| VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
 		, 0
 	);
 
-	Context.CopyBuffer(stagingVertexBuffer_.buffer, vertexBuffer_.buffer, bufferSize);
-	Context.GetEventExecuteSingleTimeCommands().AddListener(this, &AModel::DestroyStagingVertexBuffer);
-}
-
-void AModel::DestroyStagingVertexBuffer() const
-{
-	vmaDestroyBuffer(Context.GetAllocator(), stagingVertexBuffer_.buffer, stagingVertexBuffer_.allocation);
+	device.StagingUpload(vertices_.data(), bufferSize, vertexBuffer_, 0, 0);
 }
 
 bool UVertex::operator==(UVertex const& other) const noexcept

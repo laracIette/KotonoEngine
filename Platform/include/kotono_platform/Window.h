@@ -2,7 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/vec2.hpp>
 #include <kotono_common/Event.h>
-class GWindow final
+class UWindow final
 {
 	friend void framebuffersize_callback_(GLFWwindow*, int, int);
 
@@ -26,4 +26,4 @@ private:
 	UEvent<glm::uvec2> eventWindowResized_;
 };
 
-inline GWindow Window;
+inline UWindow Window;

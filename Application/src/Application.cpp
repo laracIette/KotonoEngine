@@ -26,11 +26,18 @@
 #include <kotono_object/Object.h>
 #endif
 
+UApplication::UApplication()
+    : surface_{ Window }
+    , device_{ surface_ }
+    , renderer_{ device_, surface_ }
+{
+}
+
 void UApplication::Run()
 {
     Init();
 
-    while (!Window.GetShouldClose(Context.GetDevice()))
+    while (!Window.GetShouldClose(device_.GetDevice()))
     {
         Update();
     }
@@ -44,6 +51,8 @@ void UApplication::Init()
 
     Window.Init();
     Context.Init();
+    surface_.Init(Context.GetInstance());
+    device_.Init(Context.GetInstance());
     renderer_.Init();
 
     AudioManager.Init();
@@ -132,6 +141,8 @@ void UApplication::Cleanup()
     AudioManager.Cleanup();
 
     renderer_.Cleanup();
+    device_.Cleanup();
+    surface_.Cleanup(Context.GetInstance());
     Context.Cleanup();
     Window.Cleanup();
 

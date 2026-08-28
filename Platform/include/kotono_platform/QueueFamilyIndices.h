@@ -1,7 +1,7 @@
 #pragma once
-#include <optional>
 #include <kotono_common/types.h>
-struct KtQueueFamilyIndices final
+#include <optional>
+struct UQueueFamilyIndices final
 {
 	std::optional<u32> graphicsFamily;
 	std::optional<u32> presentFamily;

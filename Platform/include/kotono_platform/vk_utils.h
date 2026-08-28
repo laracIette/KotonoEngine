@@ -7,4 +7,7 @@
 #endif
 
 enum VkResult;
-void VulkanCheckAndThrow(const VkResult result, const char* message);
+void VulkanCheckAndThrow(VkResult result, char const* message);
+
+enum VkFormat;
+bool HasStencilComponent(VkFormat format) noexcept;

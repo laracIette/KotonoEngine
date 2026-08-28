@@ -44,14 +44,20 @@ set(KPLATFORM_HEADERS
     "include/kotono_platform/AllocatedBuffer.h"
     "include/kotono_platform/AllocatedImage.h"
     "include/kotono_platform/Context.h"
+    "include/kotono_platform/Device.h"
     "include/kotono_platform/glm_utils.h"
     "include/kotono_platform/QueueFamilyIndices.h"
-    "include/kotono_platform/SwapChainSupportDetails.h"
+    "include/kotono_platform/Surface.h"
+    "include/kotono_platform/Swapchain.h"
+    "include/kotono_platform/SwapchainSupportDetails.h"
     "include/kotono_platform/vk_utils.h"
     "include/kotono_platform/Window.h"
 )
 set(KPLATFORM_SOURCES
     "src/Context.cpp"
+    "src/Device.cpp"
+    "src/Surface.cpp"
+    "src/Swapchain.cpp"
     "src/vk_utils.cpp"
     "src/Window.cpp"
 )

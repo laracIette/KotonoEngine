@@ -2,6 +2,8 @@
 #include <glm/ext/vector_uint2.hpp>
 #include <kotono_common/Average.h>
 #include <kotono_common/Handle.h>
+#include <kotono_platform/Device.h>
+#include <kotono_platform/Surface.h>
 #include <kotono_rendering/Renderer.h>
 #include <span>
 #include <unordered_map>
@@ -16,6 +18,8 @@ class WMainWindow;
 class UApplication final
 {
 public:
+	UApplication();
+
 	void Run();
 
 private:
@@ -27,7 +31,10 @@ private:
 	void OnWindowResized(glm::uvec2 const& extent);
 
 private:
+	USurface surface_;
+	UDevice device_;
 	URenderer renderer_;
+
 	UInterface* interface_;
 
 	std::unordered_map<EHandle, u32> textureHandles_;

@@ -15,6 +15,7 @@ struct UDrawDataBufferData;
 struct UTransformBufferData;
 struct UParametersBufferData;
 struct UMaterialBufferData;
+class UDevice;
 class UIndexBuffer;
 class UPipelineResourceManager;
 struct USceneRenderContext final
@@ -39,8 +40,10 @@ struct USceneRenderData final
 class USceneRender final
 {
 public:
-	void Init(glm::uvec2 const& extent, VkDevice device, VmaAllocator allocator, VkFormat depthFormat, VkFormat swapChainFormat, UPipelineResourceManager& pipelineResourceManager);
-	void Cleanup(VkDevice device, VmaAllocator allocator, UPipelineResourceManager& pipelineResourceManager) const;
+	explicit USceneRender(UDevice& device);
+
+	void Init(glm::uvec2 const& extent, VkFormat swapchainFormat, UPipelineResourceManager& pipelineResourceManager);
+	void Cleanup(UPipelineResourceManager& pipelineResourceManager) const;
 
 	u32 GetRenderTarget() const;
 	u32 GetDirectionalLightShadowMapTargetIndex(u32 index) const;
@@ -64,8 +67,8 @@ public:
 	void CmdDraw(USceneRenderContext const& renderContext, USceneRenderData const& renderData) const;
 
 private:
-	void CreateImageResources(VkDevice device, VmaAllocator allocator, VkFormat depthFormat, VkFormat swapChainFormat);
-	void CleanupImageResources(VkDevice device, VmaAllocator allocator) const;
+	void CreateImageResources(VkFormat depthFormat, VkFormat swapchainFormat);
+	void CleanupImageResources() const;
 	void RegisterFrameContextBufferTextures(UPipelineResourceManager& pipelineResourceManager);
 	void UnregisterFrameContextBufferTextures(UPipelineResourceManager& pipelineResourceManager) const;
 
@@ -115,6 +118,8 @@ private:
 	void CmdPushConstants(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, u32 drawIndex, u32 directionalIndex) const;
 
 private:
+	UDevice& device_;
+
 	VkExtent2D extent_;
 
 	UAllocatedImage depthTarget_;

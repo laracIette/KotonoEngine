@@ -2,6 +2,7 @@
 
 #include <kotono_io/serialize_base.h>
 #include <kotono_io/Serializer.h>
+#include <kotono_platform/Device.h>
 #include <kotono_platform/vk_utils.h>
 #include <nlohmann/json.hpp>
 
@@ -11,14 +12,14 @@ ASampler::ASampler(UPath const& path)
 {
 }
 
-void ASampler::Init(VkDevice device, f32 maxAnisotropy)
+void ASampler::Init(UDevice& device)
 {
-	CreateSampler(device, maxAnisotropy);
+	CreateSampler(device);
 }
 
-void ASampler::Cleanup(VkDevice device) const
+void ASampler::Cleanup(UDevice& device) const
 {
-	vkDestroySampler(device, sampler_, nullptr);
+	vkDestroySampler(device.GetDevice(), sampler_, nullptr);
 }
 
 u32 ASampler::GetIndex() const
@@ -44,7 +45,7 @@ ASampler::EType ASampler::GetType() const
 	return UDeserialize<EType>{}(json["type"]);
 }
 
-void ASampler::CreateSampler(VkDevice device, f32 maxAnisotropy)
+void ASampler::CreateSampler(UDevice& device)
 {
 	nlohmann::json json{};
 	SSerializer::Deserialize(json, GetPath());
@@ -59,7 +60,7 @@ void ASampler::CreateSampler(VkDevice device, f32 maxAnisotropy)
 		.addressModeW = json["addressModeW"],
 		.mipLodBias = json["mipLodBias"],
 		.anisotropyEnable = json["anisotropyEnable"],
-		.maxAnisotropy = maxAnisotropy,
+		.maxAnisotropy = device.GetMaxSamplerAnisotropy(),
 		.compareEnable = json["compareEnable"],
 		.compareOp = json["compareOp"],
 		.minLod = json["minLod"],
@@ -67,8 +68,9 @@ void ASampler::CreateSampler(VkDevice device, f32 maxAnisotropy)
 		.borderColor = json["borderColor"],
 		.unnormalizedCoordinates = json["unnormalizedCoordinates"],
 	};
+
 	VK_CHECK_THROW(
-		vkCreateSampler(device, &samplerInfo, nullptr, &sampler_),
+		vkCreateSampler(device.GetDevice(), &samplerInfo, nullptr, &sampler_),
 		"failed to create texture sampler!"
 	);
 }

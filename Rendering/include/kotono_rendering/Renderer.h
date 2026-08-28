@@ -8,12 +8,12 @@
 #include "PipelineResourceManager.h"
 #include "PushConstants.h"
 #include "SceneRenderer.h"
-#include "SwapChain.h"
 #include <flat_map>
 #include <kotono_common/Handle.h>
 #include <kotono_common/Path.h>
 #include <kotono_common/types.h>
 #include <kotono_platform/AllocatedImage.h>
+#include <kotono_platform/Swapchain.h>
 #include <span>
 #include <thread>
 #include <unordered_map>
@@ -41,6 +41,8 @@ class AModel;
 class ASampler;
 class AShader;
 class ATexture;
+class UDevice;
+class USurface;
 class URenderer final
 {
 public:
@@ -57,6 +59,8 @@ public:
 	};
 
 public:
+	explicit URenderer(UDevice& device, USurface& surface);
+
 	void Init();
 	void Cleanup();
 
@@ -106,7 +110,9 @@ private:
 	AShader* GetOrCreateShader(UPath const& path);
 
 private:
-	USwapChain swapChain_;
+	UDevice& device_;
+
+	USwapchain swapchain_;
 	UFramesInFlightArray<FrameData> frameDatas_;
 
 	std::thread renderThread_;

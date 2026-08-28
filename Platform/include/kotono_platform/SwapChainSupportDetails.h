@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <vulkan/vulkan_core.h>
-struct KtSwapChainSupportDetails final
+struct USwapchainSupportDetails final
 {
 	VkSurfaceCapabilitiesKHR capabilities;
 	std::vector<VkSurfaceFormatKHR> formats;

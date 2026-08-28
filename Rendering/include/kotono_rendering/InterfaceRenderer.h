@@ -4,6 +4,7 @@
 #include <kotono_common/types.h>
 #include <span>
 struct UDrawCommand;
+class UDevice;
 class UInterfaceRenderer final
 {
 public:
@@ -11,13 +12,18 @@ public:
 	{
 		UInterfaceRender interfaceRender;
 	};
+
 public:
-	void Init(VkDevice device, VmaAllocator allocator);
-	void Cleanup(VmaAllocator allocator) const;
+	explicit UInterfaceRenderer(UDevice& device);
+
+	void Init();
+	void Cleanup() const;
 
 	void UpdateInterfaceBuffers(std::span<UDrawCommand const> drawCommands, u32 frameIndex);
 	void CmdDrawInterface(VkCommandBuffer commandBuffer, u32 frameIndex, VkPipelineLayout pipelineLayout, std::span<UDrawCommand const> drawCommands, UIndexBuffer const& indexBuffer) const;
 
 private:
+	UDevice& device_;
+
 	UFramesInFlightArray<FrameData> frameDatas_;
 };

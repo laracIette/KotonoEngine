@@ -3,15 +3,16 @@
 #include <kotono_platform/AllocatedBuffer.h>
 #include <span>
 #include <vulkan/vulkan_core.h>
+class UDevice;
 class UIndexBuffer final
 {
 public:
-	void Init(VkDevice device, VmaAllocator allocator);
-	void Cleanup(VmaAllocator allocator) const;
+	void Init(UDevice& device);
+	void Cleanup(UDevice& device) const;
 
 	void CmdBind(VkCommandBuffer commandBuffer) const;
 
-	u32 RegisterIndices(std::span<u32 const> indices);
+	u32 RegisterIndices(UDevice& device, std::span<u32 const> indices);
 
 private:
 	UAllocatedBuffer dataBuffer_;

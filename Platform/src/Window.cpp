@@ -5,7 +5,7 @@
 
 void framebuffersize_callback_(GLFWwindow* window, int width, int height);
 
-void GWindow::Init()
+void UWindow::Init()
 {
     size_ = { 1600, 900 };
 
@@ -36,14 +36,14 @@ void GWindow::Init()
     glfwShowWindow(window_);
 }
 
-void GWindow::Cleanup()
+void UWindow::Cleanup()
 {
     // Cleanup GLFW
     glfwDestroyWindow(window_);
     glfwTerminate();
 }
 
-bool GWindow::GetShouldClose(VkDevice device) const
+bool UWindow::GetShouldClose(VkDevice device) const
 {
     if (shouldClose_ || glfwWindowShouldClose(window_))
     {
@@ -55,22 +55,22 @@ bool GWindow::GetShouldClose(VkDevice device) const
     return false;
 }
 
-void GWindow::SetShouldClose(const bool shouldClose)
+void UWindow::SetShouldClose(const bool shouldClose)
 {
     shouldClose_ = shouldClose;
 }
 
-GLFWwindow* GWindow::GetGLFWWindow() const
+GLFWwindow* UWindow::GetGLFWWindow() const
 {
     return window_;
 }
 
-const glm::uvec2& GWindow::GetSize() const
+const glm::uvec2& UWindow::GetSize() const
 {
     return size_;
 }
 
-UEvent<glm::uvec2>& GWindow::GetEventWindowResized()
+UEvent<glm::uvec2>& UWindow::GetEventWindowResized()
 {
     return eventWindowResized_;
 }

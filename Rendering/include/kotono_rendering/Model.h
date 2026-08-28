@@ -7,6 +7,7 @@
 #include <kotono_common/types.h>
 #include <kotono_platform/AllocatedBuffer.h>
 #include <span>
+class UDevice;
 class UIndexBuffer;
 struct UVertex
 {
@@ -22,8 +23,8 @@ class AModel final : public AAsset
 public:
 	AModel(UPath const& path);
 
-	void Init(VkDevice device, VmaAllocator allocator);
-	void Cleanup(VmaAllocator allocator) const;
+	void Init(UDevice& device);
+	void Cleanup(UDevice& device) const;
 
 	VkDeviceAddress GetVertexBufferAddress() const;
 	u32 GetIndexCount() const;
@@ -35,8 +36,7 @@ public:
 	
 private:
 	void Load();
-	void CreateVertexBuffer(VkDevice device, VmaAllocator allocator);
-	void DestroyStagingVertexBuffer() const;
+	void CreateVertexBuffer(UDevice& device);
 
 private:
 	std::vector<UVertex> vertices_;
@@ -45,7 +45,6 @@ private:
 	u32 firstIndex_;
 
 	UAllocatedBuffer vertexBuffer_;
-	UAllocatedBuffer stagingVertexBuffer_;
 };
 
 template<>

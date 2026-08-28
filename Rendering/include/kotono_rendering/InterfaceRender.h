@@ -9,12 +9,15 @@ struct UDrawCommand;
 struct UDrawDataBufferData;
 struct UTransformBufferData;
 struct UParametersBufferData;
+class UDevice;
 class UIndexBuffer;
 class UInterfaceRender final
 {
 public:
-	void Init(VkDevice device, VmaAllocator allocator);
-	void Cleanup(VmaAllocator allocator) const;
+	explicit UInterfaceRender(UDevice& device);
+
+	void Init();
+	void Cleanup() const;
 
 	void UpdateBuffers(std::span<UDrawCommand const> drawCommands) const;
 	void CmdDraw(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, std::span<UDrawCommand const> drawCommands, UIndexBuffer const& indexBuffer) const;
@@ -31,6 +34,8 @@ private:
 	void CmdPushConstants(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, u32 drawIndex, u32 directionalIndex) const;
 
 private:
+	UDevice& device_;
+
 	UFrameContextBuffer frameContextBuffer_;
 
 	UAllocatedBuffer drawDataBuffer_;

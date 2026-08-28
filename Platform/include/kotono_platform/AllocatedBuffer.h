@@ -73,5 +73,23 @@ struct UAllocatedBuffer final
 		   , data.size_bytes()
 		);
 	}
+
+	void CmdCopyTo(VkCommandBuffer commandBuffer, UAllocatedBuffer const& dstBuffer, VkDeviceSize srcOffset, VkDeviceSize dstOffset, VkDeviceSize size) const
+	{
+		VkBufferCopy2 const region{
+			.sType = VK_STRUCTURE_TYPE_BUFFER_COPY_2,
+			.srcOffset = srcOffset,
+			.dstOffset = dstOffset,
+			.size = size,
+		};
+		VkCopyBufferInfo2 const copyBufInfo{
+			.sType = VK_STRUCTURE_TYPE_COPY_BUFFER_INFO_2,
+			.srcBuffer = buffer,
+			.dstBuffer = dstBuffer.buffer,
+			.regionCount = 1,
+			.pRegions = &region,
+		};
+		vkCmdCopyBuffer2(commandBuffer, &copyBufInfo);
+	}
 };
 

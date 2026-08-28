@@ -10,75 +10,79 @@
 #include "PushConstants.h"
 #include "TransformBufferData.h"
 #include <array>
+#include <kotono_platform/Device.h>
 #include <ranges>
 
 static constexpr u32 MAX_DRAW_DATAS{ 65536 };
 
+USceneRender::USceneRender(UDevice& device)
+	: device_{ device }
+	, frameContextBuffer_{ device }
+{
+}
+
 void USceneRender::Init(
 	  glm::uvec2 const& extent
-	, VkDevice device
-	, VmaAllocator allocator
-	, VkFormat depthFormat
-	, VkFormat swapChainFormat
+	, VkFormat swapchainFormat
 	, UPipelineResourceManager& pipelineResourceManager
 )
 {
 	extent_ = { extent.x, extent.y };
 
-	frameContextBuffer_.Init(device, allocator);
+	frameContextBuffer_.Init();
 
-	CreateImageResources(device, allocator, depthFormat, swapChainFormat);
+	CreateImageResources(device_.GetDepthFormat(), swapchainFormat);
 	RegisterFrameContextBufferTextures(pipelineResourceManager);
 
-	drawDataBuffer_.Create(device, allocator
-		, sizeof(UDrawDataBufferData) * MAX_DRAW_DATAS
+	drawDataBuffer_ = device_.CreateAllocatedBuffer(
+		  sizeof(UDrawDataBufferData) * MAX_DRAW_DATAS
 		, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
 		| VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
 		, VMA_ALLOCATION_CREATE_MAPPED_BIT
 		| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
 	);
-	transformBuffer_.Create(device, allocator
-		, sizeof(UTransformBufferData) * MAX_DRAW_DATAS
+	transformBuffer_ = device_.CreateAllocatedBuffer(
+		  sizeof(UTransformBufferData) * MAX_DRAW_DATAS
 		, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
 		| VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
 		, VMA_ALLOCATION_CREATE_MAPPED_BIT
 		| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
 	);
-	parametersBuffer_.Create(device, allocator
-		, sizeof(UParametersBufferData) * MAX_DRAW_DATAS
+	parametersBuffer_ = device_.CreateAllocatedBuffer(
+		  sizeof(UParametersBufferData) * MAX_DRAW_DATAS
 		, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
 		| VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
 		, VMA_ALLOCATION_CREATE_MAPPED_BIT
 		| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
 	);
-	materialBuffer_.Create(device, allocator
-		, sizeof(UMaterialBufferData) * MAX_DRAW_DATAS
+	materialBuffer_ = device_.CreateAllocatedBuffer(
+		  sizeof(UMaterialBufferData) * MAX_DRAW_DATAS
 		, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
 		| VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
 		, VMA_ALLOCATION_CREATE_MAPPED_BIT
 		| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
 	);
 
-	lightBuffers_.Init(pipelineResourceManager, device, allocator, depthFormat);
-	gpuBuffers_.Init(device, allocator);
+	lightBuffers_.Init(pipelineResourceManager, device_.GetDevice(), device_.GetAllocator(), device_.GetDepthFormat());
+	gpuBuffers_.Init(device_.GetDevice(), device_.GetAllocator());
 
 	isAABBDirty_ = true;
 }
 
-void USceneRender::Cleanup(VkDevice device, VmaAllocator allocator, UPipelineResourceManager& pipelineResourceManager) const
+void USceneRender::Cleanup(UPipelineResourceManager& pipelineResourceManager) const
 {
-	frameContextBuffer_.Cleanup(allocator);
+	frameContextBuffer_.Cleanup();
 
-	CleanupImageResources(device, allocator);
+	CleanupImageResources();
 	UnregisterFrameContextBufferTextures(pipelineResourceManager);
 
-	drawDataBuffer_.Cleanup(allocator);
-	transformBuffer_.Cleanup(allocator);
-	parametersBuffer_.Cleanup(allocator);
-	materialBuffer_.Cleanup(allocator);
+	device_.CleanupAllocatedBuffer(drawDataBuffer_);
+	device_.CleanupAllocatedBuffer(transformBuffer_);
+	device_.CleanupAllocatedBuffer(parametersBuffer_);
+	device_.CleanupAllocatedBuffer(materialBuffer_);
 
-	lightBuffers_.Cleanup(device, allocator);
-	gpuBuffers_.Cleanup(allocator);
+	lightBuffers_.Cleanup(device_.GetDevice(), device_.GetAllocator());
+	gpuBuffers_.Cleanup(device_.GetAllocator());
 }
 
 u32 USceneRender::GetRenderTarget() const
@@ -192,25 +196,25 @@ void USceneRender::CmdDraw(USceneRenderContext const& renderContext, USceneRende
 	CmdBarrierPostProcessWriteToRead(renderContext.commandBuffer);
 }
 
-void USceneRender::CreateImageResources(VkDevice device, VmaAllocator allocator, VkFormat depthFormat, VkFormat swapChainFormat)
+void USceneRender::CreateImageResources(VkFormat depthFormat, VkFormat swapchainFormat)
 {
 	auto const [width, height] { extent_ };
-	colorTarget_.Create(device, allocator,			UAllocatedImageCreateInfo::CreateSampled2D(width, height, 1, VK_FORMAT_R16G16B16A16_SFLOAT, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
-	albedoTarget_.Create(device, allocator,			UAllocatedImageCreateInfo::CreateSampled2D(width, height, 1, VK_FORMAT_R8G8B8A8_SRGB,		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
-	normalTarget_.Create(device, allocator,			UAllocatedImageCreateInfo::CreateSampled2D(width, height, 1, VK_FORMAT_R16G16B16A16_SFLOAT, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
-	ormTarget_.Create(device, allocator,			UAllocatedImageCreateInfo::CreateSampled2D(width, height, 1, VK_FORMAT_R8G8B8A8_UNORM,		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
-	depthTarget_.Create(device, allocator,			UAllocatedImageCreateInfo::CreateSampled2D(width, height, 1, depthFormat,					VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,	VK_IMAGE_ASPECT_DEPTH_BIT));
-	postProcessTarget_.Create(device, allocator,	UAllocatedImageCreateInfo::CreateSampled2D(width, height, 1, swapChainFormat,				VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
+	colorTarget_ =			device_.CreateAllocatedImage(UAllocatedImageCreateInfo::CreateSampled2D(width, height, 1, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
+	albedoTarget_ =			device_.CreateAllocatedImage(UAllocatedImageCreateInfo::CreateSampled2D(width, height, 1, VK_FORMAT_R8G8B8A8_SRGB,			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
+	normalTarget_ =			device_.CreateAllocatedImage(UAllocatedImageCreateInfo::CreateSampled2D(width, height, 1, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
+	ormTarget_ =			device_.CreateAllocatedImage(UAllocatedImageCreateInfo::CreateSampled2D(width, height, 1, VK_FORMAT_R8G8B8A8_UNORM,			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
+	depthTarget_ =			device_.CreateAllocatedImage(UAllocatedImageCreateInfo::CreateSampled2D(width, height, 1, depthFormat,						VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,	VK_IMAGE_ASPECT_DEPTH_BIT));
+	postProcessTarget_ =	device_.CreateAllocatedImage(UAllocatedImageCreateInfo::CreateSampled2D(width, height, 1, swapchainFormat,					VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
 }
 
-void USceneRender::CleanupImageResources(VkDevice device, VmaAllocator allocator) const
+void USceneRender::CleanupImageResources() const
 {
-	depthTarget_.Cleanup(device, allocator);
-	albedoTarget_.Cleanup(device, allocator);
-	normalTarget_.Cleanup(device, allocator);
-	ormTarget_.Cleanup(device, allocator);
-	colorTarget_.Cleanup(device, allocator);
-	postProcessTarget_.Cleanup(device, allocator);
+	device_.CleanupAllocatedImage(depthTarget_);
+	device_.CleanupAllocatedImage(albedoTarget_);
+	device_.CleanupAllocatedImage(normalTarget_);
+	device_.CleanupAllocatedImage(ormTarget_);
+	device_.CleanupAllocatedImage(colorTarget_);
+	device_.CleanupAllocatedImage(postProcessTarget_);
 }
 
 void USceneRender::RegisterFrameContextBufferTextures(UPipelineResourceManager& pipelineResourceManager)

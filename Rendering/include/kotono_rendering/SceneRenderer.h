@@ -12,6 +12,7 @@ struct UPointLight;
 struct UFrameContextSceneView;
 struct USceneRenderContext;
 struct USceneRenderData;
+class UDevice;
 class UPipelineResourceManager;
 class USceneRenderer final
 {
@@ -22,10 +23,12 @@ public:
 	};
 
 public:
-	void Cleanup(VkDevice device, VmaAllocator allocator, UPipelineResourceManager& pipelineResourceManager) const;
+	explicit USceneRenderer(UDevice& device);
 
-	u32 CreateScene(glm::uvec2 const& extent, VkDevice device, VmaAllocator allocator, VkFormat depthFormat, VkFormat swapChainFormat, UPipelineResourceManager& pipelineResourceManager);
-	void DeleteScene(u32 handle, VkDevice device, VmaAllocator allocator, UPipelineResourceManager& pipelineResourceManager);
+	void Cleanup(UPipelineResourceManager& pipelineResourceManager) const;
+
+	u32 CreateScene(glm::uvec2 const& extent, VkFormat swapchainFormat, UPipelineResourceManager& pipelineResourceManager);
+	void DeleteScene(u32 handle, UPipelineResourceManager& pipelineResourceManager);
 
 	u32 GetSceneRenderTarget(u32 frameIndex, u32 handle) const;
 	u32 GetSceneDirectionalLightShadowMapTargetIndex(u32 frameIndex, u32 handle, u32 index) const;
@@ -34,6 +37,8 @@ public:
 	void CmdDrawScene(u32 frameIndex, u32 handle, USceneRenderContext const& renderContext, USceneRenderData const& renderData) const;
 
 private:
+	UDevice& device_;
+
 	UFramesInFlightArray<FrameData> frameDatas_;
 	u32 currentScene_;
 };

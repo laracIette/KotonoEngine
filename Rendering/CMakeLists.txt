@@ -80,7 +80,6 @@ set(KRENDERING_HEADERS
     "include/kotono_rendering/SceneRender.h"
     "include/kotono_rendering/SceneRenderer.h"
     "include/kotono_rendering/Shader.h"
-    "include/kotono_rendering/SwapChain.h"
     "include/kotono_rendering/Texture.h"
     "include/kotono_rendering/TransformBufferData.h"
 )
@@ -101,7 +100,6 @@ set(KRENDERING_SOURCES
     "src/SceneRender.cpp"
     "src/SceneRenderer.cpp"
     "src/Shader.cpp"
-    "src/SwapChain.cpp"
     "src/Texture.cpp"
 )
 
