@@ -7,23 +7,22 @@ WWrap::WWrap(EAxis axis)
 {
 }
 
-UWidgetDisplaySettings WWrap::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
+glm::vec2 WWrap::GetContentSize(glm::vec2 bounds) const
 {
 	if (GetChild())
 	{
-		auto const childDesiredSize{ GetChild()->GetDesiredSize(displaySettings.bounds) };
+		auto const childDesiredSize{ GetChild()->GetDesiredSize(bounds) };
 		if (has_flag(axis_, EAxis::Horizontal))
 		{
-			displaySettings.bounds.x = std::min(displaySettings.bounds.x, childDesiredSize.x);
+			bounds.x = std::min(bounds.x, childDesiredSize.x);
 		}
 		if (has_flag(axis_, EAxis::Vertical))
 		{
-			displaySettings.bounds.y = std::min(displaySettings.bounds.y, childDesiredSize.y);
+			bounds.y = std::min(bounds.y, childDesiredSize.y);
 		}
-		return GetChild()->GetContentDisplaySettings(displaySettings);
 	}
 
-	return displaySettings;
+	return Base::GetContentSize(bounds);
 }
 
 EExpand WWrap::GetExpand() const
@@ -39,6 +38,24 @@ EExpand WWrap::GetExpand() const
 EFlex WWrap::GetFlex() const
 {
 	return EFlex::All;
+}
+
+void WWrap::DisplayInternal(UWidgetDisplaySettings displaySettings)
+{
+	if (GetChild())
+	{
+		auto const childDesiredSize{ GetChild()->GetDesiredSize(displaySettings.bounds) };
+		if (has_flag(axis_, EAxis::Horizontal))
+		{
+			displaySettings.bounds.x = std::min(displaySettings.bounds.x, childDesiredSize.x);
+		}
+		if (has_flag(axis_, EAxis::Vertical))
+		{
+			displaySettings.bounds.y = std::min(displaySettings.bounds.y, childDesiredSize.y);
+		}
+	}
+
+	Base::DisplayInternal(displaySettings);
 }
 
 #include "generated/Wrap.generated.inl"

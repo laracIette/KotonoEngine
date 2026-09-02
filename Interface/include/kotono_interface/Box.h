@@ -7,14 +7,17 @@ class WBox final : public WChildOwner
 	GENERATED_WBOX()
 
 public:
-	WBox(const glm::vec2& size = { 64.0f, 64.0f });
+	WBox(glm::vec2 const& size = { 64.0f, 64.0f });
 
 public:
-	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
-	glm::vec2 GetDesiredSize(const glm::vec2& bounds) const override;
+	glm::vec2 GetContentSize(glm::vec2 bounds) const override;
+	glm::vec2 GetDesiredSize(glm::vec2 const& bounds) const override;
 
 	EExpand GetExpand() const override;
 	EFlex GetFlex() const override;
+
+protected:
+	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 
 private:
 	StateProperty(glm::vec2, size_, Size);

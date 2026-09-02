@@ -33,7 +33,7 @@ WidgetPtr WMainWindow::Build()
 			new UChildrenOwnerTree{ UCreate<WRow>{ "Center Row" }(10.0f), {
 				new UChildOwnerTree{ UCreate<WExpanded>{ "Left Panel Expanded" }(), {
 					new UChildrenOwnerTree{ UCreate<WColumn>{ "Left Panel Column" }(10.0f), {
-						new UChildOwnerTree{ UCreate<WConstraint>{ "Left Panel Constraint" }(EAxis::Vertical, 500.0f),
+						new UChildOwnerTree{ UCreate<WConstraint>{ "Left Panel Constraint" }(EAxis::Vertical, 525.0f),
 							new UChildrenOwnerTree{ UCreate<WRow>{}(), {
 								new UChildOwnerTree{ UCreate<WConstraint>{ "Scene Explorer Constraint" }(EAxis::Horizontal, 300.0f),
 									new UWidgetTreeLeaf{ UCreate<WSceneExplorer>{ "Scene Explorer" }(Ptr()) }

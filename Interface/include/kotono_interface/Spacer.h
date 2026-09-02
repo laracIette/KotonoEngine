@@ -10,7 +10,7 @@ public:
 	WSpacer(EAxis axis);
 
 public:
-	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
+	glm::vec2 GetContentSize(glm::vec2 bounds) const override;
 
 	EExpand GetExpand() const override;
 	EFlex GetFlex() const override;

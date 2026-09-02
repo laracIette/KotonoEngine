@@ -30,8 +30,4 @@ void WImage::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) co
 	});
 }
 
-void WImage::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
-}
-
 #include "generated/Image.generated.inl"

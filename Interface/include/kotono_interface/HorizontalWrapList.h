@@ -2,6 +2,7 @@
 #include "generated/HorizontalWrapList.generated.h"
 #include <kotono_object/Widget.h>
 class WHorizontalWrapListBody;
+class WScrollable;
 /// Defines an horizontal container for widgets that wraps the content to multiple rows
 class WHorizontalWrapList final : public WWidget
 {
@@ -20,5 +21,6 @@ public:
 	void SetChildren(WidgetSet const& children);
 
 private:
+	UPtr<WScrollable> scrollable_;
 	UPtr<WHorizontalWrapListBody> body_;
 };

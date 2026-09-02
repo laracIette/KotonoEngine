@@ -7,7 +7,7 @@ class WExpanded final : public WChildOwner
 	GENERATED_WEXPANDED()
 
 public:
-	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
+	glm::vec2 GetContentSize(glm::vec2 bounds) const override;
 	
 	EFlex GetFlex() const override;
 };

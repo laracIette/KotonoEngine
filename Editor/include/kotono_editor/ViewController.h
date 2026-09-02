@@ -16,6 +16,8 @@ public:
 	void Display(UWidgetDisplaySettings const& displaySettings) override;
 	void Remove() override;
 
+	b8 OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) override;
+
 private:
 	void OnKeyboardWKeyDown() const;
 	void OnKeyboardAKeyDown() const;
@@ -23,7 +25,6 @@ private:
 	void OnKeyboardDKeyDown() const;
 	void OnKeyboardQKeyDown() const;
 	void OnKeyboardEKeyDown() const;
-	void OnMouseMove(glm::vec2 const& delta);
 	void OnMouseVerticalScroll(f32 delta);
 
 	void Translate(glm::vec3 const& delta) const;

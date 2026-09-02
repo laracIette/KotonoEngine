@@ -1,14 +1,15 @@
 #include "Offset.h"
 
-UWidgetDisplaySettings WOffset::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
+glm::vec2 WOffset::GetContentSize(glm::vec2 bounds) const
+{
+	return Base::GetContentSize(bounds);
+}
+
+void WOffset::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	displaySettings.position += offset_;
-	
-	if (GetChild())
-	{
-		return GetChild()->GetContentDisplaySettings(displaySettings);
-	}
-	return displaySettings;
+
+	Base::DisplayInternal(displaySettings);
 }
 
 #include "generated/Offset.generated.inl"

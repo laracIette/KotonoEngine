@@ -8,31 +8,18 @@ class WButton final : public WWidget
 
 public:
 	WButton();
-	~WButton() override;
 
-	void Display(UWidgetDisplaySettings const& displaySettings) override;
-	void Remove() override;
-
-public:
-	/// Returns whether the mouse was over the button
-	bool ReceiveMouseLeftButtonPressed();
-	/// Returns whether the button was pressed
-	bool ReceiveMouseLeftButtonReleased();
-
-	void OnMouseLeftButtonPressedNoInteract();
+	b8 OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) override;
+	b8 OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) override;
 
 private:
-	void OnMouseLeftButtonDown();
-
-private:
-	WritableProperty(bool, isEnabled_, IsEnabled);
+	WritableProperty(b8, isEnabled_, IsEnabled);
 	WritableProperty(VoidCallback, onClicked_, OnClicked);
 	WritableProperty(VoidCallback, onPressed_, OnPressed);
 	WritableProperty(VoidCallback, onDown_, OnDown);
 	WritableProperty(VoidCallback, onPressOut_, OnPressOut);
 	WritableProperty(VoidCallback, onActive_, OnActive);
 	WritableProperty(VoidCallback, onInactive_, OnInactive);
-
-	bool isPressed_;
+	ReadonlyProperty(b8, isPressed_, IsPressed);
 };
 

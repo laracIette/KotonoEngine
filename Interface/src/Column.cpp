@@ -3,12 +3,12 @@
 #include <kotono_common/enum_utils.h>
 #include <glm/common.hpp>
 
-WColumn::WColumn(const f32 spacing)
+WColumn::WColumn(f32 spacing)
 	: spacing_{ spacing }
 {
 }
 
-UWidgetDisplaySettings WColumn::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
+glm::vec2 WColumn::GetContentSize(glm::vec2 bounds) const
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
@@ -16,9 +16,9 @@ UWidgetDisplaySettings WColumn::GetContentDisplaySettings(UWidgetDisplaySettings
 	{
 		if (child)
 		{
-			const auto childSettings{ child->GetContentDisplaySettings(displaySettings) };
-			size.x = std::max(size.x, childSettings.bounds.x);
-			size.y += childSettings.bounds.y;
+			const auto childSize{ child->GetContentSize(bounds) };
+			size.x = std::max(size.x, childSize.x);
+			size.y += childSize.y;
 		}
 	}
 
@@ -27,11 +27,11 @@ UWidgetDisplaySettings WColumn::GetContentDisplaySettings(UWidgetDisplaySettings
 		size.y += spacing_ * static_cast<f32>(GetValidChildrenCount() - 1);
 	}
 
-	displaySettings.bounds = glm::min(displaySettings.bounds, size);
-	return displaySettings;
+	bounds = glm::min(bounds, size);
+	return bounds;
 }
 
-glm::vec2 WColumn::GetDesiredSize(const glm::vec2& bounds) const
+glm::vec2 WColumn::GetDesiredSize(glm::vec2 const& bounds) const
 {
 	glm::vec2 size{};
 
@@ -72,7 +72,8 @@ void WColumn::DisplayInternal(UWidgetDisplaySettings displaySettings)
 		// Check if not vertical expand
 		if (child && !has_flag(child->GetExpand(), EExpand::Vertical))
 		{
-			nonExpandHeight += child->GetContentDisplaySettings(displaySettings).bounds.y;
+			const auto childSize{ child->GetContentSize(displaySettings.bounds) };
+			nonExpandHeight += childSize.y;
 		}
 	}
 
@@ -82,7 +83,7 @@ void WColumn::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	{
 		expandHeight -= spacing_ * static_cast<f32>(GetChildren().size() - 1);
 	}
-	if (const size expandCount{ GetExpandCount() })
+	if (size const expandCount{ GetExpandCount() })
 	{
 		expandHeight /= static_cast<f32>(expandCount);
 	}
@@ -101,12 +102,12 @@ void WColumn::DisplayInternal(UWidgetDisplaySettings displaySettings)
 			}
 
 			child->Display(settings);
-			const auto childSettings{ child->GetContentDisplaySettings(settings) };
+			const auto childSize{ child->GetContentSize(settings.bounds) };
 
-			displaySettings.position.y += childSettings.bounds.y;
+			displaySettings.position.y += childSize.y;
 			displaySettings.position.y += spacing_;
 
-			displaySettings.bounds.y -= childSettings.bounds.y;
+			displaySettings.bounds.y -= childSize.y;
 			displaySettings.bounds.y -= spacing_;
 		}
 	}
@@ -115,7 +116,7 @@ void WColumn::DisplayInternal(UWidgetDisplaySettings displaySettings)
 size WColumn::GetExpandCount() const
 {
 	return std::ranges::count_if(GetChildren(),
-		[](const WidgetPtr& child) { return child && has_flag(child->GetExpand(), EExpand::Vertical); }
+		[](WidgetPtr const& child) { return child && has_flag(child->GetExpand(), EExpand::Vertical); }
 	);
 }
 

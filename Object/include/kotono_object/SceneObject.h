@@ -24,7 +24,6 @@ protected:
 
 public:
 	UScene* GetScene() const;
-	UPtr<TSceneObject> const& GetParent() const;
 	UPtr<KSceneComponent> GetRootComponent() const;
 
 	void SetParent(UPtr<TSceneObject> const& parent, ECoordinateSpace keepTransform);
@@ -54,7 +53,7 @@ private:
 	b8 isInit_;
 	UScene* scene_;
 	WritableProperty(b8, canUpdate_, CanUpdate);
-	UPtr<TSceneObject> parent_;
+	ReadonlyProperty(UPtr<TSceneObject>, parent_, Parent);
 	SERIALIZE USet<UPtr<KSceneComponent>> sceneComponents_;
 	SERIALIZE USet<UPtr<TSceneObject>> children_;
 };

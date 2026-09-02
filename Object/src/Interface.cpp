@@ -3,14 +3,12 @@
 #include "SceneContext.h"
 #include <kotono_common/enum_utils.h>
 #include <kotono_graphics/InterfacePendingResources.h>
+#include <kotono_input/Mouse.h>
 
 UInterface::UInterface()
 	: timeContext_{
 		.frequency = 1.0f / 60.0f,
-		.lastDelta = 0.0f,
-		.currentDelta = 0.0f,
 		.scale = 1.0f,
-		.total = 0.0f,
 		.state = ETimeContextState::Playing,
 	}
 {
@@ -18,7 +16,10 @@ UInterface::UInterface()
 
 UInterface::~UInterface()
 {
-	widget_->Delete();
+	if (widget_)
+	{
+		widget_->Delete();
+	}
 }
 
 EHandle UInterface::GetTextureHandle(UPath const& path)
@@ -105,7 +106,37 @@ void UInterface::PopulateSceneRenderGraph(USceneRenderGraph& sceneRenderGraph) c
 void UInterface::Update(f32 deltaTime)
 {
 	timeContext_.Update(deltaTime);
+
+	if (!widget_)
+	{
+		return;
+	}
+
 	widget_->Update(deltaTime);
+
+	WidgetSet focusedWidgets{};
+	widget_->PopulateFocusTree(focusedWidgets, Mouse.GetCursorPosition());
+
+	for (auto const& widget : focusedWidgets)
+	{
+		if (!focusedWidgets_.Contains(widget))
+		{
+			widget->OnFocused();
+		}
+	}
+
+	for (auto const& widget : focusedWidgets_)
+	{
+		if (widget)
+		{
+			if (!focusedWidgets.Contains(widget))
+			{
+				widget->OnUnfocused();
+			}
+		}
+	}
+
+	focusedWidgets_ = focusedWidgets;
 }
 
 void UInterface::BeginDraw(glm::uvec2 const& bounds)

@@ -4,6 +4,7 @@
 #include <glm/gtx/hash.hpp>
 #include <kotono_common/Handle.h>
 #include <kotono_common/Path.h>
+#include <kotono_common/Set.h>
 #include <kotono_graphics/SceneView.h>
 #include <kotono_timing/TimeContext.h>
 #include <span>
@@ -14,6 +15,7 @@ struct UPendingSceneRender;
 struct UInterfaceRenderGraph;
 struct USceneRenderGraph;
 class WSceneContext;
+class WWidget;
 class UInterface final
 {
 public:
@@ -44,8 +46,8 @@ public:
 	std::unordered_map<EHandle, USceneView> const&		GetSceneViews() const { return sceneViews_; }
 	std::unordered_multimap<glm::uvec2, EHandle> const& GetUnusedSceneRenders() const { return unusedSceneRenders_; }
 
-	UTimeContext const&	GetTimeContext() const { return timeContext_; }
-	glm::uvec2 const&	GetBounds() const { return bounds_; }
+	glm::uvec2 const& GetBounds() const { return bounds_; }
+	UTimeContext const& GetTimeContext() const { return timeContext_; }
 
 	void SetWidget(UPtr<WSceneContext> const& widget) { widget_ = widget; }
 
@@ -62,8 +64,10 @@ private:
 	std::vector<UPendingSceneRender> pendingSceneRenders_;
 	std::unordered_multimap<glm::uvec2, EHandle> unusedSceneRenders_;
 
-	UTimeContext timeContext_;
-
 	UPtr<WSceneContext> widget_;
 	glm::uvec2 bounds_;
+
+	UTimeContext timeContext_;
+
+	USet<UPtr<WWidget>> focusedWidgets_;
 };

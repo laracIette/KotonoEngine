@@ -10,9 +10,11 @@ public:
 
 	void Remove() override;
 
-	WidgetVector WidgetTree() const override;
+	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const final;
+	void PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosition) const final;
 
-	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
+	b8 OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) final;
+	b8 OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) final;
 
 	void SetChildren(WidgetSet const& widgets);
 

@@ -1,115 +1,87 @@
 #include "Button.h"
-#include "Interface.h"
-#include <kotono_input/Mouse.h>
 
 WButton::WButton()
 	: isEnabled_{ true }
+	, isPressed_{ false }
 {
-	Interface.AddButton(Ptr());
 }
 
-WButton::~WButton()
+b8 WButton::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position)
 {
-	Interface.RemoveButton(Ptr());
+	if (button != EButton::Left)
+	{
+		return INPUT_UNHANDLED;
+	}
+
+	switch (inputState)
+	{
+	case EInputState::Pressed:
+	{
+		isPressed_ = true;
+
+		if (onActive_)
+		{
+			onActive_();
+		}
+
+		if (onPressed_)
+		{
+			onPressed_();
+		}
+
+		return INPUT_HANDLED;
+	}
+	case EInputState::Released:
+	{
+		if (!isPressed_)
+		{
+			break;
+		}
+
+		isPressed_ = false;
+
+		if (onInactive_)
+		{
+			onInactive_();
+		}
+
+		if (onClicked_)
+		{
+			onClicked_();
+		}
+
+		return INPUT_HANDLED;
+	}
+	case EInputState::Down:
+	{
+		if (!isEnabled_)
+		{
+			break;
+		}
+
+		if (!isPressed_)
+		{
+			break;
+		}
+
+		if (onDown_)
+		{
+			onDown_();
+		}
+
+		return INPUT_HANDLED;
+	}
+	default:
+		break;
+	}
+	
+
+	return INPUT_UNHANDLED;
 }
 
-void WButton::Display(UWidgetDisplaySettings const& displaySettings)
+b8 WButton::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
 {
-	Base::Display(displaySettings);
-
-	Mouse.GetEventButton(EButton::Left, EInputState::Down).AddListener(this, &WButton::OnMouseLeftButtonDown);
-}
-
-void WButton::Remove()
-{
-	Base::Remove();
-
-	Mouse.GetEventButton(EButton::Left, EInputState::Down).RemoveListener(this, &WButton::OnMouseLeftButtonDown);
-}
-
-bool WButton::ReceiveMouseLeftButtonPressed()
-{
-	if (!isEnabled_)
-	{
-		return false;
-	}
-
-	if (!IsMouseHovering())
-	{
-		return false;
-	}
-
-	isPressed_ = true;
-
-	if (onActive_)
-	{
-		onActive_();
-	}
-
-	if (onPressed_)
-	{
-		onPressed_();
-	}
-
-	return true;
-}
-
-bool WButton::ReceiveMouseLeftButtonReleased()
-{
-	if (!isPressed_)
-	{
-		return false;
-	}
-
-	isPressed_ = false;
-
-	if (onInactive_)
-	{
-		onInactive_();
-	}
-
-	if (!IsMouseHovering())
-	{
-		return false;
-	}
-
-	if (onClicked_)
-	{
-		onClicked_();
-	}
-
-	return true;
-}
-
-void WButton::OnMouseLeftButtonPressedNoInteract()
-{
-	if (!isEnabled_)
-	{
-		return;
-	}
-
-	if (onPressOut_)
-	{
-		onPressOut_();
-	}
-}
-
-void WButton::OnMouseLeftButtonDown()
-{
-	if (!isEnabled_)
-	{
-		return;
-	}
-
-	if (!isPressed_)
-	{
-		return;
-	}
-
-	if (onDown_)
-	{
-		onDown_();
-	}
+	return INPUT_UNHANDLED;
 }
 
 #include "generated/Button.generated.inl"

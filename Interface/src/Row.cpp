@@ -1,15 +1,16 @@
 #include "Row.h"
+
 #include <algorithm>
-#include <kotono_common/enum_utils.h>
 #include <glm/common.hpp>
+#include <kotono_common/enum_utils.h>
 #include <ranges>
 
-WRow::WRow(const f32 spacing)
+WRow::WRow(f32 spacing)
 	: spacing_{ spacing }
 {
 }
 
-UWidgetDisplaySettings WRow::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
+glm::vec2 WRow::GetContentSize(glm::vec2 bounds) const
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
@@ -17,22 +18,22 @@ UWidgetDisplaySettings WRow::GetContentDisplaySettings(UWidgetDisplaySettings di
 	{
 		if (child)
 		{
-			const auto childSettings{ child->GetContentDisplaySettings(displaySettings) };
-			size.x += childSettings.bounds.x;
-			size.y = std::max(size.y, childSettings.bounds.y);
+			auto const childSize{ child->GetContentSize(bounds) };
+			size.x += childSize.x;
+			size.y = std::max(size.y, childSize.y);
 		}
 	}
 
 	if (GetValidChildrenCount() > 1)
 	{
-		size.x += spacing_ * static_cast<float>(GetValidChildrenCount() - 1);
+		size.x += spacing_ * static_cast<f32>(GetValidChildrenCount() - 1);
 	}
 
-	displaySettings.bounds = glm::min(displaySettings.bounds, size);
-	return displaySettings;
+	bounds = glm::min(bounds, size);
+	return bounds;
 }
 
-glm::vec2 WRow::GetDesiredSize(const glm::vec2& bounds) const
+glm::vec2 WRow::GetDesiredSize(glm::vec2 const& bounds) const
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
@@ -40,7 +41,7 @@ glm::vec2 WRow::GetDesiredSize(const glm::vec2& bounds) const
 	{
 		if (child)
 		{
-			const auto childDesiredSize{ child->GetDesiredSize(bounds) };
+			auto const childDesiredSize{ child->GetDesiredSize(bounds) };
 			size.x += childDesiredSize.x;
 			size.y = std::max(size.y, childDesiredSize.y);
 		}
@@ -48,7 +49,7 @@ glm::vec2 WRow::GetDesiredSize(const glm::vec2& bounds) const
 
 	if (GetValidChildrenCount() > 1)
 	{
-		size.x += spacing_ * static_cast<float>(GetValidChildrenCount() - 1);
+		size.x += spacing_ * static_cast<f32>(GetValidChildrenCount() - 1);
 	}
 
 	return size;
@@ -67,25 +68,26 @@ EFlex WRow::GetFlex() const
 void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	// Get non-expand width
-	float nonExpandWidth{ 0.0f };
+	f32 nonExpandWidth{ 0.0f };
 	for (auto const& child : GetChildren())
 	{
 		// Check if not horizontal expand
 		if (child && !has_flag(child->GetExpand(), EExpand::Horizontal))
 		{
-			nonExpandWidth += child->GetContentDisplaySettings(displaySettings).bounds.x;
+			auto const childSize{ child->GetContentSize(displaySettings.bounds) };
+			nonExpandWidth += childSize.x;
 		}
 	}
 
 	// Get expand width
-	float expandWidth{ displaySettings.bounds.x - nonExpandWidth };
+	f32 expandWidth{ displaySettings.bounds.x - nonExpandWidth };
 	if (!GetChildren().empty())
 	{
-		expandWidth -= spacing_ * static_cast<float>(GetChildren().size() - 1);
+		expandWidth -= spacing_ * static_cast<f32>(GetChildren().size() - 1);
 	}
-	if (const size expandCount{ GetExpandCount() })
+	if (size const expandCount{ GetExpandCount() })
 	{
-		expandWidth /= static_cast<float>(expandCount);
+		expandWidth /= static_cast<f32>(expandCount);
 	}
 
 	++displaySettings.layer;
@@ -102,12 +104,12 @@ void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 			}
 
 			child->Display(settings);
-			const auto childSettings{ child->GetContentDisplaySettings(settings) };
+			auto const childSize{ child->GetContentSize(settings.bounds) };
 
-			displaySettings.position.x += childSettings.bounds.x;
+			displaySettings.position.x += childSize.x;
 			displaySettings.position.x += spacing_;
 
-			displaySettings.bounds.x -= childSettings.bounds.x;
+			displaySettings.bounds.x -= childSize.x;
 			displaySettings.bounds.x -= spacing_;
 		}
 	}
@@ -116,7 +118,7 @@ void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 size WRow::GetExpandCount() const
 {
 	return std::ranges::count_if(GetChildren(),
-		[](const WidgetPtr& child) { return child && has_flag(child->GetExpand(), EExpand::Horizontal); }
+		[](WidgetPtr const& child) { return child && has_flag(child->GetExpand(), EExpand::Horizontal); }
 	);
 }
 

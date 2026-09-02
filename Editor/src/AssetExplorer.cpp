@@ -39,6 +39,18 @@ WidgetPtr WAssetExplorer::Build()
 	UPtr nextButton{ UCreate<WButton>{ "Directory Next Button" }() };
 	nextButton->SetOnClicked([this]() { NavigateNext(); });
 
+	
+	UPtr backgroundButton{ UCreate<WButton>{ "Background Button" }() };
+	backgroundButton->SetOnDown([this]() {
+		if (itemList_)
+		{
+			for (auto const& item : assetExplorerItems_)
+			{
+				item->Deselect();
+			}
+		}
+	});
+
 
 	itemList_ = UCreate<WHorizontalWrapList>{ "Item List" }();
 	itemList_->SetItemSpacing(10.0f);
@@ -70,7 +82,8 @@ WidgetPtr WAssetExplorer::Build()
 			},
 		} },
 		new UChildrenOwnerTree{ UCreate<WStack>{ "Item List Stack" }(), {
-			new UWidgetTreeLeaf{ UCreate<WColor>{ "Item List Background" }(Colors::White.WithValue(0.5f).WithAlpha(0.4f))},
+			new UWidgetTreeLeaf{ UCreate<WColor>{ "Item List Background" }(Colors::White.WithValue(0.5f).WithAlpha(0.4f)) },
+			new UWidgetTreeLeaf{ backgroundButton },
 			new UChildOwnerTree{ UCreate<WPadding>{ "Item List Padding" }(UPadding::All(8.0f)),
 				new UWidgetTreeLeaf{ itemList_ }
 			},
@@ -97,7 +110,20 @@ void WAssetExplorer::Remove()
 	Mouse.GetEventButton(EButton::Next, EInputState::Pressed).RemoveListener(this, &WAssetExplorer::OnMouseNextButtonPressed);
 }
 
-void WAssetExplorer::Push(const UPath& path)
+void WAssetExplorer::DeselectOthers(UPtr<WAssetExplorerItem> const& item) const
+{
+	auto assets{ assetExplorerItems_ 
+		| std::views::filter([item](auto const& asset) { return asset != item; })
+		| std::views::filter(&UPtr<WAssetExplorerItem>::operator bool)
+	};
+
+	for (auto const& asset : assets)
+	{
+		asset->Deselect();
+	}
+}
+
+void WAssetExplorer::Push(UPath const& path)
 {
 	path_ = path;
 	++currentPathIndex_;
@@ -134,16 +160,16 @@ void WAssetExplorer::PopulateItemList()
 		auto const directories{ fileExplorer.GetDirectories() };
 		auto const files{ fileExplorer.GetFiles() };
 
-		WidgetSet assets{};
+		assetExplorerItems_.Clear();
 		for (auto const& directory : directories)
 		{
-			assets.Add(UCreate<WAssetExplorerDirectory>{}(directory, [this](const UPath& path) { Push(path); }));
+			assetExplorerItems_.Add(UCreate<WAssetExplorerDirectory>{}(Ptr(), directory, [this](UPath const& path) { Push(path); }));
 		}
 		for (auto const& file : files)
 		{
-			assets.Add(UCreate<WAssetExplorerFile>{}(file.Path()));
+			assetExplorerItems_.Add(UCreate<WAssetExplorerFile>{}(Ptr(), file.Path()));
 		}
-		itemList_->SetChildren(assets);
+		itemList_->SetChildren(assetExplorerItems_);
 	}
 }
 

@@ -9,7 +9,6 @@
 #include <kotono_graphics/SpvCompiler.h>
 #include <kotono_input/Keyboard.h>
 #include <kotono_input/Mouse.h>
-#include <kotono_interface/Interface.h>
 #include <kotono_object/Interface.h>
 #include <kotono_object/ProjectSettings.h>
 #include <kotono_timing/Clock.h>
@@ -58,7 +57,6 @@ void UApplication::Init()
     AudioManager.Init();
     Keyboard.Init(window_);
     Mouse.Init(window_);
-    Interface.Init();
 
     auto& logUPSTimer{ TimerManager.GetTimer("log ups timer") };
     logUPSTimer.SetDuration(1.0f);
@@ -82,6 +80,9 @@ void UApplication::Init()
     mainWindow_->SetInterface(interface_);
 
     interface_->SetWidget(mainWindow_);
+
+    Mouse.GetEventAnyButton().AddListener(mainWindow_.Get(), &WSceneContext::OnMouseButton);
+    Mouse.GetEventMove().AddListener(mainWindow_.Get(), &WSceneContext::OnMouseMove);
 #   endif
 
     interface_->BeginDraw(window_.GetSize());

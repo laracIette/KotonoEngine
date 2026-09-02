@@ -1,30 +1,40 @@
 #pragma once
 #include "generated/AssetExplorerItem.generated.h"
 #include <kotono_object/Widget.h>
+
 #include <kotono_common/Path.h>
+class WAssetExplorer;
 class WColor;
 class WAssetExplorerItem : public WWidget
 {
 	GENERATED_WASSETEXPLORERITEM()
 
 public:
-	using OnClickedFunc = std::function<void(const UPath&)>;
+	using OnClickedFunc = std::function<void(UPath const&)>;
 
 public:
-	WAssetExplorerItem(const UPath& path, const OnClickedFunc& onDoubleClicked);
+	WAssetExplorerItem(UPtr<WAssetExplorer> const& assetExplorer, UPath const& path, OnClickedFunc const& onDoubleClicked);
 
 protected:
 	WidgetPtr Build() override;
 
+public:
+	void Select();
+	void Deselect();
+
+	void OnFocused() override;
+	void OnUnfocused() override;
+
 protected:
-	const UPath path_;
+	UPath path_;
 
 private:
-	const OnClickedFunc onDoubleClicked_;
+	UPtr<WAssetExplorer> assetExplorer_;
+	OnClickedFunc onDoubleClicked_;
 
-	bool isSelected_;
-	float lastClickedTime_;
-	float doubleClickTreshold_;
+	b8 isSelected_;
+	f32 lastClickedTime_;
+	f32 doubleClickTreshold_;
 
 	UPtr<WColor> background_;
 };

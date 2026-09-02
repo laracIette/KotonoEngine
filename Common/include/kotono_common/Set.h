@@ -24,32 +24,47 @@ public:
 public:
 	USet() = default;
 
-	template <std::input_iterator It, std::sentinel_for<It> Sentinel>
-	constexpr USet(It begin, Sentinel end)
-		: values_(begin, end)
+	USet(USet const& set) 
+		: values_(set.values_)
+		, indices_(set.indices_)
 	{
 	}
 
-	constexpr USet(std::initializer_list<ValueType> data)
+	template <std::input_iterator It, std::sentinel_for<It> Sentinel>
+	USet(It begin, Sentinel end)
+		: values_(begin, end)
+	{
+		PopulateIndices();
+	}
+
+	USet(std::initializer_list<ValueType> data)
 		: USet(data.begin(), data.end())
 	{
 	}
 
 	template <std::ranges::input_range R>
 		requires (!std::derived_from<std::remove_cvref_t<R>, USet>)
-	constexpr USet(R&& range)
+	USet(R&& range)
 		: USet(std::ranges::begin(range), std::ranges::end(range))
 	{
 	}
 
 	template <typename T>
 		requires std::constructible_from<ValueType, T>
-	constexpr USet(USet<T> const& set)
+	USet(USet<T> const& set)
 	{
 		for (auto const& item : set)
 		{
 			values_.push_back(item);
 		}
+		PopulateIndices();
+	}
+
+	USet& operator=(USet const& set)
+	{
+		values_ = set.values_;
+		indices_ = set.indices_;
+		return *this;
 	}
 
 	template <typename T>
@@ -95,7 +110,7 @@ public:
 		Remove(Find(value));
 	}
 
-	bool Contains(const ValueType& value) const
+	bool Contains(ValueType const& value) const
 	{
 		return indices_.contains(value);
 	}
@@ -159,6 +174,15 @@ public:
 	constexpr b8 empty() const noexcept
 	{
 		return values_.empty();
+	}
+
+private:
+	void PopulateIndices()
+	{
+		for (auto const& [index, value] : values_ | std::views::enumerate)
+		{
+			indices_[value] = static_cast<IndexType>(index);
+		}
 	}
 
 private:

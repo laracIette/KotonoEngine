@@ -5,7 +5,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <kotono_common/enum_utils.h>
 #include <kotono_common/log.h>
-#include <kotono_input/Mouse.h>
+#include <kotono_graphics/InterfaceRenderGraph.h>
 #include <kotono_math/math_utils.h>
 #include <kotono_platform/glm_utils.h>
 
@@ -23,9 +23,8 @@ WWidget::WWidget()
 	: build_{}
 	, parent_{}
 	, slotDisplaySettings_{}
-	, displaySettings_{}
+	, contentSize_{}
 	, isDisplayed_{ false }
-	, wasMouseHovering_{ false }
 {
 }
 
@@ -55,23 +54,18 @@ void WWidget::Display(UWidgetDisplaySettings const& displaySettings)
 
 	slotDisplaySettings_ = displaySettings;
 
+	contentSize_ = GetContentSize(displaySettings.bounds);
+
 	// If build_ is not this, call Display
 	if (HasBuild())
 	{
-		displaySettings_ = displaySettings;
 		build_->Display(displaySettings);
 	}
 	// If build_ is this, call DisplayInternal
-	else if (IsRenderable(displaySettings))
+	else if (IsVisible(displaySettings))
 	{
-		auto const contentDisplaySettings{ GetContentDisplaySettings(displaySettings) };
-		displaySettings_ = contentDisplaySettings;
-		DisplayInternal(contentDisplaySettings);
+		DisplayInternal(displaySettings);
 	}
-
-#	ifndef NDEBUG
-		Mouse.GetEventMove().AddListener(this, &WWidget::_OnMouseMove);
-#	endif
 }
 
 void WWidget::Remove()
@@ -82,20 +76,16 @@ void WWidget::Remove()
 	{
 		build_->Remove();
 	}
-
-#	ifndef NDEBUG
-		Mouse.GetEventMove().RemoveListener(this, &WWidget::_OnMouseMove);
-#	endif
 }
 
-UWidgetDisplaySettings WWidget::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
+glm::vec2 WWidget::GetContentSize(glm::vec2 bounds) const
 {
 	if (HasBuild())
 	{
-		return build_->GetContentDisplaySettings(displaySettings);
+		return build_->GetContentSize(bounds);
 	}
 
-	return displaySettings;
+	return bounds;
 }
 
 EExpand WWidget::GetExpand() const
@@ -125,15 +115,6 @@ glm::vec2 WWidget::GetDesiredSize(glm::vec2 const& bounds) const
 	return { 0.0f, 0.0f };
 }
 
-WidgetVector WWidget::WidgetTree() const
-{
-	if (HasBuild())
-	{
-		return build_->WidgetTree();
-	}
-	return { Ptr() };
-}
-
 std::string WWidget::GetClassPath() const
 {
 	if (parent_)
@@ -141,36 +122,6 @@ std::string WWidget::GetClassPath() const
 		return std::format("{0} {1}", parent_->GetClassPath(), TypeName());
 	}
 	return TypeName();
-}
-
-b8 WWidget::IsMouseHovering() const
-{
-	return is_point_in_rect(Mouse.GetCursorPosition(), GetPosition(), GetSize());
-}
-
-glm::vec2 const& WWidget::GetPosition() const
-{
-	return displaySettings_.position;
-}
-
-glm::vec2 const& WWidget::GetSize() const
-{
-	return displaySettings_.bounds;
-}
-
-f32 WWidget::GetAspectRatio() const
-{
-	return displaySettings_.bounds.x / displaySettings_.bounds.y;
-}
-
-i32 WWidget::GetLayer() const
-{
-	return displaySettings_.layer;
-}
-
-const UScissor& WWidget::GetScissor() const
-{
-	return displaySettings_.scissor;
 }
 
 UInterface* WWidget::GetInterface() const
@@ -185,6 +136,62 @@ void WWidget::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) c
 	{
 		build_->PopulateRenderGraph(interfaceRenderGraph);
 	}
+}
+
+void WWidget::PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosition) const
+{
+	if (is_point_in_rect(cursorPosition, GetScissor().offset, GetScissor().extent)
+	 && is_point_in_rect(cursorPosition, GetPosition(), GetContentSize()))
+	{
+		widgets.Add(Ptr());
+	}
+
+	if (HasBuild())
+	{
+		build_->PopulateFocusTree(widgets, cursorPosition);
+	}
+}
+
+b8 WWidget::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position)
+{
+	if (!HasBuild())
+	{
+		return INPUT_UNHANDLED;
+	}
+
+	if (is_point_in_rect(position, build_->GetPosition(), build_->GetSize()))
+	{
+		return build_->OnMouseButton(button, inputState, position);
+	}
+
+	return INPUT_UNHANDLED;
+}
+
+b8 WWidget::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
+{
+	KT_LOG(ELogImportanceLevel::Medium, "Interface", "overlapping {0:30} | {1:100} | | position: {2:30} | size: {3:30} | | slot | position: {4:30} | bounds: {5:30}", GetName(), GetClassPath(), glm::to_string(GetPosition()), glm::to_string(GetSize()), glm::to_string(slotDisplaySettings_.position), glm::to_string(slotDisplaySettings_.bounds));
+	
+	if (!HasBuild())
+	{
+		return INPUT_UNHANDLED;
+	}
+
+	if (is_point_in_rect(position, build_->GetPosition(), build_->GetSize()))
+	{
+		return build_->OnMouseMove(delta, position);
+	}
+
+	return INPUT_UNHANDLED;
+}
+
+void WWidget::OnFocused()
+{
+	isFocused_ = true;
+}
+
+void WWidget::OnUnfocused()
+{
+	isFocused_ = false;
 }
 
 void WWidget::SetState(const StateFunction& function)
@@ -264,27 +271,19 @@ bool WWidget::HasBuild() const
 	return build_ && build_ != Ptr();
 }
 
-bool WWidget::IsRenderable(UWidgetDisplaySettings const& displaySettings) const
+bool WWidget::IsVisible(UWidgetDisplaySettings const& displaySettings) const
 {
+	if (is_overlapping(displaySettings.position, displaySettings.bounds, displaySettings.scissor.offset, displaySettings.scissor.extent))
+	{
+		return true;
+	}
+	
+	return false;
+
+
+
 	return is_overlapping(displaySettings.position, displaySettings.bounds, displaySettings.scissor.offset, displaySettings.scissor.extent);
 }
-
-#ifndef NDEBUG
-void WWidget::_OnMouseMove(glm::vec2 const& delta)
-{
-	if (!IsMouseHovering())
-	{
-		wasMouseHovering_ = false;
-		return;
-	}
-
-	if (!wasMouseHovering_)
-	{
-		wasMouseHovering_ = true;
-		KT_LOG(ELogImportanceLevel::Medium, "Interface", "overlapping {0:30} | {1:100} | | position: {2:30} | size: {3:30} | | slot | position: {4:30} | bounds: {5:30}", GetName(), GetClassPath(), glm::to_string(GetPosition()), glm::to_string(GetSize()), glm::to_string(slotDisplaySettings_.position), glm::to_string(slotDisplaySettings_.bounds));
-	}
-}
-#endif
 
 WidgetPtr WWidget::FindNonFlexAncestor(EFlex flex) const
 {

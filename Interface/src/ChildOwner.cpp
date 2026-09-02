@@ -1,5 +1,7 @@
 #include "ChildOwner.h"
 
+#include <kotono_math/math_utils.h>
+
 WChildOwner::~WChildOwner()
 {
 	if (child_)
@@ -18,6 +20,15 @@ void WChildOwner::Remove()
 	}
 }
 
+glm::vec2 WChildOwner::GetContentSize(glm::vec2 bounds) const
+{
+	if (child_)
+	{
+		return child_->GetContentSize(bounds);
+	}
+	return bounds;
+}
+
 glm::vec2 WChildOwner::GetDesiredSize(const glm::vec2& bounds) const
 {
 	if (child_)
@@ -27,25 +38,52 @@ glm::vec2 WChildOwner::GetDesiredSize(const glm::vec2& bounds) const
 	return { 0.0f, 0.0f };
 }
 
-WidgetVector WChildOwner::WidgetTree() const
-{
-	WidgetVector result{ Base::WidgetTree() };
-
-	if (child_)
-	{
-		const auto sub{ child_->WidgetTree() };
-		result.insert(result.end(), sub.begin(), sub.end());
-	}
-
-	return result;
-}
-
 void WChildOwner::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
 {
 	if (child_ && child_->GetIsDisplayed())
 	{
 		child_->PopulateRenderGraph(interfaceRenderGraph);
 	}
+}
+
+void WChildOwner::PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosition) const
+{
+	Base::PopulateFocusTree(widgets, cursorPosition);
+
+	if (child_ && child_->GetIsDisplayed())
+	{
+		child_->PopulateFocusTree(widgets, cursorPosition);
+	}
+}
+
+b8 WChildOwner::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position)
+{
+	if (!child_ || !child_->GetIsDisplayed())
+	{
+		return INPUT_UNHANDLED;
+	}
+
+	if (is_point_in_rect(position, child_->GetPosition(), child_->GetSize()))
+	{
+		return child_->OnMouseButton(button, inputState, position);
+	}
+
+	return INPUT_UNHANDLED;
+}
+
+b8 WChildOwner::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
+{
+	if (!child_ || !child_->GetIsDisplayed())
+	{
+		return INPUT_UNHANDLED;
+	}
+
+	if (is_point_in_rect(position, child_->GetPosition(), child_->GetSize()))
+	{
+		return child_->OnMouseMove(delta, position);
+	}
+
+	return INPUT_UNHANDLED;
 }
 
 void WChildOwner::SetChild(const WidgetPtr& widget)
@@ -58,7 +96,7 @@ void WChildOwner::SetChild(const WidgetPtr& widget)
 	SetState([this, widget]() {
 		if (child_)
 		{
-			child_->SetParent({});
+			child_->SetParent(nullptr);
 		}
 
 		child_ = widget;
@@ -80,9 +118,9 @@ void WChildOwner::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	}
 }
 
-UChildOwnerTree::UChildOwnerTree(const UPtr<WChildOwner>& widget, UWidgetTree* child)
-	: widget_(widget)
-	, child_(child)
+UChildOwnerTree::UChildOwnerTree(UPtr<WChildOwner> const& widget, UWidgetTree* child)
+	: widget_{ widget }
+	, child_{ child }
 {
 }
 

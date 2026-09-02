@@ -25,6 +25,7 @@ void GMouse::Update()
             if (buttonStates_[button][inputState])
             {
                 buttonEvents_[button][inputState].Broadcast();
+                eventAnyButton_.Broadcast(static_cast<EButton>(button), static_cast<EInputState>(inputState), cursorPosition_);
             }
         }
 
@@ -40,7 +41,7 @@ void GMouse::Update()
 
     if (cursorPosition_ != previousCursorPosition_)
     {
-        eventMove_.Broadcast(GetCursorPositionDelta());
+        eventMove_.Broadcast(GetCursorPositionDelta(), cursorPosition_);
         previousCursorPosition_ = cursorPosition_;
     }
 

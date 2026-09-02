@@ -11,17 +11,20 @@ public:
 public:
 	void Remove() override;
 
-	glm::vec2 GetDesiredSize(const glm::vec2& bounds) const override;
+	glm::vec2 GetContentSize(glm::vec2 bounds) const override;
+	glm::vec2 GetDesiredSize(glm::vec2 const& bounds) const override;
 
-	WidgetVector WidgetTree() const override;
+	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const final;
+	void PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosition) const final;
 
-	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
+	b8 OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) final;
+	b8 OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) final;
 
 public:
 	void SetChild(const WidgetPtr& widget);
 
 protected:
-	void DisplayInternal(UWidgetDisplaySettings displaySettings) final;
+	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 
 private:
 	ReadonlyProperty(WidgetPtr, child_, Child);
@@ -30,7 +33,7 @@ private:
 class UChildOwnerTree final : public UWidgetTree
 {
 public:
-	UChildOwnerTree(const UPtr<WChildOwner>& widget, UWidgetTree* child);
+	UChildOwnerTree(UPtr<WChildOwner> const& widget, UWidgetTree* child);
 	~UChildOwnerTree() override;
 
 	WidgetPtr Widget() const override;

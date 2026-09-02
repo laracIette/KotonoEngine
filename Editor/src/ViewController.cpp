@@ -41,7 +41,6 @@ void WViewController::Display(UWidgetDisplaySettings const& displaySettings)
     Keyboard.GetEventKey(EKey::D, EInputState::Down).AddListener(this, &WViewController::OnKeyboardDKeyDown);
     Keyboard.GetEventKey(EKey::Q, EInputState::Down).AddListener(this, &WViewController::OnKeyboardQKeyDown);
     Keyboard.GetEventKey(EKey::E, EInputState::Down).AddListener(this, &WViewController::OnKeyboardEKeyDown);
-    Mouse.GetEventMove().AddListener(this, &WViewController::OnMouseMove);
     Mouse.GetEventVerticalScroll().AddListener(this, &WViewController::OnMouseVerticalScroll);
 }
 
@@ -55,10 +54,33 @@ void WViewController::Remove()
     Keyboard.GetEventKey(EKey::D, EInputState::Down).RemoveListener(this, &WViewController::OnKeyboardDKeyDown);
     Keyboard.GetEventKey(EKey::Q, EInputState::Down).RemoveListener(this, &WViewController::OnKeyboardQKeyDown);
     Keyboard.GetEventKey(EKey::E, EInputState::Down).RemoveListener(this, &WViewController::OnKeyboardEKeyDown);
-    Mouse.GetEventMove().RemoveListener(this, &WViewController::OnMouseMove);
     Mouse.GetEventVerticalScroll().RemoveListener(this, &WViewController::OnMouseVerticalScroll);
 }
 
+b8 WViewController::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
+{
+	if (!isFocused_)
+	{
+		return INPUT_UNHANDLED;
+	}
+
+	pitch_ -= delta.y * sensitivity_;
+	yaw_ += delta.x * sensitivity_;
+
+	// Clamp pitch to avoid flipping
+	pitch_ = glm::clamp(pitch_, -glm::half_pi<f32>(), glm::half_pi<f32>());
+
+	glm::quat const qPitch{ glm::angleAxis(pitch_, WorldRightVector) };
+	glm::quat const qYaw{ glm::angleAxis(yaw_, WorldUpVector) };
+
+	if (sceneRenderer_)
+	{
+		glm::quat const rotation{ qYaw * qPitch };
+		sceneRenderer_->SetViewRotation(rotation);
+	}
+
+	return INPUT_HANDLED;
+}
 
 void WViewController::OnKeyboardWKeyDown() const
 {
@@ -104,29 +126,6 @@ void WViewController::OnKeyboardQKeyDown() const
 void WViewController::OnKeyboardEKeyDown() const
 {
 	Translate(WorldUpVector * GetInterface()->GetTimeContext().lastDelta * speed_);
-}
-
-void WViewController::OnMouseMove(glm::vec2 const& delta)
-{
-	if (!isFocused_)
-	{
-		return;
-	}
-
-	pitch_ -= delta.y * sensitivity_;
-	yaw_ += delta.x * sensitivity_;
-
-	// Clamp pitch to avoid flipping
-	pitch_ = glm::clamp(pitch_, -glm::half_pi<f32>(), glm::half_pi<f32>());
-
-	glm::quat const qPitch{ glm::angleAxis(pitch_, WorldRightVector) };
-	glm::quat const qYaw{ glm::angleAxis(yaw_, WorldUpVector) };
-	
-	if (sceneRenderer_)
-	{
-		glm::quat const rotation{ qYaw * qPitch };
-		sceneRenderer_->SetViewRotation(rotation);
-	}
 }
 
 void WViewController::OnMouseVerticalScroll(f32 delta)

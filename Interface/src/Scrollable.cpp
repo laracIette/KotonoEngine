@@ -1,11 +1,10 @@
 #include "Scrollable.h"
-#include "widgets.h"
+
+#include <glm/common.hpp>
 #include <kotono_common/enum_utils.h>
 #include <kotono_input/Mouse.h>
-#include <kotono_math/math_utils.h>
-#include <glm/common.hpp>
 
-WScrollable::WScrollable(const EAxis axis)
+WScrollable::WScrollable(EAxis axis)
 	: axis_{ axis }
 {
 }
@@ -24,35 +23,45 @@ void WScrollable::Remove()
 	Mouse.GetEventScroll().RemoveListener(this, &WScrollable::Scroll);
 }
 
-UWidgetDisplaySettings WScrollable::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
+glm::vec2 WScrollable::GetContentSize(glm::vec2 bounds) const
+{
+	return Base::GetContentSize(bounds);
+}
+
+void WScrollable::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	displaySettings.scissor.offset = displaySettings.position;
 	displaySettings.scissor.extent = displaySettings.bounds;
 
 	displaySettings.position += offset_;
 
-	if (GetChild())
+	switch (axis_)
 	{
-		return GetChild()->GetContentDisplaySettings(displaySettings);
+	case EAxis::Horizontal:
+		displaySettings.bounds.x = INFINITY;
+		break;
+	case EAxis::Vertical:
+		displaySettings.bounds.y = INFINITY;
+		break;
+	case EAxis::All:
+		displaySettings.bounds = { INFINITY, INFINITY };
+		break;
 	}
-	return displaySettings;
+
+	Base::DisplayInternal(displaySettings);
 }
 
-void WScrollable::Scroll(const glm::vec2 delta)
+void WScrollable::Scroll(glm::vec2 const& delta)
 {
-	if (!IsMouseHovering())
+	if (!GetIsFocused())
 	{
 		return;
 	}
 
 	SetState([this, delta]() {
-		if (!GetParent())
-		{
-			return;
-		}
-
-		const auto parentSize{ GetParent()->GetSize() };
-		const auto maxOffset{ glm::min(parentSize - GetDesiredSize(parentSize), 0.0f) };
+		auto const bounds{ GetSlotDisplaySettings().bounds };
+		auto const desiredSize{ GetDesiredSize(bounds) };
+		auto const maxOffset{ glm::min(bounds - desiredSize, 0.0f) };
 		
 		offset_ += delta * 10.0f;
 		offset_ = glm::clamp(offset_, maxOffset, { 0.0f, 0.0f });

@@ -1,11 +1,12 @@
 #include "ChildrenOwner.h"
+
 #include <algorithm>
+#include <kotono_math/math_utils.h>		 
 #include <ranges>
-#include <kotono_common/enum_utils.h>		 
 
 WChildrenOwner::~WChildrenOwner()
 {
-	for (auto& child : children_)
+	for (auto const& child : children_)
 	{
 		if (child)
 		{
@@ -18,7 +19,7 @@ void WChildrenOwner::Remove()
 {
 	Base::Remove();
 
-	for (auto& child : children_)
+	for (auto const& child : children_)
 	{
 		if (child)
 		{
@@ -27,31 +28,74 @@ void WChildrenOwner::Remove()
 	}
 }
 
-WidgetVector WChildrenOwner::WidgetTree() const
-{
-	WidgetVector result{ Base::WidgetTree() };
-
-	for (auto& child : children_)
-	{
-		if (child)
-		{
-			const auto sub{ child->WidgetTree() };
-			result.insert(result.end(), sub.begin(), sub.end());
-		}
-	}
-
-	return result;
-}
-
 void WChildrenOwner::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
 {
-	for (auto& child : children_)
+	for (auto const& child : children_)
 	{
 		if (child && child->GetIsDisplayed())
 		{
 			child->PopulateRenderGraph(interfaceRenderGraph);
 		}
 	}
+}
+
+void WChildrenOwner::PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosition) const
+{
+	Base::PopulateFocusTree(widgets, cursorPosition);
+
+	for (auto const& child : children_)
+	{
+		if (child && child->GetIsDisplayed())
+		{
+			child->PopulateFocusTree(widgets, cursorPosition);
+		}
+	}
+}
+
+b8 WChildrenOwner::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position)
+{
+	for (auto const& child : children_ | std::views::reverse)
+	{
+		if (!child || !child->GetIsDisplayed())
+		{
+			continue;
+		}
+
+		if (!is_point_in_rect(position, child->GetPosition(), child->GetSize()))
+		{
+			continue;
+		}
+
+		if (child->OnMouseButton(button, inputState, position) == INPUT_HANDLED)
+		{
+			return INPUT_HANDLED;
+		}
+	}
+
+	return INPUT_UNHANDLED;
+}
+
+b8 WChildrenOwner::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
+{
+	for (auto const& child : children_ | std::views::reverse)
+	{
+		if (!child || !child->GetIsDisplayed())
+		{
+			continue;
+		}
+
+		if (!is_point_in_rect(position, child->GetPosition(), child->GetSize()))
+		{
+			continue;
+		}
+
+		if (child->OnMouseMove(delta, position) == INPUT_HANDLED)
+		{
+			return INPUT_HANDLED;
+		}
+	}
+
+	return INPUT_UNHANDLED;
 }
 
 void WChildrenOwner::SetChildren(const WidgetSet& widgets)

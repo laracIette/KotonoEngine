@@ -34,11 +34,6 @@ UScene* TSceneObject::GetScene() const
 	return scene_;
 }
 
-UPtr<TSceneObject> const& TSceneObject::GetParent() const
-{
-	return parent_;
-}
-
 UPtr<KSceneComponent> TSceneObject::GetRootComponent() const
 {
 	return sceneComponents_.empty() ? nullptr : sceneComponents_[0];

@@ -6,5 +6,5 @@ class WAssetExplorerDirectory : public WAssetExplorerItem
 	GENERATED_WASSETEXPLORERDIRECTORY()
 
 public:
-	WAssetExplorerDirectory(const UPath& path, const OnClickedFunc& onDoubleClicked);
+	WAssetExplorerDirectory(UPtr<WAssetExplorer> const& assetExplorer, UPath const& path, const OnClickedFunc& onDoubleClicked);
 };

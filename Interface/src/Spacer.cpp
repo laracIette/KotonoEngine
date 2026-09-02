@@ -6,18 +6,18 @@ WSpacer::WSpacer(EAxis axis)
 {
 }
 
-UWidgetDisplaySettings WSpacer::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
+glm::vec2 WSpacer::GetContentSize(glm::vec2 bounds) const
 {
 	if (has_flag(axis_, EAxis::Horizontal))
 	{
-		displaySettings.bounds.y = 0.0f;
+		bounds.y = 0.0f;
 	}
 	if (has_flag(axis_, EAxis::Vertical))
 	{
-		displaySettings.bounds.x = 0.0f;
+		bounds.x = 0.0f;
 	}
 	
-	return displaySettings;
+	return bounds;
 }
 
 EExpand WSpacer::GetExpand() const

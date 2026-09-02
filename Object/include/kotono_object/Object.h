@@ -95,12 +95,12 @@ struct UCreate final
 {
 public:
 #ifndef NDEBUG
-	constexpr UCreate(const std::string& name = "", const std::source_location& loc = std::source_location::current())
+	constexpr UCreate(std::string_view name = "", std::source_location const& loc = std::source_location::current())
 		: name_{ name }
 		, loc_{ loc }
 	{}
 #else
-	constexpr UCreate(const std::string& name = "")
+	constexpr UCreate(std::string_view name = "")
 		: name_{ name }
 	{}
 #endif

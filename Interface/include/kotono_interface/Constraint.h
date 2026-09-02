@@ -10,11 +10,14 @@ public:
 	WConstraint(EAxis axis, f32 size);
 	WConstraint();
 
-	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
+	glm::vec2 GetContentSize(glm::vec2 bounds) const override;
 	glm::vec2 GetDesiredSize(const glm::vec2& bounds) const override;
 
 	EExpand GetExpand() const override;
 	EFlex GetFlex() const override;
+
+protected:
+	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 
 private:
 	StateProperty(EAxis, axis_, Axis);

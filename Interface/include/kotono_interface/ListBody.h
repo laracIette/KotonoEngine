@@ -6,7 +6,7 @@ class WListBody final : public WChildrenOwner
 	GENERATED_WLISTBODY()
 
 public:
-	UWidgetDisplaySettings GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const override;
+	glm::vec2 GetContentSize(glm::vec2 bounds) const override;
 	glm::vec2 GetDesiredSize(const glm::vec2& bounds) const override;
 
 	EFlex GetFlex() const override;

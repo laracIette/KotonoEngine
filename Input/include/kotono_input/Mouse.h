@@ -14,6 +14,13 @@ class GMouse final
 	friend void scroll_callback_(GLFWwindow* window, f64 xoffset, f64 yoffset);
 
 public:
+	using EventEmptyType = UEvent<>;
+	using EventMoveType = UEvent<glm::vec2, glm::vec2>;
+	using EventScrollType = UEvent<glm::vec2>;
+	using EventFloatType = UEvent<f32>;
+	using EventAnyButtonType = UEvent<EButton, EInputState, glm::vec2>;
+
+public:
 	void Init(UWindow& window);
 	void Update();
 
@@ -21,29 +28,31 @@ public:
 	f32 GetHorizontalScrollDelta() const;
 	f32 GetVerticalScrollDelta() const;
 
-	UEvent<>& GetEventButton(EButton button, EInputState inputState);
+	EventEmptyType& GetEventButton(EButton button, EInputState inputState);
 	b8 GetButtonState(EButton button, EInputState inputState) const;
 
 	glm::vec2 const& GetPreviousCursorPosition() const { return previousCursorPosition_; }
 	glm::vec2 const& GetCursorPosition() const { return cursorPosition_; }
 
-	UEvent<glm::vec2>&	GetEventMove() { return eventMove_; }
-	UEvent<glm::vec2>&	GetEventScroll() { return eventScroll_; }
-	UEvent<f32>&		GetEventHorizontalScroll() { return eventHorizontalScroll_; }
-	UEvent<f32>&		GetEventVerticalScroll() { return eventVerticalScroll_; }
+	EventMoveType&		GetEventMove() { return eventMove_; }
+	EventScrollType&	GetEventScroll() { return eventScroll_; }
+	EventFloatType&		GetEventHorizontalScroll() { return eventHorizontalScroll_; }
+	EventFloatType&		GetEventVerticalScroll() { return eventVerticalScroll_; }
+	EventAnyButtonType&	GetEventAnyButton() { return eventAnyButton_; }
 
 private:
 	glm::vec2 previousCursorPosition_;
 	glm::vec2 cursorPosition_;
-
 	glm::vec2 scrollDelta_;
 
-	UEvent<glm::vec2> eventMove_;
-	UEvent<glm::vec2> eventScroll_;
-	UEvent<f32> eventHorizontalScroll_;
-	UEvent<f32> eventVerticalScroll_;
+	EventMoveType eventMove_;
+	EventScrollType eventScroll_;
+	EventFloatType eventHorizontalScroll_;
+	EventFloatType eventVerticalScroll_;
 
-	std::array<std::array<UEvent<>, InputStateCount>, ButtonCount> buttonEvents_;
+	EventAnyButtonType eventAnyButton_;
+
+	std::array<std::array<EventEmptyType, InputStateCount>, ButtonCount> buttonEvents_;
 	std::array<std::array<b8, InputStateCount>, ButtonCount> buttonStates_;
 
 	void UpdateButton(EButton button, i32 action);

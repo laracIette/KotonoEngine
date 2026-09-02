@@ -1,8 +1,8 @@
 #include "Expanded.h"
 
-UWidgetDisplaySettings WExpanded::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
+glm::vec2 WExpanded::GetContentSize(glm::vec2 bounds) const
 {
-	return displaySettings;
+	return bounds;
 }
 
 EFlex WExpanded::GetFlex() const

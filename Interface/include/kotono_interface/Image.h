@@ -14,9 +14,6 @@ public:
 
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
 
-protected:
-	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
-
 private:
 	StateProperty(UPath, path_, Path);
 };

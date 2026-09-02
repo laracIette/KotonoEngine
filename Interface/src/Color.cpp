@@ -31,8 +31,4 @@ void WColor::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) co
 	});
 }
 
-void WColor::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
-}
-
 #include "generated/Color.generated.inl"

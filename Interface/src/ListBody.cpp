@@ -1,9 +1,10 @@
 #include "ListBody.h"
+
 #include <glm/common.hpp>
 
-UWidgetDisplaySettings WListBody::GetContentDisplaySettings(UWidgetDisplaySettings displaySettings) const
+glm::vec2 WListBody::GetContentSize(glm::vec2 bounds) const
 {
-	displaySettings.bounds.y = INFINITY;
+	bounds.y = INFINITY;
 
 	glm::vec2 size{ 0.0f, 0.0f };
 
@@ -11,19 +12,19 @@ UWidgetDisplaySettings WListBody::GetContentDisplaySettings(UWidgetDisplaySettin
 	{
 		if (child)
 		{
-			const auto childSettings{ child->GetContentDisplaySettings(displaySettings) };
-			size.x = std::max(size.x, childSettings.bounds.x);
-			size.y += childSettings.bounds.y;
+			auto const childSize{ child->GetContentSize(bounds) };
+			size.x = std::max(size.x, childSize.x);
+			size.y += childSize.y;
 		}
 	}
 
 	if (!GetChildren().empty())
 	{
-		size.y += spacing_ * static_cast<float>(GetChildren().size() - 1);
+		size.y += spacing_ * static_cast<f32>(GetChildren().size() - 1);
 	}
 
-	displaySettings.bounds = glm::min(size, displaySettings.bounds);
-	return displaySettings;
+	bounds = glm::min(size, bounds);
+	return bounds;
 }
 
 glm::vec2 WListBody::GetDesiredSize(const glm::vec2& bounds) const
@@ -34,7 +35,7 @@ glm::vec2 WListBody::GetDesiredSize(const glm::vec2& bounds) const
 	{
 		if (child)
 		{
-			const auto childDesiredSize{ child->GetDesiredSize(bounds) };
+			auto const childDesiredSize{ child->GetDesiredSize(bounds) };
 			size.x = std::max(size.x, childDesiredSize.x);
 			size.y += childDesiredSize.y;
 		}
@@ -42,7 +43,7 @@ glm::vec2 WListBody::GetDesiredSize(const glm::vec2& bounds) const
 
 	if (GetValidChildrenCount() > 1)
 	{
-		size.y += spacing_ * static_cast<float>(GetValidChildrenCount() - 1);
+		size.y += spacing_ * static_cast<f32>(GetValidChildrenCount() - 1);
 	}
 
 	return size;
@@ -62,8 +63,9 @@ void WListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
 		if (child)
 		{
 			child->Display(displaySettings);
+			auto const childSize{ child->GetContentSize(displaySettings.bounds) };
 
-			displaySettings.position.y += child->GetContentDisplaySettings(displaySettings).bounds.y;
+			displaySettings.position.y += childSize.y;
 			displaySettings.position.y += spacing_;
 		}
 	}

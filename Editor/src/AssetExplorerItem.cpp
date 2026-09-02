@@ -1,9 +1,16 @@
 #include "AssetExplorerItem.h"
+
+#include "AssetExplorer.h"
 #include <kotono_interface/widgets.h>
 #include <kotono_object/Interface.h>
 
-WAssetExplorerItem::WAssetExplorerItem(const UPath& path, const OnClickedFunc& onDoubleClicked)
-    : path_{ path }
+static constexpr UColor NORMAL_COLOR{ Colors::White.WithValue(0.1f).WithAlpha(0.75f) };
+static constexpr UColor SELECTED_COLOR{ Colors::Blue.WithAlpha(0.3f) };
+static constexpr UColor FOCUSED_COLOR{ Colors::White.WithValue(0.15f).WithAlpha(0.75f) };
+
+WAssetExplorerItem::WAssetExplorerItem(UPtr<WAssetExplorer> const& assetExplorer, UPath const& path, OnClickedFunc const& onDoubleClicked)
+    : assetExplorer_{ assetExplorer }
+    , path_{ path }
     , onDoubleClicked_{ onDoubleClicked }
     , isSelected_{ false }
     , lastClickedTime_{ 0.0f }
@@ -14,9 +21,6 @@ WAssetExplorerItem::WAssetExplorerItem(const UPath& path, const OnClickedFunc& o
 
 WidgetPtr WAssetExplorerItem::Build()
 {
-    constexpr UColor SELECTED_COLOR{ Colors::White.WithValue(0.2f).WithAlpha(0.75f) };
-    constexpr UColor UNSELECTED_COLOR{ Colors::White.WithValue(0.1f).WithAlpha(0.75f) };
-
     UPtr text{ UCreate<WText>{ "Item Text" }() };
     text->SetText(path_.Name());
     text->SetFontSize({ 16.0f, 20.0f });
@@ -24,27 +28,26 @@ WidgetPtr WAssetExplorerItem::Build()
     text->SetShouldWrap(true);
 
     UPtr button{ UCreate<WButton>{ "Item Button" }() };
-    button->SetOnClicked([this, SELECTED_COLOR]() { 
-        if (isSelected_ && GetInterface()->GetTimeContext().total - lastClickedTime_ < doubleClickTreshold_) {
-            if (onDoubleClicked_) {
+    button->SetOnClicked([this]() {
+        if (isSelected_ && GetInterface()->GetTimeContext().total - lastClickedTime_ < doubleClickTreshold_)
+        {
+            if (onDoubleClicked_)
+            {
                 onDoubleClicked_(path_);
             }
         }
-        else {
-            lastClickedTime_ = GetInterface()->GetTimeContext().total;
-            isSelected_ = true;
-            background_->SetColor(SELECTED_COLOR);
+        else
+        {
+            Select();
         }
     });
-    button->SetOnPressOut([this, UNSELECTED_COLOR]() {
-        isSelected_ = false;
-        background_->SetColor(UNSELECTED_COLOR);
-    });
+
+    button->SetOnPressOut([this]() { Deselect(); });
 
     const auto widgetTree{ UChildOwnerTree{ UCreate<WBox>{ "Item Box" }(glm::vec2{ 128.0f }),
         new UChildrenOwnerTree{ UCreate<WStack>{ "Item Stack" }(), {
-            new UWidgetTreeLeaf{ background_ = UCreate<WColor>{ "Item Background" }(UNSELECTED_COLOR) },
-            new UChildOwnerTree{ UCreate<WCenter>{ "Item Center" }(EAxis::All), 
+            new UWidgetTreeLeaf{ background_ = UCreate<WColor>{ "Item Background" }(NORMAL_COLOR) },
+            new UChildOwnerTree{ UCreate<WCenter>{ "Item Center" }(EAxis::All),
                 new UWidgetTreeLeaf{ text }
             },
             new UWidgetTreeLeaf{ button },
@@ -53,6 +56,43 @@ WidgetPtr WAssetExplorerItem::Build()
     widgetTree.Link();
 
     return widgetTree.Widget();
+}
+
+void WAssetExplorerItem::Select()
+{
+    isSelected_ = true;
+    lastClickedTime_ = GetInterface()->GetTimeContext().total;
+    background_->SetColor(SELECTED_COLOR);
+    if (assetExplorer_)
+    {
+        assetExplorer_->DeselectOthers(Ptr());
+    }
+}
+
+void WAssetExplorerItem::Deselect()
+{
+    isSelected_ = false;
+    background_->SetColor(NORMAL_COLOR);
+}
+
+void WAssetExplorerItem::OnFocused()
+{
+    Base::OnFocused();
+
+    if (!isSelected_)
+    {
+        background_->SetColor(FOCUSED_COLOR);
+    }
+}
+
+void WAssetExplorerItem::OnUnfocused()
+{
+    Base::OnUnfocused();
+
+    if (!isSelected_)
+    {
+        background_->SetColor(NORMAL_COLOR);
+    }
 }
 
 #include "generated/AssetExplorerItem.generated.inl"

@@ -6,9 +6,9 @@
     #include <stdexcept>
 #endif
 
-WAssetExplorerFile::WAssetExplorerFile(const UPath& path)
-	: Base(path, 
-        [](const UPath& path)
+WAssetExplorerFile::WAssetExplorerFile(UPtr<WAssetExplorer> const& assetExplorer, UPath const& path)
+	: Base(assetExplorer, path
+        , [](UPath const& path)
         {
             const auto string{ std::format("\"{0}\"", path.ToString()) };
 
