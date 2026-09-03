@@ -41,7 +41,7 @@ Kotono features an asset system which helps simplify the workflow for creating r
 
 ### Core
 
-In Kotono, all instantiable objects inherit from a base [Object](Object/include/kotono_object/Object.h) class, this class provides a bunch of utilities such as debug information (source file, line, ...), automatic serialization and deserialization using the *GENERATED_T()* macro combined with the *SERIALIZE* macro on serializable fields.
+In Kotono, all instantiable objects inherit from a base [Object](Object/include/kotono_core/Object.h) class, this class provides a bunch of utilities such as debug information (source file, line, ...), automatic serialization and deserialization using the *GENERATED_T()* macro combined with the *SERIALIZE* macro on serializable fields.
 
 Every object must be instantiated using the [Create](https://github.com/laracIette/KotonoEngine/blob/952dd7c2f57ccfcc23243680cd73a35cc99f02b3/Object/include/kotono_object/Object.h#L125) struct, this struct provides a pointer to the instantiated object that automatically gets invalidated when the object gets destroyed.
 
@@ -53,7 +53,7 @@ Spawnable objects are built using an instance of the [Scene Object](Core/include
 
 The editor layer is divided into multiple projects, those are included in the application project only if it was built with the CMake option *WITH_EDITOR*.
 
-Interfaces are created with a widget system where every widget class inherits from a base [Widget](Interface/include/kotono_interface/Widget.h) class that itself inherits from the [Object](Object/include/kotono_object/Object.h) class. It is inspired by *[Flutter](https://flutter.dev/)* and an example of a widget build can be found in the [Main Window](https://github.com/laracIette/KotonoEngine/blob/952dd7c2f57ccfcc23243680cd73a35cc99f02b3/Editor/src/MainWindow.cpp#L27) widget class.
+Interfaces are created with a widget system where every widget class inherits from a base [Widget](Interface/include/kotono_interface/Widget.h) class that itself inherits from the [Object](Object/include/kotono_core/Object.h) class. It is inspired by *[Flutter](https://flutter.dev/)* and an example of a widget build can be found in the [Main Window](https://github.com/laracIette/KotonoEngine/blob/952dd7c2f57ccfcc23243680cd73a35cc99f02b3/Editor/src/MainWindow.cpp#L27) widget class.
 
 Widgets are updated by calling the [SetState](https://github.com/laracIette/KotonoEngine/blob/952dd7c2f57ccfcc23243680cd73a35cc99f02b3/Interface/include/kotono_interface/Widget.h#L77) function, which refreshes their displayed content. The widget header also provides the [StateProperty](https://github.com/laracIette/KotonoEngine/blob/952dd7c2f57ccfcc23243680cd73a35cc99f02b3/Interface/include/kotono_interface/Widget.h#L28) macro that automatically refreshes the widget after updating the property's value.
 

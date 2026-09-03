@@ -1,18 +1,19 @@
 #pragma once
 #include <kotono_common/Event.h>
+#include <kotono_common/types.h>
 struct UTask final
 {
-	bool isPlaying;
-	float duration;
+	b8 isPlaying;
+	f32 duration;
 	UEvent<f32> eventUpdate;
 	UEvent<> eventCompleted;
 
-	void Update(const float deltaTime);
+	void Update(f32 deltaTime);
 
 	void Start();
 	void Stop();
 
 private:
-	float current_;
+	f32 current_;
 };
 

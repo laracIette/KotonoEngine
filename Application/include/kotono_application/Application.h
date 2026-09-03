@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <vector>
 #ifdef EDITOR
-#include <kotono_object/Ptr.h>
+#include <kotono_core/Ptr.h>
 #endif
 class UInterface;
 #ifdef EDITOR

@@ -1,6 +1,6 @@
 #include "Task.h"
 
-void UTask::Update(const float deltaTime)
+void UTask::Update(f32 deltaTime)
 {
     if (!isPlaying)
     {

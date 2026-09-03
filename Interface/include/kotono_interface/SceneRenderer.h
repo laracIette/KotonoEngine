@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/SceneRenderer.generated.h"
-#include <kotono_object/Widget.h>
+#include <kotono_core/Widget.h>
 
 #include <glm/ext/quaternion_float.hpp>
 #include <glm/ext/vector_float3.hpp>

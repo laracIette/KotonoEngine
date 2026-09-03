@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/Button.generated.h"
-#include <kotono_object/Widget.h>
+#include <kotono_core/Widget.h>
 /// Set the widget's bounds as pressable
 class WButton final : public WWidget
 {

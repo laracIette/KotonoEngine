@@ -2,7 +2,7 @@
 
 #include <kotono_input/Keyboard.h>
 #include <kotono_interface/widgets.h>
-#include <kotono_object/Scene.h>
+#include <kotono_core/Scene.h>
 
 static void SwitchPlayPause();
 

@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/VisualizerWindowItem.generated.h"
-#include <kotono_object/Widget.h>
+#include <kotono_core/Widget.h>
 #include "VisualizationField.h"
 class WVisualizerWindowItem : public WWidget
 {

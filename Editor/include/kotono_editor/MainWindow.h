@@ -1,7 +1,7 @@
 #pragma once
 #include "generated/MainWindow.generated.h"
 #include <assert.h>
-#include <kotono_object/SceneContext.h>
+#include <kotono_core/SceneContext.h>
 class WMainWindow final : public WSceneContext
 {
 	GENERATED_WMAINWINDOW()

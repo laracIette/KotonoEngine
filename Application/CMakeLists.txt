@@ -29,11 +29,12 @@ if (TARGET KotonoEditor)
     target_compile_definitions(KotonoApplication PUBLIC EDITOR)
     target_link_libraries(KotonoApplication PUBLIC
         KotonoRendering
+        KotonoScene
         KotonoEditor
     )
 else()
     target_link_libraries(KotonoApplication PUBLIC
         KotonoRendering
-        KotonoCore
+        KotonoScene
     )
 endif()

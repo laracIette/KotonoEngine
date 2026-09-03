@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/AssetExplorerItem.generated.h"
-#include <kotono_object/Widget.h>
+#include <kotono_core/Widget.h>
 
 #include <kotono_common/Path.h>
 class WAssetExplorer;

@@ -1,7 +1,7 @@
 #include "UpdateTimeText.h"
 
 #include <kotono_interface/widgets.h>
-#include <kotono_object/Scene.h>
+#include <kotono_core/Scene.h>
 #include <kotono_timing/Timer.h>
 #include <kotono_timing/TimerManager.h>
 

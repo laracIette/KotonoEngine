@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/UpdateTimeText.generated.h"
-#include <kotono_object/SceneWidget.h>
+#include <kotono_core/SceneWidget.h>
 class WText;
 class WUpdateTimeText : public WSceneWidget
 {

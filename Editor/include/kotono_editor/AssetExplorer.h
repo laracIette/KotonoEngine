@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/AssetExplorer.generated.h"
-#include <kotono_object/Widget.h>
+#include <kotono_core/Widget.h>
 
 #include <kotono_common/Path.h>
 class WAssetExplorerItem;
@@ -28,7 +28,7 @@ private:
 	void NavigateNext();
 
 	void PopulateItemList();
-	
+
 	void OnMousePreviousButtonPressed();
 	void OnMouseNextButtonPressed();
 

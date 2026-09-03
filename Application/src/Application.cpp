@@ -2,15 +2,16 @@
 
 #include <kotono_audio/AudioManager.h>
 #include <kotono_common/log.h>
-#include <kotono_core/DirectionalLightComponent.h>
-#include <kotono_core/PointLightComponent.h>
+#include <kotono_core/Interface.h>
+#include <kotono_core/ProjectSettings.h>
 #include <kotono_graphics/InterfaceRenderGraph.h>
 #include <kotono_graphics/SceneRenderGraph.h>
 #include <kotono_graphics/SpvCompiler.h>
 #include <kotono_input/Keyboard.h>
 #include <kotono_input/Mouse.h>
-#include <kotono_object/Interface.h>
-#include <kotono_object/ProjectSettings.h>
+#include <kotono_scene/DirectionalLightComponent.h>
+#include <kotono_scene/MeshComponent.h>
+#include <kotono_scene/PointLightComponent.h>
 #include <kotono_timing/Clock.h>
 #include <kotono_timing/TimerManager.h>
 
@@ -20,7 +21,7 @@
 #endif
 
 #ifndef NDEBUG
-#include <kotono_object/Object.h>
+#include <kotono_core/Object.h>
 #endif
 
 UApplication::UApplication()
@@ -90,6 +91,7 @@ void UApplication::Init()
     // force unused classes to compile, for registry
     {
         KDirectionalLightComponent{};
+        KMeshComponent{};
         KPointLightComponent{};
     }
 }

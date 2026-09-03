@@ -2,7 +2,7 @@
 
 #include <glm/ext/matrix_transform.hpp>
 #include <kotono_graphics/InterfaceRenderGraph.h>
-#include <kotono_object/Interface.h>
+#include <kotono_core/Interface.h>
 
 WColor::WColor(const UColor& color)
 	: color_{ color }

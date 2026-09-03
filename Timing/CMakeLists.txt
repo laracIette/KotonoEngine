@@ -10,6 +10,7 @@ set_target_properties(KotonoTiming PROPERTIES FOLDER "KotonoEngine")
 set(KTIMING_HEADERS
     "include/kotono_timing/Clock.h"
     "include/kotono_timing/Stopwatch.h"
+    "include/kotono_timing/Task.h"
     "include/kotono_timing/TimeContext.h"
     "include/kotono_timing/Timer.h"
     "include/kotono_timing/TimerManager.h"
@@ -17,6 +18,7 @@ set(KTIMING_HEADERS
 set(KTIMING_SOURCES
     "src/Clock.cpp"
     "src/Stopwatch.cpp"
+    "src/Task.cpp"
     "src/TimeContext.cpp"
     "src/Timer.cpp"
     "src/TimerManager.cpp"

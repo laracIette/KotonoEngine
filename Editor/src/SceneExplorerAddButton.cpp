@@ -1,10 +1,6 @@
 #include "SceneExplorerAddButton.h"
 
-#include <kotono_core/MeshComponent.h>
 #include <kotono_interface/widgets.h>
-#include <kotono_object/Scene.h>
-#include <kotono_object/SceneComponent.h>
-#include <kotono_object/SceneObject.h>
 
 WidgetPtr WSceneExplorerAddButton::Build()
 {
@@ -16,32 +12,8 @@ WidgetPtr WSceneExplorerAddButton::Build()
 	text->SetText("Add");
 
 	UPtr button{ UCreate<WButton>{}() };
-	button->SetOnPressed([this]() {
-		UPath const shader{ "${ENGINE_DIRECTORY}/Graphics/assets/shaders/gbuffer.kasset" };
-		UPath const model1{ "${ENGINE_DIRECTORY}/Graphics/assets/models/viking_room.obj" };
-		UPath const model2{ "${ENGINE_DIRECTORY}/Graphics/assets/models/column.obj" };
-
-		UPtr mesh{ UCreate<TSceneObject>{}() };
-		UPtr rootComponent{ UCreate<KSceneComponent>{}() };
-		UPtr meshComponent1{ UCreate<KMeshComponent>{}() };
-		UPtr meshComponent2{ UCreate<KMeshComponent>{}() };
-													
-		mesh->AddComponent(rootComponent);
-		rootComponent->SetRelativePosition(glm::vec3(0.0f));
-													
-		mesh->AddComponent(meshComponent1);
-		meshComponent1->SetShader(shader);
-		meshComponent1->SetModel(model1);
-		meshComponent1->SetParent(rootComponent, ECoordinateSpace::Relative);
-													
-		mesh->AddComponent(meshComponent2);
-		meshComponent2->SetShader(shader);
-		meshComponent2->SetModel(model2);
-		meshComponent2->SetParent(meshComponent1, ECoordinateSpace::Relative);
-		meshComponent2->SetRelativePosition({ 1.0f, 1.0f, 1.0f });
-
-		GetScene()->Add(mesh);
-		mesh->Spawn();
+	button->SetOnPressed([]() {
+		throw std::runtime_error{ "unimplemented!" };
 	});
 
 	const auto widgetTree{ UChildrenOwnerTree{ UCreate<WStack>{ "Add Button Stack" }(), {

@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/SceneExplorerItem.generated.h"
-#include <kotono_object/Widget.h>
+#include <kotono_core/Widget.h>
 class WColor;
 class TSceneObject;
 class WSceneExplorerItem : public WWidget
@@ -9,7 +9,7 @@ class WSceneExplorerItem : public WWidget
 
 public:
 	WSceneExplorerItem(UPtr<TSceneObject> const& sceneObject);
-	
+
 protected:
 	WidgetPtr Build() override;
 

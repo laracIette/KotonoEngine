@@ -1,6 +1,6 @@
 #include "DrawTimeText.h"
 #include <kotono_interface/widgets.h>
-#include <kotono_object/Interface.h>
+#include <kotono_core/Interface.h>
 #include <kotono_timing/Timer.h>
 #include <kotono_timing/TimerManager.h>
 

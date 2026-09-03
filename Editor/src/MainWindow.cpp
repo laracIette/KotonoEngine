@@ -8,7 +8,7 @@
 #include "ViewController.h"
 #include "VisualizerWindow.h"
 #include <kotono_interface/widgets.h>
-#include <kotono_object/Scene.h>
+#include <kotono_core/Scene.h>
 
 WidgetPtr WMainWindow::Build()
 {
@@ -60,7 +60,7 @@ WidgetPtr WMainWindow::Build()
 		} }
 	} };
 	widgetTree.Link();
-	
+
 	return widgetTree.Widget();
 }
 

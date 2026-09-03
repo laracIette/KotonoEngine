@@ -4,7 +4,7 @@
 #include <kotono_common/conversion_utils.h>
 #include <kotono_common/log.h>
 #include <kotono_interface/widgets.h>
-#include <kotono_object/Object.h>
+#include <kotono_core/Object.h>
 #include <glm/gtx/string_cast.hpp>
 
 static void* get_member_variable_pointer(void* object, const size offset) noexcept
@@ -12,7 +12,7 @@ static void* get_member_variable_pointer(void* object, const size offset) noexce
     return reinterpret_cast<void*>(reinterpret_cast<std::uintptr_t>(object) + offset);
 }
 
-WObjectProperties::WObjectProperties(const UPtr<KObject>& object) 
+WObjectProperties::WObjectProperties(const UPtr<KObject>& object)
     : object_(object)
 {
 }
@@ -84,11 +84,11 @@ WidgetPtr WObjectProperties::BuildMemberWidget(const std::string& type, void* va
         auto* sizePtr{ static_cast<size*>(variablePtr) };
 
         UPtr valueBox{ UCreate<WValueBox>{}() };
-        valueBox->SetValueToString([sizePtr]() { 
+        valueBox->SetValueToString([sizePtr]() {
             return std::format("{0}", *sizePtr);
         });
-        valueBox->SetStringToValue([sizePtr](const std::string& value) { 
-            *sizePtr = from_string<size>(value); 
+        valueBox->SetStringToValue([sizePtr](const std::string& value) {
+            *sizePtr = from_string<size>(value);
         });
 
         return valueBox;

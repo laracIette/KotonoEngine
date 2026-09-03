@@ -2,7 +2,7 @@
 
 #include "AssetExplorer.h"
 #include <kotono_interface/widgets.h>
-#include <kotono_object/Interface.h>
+#include <kotono_core/Interface.h>
 
 static constexpr UColor NORMAL_COLOR{ Colors::White.WithValue(0.1f).WithAlpha(0.75f) };
 static constexpr UColor SELECTED_COLOR{ Colors::Blue.WithAlpha(0.3f) };

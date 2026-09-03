@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/Text.generated.h"
-#include <kotono_object/Widget.h>
+#include <kotono_core/Widget.h>
 /// Display a text
 class WText final : public WWidget
 {

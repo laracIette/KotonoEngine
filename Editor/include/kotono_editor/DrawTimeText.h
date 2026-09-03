@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/DrawTimeText.generated.h"
-#include <kotono_object/Widget.h>
+#include <kotono_core/Widget.h>
 class WText;
 class WDrawTimeText : public WWidget
 {
@@ -13,7 +13,7 @@ public:
 	void Display(UWidgetDisplaySettings const& displaySettings) override;
 	void Remove() override;
 
-private: 
+private:
 	void UpdateText() const;
 
 private:

@@ -4,7 +4,7 @@
 #include <kotono_input/Keyboard.h>
 #include <kotono_input/Mouse.h>
 #include <kotono_interface/widgets.h>
-#include <kotono_object/Interface.h>
+#include <kotono_core/Interface.h>
 #include <kotono_platform/glm_utils.h>
 
 WViewController::WViewController()

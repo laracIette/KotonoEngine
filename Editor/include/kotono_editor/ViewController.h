@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/ViewController.generated.h"
-#include <kotono_object/Widget.h>
+#include <kotono_core/Widget.h>
 class WSceneRenderer;
 class WViewController final : public WWidget
 {

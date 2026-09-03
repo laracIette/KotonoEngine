@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/ValueBox.generated.h"
-#include <kotono_object/Widget.h>
+#include <kotono_core/Widget.h>
 class WValueBox : public WWidget
 {
 	GENERATED_WVALUEBOX()

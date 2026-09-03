@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/SceneExplorerRemoveButton.generated.h"
-#include <kotono_object/SceneWidget.h>
+#include <kotono_core/SceneWidget.h>
 class WButton;
 class WColor;
 class WSceneExplorerRemoveButton final : public WSceneWidget

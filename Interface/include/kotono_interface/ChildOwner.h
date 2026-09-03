@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/ChildOwner.generated.h"
-#include <kotono_object/Widget.h>
+#include <kotono_core/Widget.h>
 class WChildOwner : public WWidget
 {
 	GENERATED_WCHILDOWNER()

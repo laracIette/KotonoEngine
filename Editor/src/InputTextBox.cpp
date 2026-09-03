@@ -1,9 +1,9 @@
 #include "InputTextBox.h"
 #include <kotono_input/Keyboard.h>
 #include <kotono_interface/widgets.h>
-#include <kotono_object/Interface.h>
+#include <kotono_core/Interface.h>
 
-WInputTextBox::WInputTextBox() 
+WInputTextBox::WInputTextBox()
 	: text_{ "" }
 	, onTextChanged_{}
 	, actuationTime_{ 0.5f }
@@ -33,7 +33,7 @@ WidgetPtr WInputTextBox::Build()
 		SetState([this]() { isSelected_ = true; });
 	});
 
-	
+
 	UPtr bg{ UCreate<WColor>{}() };
 	bg->SetColor(isSelected_
 		? Colors::White.WithAlpha(0.15f)

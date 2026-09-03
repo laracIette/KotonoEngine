@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/Spacer.generated.h"
-#include <kotono_object/Widget.h>
+#include <kotono_core/Widget.h>
 /// Fills the entirety of the available parent space
 class WSpacer final : public WWidget
 {

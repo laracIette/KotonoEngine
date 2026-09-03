@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/PropertiesWindow.generated.h"
-#include <kotono_object\Widget.h>
+#include <kotono_core/Widget.h>
 class WList;
 class WObjectProperties;
 class WPropertiesWindow : public WWidget

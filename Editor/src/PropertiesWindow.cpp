@@ -3,9 +3,9 @@
 #include <kotono_common/log.h>
 #include <kotono_input/Mouse.h>
 #include <kotono_interface/widgets.h>
-#include <kotono_object/ObjectManager.h>
-#include <kotono_object/SceneComponent.h>
-#include <kotono_object/SceneObject.h>
+#include <kotono_core/ObjectManager.h>
+#include <kotono_core/SceneComponent.h>
+#include <kotono_core/SceneObject.h>
 #include <kotono_platform/glm_utils.h>
 
 WidgetPtr WPropertiesWindow::Build()
@@ -36,7 +36,7 @@ WidgetPtr WPropertiesWindow::Build()
     const auto widgetTree{ UChildOwnerTree{ UCreate<WWrap>{}(),
         new UChildrenOwnerTree{ UCreate<WStack>{}(), {
             new UWidgetTreeLeaf{ mainListBg },
-            new UChildOwnerTree{ mainListPadding, 
+            new UChildOwnerTree{ mainListPadding,
                 new UWidgetTreeLeaf{ mainList_ }
             },
         } }

@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/List.generated.h"
-#include <kotono_object/Widget.h>
+#include <kotono_core/Widget.h>
 class WListBody;
 /// Defines a vertical container for widgets
 class WList final : public WWidget

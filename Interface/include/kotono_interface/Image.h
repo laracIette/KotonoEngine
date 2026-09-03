@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/Image.generated.h"
-#include <kotono_object/Widget.h>
+#include <kotono_core/Widget.h>
 #include <kotono_common/Path.h>
 /// Display an image over the widget's bounds
 class WImage final : public WWidget

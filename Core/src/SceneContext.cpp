@@ -1,6 +1,6 @@
 #include "SceneContext.h"
 
-#include <kotono_object/Scene.h>
+#include <kotono_core/Scene.h>
 
 WSceneContext::WSceneContext(UPath const& scenePath)
 	: scenePath_{ scenePath }

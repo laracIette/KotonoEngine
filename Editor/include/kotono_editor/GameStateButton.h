@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/GameStateButton.generated.h"
-#include <kotono_object\SceneWidget.h>
+#include <kotono_core/SceneWidget.h>
 class WColor;
 enum class EGameState : u8;
 class WGameStateButton : public WSceneWidget

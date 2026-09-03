@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/InputTextBox.generated.h"
-#include <kotono_object/Widget.h>
+#include <kotono_core/Widget.h>
 
 #include <kotono_input/InputHoldAction.h>
 enum class EKey : u8;
