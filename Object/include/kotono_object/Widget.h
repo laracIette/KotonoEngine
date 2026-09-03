@@ -111,7 +111,6 @@ private:
 	ReadonlyProperty(UWidgetDisplaySettings, slotDisplaySettings_, SlotDisplaySettings);
 	ReadonlyProperty(glm::vec2, contentSize_, ContentSize);
 	WidgetPtr build_;
-	UInterface* interface_;
 };
 
 class UWidgetTree

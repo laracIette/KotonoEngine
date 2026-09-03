@@ -30,7 +30,8 @@ private:
 	void Translate(glm::vec3 const& delta) const;
 
 private:
-	bool isFocused_;
+	b8 isActive_;
+
 	f32 speed_;
 	f32 sensitivity_;
 	f32 pitch_;

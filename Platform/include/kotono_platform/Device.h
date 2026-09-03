@@ -41,6 +41,8 @@ public:
 	void CleanupImage(UAllocatedImage const& allocatedImage) const;
 	void CleanupImageView(UAllocatedImage const& allocatedImage) const;
 
+	USwapchainSupportDetails QuerySwapchainSupportDetails() const;
+
 	// Getters
 	VkPhysicalDevice	GetPhysicalDevice() const { return physicalDevice_; }
 	VkDevice			GetDevice() const { return device_; }
@@ -53,8 +55,7 @@ public:
 	VkFormat				GetDepthFormat() const { return depthFormat_; }
 	VkSampleCountFlagBits	GetMSAASamples() const { return msaaSamples_; }
 
-	UQueueFamilyIndices	const&		GetQueueFamilyIndices() const { return queueFamilyIndices_; }
-	USwapchainSupportDetails const&	GetSwapchainSupportDetails() const { return swapchainSupportDetails_; }
+	UQueueFamilyIndices	const&	GetQueueFamilyIndices() const { return queueFamilyIndices_; }
 
 private:
 	void CreatePhysicalDevice();
@@ -86,7 +87,6 @@ private:
 	VkSampleCountFlagBits msaaSamples_;
 
 	UQueueFamilyIndices queueFamilyIndices_;
-	USwapchainSupportDetails swapchainSupportDetails_;
 
 	VkQueue graphicsQueue_;
 	VkQueue presentQueue_;

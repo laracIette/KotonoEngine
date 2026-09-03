@@ -7,14 +7,18 @@ class UDevice;
 class UIndexBuffer final
 {
 public:
-	void Init(UDevice& device);
-	void Cleanup(UDevice& device) const;
+	explicit UIndexBuffer(UDevice& device);
+
+	void Init();
+	void Cleanup() const;
 
 	void CmdBind(VkCommandBuffer commandBuffer) const;
 
-	u32 RegisterIndices(UDevice& device, std::span<u32 const> indices);
+	u32 RegisterIndices(std::span<u32 const> indices);
 
 private:
+	UDevice& device_;
+
 	UAllocatedBuffer dataBuffer_;
 	u32 indexCount_;
 };

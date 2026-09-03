@@ -3,25 +3,30 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <kotono_graphics/Color.h>
 #include <kotono_graphics/InterfaceRenderGraph.h>
-#include <kotono_object/Interface.h>
 #include <kotono_platform/glm_utils.h>
 #include <kotono_timing/Clock.h>
 
 WSceneRenderer::WSceneRenderer()
 	: depthNear_{ 0.1f }
 	, verticalFOV_{ 90.0f }
+	, viewPosition_{ WorldUpVector - WorldForwardVector }
+	, viewRotation_{ glm::identity<glm::quat>() }
 {
-}
-
-void WSceneRenderer::Remove()
-{
-	Base::Remove();
-
-	GetInterface()->UnregisterRenderTarget(renderTarget_);
 }
 
 void WSceneRenderer::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
 {
+	USceneView const sceneView{
+		.view = GetViewMatrix(),
+		.proj = GetProjectionMatrix(),
+		.viewPos = GetViewPosition(),
+		.extent = GetSize(),
+		.time = SClock::Now(),
+		.fov = GetVerticalFOV(),
+		.aspectRatio = GetAspectRatio(),
+		.depthNear = GetDepthNear(),
+	};
+
 	interfaceRenderGraph.drawDatas.push_back({
 		.scissor = GetScissor(),
 		.sortKey = static_cast<f32>(GetLayer()),
@@ -32,7 +37,7 @@ void WSceneRenderer::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderG
 		.model = "${ENGINE_DIRECTORY}/Graphics/assets/models/rectangle.obj",
 		.scalars = {},
 		.vectors = { Colors::White },
-		.textures = { renderTarget_ },
+		.textures = { sceneView },
 		.isVisible = true,
 	});
 }
@@ -60,22 +65,6 @@ glm::mat4 WSceneRenderer::GetViewMatrix() const
 glm::mat4 WSceneRenderer::GetProjectionMatrix() const
 {
 	return calculate_reverse_z_infinite_perspective(glm::radians(verticalFOV_), GetAspectRatio(), depthNear_);
-}
-
-void WSceneRenderer::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
-	renderTarget_ = GetInterface()->RegisterRenderTarget(glm::uvec2{ displaySettings.bounds });
-	
-	GetInterface()->SetRenderTargetData(renderTarget_, {
-		.view = GetViewMatrix(),
-		.proj = GetProjectionMatrix(),
-		.viewPos = GetViewPosition(),
-		.extent = GetSize(),
-		.time = SClock::Now(),
-		.fov = GetVerticalFOV(),
-		.aspectRatio = GetAspectRatio(),
-		.depthNear = GetDepthNear(),
-	});
 }
 
 #include "generated/SceneRenderer.generated.inl"

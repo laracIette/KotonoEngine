@@ -12,7 +12,6 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/DirectionalLightData.h"
     "include/kotono_graphics/DrawData.h"
     "include/kotono_graphics/Font.h"
-    "include/kotono_graphics/InterfacePendingResources.h"
     "include/kotono_graphics/InterfaceRenderGraph.h"
     "include/kotono_graphics/Mobility.h"
     "include/kotono_graphics/PointLightData.h"

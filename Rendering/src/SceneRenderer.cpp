@@ -5,47 +5,100 @@
 #include <array>
 #include <ranges>
 
-USceneRenderer::USceneRenderer(UDevice& device)
+USceneRenderer::USceneRenderer(UDevice& device, USwapchain& swapchain, UPipelineResourceManager& pipelineResourceManager)
 	: device_{ device }
+	, swapchain_{ swapchain }
+	, pipelineResourceManager_{ pipelineResourceManager }
 {
 }
 
-void USceneRenderer::Cleanup(UPipelineResourceManager& pipelineResourceManager) const
+void USceneRenderer::Cleanup() const
 {
 	for (auto const& sceneRenders : frameDatas_ | std::views::transform(&FrameData::sceneRenders))
 	{
 		for (auto const& sceneRender : sceneRenders | std::views::values)
 		{
-			sceneRender.Cleanup(pipelineResourceManager);
+			sceneRender.Cleanup(pipelineResourceManager_);
 		}
 	}
 }
 
-u32 USceneRenderer::CreateScene(
-	  glm::uvec2 const& extent
-	, VkFormat swapchainFormat
-	, UPipelineResourceManager& pipelineResourceManager
-)
+u32 USceneRenderer::GetSceneRenderTarget(glm::uvec2 const& extent, u32 frameIndex)
+{
+	auto& frameData{ frameDatas_[frameIndex] };
+
+	u32 handle;
+
+	auto const it{ frameData.sceneRenderExtents.find(extent) };
+	if (it != frameData.sceneRenderExtents.end())
+	{
+		handle = it->second;
+	}
+	else
+	{
+		handle = CreateScene(extent);
+		frameData.sceneRenderExtents.insert({ extent, handle });
+	}
+
+	auto const& sceneRender{ frameData.sceneRenders.at(handle) };
+	return sceneRender.GetRenderTarget();
+}
+
+u32 USceneRenderer::GetSceneRender(glm::uvec2 const& extent, u32 frameIndex)
+{
+	auto& frameData{ frameDatas_[frameIndex] };
+
+	auto const it{ frameData.availableSceneRenderExtents.find(extent) };
+	if (it != frameData.availableSceneRenderExtents.end())
+	{
+		auto const handle{ it->second };
+		frameData.availableSceneRenderExtents.erase(it);
+		return handle;
+	}
+	
+	throw std::runtime_error{ "couldn't find an available scene render!" };
+}
+
+void USceneRenderer::RefreshAvailableSceneRenders(u32 frameIndex)
+{
+	auto& frameData{ frameDatas_[frameIndex] };
+	frameData.availableSceneRenderExtents = frameData.sceneRenderExtents;
+}
+
+void USceneRenderer::ClearUnusedSceneRenders(u32 frameIndex)
+{
+	auto& frameData{ frameDatas_[frameIndex] };
+
+	for (auto const& [extent, handle] : frameData.availableSceneRenderExtents)
+	{
+		auto const it{ frameData.sceneRenderExtents.find(extent) };
+		if (it != frameData.sceneRenderExtents.end())
+		{
+			frameData.sceneRenderExtents.erase(it);
+		}
+
+		DeleteScene(handle);
+	}
+}
+
+u32 USceneRenderer::CreateScene(glm::uvec2 const& extent)
 {
 	for (auto& frameData : frameDatas_)
 	{
-		USceneRender scene{ device_ };
-		scene.Init(extent, swapchainFormat, pipelineResourceManager);
+		USceneRender scene{ device_, swapchain_ };
+		scene.Init(extent, pipelineResourceManager_);
 		frameData.sceneRenders.insert({ currentScene_, scene });
 	}
 
 	return currentScene_++;
 }
 
-void USceneRenderer::DeleteScene(
-	  u32 handle
-	, UPipelineResourceManager& pipelineResourceManager
-)
+void USceneRenderer::DeleteScene(u32 handle)
 {
 	for (auto& frameData : frameDatas_)
 	{
 		auto const& scene{ frameData.sceneRenders.at(handle) };
-		scene.Cleanup(pipelineResourceManager);
+		scene.Cleanup(pipelineResourceManager_);
 		frameData.sceneRenders.erase(handle);
 	}
 }

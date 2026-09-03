@@ -93,7 +93,7 @@ VkResult USwapchain::QueuePresent(VkSemaphore semaphore, u32 imageIndex) const
 
 void USwapchain::CreateSwapchain()
 {
-	auto const swapchainSupport{ device_.GetSwapchainSupportDetails() };
+	auto const swapchainSupport{ device_.QuerySwapchainSupportDetails() };
 
 	auto const surfaceFormat{ chooseSurfaceFormat(swapchainSupport.formats) };
 	auto const presentMode{ choosePresentMode(swapchainSupport.presentModes) };
@@ -108,7 +108,7 @@ void USwapchain::CreateSwapchain()
 
 	KT_LOG(ELogImportanceLevel::High, "Graphics", "swap chain image count: {0}", imageCount);
 
-	UQueueFamilyIndices const indices{ device_.GetQueueFamilyIndices() };
+	UQueueFamilyIndices const& indices{ device_.GetQueueFamilyIndices() };
 	std::array const queueFamilyIndices{ indices.graphicsFamily.value(), indices.presentFamily.value() };
 
 	VkSharingMode imageSharingMode;

@@ -11,27 +11,25 @@
 #include "TransformBufferData.h"
 #include <array>
 #include <kotono_platform/Device.h>
+#include <kotono_platform/Swapchain.h>
 #include <ranges>
 
 static constexpr u32 MAX_DRAW_DATAS{ 65536 };
 
-USceneRender::USceneRender(UDevice& device)
+USceneRender::USceneRender(UDevice& device, USwapchain& swapchain)
 	: device_{ device }
+	, swapchain_{ swapchain }
 	, frameContextBuffer_{ device }
 {
 }
 
-void USceneRender::Init(
-	  glm::uvec2 const& extent
-	, VkFormat swapchainFormat
-	, UPipelineResourceManager& pipelineResourceManager
-)
+void USceneRender::Init(glm::uvec2 const& extent, UPipelineResourceManager& pipelineResourceManager)
 {
 	extent_ = { extent.x, extent.y };
 
 	frameContextBuffer_.Init();
 
-	CreateImageResources(device_.GetDepthFormat(), swapchainFormat);
+	CreateImageResources(device_.GetDepthFormat());
 	RegisterFrameContextBufferTextures(pipelineResourceManager);
 
 	drawDataBuffer_ = device_.CreateAllocatedBuffer(
@@ -196,7 +194,7 @@ void USceneRender::CmdDraw(USceneRenderContext const& renderContext, USceneRende
 	CmdBarrierPostProcessWriteToRead(renderContext.commandBuffer);
 }
 
-void USceneRender::CreateImageResources(VkFormat depthFormat, VkFormat swapchainFormat)
+void USceneRender::CreateImageResources(VkFormat depthFormat)
 {
 	auto const [width, height] { extent_ };
 	colorTarget_ =			device_.CreateAllocatedImage(UAllocatedImageCreateInfo::CreateSampled2D(width, height, 1, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
@@ -204,7 +202,7 @@ void USceneRender::CreateImageResources(VkFormat depthFormat, VkFormat swapchain
 	normalTarget_ =			device_.CreateAllocatedImage(UAllocatedImageCreateInfo::CreateSampled2D(width, height, 1, VK_FORMAT_R16G16B16A16_SFLOAT,	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
 	ormTarget_ =			device_.CreateAllocatedImage(UAllocatedImageCreateInfo::CreateSampled2D(width, height, 1, VK_FORMAT_R8G8B8A8_UNORM,			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
 	depthTarget_ =			device_.CreateAllocatedImage(UAllocatedImageCreateInfo::CreateSampled2D(width, height, 1, depthFormat,						VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,	VK_IMAGE_ASPECT_DEPTH_BIT));
-	postProcessTarget_ =	device_.CreateAllocatedImage(UAllocatedImageCreateInfo::CreateSampled2D(width, height, 1, swapchainFormat,					VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
+	postProcessTarget_ =	device_.CreateAllocatedImage(UAllocatedImageCreateInfo::CreateSampled2D(width, height, 1, swapchain_.GetFormat(),			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			VK_IMAGE_ASPECT_COLOR_BIT));
 }
 
 void USceneRender::CleanupImageResources() const

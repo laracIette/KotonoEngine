@@ -13,7 +13,6 @@
 #include "Texture.h"
 #include <assert.h>
 #include <kotono_common/log.h>
-#include <kotono_graphics/InterfacePendingResources.h>
 #include <kotono_graphics/InterfaceRenderGraph.h>
 #include <kotono_graphics/SceneRenderGraph.h>
 #include <kotono_graphics/SceneView.h>
@@ -59,9 +58,10 @@ static GetOrCreateResult<T> GetOrCreate(UPath const& path, std::unordered_map<UP
 URenderer::URenderer(UDevice& device, USurface& surface)
 	: device_{ device }
 	, swapchain_{ device, surface }
-	, sceneRenderer_{ device }
-	, interfaceRenderer_{ device }
 	, pipelineResourceManager_{ device }
+	, sceneRenderer_{ device, swapchain_, pipelineResourceManager_ }
+	, interfaceRenderer_{ device }
+	, indexBuffer_{ device }
 {
 }
 
@@ -74,7 +74,7 @@ void URenderer::Init()
 	CreateSyncObjects();
 
 	pipelineResourceManager_.Init();
-	indexBuffer_.Init(device_);
+	indexBuffer_.Init();
 
 	interfaceRenderer_.Init();
 
@@ -113,10 +113,10 @@ void URenderer::Cleanup()
 		delete shader;
 	}
 
-	sceneRenderer_.Cleanup(pipelineResourceManager_);
+	sceneRenderer_.Cleanup();
 	interfaceRenderer_.Cleanup();
 
-	indexBuffer_.Cleanup(device_);
+	indexBuffer_.Cleanup();
 	pipelineResourceManager_.Cleanup();
 
 	swapchain_.Cleanup();
@@ -132,61 +132,27 @@ void URenderer::Cleanup()
 	KT_LOG(ELogImportanceLevel::High, "Graphics", "cleaned up renderer");
 }
 
-void URenderer::RegisterPendingTextures(std::span<UPendingTexture const> pendingTextures)
-{
-	for (auto const& [path, handle] : pendingTextures)
-	{
-		textureHandles_[handle] = GetOrCreateTexture(path)->GetIndex();
-	}
-}
-
-void URenderer::RegisterPendingSceneRenders(std::span<UPendingSceneRender const> pendingSceneRenders)
-{
-	for (auto const& [handle, extent] : pendingSceneRenders)
-	{
-		u32 const renderTarget{ sceneRenderer_.CreateScene(
-			  extent
-			, swapchain_.GetFormat()
-			, pipelineResourceManager_
-		) };
-		sceneRenders_[handle] = renderTarget;
-	}
-}
-
-void URenderer::UnregisterUnusedSceneRenders(std::unordered_multimap<glm::uvec2, EHandle> const& unsedSceneRenders)
-{
-	for (auto const handle : unsedSceneRenders | std::views::values)
-	{
-		auto const it{ sceneRenders_.find(handle) };
-		if (it != sceneRenders_.end())
-		{
-			sceneRenderer_.DeleteScene(it->second, pipelineResourceManager_);
-			sceneRenders_.erase(it);
-		}
-	}
-}
-
-void URenderer::DrawFrame(
-	  std::unordered_map<EHandle, USceneView> const& interfaceSceneViews
-	, USceneRenderGraph const& sceneRenderGraph
-	, UInterfaceRenderGraph const& interfaceRenderGraph
-)
+void URenderer::DrawFrame(USceneRenderGraph const& sceneRenderGraph, UInterfaceRenderGraph const& interfaceRenderGraph)
 {
 	u32 const frameIndex{ GetGameThreadFrame() };
 
-	for (auto const& [handle, sceneRender] : sceneRenders_)
-	{
-		textureHandles_[handle] = sceneRenderer_.GetSceneRenderTarget(frameIndex, sceneRender);
-	}
-
-	auto const sceneDrawCommands{ MakeDrawCommands(sceneRenderGraph.drawDatas) };
+	auto const sceneDrawCommands{ MakeDrawCommands(sceneRenderGraph.drawDatas, frameIndex) };
 	auto const pointLights{ MakePointLights(sceneRenderGraph.pointLightDatas) };
 
-	auto const sceneRenderViews{ interfaceSceneViews
-		| std::views::transform([this](auto&& tuple) {
-		auto const& [handle, sceneView] { tuple };
+	auto const interfaceDrawCommands{ MakeDrawCommands(interfaceRenderGraph.drawDatas, frameIndex) };
+
+	sceneRenderer_.RefreshAvailableSceneRenders(frameIndex);
+
+	auto const sceneRenderViews{ interfaceRenderGraph.drawDatas
+		| std::views::transform(&UDrawData::textures)
+		| std::views::join
+		| std::views::filter([](UDrawData::Texture const& texture) {
+			return std::holds_alternative<USceneView>(texture);
+		})
+		| std::views::transform([this, frameIndex](UDrawData::Texture const& texture) {
+			auto const& sceneView{ std::get<USceneView>(texture) };
 			return USceneRenderView{
-				.sceneRender = sceneRenders_.at(handle),
+				.sceneRender = sceneRenderer_.GetSceneRender(sceneView.extent, frameIndex),
 				.sceneView = MakeFrameContextSceneView(sceneView),
 			};
 		})
@@ -208,10 +174,9 @@ void URenderer::DrawFrame(
 		);
 	}
 
-	auto const interfaceDrawCommands{ MakeDrawCommands(interfaceRenderGraph.drawDatas) };
 	interfaceRenderer_.UpdateInterfaceBuffers(interfaceDrawCommands, frameIndex);
 
-
+	sceneRenderer_.ClearUnusedSceneRenders(frameIndex);
 
 	if constexpr (IS_MULTI_THREADED)
 	{
@@ -418,11 +383,12 @@ void URenderer::RecordCommandBuffer(
 		);
 	}
 
+	auto const [width, height] { swapchain_.GetExtent() };
 	VkViewport const viewport{
-		.x = 0,
-		.y = 0,
-		.width = 1600,
-		.height = 900,
+		.x = 0.0f,
+		.y = 0.0f,
+		.width = static_cast<f32>(width),
+		.height = static_cast<f32>(height),
 		.minDepth = 0.0f,
 		.maxDepth = 1.0f,
 	};
@@ -622,12 +588,12 @@ UFrameContextSceneView URenderer::MakeFrameContextSceneView(USceneView const& sc
 	};
 }
 
-std::vector<UDrawCommand> URenderer::MakeDrawCommands(std::span<UDrawData const> drawDatas)
+std::vector<UDrawCommand> URenderer::MakeDrawCommands(std::span<UDrawData const> drawDatas, u32 frameIndex)
 {
 	return drawDatas
 		| std::views::filter(&UDrawData::isVisible)
 		| std::views::enumerate
-		| std::views::transform([this](auto&& tuple) {
+		| std::views::transform([this, frameIndex](auto&& tuple) {
 			auto const& [index, drawData] { tuple };
 
 			auto const* shader{ GetOrCreateShader(drawData.shader) };
@@ -644,8 +610,8 @@ std::vector<UDrawCommand> URenderer::MakeDrawCommands(std::span<UDrawData const>
 			std::ranges::copy(drawData.scalars | std::views::take(16), scalars.begin());
 			std::ranges::copy(drawData.vectors | std::views::take(16), vectors.begin());
 			std::ranges::copy(drawData.textures | std::views::take(16)
-				| std::views::transform([this](EHandle handle) {
-					return textureHandles_.at(handle);
+				| std::views::transform([this, frameIndex](UDrawData::Texture const& texture) {
+					return GetTextureHandle(texture, frameIndex);
 				})
 				, textures.begin()
 			);
@@ -800,7 +766,7 @@ AModel* URenderer::GetOrCreateModel(UPath const& path)
 		model->Init(device_);
 
 		auto const indices{ model->GetIndices() };
-		model->SetFirstIndex(indexBuffer_.RegisterIndices(device_, indices));
+		model->SetFirstIndex(indexBuffer_.RegisterIndices(indices));
 	}
 	return model;
 }
@@ -813,4 +779,18 @@ AShader* URenderer::GetOrCreateShader(UPath const& path)
 		shader->Init(device_, pipelineResourceManager_.GetPipelineLayout(), swapchain_.GetFormat());
 	}
 	return shader;
+}
+
+u32 URenderer::GetTextureHandle(UDrawData::Texture const& texture, u32 frameIndex)
+{
+	if (std::holds_alternative<UPath>(texture))
+	{
+		auto const& path{ std::get<UPath>(texture) };
+		return GetOrCreateTexture(path)->GetIndex();
+	}
+	else
+	{
+		auto const& sceneView{ std::get<USceneView>(texture) };
+		return sceneRenderer_.GetSceneRenderTarget(sceneView.extent, frameIndex);
+	}
 }

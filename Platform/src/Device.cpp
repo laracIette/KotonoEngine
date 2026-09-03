@@ -401,6 +401,11 @@ void UDevice::CleanupImageView(UAllocatedImage const& allocatedImage) const
 	allocatedImage.CleanupImageView(device_);
 }
 
+USwapchainSupportDetails UDevice::QuerySwapchainSupportDetails() const
+{
+	return querySwapchainSupport(physicalDevice_, surface_.GetSurface());
+}
+
 void UDevice::CreatePhysicalDevice()
 {
 	u32 deviceCount;
@@ -464,7 +469,6 @@ void UDevice::CreatePhysicalDevice()
 
 	physicalDevice_ = bestDevice;
 	queueFamilyIndices_ = findQueueFamilies(bestDevice, surface_.GetSurface());
-	swapchainSupportDetails_ = querySwapchainSupport(bestDevice, surface_.GetSurface());
 }
 
 void UDevice::CreateDevice()

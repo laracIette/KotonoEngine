@@ -8,19 +8,19 @@
 #include <kotono_platform/glm_utils.h>
 
 WViewController::WViewController()
-	: isFocused_{ false }
+	: isActive_{ false }
 	, speed_{ 1.0f }
 	, sensitivity_{ 0.005f }
 	, pitch_{ 0.0f }
-	, yaw_{ glm::radians(180.0f) }
+	, yaw_{ glm::radians(0.0f) }
 {
 }
 
 WidgetPtr WViewController::Build()
 {
     UPtr button{ UCreate<WButton>{ "Button" }() };
-    button->SetOnActive([this]() { isFocused_ = true; });
-    button->SetOnInactive([this]() { isFocused_ = false; });
+    button->SetOnActive([this]() { isActive_ = true; });
+    button->SetOnInactive([this]() { isActive_ = false; });
 
 	auto const widgetTree{ UChildrenOwnerTree{ UCreate<WStack>{}(), {
 		new UWidgetTreeLeaf{ sceneRenderer_ = UCreate<WSceneRenderer>{ "Scene Renderer" }() },
@@ -59,7 +59,7 @@ void WViewController::Remove()
 
 b8 WViewController::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
 {
-	if (!isFocused_)
+	if (!isActive_)
 	{
 		return INPUT_UNHANDLED;
 	}
@@ -130,7 +130,7 @@ void WViewController::OnKeyboardEKeyDown() const
 
 void WViewController::OnMouseVerticalScroll(f32 delta)
 {
-	if (!isFocused_)
+	if (!isActive_)
 	{
 		return;
 	}
@@ -141,7 +141,7 @@ void WViewController::OnMouseVerticalScroll(f32 delta)
 
 void WViewController::Translate(glm::vec3 const& delta) const
 {
-	if (!isFocused_)
+	if (!isActive_)
 	{
 		return;
 	}

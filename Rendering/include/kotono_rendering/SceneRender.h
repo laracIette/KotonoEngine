@@ -18,6 +18,7 @@ struct UMaterialBufferData;
 class UDevice;
 class UIndexBuffer;
 class UPipelineResourceManager;
+class USwapchain;
 struct USceneRenderContext final
 {
 	VkCommandBuffer	commandBuffer;
@@ -40,9 +41,9 @@ struct USceneRenderData final
 class USceneRender final
 {
 public:
-	explicit USceneRender(UDevice& device);
+	explicit USceneRender(UDevice& device, USwapchain& swapchain);
 
-	void Init(glm::uvec2 const& extent, VkFormat swapchainFormat, UPipelineResourceManager& pipelineResourceManager);
+	void Init(glm::uvec2 const& extent, UPipelineResourceManager& pipelineResourceManager);
 	void Cleanup(UPipelineResourceManager& pipelineResourceManager) const;
 
 	u32 GetRenderTarget() const;
@@ -67,7 +68,7 @@ public:
 	void CmdDraw(USceneRenderContext const& renderContext, USceneRenderData const& renderData) const;
 
 private:
-	void CreateImageResources(VkFormat depthFormat, VkFormat swapchainFormat);
+	void CreateImageResources(VkFormat depthFormat);
 	void CleanupImageResources() const;
 	void RegisterFrameContextBufferTextures(UPipelineResourceManager& pipelineResourceManager);
 	void UnregisterFrameContextBufferTextures(UPipelineResourceManager& pipelineResourceManager) const;
@@ -119,6 +120,7 @@ private:
 
 private:
 	UDevice& device_;
+	USwapchain& swapchain_;
 
 	VkExtent2D extent_;
 

@@ -5,9 +5,16 @@
 
 static constexpr u32 MAX_INDICES{ 1 << 20 };
 
-void UIndexBuffer::Init(UDevice& device)
+UIndexBuffer::UIndexBuffer(UDevice& device)
+    : device_{ device }
+    , dataBuffer_{}
+    , indexCount_{ 0 }
 {
-    dataBuffer_ = device.CreateAllocatedBuffer(
+}
+
+void UIndexBuffer::Init()
+{
+    dataBuffer_ = device_.CreateAllocatedBuffer(
           sizeof(u32) * MAX_INDICES
         , VK_BUFFER_USAGE_INDEX_BUFFER_BIT
         | VK_BUFFER_USAGE_TRANSFER_DST_BIT
@@ -15,9 +22,9 @@ void UIndexBuffer::Init(UDevice& device)
     );
 }
 
-void UIndexBuffer::Cleanup(UDevice& device) const
+void UIndexBuffer::Cleanup() const
 {
-    device.CleanupAllocatedBuffer(dataBuffer_);
+    device_.CleanupAllocatedBuffer(dataBuffer_);
 }
 
 void UIndexBuffer::CmdBind(VkCommandBuffer commandBuffer) const
@@ -30,13 +37,13 @@ void UIndexBuffer::CmdBind(VkCommandBuffer commandBuffer) const
     );
 }
 
-u32 UIndexBuffer::RegisterIndices(UDevice& device, std::span<u32 const> indices)
+u32 UIndexBuffer::RegisterIndices(std::span<u32 const> indices)
 {
     u32 const oldIndex{ indexCount_ };
     u32 const newIndex{ indexCount_ + static_cast<u32>(indices.size()) };
     assert(newIndex <= MAX_INDICES);
 
-    device.StagingUpload(
+    device_.StagingUpload(
           indices.data()
         , indices.size_bytes()
         , dataBuffer_

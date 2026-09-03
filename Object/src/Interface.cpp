@@ -1,8 +1,8 @@
 #include "Interface.h"
 
 #include "SceneContext.h"
-#include <kotono_common/enum_utils.h>
-#include <kotono_graphics/InterfacePendingResources.h>
+#include <glm/gtx/string_cast.hpp>
+#include <kotono_common/log.h>
 #include <kotono_input/Mouse.h>
 
 UInterface::UInterface()
@@ -20,71 +20,6 @@ UInterface::~UInterface()
 	{
 		widget_->Delete();
 	}
-}
-
-EHandle UInterface::GetTextureHandle(UPath const& path)
-{
-	auto const it{ textures_.find(path) };
-	if (it != textures_.end())
-	{
-		return it->second;
-	}
-
-	auto const handle{ ++currentHandle_ };
-	textures_[path] = handle;
-	pendingTextures_.push_back({ path, handle });
-	return handle;
-}
-
-void UInterface::ClearPendingTextures()
-{
-	pendingTextures_.clear();
-}
-
-EHandle UInterface::RegisterRenderTarget(glm::uvec2 const& extent)
-{
-	EHandle handle;
-
-	auto const it{ unusedSceneRenders_.find(extent) };
-	if (it != unusedSceneRenders_.end())
-	{
-		handle = it->second;
-		unusedSceneRenders_.erase(it);
-	}
-	else
-	{
-		handle = ++currentHandle_;
-		pendingSceneRenders_.push_back({ handle, extent });
-	}
-	sceneRenders_[handle] = extent;
-	return handle;
-}
-
-void UInterface::UnregisterRenderTarget(EHandle handle)
-{
-	auto const it{ sceneRenders_.find(handle) };
-	if (it != sceneRenders_.end())
-	{
-		unusedSceneRenders_.insert({ it->second, handle });
-		sceneRenders_.erase(it);
-	}
-
-	// todo: remove from pending scene render? depends if query each frame instead
-}
-
-void UInterface::SetRenderTargetData(EHandle handle, USceneView const& sceneView)
-{
-	sceneViews_[handle] = sceneView;
-}
-
-void UInterface::ClearPendingSceneRenders()
-{
-	pendingSceneRenders_.clear();
-}
-
-void UInterface::ClearUnusedSceneRenders()
-{
-	unusedSceneRenders_.clear();
 }
 
 void UInterface::PopulateInterfaceRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
@@ -105,17 +40,55 @@ void UInterface::PopulateSceneRenderGraph(USceneRenderGraph& sceneRenderGraph) c
 
 void UInterface::Update(f32 deltaTime)
 {
-	timeContext_.Update(deltaTime);
-
-	if (!widget_)
+	if (timeContext_.Update(deltaTime))
 	{
-		return;
 	}
 
-	widget_->Update(deltaTime);
+	if (widget_)
+	{
+		widget_->Update(deltaTime);
+	}
 
+	UpdateFocusedWidgets();
+}
+
+void UInterface::BeginDraw(glm::uvec2 const& bounds)
+{
+	bounds_ = bounds;
+	if (widget_)
+	{
+		widget_->Display({
+			.position = { 0.0f, 0.0f },
+			.bounds = glm::vec2{ bounds },
+			.layer = 0,
+			.scissor{
+				.offset = { 0, 0 },
+				.extent = bounds
+			},
+		});
+
+		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Object", "Main window widget displayed with a size of: {0}", glm::to_string(bounds));
+	}
+}
+
+void UInterface::EndDraw() const
+{
+	if (widget_)
+	{
+		widget_->Remove();
+
+		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Object", "Main window widget removed");
+	}
+}
+
+void UInterface::UpdateFocusedWidgets()
+{
 	WidgetSet focusedWidgets{};
-	widget_->PopulateFocusTree(focusedWidgets, Mouse.GetCursorPosition());
+
+	if (widget_)
+	{
+		widget_->PopulateFocusTree(focusedWidgets, Mouse.GetCursorPosition());
+	}
 
 	for (auto const& widget : focusedWidgets)
 	{
@@ -138,39 +111,3 @@ void UInterface::Update(f32 deltaTime)
 
 	focusedWidgets_ = focusedWidgets;
 }
-
-void UInterface::BeginDraw(glm::uvec2 const& bounds)
-{
-	bounds_ = bounds;
-	if (widget_)
-	{
-		widget_->Display({
-			.position = { 0.0f, 0.0f },
-			.bounds = glm::vec2{ bounds },
-			.layer = 0,
-			.scissor{
-				.offset = { 0, 0 },
-				.extent = bounds
-			},
-		});
-	}
-}
-
-void UInterface::EndDraw() const
-{
-	if (widget_)
-	{
-		widget_->Remove();
-	}
-}
-
-std::span<UPendingTexture const> UInterface::GetPendingTextures() const
-{ 
-	return pendingTextures_; 
-}
-
-std::span<UPendingSceneRender const> UInterface::GetPendingSceneRenders() const
-{ 
-	return pendingSceneRenders_;
-}
-

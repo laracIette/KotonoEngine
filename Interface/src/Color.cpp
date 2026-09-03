@@ -26,7 +26,7 @@ void WColor::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) co
 		.model = "${ENGINE_DIRECTORY}/Graphics/assets/models/rectangle.obj",
 		.scalars = {},
 		.vectors = { color_ },
-		.textures = { GetInterface()->GetTextureHandle("${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg") },
+		.textures = { "${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg" },
 		.isVisible = true,
 	});
 }

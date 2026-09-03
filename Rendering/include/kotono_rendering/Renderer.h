@@ -17,6 +17,8 @@
 #include <span>
 #include <thread>
 #include <unordered_map>
+#include <unordered_set>
+#include <variant>
 #include <vector>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
@@ -30,8 +32,6 @@ struct UDirectionalLightData;
 struct UDrawCommand;
 struct UDrawData;
 struct UInterfaceRenderGraph;
-struct UPendingSceneRender;
-struct UPendingTexture;
 struct UPointLight;
 struct UPointLightData;
 struct USceneRenderGraph;
@@ -64,18 +64,16 @@ public:
 	void Init();
 	void Cleanup();
 
-	void RegisterPendingTextures(std::span<UPendingTexture const> pendingTextures);
-	void RegisterPendingSceneRenders(std::span<UPendingSceneRender const> pendingSceneRenders);
-	void UnregisterUnusedSceneRenders(std::unordered_multimap<glm::uvec2, EHandle> const& unsedSceneRenders);
+	void UnregisterUnusedSceneRenders();
 
-	void DrawFrame(std::unordered_map<EHandle, USceneView> const& interfaceSceneViews, USceneRenderGraph const& sceneRenderGraph, UInterfaceRenderGraph const& interfaceRenderGraph);
+	void DrawFrame(USceneRenderGraph const& sceneRenderGraph, UInterfaceRenderGraph const& interfaceRenderGraph);
 
 private:
 	void InitSceneRendererResources();
 
 	void RecreateFrames();
 
-	bool TryAcquireNextImage(u32 frameIndex);
+	b8 TryAcquireNextImage(u32 frameIndex);
 
 	void CreateCommandPools();
 	void CreateCommandPool(u32 frameIndex);
@@ -99,7 +97,7 @@ private:
 	u32 GetRHIThreadFrame() const;
 
 	UFrameContextSceneView MakeFrameContextSceneView(USceneView const& sceneView) const;
-	std::vector<UDrawCommand> MakeDrawCommands(std::span<UDrawData const> drawDatas);
+	std::vector<UDrawCommand> MakeDrawCommands(std::span<UDrawData const> drawDatas, u32 frameIndex);
 	std::vector<UDirectionalLight> MakeDirectionalLights(std::span<UDirectionalLightData const> directionalLightDatas, UFrameContextSceneView const& sceneView, u32 sceneRender, u32 frameIndex);
 	std::vector<UPointLight> MakePointLights(std::span<UPointLightData const> pointLightDatas) const;
 
@@ -108,6 +106,8 @@ private:
 	ASampler* GetOrCreateSampler(UPath const& path);
 	AModel* GetOrCreateModel(UPath const& path);
 	AShader* GetOrCreateShader(UPath const& path);
+
+	u32 GetTextureHandle(std::variant<UPath, USceneView> const& texture, u32 frameIndex);
 
 private:
 	UDevice& device_;
@@ -139,7 +139,4 @@ private:
 	std::unordered_map<UPath, ASampler*> samplers_;
 	std::unordered_map<UPath, AModel*> models_;
 	std::unordered_map<UPath, AShader*> shaders_;
-
-	std::unordered_map<EHandle, u32> textureHandles_;
-	std::unordered_map<EHandle, u32> sceneRenders_;
 };

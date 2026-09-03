@@ -1,10 +1,10 @@
 #include "Image.h"
+
 #include <glm/ext/matrix_transform.hpp>
 #include <kotono_graphics/Color.h>
 #include <kotono_graphics/InterfaceRenderGraph.h>
-#include <kotono_object/Interface.h>
 
-WImage::WImage(const UPath& path)
+WImage::WImage(UPath const& path)
 	: path_{ path }
 {}
 
@@ -25,7 +25,7 @@ void WImage::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) co
 		.model = "${ENGINE_DIRECTORY}/Graphics/assets/models/rectangle.obj",
 		.scalars = {},
 		.vectors = { Colors::White },
-		.textures = { GetInterface()->GetTextureHandle(path_) },
+		.textures = { path_ },
 		.isVisible = true,
 	});
 }

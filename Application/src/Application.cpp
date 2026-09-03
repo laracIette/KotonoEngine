@@ -118,23 +118,17 @@ void UApplication::Update()
         USceneRenderGraph sceneRenderGraph{};
         interface_->PopulateSceneRenderGraph(sceneRenderGraph);
 
-        renderer_.RegisterPendingTextures(interface_->GetPendingTextures());
-        interface_->ClearPendingTextures();
-
-        renderer_.RegisterPendingSceneRenders(interface_->GetPendingSceneRenders());
-        interface_->ClearPendingSceneRenders();
-
-        renderer_.UnregisterUnusedSceneRenders(interface_->GetUnusedSceneRenders());
-        interface_->ClearUnusedSceneRenders();
-
-        renderer_.DrawFrame(interface_->GetSceneViews(), sceneRenderGraph, interfaceRenderGraph);
+        renderer_.DrawFrame(sceneRenderGraph, interfaceRenderGraph);
     }
 }
 
 void UApplication::Cleanup()
 {
-    interface_->EndDraw();
-    delete interface_;
+    if (interface_)
+    {
+        interface_->EndDraw();
+        delete interface_;
+    }
 
     AudioManager.Cleanup();
 
@@ -156,6 +150,9 @@ void UApplication::LogUPS() const
 
 void UApplication::OnWindowResized(glm::uvec2 const& extent)
 {
-    interface_->EndDraw();
-    interface_->BeginDraw(extent);
+    if (interface_)
+    {
+        interface_->EndDraw();
+        interface_->BeginDraw(extent);
+    }
 }

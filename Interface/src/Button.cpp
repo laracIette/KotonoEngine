@@ -84,4 +84,17 @@ b8 WButton::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
 	return INPUT_UNHANDLED;
 }
 
+void WButton::OnUnfocused()
+{
+	if (isPressed_)
+	{
+		isPressed_ = false;
+
+		if (onInactive_)
+		{
+			onInactive_();
+		}
+	}
+}
+
 #include "generated/Button.generated.inl"
