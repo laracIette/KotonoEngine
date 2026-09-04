@@ -1,30 +1,37 @@
 #include "GPUBuffers.h"
 
+#include <kotono_platform/Device.h>
+
 static constexpr u32 CLUSTER_AABB_COUNT{ 16 * 9 * 24 };
 
-void UGPUBuffers::Init(VkDevice device, VmaAllocator allocator)
+UGPUBuffers::UGPUBuffers(UDevice& device)
+    : device_{ device }
 {
-    clusterAABBBuffer_.Create(device, allocator
-        , sizeof(ClusterAABB) * CLUSTER_AABB_COUNT
+}
+
+void UGPUBuffers::Init()
+{
+    clusterAABBBuffer_ = device_.CreateAllocatedBuffer(
+          sizeof(ClusterAABB) * CLUSTER_AABB_COUNT
         , VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
         | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
         , 0
     );
    
-    clusterGridBuffer_.Create(device, allocator
-        , sizeof(ClusterGrid) * CLUSTER_AABB_COUNT
+    clusterGridBuffer_ = device_.CreateAllocatedBuffer(
+          sizeof(ClusterGrid) * CLUSTER_AABB_COUNT
         , VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
         | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
         , 0
     );
-    lightIndexBuffer_.Create(device, allocator
-        , sizeof(u32) * CLUSTER_AABB_COUNT
+    lightIndexBuffer_ = device_.CreateAllocatedBuffer(
+          sizeof(u32) * CLUSTER_AABB_COUNT
         , VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
         | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
         , 0
     );
-    lightCounterBuffer_.Create(device, allocator
-        , sizeof(u32)
+    lightCounterBuffer_ = device_.CreateAllocatedBuffer(
+          sizeof(u32)
         , VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
         | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
         | VK_BUFFER_USAGE_TRANSFER_DST_BIT
@@ -32,12 +39,12 @@ void UGPUBuffers::Init(VkDevice device, VmaAllocator allocator)
     );
 }
 
-void UGPUBuffers::Cleanup(VmaAllocator allocator) const
+void UGPUBuffers::Cleanup() const
 {
-    clusterAABBBuffer_.Cleanup(allocator);
-    clusterGridBuffer_.Cleanup(allocator);
-    lightIndexBuffer_.Cleanup(allocator);
-    lightCounterBuffer_.Cleanup(allocator);
+    device_.CleanupAllocatedBuffer(clusterAABBBuffer_);
+    device_.CleanupAllocatedBuffer(clusterGridBuffer_);
+    device_.CleanupAllocatedBuffer(lightIndexBuffer_);
+    device_.CleanupAllocatedBuffer(lightCounterBuffer_);
 }
 
 VkDeviceAddress UGPUBuffers::GetClusterAABBAddress() const

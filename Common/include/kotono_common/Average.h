@@ -6,7 +6,7 @@ template <std::floating_point T, size Size>
 class UAverage final
 {
 public:
-	UAverage() : index_{ 0 }, sum_{ 0 } {}
+	constexpr UAverage() : values_{}, index_ { 0 }, sum_{ 0 } {}
 
 	constexpr void Add(T time) noexcept
 	{

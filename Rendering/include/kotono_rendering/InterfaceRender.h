@@ -11,16 +11,17 @@ struct UTransformBufferData;
 struct UParametersBufferData;
 class UDevice;
 class UIndexBuffer;
+class UPipelineResourceManager;
 class UInterfaceRender final
 {
 public:
-	explicit UInterfaceRender(UDevice& device);
+	explicit UInterfaceRender(UDevice& device, UPipelineResourceManager& pipelineResourceManager);
 
 	void Init();
 	void Cleanup() const;
 
 	void UpdateBuffers(std::span<UDrawCommand const> drawCommands) const;
-	void CmdDraw(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, std::span<UDrawCommand const> drawCommands, UIndexBuffer const& indexBuffer) const;
+	void CmdDraw(VkCommandBuffer commandBuffer, std::span<UDrawCommand const> drawCommands, UIndexBuffer const& indexBuffer) const;
 
 private:
 	UFrameContextAddresses MakeFrameContextAddresses() const;
@@ -29,12 +30,13 @@ private:
 	std::vector<UTransformBufferData> MakeTransformBuffer(std::span<UDrawCommand const> drawCommands) const;
 	std::vector<UParametersBufferData> MakeParametersBuffer(std::span<UDrawCommand const> drawCommands) const;
 
-	void CmdDrawFrameInterface(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, std::span<UDrawCommand const> drawCommands, UIndexBuffer const& indexBuffer) const;
+	void CmdDrawFrameInterface(VkCommandBuffer commandBuffer, std::span<UDrawCommand const> drawCommands, UIndexBuffer const& indexBuffer) const;
 
-	void CmdPushConstants(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, u32 drawIndex, u32 directionalIndex) const;
+	void CmdPushConstants(VkCommandBuffer commandBuffer, u32 drawIndex, u32 directionalIndex) const;
 
 private:
 	UDevice& device_;
+	UPipelineResourceManager& pipelineResourceManager_;
 
 	UFrameContextBuffer frameContextBuffer_;
 

@@ -39,6 +39,7 @@ WidgetPtr WMainWindow::Build()
 									new UWidgetTreeLeaf{ UCreate<WSceneExplorer>{ "Scene Explorer" }(Ptr()) }
 								},
 								new UWidgetTreeLeaf{ UCreate<WViewController>{ "Scene View Controller" }() },
+								new UWidgetTreeLeaf{ UCreate<WViewController>{ "Scene View Controller" }() },
 							} }
 						},
 						new UWidgetTreeLeaf{ UCreate<WAssetExplorer>{ "Asset Explorer" }() },

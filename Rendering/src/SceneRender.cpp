@@ -16,21 +16,24 @@
 
 static constexpr u32 MAX_DRAW_DATAS{ 65536 };
 
-USceneRender::USceneRender(UDevice& device, USwapchain& swapchain)
+USceneRender::USceneRender(UDevice& device, USwapchain& swapchain, UPipelineResourceManager& pipelineResourceManager)
 	: device_{ device }
 	, swapchain_{ swapchain }
+	, pipelineResourceManager_{ pipelineResourceManager }
 	, frameContextBuffer_{ device }
+	, gpuBuffers_{ device }
+	, lightBuffers_{ device, pipelineResourceManager }
 {
 }
 
-void USceneRender::Init(glm::uvec2 const& extent, UPipelineResourceManager& pipelineResourceManager)
+void USceneRender::Init(glm::uvec2 const& extent)
 {
 	extent_ = { extent.x, extent.y };
 
 	frameContextBuffer_.Init();
 
 	CreateImageResources(device_.GetDepthFormat());
-	RegisterFrameContextBufferTextures(pipelineResourceManager);
+	RegisterFrameContextBufferTextures();
 
 	drawDataBuffer_ = device_.CreateAllocatedBuffer(
 		  sizeof(UDrawDataBufferData) * MAX_DRAW_DATAS
@@ -61,26 +64,26 @@ void USceneRender::Init(glm::uvec2 const& extent, UPipelineResourceManager& pipe
 		| VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
 	);
 
-	lightBuffers_.Init(pipelineResourceManager, device_.GetDevice(), device_.GetAllocator(), device_.GetDepthFormat());
-	gpuBuffers_.Init(device_.GetDevice(), device_.GetAllocator());
+	lightBuffers_.Init();
+	gpuBuffers_.Init();
 
 	isAABBDirty_ = true;
 }
 
-void USceneRender::Cleanup(UPipelineResourceManager& pipelineResourceManager) const
+void USceneRender::Cleanup() const
 {
 	frameContextBuffer_.Cleanup();
 
 	CleanupImageResources();
-	UnregisterFrameContextBufferTextures(pipelineResourceManager);
+	UnregisterFrameContextBufferTextures();
 
 	device_.CleanupAllocatedBuffer(drawDataBuffer_);
 	device_.CleanupAllocatedBuffer(transformBuffer_);
 	device_.CleanupAllocatedBuffer(parametersBuffer_);
 	device_.CleanupAllocatedBuffer(materialBuffer_);
 
-	lightBuffers_.Cleanup(device_.GetDevice(), device_.GetAllocator());
-	gpuBuffers_.Cleanup(device_.GetAllocator());
+	lightBuffers_.Cleanup();
+	gpuBuffers_.Cleanup();
 }
 
 u32 USceneRender::GetRenderTarget() const
@@ -215,24 +218,24 @@ void USceneRender::CleanupImageResources() const
 	device_.CleanupAllocatedImage(postProcessTarget_);
 }
 
-void USceneRender::RegisterFrameContextBufferTextures(UPipelineResourceManager& pipelineResourceManager)
+void USceneRender::RegisterFrameContextBufferTextures()
 {
-	depthIndex_ = pipelineResourceManager.RegisterTexture(depthTarget_.imageView);
-	albedoIndex_ = pipelineResourceManager.RegisterTexture(albedoTarget_.imageView);
-	normalIndex_ = pipelineResourceManager.RegisterTexture(normalTarget_.imageView);
-	ormIndex_ = pipelineResourceManager.RegisterTexture(ormTarget_.imageView);
-	colorIndex_ = pipelineResourceManager.RegisterTexture(colorTarget_.imageView);
-	postProcessIndex_ = pipelineResourceManager.RegisterTexture(postProcessTarget_.imageView);
+	depthIndex_ = pipelineResourceManager_.RegisterTexture(depthTarget_.imageView);
+	albedoIndex_ = pipelineResourceManager_.RegisterTexture(albedoTarget_.imageView);
+	normalIndex_ = pipelineResourceManager_.RegisterTexture(normalTarget_.imageView);
+	ormIndex_ = pipelineResourceManager_.RegisterTexture(ormTarget_.imageView);
+	colorIndex_ = pipelineResourceManager_.RegisterTexture(colorTarget_.imageView);
+	postProcessIndex_ = pipelineResourceManager_.RegisterTexture(postProcessTarget_.imageView);
 }
 
-void USceneRender::UnregisterFrameContextBufferTextures(UPipelineResourceManager& pipelineResourceManager) const
+void USceneRender::UnregisterFrameContextBufferTextures() const
 {
-	pipelineResourceManager.UnregisterTexture(depthIndex_);
-	pipelineResourceManager.UnregisterTexture(albedoIndex_);
-	pipelineResourceManager.UnregisterTexture(normalIndex_);
-	pipelineResourceManager.UnregisterTexture(ormIndex_);
-	pipelineResourceManager.UnregisterTexture(colorIndex_);
-	pipelineResourceManager.UnregisterTexture(postProcessIndex_);
+	pipelineResourceManager_.UnregisterTexture(depthIndex_);
+	pipelineResourceManager_.UnregisterTexture(albedoIndex_);
+	pipelineResourceManager_.UnregisterTexture(normalIndex_);
+	pipelineResourceManager_.UnregisterTexture(ormIndex_);
+	pipelineResourceManager_.UnregisterTexture(colorIndex_);
+	pipelineResourceManager_.UnregisterTexture(postProcessIndex_);
 }
 
 UFrameContextAddresses USceneRender::MakeFrameContextAddresses() const
@@ -323,7 +326,7 @@ std::vector<UMaterialBufferData> USceneRender::MakeMaterialBuffer(std::span<UDra
 void USceneRender::CmdUpdateClusterAABB(USceneRenderContext const& renderContext) const
 {
 	vkCmdBindPipeline(renderContext.commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, renderContext.clusterAABBPipeline);
-	CmdPushConstants(renderContext.commandBuffer, renderContext.pipelineLayout, 0, 0);
+	CmdPushConstants(renderContext.commandBuffer, 0, 0);
 	vkCmdDispatch(renderContext.commandBuffer, 16, 9, 24); // todo: variable
 }
 
@@ -364,7 +367,7 @@ void USceneRender::CmdBarrierComputeClearWriteToReadWrite(VkCommandBuffer comman
 void USceneRender::CmdDispatchLightBinning(USceneRenderContext const& renderContext) const
 {
 	vkCmdBindPipeline(renderContext.commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, renderContext.lightBinningPipeline);
-	CmdPushConstants(renderContext.commandBuffer, renderContext.pipelineLayout, 0, 0);
+	CmdPushConstants(renderContext.commandBuffer, 0, 0);
 	vkCmdDispatch(renderContext.commandBuffer, 16, 9, 24);
 }
 
@@ -388,7 +391,7 @@ void USceneRender::CmdDrawFrameShadowMaps(USceneRenderContext const& renderConte
 	{
 		lightBuffers_.CmdBeginRenderingShadowMapTarget(renderContext.commandBuffer, i);
 		// todo: add cast shadow check
-		CmdDrawFrame(renderContext.commandBuffer, renderContext.pipelineLayout, renderData.drawCommands, i);
+		CmdDrawFrame(renderContext.commandBuffer, renderData.drawCommands, i);
 
 		CmdEndRendering(renderContext.commandBuffer);
 	}
@@ -440,7 +443,7 @@ void USceneRender::CmdDrawFrameDepthPrePass(USceneRenderContext const& renderCon
 {
 	renderContext.indexBuffer.CmdBind(renderContext.commandBuffer);
 	vkCmdBindPipeline(renderContext.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderContext.depthPrePassPipeline);
-	CmdDrawFrame(renderContext.commandBuffer, renderContext.pipelineLayout, renderData.drawCommands, 0);
+	CmdDrawFrame(renderContext.commandBuffer, renderData.drawCommands, 0);
 }
 
 void USceneRender::CmdBarrierDepthWriteToRead(VkCommandBuffer commandBuffer) const
@@ -542,7 +545,7 @@ void USceneRender::CmdDrawFrameGBuffer(USceneRenderContext const& renderContext,
 	for (auto const& [pipeline, drawCommands] : pipelineDrawCommands)
 	{
 		vkCmdBindPipeline(renderContext.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-		CmdDrawFrame(renderContext.commandBuffer, renderContext.pipelineLayout, drawCommands, 0);
+		CmdDrawFrame(renderContext.commandBuffer, drawCommands, 0);
 	}
 }
 
@@ -621,7 +624,7 @@ void USceneRender::CmdBeginRenderingDeferredLighting(VkCommandBuffer commandBuff
 void USceneRender::CmdDrawFrameDeferredLighting(USceneRenderContext const& renderContext) const
 {
 	vkCmdBindPipeline(renderContext.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderContext.deferredLightingPipeline);
-	CmdPushConstants(renderContext.commandBuffer, renderContext.pipelineLayout, 0, 0);
+	CmdPushConstants(renderContext.commandBuffer, 0, 0);
 	vkCmdDraw(renderContext.commandBuffer, 3, 1, 0, 0);
 }
 
@@ -681,7 +684,7 @@ void USceneRender::CmdBeginRenderingPostProcess(VkCommandBuffer commandBuffer) c
 void USceneRender::CmdDrawFramePostProcess(USceneRenderContext const& renderContext) const
 {
 	vkCmdBindPipeline(renderContext.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderContext.postProcessPipeline);
-	CmdPushConstants(renderContext.commandBuffer, renderContext.pipelineLayout, 0, 0);
+	CmdPushConstants(renderContext.commandBuffer, 0, 0);
 	vkCmdDraw(renderContext.commandBuffer, 3, 1, 0, 0);
 }
 
@@ -723,11 +726,11 @@ void USceneRender::CmdUseViewport(VkCommandBuffer commandBuffer) const
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 }
 
-void USceneRender::CmdDrawFrame(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, std::span<UDrawCommand const> drawCommands, u32 directionalIndex) const
+void USceneRender::CmdDrawFrame(VkCommandBuffer commandBuffer, std::span<UDrawCommand const> drawCommands, u32 directionalIndex) const
 {
 	for (auto const& drawCommand : drawCommands)
 	{
-		CmdPushConstants(commandBuffer, pipelineLayout, drawCommand.drawIndex, directionalIndex);
+		CmdPushConstants(commandBuffer, drawCommand.drawIndex, directionalIndex);
 		
 		vkCmdDrawIndexed(commandBuffer
 			, drawCommand.indexCount
@@ -739,12 +742,7 @@ void USceneRender::CmdDrawFrame(VkCommandBuffer commandBuffer, VkPipelineLayout 
 	}
 }
 
-void USceneRender::CmdPushConstants(
-	  VkCommandBuffer commandBuffer
-	, VkPipelineLayout pipelineLayout
-	, u32 drawIndex
-	, u32 directionalIndex
-) const
+void USceneRender::CmdPushConstants(VkCommandBuffer commandBuffer, u32 drawIndex, u32 directionalIndex) const
 {
 	const UPushConstants pc{
 		.frameContextBufferAddress = frameContextBuffer_.GetAddress(),
@@ -753,7 +751,7 @@ void USceneRender::CmdPushConstants(
 	};
 
 	vkCmdPushConstants(commandBuffer
-		, pipelineLayout
+		, pipelineResourceManager_.GetPipelineLayout()
 		, VK_SHADER_STAGE_ALL
 		, 0
 		, sizeof(UPushConstants)

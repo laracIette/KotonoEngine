@@ -3,6 +3,7 @@
 #include <kotono_common/types.h>
 #include <kotono_platform/AllocatedBuffer.h>
 #include <vulkan/vulkan_core.h>
+class UDevice;
 class UGPUBuffers final
 {
 public:
@@ -19,8 +20,10 @@ public:
 	};
 
 public:
-	void Init(VkDevice device, VmaAllocator allocator);
-	void Cleanup(VmaAllocator allocator) const;
+	explicit UGPUBuffers(UDevice& device);
+
+	void Init();
+	void Cleanup() const;
 
 	VkDeviceAddress GetClusterAABBAddress() const;
 	VkDeviceAddress GetClusterGridAddress() const;
@@ -30,6 +33,8 @@ public:
 	VkBuffer GetLightCounterBuffer() const;
 
 private:
+	UDevice& device_;
+
 	UAllocatedBuffer clusterAABBBuffer_; 
 	UAllocatedBuffer clusterGridBuffer_;
 	UAllocatedBuffer lightIndexBuffer_;

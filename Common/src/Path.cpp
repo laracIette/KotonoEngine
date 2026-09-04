@@ -54,7 +54,7 @@ std::string UPath::Stem() const
 
 b8 UPath::IsEmpty() const
 {
-    return ToPath().empty();
+    return source_.empty();
 }
 
 b8 UPath::IsFile() const

@@ -60,7 +60,7 @@ URenderer::URenderer(UDevice& device, USurface& surface)
 	, swapchain_{ device, surface }
 	, pipelineResourceManager_{ device }
 	, sceneRenderer_{ device, swapchain_, pipelineResourceManager_ }
-	, interfaceRenderer_{ device }
+	, interfaceRenderer_{ device, pipelineResourceManager_ }
 	, indexBuffer_{ device }
 {
 }
@@ -136,6 +136,8 @@ void URenderer::DrawFrame(USceneRenderGraph const& sceneRenderGraph, UInterfaceR
 {
 	u32 const frameIndex{ GetGameThreadFrame() };
 
+	sceneRenderer_.RefreshAvailableSceneRenders(frameIndex);
+
 	auto const sceneDrawCommands{ MakeDrawCommands(sceneRenderGraph.drawDatas, frameIndex) };
 	auto const pointLights{ MakePointLights(sceneRenderGraph.pointLightDatas) };
 
@@ -151,13 +153,15 @@ void URenderer::DrawFrame(USceneRenderGraph const& sceneRenderGraph, UInterfaceR
 		})
 		| std::views::transform([this, frameIndex](UDrawData::Texture const& texture) {
 			auto const& sceneView{ std::get<USceneView>(texture) };
-			return USceneRenderView{
+			return SceneRenderView{
 				.sceneRender = sceneRenderer_.GetSceneRender(sceneView.extent, frameIndex),
 				.sceneView = MakeFrameContextSceneView(sceneView),
 			};
 		})
 		| std::ranges::to<std::vector>()
 	};
+
+	sceneRenderer_.ClearUnusedSceneRenders(frameIndex);
 
 	for (auto const& [sceneRender, sceneView] : sceneRenderViews)
 	{
@@ -175,8 +179,6 @@ void URenderer::DrawFrame(USceneRenderGraph const& sceneRenderGraph, UInterfaceR
 	}
 
 	interfaceRenderer_.UpdateInterfaceBuffers(interfaceDrawCommands, frameIndex);
-
-	sceneRenderer_.ClearUnusedSceneRenders(frameIndex);
 
 	if constexpr (IS_MULTI_THREADED)
 	{
@@ -348,7 +350,7 @@ void URenderer::CreateSyncObjects()
 
 void URenderer::RecordCommandBuffer(
 	  u32 frameIndex
-	, std::span<USceneRenderView const> sceneRenderViews
+	, std::span<SceneRenderView const> sceneRenderViews
 	, std::span<UDrawCommand const> sceneDrawCommands
 	, std::span<UDrawCommand const> interfaceDrawCommands
 	, u32 directionalLightCount
@@ -362,12 +364,11 @@ void URenderer::RecordCommandBuffer(
 	pipelineResourceManager_.CmdBindDescriptorSet(commandBuffer);
 
 	// Scene
-	for (auto const handle : sceneRenderViews | std::views::transform(&USceneRenderView::sceneRender))
+	for (auto const handle : sceneRenderViews | std::views::transform(&SceneRenderView::sceneRender))
 	{
 		sceneRenderer_.CmdDrawScene(frameIndex, handle
 			, {
 				.commandBuffer = commandBuffer,
-				.pipelineLayout = pipelineResourceManager_.GetPipelineLayout(),
 				.clusterAABBPipeline = clusterAABBPipeline_,
 				.lightBinningPipeline = lightBinningPipeline_,
 				.shadowPrePassPipeline = shadowPrePassPipeline_,
@@ -400,7 +401,6 @@ void URenderer::RecordCommandBuffer(
 	CmdBeginRenderingInterface(commandBuffer, frameIndex);
 	interfaceRenderer_.CmdDrawInterface(commandBuffer
 		, frameIndex
-		, pipelineResourceManager_.GetPipelineLayout()
 		, interfaceDrawCommands
 		, indexBuffer_
 	);

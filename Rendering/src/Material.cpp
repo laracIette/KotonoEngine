@@ -7,14 +7,10 @@
 AMaterial::AMaterial(UPath const& path)
 	: AAsset(path)
 {
-}
-
-AMaterial::Data AMaterial::GetData() const
-{
 	nlohmann::json json{};
 	SSerializer::Deserialize(json, GetPath());
 
-	return{
+	data_ = {
 		.albedo = UDeserialize<UPath>{}(json["albedo"]),
 		.normal = UDeserialize<UPath>{}(json["normal"]),
 		.orm = UDeserialize<UPath>{}(json["orm"]),

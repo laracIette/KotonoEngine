@@ -4,6 +4,7 @@
 #include "DrawDataBufferData.h"
 #include "IndexBuffer.h"
 #include "ParametersBufferData.h"
+#include "PipelineResourceManager.h"
 #include "PushConstants.h"
 #include "TransformBufferData.h"
 #include <kotono_platform/Device.h>
@@ -12,8 +13,17 @@
 
 static constexpr u32 MAX_DRAW_DATAS{ 65536 };
 
-UInterfaceRender::UInterfaceRender(UDevice& device)
+static constexpr b8 equal(VkRect2D const& left, VkRect2D const& right) noexcept
+{
+	return left.offset.x == right.offset.x
+		&& left.offset.y == right.offset.y
+		&& left.extent.width == right.extent.width
+		&& left.extent.height == right.extent.height;
+}
+
+UInterfaceRender::UInterfaceRender(UDevice& device, UPipelineResourceManager& pipelineResourceManager)
 	: device_{ device }
+	, pipelineResourceManager_{ pipelineResourceManager }
 	, frameContextBuffer_{ device }
 {
 }
@@ -71,12 +81,11 @@ void UInterfaceRender::UpdateBuffers(std::span<UDrawCommand const> drawCommands)
 
 void UInterfaceRender::CmdDraw(
 	  VkCommandBuffer commandBuffer
-	, VkPipelineLayout pipelineLayout
 	, std::span<UDrawCommand const> drawCommands
 	, UIndexBuffer const& indexBuffer
 ) const
 {
-	CmdDrawFrameInterface(commandBuffer, pipelineLayout, drawCommands, indexBuffer);
+	CmdDrawFrameInterface(commandBuffer, drawCommands, indexBuffer);
 }
 
 UFrameContextAddresses UInterfaceRender::MakeFrameContextAddresses() const
@@ -138,40 +147,47 @@ std::vector<UParametersBufferData> UInterfaceRender::MakeParametersBuffer(std::s
 
 void UInterfaceRender::CmdDrawFrameInterface(
 	  VkCommandBuffer commandBuffer
-	, VkPipelineLayout pipelineLayout
 	, std::span<UDrawCommand const> drawCommands
 	, UIndexBuffer const& indexBuffer
 ) const
 {
-	VkPipeline currentPipeline{ VK_NULL_HANDLE };
-
 	indexBuffer.CmdBind(commandBuffer);
-	
-	for (auto const& drawCommand : drawCommands)
+		
+	for (size i{ 0 }; i < drawCommands.size();)
 	{
-		if (currentPipeline != drawCommand.pipeline)
+		auto const& drawCommand{ drawCommands[i] };
+
+		u32 instances{ 1 };
+		while (i + instances < drawCommands.size())
 		{
-			currentPipeline = drawCommand.pipeline;
-			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, drawCommand.pipeline);
+			if (drawCommands[i + instances].pipeline != drawCommand.pipeline
+			 || !equal(drawCommands[i + instances].scissor, drawCommand.scissor))
+			{
+				break;
+			}
+			++instances;
 		}
 
-		CmdPushConstants(commandBuffer, pipelineLayout, drawCommand.drawIndex, 0);
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, drawCommand.pipeline);
+
+		CmdPushConstants(commandBuffer, drawCommand.drawIndex, 0);
 
 		vkCmdSetScissor(commandBuffer, 0, 1, &drawCommand.scissor);
 
 		vkCmdDrawIndexed(commandBuffer
 			, drawCommand.indexCount
-			, 1
+			, instances
 			, drawCommand.firstIndex
 			, 0
 			, 0
 		);
+
+		i += instances;
 	}
 }
 
 void UInterfaceRender::CmdPushConstants(
 	  VkCommandBuffer commandBuffer
-	, VkPipelineLayout pipelineLayout
 	, u32 drawIndex
 	, u32 directionalIndex
 ) const
@@ -183,7 +199,7 @@ void UInterfaceRender::CmdPushConstants(
 	};
 
 	vkCmdPushConstants(commandBuffer
-		, pipelineLayout
+		, pipelineResourceManager_.GetPipelineLayout()
 		, VK_SHADER_STAGE_ALL
 		, 0
 		, sizeof(UPushConstants)

@@ -22,7 +22,6 @@ class USwapchain;
 struct USceneRenderContext final
 {
 	VkCommandBuffer	commandBuffer;
-	VkPipelineLayout pipelineLayout;
 
 	VkPipeline clusterAABBPipeline;
 	VkPipeline lightBinningPipeline;
@@ -41,10 +40,10 @@ struct USceneRenderData final
 class USceneRender final
 {
 public:
-	explicit USceneRender(UDevice& device, USwapchain& swapchain);
+	explicit USceneRender(UDevice& device, USwapchain& swapchain, UPipelineResourceManager& pipelineResourceManager);
 
-	void Init(glm::uvec2 const& extent, UPipelineResourceManager& pipelineResourceManager);
-	void Cleanup(UPipelineResourceManager& pipelineResourceManager) const;
+	void Init(glm::uvec2 const& extent);
+	void Cleanup() const;
 
 	u32 GetRenderTarget() const;
 	u32 GetDirectionalLightShadowMapTargetIndex(u32 index) const;
@@ -70,8 +69,8 @@ public:
 private:
 	void CreateImageResources(VkFormat depthFormat);
 	void CleanupImageResources() const;
-	void RegisterFrameContextBufferTextures(UPipelineResourceManager& pipelineResourceManager);
-	void UnregisterFrameContextBufferTextures(UPipelineResourceManager& pipelineResourceManager) const;
+	void RegisterFrameContextBufferTextures();
+	void UnregisterFrameContextBufferTextures() const;
 
 	UFrameContextAddresses MakeFrameContextAddresses() const;
 	UFrameContextTargets MakeFrameContextTargets() const;
@@ -115,12 +114,13 @@ private:
 	void CmdEndRendering(VkCommandBuffer commandBuffer) const;
 
 	void CmdUseViewport(VkCommandBuffer commandBuffer) const;
-	void CmdDrawFrame(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, std::span<UDrawCommand const> drawCommands, u32 directionalIndex) const;
-	void CmdPushConstants(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, u32 drawIndex, u32 directionalIndex) const;
+	void CmdDrawFrame(VkCommandBuffer commandBuffer, std::span<UDrawCommand const> drawCommands, u32 directionalIndex) const;
+	void CmdPushConstants(VkCommandBuffer commandBuffer, u32 drawIndex, u32 directionalIndex) const;
 
 private:
 	UDevice& device_;
 	USwapchain& swapchain_;
+	UPipelineResourceManager& pipelineResourceManager_;
 
 	VkExtent2D extent_;
 

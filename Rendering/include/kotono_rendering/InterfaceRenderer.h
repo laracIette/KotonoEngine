@@ -5,6 +5,7 @@
 #include <span>
 struct UDrawCommand;
 class UDevice;
+class UPipelineResourceManager;
 class UInterfaceRenderer final
 {
 public:
@@ -14,16 +15,17 @@ public:
 	};
 
 public:
-	explicit UInterfaceRenderer(UDevice& device);
+	explicit UInterfaceRenderer(UDevice& device, UPipelineResourceManager& pipelineResourceManager);
 
 	void Init();
 	void Cleanup() const;
 
 	void UpdateInterfaceBuffers(std::span<UDrawCommand const> drawCommands, u32 frameIndex);
-	void CmdDrawInterface(VkCommandBuffer commandBuffer, u32 frameIndex, VkPipelineLayout pipelineLayout, std::span<UDrawCommand const> drawCommands, UIndexBuffer const& indexBuffer) const;
+	void CmdDrawInterface(VkCommandBuffer commandBuffer, u32 frameIndex, std::span<UDrawCommand const> drawCommands, UIndexBuffer const& indexBuffer) const;
 
 private:
-	UDevice& device_;
+	UDevice& device_; 
+	UPipelineResourceManager& pipelineResourceManager_;
 
 	UFramesInFlightArray<FrameData> frameDatas_;
 };

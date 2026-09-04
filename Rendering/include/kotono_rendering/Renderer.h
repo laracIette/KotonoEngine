@@ -22,11 +22,6 @@
 #include <vector>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
-struct USceneRenderView
-{
-	u32 sceneRender;
-	UFrameContextSceneView sceneView;
-};
 struct UDirectionalLight;
 struct UDirectionalLightData;
 struct UDrawCommand;
@@ -58,6 +53,12 @@ public:
 		u32		imageIndex;
 	};
 
+	struct SceneRenderView
+	{
+		u32 sceneRender;
+		UFrameContextSceneView sceneView;
+	};
+
 public:
 	explicit URenderer(UDevice& device, USurface& surface);
 
@@ -79,7 +80,7 @@ private:
 	void CreateCommandPool(u32 frameIndex);
 	void CreateCommandBuffers();
 	void CreateCommandBuffer(u32 frameIndex);
-	void RecordCommandBuffer(u32 frameIndex, std::span<USceneRenderView const> sceneRenderViews, std::span<UDrawCommand const> sceneDrawCommands, std::span<UDrawCommand const> interfaceDrawCommands, u32 directionalLightCount) const;
+	void RecordCommandBuffer(u32 frameIndex, std::span<SceneRenderView const> sceneRenderViews, std::span<UDrawCommand const> sceneDrawCommands, std::span<UDrawCommand const> interfaceDrawCommands, u32 directionalLightCount) const;
 	void BeginCommandBuffer(VkCommandBuffer commandBuffer) const;
 
 	void CmdBarrierSwapchainNoneToWrite(VkCommandBuffer commandBuffer, u32 frameIndex) const;

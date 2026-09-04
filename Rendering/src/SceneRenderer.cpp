@@ -1,7 +1,6 @@
 #include "SceneRenderer.h"
 
 #include "DrawCommand.h"
-#include <algorithm>
 #include <array>
 #include <ranges>
 
@@ -18,21 +17,22 @@ void USceneRenderer::Cleanup() const
 	{
 		for (auto const& sceneRender : sceneRenders | std::views::values)
 		{
-			sceneRender.Cleanup(pipelineResourceManager_);
+			sceneRender.Cleanup();
 		}
 	}
 }
 
-u32 USceneRenderer::GetSceneRenderTarget(glm::uvec2 const& extent, u32 frameIndex)
+USceneRenderer::RenderTarget USceneRenderer::GetSceneRenderTarget(glm::uvec2 const& extent, u32 frameIndex)
 {
 	auto& frameData{ frameDatas_[frameIndex] };
 
-	u32 handle;
+	SceneRenderHandle handle;
 
-	auto const it{ frameData.sceneRenderExtents.find(extent) };
-	if (it != frameData.sceneRenderExtents.end())
+	auto const it{ frameData.availableSceneRenderExtents.find(extent) };
+	if (it != frameData.availableSceneRenderExtents.end())
 	{
 		handle = it->second;
+		frameData.availableSceneRenderExtents.erase(it);
 	}
 	else
 	{
@@ -44,7 +44,7 @@ u32 USceneRenderer::GetSceneRenderTarget(glm::uvec2 const& extent, u32 frameInde
 	return sceneRender.GetRenderTarget();
 }
 
-u32 USceneRenderer::GetSceneRender(glm::uvec2 const& extent, u32 frameIndex)
+USceneRenderer::SceneRenderHandle USceneRenderer::GetSceneRender(glm::uvec2 const& extent, u32 frameIndex)
 {
 	auto& frameData{ frameDatas_[frameIndex] };
 
@@ -85,31 +85,25 @@ u32 USceneRenderer::CreateScene(glm::uvec2 const& extent)
 {
 	for (auto& frameData : frameDatas_)
 	{
-		USceneRender scene{ device_, swapchain_ };
-		scene.Init(extent, pipelineResourceManager_);
+		USceneRender scene{ device_, swapchain_, pipelineResourceManager_ };
+		scene.Init(extent);
 		frameData.sceneRenders.insert({ currentScene_, scene });
 	}
 
 	return currentScene_++;
 }
 
-void USceneRenderer::DeleteScene(u32 handle)
+void USceneRenderer::DeleteScene(SceneRenderHandle handle)
 {
 	for (auto& frameData : frameDatas_)
 	{
 		auto const& scene{ frameData.sceneRenders.at(handle) };
-		scene.Cleanup(pipelineResourceManager_);
+		scene.Cleanup();
 		frameData.sceneRenders.erase(handle);
 	}
 }
 
-u32 USceneRenderer::GetSceneRenderTarget(u32 frameIndex, u32 handle) const
-{
-	return frameDatas_[frameIndex].sceneRenders.at(handle)
-		.GetRenderTarget();
-}
-
-u32 USceneRenderer::GetSceneDirectionalLightShadowMapTargetIndex(u32 frameIndex, u32 handle, u32 index) const
+u32 USceneRenderer::GetSceneDirectionalLightShadowMapTargetIndex(u32 frameIndex, SceneRenderHandle handle, u32 index) const
 {
 	return frameDatas_[frameIndex].sceneRenders.at(handle)
 		.GetDirectionalLightShadowMapTargetIndex(index);
@@ -117,7 +111,7 @@ u32 USceneRenderer::GetSceneDirectionalLightShadowMapTargetIndex(u32 frameIndex,
 
 void USceneRenderer::UpdateSceneBuffers(
 	  u32 frameIndex
-	, u32 handle
+	, SceneRenderHandle handle
 	, UFrameContextSceneView const& sceneView
 	, std::span<UDrawCommand const> drawCommands
 	, std::span<UDirectionalLight const> directionalLights
@@ -131,7 +125,7 @@ void USceneRenderer::UpdateSceneBuffers(
 
 void USceneRenderer::CmdDrawScene(
 	  u32 frameIndex
-	, u32 handle
+	, SceneRenderHandle handle
 	, USceneRenderContext const& renderContext
 	, USceneRenderData const& renderData
 ) const

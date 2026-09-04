@@ -8,6 +8,7 @@
 struct UDirectionalLight;
 struct UFrameContextSceneView;
 struct UPointLight;
+class UDevice;
 class UPipelineResourceManager;
 class ULightBuffers final
 {
@@ -19,8 +20,10 @@ public:
 	};
 
 public:
-	void Init(UPipelineResourceManager& pipelineResourceManager, VkDevice device, VmaAllocator allocator, VkFormat shadowMapFormat);
-	void Cleanup(VkDevice device, VmaAllocator allocator) const;
+	explicit ULightBuffers(UDevice& device, UPipelineResourceManager& pipelineResourceManager);
+
+	void Init();
+	void Cleanup() const;
 
 	void UpdateBuffers(std::span<UDirectionalLight const> directionalLights, std::span<UPointLight const> pointLights) const;
 
@@ -35,10 +38,13 @@ public:
 	void CmdBarrierShadowMapsWriteToShaderRead(VkCommandBuffer commandBuffer) const;
 
 private:
-	void CreateBuffers(VkDevice device, VmaAllocator allocator);
-	void CreateShadowMapResources(UPipelineResourceManager& pipelineResourceManager, VkDevice device, VmaAllocator allocator, VkFormat shadowMapFormat);
+	void CreateBuffers();
+	void CreateShadowMapResources();
 
 private:
+	UDevice& device_;
+	UPipelineResourceManager& pipelineResourceManager_;
+
 	UAllocatedBuffer directionalLightBuffer_;
 	UAllocatedBuffer pointLightBuffer_;
 	std::vector<ShadowMapTarget> directionalLightShadowMapTargets_;

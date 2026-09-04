@@ -3,12 +3,13 @@
 #include "DrawCommand.h"
 #include "InterfaceRender.h"
 
-UInterfaceRenderer::UInterfaceRenderer(UDevice& device)
+UInterfaceRenderer::UInterfaceRenderer(UDevice& device, UPipelineResourceManager& pipelineResourceManager)
 	: device_{ device }
+	, pipelineResourceManager_{ pipelineResourceManager }
 	, frameDatas_{ 
-		UInterfaceRender{ device },
-		UInterfaceRender{ device },
-		UInterfaceRender{ device }
+		UInterfaceRender{ device, pipelineResourceManager },
+		UInterfaceRender{ device, pipelineResourceManager },
+		UInterfaceRender{ device, pipelineResourceManager }
 	}
 {
 }
@@ -38,11 +39,10 @@ void UInterfaceRenderer::UpdateInterfaceBuffers(std::span<UDrawCommand const> dr
 void UInterfaceRenderer::CmdDrawInterface(
 	  VkCommandBuffer commandBuffer
 	, u32 frameIndex
-	, VkPipelineLayout pipelineLayout
 	, std::span<UDrawCommand const> drawCommands
 	, UIndexBuffer const& indexBuffer
 ) const
 {
 	frameDatas_[frameIndex].interfaceRender
-		.CmdDraw(commandBuffer, pipelineLayout, drawCommands, indexBuffer);
+		.CmdDraw(commandBuffer, drawCommands, indexBuffer);
 }

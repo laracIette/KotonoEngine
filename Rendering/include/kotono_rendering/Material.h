@@ -18,5 +18,8 @@ public:
 public:
 	AMaterial(UPath const& path);
 
-	Data GetData() const;
+	Data const& GetData() const { return data_; }
+
+private:
+	Data data_;
 };
