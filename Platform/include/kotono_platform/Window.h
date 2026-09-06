@@ -12,8 +12,8 @@ public:
 	void Init(); 
 	void Cleanup();
 
-	// Executes vkDeviceWaitIdle(VkDevice) if true, else executes glfwPollEvents()
-	bool GetShouldClose(VkDevice device) const;
+	// Executes glfwPollEvents() when returns false
+	b8 GetShouldClose() const;
 
 	GLFWwindow*			GetGLFWWindow() const { return window_; }
 	glm::uvec2 const&	GetSize() const { return size_; }

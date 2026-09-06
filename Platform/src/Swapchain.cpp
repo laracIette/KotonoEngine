@@ -93,7 +93,7 @@ VkResult USwapchain::QueuePresent(VkSemaphore semaphore, u32 imageIndex) const
 
 void USwapchain::CreateSwapchain()
 {
-	auto const swapchainSupport{ device_.QuerySwapchainSupportDetails() };
+	auto const swapchainSupport{ device_.QuerySwapchainSupportDetails(surface_.GetSurface()) };
 
 	auto const surfaceFormat{ chooseSurfaceFormat(swapchainSupport.formats) };
 	auto const presentMode{ choosePresentMode(swapchainSupport.presentModes) };

@@ -40,13 +40,14 @@ public:
 	void RefreshAvailableSceneRenders(u32 frameIndex);
 	void ClearUnusedSceneRenders(u32 frameIndex);
 
-	u32 CreateScene(glm::uvec2 const& extent);
-	void DeleteScene(SceneRenderHandle handle);
-
 	u32 GetSceneDirectionalLightShadowMapTargetIndex(u32 frameIndex, SceneRenderHandle handle, u32 index) const;
 
 	void UpdateSceneBuffers(u32 frameIndex, SceneRenderHandle handle, UFrameContextSceneView const& sceneView, std::span<UDrawCommand const> drawCommands, std::span<UDirectionalLight const> directionalLights, std::span<UPointLight const> pointLights, u32 samplerIndex);
 	void CmdDrawScene(u32 frameIndex, SceneRenderHandle handle, USceneRenderContext const& renderContext, USceneRenderData const& renderData) const;
+
+private:
+	SceneRenderHandle CreateScene(glm::uvec2 const& extent);
+	void DeleteScene(SceneRenderHandle handle);
 
 private:
 	UDevice& device_;
@@ -54,5 +55,5 @@ private:
 	UPipelineResourceManager& pipelineResourceManager_;
 
 	UFramesInFlightArray<FrameData> frameDatas_;
-	u32 currentScene_;
+	SceneRenderHandle currentScene_;
 };

@@ -3,7 +3,6 @@
 #include "AllocatedBuffer.h"
 #include "AllocatedImage.h"
 #include "Context.h"
-#include "Surface.h"
 #include "vk_utils.h"
 #include <algorithm>
 #include <array>
@@ -184,15 +183,14 @@ static b8 isDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
 		&& featuresSupported;
 }
 
-UDevice::UDevice(UContext& context, USurface& surface)
+UDevice::UDevice(UContext& context)
 	: context_{ context }
-	, surface_{ surface }
 {
 }
 
-void UDevice::Init()
+void UDevice::Init(VkSurfaceKHR mainSurface)
 {
-	CreatePhysicalDevice();
+	CreatePhysicalDevice(mainSurface);
 	CreateDevice();
 	CreateAllocator();
 	CreateCommandPool();
@@ -401,12 +399,12 @@ void UDevice::CleanupImageView(UAllocatedImage const& allocatedImage) const
 	allocatedImage.CleanupImageView(device_);
 }
 
-USwapchainSupportDetails UDevice::QuerySwapchainSupportDetails() const
+USwapchainSupportDetails UDevice::QuerySwapchainSupportDetails(VkSurfaceKHR surface) const
 {
-	return querySwapchainSupport(physicalDevice_, surface_.GetSurface());
+	return querySwapchainSupport(physicalDevice_, surface);
 }
 
-void UDevice::CreatePhysicalDevice()
+void UDevice::CreatePhysicalDevice(VkSurfaceKHR mainSurface)
 {
 	u32 deviceCount;
 	vkEnumeratePhysicalDevices(context_.GetInstance(), &deviceCount, nullptr);
@@ -424,7 +422,7 @@ void UDevice::CreatePhysicalDevice()
 
 	for (auto const& device : devices)
 	{
-		if (isDeviceSuitable(device, surface_.GetSurface()))
+		if (isDeviceSuitable(device, mainSurface))
 		{
 			VkPhysicalDeviceProperties deviceProperties;
 			vkGetPhysicalDeviceProperties(device, &deviceProperties);
@@ -468,7 +466,7 @@ void UDevice::CreatePhysicalDevice()
 	}
 
 	physicalDevice_ = bestDevice;
-	queueFamilyIndices_ = findQueueFamilies(bestDevice, surface_.GetSurface());
+	queueFamilyIndices_ = findQueueFamilies(physicalDevice_, mainSurface);
 }
 
 void UDevice::CreateDevice()
@@ -542,9 +540,6 @@ void UDevice::CreateDevice()
 
 		.queueCreateInfoCount = static_cast<u32>(queueCreateInfos.size()),
 		.pQueueCreateInfos = queueCreateInfos.data(),
-
-		.enabledLayerCount = 0,
-		.ppEnabledLayerNames = VK_NULL_HANDLE,
 
 		.enabledExtensionCount = static_cast<u32>(DEVICE_EXTENSIONS.size()),
 		.ppEnabledExtensionNames = DEVICE_EXTENSIONS.data(),

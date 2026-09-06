@@ -13,12 +13,12 @@ USceneRenderer::USceneRenderer(UDevice& device, USwapchain& swapchain, UPipeline
 
 void USceneRenderer::Cleanup() const
 {
-	for (auto const& sceneRenders : frameDatas_ | std::views::transform(&FrameData::sceneRenders))
+	for (auto const& sceneRender : frameDatas_ 
+		| std::views::transform(&FrameData::sceneRenders) 
+		| std::views::join 
+		| std::views::values)
 	{
-		for (auto const& sceneRender : sceneRenders | std::views::values)
-		{
-			sceneRender.Cleanup();
-		}
+		sceneRender.Cleanup();
 	}
 }
 
@@ -81,28 +81,6 @@ void USceneRenderer::ClearUnusedSceneRenders(u32 frameIndex)
 	}
 }
 
-u32 USceneRenderer::CreateScene(glm::uvec2 const& extent)
-{
-	for (auto& frameData : frameDatas_)
-	{
-		USceneRender scene{ device_, swapchain_, pipelineResourceManager_ };
-		scene.Init(extent);
-		frameData.sceneRenders.insert({ currentScene_, scene });
-	}
-
-	return currentScene_++;
-}
-
-void USceneRenderer::DeleteScene(SceneRenderHandle handle)
-{
-	for (auto& frameData : frameDatas_)
-	{
-		auto const& scene{ frameData.sceneRenders.at(handle) };
-		scene.Cleanup();
-		frameData.sceneRenders.erase(handle);
-	}
-}
-
 u32 USceneRenderer::GetSceneDirectionalLightShadowMapTargetIndex(u32 frameIndex, SceneRenderHandle handle, u32 index) const
 {
 	return frameDatas_[frameIndex].sceneRenders.at(handle)
@@ -132,4 +110,26 @@ void USceneRenderer::CmdDrawScene(
 {
 	frameDatas_[frameIndex].sceneRenders.at(handle)
 		.CmdDraw(renderContext, renderData);
+}
+
+USceneRenderer::SceneRenderHandle USceneRenderer::CreateScene(glm::uvec2 const& extent)
+{
+	for (auto& frameData : frameDatas_)
+	{
+		USceneRender scene{ device_, swapchain_, pipelineResourceManager_ };
+		scene.Init(extent);
+		frameData.sceneRenders.insert({ currentScene_, scene });
+	}
+
+	return currentScene_++;
+}
+
+void USceneRenderer::DeleteScene(SceneRenderHandle handle)
+{
+	for (auto& frameData : frameDatas_)
+	{
+		auto const& scene{ frameData.sceneRenders.at(handle) };
+		scene.Cleanup();
+		frameData.sceneRenders.erase(handle);
+	}
 }

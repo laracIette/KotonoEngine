@@ -1,5 +1,6 @@
 #include "Application.h"
 
+#include <GLFW/glfw3.h>
 #include <kotono_audio/AudioManager.h>
 #include <kotono_common/log.h>
 #include <kotono_core/Interface.h>
@@ -25,10 +26,10 @@
 #endif
 
 UApplication::UApplication()
-    : window_{}
-    , context_{}
+    : context_{}
+    , device_{ context_ }
+    , window_{}
     , surface_{ window_, context_ }
-    , device_{ context_, surface_ }
     , renderer_{ device_, surface_ }
 {
 }
@@ -37,10 +38,12 @@ void UApplication::Run()
 {
     Init();
 
-    while (!window_.GetShouldClose(device_.GetDevice()))
+    while (!window_.GetShouldClose())
     {
         Update();
     }
+
+    vkDeviceWaitIdle(device_.GetDevice());
 
     Cleanup();
 }
@@ -49,10 +52,15 @@ void UApplication::Init()
 {
     SSpvCompiler::CompileUpdated();
 
-    window_.Init();
+    if (glfwInit() == GLFW_FALSE)
+    {
+        throw std::runtime_error{ "Failed to initialize GLFW" };
+    }
+
     context_.Init();
+    window_.Init();
     surface_.Init();
-    device_.Init();
+    device_.Init(surface_.GetSurface());
     renderer_.Init();
 
     AudioManager.Init();
@@ -139,6 +147,8 @@ void UApplication::Cleanup()
     surface_.Cleanup();
     context_.Cleanup();
     window_.Cleanup();
+
+    glfwTerminate();
 
 #   ifndef NDEBUG
     KObject::CheckDebugRegistry();

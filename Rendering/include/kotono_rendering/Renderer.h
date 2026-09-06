@@ -65,8 +65,6 @@ public:
 	void Init();
 	void Cleanup();
 
-	void UnregisterUnusedSceneRenders();
-
 	void DrawFrame(USceneRenderGraph const& sceneRenderGraph, UInterfaceRenderGraph const& interfaceRenderGraph);
 
 private:
@@ -98,9 +96,11 @@ private:
 	u32 GetRHIThreadFrame() const;
 
 	UFrameContextSceneView MakeFrameContextSceneView(USceneView const& sceneView) const;
-	std::vector<UDrawCommand> MakeDrawCommands(std::span<UDrawData const> drawDatas, u32 frameIndex);
+	std::vector<UDrawCommand> MakeInterfaceDrawCommands(std::span<UDrawData const> drawDatas, u32 frameIndex);
+	std::vector<UDrawCommand> MakeSceneDrawCommands(std::span<UDrawData const> drawDatas, u32 frameIndex);
 	std::vector<UDirectionalLight> MakeDirectionalLights(std::span<UDirectionalLightData const> directionalLightDatas, UFrameContextSceneView const& sceneView, u32 sceneRender, u32 frameIndex);
 	std::vector<UPointLight> MakePointLights(std::span<UPointLightData const> pointLightDatas) const;
+	std::vector<SceneRenderView> MakeSceneRenderViews(std::span<UDrawData const> drawDatas, u32 frameIndex);
 
 	ATexture* GetOrCreateTexture(UPath const& path);
 	AMaterial* GetOrCreateMaterial(UPath const& path);

@@ -10,13 +10,12 @@ struct UAllocatedBuffer;
 struct UAllocatedImage;
 struct UAllocatedImageCreateInfo;
 class UContext;
-class USurface;
 class UDevice final
 {
 public:
-	explicit UDevice(UContext& context, USurface& surface);
+	explicit UDevice(UContext& context);
 
-	void Init();
+	void Init(VkSurfaceKHR mainSurface);
 	void Cleanup() const;
 
 	void ExecuteSingleTimeCommands();
@@ -41,7 +40,7 @@ public:
 	void CleanupImage(UAllocatedImage const& allocatedImage) const;
 	void CleanupImageView(UAllocatedImage const& allocatedImage) const;
 
-	USwapchainSupportDetails QuerySwapchainSupportDetails() const;
+	USwapchainSupportDetails QuerySwapchainSupportDetails(VkSurfaceKHR surface) const;
 
 	// Getters
 	VkPhysicalDevice	GetPhysicalDevice() const { return physicalDevice_; }
@@ -58,7 +57,7 @@ public:
 	UQueueFamilyIndices	const&	GetQueueFamilyIndices() const { return queueFamilyIndices_; }
 
 private:
-	void CreatePhysicalDevice();
+	void CreatePhysicalDevice(VkSurfaceKHR mainSurface);
 	void CreateDevice();
 	void CreateAllocator();
 	void CreateCommandPool();
@@ -76,7 +75,6 @@ private:
 
 private:
 	UContext& context_;
-	USurface& surface_;
 
 	VkPhysicalDevice physicalDevice_;
 	VkDevice device_;

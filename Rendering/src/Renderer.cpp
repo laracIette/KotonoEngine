@@ -138,28 +138,14 @@ void URenderer::DrawFrame(USceneRenderGraph const& sceneRenderGraph, UInterfaceR
 
 	sceneRenderer_.RefreshAvailableSceneRenders(frameIndex);
 
-	auto const sceneDrawCommands{ MakeDrawCommands(sceneRenderGraph.drawDatas, frameIndex) };
-	auto const pointLights{ MakePointLights(sceneRenderGraph.pointLightDatas) };
+	auto const interfaceDrawCommands{ MakeInterfaceDrawCommands(interfaceRenderGraph.drawDatas, frameIndex) };
 
-	auto const interfaceDrawCommands{ MakeDrawCommands(interfaceRenderGraph.drawDatas, frameIndex) };
+	auto const sceneDrawCommands{ MakeSceneDrawCommands(sceneRenderGraph.drawDatas, frameIndex) };
+	auto const pointLights{ MakePointLights(sceneRenderGraph.pointLightDatas) };
 
 	sceneRenderer_.RefreshAvailableSceneRenders(frameIndex);
 
-	auto const sceneRenderViews{ interfaceRenderGraph.drawDatas
-		| std::views::transform(&UDrawData::textures)
-		| std::views::join
-		| std::views::filter([](UDrawData::Texture const& texture) {
-			return std::holds_alternative<USceneView>(texture);
-		})
-		| std::views::transform([this, frameIndex](UDrawData::Texture const& texture) {
-			auto const& sceneView{ std::get<USceneView>(texture) };
-			return SceneRenderView{
-				.sceneRender = sceneRenderer_.GetSceneRender(sceneView.extent, frameIndex),
-				.sceneView = MakeFrameContextSceneView(sceneView),
-			};
-		})
-		| std::ranges::to<std::vector>()
-	};
+	auto const sceneRenderViews{ MakeSceneRenderViews(interfaceRenderGraph.drawDatas, frameIndex) };
 
 	sceneRenderer_.ClearUnusedSceneRenders(frameIndex);
 
@@ -588,7 +574,7 @@ UFrameContextSceneView URenderer::MakeFrameContextSceneView(USceneView const& sc
 	};
 }
 
-std::vector<UDrawCommand> URenderer::MakeDrawCommands(std::span<UDrawData const> drawDatas, u32 frameIndex)
+std::vector<UDrawCommand> URenderer::MakeInterfaceDrawCommands(std::span<UDrawData const> drawDatas, u32 frameIndex)
 {
 	return drawDatas
 		| std::views::filter(&UDrawData::isVisible)
@@ -598,10 +584,6 @@ std::vector<UDrawCommand> URenderer::MakeDrawCommands(std::span<UDrawData const>
 
 			auto const* shader{ GetOrCreateShader(drawData.shader) };
 			auto const* model{ GetOrCreateModel(drawData.model) };
-			auto const* material{ drawData.material ? GetOrCreateMaterial(drawData.material) : nullptr };
-			
-			// todo: temp fixes, split interface and scene
-			auto const materialData{ material ? material->GetData() : AMaterial::Data{} };
 
 			std::array<f32, 16> scalars{};
 			std::array<glm::vec4, 16> vectors{};
@@ -626,14 +608,56 @@ std::vector<UDrawCommand> URenderer::MakeDrawCommands(std::span<UDrawData const>
 					.offset = { drawData.scissor.offset.x, drawData.scissor.offset.y },
 					.extent = { drawData.scissor.extent.x, drawData.scissor.extent.y },
 				},
-				.material = material ? UDrawCommand::Material{
+				.modelMatrix = drawData.modelMatrix,
+				.scalars = scalars,
+				.vectors = vectors,
+				.textures = textures,
+			};
+		})
+		| std::ranges::to<std::vector>();
+}
+
+std::vector<UDrawCommand> URenderer::MakeSceneDrawCommands(std::span<UDrawData const> drawDatas, u32 frameIndex)
+{
+	return drawDatas
+		| std::views::filter(&UDrawData::isVisible)
+		| std::views::enumerate
+		| std::views::transform([this, frameIndex](auto&& tuple) {
+			auto const& [index, drawData] { tuple };
+
+			auto const* shader{ GetOrCreateShader(drawData.shader) };
+			auto const* model{ GetOrCreateModel(drawData.model) };
+			auto const* material{ GetOrCreateMaterial(drawData.material) };
+			
+			auto const materialData{ material->GetData() };
+
+			std::array<f32, 16> scalars{};
+			std::array<glm::vec4, 16> vectors{};
+			std::array<u32, 16> textures{};
+
+			std::ranges::copy(drawData.scalars | std::views::take(16), scalars.begin());
+			std::ranges::copy(drawData.vectors | std::views::take(16), vectors.begin());
+			std::ranges::copy(drawData.textures | std::views::take(16)
+				| std::views::transform([this, frameIndex](UDrawData::Texture const& texture) {
+					return GetTextureHandle(texture, frameIndex);
+				})
+				, textures.begin()
+			);
+
+			return UDrawCommand{
+				.drawIndex = static_cast<u32>(index),
+				.pipeline = shader->GetPipeline(),
+				.vertexBufferAddress = model->GetVertexBufferAddress(),
+				.indexCount = model->GetIndexCount(),
+				.firstIndex = model->GetFirstIndex(),
+				.material = {
 					.albedoIndex = GetOrCreateTexture(materialData.albedo)->GetIndex(),
 					.normalIndex = GetOrCreateTexture(materialData.normal)->GetIndex(),
 					.ormIndex = GetOrCreateTexture(materialData.orm)->GetIndex(),
 					.emissiveIndex = GetOrCreateTexture(materialData.emissive)->GetIndex(),
 					.materialType = materialData.materialType,
 					.samplerIndex = GetOrCreateSampler(materialData.sampler)->GetIndex(),
-				} : UDrawCommand::Material{},
+				},
 				.modelMatrix = drawData.modelMatrix,
 				.normalMatrix = drawData.normalMatrix,
 				.sortKey = drawData.sortKey,
@@ -707,6 +731,24 @@ std::vector<UPointLight> URenderer::MakePointLights(std::span<UPointLightData co
 				.range = pointLightData.range,
 				.color = pointLightData.color,
 				.intensity = pointLightData.intensity,
+			};
+		})
+		| std::ranges::to<std::vector>();
+}
+
+std::vector<URenderer::SceneRenderView> URenderer::MakeSceneRenderViews(std::span<UDrawData const> drawDatas, u32 frameIndex)
+{
+	return drawDatas
+		| std::views::transform(&UDrawData::textures)
+		| std::views::join
+		| std::views::filter([](UDrawData::Texture const& texture) {
+			return std::holds_alternative<USceneView>(texture);
+		})
+		| std::views::transform([this, frameIndex](UDrawData::Texture const& texture) {
+			auto const& sceneView{ std::get<USceneView>(texture) };
+			return SceneRenderView{
+				.sceneRender = sceneRenderer_.GetSceneRender(sceneView.extent, frameIndex),
+				.sceneView = MakeFrameContextSceneView(sceneView),
 			};
 		})
 		| std::ranges::to<std::vector>();

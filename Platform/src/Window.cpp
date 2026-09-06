@@ -25,46 +25,30 @@ void UWindow::Init()
 {
     size_ = { 1600u, 900u };
 
-    // Initialize GLFW
-    if (!glfwInit())
-    {
-        throw std::runtime_error{ "Failed to initialize GLFW" };
-    }
-
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    // Create a windowed mode window and its OpenGL context
     window_ = glfwCreateWindow(size_.x, size_.y, "Kotono Engine", nullptr, nullptr);
     if (!window_)
     {
         throw std::runtime_error("Failed to create GLFW window");
     }
 
-    // Make the window's context current
-    glfwMakeContextCurrent(window_);
-
     glfwSetFramebufferSizeCallback(window_, framebuffersize_callback_);
-    //framebuffersize_callback_(window_, size_.x, size_.y);
-
     EventFramebufferSizeChanged.AddListener(this, &UWindow::OnFramebufferSizeChanged);
 
-    // Show the window after initialization
     glfwShowWindow(window_);
 }
 
 void UWindow::Cleanup()
 {
-    // Cleanup GLFW
     glfwDestroyWindow(window_);
-    glfwTerminate();
 }
 
-bool UWindow::GetShouldClose(VkDevice device) const
+bool UWindow::GetShouldClose() const
 {
     if (glfwWindowShouldClose(window_))
     {
-        vkDeviceWaitIdle(device);
         return true;
     }
 
