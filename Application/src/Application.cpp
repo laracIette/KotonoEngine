@@ -89,9 +89,6 @@ void UApplication::Init()
     mainWindow_->SetInterface(interface_);
 
     interface_->SetWidget(mainWindow_);
-
-    Mouse.GetEventAnyButton().AddListener(mainWindow_.Get(), &WSceneContext::OnMouseButton);
-    Mouse.GetEventMove().AddListener(mainWindow_.Get(), &WSceneContext::OnMouseMove);
 #   endif
 
     interface_->BeginDraw(window_.GetSize());
@@ -116,7 +113,7 @@ void UApplication::Update()
         Keyboard.Update();
         Mouse.Update();
 
-        //TimerManager.Update(deltaTime_);
+        TimerManager.Update(deltaTime_);
         interface_->Update(deltaTime_);
     }
 

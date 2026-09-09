@@ -11,6 +11,7 @@ void scroll_callback_(GLFWwindow* window, f64 xoffset, f64 yoffset);
 
 void GMouse::Init(UWindow& window)
 {
+    window_ = window.GetGLFWWindow();
     glfwSetMouseButtonCallback(window.GetGLFWWindow(), mousebutton_callback_);
     glfwSetCursorPosCallback(window.GetGLFWWindow(), cursorpos_callback_);
     glfwSetScrollCallback(window.GetGLFWWindow(), scroll_callback_);
@@ -118,6 +119,16 @@ UEvent<>& GMouse::GetEventButton(EButton button, EInputState inputState)
 bool GMouse::GetButtonState(EButton button, EInputState inputState) const
 {
     return buttonStates_[to_index(button)][to_index(inputState)];
+}
+
+void GMouse::HideCursor() const
+{
+    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
+void GMouse::ShowCursor() const
+{
+    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 void mousebutton_callback_(GLFWwindow* window, i32 button, i32 action, i32 mods)

@@ -1,17 +1,14 @@
 #include "UpdateTimeText.h"
 
-#include <kotono_interface/widgets.h>
+#include <kotono_core/Interface.h>
 #include <kotono_core/Scene.h>
+#include <kotono_interface/widgets.h>
 #include <kotono_timing/Timer.h>
 #include <kotono_timing/TimerManager.h>
 
 WidgetPtr WUpdateTimeText::Build()
 {
-    text_ = UCreate<WText>{}();
-    text_->SetName("Update Time Text");
-    text_->SetText("Update Time Text");
-    text_->SetFontSize({ 20.0f, 24.0f });
-    text_->SetSpacing(-6.0f);
+    text_ = UCreate<WText>{ "Update Time Text" }("Update Time Text");
     return text_;
 }
 
@@ -31,7 +28,16 @@ void WUpdateTimeText::Remove()
 
 void WUpdateTimeText::UpdateText() const
 {
-    text_->SetText(std::format("U {0:.8f}s", GetScene()->GetGameTime().lastDelta));
+    if (GetScene()->GetIsGamePlaying())
+    {
+        f32 const delta{ GetScene()->GetDeltaTime() };
+        text_->SetText(std::format("S {0:.8f}FPS / {1:.8f}s", 1.0f / delta, delta));
+    }
+    else
+    {
+        f32 const delta{ GetInterface()->GetTimeContext().lastDelta };
+        text_->SetText(std::format("I {0:.8f}FPS / {1:.8f}s", 1.0f / delta, delta));
+    }
 }
 
 #include "generated/UpdateTimeText.generated.inl"

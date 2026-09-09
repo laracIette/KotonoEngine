@@ -6,14 +6,9 @@
 
 UScene::UScene(UPath const& path)
 	: gameState_{ EGameState::Stopped }
-	, gameTime_{
-		.frequency = 1.0f / 120.0f,
-		.lastDelta = 0.0f,
-		.currentDelta = 0.0f,
-		.scale = 1.0f,
-		.total = 0.0f,
-		.state = ETimeContextState::Paused,
-	}
+	, deltaTime_{ 0.0f }
+	, now_{ 0.0f }
+	, timeScale_{ 1.0f }
 {
 	nlohmann::json json{};
 	SSerializer::Deserialize(json, path);
@@ -46,9 +41,13 @@ UScene::~UScene()
 
 void UScene::Update(f32 deltaTime)
 {
-	if (gameTime_.Update(deltaTime))
+	if (gameState_ == EGameState::Playing)
 	{
-		UpdateSceneObjects(gameTime_.lastDelta);
+		deltaTime *= timeScale_;
+
+		deltaTime_ = deltaTime;
+		now_ += deltaTime;
+		UpdateSceneObjects(deltaTime);
 	}
 }
 
@@ -117,53 +116,20 @@ void UScene::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const
 
 void UScene::PlayGame()
 {
-	if (TrySetState(EGameState::Playing))
-	{
-		gameTime_.state = ETimeContextState::Playing;
-	}
+	TrySetState(EGameState::Playing);
 }
 
 void UScene::PauseGame()
 {
-	if (TrySetState(EGameState::Paused))
-	{
-		gameTime_.state = ETimeContextState::Paused;
-	}
+	TrySetState(EGameState::Paused);
 }
 
 void UScene::StopGame()
 {
 	if (TrySetState(EGameState::Stopped))
 	{
-		gameTime_.total = 0.0f;
-		gameTime_.currentDelta = 0.0f;
-		gameTime_.state = ETimeContextState::Paused;
+		now_ = 0.0f;
 	}
-}
-
-b8 UScene::GetIsGamePlaying() const
-{
-	return gameState_ == EGameState::Playing;
-}
-
-b8 UScene::GetIsGamePaused() const
-{
-	return gameState_ == EGameState::Paused;
-}
-
-b8 UScene::GetIsGameStopped() const
-{
-	return gameState_ == EGameState::Stopped;
-}
-
-UEvent<EGameState>& UScene::GetEventGameStateUpdated()
-{
-	return eventGameStateUpdated_;
-}
-
-UTimeContext const& UScene::GetGameTime() const
-{
-	return gameTime_;
 }
 
 void UScene::UpdateSceneObjects(f32 deltaTime) const
@@ -194,5 +160,6 @@ b8 UScene::TrySetState(EGameState gameState)
 	}
 
 	gameState_ = gameState;
+	eventGameStateUpdated_.Broadcast(gameState);
 	return true;
 }

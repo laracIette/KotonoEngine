@@ -110,12 +110,13 @@ public:
 	UPtr<T> operator()(Args&&... args) const
 	{
 		T* object{ new T{ std::forward<Args>(args)... } };
-		object->PostConstruct();
 
 		if (!name_.empty())
 		{
 			object->SetName(name_);
 		}
+
+		object->PostConstruct();
 
 #	ifndef NDEBUG
 		object->sourceFile = loc_.file_name();

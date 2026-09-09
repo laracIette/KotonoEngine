@@ -31,6 +31,9 @@ public:
 	EventEmptyType& GetEventButton(EButton button, EInputState inputState);
 	b8 GetButtonState(EButton button, EInputState inputState) const;
 
+	void HideCursor() const;
+	void ShowCursor() const;
+
 	glm::vec2 const& GetPreviousCursorPosition() const { return previousCursorPosition_; }
 	glm::vec2 const& GetCursorPosition() const { return cursorPosition_; }
 
@@ -41,6 +44,8 @@ public:
 	EventAnyButtonType&	GetEventAnyButton() { return eventAnyButton_; }
 
 private:
+	GLFWwindow* window_;
+
 	glm::vec2 previousCursorPosition_;
 	glm::vec2 cursorPosition_;
 	glm::vec2 scrollDelta_;

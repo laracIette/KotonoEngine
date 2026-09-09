@@ -19,8 +19,9 @@ WViewController::WViewController()
 WidgetPtr WViewController::Build()
 {
     UPtr button{ UCreate<WButton>{ "Button" }() };
-    button->SetOnActive([this]() { isActive_ = true; });
-    button->SetOnInactive([this]() { isActive_ = false; });
+    button->SetIsVisible(false);
+	button->SetOnActive([this]() { isActive_ = true; });
+	button->SetOnInactive([this]() { isActive_ = false; });
 
 	auto const widgetTree{ UChildrenOwnerTree{ UCreate<WStack>{}(), {
 		new UWidgetTreeLeaf{ sceneRenderer_ = UCreate<WSceneRenderer>{ "Scene Renderer" }() },

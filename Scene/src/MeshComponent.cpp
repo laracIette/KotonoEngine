@@ -47,7 +47,6 @@ void KMeshComponent::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) co
 {
     auto const modelMatrix{ ModelMatrix() };
     sceneRenderGraph.drawDatas.push_back({
-        .scissor = {},
         .sortKey = {},
         .modelMatrix = modelMatrix,
         .normalMatrix = glm::mat4{ glm::inverseTranspose(glm::mat3{ modelMatrix }) },
@@ -63,7 +62,7 @@ void KMeshComponent::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) co
 
 void KMeshComponent::Spin(f32 deltaTime)
 {
-    f32 const speed{ 10.0f * GetScene()->GetGameTime().lastDelta };
+    f32 const speed{ 10.0f * deltaTime };
     glm::quat const rotation{ glm::radians(glm::vec3{ 0.0f, speed, 0.0f }) };
     Rotate(rotation);
 }

@@ -29,9 +29,6 @@ WidgetPtr WInputTextBox::Build()
 	button->SetOnPressed([this]() {
 		SetState([this]() { isSelected_ = true; });
 	});
-	button->SetOnPressOut([this]() {
-		SetState([this]() { isSelected_ = true; });
-	});
 
 
 	UPtr bg{ UCreate<WColor>{}() };

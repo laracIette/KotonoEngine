@@ -41,7 +41,6 @@
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/AssetExplorerDirectory.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/AssetExplorerFile.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/AssetExplorerItem.h",
-        "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/DrawTimeText.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/GameStateButton.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/InputTextBox.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/MainWindow.h",

@@ -18,7 +18,7 @@ glm::vec2 WStack::GetContentSize(glm::vec2 bounds) const
 	return size;
 }
 
-glm::vec2 WStack::GetDesiredSize(const glm::vec2& bounds) const
+glm::vec2 WStack::GetDesiredSize(glm::vec2 const& bounds) const
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
@@ -32,6 +32,16 @@ glm::vec2 WStack::GetDesiredSize(const glm::vec2& bounds) const
 	}
 
 	return size;
+}
+
+EExpand WStack::GetExpand() const
+{
+	return EExpand::All;
+}
+
+EFlex WStack::GetFlex() const
+{
+	return EFlex::All;
 }
 
 void WStack::DisplayInternal(UWidgetDisplaySettings displaySettings)

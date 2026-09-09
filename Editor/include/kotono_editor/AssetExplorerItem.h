@@ -4,7 +4,6 @@
 
 #include <kotono_common/Path.h>
 class WAssetExplorer;
-class WColor;
 class WAssetExplorerItem : public WWidget
 {
 	GENERATED_WASSETEXPLORERITEM()
@@ -22,9 +21,6 @@ public:
 	void Select();
 	void Deselect();
 
-	void OnFocused() override;
-	void OnUnfocused() override;
-
 protected:
 	UPath path_;
 
@@ -35,6 +31,4 @@ private:
 	b8 isSelected_;
 	f32 lastClickedTime_;
 	f32 doubleClickTreshold_;
-
-	UPtr<WColor> background_;
 };

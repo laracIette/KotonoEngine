@@ -35,5 +35,6 @@ private:
 
 	UTimeContext timeContext_;
 
+	/// Widgets currently hovered by the mouse cursor
 	USet<UPtr<WWidget>> focusedWidgets_;
 };

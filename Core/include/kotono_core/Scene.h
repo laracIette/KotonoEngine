@@ -4,7 +4,6 @@
 #include <kotono_common/Event.h>
 #include <kotono_common/Path.h>
 #include <kotono_common/Set.h>
-#include <kotono_timing/TimeContext.h>
 #include <span>
 struct USceneRenderGraph;
 class TSceneObject;
@@ -32,13 +31,17 @@ public:
 	void PauseGame();
 	void StopGame();
 
-	b8 GetIsGamePlaying() const;
-	b8 GetIsGamePaused() const;
-	b8 GetIsGameStopped() const;
+	UEvent<EGameState>& GetEventGameStateUpdated() { return eventGameStateUpdated_; }
 
-	UEvent<EGameState>& GetEventGameStateUpdated();
+	b8 GetIsGamePlaying() const { return gameState_ == EGameState::Playing; }
+	b8 GetIsGamePaused() const { return gameState_ == EGameState::Paused; }
+	b8 GetIsGameStopped() const { return gameState_ == EGameState::Stopped; }
 
-	UTimeContext const& GetGameTime() const;
+	f32 GetDeltaTime() const { return deltaTime_; }
+	f32 GetNow() const { return now_; }
+	f32 GetTimeScale() const { return timeScale_; }
+
+	void SetTimeScale(f32 timeScale) { timeScale_ = timeScale; }
 
 private:
 	void UpdateSceneObjects(f32 deltaTime) const;
@@ -53,5 +56,8 @@ private:
 	UEvent<EGameState> eventGameStateUpdated_;
 
 	EGameState gameState_;
-	UTimeContext gameTime_;
+
+	f32 deltaTime_;
+	f32 now_;
+	f32 timeScale_;
 };

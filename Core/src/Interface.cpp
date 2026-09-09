@@ -67,6 +67,9 @@ void UInterface::BeginDraw(glm::uvec2 const& bounds)
 			},
 		});
 
+		Mouse.GetEventAnyButton().AddListener(widget_.Get(), &WSceneContext::OnMouseButton);
+		Mouse.GetEventMove().AddListener(widget_.Get(), &WSceneContext::OnMouseMove);
+
 		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Object", "Main window widget displayed with a size of: {0}", glm::to_string(bounds));
 	}
 }
@@ -75,7 +78,10 @@ void UInterface::EndDraw() const
 {
 	if (widget_)
 	{
-		widget_->Remove();
+		widget_->Remove(); 
+		
+		Mouse.GetEventAnyButton().RemoveListener(widget_.Get(), &WSceneContext::OnMouseButton);
+		Mouse.GetEventMove().RemoveListener(widget_.Get(), &WSceneContext::OnMouseMove);
 
 		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Object", "Main window widget removed");
 	}
@@ -83,16 +89,16 @@ void UInterface::EndDraw() const
 
 void UInterface::UpdateFocusedWidgets()
 {
-	WidgetSet focusedWidgets{};
+	WidgetSet newFocusedWidgets{};
 
 	if (widget_)
 	{
-		widget_->PopulateFocusTree(focusedWidgets, Mouse.GetCursorPosition());
+		widget_->PopulateFocusTree(newFocusedWidgets, Mouse.GetCursorPosition());
 	}
 
-	for (auto const& widget : focusedWidgets)
+	for (auto const& widget : newFocusedWidgets)
 	{
-		if (!focusedWidgets_.Contains(widget))
+		if (widget && !focusedWidgets_.Contains(widget))
 		{
 			widget->OnFocused();
 		}
@@ -100,14 +106,11 @@ void UInterface::UpdateFocusedWidgets()
 
 	for (auto const& widget : focusedWidgets_)
 	{
-		if (widget)
+		if (widget && !newFocusedWidgets.Contains(widget))
 		{
-			if (!focusedWidgets.Contains(widget))
-			{
-				widget->OnUnfocused();
-			}
+			widget->OnUnfocused();
 		}
 	}
 
-	focusedWidgets_ = focusedWidgets;
+	focusedWidgets_ = newFocusedWidgets;
 }

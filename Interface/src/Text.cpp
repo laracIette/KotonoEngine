@@ -1,13 +1,21 @@
 #include "Text.h"
+
 #include "widgets.h"
 #include <kotono_graphics/Font.h>
+
+WText::WText(std::string_view text, glm::vec2 const& fontSize, f32 spacing)
+	: text_{ text }
+	, fontSize_{ fontSize }
+	, spacing_{ spacing }
+{
+}
 
 WidgetPtr WText::Build()
 {
 	if (shouldWrap_)
 	{
 		UPtr horizontalWrapList{ UCreate<WHorizontalWrapList>{}() };
-		horizontalWrapList->SetItemSpacing(spacing_);
+		horizontalWrapList->SetItemSpacing(spacing_ * fontSize_.x);
 		horizontalWrapList->SetRowSpacing(0.0f);
 		horizontalWrapList->SetChildren(GetCharacters());
 		horizontalWrapList->SetName("Text Horizontal Wrap List");
@@ -16,7 +24,7 @@ WidgetPtr WText::Build()
 	else
 	{
 		UPtr row{ UCreate<WRow>{}() };
-		row->SetSpacing(spacing_);
+		row->SetSpacing(spacing_ * fontSize_.x);
 		row->SetChildren(GetCharacters());
 		row->SetName("Text Row");
 		textBody_ = row;
@@ -60,7 +68,14 @@ void WText::SetFontSize(glm::vec2 const& fontSize)
 void WText::SetSpacing(f32 spacing)
 {
 	spacing_ = spacing;
-	UpdateTextBody();
+	if (UPtr row{ TryCast<WRow>(textBody_) })
+	{
+		row->SetSpacing(spacing);
+	}
+	else if (UPtr horizontalWrapList{ TryCast<WHorizontalWrapList>(textBody_) })
+	{
+		horizontalWrapList->SetItemSpacing(spacing);
+	}
 }
 
 void WText::SetShouldWrap(b8 shouldWrap)

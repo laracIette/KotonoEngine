@@ -5,6 +5,9 @@
 #include <kotono_common/Path.h>
 class WAssetExplorerItem;
 class WHorizontalWrapList;
+class WBox;
+class WColor;
+class WOffset;
 class WAssetExplorer : public WWidget
 {
 	GENERATED_WASSETEXPLORER()
@@ -16,13 +19,12 @@ protected:
 	WidgetPtr Build() override;
 
 public:
-	void Display(UWidgetDisplaySettings const& displaySettings) override;
-	void Remove() override;
+	b8 OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) override;
 
 	void DeselectOthers(UPtr<WAssetExplorerItem> const& item) const;
 
 private:
-	void Push(const UPath& path);
+	void Push(UPath const& path);
 
 	void NavigatePrevious();
 	void NavigateNext();
@@ -38,4 +40,8 @@ private:
 	size currentPathIndex_;
 	UPtr<WHorizontalWrapList> itemList_;
 	USet<UPtr<WAssetExplorerItem>> assetExplorerItems_;
+
+	UPtr<WOffset> selectOffset_;
+	UPtr<WBox> selectBox_;
+	UPtr<WColor> selectColor_;
 };

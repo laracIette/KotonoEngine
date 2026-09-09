@@ -25,7 +25,8 @@
 struct UDirectionalLight;
 struct UDirectionalLightData;
 struct UDrawCommand;
-struct UDrawData;
+struct UInterfaceDrawData;
+struct USceneDrawData;
 struct UInterfaceRenderGraph;
 struct UPointLight;
 struct UPointLightData;
@@ -91,16 +92,12 @@ private:
 
 	void CreateSyncObjects();
 
-	u32 GetGameThreadFrame() const;
-	u32 GetRenderThreadFrame() const;
-	u32 GetRHIThreadFrame() const;
-
 	UFrameContextSceneView MakeFrameContextSceneView(USceneView const& sceneView) const;
-	std::vector<UDrawCommand> MakeInterfaceDrawCommands(std::span<UDrawData const> drawDatas, u32 frameIndex);
-	std::vector<UDrawCommand> MakeSceneDrawCommands(std::span<UDrawData const> drawDatas, u32 frameIndex);
+	std::vector<UDrawCommand> MakeInterfaceDrawCommands(std::span<UInterfaceDrawData const> drawDatas, u32 frameIndex);
+	std::vector<UDrawCommand> MakeSceneDrawCommands(std::span<USceneDrawData const> drawDatas, u32 frameIndex);
 	std::vector<UDirectionalLight> MakeDirectionalLights(std::span<UDirectionalLightData const> directionalLightDatas, UFrameContextSceneView const& sceneView, u32 sceneRender, u32 frameIndex);
 	std::vector<UPointLight> MakePointLights(std::span<UPointLightData const> pointLightDatas) const;
-	std::vector<SceneRenderView> MakeSceneRenderViews(std::span<UDrawData const> drawDatas, u32 frameIndex);
+	std::vector<SceneRenderView> MakeSceneRenderViews(std::span<UInterfaceDrawData const> drawDatas, u32 frameIndex);
 
 	ATexture* GetOrCreateTexture(UPath const& path);
 	AMaterial* GetOrCreateMaterial(UPath const& path);

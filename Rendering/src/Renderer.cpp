@@ -55,6 +55,24 @@ static GetOrCreateResult<T> GetOrCreate(UPath const& path, std::unordered_map<UP
 	return { false, texture };
 }
 
+static constexpr u32 getGameThreadFrame(u32 frameCount)
+{
+	// Prepare game thread for render thread
+	return frameCount % static_cast<u32>(KT_FRAMES_IN_FLIGHT);
+}
+
+static constexpr u32 getRenderThreadFrame(u32 frameCount)
+{
+	// Prepare render thread for RHI thread
+	return ((frameCount + KT_FRAMES_IN_FLIGHT) - 1) % static_cast<u32>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
+}
+
+static constexpr u32 getRHIThreadFrame(u32 frameCount)
+{
+	// Prepare RHI thread for game thread
+	return ((frameCount + KT_FRAMES_IN_FLIGHT) - 2) % static_cast<u32>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
+}
+
 URenderer::URenderer(UDevice& device, USurface& surface)
 	: device_{ device }
 	, swapchain_{ device, surface }
@@ -134,7 +152,7 @@ void URenderer::Cleanup()
 
 void URenderer::DrawFrame(USceneRenderGraph const& sceneRenderGraph, UInterfaceRenderGraph const& interfaceRenderGraph)
 {
-	u32 const frameIndex{ GetGameThreadFrame() };
+	u32 const frameIndex{ getGameThreadFrame(frameCount_) };
 
 	sceneRenderer_.RefreshAvailableSceneRenders(frameIndex);
 
@@ -171,7 +189,7 @@ void URenderer::DrawFrame(USceneRenderGraph const& sceneRenderGraph, UInterfaceR
 		if (frameCount_ >= 1)
 		{
 			JoinThread(renderThread_);
-			u32 const renderThreadFrame{ GetRenderThreadFrame() };
+			u32 const renderThreadFrame{ getRenderThreadFrame(frameCount_) };
 			renderThread_ = std::thread{ &URenderer::RecordCommandBuffer, this, renderThreadFrame };
 		}
 
@@ -181,7 +199,7 @@ void URenderer::DrawFrame(USceneRenderGraph const& sceneRenderGraph, UInterfaceR
 
 			JoinThread(rhiThread_);
 			device_.ExecuteSingleTimeCommands();
-			u32 const renderRHIFrame{ GetRHIThreadFrame() };
+			u32 const renderRHIFrame{ getRHIThreadFrame(frameCount_) };
 			rhiThread_ = std::thread{ &URenderer::SubmitCommandBuffer, this, renderRHIFrame };
 		}
 	}
@@ -542,24 +560,6 @@ void URenderer::SubmitCommandBuffer(u32 frameIndex)
 	}
 }
 
-u32 URenderer::GetGameThreadFrame() const
-{
-	// Prepare game thread for render thread
-	return frameCount_ % static_cast<u32>(KT_FRAMES_IN_FLIGHT);
-}
-
-u32 URenderer::GetRenderThreadFrame() const
-{
-	// Prepare render thread for RHI thread
-	return ((frameCount_ + KT_FRAMES_IN_FLIGHT) - 1) % static_cast<u32>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
-}
-
-u32 URenderer::GetRHIThreadFrame() const
-{
-	// Prepare RHI thread for game thread
-	return ((frameCount_ + KT_FRAMES_IN_FLIGHT) - 2) % static_cast<u32>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
-}
-
 UFrameContextSceneView URenderer::MakeFrameContextSceneView(USceneView const& sceneView) const
 {
 	return {
@@ -574,10 +574,10 @@ UFrameContextSceneView URenderer::MakeFrameContextSceneView(USceneView const& sc
 	};
 }
 
-std::vector<UDrawCommand> URenderer::MakeInterfaceDrawCommands(std::span<UDrawData const> drawDatas, u32 frameIndex)
+std::vector<UDrawCommand> URenderer::MakeInterfaceDrawCommands(std::span<UInterfaceDrawData const> drawDatas, u32 frameIndex)
 {
 	return drawDatas
-		| std::views::filter(&UDrawData::isVisible)
+		| std::views::filter(&UInterfaceDrawData::isVisible)
 		| std::views::enumerate
 		| std::views::transform([this, frameIndex](auto&& tuple) {
 			auto const& [index, drawData] { tuple };
@@ -592,7 +592,7 @@ std::vector<UDrawCommand> URenderer::MakeInterfaceDrawCommands(std::span<UDrawDa
 			std::ranges::copy(drawData.scalars | std::views::take(16), scalars.begin());
 			std::ranges::copy(drawData.vectors | std::views::take(16), vectors.begin());
 			std::ranges::copy(drawData.textures | std::views::take(16)
-				| std::views::transform([this, frameIndex](UDrawData::Texture const& texture) {
+				| std::views::transform([this, frameIndex](UInterfaceDrawData::Texture const& texture) {
 					return GetTextureHandle(texture, frameIndex);
 				})
 				, textures.begin()
@@ -617,10 +617,10 @@ std::vector<UDrawCommand> URenderer::MakeInterfaceDrawCommands(std::span<UDrawDa
 		| std::ranges::to<std::vector>();
 }
 
-std::vector<UDrawCommand> URenderer::MakeSceneDrawCommands(std::span<UDrawData const> drawDatas, u32 frameIndex)
+std::vector<UDrawCommand> URenderer::MakeSceneDrawCommands(std::span<USceneDrawData const> drawDatas, u32 frameIndex)
 {
 	return drawDatas
-		| std::views::filter(&UDrawData::isVisible)
+		| std::views::filter(&USceneDrawData::isVisible)
 		| std::views::enumerate
 		| std::views::transform([this, frameIndex](auto&& tuple) {
 			auto const& [index, drawData] { tuple };
@@ -638,7 +638,7 @@ std::vector<UDrawCommand> URenderer::MakeSceneDrawCommands(std::span<UDrawData c
 			std::ranges::copy(drawData.scalars | std::views::take(16), scalars.begin());
 			std::ranges::copy(drawData.vectors | std::views::take(16), vectors.begin());
 			std::ranges::copy(drawData.textures | std::views::take(16)
-				| std::views::transform([this, frameIndex](UDrawData::Texture const& texture) {
+				| std::views::transform([this, frameIndex](USceneDrawData::Texture const& texture) {
 					return GetTextureHandle(texture, frameIndex);
 				})
 				, textures.begin()
@@ -736,15 +736,15 @@ std::vector<UPointLight> URenderer::MakePointLights(std::span<UPointLightData co
 		| std::ranges::to<std::vector>();
 }
 
-std::vector<URenderer::SceneRenderView> URenderer::MakeSceneRenderViews(std::span<UDrawData const> drawDatas, u32 frameIndex)
+std::vector<URenderer::SceneRenderView> URenderer::MakeSceneRenderViews(std::span<UInterfaceDrawData const> drawDatas, u32 frameIndex)
 {
 	return drawDatas
-		| std::views::transform(&UDrawData::textures)
+		| std::views::transform(&UInterfaceDrawData::textures)
 		| std::views::join
-		| std::views::filter([](UDrawData::Texture const& texture) {
+		| std::views::filter([](UInterfaceDrawData::Texture const& texture) {
 			return std::holds_alternative<USceneView>(texture);
 		})
-		| std::views::transform([this, frameIndex](UDrawData::Texture const& texture) {
+		| std::views::transform([this, frameIndex](UInterfaceDrawData::Texture const& texture) {
 			auto const& sceneView{ std::get<USceneView>(texture) };
 			return SceneRenderView{
 				.sceneRender = sceneRenderer_.GetSceneRender(sceneView.extent, frameIndex),
@@ -823,7 +823,7 @@ AShader* URenderer::GetOrCreateShader(UPath const& path)
 	return shader;
 }
 
-u32 URenderer::GetTextureHandle(UDrawData::Texture const& texture, u32 frameIndex)
+u32 URenderer::GetTextureHandle(std::variant<UPath, USceneView> const& texture, u32 frameIndex)
 {
 	if (std::holds_alternative<UPath>(texture))
 	{

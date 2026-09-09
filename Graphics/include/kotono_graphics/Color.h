@@ -1,6 +1,6 @@
 #pragma once
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/ext/vector_float4.hpp>
 #include <kotono_common/types.h>
 #include <kotono_io/serialize_base.h>
 #include <kotono_math/math_utils.h>
@@ -18,16 +18,20 @@ struct UColor final
 	};
 	f32 a;
 
-	constexpr UColor() 
-		: r{ 0.0f }, g{ 0.0f }, b{ 0.0f }, a{ 1.0f }
-	{}
-
-	constexpr UColor(f32 red, f32 green, f32 blue, f32 alpha) 
+	constexpr UColor(f32 red, f32 green, f32 blue, f32 alpha)
 		: r{ red }, g{ green }, b{ blue }, a{ alpha }
 	{}
 
+	constexpr UColor() 
+		: UColor(0.0f, 0.0f, 0.0f, 1.0f)
+	{}
+
 	constexpr UColor(f32 red, f32 green, f32 blue) 
-		: r{ red }, g{ green }, b{ blue }, a{ 1.0f }
+		: UColor(red, green, blue, 1.0f)
+	{}
+
+	constexpr UColor(f32 value) 
+		: UColor(value, value, value, 1.0f)
 	{}
 
 	constexpr UColor WithRed(f32 red)		const noexcept { return { red, g, b, a }; }
@@ -36,19 +40,19 @@ struct UColor final
 	constexpr UColor WithAlpha(f32 alpha)	const noexcept { return { r, g, b, alpha }; }
 	constexpr UColor WithValue(f32 value)	const noexcept { return { r * value, g * value, b * value, a }; }
 	
-	static constexpr UColor Mix(const UColor& left, const UColor& right) noexcept 
+	static constexpr UColor Mix(UColor const& left, UColor const& right) noexcept 
 	{ 
 		return {
-			clamp01(left.r + right.r),
-			clamp01(left.g + right.g),
-			clamp01(left.b + right.b),
-			clamp01(left.a + right.a)
+			(left.r + right.r) / 2.0f,
+			(left.g + right.g) / 2.0f,
+			(left.b + right.b) / 2.0f,
+			(left.a + right.a) / 2.0f
 		};
 	}
 
-	constexpr bool IsVisible()		const noexcept { return a > 0.0f; }
-	constexpr bool IsOpaque()		const noexcept { return a >= 1.0f; }
-	constexpr bool IsTranslucent()	const noexcept { return a < 1.0f; }
+	constexpr b8 IsVisible()		const noexcept { return a > 0.0f; }
+	constexpr b8 IsOpaque()		const noexcept { return a >= 1.0f; }
+	constexpr b8 IsTranslucent()	const noexcept { return a < 1.0f; }
 
 	constexpr HSV GetHSV() const noexcept
 	{
@@ -194,7 +198,7 @@ struct UColor final
 		return { r, g, b, a };
 	}
 
-	constexpr UColor operator+(const UColor& other) const noexcept
+	constexpr UColor operator+(UColor const& other) const noexcept
 	{
 		return { r + other.r, g + other.g, b + other.b, a };
 	}
@@ -204,7 +208,7 @@ struct UColor final
 		return { r + f, g + f, b + f, a };
 	}
 
-	constexpr UColor operator-(const UColor& other) const noexcept
+	constexpr UColor operator-(UColor const& other) const noexcept
 	{
 		return { r - other.r, g - other.g, b - other.b, a };
 	}
@@ -214,7 +218,7 @@ struct UColor final
 		return { r - f, g - f, b - f, a };
 	}
 
-	constexpr UColor operator*(const UColor& other) const noexcept
+	constexpr UColor operator*(UColor const& other) const noexcept
 	{
 		return { r * other.r, g * other.g, b * other.b, a };
 	}
@@ -224,7 +228,7 @@ struct UColor final
 		return { r * f, g * f, b * f, a };
 	}
 
-	constexpr UColor operator/(const UColor& other) const noexcept
+	constexpr UColor operator/(UColor const& other) const noexcept
 	{
 		return { r / other.r, g / other.g, b / other.b, a };
 	}
@@ -234,12 +238,12 @@ struct UColor final
 		return { r / f, g / f, b / f, a };
 	}
 
-	constexpr bool operator==(const UColor& other) const noexcept
+	constexpr b8 operator==(UColor const& other) const noexcept
 	{
 		return r == other.r && g == other.g && b == other.b && a == other.a;
 	}
 
-	constexpr bool operator!=(const UColor& other) const noexcept
+	constexpr b8 operator!=(UColor const& other) const noexcept
 	{
 		return r != other.r || g != other.g || b != other.b || a != other.a;
 	}
@@ -253,31 +257,25 @@ namespace Colors
 	inline constexpr UColor Green		{ 0.0f, 1.0f, 0.0f, 1.0f };
 	inline constexpr UColor Magenta		{ 1.0f, 0.0f, 1.0f, 1.0f };
 	inline constexpr UColor Red			{ 1.0f, 0.0f, 0.0f, 1.0f };
-	inline constexpr UColor Transparent	{ 0.0f, 0.0f, 0.0f, 0.0f };
+	inline constexpr UColor Transparent	{ 1.0f, 1.0f, 1.0f, 0.0f };
 	inline constexpr UColor White		{ 1.0f, 1.0f, 1.0f, 1.0f };
 	inline constexpr UColor Yellow		{ 1.0f, 1.0f, 0.0f, 1.0f };
 }
 
 template<>
-struct USerialize<UColor>
+inline void USerialize<UColor>::operator()(nlohmann::json& json, UColor const& v) const
 {
-	void operator()(nlohmann::json& json, const UColor& v) const
-	{
-		USerialize<f32>{}(get(json, "r"), v.r);
-		USerialize<f32>{}(get(json, "g"), v.g);
-		USerialize<f32>{}(get(json, "b"), v.b);
-		USerialize<f32>{}(get(json, "a"), v.a);
-	}
-};
+	USerialize<f32>{}(get(json, "r"), v.r);
+	USerialize<f32>{}(get(json, "g"), v.g);
+	USerialize<f32>{}(get(json, "b"), v.b);
+	USerialize<f32>{}(get(json, "a"), v.a);
+}
 
 template<>
-struct UDeserialize<UColor>
+inline void UDeserialize<UColor>::operator()(const nlohmann::json& json, UColor& v) const
 {
-	void operator()(const nlohmann::json& json, UColor& v) const
-	{
-		UDeserialize<f32>{}(get(json, "r"), v.r);
-		UDeserialize<f32>{}(get(json, "g"), v.g);
-		UDeserialize<f32>{}(get(json, "b"), v.b);
-		UDeserialize<f32>{}(get(json, "a"), v.a);
-	}
-};
+	UDeserialize<f32>{}(get(json, "r"), v.r);
+	UDeserialize<f32>{}(get(json, "g"), v.g);
+	UDeserialize<f32>{}(get(json, "b"), v.b);
+	UDeserialize<f32>{}(get(json, "a"), v.a);
+}

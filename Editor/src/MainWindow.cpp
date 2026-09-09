@@ -1,6 +1,6 @@
 #include "MainWindow.h"
+
 #include "AssetExplorer.h"
-#include "DrawTimeText.h"
 #include "GameStateButton.h"
 #include "PropertiesWindow.h"
 #include "SceneExplorer.h"
@@ -8,7 +8,6 @@
 #include "ViewController.h"
 #include "VisualizerWindow.h"
 #include <kotono_interface/widgets.h>
-#include <kotono_core/Scene.h>
 
 WidgetPtr WMainWindow::Build()
 {
@@ -17,10 +16,7 @@ WidgetPtr WMainWindow::Build()
 			new UChildrenOwnerTree{ UCreate<WRow>{ "Top Row" }(), {
 				new UWidgetTreeLeaf{ UCreate<WSpacer>{ "Top Row Spacer" }(EAxis::Horizontal) },
 				new UChildOwnerTree{ UCreate<WWrap>{ "Times Wrap" }(),
-					new UChildrenOwnerTree{ UCreate<WColumn>{ "Times Column" }(), {
-						new UWidgetTreeLeaf{ UCreate<WUpdateTimeText>{ "Update Time Text" }(Ptr()) },
-						new UWidgetTreeLeaf{ UCreate<WDrawTimeText>{ "Draw Time Text" }() },
-					} },
+					new UWidgetTreeLeaf{ UCreate<WUpdateTimeText>{ "Update Time Text" }(Ptr()) },
 				},
 			} },
 			new UChildOwnerTree{ UCreate<WWrap>{ "Game State Wrap" }(EAxis::Vertical),

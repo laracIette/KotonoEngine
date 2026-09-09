@@ -21,7 +21,8 @@ static EFlex getUpdatedFlex(glm::vec2 const& left, glm::vec2 const& right) noexc
 
 WWidget::WWidget() 
 	: build_{}
-	, parent_{}
+	, parent_{ nullptr }
+	, isVisible_{ true }
 	, slotDisplaySettings_{}
 	, contentSize_{}
 	, isDisplayed_{ false }
@@ -194,11 +195,11 @@ void WWidget::OnUnfocused()
 	isFocused_ = false;
 }
 
-void WWidget::SetState(const StateFunction& function)
+void WWidget::SetState(StateFunction const& function)
 {
-	const auto oldDesiredSize{ GetDesiredSize(glm::vec2{ INFINITY }) };
+	auto const oldDesiredSize{ GetDesiredSize(glm::vec2{ INFINITY }) };
 
-	const bool wasDisplayed{ isDisplayed_ };
+	b8 const wasDisplayed{ isDisplayed_ };
 	if (wasDisplayed)
 	{
 		Remove();
@@ -211,7 +212,7 @@ void WWidget::SetState(const StateFunction& function)
 
 	if (wasDisplayed)
 	{
-		const auto newDesiredSize{ GetDesiredSize(glm::vec2{ INFINITY }) };
+		auto const newDesiredSize{ GetDesiredSize(glm::vec2{ INFINITY }) };
 
 		if (oldDesiredSize == newDesiredSize)
 		{

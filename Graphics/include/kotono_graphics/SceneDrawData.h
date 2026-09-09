@@ -1,17 +1,15 @@
 #pragma once
 #include "SceneView.h"
-#include "Scissor.h"
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float4.hpp>
 #include <kotono_common/Path.h>
 #include <kotono_common/types.h>
 #include <variant>
 #include <vector>
-struct UDrawData final
+struct USceneDrawData final
 {
 	using Texture = std::variant<UPath, USceneView>;
 
-	UScissor scissor;
 	f32 sortKey;
 
 	glm::mat4 modelMatrix;

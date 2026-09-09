@@ -1,36 +1,29 @@
 #include "GameStateButton.h"
 
-#include <kotono_input/Keyboard.h>
-#include <kotono_interface/widgets.h>
 #include <kotono_core/Scene.h>
+#include <kotono_interface/widgets.h>
 
-static void SwitchPlayPause();
+static constexpr UColor PLAYING_COLOR{ Colors::Green };
+static constexpr UColor PAUSE_COLOR{ Colors::White.WithValue(0.5f) };
+static constexpr UColor STOP_COLOR{ Colors::Red };
+static constexpr UColor STOPPED_COLOR{ Colors::Red.WithValue(0.2f) };
 
 WidgetPtr WGameStateButton::Build()
 {
-    UPtr mainRow{ UCreate<WRow>{}() };
-    mainRow->SetSpacing(5.0f);
-
-    UPtr playPauseBox{ UCreate<WBox>{}() };
-    playPauseBox->SetSize({ 64.0f, 64.0f });
-
     playPauseBg_ = UCreate<WColor>{}();
     playPauseBg_->SetColor(GetScene()->GetIsGamePlaying()
-        ? Colors::White.WithValue(0.5f)
-        : Colors::Green
+        ? PAUSE_COLOR
+        : PLAYING_COLOR
     );
 
     UPtr playPauseButton{ UCreate<WButton>{}() };
     playPauseButton->SetOnPressed([this]() { SwitchPlayPause(); });
-
-
-    UPtr stopBox{ UCreate<WBox>{}() };
-    stopBox->SetSize({ 64.0f, 64.0f });
+    playPauseButton->SetIsVisible(false);
 
     stopBg_ = UCreate<WColor>{}();
     stopBg_->SetColor(GetScene()->GetIsGameStopped()
-        ? Colors::Red.WithAlpha(0.1f)
-        : Colors::Red
+        ? STOPPED_COLOR
+        : STOP_COLOR
     );
 
     UPtr stopButton{ UCreate<WButton>{}() };
@@ -40,30 +33,31 @@ WidgetPtr WGameStateButton::Build()
             GetScene()->StopGame();
         }
     });
+    stopButton->SetIsVisible(false);
 
-    UChildrenOwnerTree(mainRow, {
-        new UChildOwnerTree(playPauseBox,
-            new UChildrenOwnerTree(UCreate<WStack>{}(), {
-                new UWidgetTreeLeaf(playPauseBg_),
-                new UWidgetTreeLeaf(playPauseButton),
-            })
-        ),
-        new UChildOwnerTree(stopBox,
-            new UChildrenOwnerTree(UCreate<WStack>{}(), {
-                new UWidgetTreeLeaf(stopBg_),
-                new UWidgetTreeLeaf(stopButton),
-            })
-        )
-    }).Link();
+    auto const widgetTree{ UChildrenOwnerTree{ UCreate<WRow>{ "Main Row" }(5.0f), {
+        new UChildOwnerTree{ UCreate<WBox>{ "Play Pause Box" }(glm::vec2{ 64.0f, 64.0f }),
+            new UChildrenOwnerTree{ UCreate<WStack>{}(), {
+                new UWidgetTreeLeaf{ playPauseBg_ },
+                new UWidgetTreeLeaf{ playPauseButton },
+            } }
+        },
+        new UChildOwnerTree{ UCreate<WBox>{ "Stop Box" }(glm::vec2{ 64.0f, 64.0f }),
+            new UChildrenOwnerTree{ UCreate<WStack>{}(), {
+                new UWidgetTreeLeaf{ stopBg_ },
+                new UWidgetTreeLeaf{ stopButton },
+            } }
+        },
+    } } };
+    widgetTree.Link();
 
-    return mainRow;
+    return widgetTree.Widget();
 }
 
 void WGameStateButton::Display(UWidgetDisplaySettings const& displaySettings)
 {
     Base::Display(displaySettings);
 
-    Keyboard.GetEventKey(EKey::Space, EInputState::Pressed).AddListener(this, &WGameStateButton::OnKeyboardSpaceKeyPressed);
     GetScene()->GetEventGameStateUpdated().AddListener(this, &Self::OnGameStateChanged);
 }
 
@@ -71,24 +65,18 @@ void WGameStateButton::Remove()
 {
     Base::Remove();
 
-    Keyboard.GetEventKey(EKey::Space, EInputState::Pressed).RemoveListener(this, &WGameStateButton::OnKeyboardSpaceKeyPressed);
     GetScene()->GetEventGameStateUpdated().RemoveListener(this, &Self::OnGameStateChanged);
-}
-
-void WGameStateButton::OnKeyboardSpaceKeyPressed() const
-{
-    SwitchPlayPause();
 }
 
 void WGameStateButton::OnGameStateChanged(EGameState gameState) const
 {
     playPauseBg_->SetColor(GetScene()->GetIsGamePlaying()
-        ? Colors::White.WithValue(0.5f)
-        : Colors::Green
+        ? PAUSE_COLOR
+        : PLAYING_COLOR
     );
     stopBg_->SetColor(GetScene()->GetIsGameStopped()
-        ? Colors::Red.WithAlpha(0.1f)
-        : Colors::Red
+        ? STOPPED_COLOR
+        : STOP_COLOR
     );
 }
 
@@ -96,7 +84,7 @@ void WGameStateButton::SwitchPlayPause() const
 {
     if (GetScene()->GetIsGamePlaying())
     {
-        GetScene()->StopGame();
+        GetScene()->PauseGame();
     }
     else
     {

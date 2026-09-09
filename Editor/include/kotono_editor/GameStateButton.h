@@ -15,7 +15,6 @@ public:
 	void Remove() override;
 
 private:
-	void OnKeyboardSpaceKeyPressed() const;
 	void OnGameStateChanged(EGameState gameState) const;
 	void SwitchPlayPause() const;
 

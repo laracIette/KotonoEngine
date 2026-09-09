@@ -10,11 +10,12 @@ set_target_properties(KotonoGraphics PROPERTIES FOLDER "KotonoEngine")
 set(KGRAPHICS_HEADERS
     "include/kotono_graphics/Color.h"
     "include/kotono_graphics/DirectionalLightData.h"
-    "include/kotono_graphics/DrawData.h"
     "include/kotono_graphics/Font.h"
+    "include/kotono_graphics/InterfaceDrawData.h"
     "include/kotono_graphics/InterfaceRenderGraph.h"
     "include/kotono_graphics/Mobility.h"
     "include/kotono_graphics/PointLightData.h"
+    "include/kotono_graphics/SceneDrawData.h"
     "include/kotono_graphics/SceneRenderGraph.h"
     "include/kotono_graphics/SceneView.h"
     "include/kotono_graphics/Scissor.h"

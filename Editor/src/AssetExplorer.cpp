@@ -2,7 +2,6 @@
 
 #include "AssetExplorerDirectory.h"
 #include "AssetExplorerFile.h"
-#include <kotono_input/Mouse.h>
 #include <kotono_interface/widgets.h>
 #include <kotono_io/File.h>
 #include <kotono_io/FileExplorer.h>
@@ -39,23 +38,13 @@ WidgetPtr WAssetExplorer::Build()
 	UPtr nextButton{ UCreate<WButton>{ "Directory Next Button" }() };
 	nextButton->SetOnClicked([this]() { NavigateNext(); });
 
-	
-	UPtr backgroundButton{ UCreate<WButton>{ "Background Button" }() };
-	backgroundButton->SetOnDown([this]() {
-		if (itemList_)
-		{
-			for (auto const& item : assetExplorerItems_)
-			{
-				item->Deselect();
-			}
-		}
-	});
-
-
 	itemList_ = UCreate<WHorizontalWrapList>{ "Item List" }();
 	itemList_->SetItemSpacing(10.0f);
 	itemList_->SetRowSpacing(10.0f);
 	PopulateItemList();
+
+	selectColor_ = UCreate<WColor>{ "Select Box Color" }(UColor::Mix(Colors::Blue, Colors::Cyan).WithAlpha(0.2f));
+	selectColor_->SetIsVisible(false);
 
 	auto const widgetTree{ UChildrenOwnerTree{ UCreate<WColumn>{ "Asset Explorer Main Column" }(4.0f), {
 		new UChildrenOwnerTree{ UCreate<WRow>{ "Asset Explorer Navigation Row" }(4.0f), {
@@ -82,10 +71,14 @@ WidgetPtr WAssetExplorer::Build()
 			},
 		} },
 		new UChildrenOwnerTree{ UCreate<WStack>{ "Item List Stack" }(), {
-			new UWidgetTreeLeaf{ UCreate<WColor>{ "Item List Background" }(Colors::White.WithValue(0.5f).WithAlpha(0.4f)) },
-			new UWidgetTreeLeaf{ backgroundButton },
+			new UWidgetTreeLeaf{ UCreate<WColor>{ "Item List Background" }(Colors::White.WithValue(0.05f)) },
 			new UChildOwnerTree{ UCreate<WPadding>{ "Item List Padding" }(UPadding::All(8.0f)),
 				new UWidgetTreeLeaf{ itemList_ }
+			},
+			new UChildOwnerTree{ selectOffset_ = UCreate<WOffset>{ "Select Offset" }(),
+				new UChildOwnerTree{ selectBox_ = UCreate<WBox>{ "Select Box" }(),
+					new UWidgetTreeLeaf{ selectColor_ }
+				}
 			},
 		} },
 	} } }; 
@@ -94,20 +87,65 @@ WidgetPtr WAssetExplorer::Build()
 	return widgetTree.Widget();
 }
 
-void WAssetExplorer::Display(UWidgetDisplaySettings const& displaySettings)
+b8 WAssetExplorer::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position)
 {
-	Base::Display(displaySettings);
+	if (Base::OnMouseButton(button, inputState, position))
+	{
+		return INPUT_HANDLED;
+	}
 
-	Mouse.GetEventButton(EButton::Previous, EInputState::Pressed).AddListener(this, &WAssetExplorer::OnMousePreviousButtonPressed);
-	Mouse.GetEventButton(EButton::Next, EInputState::Pressed).AddListener(this, &WAssetExplorer::OnMouseNextButtonPressed);
-}
+	switch (button)
+	{
+	case EButton::Left:
+	{
+		switch (inputState)
+		{
+		case EInputState::Pressed:
+		{
+			auto const offset{ position - selectOffset_->GetPosition() };
+			selectOffset_->SetOffset(offset);
+			selectColor_->SetIsVisible(true);
+			return INPUT_HANDLED;
+		}
+		case EInputState::Released:
+		{
+			selectColor_->SetIsVisible(false);
+			return INPUT_HANDLED;
+		}
+		case EInputState::Down:
+		{
+			auto const size{ position - selectBox_->GetPosition() };
+			selectBox_->SetSize(size);
+			return INPUT_HANDLED;
+		}
+		default:
+			break;
+		}
+		break;
+	}
+	case EButton::Previous:
+	{
+		if (inputState == EInputState::Pressed)
+		{
+			NavigatePrevious();
+			return INPUT_HANDLED;
+		}
+		break;
+	}
+	case EButton::Next:
+	{
+		if (inputState == EInputState::Pressed)
+		{
+			NavigateNext();
+			return INPUT_HANDLED;
+		}
+		break;
+	}
+	default:
+		break;
+	}
 
-void WAssetExplorer::Remove()
-{
-	Base::Remove();
-
-	Mouse.GetEventButton(EButton::Previous, EInputState::Pressed).RemoveListener(this, &WAssetExplorer::OnMousePreviousButtonPressed);
-	Mouse.GetEventButton(EButton::Next, EInputState::Pressed).RemoveListener(this, &WAssetExplorer::OnMouseNextButtonPressed);
+	return INPUT_UNHANDLED;
 }
 
 void WAssetExplorer::DeselectOthers(UPtr<WAssetExplorerItem> const& item) const
@@ -171,16 +209,6 @@ void WAssetExplorer::PopulateItemList()
 		}
 		itemList_->SetChildren(assetExplorerItems_);
 	}
-}
-
-void WAssetExplorer::OnMousePreviousButtonPressed()
-{
-	NavigatePrevious();
-}
-
-void WAssetExplorer::OnMouseNextButtonPressed()
-{
-	NavigateNext();
 }
 
 #include "generated/AssetExplorer.generated.inl"

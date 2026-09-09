@@ -6,6 +6,9 @@ class WText final : public WWidget
 {
 	GENERATED_WTEXT()
 
+public:
+	WText(std::string_view text, glm::vec2 const& fontSize = { 20.0f, 24.0f }, f32 spacing = -0.25f);
+
 protected:
 	WidgetPtr Build() override;
 

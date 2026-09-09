@@ -105,6 +105,7 @@ private:
 
 private:
 	WritableProperty(WidgetPtr, parent_, Parent);
+	WritableProperty(b8, isVisible_, IsVisible);
 	ReadonlyProperty(b8, isDisplayed_, IsDisplayed);
 	ReadonlyProperty(b8, isFocused_, IsFocused);
 	// The display settings this widget's parent gave it
