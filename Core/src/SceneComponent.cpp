@@ -35,50 +35,15 @@ void KSceneComponent::Update(f32 deltaTime)
 {
 }
 
-UPtr<TSceneObject> const& KSceneComponent::GetOwner() const
-{
-    return owner_;
-}
-
 UScene* KSceneComponent::GetScene() const
 {
     assert(GetOwner());
     return GetOwner()->GetScene();
 }
 
-UPtr<KSceneComponent> const& KSceneComponent::GetParent() const
-{
-	return parent_;
-}
-
-b8 KSceneComponent::GetCanUpdate() const
-{
-    return canUpdate_;
-}
-
-UTransform const& KSceneComponent::GetTransform() const
-{
-    return transform_;
-}
-
-EVisibility KSceneComponent::GetVisibility() const
-{
-    return visibility_;
-}
-
-EMobility KSceneComponent::GetMobility() const
-{
-    return mobility_;
-}
-
 b8 KSceneComponent::CanSetTransform() const
 {
     return mobility_ == EMobility::Dynamic;
-}
-
-UEvent<>& KSceneComponent::GetEventTransformUpdated()
-{
-    return eventTransformUpdated_;
 }
 
 void KSceneComponent::SetCanUpdate(b8 canUpdate)
@@ -101,21 +66,6 @@ void KSceneComponent::SetVisibility(EVisibility visibility, b8 propagateToChildr
 void KSceneComponent::SetMobility(EMobility mobility)
 {
     mobility_ = mobility;
-}
-
-glm::vec3 const& KSceneComponent::GetRelativePosition() const
-{
-    return transform_.position;
-}
-
-glm::quat const& KSceneComponent::GetRelativeRotation() const
-{
-    return transform_.rotation;
-}
-
-glm::vec3 const& KSceneComponent::GetRelativeScale() const
-{
-    return transform_.scale;
 }
 
 glm::vec3 KSceneComponent::GetWorldPosition() const

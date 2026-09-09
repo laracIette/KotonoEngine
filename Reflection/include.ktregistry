@@ -1,7 +1,6 @@
 {
     "files": [
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/Object.h",
-        "${ENGINE_DIRECTORY}/Core/include/kotono_core/Scene.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/SceneComponent.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/SceneContext.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/SceneObject.h",
@@ -25,7 +24,7 @@
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Offset.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Padding.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Row.h",
-        "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/SceneRenderer.h",
+        "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/SceneTexture.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Scrollable.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Spacer.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Stack.h",

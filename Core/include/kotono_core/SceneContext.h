@@ -20,9 +20,7 @@ public:
 
 	void PopulateSceneRenderGraph(USceneRenderGraph& sceneRenderGraph) const;
 
-	UScene* GetScene() const { return scene_; }
-
 private:
 	SERIALIZE UPath scenePath_;
-	UScene* scene_;
+	ReadonlyProperty(UScene*, scene_, Scene, Value);
 };

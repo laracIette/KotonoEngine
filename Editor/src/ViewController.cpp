@@ -1,10 +1,10 @@
 #include "ViewController.h"
 
 #include <glm/ext/quaternion_trigonometric.hpp>
+#include <kotono_core/Interface.h>
 #include <kotono_input/Keyboard.h>
 #include <kotono_input/Mouse.h>
 #include <kotono_interface/widgets.h>
-#include <kotono_core/Interface.h>
 #include <kotono_platform/glm_utils.h>
 
 WViewController::WViewController()
@@ -12,7 +12,7 @@ WViewController::WViewController()
 	, speed_{ 1.0f }
 	, sensitivity_{ 0.005f }
 	, pitch_{ 0.0f }
-	, yaw_{ glm::radians(0.0f) }
+	, yaw_{ glm::radians(180.0f) }
 {
 }
 
@@ -24,7 +24,7 @@ WidgetPtr WViewController::Build()
 	button->SetOnInactive([this]() { isActive_ = false; });
 
 	auto const widgetTree{ UChildrenOwnerTree{ UCreate<WStack>{}(), {
-		new UWidgetTreeLeaf{ sceneRenderer_ = UCreate<WSceneRenderer>{ "Scene Renderer" }() },
+		new UWidgetTreeLeaf{ sceneTexture_ = UCreate<WSceneTexture>{ "Scene Texture" }() },
 		new UWidgetTreeLeaf{ button },
 	} } };
 	widgetTree.Link();
@@ -74,10 +74,10 @@ b8 WViewController::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& positio
 	glm::quat const qPitch{ glm::angleAxis(pitch_, WorldRightVector) };
 	glm::quat const qYaw{ glm::angleAxis(yaw_, WorldUpVector) };
 
-	if (sceneRenderer_)
+	if (sceneTexture_)
 	{
 		glm::quat const rotation{ qYaw * qPitch };
-		sceneRenderer_->SetViewRotation(rotation);
+		sceneTexture_->SetViewRotation(rotation);
 	}
 
 	return INPUT_HANDLED;
@@ -85,36 +85,36 @@ b8 WViewController::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& positio
 
 void WViewController::OnKeyboardWKeyDown() const
 {
-	if (sceneRenderer_)
+	if (sceneTexture_)
 	{
-		auto const direction{ sceneRenderer_->GetForwardVector() };
+		auto const direction{ sceneTexture_->GetForwardVector() };
 		Translate(direction * GetInterface()->GetTimeContext().lastDelta * speed_);
 	}
 }
 
 void WViewController::OnKeyboardAKeyDown() const
 {
-	if (sceneRenderer_)
+	if (sceneTexture_)
 	{
-		auto const direction{ sceneRenderer_->GetRightVector() };
+		auto const direction{ sceneTexture_->GetRightVector() };
 		Translate(direction * GetInterface()->GetTimeContext().lastDelta * speed_);
 	}
 }
 
 void WViewController::OnKeyboardSKeyDown() const
 {
-	if (sceneRenderer_)
+	if (sceneTexture_)
 	{
-		auto const direction{ -sceneRenderer_->GetForwardVector() };
+		auto const direction{ -sceneTexture_->GetForwardVector() };
 		Translate(direction * GetInterface()->GetTimeContext().lastDelta * speed_);
 	}
 }
 
 void WViewController::OnKeyboardDKeyDown() const
 {
-	if (sceneRenderer_)
+	if (sceneTexture_)
 	{
-		auto const direction{ -sceneRenderer_->GetRightVector() };
+		auto const direction{ -sceneTexture_->GetRightVector() };
 		Translate(direction * GetInterface()->GetTimeContext().lastDelta * speed_);
 	}
 }
@@ -147,10 +147,10 @@ void WViewController::Translate(glm::vec3 const& delta) const
 		return;
 	}
 
-	if (sceneRenderer_)
+	if (sceneTexture_)
 	{
-		auto const& position{ sceneRenderer_->GetViewPosition() };
-		sceneRenderer_->SetViewPosition(position + delta);
+		auto const& position{ sceneTexture_->GetViewPosition() };
+		sceneTexture_->SetViewPosition(position + delta);
 	}
 }
 

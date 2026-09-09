@@ -23,22 +23,11 @@ public:
 
 protected:
 	virtual void Init();
-	virtual void Update(const float deltaTime);
+	virtual void Update(f32 deltaTime);
 
 public:
-	UPtr<TSceneObject> const& GetOwner() const;
 	UScene* GetScene() const;
-	UPtr<KSceneComponent> const& GetParent() const;
-	b8 GetCanUpdate() const;
-	UTransform const& GetTransform() const;
-	EVisibility GetVisibility() const;
-	EMobility GetMobility() const;
 	b8 CanSetTransform() const;
-	UEvent<>& GetEventTransformUpdated();
-
-	glm::vec3 const& GetRelativePosition() const;
-	glm::quat const& GetRelativeRotation() const;
-	glm::vec3 const& GetRelativeScale() const;
 
 	glm::vec3 GetWorldPosition() const;
 	glm::quat GetWorldRotation() const;
@@ -82,19 +71,23 @@ public:
 
 	virtual void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const;
 
+	auto GetRelativePosition() const -> glm::vec3 { return transform_.position; }
+	auto GetRelativeRotation() const -> glm::quat { return transform_.rotation; }
+	auto GetRelativeScale() const -> glm::vec3 { return transform_.scale; }
+
 private:
 	void AddChild(UPtr<KSceneComponent> const& component);
 	void RemoveChild(UPtr<KSceneComponent> const& component);
 
 private:
 	b8 isInit_;
-	b8 canUpdate_;
-	UPtr<TSceneObject> owner_;
-	UPtr<KSceneComponent> parent_;
+	ReadonlyProperty(b8, canUpdate_, CanUpdate, Value);
+	ReadonlyProperty(UPtr<TSceneObject>, owner_, Owner);
+	ReadonlyProperty(UPtr<KSceneComponent>, parent_, Parent);
+	ReadonlyProperty(UEvent<>, eventTransformUpdated_, EventTransformUpdated, Reference);
 	SERIALIZE USet<UPtr<KSceneComponent>> children_;
-	SERIALIZE UTransform transform_;
-	SERIALIZE EVisibility visibility_;
-	SERIALIZE EMobility mobility_;
-	UEvent<> eventTransformUpdated_;
+	SERIALIZE ReadonlyProperty(UTransform, transform_, Transform);
+	SERIALIZE ReadonlyProperty(EVisibility, visibility_, Visibility, Value);
+	SERIALIZE ReadonlyProperty(EMobility, mobility_, Mobility, Value);
 };
 

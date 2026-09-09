@@ -8,13 +8,13 @@ class WColor final : public WWidget
 	GENERATED_WCOLOR()
 
 public:
-	WColor(const UColor& color = Colors::White);
+	WColor(UColor const& color = Colors::White);
 
 	void Remove() override;
 
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
 
 private:
-	StateProperty(UColor, color_, Color);
+	WritableProperty(UColor, color_, Color);
 };
 

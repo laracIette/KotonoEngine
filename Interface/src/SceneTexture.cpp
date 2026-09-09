@@ -1,20 +1,21 @@
-#include "SceneRenderer.h"
+#include "SceneTexture.h"
 
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/quaternion_trigonometric.hpp>
 #include <kotono_graphics/Color.h>
 #include <kotono_graphics/InterfaceRenderGraph.h>
 #include <kotono_platform/glm_utils.h>
 #include <kotono_timing/Clock.h>
 
-WSceneRenderer::WSceneRenderer()
+WSceneTexture::WSceneTexture()
 	: depthNear_{ 0.1f }
 	, verticalFOV_{ 90.0f }
-	, viewPosition_{ WorldUpVector - WorldForwardVector }
-	, viewRotation_{ glm::identity<glm::quat>() }
+	, viewPosition_{ WorldUpVector + WorldForwardVector * 2.0f }
+	, viewRotation_{ glm::angleAxis(glm::radians(180.0f), WorldUpVector) }
 {
 }
 
-void WSceneRenderer::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
+void WSceneTexture::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
 {
 	USceneView const sceneView{
 		.view = GetViewMatrix(),
@@ -39,29 +40,29 @@ void WSceneRenderer::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderG
 	});
 }
 
-glm::vec3 WSceneRenderer::GetRightVector() const
+glm::vec3 WSceneTexture::GetRightVector() const
 {
 	return viewRotation_ * WorldRightVector;
 }
 
-glm::vec3 WSceneRenderer::GetUpVector() const
+glm::vec3 WSceneTexture::GetUpVector() const
 {
 	return viewRotation_ * WorldUpVector;
 }
 
-glm::vec3 WSceneRenderer::GetForwardVector() const
+glm::vec3 WSceneTexture::GetForwardVector() const
 {
 	return viewRotation_ * WorldForwardVector;
 }
 
-glm::mat4 WSceneRenderer::GetViewMatrix() const
+glm::mat4 WSceneTexture::GetViewMatrix() const
 {
 	return glm::lookAt(viewPosition_, viewPosition_ + GetForwardVector(), GetUpVector());
 }
 
-glm::mat4 WSceneRenderer::GetProjectionMatrix() const
+glm::mat4 WSceneTexture::GetProjectionMatrix() const
 {
 	return calculate_reverse_z_infinite_perspective(glm::radians(verticalFOV_), GetAspectRatio(), depthNear_);
 }
 
-#include "generated/SceneRenderer.generated.inl"
+#include "generated/SceneTexture.generated.inl"

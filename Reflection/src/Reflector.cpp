@@ -1,8 +1,10 @@
 #include "Reflector.h"
+
 #include <kotono_common/Path.h>
 #include <kotono_io/File.h>
 #include <kotono_io/Serializer.h>
 #include <nlohmann/json.hpp>
+#include <ranges>
 #include <regex>
 
 void GReflector::Reflect()
@@ -25,18 +27,11 @@ void GReflector::Reflect()
 		allResults_.push_back(reflectionResult);
 	}
 
-	reflectionResults_ = allResults_;
-
-	std::erase_if(reflectionResults_, 
-		[this](const UReflectionResult& reflectionResult)
-		{
-			if (reflectionResult.type.isTemplate || !IsObjectType(reflectionResult.type))
-			{
-				return true;
-			}
-			return reflectionResult.type.isTemplate || !IsObjectType(reflectionResult.type);
-		}
-	);
+	reflectionResults_ = allResults_
+		| std::views::filter([this](UReflectionResult const& reflectionResult) {
+			return IsObjectType(reflectionResult.type);
+		})
+		| std::ranges::to<std::vector>();
 }
 
 const std::vector<UReflectionResult>& GReflector::GetReflectionResults() const
@@ -44,30 +39,27 @@ const std::vector<UReflectionResult>& GReflector::GetReflectionResults() const
 	return reflectionResults_;
 }
 
-UReflectionResult::TypeInfo GReflector::GetTypeInfo(const std::string& content) const
+UReflectionResult::TypeInfo GReflector::GetTypeInfo(std::string const& content) const
 {
-	const std::regex pattern(R"((template\s*<[^;\{]*>\s+)?(?:class)\s+([a-zA-Z_]\w*)\s*(?:final)?\s*(?::\s*(?:public|protected|private)?\s*([a-zA-Z_]\w*)\s*(?:<[^\{]*>)?\s*)?\{)");
+	std::regex const pattern{ R"((?:class)\s+([a-zA-Z_]\w*)\s*(?:final)?\s*(?::\s*(?:public|protected|private)?\s*([a-zA-Z_]\w*)\s*(?:<[^\{]*>)?\s*)?\{)" };
 	
-	bool isTemplate{ false };
 	std::string name{ "" };
 	std::optional<std::string> base{ std::nullopt };
 
 	std::smatch match;
 	if (std::regex_search(content, match, pattern))
 	{
-		isTemplate = match[1].matched;
+		if (match[1].matched)
+		{
+			name = match[1].str();
+		}
 		if (match[2].matched)
 		{
-			name = match[2].str();
-		}
-		if (match[3].matched)
-		{
-			base = match[3].str();
+			base = match[2].str();
 		}
 	}
 
 	return {
-		.isTemplate = isTemplate,
 		.name = name,
 		.base = base,
 	};
@@ -77,10 +69,9 @@ std::vector<UReflectionResult::MemberInfo> GReflector::GetMemberInfos(const std:
 {
 	std::vector<UReflectionResult::MemberInfo> result{};
 
-	const std::regex varRegex(R"(SERIALIZE\s*(?:\(\s*\))?\s*(?:(?:Writable|Readonly)Property\s*\(\s*)?(.*?)(?:\s*,\s*|\s+)([A-Za-z_]\w*)\s*(?:,\s*[A-Za-z_]\w*\s*\)\s*)?;)");
-	//const std::regex varRegex(R"(SERIALIZE\s*\(?\s*\)?\s*(.+?)\s+([A-Za-z_]\w*)\s*;)");
+	std::regex const varRegex{ R"(SERIALIZE\s*(?:\(\s*\))?\s*(?:(?:Writable|Readonly)Property\s*\(\s*)?([A-Za-z_][\w:]*(?:<[\w:\s<>,]+>)?)\s*(?:,\s*|\s+)([A-Za-z_]\w*)[^;]*;)" };
 
-	for (std::sregex_iterator it(content.begin(), content.end(), varRegex), end; it != end; ++it)
+	for (std::sregex_iterator it{ content.begin(), content.end(), varRegex }, end; it != end; ++it)
 	{
 		const auto type{ (*it)[1].str() };
 		const auto name{ (*it)[2].str() };

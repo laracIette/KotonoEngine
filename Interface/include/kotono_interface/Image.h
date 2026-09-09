@@ -8,13 +8,13 @@ class WImage final : public WWidget
 	GENERATED_WIMAGE()
 
 public:
-	WImage(const UPath& path = "");
+	WImage(UPath const& path = "${ENGINE_DIRECTORY}/Graphics/assets/textures/default_texture.jpg");
 
 	void Remove() override;
 
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
 
 private:
-	StateProperty(UPath, path_, Path);
+	WritableProperty(UPath, path_, Path);
 };
 

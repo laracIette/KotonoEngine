@@ -1,7 +1,7 @@
 #pragma once
 #include "generated/ViewController.generated.h"
 #include <kotono_core/Widget.h>
-class WSceneRenderer;
+class WSceneTexture;
 class WViewController final : public WWidget
 {
 	GENERATED_WVIEWCONTROLLER()
@@ -37,5 +37,5 @@ private:
 	f32 pitch_;
 	f32 yaw_;
 
-	UPtr<WSceneRenderer> sceneRenderer_;
+	UPtr<WSceneTexture> sceneTexture_;
 };

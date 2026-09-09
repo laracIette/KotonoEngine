@@ -18,17 +18,32 @@
 
 using VoidCallback = std::function<void()>;
 
-#define ReadonlyProperty(Type, Name, PropertyName) private:			\
-	Type Name;														\
-public:																\
-	const Type& Get##PropertyName() const noexcept { return Name; } \
+#define PROP_ACCESS_ const&
+#define PROP_ACCESS_Value 
+#define PROP_ACCESS_Reference &
+#define PROP_ACCESS_ConstReference const&
+
+#define FUNC_ACCESS_ const
+#define FUNC_ACCESS_Value const
+#define FUNC_ACCESS_Reference 
+#define FUNC_ACCESS_ConstReference const
+
+#define MACRO_CONCAT(a, b) a##b
+
+#define GET_PROP_ACCESS(...) MACRO_CONCAT(PROP_ACCESS_, __VA_ARGS__)
+#define GET_FUNC_ACCESS(...) MACRO_CONCAT(FUNC_ACCESS_, __VA_ARGS__)
+
+#define ReadonlyProperty(Type, Name, PropertyName, ...) private:						\
+	Type Name;																			\
+public:																					\
+	Type GET_PROP_ACCESS(__VA_ARGS__) Get##PropertyName() GET_FUNC_ACCESS(__VA_ARGS__) { return Name; } \
 private:
 
-#define WritableProperty(Type, Name, PropertyName) private:					\
-	Type Name;																\
-public:																		\
-	const Type& Get##PropertyName() const noexcept { return Name; }			\
-	void Set##PropertyName(const Type& value) noexcept { Name = value; }	\
+#define WritableProperty(Type, Name, PropertyName, ...) private:						\
+	Type Name;																			\
+public:																					\
+	Type GET_PROP_ACCESS(__VA_ARGS__) Get##PropertyName() GET_FUNC_ACCESS(__VA_ARGS__) { return Name; } \
+	void Set##PropertyName(Type const& value) { Name = value; }				\
 private:
 
 class UPath;

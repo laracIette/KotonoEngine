@@ -7,7 +7,6 @@ struct UReflectionResult final
 {
 	struct TypeInfo
 	{
-		bool isTemplate;
 		std::string name;
 		std::optional<std::string> base;
 	};
