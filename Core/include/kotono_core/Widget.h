@@ -6,7 +6,8 @@
 #include "Expand.h"
 #include "Flex.h"
 #include "WidgetDisplaySettings.h"
-#include <glm/fwd.hpp>
+#include <glm/ext/matrix_float4x4.hpp>
+#include <glm/ext/vector_float2.hpp>
 #include <kotono_common/Set.h>
 #include <kotono_common/types.h>
 #include <kotono_input/Button.h>
@@ -78,19 +79,14 @@ public:
 	virtual void OnFocused();
 	virtual void OnUnfocused();
 
-	glm::vec2 const&	GetPosition() const { return slotDisplaySettings_.position; }
-	glm::vec2 const&	GetSize() const { return slotDisplaySettings_.bounds; }
-	f32					GetAspectRatio() const { return slotDisplaySettings_.bounds.x / slotDisplaySettings_.bounds.y; }
-	i32					GetLayer() const { return slotDisplaySettings_.layer; }
-	UScissor const&		GetScissor() const { return slotDisplaySettings_.scissor; }
+	auto GetPosition() const -> glm::vec2 { return slotDisplaySettings_.position; }
+	auto GetSize() const -> glm::vec2 { return slotDisplaySettings_.bounds; }
+	auto GetAspectRatio() const -> f32 { return slotDisplaySettings_.bounds.x / slotDisplaySettings_.bounds.y; }
+	auto GetLayer() const -> i32 { return slotDisplaySettings_.layer; }
+	auto GetScissor() const -> UScissor { return slotDisplaySettings_.scissor; }
 
 protected:
 	void SetState(StateFunction const& function);
-
-	glm::mat4 TranslationMatrix() const;
-	glm::mat4 RotationMatrix() const;
-	glm::mat4 ScaleMatrix() const;
-	glm::mat4 ModelMatrix() const;
 
 	virtual void DisplayInternal(UWidgetDisplaySettings displaySettings);
 
@@ -103,15 +99,20 @@ private:
 
 	WidgetPtr FindNonFlexAncestor(EFlex flex) const;
 
+	glm::mat4 TranslationMatrix() const;
+	glm::mat4 RotationMatrix() const;
+	glm::mat4 ScaleMatrix() const;
+	glm::mat4 ModelMatrix() const;
+
 private:
-	WritableProperty(WidgetPtr, parent_, Parent);
-	WritableProperty(b8, isVisible_, IsVisible);
-	ReadonlyProperty(b8, isDisplayed_, IsDisplayed);
-	ReadonlyProperty(b8, isFocused_, IsFocused);
-	// The display settings this widget's parent gave it
-	ReadonlyProperty(UWidgetDisplaySettings, slotDisplaySettings_, SlotDisplaySettings);
-	ReadonlyProperty(glm::vec2, contentSize_, ContentSize);
 	WidgetPtr build_;
+	UWidgetDisplaySettings slotDisplaySettings_;
+	WritableProperty(WidgetPtr, parent_, Parent);
+	WritableProperty(b8, isVisible_, IsVisible, Value);
+	ReadonlyProperty(b8, isDisplayed_, IsDisplayed, Value);
+	ReadonlyProperty(b8, isFocused_, IsFocused, Value);
+	ReadonlyProperty(glm::vec2, contentSize_, ContentSize, Value);
+	ReadonlyProperty(glm::mat4, modelMatrix_, ModelMatrix);
 };
 
 class UWidgetTree

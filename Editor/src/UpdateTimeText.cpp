@@ -35,7 +35,7 @@ void WUpdateTimeText::UpdateText() const
     }
     else
     {
-        f32 const delta{ GetInterface()->GetTimeContext().lastDelta };
+        f32 const delta{ GetInterface()->GetDeltaTime() };
         text_->SetText(std::format("I {0:.8f}FPS / {1:.8f}s", 1.0f / delta, delta));
     }
 }

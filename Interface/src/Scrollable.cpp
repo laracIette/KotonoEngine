@@ -59,7 +59,7 @@ void WScrollable::Scroll(glm::vec2 const& delta)
 	}
 
 	SetState([this, delta]() {
-		auto const bounds{ GetSlotDisplaySettings().bounds };
+		auto const bounds{ GetSize() };
 		auto const desiredSize{ GetDesiredSize(bounds) };
 		auto const maxOffset{ glm::min(bounds - desiredSize, 0.0f) };
 		

@@ -128,7 +128,7 @@ void WInputTextBox::OnKeyBackspaceDown()
 		return;
 	}
 
-	if (holdAction_.Update(GetInterface()->GetTimeContext().lastDelta))
+	if (holdAction_.Update(GetInterface()->GetDeltaTime()))
 	{
 		SetState([this]()
 		{
@@ -194,7 +194,7 @@ void WInputTextBox::OnAnyKeyDown(EKey key)
 		return;
 	}
 
-	if (holdAction_.Update(GetInterface()->GetTimeContext().lastDelta))
+	if (holdAction_.Update(GetInterface()->GetDeltaTime()))
 	{
 		SetState([this, character]()
 		{

@@ -88,7 +88,7 @@ void WViewController::OnKeyboardWKeyDown() const
 	if (sceneTexture_)
 	{
 		auto const direction{ sceneTexture_->GetForwardVector() };
-		Translate(direction * GetInterface()->GetTimeContext().lastDelta * speed_);
+		Translate(direction * GetInterface()->GetDeltaTime() * speed_);
 	}
 }
 
@@ -97,7 +97,7 @@ void WViewController::OnKeyboardAKeyDown() const
 	if (sceneTexture_)
 	{
 		auto const direction{ sceneTexture_->GetRightVector() };
-		Translate(direction * GetInterface()->GetTimeContext().lastDelta * speed_);
+		Translate(direction * GetInterface()->GetDeltaTime() * speed_);
 	}
 }
 
@@ -106,7 +106,7 @@ void WViewController::OnKeyboardSKeyDown() const
 	if (sceneTexture_)
 	{
 		auto const direction{ -sceneTexture_->GetForwardVector() };
-		Translate(direction * GetInterface()->GetTimeContext().lastDelta * speed_);
+		Translate(direction * GetInterface()->GetDeltaTime() * speed_);
 	}
 }
 
@@ -115,18 +115,18 @@ void WViewController::OnKeyboardDKeyDown() const
 	if (sceneTexture_)
 	{
 		auto const direction{ -sceneTexture_->GetRightVector() };
-		Translate(direction * GetInterface()->GetTimeContext().lastDelta * speed_);
+		Translate(direction * GetInterface()->GetDeltaTime() * speed_);
 	}
 }
 
 void WViewController::OnKeyboardQKeyDown() const
 {
-	Translate(-WorldUpVector * GetInterface()->GetTimeContext().lastDelta * speed_);
+	Translate(-WorldUpVector * GetInterface()->GetDeltaTime() * speed_);
 }
 
 void WViewController::OnKeyboardEKeyDown() const
 {
-	Translate(WorldUpVector * GetInterface()->GetTimeContext().lastDelta * speed_);
+	Translate(WorldUpVector * GetInterface()->GetDeltaTime() * speed_);
 }
 
 void WViewController::OnMouseVerticalScroll(f32 delta)

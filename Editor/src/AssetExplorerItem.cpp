@@ -26,7 +26,7 @@ WidgetPtr WAssetExplorerItem::Build()
     UPtr button{ UCreate<WButton>{ "Item Button" }() };
     button->SetIsSelectable(true);
     button->SetOnClicked([this]() {
-        if (isSelected_ && GetInterface()->GetTimeContext().total - lastClickedTime_ < doubleClickTreshold_)
+        if (isSelected_ && GetInterface()->GetNow() - lastClickedTime_ < doubleClickTreshold_)
         {
             if (onDoubleClicked_)
             {
@@ -55,7 +55,7 @@ WidgetPtr WAssetExplorerItem::Build()
 void WAssetExplorerItem::Select()
 {
     isSelected_ = true;
-    lastClickedTime_ = GetInterface()->GetTimeContext().total;
+    lastClickedTime_ = GetInterface()->GetNow();
 }
 
 void WAssetExplorerItem::Deselect()

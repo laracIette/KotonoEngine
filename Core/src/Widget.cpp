@@ -57,6 +57,8 @@ void WWidget::Display(UWidgetDisplaySettings const& displaySettings)
 
 	contentSize_ = GetContentSize(displaySettings.bounds);
 
+	modelMatrix_ = ModelMatrix();
+
 	// If build_ is not this, call Display
 	if (HasBuild())
 	{
@@ -227,28 +229,6 @@ void WWidget::SetState(StateFunction const& function)
 	}
 }
 
-glm::mat4 WWidget::TranslationMatrix() const
-{
-	glm::vec2 const bounds{ GetInterface()->GetBounds() };
-	return glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(GetPosition() + GetSize() / 2.0f, bounds), 0.0f });
-}
-
-glm::mat4 WWidget::RotationMatrix() const
-{
-	return glm::rotate(glm::identity<glm::mat4>(), 0.0f, -WorldForwardVector);
-}
-
-glm::mat4 WWidget::ScaleMatrix() const
-{
-	glm::vec2 const bounds{ GetInterface()->GetBounds() };
-	return glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(GetSize(), bounds), 1.0f });
-}
-
-glm::mat4 WWidget::ModelMatrix() const
-{
-	return TranslationMatrix() * RotationMatrix() * ScaleMatrix();
-}
-
 void WWidget::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 }
@@ -299,6 +279,28 @@ WidgetPtr WWidget::FindNonFlexAncestor(EFlex flex) const
 	}
 
 	return parent_->FindNonFlexAncestor(flex);
+}
+
+glm::mat4 WWidget::TranslationMatrix() const
+{
+	glm::vec2 const bounds{ GetInterface()->GetBounds() };
+	return glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(GetPosition() + GetSize() / 2.0f, bounds), 0.0f });
+}
+
+glm::mat4 WWidget::RotationMatrix() const
+{
+	return glm::rotate(glm::identity<glm::mat4>(), 0.0f, -WorldForwardVector);
+}
+
+glm::mat4 WWidget::ScaleMatrix() const
+{
+	glm::vec2 const bounds{ GetInterface()->GetBounds() };
+	return glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(GetSize(), bounds), 1.0f });
+}
+
+glm::mat4 WWidget::ModelMatrix() const
+{
+	return TranslationMatrix() * RotationMatrix() * ScaleMatrix();
 }
 
 UWidgetTreeLeaf::UWidgetTreeLeaf(const WidgetPtr& widget)

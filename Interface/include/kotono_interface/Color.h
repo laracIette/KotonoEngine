@@ -10,8 +10,6 @@ class WColor final : public WWidget
 public:
 	WColor(UColor const& color = Colors::White);
 
-	void Remove() override;
-
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
 
 private:

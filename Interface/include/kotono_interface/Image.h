@@ -10,8 +10,6 @@ class WImage final : public WWidget
 public:
 	WImage(UPath const& path = "${ENGINE_DIRECTORY}/Graphics/assets/textures/default_texture.jpg");
 
-	void Remove() override;
-
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
 
 private:

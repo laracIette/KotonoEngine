@@ -1,26 +1,27 @@
 #pragma once
+#include "types.h"
 #include <functional>
 template <typename T>
-class KtCached final
+class UCached final
 {
 public:
 	using ValueFunction = std::function<T()>;
 
 public:
-	KtCached() : 
-		value_(T{}),
-		valueFunction_(nullptr),
-		isDirty_(true)
+	UCached() : 
+		value_{},
+		valueFunction_{},
+		isDirty_{ true }
 	{}
 
-	KtCached(ValueFunction&& valueFunction) : 
-		value_(T{}),
-		valueFunction_(std::move(valueFunction)),
-		isDirty_(true) 
+	UCached(ValueFunction&& valueFunction) : 
+		value_{},
+		valueFunction_{ std::move(valueFunction) },
+		isDirty_{ true }
 	{}
 
 	// Get the current value without updating it
-	const T& Value() const noexcept
+	T const& GetValue() const noexcept
 	{
 		return value_;
 	}
@@ -35,7 +36,7 @@ public:
 		}
 	}
 
-	constexpr bool IsDirty() const noexcept
+	constexpr b8 GetIsDirty() const noexcept
 	{
 		return isDirty_;
 	}
@@ -52,14 +53,14 @@ public:
 		return value_;
 	}
 
-	void operator=(const T& value)
+	void operator=(T const& value)
 	{
 		value_ = value;
 	}
 
 private:
 	T value_;
-	bool isDirty_;
+	b8 isDirty_;
 	ValueFunction valueFunction_;
 };
 

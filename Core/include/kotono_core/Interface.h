@@ -2,7 +2,6 @@
 #include "Ptr.h"
 #include <glm/ext/vector_uint2.hpp>
 #include <kotono_common/Set.h>
-#include <kotono_timing/TimeContext.h>
 struct UInterfaceRenderGraph;
 struct USceneRenderGraph;
 class WSceneContext;
@@ -21,8 +20,10 @@ public:
 	void BeginDraw(glm::uvec2 const& bounds);
 	void EndDraw() const;
 
-	glm::uvec2 const& GetBounds() const { return bounds_; }
-	UTimeContext const& GetTimeContext() const { return timeContext_; }
+	glm::uvec2 GetBounds() const { return bounds_; }
+
+	f32 GetDeltaTime() const { return deltaTime_; }
+	f32 GetNow() const { return now_; }
 
 	void SetWidget(UPtr<WSceneContext> const& widget) { widget_ = widget; }
 
@@ -33,7 +34,8 @@ private:
 	UPtr<WSceneContext> widget_;
 	glm::uvec2 bounds_;
 
-	UTimeContext timeContext_;
+	f32 deltaTime_;
+	f32 now_;
 
 	/// Widgets currently hovered by the mouse cursor
 	USet<UPtr<WWidget>> focusedWidgets_;

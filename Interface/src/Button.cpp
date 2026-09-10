@@ -139,7 +139,7 @@ void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) c
 
 	interfaceRenderGraph.drawDatas.push_back({
 		.scissor = GetScissor(),
-		.modelMatrix = ModelMatrix(),
+		.modelMatrix = GetModelMatrix(),
 		.shader = "${ENGINE_DIRECTORY}/Graphics/assets/shaders/shader2D.kasset",
 		.model = "${ENGINE_DIRECTORY}/Graphics/assets/models/rectangle.obj",
 		.scalars = {},

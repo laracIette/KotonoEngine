@@ -6,11 +6,6 @@
 #include <kotono_input/Mouse.h>
 
 UInterface::UInterface()
-	: timeContext_{
-		.frequency = 1.0f / 60.0f,
-		.scale = 1.0f,
-		.state = ETimeContextState::Playing,
-	}
 {
 }
 
@@ -40,9 +35,8 @@ void UInterface::PopulateSceneRenderGraph(USceneRenderGraph& sceneRenderGraph) c
 
 void UInterface::Update(f32 deltaTime)
 {
-	if (timeContext_.Update(deltaTime))
-	{
-	}
+	deltaTime_ = deltaTime;
+	now_ += deltaTime;
 
 	if (widget_)
 	{
