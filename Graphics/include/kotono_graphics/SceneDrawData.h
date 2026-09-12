@@ -2,10 +2,10 @@
 #include "SceneView.h"
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float4.hpp>
+#include <kotono_common/FixedHeapContainer.h>
 #include <kotono_common/Path.h>
 #include <kotono_common/types.h>
 #include <variant>
-#include <vector>
 struct USceneDrawData final
 {
 	using Texture = std::variant<UPath, USceneView>;
@@ -19,9 +19,9 @@ struct USceneDrawData final
 	UPath material;
 	UPath model;
 
-	std::vector<f32>       scalars;  // max 16
-	std::vector<glm::vec4> vectors;  // max 16
-	std::vector<Texture>   textures; // max 16
+	UFixedHeapContainer<f32, 16> scalars;
+	UFixedHeapContainer<glm::vec4, 16> vectors;
+	UFixedHeapContainer<Texture, 16> textures;
 
 	b8 isVisible;
 };

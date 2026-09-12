@@ -16,6 +16,7 @@ set(KCOMMON_HEADERS
     "include/kotono_common/Delegate.h"
     "include/kotono_common/enum_utils.h"
     "include/kotono_common/Event.h"
+    "include/kotono_common/FixedHeapContainer.h"
     "include/kotono_common/Handle.h"
     "include/kotono_common/hash_utils.h"
     "include/kotono_common/log.h"

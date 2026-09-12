@@ -1,9 +1,8 @@
 #include "Guid.h"
+#include <bit>
 #include <format>
-#include <kotono_common/hash_utils.h>
 #include <nlohmann/json.hpp>
 #include <random>
-#include <sstream>
 
 UGuid::UGuid()
 {
@@ -23,31 +22,19 @@ UGuid::UGuid()
     bytes_[8] = (bytes_[8] & 0x3F) | 0x80;
 }
 
-UGuid::UGuid(const std::string& string)
+UGuid::UGuid(std::string_view string)
 {
     if (string.length() < 36)
     {
         return;
     }
 
-    // Helper to parse a specific hex range into bytes
-    auto parse_hex = [&](size str_pos, size num_bytes, size array_offset)
-        {
-            for (size i{ 0 }; i < num_bytes; ++i)
-            {
-                std::from_chars(
-                    string.data() + str_pos + (i * 2),
-                    string.data() + str_pos + (i * 2) + 2,
-                    bytes_[array_offset + i], 16
-                );
-            }
-        };
-
-    parse_hex(0, 4, 0);   
-    parse_hex(9, 2, 4);   
-    parse_hex(14, 2, 6);  
-    parse_hex(19, 2, 8);  
-    parse_hex(24, 6, 10); 
+    // Parse according to 8-4-4-4-12 structure
+    ParseHex(string, 0, 4, 0);   // First 8 chars -> bytes 0-3
+    ParseHex(string, 9, 2, 4);   // Next 4 chars  -> bytes 4-5
+    ParseHex(string, 14, 2, 6);  // Next 4 chars  -> bytes 6-7
+    ParseHex(string, 19, 2, 8);  // Next 4 chars  -> bytes 8-9
+    ParseHex(string, 24, 6, 10); // Last 12 chars -> bytes 10-15
 }
 
 std::string UGuid::ToString() const
@@ -67,59 +54,56 @@ UGuid::operator std::string() const
     return ToString();
 }
 
-UGuid& UGuid::operator=(const std::string& string)
+UGuid& UGuid::operator=(std::string_view string)
 {
     if (string.length() < 36)
     {
         return *this;
     }
 
-    // Helper to parse a specific hex range into bytes
-    auto parse_hex = [&](size str_pos, size num_bytes, size array_offset)
-        {
-            for (size i{ 0 }; i < num_bytes; ++i)
-            {
-                // Each byte is 2 hex chars
-                std::from_chars(
-                    string.data() + str_pos + (i * 2),
-                    string.data() + str_pos + (i * 2) + 2,
-                    bytes_[array_offset + i], 16
-                );
-            }
-        };
-
-    // Parse according to 8-4-4-4-12 structure
-    parse_hex(0, 4, 0);   // First 8 chars -> bytes 0-3
-    parse_hex(9, 2, 4);   // Next 4 chars  -> bytes 4-5
-    parse_hex(14, 2, 6);  // Next 4 chars  -> bytes 6-7
-    parse_hex(19, 2, 8);  // Next 4 chars  -> bytes 8-9
-    parse_hex(24, 6, 10); // Last 12 chars -> bytes 10-15
+    ParseHex(string, 0, 4, 0);  
+    ParseHex(string, 9, 2, 4);  
+    ParseHex(string, 14, 2, 6); 
+    ParseHex(string, 19, 2, 8); 
+    ParseHex(string, 24, 6, 10);
 
     return *this;
 }
 
-bool UGuid::operator==(const UGuid& other) const noexcept
+bool UGuid::operator==(UGuid const& other) const noexcept
 {
-    auto [a_low, a_high] { std::bit_cast<std::array<u64, 2>>(bytes_) };
-    auto [b_low, b_high] { std::bit_cast<std::array<u64, 2>>(other.bytes_) };
+    auto const [a_low, a_high] { std::bit_cast<std::array<u64, 2>>(bytes_) };
+    auto const [b_low, b_high] { std::bit_cast<std::array<u64, 2>>(other.bytes_) };
 
     return (a_low == b_low) && (a_high == b_high);
 }
 
-size std::hash<UGuid>::operator()(const UGuid& g) const noexcept
+void UGuid::ParseHex(std::string_view string, size str_pos, size num_bytes, size array_offset)
 {
-    auto [low, high] { std::bit_cast<std::array<u64, 2>>(g.bytes_) };
+    for (size i{ 0 }; i < num_bytes; ++i)
+    {
+        std::from_chars(
+            string.data() + str_pos + (i * 2),
+            string.data() + str_pos + (i * 2) + 2,
+            bytes_[array_offset + i], 16
+        );
+    }
+};
+
+size std::hash<UGuid>::operator()(UGuid const& g) const noexcept
+{
+    auto const [low, high] { std::bit_cast<std::array<u64, 2>>(g.bytes_) };
     return static_cast<::size>(low ^ high);
 }
 
-void USerialize<UGuid>::operator()(nlohmann::json& json, const UGuid& v) const
+void USerialize<UGuid>::operator()(nlohmann::json& json, UGuid const& v) const
 {
     USerialize<std::string>{}(json, v.ToString());
 }
 
-void UDeserialize<UGuid>::operator()(const nlohmann::json& json, UGuid& v) const
+void UDeserialize<UGuid>::operator()(nlohmann::json const& json, UGuid& v) const
 {
-    const auto string{ json.get<std::string>() };
+    auto const string{ json.get<std::string>() };
     if (!string.empty())
     {
         v = json;
