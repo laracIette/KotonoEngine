@@ -15,7 +15,7 @@
 #endif
 class UInterface;
 #ifdef EDITOR
-class WMainWindow;
+class WInterfaceRoot;
 #endif
 class UApplication final
 {
@@ -49,6 +49,6 @@ private:
 	UAverage<f32, 256> averageUpdateTime_;
 
 #	ifdef EDITOR
-	UPtr<WMainWindow> mainWindow_;
+	UPtr<WInterfaceRoot> mainWindow_;
 #	endif
 };

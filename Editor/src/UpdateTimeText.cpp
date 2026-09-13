@@ -1,7 +1,6 @@
 #include "UpdateTimeText.h"
 
 #include <kotono_core/Interface.h>
-#include <kotono_core/Scene.h>
 #include <kotono_interface/widgets.h>
 #include <kotono_timing/Timer.h>
 #include <kotono_timing/TimerManager.h>
@@ -28,16 +27,8 @@ void WUpdateTimeText::Remove()
 
 void WUpdateTimeText::UpdateText() const
 {
-    if (GetScene()->GetIsGamePlaying())
-    {
-        f32 const delta{ GetScene()->GetDeltaTime() };
-        text_->SetText(std::format("S {0:.8f}FPS / {1:.8f}s", 1.0f / delta, delta));
-    }
-    else
-    {
-        f32 const delta{ GetInterface()->GetDeltaTime() };
-        text_->SetText(std::format("I {0:.8f}FPS / {1:.8f}s", 1.0f / delta, delta));
-    }
+    f32 const delta{ GetInterface()->GetDeltaTime() };
+    text_->SetText(std::format("{0:.8f}FPS / {1:.8f}s", 1.0f / delta, delta));
 }
 
 #include "generated/UpdateTimeText.generated.inl"

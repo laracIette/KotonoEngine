@@ -4,7 +4,6 @@
 #include <kotono_audio/AudioManager.h>
 #include <kotono_common/log.h>
 #include <kotono_core/Interface.h>
-#include <kotono_core/ProjectSettings.h>
 #include <kotono_graphics/InterfaceRenderGraph.h>
 #include <kotono_graphics/SceneRenderGraph.h>
 #include <kotono_graphics/SpvCompiler.h>
@@ -85,8 +84,7 @@ void UApplication::Init()
     updateTimer.SetIsRepeat(true);
     updateTimer.Start();
 
-    mainWindow_ = UCreate<WMainWindow>{ "Main Window" }(SProjectSettings::Get<std::string>("/startupScene"));
-    mainWindow_->SetInterface(interface_);
+    mainWindow_ = UCreate<WMainWindow>{ "Main Window" }(interface_);
 
     interface_->SetWidget(mainWindow_);
 #   endif

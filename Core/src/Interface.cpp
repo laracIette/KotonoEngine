@@ -1,6 +1,6 @@
 #include "Interface.h"
 
-#include "SceneContext.h"
+#include "InterfaceRoot.h"
 #include <glm/gtx/string_cast.hpp>
 #include <kotono_common/log.h>
 #include <kotono_input/Mouse.h>
@@ -40,7 +40,7 @@ void UInterface::Update(f32 deltaTime)
 
 	if (widget_)
 	{
-		widget_->Update(deltaTime);
+		widget_->UpdateSceneContexts(deltaTime);
 	}
 
 	UpdateFocusedWidgets();
@@ -61,8 +61,8 @@ void UInterface::BeginDraw(glm::uvec2 const& bounds)
 			},
 		});
 
-		Mouse.GetEventAnyButton().AddListener(widget_.Get(), &WSceneContext::OnMouseButton);
-		Mouse.GetEventMove().AddListener(widget_.Get(), &WSceneContext::OnMouseMove);
+		Mouse.GetEventAnyButton().AddListener(widget_.Get(), &WInterfaceRoot::OnMouseButton);
+		Mouse.GetEventMove().AddListener(widget_.Get(), &WInterfaceRoot::OnMouseMove);
 
 		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Object", "Main window widget displayed with a size of: {0}", glm::to_string(bounds));
 	}
@@ -74,8 +74,8 @@ void UInterface::EndDraw() const
 	{
 		widget_->Remove(); 
 		
-		Mouse.GetEventAnyButton().RemoveListener(widget_.Get(), &WSceneContext::OnMouseButton);
-		Mouse.GetEventMove().RemoveListener(widget_.Get(), &WSceneContext::OnMouseMove);
+		Mouse.GetEventAnyButton().RemoveListener(widget_.Get(), &WInterfaceRoot::OnMouseButton);
+		Mouse.GetEventMove().RemoveListener(widget_.Get(), &WInterfaceRoot::OnMouseMove);
 
 		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Object", "Main window widget removed");
 	}

@@ -1,6 +1,6 @@
 #pragma once
 #include "types.h"
-#include <assert.h>
+#include <cassert>
 #include <concepts>
 #include <memory>
 #include <new>

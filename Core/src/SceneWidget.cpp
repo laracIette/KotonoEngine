@@ -1,7 +1,7 @@
 #include "SceneWidget.h"
 
 #include "SceneContext.h"
-#include <assert.h>
+#include <cassert>
 
 WSceneWidget::WSceneWidget(UPtr<WSceneContext> const& sceneContext)
 	: sceneContext_{ sceneContext }

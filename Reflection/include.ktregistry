@@ -1,5 +1,6 @@
 {
     "files": [
+        "${ENGINE_DIRECTORY}/Core/include/kotono_core/InterfaceRoot.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/Object.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/SceneComponent.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/SceneContext.h",
@@ -40,6 +41,7 @@
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/AssetExplorerDirectory.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/AssetExplorerFile.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/AssetExplorerItem.h",
+        "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/DefaultSceneContext.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/GameStateButton.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/InputTextBox.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/MainWindow.h",

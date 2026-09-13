@@ -1,6 +1,6 @@
 #include "IndexBuffer.h"
 
-#include <assert.h>
+#include <cassert>
 #include <kotono_platform/Device.h>
 
 static constexpr u32 MAX_INDICES{ 1 << 20 };

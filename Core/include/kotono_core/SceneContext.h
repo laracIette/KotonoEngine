@@ -11,6 +11,7 @@ class WSceneContext : public WWidget
 	GENERATED_WSCENECONTEXT()
 
 public:
+	//WSceneContext() = delete; // register_ breaks if default constructor deleted
 	WSceneContext(UPath const& scenePath);
 	~WSceneContext() override;
 

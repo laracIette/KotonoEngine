@@ -2,7 +2,7 @@
 
 #include "PushConstants.h"
 #include <array>
-#include <assert.h>
+#include <cassert>
 #include <kotono_platform/Device.h>
 #include <kotono_platform/vk_utils.h>
 

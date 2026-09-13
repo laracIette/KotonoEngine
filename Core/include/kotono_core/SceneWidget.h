@@ -8,6 +8,7 @@ class WSceneWidget : public WWidget
 	GENERATED_WSCENEWIDGET()
 
 public:
+	//WSceneWidget() = delete; // register_ breaks if default constructor deleted
 	WSceneWidget(UPtr<WSceneContext> const& sceneContext);
 
 	UPtr<WSceneContext> const& GetSceneContext() const;

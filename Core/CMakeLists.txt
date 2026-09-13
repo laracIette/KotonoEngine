@@ -15,6 +15,7 @@ set(KCORE_HEADERS
     "include/kotono_core/GameState.h"
     "include/kotono_core/Guid.h"
     "include/kotono_core/Interface.h"
+    "include/kotono_core/InterfaceRoot.h"
     "include/kotono_core/Object.h"
     "include/kotono_core/ObjectFactory.h"
     "include/kotono_core/ObjectManager.h"
@@ -34,6 +35,7 @@ set(KCORE_HEADERS
 set(KCORE_SOURCES
     "src/Guid.cpp"
     "src/Interface.cpp"
+    "src/InterfaceRoot.cpp"
     "src/Object.cpp"
     "src/ObjectFactory.cpp"
     "src/ObjectManager.cpp"

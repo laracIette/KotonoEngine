@@ -11,7 +11,7 @@
 #include "Sampler.h"
 #include "Shader.h"
 #include "Texture.h"
-#include <assert.h>
+#include <cassert>
 #include <kotono_common/log.h>
 #include <kotono_graphics/InterfaceRenderGraph.h>
 #include <kotono_graphics/SceneRenderGraph.h>

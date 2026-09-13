@@ -4,7 +4,7 @@
 #include <kotono_common/Set.h>
 struct UInterfaceRenderGraph;
 struct USceneRenderGraph;
-class WSceneContext;
+class WInterfaceRoot;
 class WWidget;
 class UInterface final
 {
@@ -25,13 +25,13 @@ public:
 	f32 GetDeltaTime() const { return deltaTime_; }
 	f32 GetNow() const { return now_; }
 
-	void SetWidget(UPtr<WSceneContext> const& widget) { widget_ = widget; }
+	void SetWidget(UPtr<WInterfaceRoot> const& widget) { widget_ = widget; }
 
 private:
 	void UpdateFocusedWidgets();
 
 private:
-	UPtr<WSceneContext> widget_;
+	UPtr<WInterfaceRoot> widget_;
 	glm::uvec2 bounds_;
 
 	f32 deltaTime_;

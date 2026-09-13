@@ -1,18 +1,10 @@
 #pragma once
 #include "generated/MainWindow.generated.h"
-#include <assert.h>
-#include <kotono_core/SceneContext.h>
-class WMainWindow final : public WSceneContext
+#include <kotono_core/InterfaceRoot.h>
+class WMainWindow final : public WInterfaceRoot
 {
 	GENERATED_WMAINWINDOW()
 
 protected:
 	WidgetPtr Build() override;
-
-public:
-	void SetInterface(UInterface* newInterface) { interface_ = newInterface; }
-	UInterface* GetInterface() const override { assert(interface_); return interface_; }
-
-private:
-	UInterface* interface_;
 };
