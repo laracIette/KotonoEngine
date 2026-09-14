@@ -1,7 +1,6 @@
 #pragma once
 #include "generated/SceneExplorerItem.generated.h"
 #include <kotono_core/Widget.h>
-class WColor;
 class TSceneObject;
 class WSceneExplorerItem : public WWidget
 {
@@ -21,6 +20,5 @@ private:
 	void OnSelectedObjectChanged(UPtr<KObject> const& object);
 
 private:
-	UPtr<WColor> bg_;
 	UPtr<TSceneObject> sceneObject_;
 };

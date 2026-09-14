@@ -1,5 +1,6 @@
 #include "Font.h"
 
+#include <ranges>
 #include <unordered_map>
 
 static std::unordered_map<char, std::string_view> const CHARACTER_NAMES =
@@ -28,11 +29,25 @@ static std::unordered_map<char, std::string_view> const CHARACTER_NAMES =
 	{'<', "lesser"}, {'>', "greater"},
 };
 
+static UPath const DEFAULT_TEXTURE{ "${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg" };
+
 UFont::UFont(UPath const& path) 
     : path_{ path }
     , size_{ 10.0f }
     , spacing_{ 0.0f }
 {
+    characterPaths_ = std::vector<UPath>{ 256, DEFAULT_TEXTURE };
+
+    for (auto const& [character, name] : CHARACTER_NAMES)
+    {
+        auto const fontCharacterPath{ path_ / std::format("{0}.png", name) };
+
+        if (fontCharacterPath.Exists())
+        {
+            auto const index{ static_cast<size>(character) };
+            characterPaths_[index] = fontCharacterPath;
+        }
+    }
 }
 
 UPath const& UFont::Path() const
@@ -62,27 +77,9 @@ void UFont::SetSpacing(f32 spacing)
 
 std::vector<UPath> UFont::GetTextPaths(std::string_view text) const
 {
-    std::vector<UPath> result{};
-    result.reserve(text.size());
-
-    for (auto const character : text)
-    {
-        // default texture
-        UPath characterPath{ "${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg" };
-
-        auto const it{ CHARACTER_NAMES.find(character) };
-        if (it != CHARACTER_NAMES.end())
-        {
-            auto const fontCharacterPath{ path_ / std::format("{}.png", it->second) };
-            if (std::filesystem::exists(fontCharacterPath))
-            {
-                // actual character texture if found
-                characterPath = fontCharacterPath;
-            }
-        }
-
-        result.push_back(characterPath);
-    }
-
-    return result;
+    return text
+        | std::views::transform([this](char const character) { 
+            return characterPaths_[static_cast<size>(character)]; 
+        })
+        | std::ranges::to<std::vector>();
 }

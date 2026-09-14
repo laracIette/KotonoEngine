@@ -20,9 +20,6 @@ WAssetExplorerItem::WAssetExplorerItem(UPtr<WAssetExplorer> const& assetExplorer
 
 WidgetPtr WAssetExplorerItem::Build()
 {
-    UPtr text{ UCreate<WText>{ "Item Text" }(path_.Name(), glm::vec2{ 16.0f, 20.0f }) };
-    text->SetShouldWrap(true);
-
     UPtr button{ UCreate<WButton>{ "Item Button" }() };
     button->SetIsSelectable(true);
     button->SetOnClicked([this]() {
@@ -43,7 +40,7 @@ WidgetPtr WAssetExplorerItem::Build()
         new UChildrenOwnerTree{ UCreate<WStack>{ "Item Stack" }(), {
             new UWidgetTreeLeaf{ button },
             new UChildOwnerTree{ UCreate<WCenter>{ "Item Center" }(EAxis::All),
-                new UWidgetTreeLeaf{ text }
+                new UWidgetTreeLeaf{ UCreate<WText>{ "Item Text" }(path_.Name(), glm::vec2{ 16.0f, 20.0f }) }
             },
         } }
     } };

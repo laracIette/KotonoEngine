@@ -1,34 +1,18 @@
 #include "UpdateTimeText.h"
 
+#include <cassert>
 #include <kotono_core/Interface.h>
 #include <kotono_interface/widgets.h>
-#include <kotono_timing/Timer.h>
-#include <kotono_timing/TimerManager.h>
 
 WidgetPtr WUpdateTimeText::Build()
 {
-    text_ = UCreate<WText>{ "Update Time Text" }("Update Time Text");
-    return text_;
-}
-
-void WUpdateTimeText::Display(UWidgetDisplaySettings const& displaySettings)
-{
-    Base::Display(displaySettings);
-
-    TimerManager.GetTimer("update time text").EventCompleted().AddListener(this, &Self::UpdateText);
-}
-
-void WUpdateTimeText::Remove()
-{
-    Base::Remove();
-
-    TimerManager.GetTimer("update time text").EventCompleted().RemoveListener(this, &Self::UpdateText);
-}
-
-void WUpdateTimeText::UpdateText() const
-{
-    f32 const delta{ GetInterface()->GetDeltaTime() };
-    text_->SetText(std::format("{0:.8f}FPS / {1:.8f}s", 1.0f / delta, delta));
+    UPtr text{ UCreate<WText>{ "Update Time Text" }("Update Time Text") };
+    text->SetText([this]() { 
+        assert(this);
+        f32 const delta{ GetInterface()->GetDeltaTime() };
+        return std::format("{0:.8f}FPS / {1:.8f}s", 1.0f / delta, delta); 
+    });
+    return text;
 }
 
 #include "generated/UpdateTimeText.generated.inl"

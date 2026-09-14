@@ -21,7 +21,9 @@ static EFlex getUpdatedFlex(glm::vec2 const& left, glm::vec2 const& right) noexc
 
 WWidget::WWidget() 
 	: build_{}
+	, isDirty_{ true }
 	, parent_{ nullptr }
+	, canCache_{ true }
 	, isVisible_{ true }
 	, slotDisplaySettings_{}
 	, contentSize_{}
@@ -129,8 +131,8 @@ std::string WWidget::GetClassPath() const
 
 UInterface* WWidget::GetInterface() const
 {
-	assert(GetParent());
-	return GetParent()->GetInterface();
+	assert(parent_);
+	return parent_->GetInterface();
 }
 
 void WWidget::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
@@ -197,45 +199,38 @@ void WWidget::OnUnfocused()
 	isFocused_ = false;
 }
 
-void WWidget::SetState(StateFunction const& function)
+b8 WWidget::GetShouldRefresh() const
 {
-	auto const oldDesiredSize{ GetDesiredSize(glm::vec2{ INFINITY }) };
+	return isDirty_ || !canCache_;
+}
 
-	b8 const wasDisplayed{ isDisplayed_ };
-	if (wasDisplayed)
+void WWidget::Refresh()
+{
+	isDirty_ = false;
+
+	if (isDisplayed_)
 	{
 		Remove();
 	}
 
+	if (isVisible_)
+	{
+		Display(slotDisplaySettings_);
+	}
+}
+
+void WWidget::SetState(StateFunction const& function)
+{
 	if (function)
 	{
 		function();
 	}
 
-	if (wasDisplayed)
-	{
-		auto const newDesiredSize{ GetDesiredSize(glm::vec2{ INFINITY }) };
-
-		if (oldDesiredSize == newDesiredSize)
-		{
-			Display(slotDisplaySettings_);
-		}
-		else if (UPtr ancestor{ FindNonFlexAncestor(getUpdatedFlex(oldDesiredSize, newDesiredSize)) })
-		{
-			KT_LOG(ELogImportanceLevel::High, "Interface", "ancestor: {0}", ancestor->GetName());
-			ancestor->Remove();
-			ancestor->Display(ancestor->slotDisplaySettings_);
-		}
-	}
+	MarkDirty();
 }
 
 void WWidget::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
-}
-
-void WWidget::Refresh()
-{
-	SetState({});
 }
 
 void WWidget::CacheBuild()
@@ -254,31 +249,22 @@ bool WWidget::HasBuild() const
 
 bool WWidget::IsVisible(UWidgetDisplaySettings const& displaySettings) const
 {
-	if (is_overlapping(displaySettings.position, displaySettings.bounds, displaySettings.scissor.offset, displaySettings.scissor.extent))
-	{
-		return true;
-	}
-	
-	return false;
-
-
-
 	return is_overlapping(displaySettings.position, displaySettings.bounds, displaySettings.scissor.offset, displaySettings.scissor.extent);
 }
 
-WidgetPtr WWidget::FindNonFlexAncestor(EFlex flex) const
+void WWidget::MarkDirty()
 {
-	if (!parent_)
+	isDirty_ = true;
+
+	if (GetFlex() == EFlex::None)
 	{
-		return Ptr();
+		return;
 	}
 
-	if (!has_flag(parent_->GetFlex(), flex))
+	if (parent_)
 	{
-		return parent_;
+		parent_->MarkDirty();
 	}
-
-	return parent_->FindNonFlexAncestor(flex);
 }
 
 glm::mat4 WWidget::TranslationMatrix() const

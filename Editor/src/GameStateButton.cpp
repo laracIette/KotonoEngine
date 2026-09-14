@@ -3,50 +3,40 @@
 #include <kotono_core/Scene.h>
 #include <kotono_interface/widgets.h>
 
-static constexpr UColor PLAYING_COLOR{ Colors::Green };
+static constexpr UColor PLAY_COLOR{ Colors::Green };
 static constexpr UColor PAUSE_COLOR{ Colors::White.WithValue(0.5f) };
 static constexpr UColor STOP_COLOR{ Colors::Red };
 static constexpr UColor STOPPED_COLOR{ Colors::Red.WithValue(0.2f) };
 
 WidgetPtr WGameStateButton::Build()
 {
-    playPauseBg_ = UCreate<WColor>{}();
-    playPauseBg_->SetColor(GetScene()->GetIsGamePlaying()
-        ? PAUSE_COLOR
-        : PLAYING_COLOR
-    );
-
-    UPtr playPauseButton{ UCreate<WButton>{}() };
-    playPauseButton->SetOnPressed([this]() { SwitchPlayPause(); });
-    playPauseButton->SetIsVisible(false);
-
-    stopBg_ = UCreate<WColor>{}();
-    stopBg_->SetColor(GetScene()->GetIsGameStopped()
-        ? STOPPED_COLOR
-        : STOP_COLOR
-    );
-
-    UPtr stopButton{ UCreate<WButton>{}() };
-    stopButton->SetOnPressed([this]() {
-        if (!GetScene()->GetIsGameStopped())
+    playPauseButton_ = UCreate<WButton>{ "Play Pause Button" }();
+    playPauseButton_->SetNormalColor(PLAY_COLOR);
+    playPauseButton_->SetFocusedColor(playPauseButton_->GetNormalColor() * 0.9f);
+    playPauseButton_->SetOnClicked([this]() {
+        if (GetScene()->GetIsGamePlaying())
         {
-            GetScene()->StopGame();
+            GetScene()->PauseGame();
+        }
+        else
+        {
+            GetScene()->PlayGame();
         }
     });
-    stopButton->SetIsVisible(false);
+
+    stopButton_ = UCreate<WButton>{ "Play Pause Button" }();
+    stopButton_->SetNormalColor(STOP_COLOR);
+    stopButton_->SetFocusedColor(stopButton_->GetNormalColor() * 0.9f);
+    stopButton_->SetDisabledColor(STOPPED_COLOR);
+    stopButton_->SetOnClicked([this]() { GetScene()->StopGame(); });
+    stopButton_->SetIsEnabled(!GetScene()->GetIsGameStopped());
 
     auto const widgetTree{ UChildrenOwnerTree{ UCreate<WRow>{ "Main Row" }(5.0f), {
         new UChildOwnerTree{ UCreate<WBox>{ "Play Pause Box" }(glm::vec2{ 64.0f, 64.0f }),
-            new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-                new UWidgetTreeLeaf{ playPauseBg_ },
-                new UWidgetTreeLeaf{ playPauseButton },
-            } }
+            new UWidgetTreeLeaf{ playPauseButton_ }
         },
         new UChildOwnerTree{ UCreate<WBox>{ "Stop Box" }(glm::vec2{ 64.0f, 64.0f }),
-            new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-                new UWidgetTreeLeaf{ stopBg_ },
-                new UWidgetTreeLeaf{ stopButton },
-            } }
+            new UWidgetTreeLeaf{ stopButton_ },
         },
     } } };
     widgetTree.Link();
@@ -58,37 +48,26 @@ void WGameStateButton::Display(UWidgetDisplaySettings const& displaySettings)
 {
     Base::Display(displaySettings);
 
-    GetScene()->GetEventGameStateUpdated().AddListener(this, &Self::OnGameStateChanged);
+    GetScene()->GetEventGameStateChanged().AddListener(this, &Self::OnGameStateChanged);
 }
 
 void WGameStateButton::Remove()
 {
     Base::Remove();
 
-    GetScene()->GetEventGameStateUpdated().RemoveListener(this, &Self::OnGameStateChanged);
+    GetScene()->GetEventGameStateChanged().RemoveListener(this, &Self::OnGameStateChanged);
 }
 
 void WGameStateButton::OnGameStateChanged(EGameState gameState) const
 {
-    playPauseBg_->SetColor(GetScene()->GetIsGamePlaying()
-        ? PAUSE_COLOR
-        : PLAYING_COLOR
-    );
-    stopBg_->SetColor(GetScene()->GetIsGameStopped()
-        ? STOPPED_COLOR
-        : STOP_COLOR
-    );
-}
-
-void WGameStateButton::SwitchPlayPause() const
-{
-    if (GetScene()->GetIsGamePlaying())
+    if (playPauseButton_)
     {
-        GetScene()->PauseGame();
+        playPauseButton_->SetNormalColor(gameState == EGameState::Playing ? PAUSE_COLOR : PLAY_COLOR);
+        playPauseButton_->SetFocusedColor(playPauseButton_->GetNormalColor() * 0.9f);
     }
-    else
+    if (stopButton_)
     {
-        GetScene()->PlayGame();
+        stopButton_->SetIsEnabled(gameState != EGameState::Stopped);
     }
 }
 

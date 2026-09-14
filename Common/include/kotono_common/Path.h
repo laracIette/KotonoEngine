@@ -20,6 +20,7 @@ public:
 	std::string Stem() const;
 	b8 IsEmpty() const;
 	b8 IsFile() const;
+	b8 Exists() const;
 
 	std::string const& ToString() const;
 	std::filesystem::path ToPath() const;

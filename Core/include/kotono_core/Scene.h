@@ -2,6 +2,7 @@
 #include "GameState.h"
 #include "Ptr.h"
 #include <kotono_common/Event.h>
+#include <kotono_common/Notify.h>
 #include <kotono_common/Path.h>
 #include <kotono_common/Set.h>
 #include <span>
@@ -23,23 +24,24 @@ public:
 
 	std::span<UPtr<TSceneObject> const> GetSceneObjects() const;
 
-	UEvent<>& GetEventSceneObjectsUpdated();
-
 	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const;
 
 	void PlayGame();
 	void PauseGame();
 	void StopGame();
 
-	UEvent<EGameState>& GetEventGameStateUpdated() { return eventGameStateUpdated_; }
+	auto GetEventSceneObjectsUpdated() -> UEvent<USet<UPtr<TSceneObject>>>& { return eventSceneObjectsUpdated_; }
 
-	b8 GetIsGamePlaying() const { return gameState_ == EGameState::Playing; }
-	b8 GetIsGamePaused() const { return gameState_ == EGameState::Paused; }
-	b8 GetIsGameStopped() const { return gameState_ == EGameState::Stopped; }
+	auto GetEventGameStateChanged() -> UEvent<EGameState>& { return gameState_.GetEventValueChanged(); }
+	auto GetEventTimeScaleChanged() -> UEvent<f32>& { return timeScale_.GetEventValueChanged(); }
 
-	f32 GetDeltaTime() const { return deltaTime_; }
-	f32 GetNow() const { return now_; }
-	f32 GetTimeScale() const { return timeScale_; }
+	auto GetIsGamePlaying() const -> b8 { return gameState_ == EGameState::Playing; }
+	auto GetIsGamePaused() const -> b8 { return gameState_ == EGameState::Paused; }
+	auto GetIsGameStopped() const -> b8 { return gameState_ == EGameState::Stopped; }
+
+	auto GetDeltaTime() const -> f32 { return deltaTime_; }
+	auto GetNow() const -> f32 { return now_; }
+	auto GetTimeScale() const -> f32 { return timeScale_; }
 
 	void SetTimeScale(f32 timeScale) { timeScale_ = timeScale; }
 
@@ -52,12 +54,11 @@ private:
 	USet<UPtr<TSceneObject>> sceneObjects_;
 	USet<UPtr<TSceneObject>> spawnedSceneObjects_;
 
-	UEvent<> eventSceneObjectsUpdated_;
-	UEvent<EGameState> eventGameStateUpdated_;
+	UEvent<USet<UPtr<TSceneObject>>> eventSceneObjectsUpdated_;
 
-	EGameState gameState_;
+	UNotify<EGameState> gameState_;
+	UNotify<f32> timeScale_;
 
 	f32 deltaTime_;
 	f32 now_;
-	f32 timeScale_;
 };

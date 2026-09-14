@@ -15,25 +15,11 @@ WAssetExplorer::WAssetExplorer()
 
 WidgetPtr WAssetExplorer::Build()
 {
-	UPtr upText{ UCreate<WText>{ "Directory Up Text" }()};
-	upText->SetText("Up");
-	upText->SetFontSize({ 16.0f, 20.0f });
-
 	UPtr upButton{ UCreate<WButton>{ "Directory Up Button" }() };
 	upButton->SetOnClicked([this]() { Push(path_.Directory()); });
 
-
-	UPtr previousText{ UCreate<WText>{ "Directory Prev Text" }() };
-	previousText->SetText("Prev");
-	previousText->SetFontSize({ 16.0f, 20.0f });
-
 	UPtr previousButton{ UCreate<WButton>{ "Directory Prev Button" }() };
 	previousButton->SetOnClicked([this]() { NavigatePrevious(); });
-
-
-	UPtr nextText{ UCreate<WText>{ "Directory Next Text" }() };
-	nextText->SetText("Next");
-	nextText->SetFontSize({ 16.0f, 20.0f });
 
 	UPtr nextButton{ UCreate<WButton>{ "Directory Next Button" }() };
 	nextButton->SetOnClicked([this]() { NavigateNext(); });
@@ -51,22 +37,22 @@ WidgetPtr WAssetExplorer::Build()
 			new UChildOwnerTree{ UCreate<WWrap>{}(),
 				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
 					new UWidgetTreeLeaf{ UCreate<WColor>{}(Colors::White.WithValue(0.25f)) },
-					new UWidgetTreeLeaf{ upText },
 					new UWidgetTreeLeaf{ upButton },
+					new UWidgetTreeLeaf{ UCreate<WText>{ "Directory Up Text" }("Up", glm::vec2{ 16.0f, 20.0f }) },
 				} }
 			},
 			new UChildOwnerTree{ UCreate<WWrap>{}(),
 				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
 					new UWidgetTreeLeaf{ UCreate<WColor>{}(Colors::White.WithValue(0.25f)) },
-					new UWidgetTreeLeaf{ previousText },
 					new UWidgetTreeLeaf{ previousButton },
+					new UWidgetTreeLeaf{ UCreate<WText>{ "Directory Prev Text" }("Prev", glm::vec2{ 16.0f, 20.0f }) },
 				} }
 			},
 			new UChildOwnerTree{ UCreate<WWrap>{}(),
 				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
 					new UWidgetTreeLeaf{ UCreate<WColor>{}(Colors::White.WithValue(0.25f)) },
-					new UWidgetTreeLeaf{ nextText },
 					new UWidgetTreeLeaf{ nextButton },
+					new UWidgetTreeLeaf{ UCreate<WText>{ "Directory Next Text" }("Next", glm::vec2{ 16.0f, 20.0f }) },
 				} }
 			},
 		} },

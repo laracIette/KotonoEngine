@@ -8,13 +8,8 @@
 
 WidgetPtr WSceneExplorer::Build()
 {
-	UPtr headerText{ UCreate<WText>{ "Scene Explorer Text" }() };
-	headerText->SetText("Scene Explorer");
-	headerText->SetFontSize({ 20.0f, 24.0f });
-	headerText->SetSpacing(-5.0f);
-
 	itemList_ = UCreate<WList>{ "Scene Explorer Item List" }();
-	PopulateItemList();
+	PopulateItemList(GetScene()->GetSceneObjects());
 
 	const UChildrenOwnerTree widgetTree(UCreate<WStack>{}(), {
 		new UWidgetTreeLeaf(UCreate<WColor>{}(Colors::White.WithValue(0.5f).WithAlpha(0.4f))),
@@ -29,7 +24,7 @@ WidgetPtr WSceneExplorer::Build()
 						new UWidgetTreeLeaf(UCreate<WSceneExplorerRemoveButton>{}(GetSceneContext()))
 					),
 				}),
-				new UWidgetTreeLeaf(headerText),
+				new UWidgetTreeLeaf(UCreate<WText>{ "Scene Explorer Text" }("Scene Explorer")),
 				new UChildOwnerTree(UCreate<WPadding>{}(UPadding::All(5.0f)),
 					new UChildrenOwnerTree(UCreate<WStack>{}(), {
 						new UWidgetTreeLeaf(UCreate<WColor>{}(Colors::Black.WithAlpha(0.5f))),
@@ -50,7 +45,7 @@ void WSceneExplorer::Display(UWidgetDisplaySettings const& displaySettings)
 {
 	Base::Display(displaySettings);
 
-	GetScene()->GetEventGameStateUpdated().AddListener(this, &Self::OnGameStateChanged);
+	GetScene()->GetEventGameStateChanged().AddListener(this, &Self::OnGameStateChanged);
 	GetScene()->GetEventSceneObjectsUpdated().AddListener(this, &Self::PopulateItemList);
 }
 
@@ -58,23 +53,26 @@ void WSceneExplorer::Remove()
 {
 	Base::Remove();
 
-	GetScene()->GetEventGameStateUpdated().RemoveListener(this, &Self::OnGameStateChanged);
+	GetScene()->GetEventGameStateChanged().RemoveListener(this, &Self::OnGameStateChanged);
 	GetScene()->GetEventSceneObjectsUpdated().RemoveListener(this, &Self::PopulateItemList);
 }
 
 void WSceneExplorer::OnGameStateChanged(EGameState gameState) const
 {
-	PopulateItemList();
+	if (gameState != EGameState::Paused)
+	{
+		PopulateItemList(GetScene()->GetSceneObjects());
+	}
 }
 
-void WSceneExplorer::PopulateItemList() const
+void WSceneExplorer::PopulateItemList(std::span<UPtr<TSceneObject> const> sceneObjects) const
 {
 	if (itemList_)
 	{
 		UAutoDelete<WWidget> const itemListChildren{ itemList_->GetChildren() };
 
 		WidgetSet items{};
-		for (auto const& sceneObject : GetScene()->GetSceneObjects())
+		for (auto const& sceneObject : sceneObjects)
 		{
 			items.Add(UCreate<WSceneExplorerItem>{}(sceneObject));
 		}

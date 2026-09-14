@@ -98,6 +98,22 @@ b8 WChildrenOwner::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position
 	return INPUT_UNHANDLED;
 }
 
+void WChildrenOwner::Refresh()
+{
+	if (GetShouldRefresh())
+	{
+		return Base::Refresh();
+	}
+
+	for (auto const& child : children_)
+	{
+		if (child && child->GetShouldRefresh())
+		{
+			child->Refresh();
+		}
+	}
+}
+
 void WChildrenOwner::SetChildren(const WidgetSet& widgets)
 {
 	SetState([this, widgets]() {

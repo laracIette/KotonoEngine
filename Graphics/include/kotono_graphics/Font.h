@@ -21,5 +21,7 @@ private:
 	// todo: unused yet, for sdf
 	f32 size_;
 	f32 spacing_;
+
+	std::vector<UPath> characterPaths_;
 };
 

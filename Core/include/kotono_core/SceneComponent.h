@@ -1,7 +1,8 @@
 #pragma once
 #include "generated/SceneComponent.generated.h"
-#include "CoordinateSpace.h"
 #include "Object.h"
+
+#include "CoordinateSpace.h"
 #include "Transform.h"
 #include <kotono_common/Event.h>
 #include <kotono_common/Set.h>

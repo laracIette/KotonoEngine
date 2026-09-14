@@ -60,7 +60,7 @@ void UScene::Add(UPtr<TSceneObject> const& sceneObject)
 
 	sceneObjects_.Add(sceneObject);
 	sceneObject->scene_ = this;
-	eventSceneObjectsUpdated_.Broadcast();
+	eventSceneObjectsUpdated_.Broadcast(sceneObjects_);
 }
 
 void UScene::Remove(UPtr<TSceneObject> const& sceneObject)
@@ -72,7 +72,7 @@ void UScene::Remove(UPtr<TSceneObject> const& sceneObject)
 
 	sceneObjects_.Remove(sceneObject);
 	sceneObject->scene_ = nullptr;
-	eventSceneObjectsUpdated_.Broadcast();
+	eventSceneObjectsUpdated_.Broadcast(sceneObjects_);
 }
 
 void UScene::SpawnSceneObjects()
@@ -96,11 +96,6 @@ void UScene::AddSpawnedSceneObject(UPtr<TSceneObject> const& sceneObject)
 std::span<UPtr<TSceneObject> const> UScene::GetSceneObjects() const
 {
 	return sceneObjects_;
-}
-
-UEvent<>& UScene::GetEventSceneObjectsUpdated()
-{
-	return eventSceneObjectsUpdated_;
 }
 
 void UScene::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const
@@ -160,6 +155,5 @@ b8 UScene::TrySetState(EGameState gameState)
 	}
 
 	gameState_ = gameState;
-	eventGameStateUpdated_.Broadcast(gameState);
 	return true;
 }

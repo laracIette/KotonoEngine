@@ -79,6 +79,9 @@ public:
 	virtual void OnFocused();
 	virtual void OnUnfocused();
 
+	b8 GetShouldRefresh() const;
+	virtual void Refresh();
+
 	auto GetPosition() const -> glm::vec2 { return slotDisplaySettings_.position; }
 	auto GetSize() const -> glm::vec2 { return slotDisplaySettings_.bounds; }
 	auto GetAspectRatio() const -> f32 { return slotDisplaySettings_.bounds.x / slotDisplaySettings_.bounds.y; }
@@ -90,14 +93,11 @@ protected:
 
 	virtual void DisplayInternal(UWidgetDisplaySettings displaySettings);
 
-	void Refresh();
-
 private:
 	void CacheBuild();
 	bool HasBuild() const;
 	bool IsVisible(UWidgetDisplaySettings const& displaySettings) const;
-
-	WidgetPtr FindNonFlexAncestor(EFlex flex) const;
+	void MarkDirty();
 
 	glm::mat4 TranslationMatrix() const;
 	glm::mat4 RotationMatrix() const;
@@ -107,7 +107,9 @@ private:
 private:
 	WidgetPtr build_;
 	UWidgetDisplaySettings slotDisplaySettings_;
+	b8 isDirty_;
 	WritableProperty(WidgetPtr, parent_, Parent);
+	WritableProperty(b8, canCache_, CanCache, Value);
 	WritableProperty(b8, isVisible_, IsVisible, Value);
 	ReadonlyProperty(b8, isDisplayed_, IsDisplayed, Value);
 	ReadonlyProperty(b8, isFocused_, IsFocused, Value);

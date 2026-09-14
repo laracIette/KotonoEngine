@@ -38,12 +38,13 @@ void UInterface::Update(f32 deltaTime)
 	deltaTime_ = deltaTime;
 	now_ += deltaTime;
 
+	UpdateFocusedWidgets();
+
 	if (widget_)
 	{
 		widget_->UpdateSceneContexts(deltaTime);
+		widget_->Refresh();
 	}
-
-	UpdateFocusedWidgets();
 }
 
 void UInterface::BeginDraw(glm::uvec2 const& bounds)

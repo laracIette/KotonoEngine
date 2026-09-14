@@ -86,6 +86,19 @@ b8 WChildOwner::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
 	return INPUT_UNHANDLED;
 }
 
+void WChildOwner::Refresh()
+{
+	if (GetShouldRefresh())
+	{
+		return Base::Refresh();
+	}
+
+	if (child_ && child_->GetShouldRefresh())
+	{
+		child_->Refresh();
+	}
+}
+
 void WChildOwner::SetChild(const WidgetPtr& widget)
 {
 	if (widget == child_)

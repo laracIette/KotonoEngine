@@ -79,11 +79,6 @@ void UApplication::Init()
 #   ifdef EDITOR
     Visualizer.Init();
 
-    auto& updateTimer{ TimerManager.GetTimer("update time text") };
-    updateTimer.SetDuration(1.0f / 20.0f);
-    updateTimer.SetIsRepeat(true);
-    updateTimer.Start();
-
     mainWindow_ = UCreate<WMainWindow>{ "Main Window" }(interface_);
 
     interface_->SetWidget(mainWindow_);

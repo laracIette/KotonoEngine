@@ -1,38 +1,43 @@
 #pragma once
 #include "generated/Text.generated.h"
 #include <kotono_core/Widget.h>
+
+#include <kotono_common/Bindable.h>
 /// Display a text
 class WText final : public WWidget
 {
 	GENERATED_WTEXT()
 
+private:
+	struct CharacterData
+	{
+		UPath path;
+		glm::mat4 modelMatrix;
+	};
+
 public:
-	WText(std::string_view text, glm::vec2 const& fontSize = { 20.0f, 24.0f }, f32 spacing = -0.25f);
+	WText(std::string_view text, glm::vec2 const& fontSize = { 20.0f, 24.0f }, f32 spacing = 0.75f);
 
-protected:
-	WidgetPtr Build() override;
+	void Display(UWidgetDisplaySettings const& displaySettings) override;
+	void Remove() override;
 
-public:
-	std::string_view GetText() const;
-	glm::vec2 const& GetFontSize() const;
-	f32 GetSpacing() const;
-	b8 GetShouldWrap() const;
+	glm::vec2 GetContentSize(glm::vec2 bounds) const override;
+	glm::vec2 GetDesiredSize(glm::vec2 const& bounds) const override;
 
-	void SetText(std::string_view text);
-	void SetFontSize(glm::vec2 const& fontSize);
-	void SetSpacing(f32 spacing);
-	void SetShouldWrap(b8 shouldWrap);
+	EFlex GetFlex() const override;
+	EExpand GetExpand() const override;
+
+	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
+
+	std::string GetText() const;
+
+	void SetText(UBindable<std::string> const& text);
 
 private:
-	void UpdateTextBody() const;
-	WidgetSet GetCharacters() const;
+	UBindable<std::string> text_;
+	WritableProperty(glm::vec2, fontSize_, FontSize, Value);
+	WritableProperty(f32, spacing_, Spacing, Value);
 
-private:
-	UPtr<WWidget> textBody_;
-
-	std::string text_;
-	glm::vec2 fontSize_;
-	f32 spacing_;
-	b8 shouldWrap_;
+	std::vector<CharacterData> characters_;
 };
 

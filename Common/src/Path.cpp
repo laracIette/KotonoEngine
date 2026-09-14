@@ -62,6 +62,11 @@ b8 UPath::IsFile() const
     return is_regular_file(ToPath());
 }
 
+b8 UPath::Exists() const
+{
+    return exists(ToPath());
+}
+
 std::string const& UPath::ToString() const
 {
     return source_;

@@ -1,6 +1,8 @@
 #pragma once
 #include "generated/SceneExplorer.generated.h"
 #include <kotono_core/SceneWidget.h>
+#include <span>
+class TSceneObject;
 class WList;
 enum class EGameState : u8;
 class WSceneExplorer : public WSceneWidget
@@ -16,7 +18,7 @@ public:
 
 private:
 	void OnGameStateChanged(EGameState gameState) const;
-	void PopulateItemList() const;
+	void PopulateItemList(std::span<UPtr<TSceneObject> const> sceneObjects) const;
 
 private:
 	UPtr<WList> itemList_;

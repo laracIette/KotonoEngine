@@ -15,6 +15,8 @@ public:
 
 	b8 OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) final;
 	b8 OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) final;
+	
+	void Refresh() final;
 
 	void SetChildren(WidgetSet const& widgets);
 

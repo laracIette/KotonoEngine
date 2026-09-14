@@ -1,9 +1,9 @@
 #pragma once
 #include "generated/GameStateButton.generated.h"
 #include <kotono_core/SceneWidget.h>
-class WColor;
+class WButton;
 enum class EGameState : u8;
-class WGameStateButton : public WSceneWidget
+class WGameStateButton final : public WSceneWidget
 {
 	GENERATED_WGAMESTATEBUTTON()
 
@@ -16,10 +16,9 @@ public:
 
 private:
 	void OnGameStateChanged(EGameState gameState) const;
-	void SwitchPlayPause() const;
 
 private:
-	UPtr<WColor> playPauseBg_;
-	UPtr<WColor> stopBg_;
+	UPtr<WButton> playPauseButton_;
+	UPtr<WButton> stopButton_;
 };
 
