@@ -1,6 +1,7 @@
 #pragma once
 #include "GameState.h"
 #include "Ptr.h"
+#include <kotono_audio/AudioContext.h>
 #include <kotono_common/Event.h>
 #include <kotono_common/Notify.h>
 #include <kotono_common/Path.h>
@@ -51,6 +52,8 @@ private:
 	b8 TrySetState(EGameState gameState);
 
 private:
+	UAudioContext audioContext_;
+
 	USet<UPtr<TSceneObject>> sceneObjects_;
 	USet<UPtr<TSceneObject>> spawnedSceneObjects_;
 

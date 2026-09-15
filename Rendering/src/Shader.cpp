@@ -7,8 +7,6 @@
 #include <kotono_platform/vk_utils.h>
 #include <nlohmann/json.hpp>
 
-#define KT_LOG_IMPORTANCE_LEVEL_SHADER ELogImportanceLevel::High
-
 AShader::AShader(UPath const& path)
 	: AAsset(path)
 	, pipeline_{ VK_NULL_HANDLE }
@@ -28,13 +26,13 @@ void AShader::Init(UDevice& device, VkPipelineLayout pipelineLayout, VkFormat sw
 	{
 		CreateGraphicsPipeline(device, pipelineLayout, swapchainFormat);
 	}
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "initialized shader {0}", GetPath().ToString());
+	KT_LOG(ELogImportanceLevel::Medium, "Graphics", "initialized shader {0}", GetPath().ToString());
 }
 
 void AShader::Cleanup(UDevice& device) const
 {
 	vkDestroyPipeline(device.GetDevice(), pipeline_, nullptr);
-	KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SHADER, "Graphics", "cleaned up shader {0}", GetPath().ToString());
+	KT_LOG(ELogImportanceLevel::Medium, "Graphics", "cleaned up shader {0}", GetPath().ToString());
 }
 
 VkPipeline AShader::GetPipeline() const

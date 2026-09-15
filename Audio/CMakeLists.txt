@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 4.2)
 project(KotonoAudio LANGUAGES C CXX)
 
-
 ################
 include(FetchContent)
 
@@ -61,10 +60,15 @@ target_compile_features(KotonoAudio PUBLIC cxx_std_23)
 set_target_properties(KotonoAudio PROPERTIES FOLDER "KotonoEngine")
 
 set(KAUDIO_HEADERS
-    "include/kotono_audio/AudioManager.h"
+    "include/kotono_audio/al_utils.h"
+    "include/kotono_audio/AudioContext.h"
+    "include/kotono_audio/AudioSource.h"
 )
 set(KAUDIO_SOURCES
-    "src/AudioManager.cpp"
+    "src/al_utils.cpp"
+    "src/AudioContext.cpp"
+    "src/AudioSource.cpp"
+    "src/implementations.cpp"
 )
 
 target_sources(KotonoAudio
@@ -72,8 +76,11 @@ target_sources(KotonoAudio
     PRIVATE ${KAUDIO_SOURCES}
 )
 
+set(THIRD_PARTY_DIR "${ENGINE_PATH}/ThirdParty")
+
 # Include directories
 target_include_directories(KotonoAudio
+    PUBLIC  "${THIRD_PARTY_DIR}/dr_libs/include"
     PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_audio"
 )

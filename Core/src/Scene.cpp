@@ -1,4 +1,5 @@
 #include "Scene.h"
+
 #include "SceneObject.h"
 #include <kotono_io/Serializer.h>
 #include <nlohmann/json.hpp>
@@ -10,6 +11,9 @@ UScene::UScene(UPath const& path)
 	, now_{ 0.0f }
 	, timeScale_{ 1.0f }
 {
+	audioContext_.Init();
+	audioContext_.PlaySource("${ENGINE_DIRECTORY}/Audio/assets/honk.wav", true);
+
 	nlohmann::json json{};
 	SSerializer::Deserialize(json, path);
 
@@ -37,6 +41,8 @@ UScene::~UScene()
 			sceneObject->Delete();
 		}
 	}
+
+	audioContext_.Cleanup();
 }
 
 void UScene::Update(f32 deltaTime)
@@ -48,6 +54,8 @@ void UScene::Update(f32 deltaTime)
 		deltaTime_ = deltaTime;
 		now_ += deltaTime;
 		UpdateSceneObjects(deltaTime);
+
+		audioContext_.Update();
 	}
 }
 

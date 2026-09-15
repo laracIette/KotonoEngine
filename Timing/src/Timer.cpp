@@ -1,36 +1,6 @@
 #include "Timer.h"
 
-bool UTimer::GetIsPlaying() const
-{
-    return isPlaying_;
-}
-
-bool UTimer::GetIsRepeat() const
-{
-    return isRepeat_;
-}
-
-f32 UTimer::GetDuration() const
-{
-    return duration_;
-}
-
-UEvent<>& UTimer::EventCompleted()
-{
-    return eventCompleted_;
-}
-
-void UTimer::SetIsRepeat(const bool isRepeat)
-{
-    isRepeat_ = isRepeat;
-}
-
-void UTimer::SetDuration(const f32 duration)
-{
-    duration_ = duration;
-}
-
-void UTimer::Start(const bool isOverride)
+void UTimer::Start(b8 isOverride)
 {
     if (isPlaying_ && !isOverride)
     {
@@ -46,7 +16,7 @@ void UTimer::Stop()
     isPlaying_ = false;
 }
 
-void UTimer::Update(const f32 deltaTime)
+void UTimer::Update(f32 deltaTime)
 {
     if (!isPlaying_)
     {

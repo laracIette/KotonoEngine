@@ -3,26 +3,23 @@
 #include <kotono_common/types.h>
 class UTimer final
 {
-	friend class GTimerManager;
-
 public:
-	bool GetIsPlaying() const;
-	bool GetIsRepeat() const;
-	f32 GetDuration() const;
-	UEvent<>& EventCompleted();
+	void Update(f32 deltaTime);
 
-	void SetIsRepeat(const bool isRepeat);
-	void SetDuration(const f32 duration);
-
-	void Start(const bool isOverride = true);
+	void Start(b8 isOverride = true);
 	void Stop();
 
-private:
-	void Update(const f32 deltaTime);
+	auto GetIsPlaying() const -> b8 { return isPlaying_; }
+	auto GetIsRepeat() const -> b8 { return isRepeat_; }
+	auto GetDuration() const -> f32 { return duration_; }
+	auto EventCompleted() -> UEvent<>& { return eventCompleted_; }
+
+	void SetIsRepeat(b8 isRepeat) { isRepeat_ = isRepeat; }
+	void SetDuration(f32 duration) { duration_ = duration; }
 
 private:
-	bool isPlaying_;
-	bool isRepeat_;
+	b8 isPlaying_;
+	b8 isRepeat_;
 	f32 duration_;
 	f32 current_;
 	UEvent<> eventCompleted_;

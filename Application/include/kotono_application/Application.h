@@ -7,9 +7,8 @@
 #include <kotono_platform/Surface.h>
 #include <kotono_platform/Window.h>
 #include <kotono_rendering/Renderer.h>
-#include <span>
+#include <kotono_timing/Timer.h>
 #include <unordered_map>
-#include <vector>
 #ifdef EDITOR
 #include <kotono_core/Ptr.h>
 #endif
@@ -47,6 +46,8 @@ private:
 	f32 now_;
 	f32 deltaTime_;
 	UAverage<f32, 256> averageUpdateTime_;
+
+	UTimer logUPSTimer_;
 
 #	ifdef EDITOR
 	UPtr<WInterfaceRoot> mainWindow_;

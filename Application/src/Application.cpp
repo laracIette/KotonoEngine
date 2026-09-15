@@ -1,7 +1,6 @@
 #include "Application.h"
 
 #include <GLFW/glfw3.h>
-#include <kotono_audio/AudioManager.h>
 #include <kotono_common/log.h>
 #include <kotono_core/Interface.h>
 #include <kotono_graphics/InterfaceRenderGraph.h>
@@ -13,7 +12,6 @@
 #include <kotono_scene/MeshComponent.h>
 #include <kotono_scene/PointLightComponent.h>
 #include <kotono_timing/Clock.h>
-#include <kotono_timing/TimerManager.h>
 
 #ifdef EDITOR
 #include <kotono_editor/MainWindow.h>
@@ -62,15 +60,13 @@ void UApplication::Init()
     device_.Init(surface_.GetSurface());
     renderer_.Init();
 
-    AudioManager.Init();
     Keyboard.Init(window_);
     Mouse.Init(window_);
 
-    auto& logUPSTimer{ TimerManager.GetTimer("log ups timer") };
-    logUPSTimer.SetDuration(1.0f);
-    logUPSTimer.SetIsRepeat(true);
-    logUPSTimer.EventCompleted().AddListener(this, &UApplication::LogUPS);
-    logUPSTimer.Start();
+    logUPSTimer_.SetDuration(1.0f);
+    logUPSTimer_.SetIsRepeat(true);
+    logUPSTimer_.EventCompleted().AddListener(this, &UApplication::LogUPS);
+    logUPSTimer_.Start();
 
     window_.GetEventWindowResized().AddListener(this, &UApplication::OnWindowResized);
 
@@ -106,7 +102,7 @@ void UApplication::Update()
         Keyboard.Update();
         Mouse.Update();
 
-        TimerManager.Update(deltaTime_);
+        logUPSTimer_.Update(deltaTime_);
         interface_->Update(deltaTime_);
     }
 
@@ -129,8 +125,6 @@ void UApplication::Cleanup()
         interface_->EndDraw();
         delete interface_;
     }
-
-    AudioManager.Cleanup();
 
     renderer_.Cleanup();
     device_.Cleanup();

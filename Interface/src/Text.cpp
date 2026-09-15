@@ -14,44 +14,6 @@ WText::WText(std::string_view text, glm::vec2 const& fontSize, f32 spacing)
 {
 }
 
-void WText::Display(UWidgetDisplaySettings const& displaySettings)
-{
-	Base::Display(displaySettings);
-
-	static UFont const font{ "${ENGINE_DIRECTORY}/Graphics/assets/fonts/default" };
-	auto const characterPaths{ font.GetTextPaths(GetText()) };
-
-	for (auto const& [index, characterPath] : characterPaths | std::views::enumerate)
-	{
-		if (fontSize_.x * spacing_ * (index + 1) > displaySettings.bounds.x)
-		{
-			break;
-		}
-
-		glm::vec2 const offset{
-			fontSize_.x * 0.5f + fontSize_.x * spacing_ * index,
-			fontSize_.y * 0.5f
-		};
-
-		auto const position{ GetPosition() + offset };
-
-		glm::vec2 const bounds{ GetInterface()->GetBounds() };
-		auto const modelMatrix{
-			glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(position, bounds), 0.0f })
-		  * glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(fontSize_, bounds), 1.0f }) 
-		};
-
-		characters_.emplace_back(characterPath, modelMatrix);
-	}
-}
-
-void WText::Remove()
-{
-	Base::Remove();
-
-	characters_.clear();
-}
-
 glm::vec2 WText::GetContentSize(glm::vec2 bounds) const
 {
 	return glm::min(GetDesiredSize(bounds), bounds);
@@ -109,6 +71,37 @@ void WText::SetText(UBindable<std::string> const& text)
 {
 	text_ = text;
 	SetCanCache(text.GetIsValue());
+}
+
+void WText::DisplayInternal(UWidgetDisplaySettings displaySettings)
+{
+	characters_.clear();
+
+	static UFont const font{ "${ENGINE_DIRECTORY}/Graphics/assets/fonts/default" };
+	auto const characterPaths{ font.GetTextPaths(GetText()) };
+
+	for (auto const& [index, characterPath] : characterPaths | std::views::enumerate)
+	{
+		if (fontSize_.x * spacing_ * (index + 1) > displaySettings.bounds.x)
+		{
+			break;
+		}
+
+		glm::vec2 const offset{
+			fontSize_.x * 0.5f + fontSize_.x * spacing_ * index,
+			fontSize_.y * 0.5f
+		};
+
+		auto const position{ GetPosition() + offset };
+
+		glm::vec2 const bounds{ GetInterface()->GetBounds() };
+		auto const modelMatrix{
+			glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(position, bounds), 0.0f })
+		  * glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(fontSize_, bounds), 1.0f })
+		};
+
+		characters_.emplace_back(characterPath, modelMatrix);
+	}
 }
 
 #include "generated/Text.generated.inl"

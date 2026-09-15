@@ -13,7 +13,6 @@ set(KTIMING_HEADERS
     "include/kotono_timing/Task.h"
     "include/kotono_timing/TimeContext.h"
     "include/kotono_timing/Timer.h"
-    "include/kotono_timing/TimerManager.h"
 )
 set(KTIMING_SOURCES
     "src/Clock.cpp"
@@ -21,7 +20,6 @@ set(KTIMING_SOURCES
     "src/Task.cpp"
     "src/TimeContext.cpp"
     "src/Timer.cpp"
-    "src/TimerManager.cpp"
 )
 
 target_sources(KotonoTiming
