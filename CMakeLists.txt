@@ -12,6 +12,8 @@ if (MSVC)
 endif()
 
 # --- Add all modules (subprojects) ---
+add_subdirectory(ThirdParty/dr_libs)
+
 add_subdirectory(Common)
 add_subdirectory(Math)
 add_subdirectory(IO)

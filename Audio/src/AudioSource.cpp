@@ -1,13 +1,14 @@
 #include "AudioSource.h"
 
 #include "al_utils.h"
+#include "AudioDataWAV.h"
 #include <AL/al.h>
 
 UAudioSource::UAudioSource(UPath const& path)
 {
     if (path.Extension() == ".wav" || path.Extension() == ".WAV")
     {
-        DataWAV const data{ path };
+        UAudioDataWAV const data{ path };
 
         ALenum const format{ (data.channels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16 };
 
@@ -130,23 +131,4 @@ void UAudioSource::SetIsLooping(b8 isLooping) const
          alSourcei(source_, AL_LOOPING, isLooping),
          "couldn't set the source's looping value"
     );
-}
-
-UAudioSource::DataWAV::DataWAV(UPath const& path)
-{
-    pSampleData = drwav_open_file_and_read_pcm_frames_s16(
-        path.ToPath().string().c_str(), &channels, &sampleRate, &totalFrameCount, NULL
-    );
-
-    if (!pSampleData)
-    {
-        throw std::runtime_error{ "failed to load file" };
-    }
-
-    dataSize = totalFrameCount * channels * sizeof(drwav_int16);
-}
-
-UAudioSource::DataWAV::~DataWAV()
-{
-    drwav_free(pSampleData, NULL);
 }

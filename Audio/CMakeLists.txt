@@ -62,13 +62,14 @@ set_target_properties(KotonoAudio PROPERTIES FOLDER "KotonoEngine")
 set(KAUDIO_HEADERS
     "include/kotono_audio/al_utils.h"
     "include/kotono_audio/AudioContext.h"
+    "include/kotono_audio/AudioDataWAV.h"
     "include/kotono_audio/AudioSource.h"
 )
 set(KAUDIO_SOURCES
     "src/al_utils.cpp"
     "src/AudioContext.cpp"
+    "src/AudioDataWAV.cpp"
     "src/AudioSource.cpp"
-    "src/implementations.cpp"
 )
 
 target_sources(KotonoAudio
@@ -76,11 +77,7 @@ target_sources(KotonoAudio
     PRIVATE ${KAUDIO_SOURCES}
 )
 
-set(THIRD_PARTY_DIR "${ENGINE_PATH}/ThirdParty")
-
-# Include directories
 target_include_directories(KotonoAudio
-    PUBLIC  "${THIRD_PARTY_DIR}/dr_libs/include"
     PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_audio"
 )
@@ -90,12 +87,12 @@ target_compile_definitions(KotonoAudio PUBLIC
     AL_LIBTYPE_STATIC
 )
 
-# Link system + third-party libs
+# Link third-party libs
 target_link_libraries(KotonoAudio PRIVATE
     OpenAL::OpenAL
+    dr_libs
 )
 
-# Link libs
 target_link_libraries(KotonoAudio PUBLIC
     KotonoCommon
 )

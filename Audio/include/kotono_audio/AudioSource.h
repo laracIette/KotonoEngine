@@ -1,7 +1,6 @@
 #pragma once
-#include <dr_libs/dr_wav.h>
 #include <kotono_common/Path.h>
-
+#include <kotono_common/types.h>
 enum class EAudioSourceState : u8
 {
 	Initial,
@@ -9,24 +8,8 @@ enum class EAudioSourceState : u8
 	Paused,
 	Stopped
 };
-
 class UAudioSource final
 {
-public:
-
-private:
-	struct DataWAV
-	{
-		DataWAV(UPath const& path);
-		~DataWAV();
-
-		drwav_int16* pSampleData;
-		drwav_uint64 totalFrameCount;
-		u32 channels;
-		u32 sampleRate;
-		size dataSize;
-	};
-
 public:
 	UAudioSource(UPath const& path);
 	~UAudioSource();
