@@ -31,6 +31,8 @@ public:
 	void PauseGame();
 	void StopGame();
 
+	auto GetAudioContext() -> UAudioContext& { return audioContext_; }
+
 	auto GetEventSceneObjectsUpdated() -> UEvent<USet<UPtr<TSceneObject>>>& { return eventSceneObjectsUpdated_; }
 
 	auto GetEventGameStateChanged() -> UEvent<EGameState>& { return gameState_.GetEventValueChanged(); }

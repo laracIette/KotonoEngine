@@ -27,9 +27,9 @@ public:
 
 	operator std::string() const;
 	operator std::filesystem::path() const;
-	operator bool() const;
+	operator b8() const;
 
-	bool operator==(UPath const& other) const noexcept;
+	b8 operator==(UPath const& other) const noexcept;
 
 	friend UPath operator/(UPath const& r, UPath const& l);
 

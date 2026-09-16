@@ -1,0 +1,36 @@
+#include "AudioComponent.h"
+
+#include <kotono_core/Scene.h>
+
+KAudioComponent::KAudioComponent()
+	: audioSourceHandle_{ EHandle::Invalid }
+{
+}
+
+KAudioComponent::~KAudioComponent()
+{
+	if (audioSourceHandle_ != EHandle::Invalid)
+	{
+		GetScene()->GetAudioContext().DeleteSource(audioSourceHandle_);
+	}
+}
+
+void KAudioComponent::Spawn()
+{
+	Base::Spawn();
+
+	if (audioSource_)
+	{
+		audioSourceHandle_ = GetScene()->GetAudioContext().CreateSource(audioSource_);
+		auto& source{ GetScene()->GetAudioContext().GetSource(audioSourceHandle_) };
+		source.SetIsLooping(true);
+		source.SetState(EAudioSourceState::Playing);
+		source.SetPosition(GetWorldPosition());
+		source.SetSpace(EAudioSourceSpace::Scene);
+		source.SetAttenuationFactor(1.0f);
+		source.SetAttenuationStartDistance(1.0f);
+		source.SetAttenuationEndDistance(10.0f);
+	}
+}
+
+#include "generated/AudioComponent.generated.inl"

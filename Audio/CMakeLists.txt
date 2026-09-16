@@ -95,4 +95,5 @@ target_link_libraries(KotonoAudio PRIVATE
 
 target_link_libraries(KotonoAudio PUBLIC
     KotonoCommon
+    KotonoMath
 )

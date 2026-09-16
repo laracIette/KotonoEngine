@@ -1,6 +1,6 @@
 #pragma once
 #include "types.h"
-enum class EHandle : u32
+enum class EHandle : i32
 {
-	Invalid = 0,
+	Invalid = -1,
 };

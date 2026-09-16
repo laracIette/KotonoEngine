@@ -1,13 +1,14 @@
 #pragma once
 #include "generated/ViewController.generated.h"
-#include <kotono_core/Widget.h>
+#include <kotono_core/SceneWidget.h>
 class WSceneTexture;
-class WViewController final : public WWidget
+class WViewController final : public WSceneWidget
 {
 	GENERATED_WVIEWCONTROLLER()
 
 public:
 	WViewController();
+	WViewController(UPtr<WSceneContext> const& sceneContext);
 
 protected:
 	WidgetPtr Build() override;

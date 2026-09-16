@@ -17,8 +17,8 @@ WidgetPtr WDefaultSceneContext::Build()
 			new UChildOwnerTree{ UCreate<WConstraint>{ "Scene Explorer Constraint" }(EAxis::Horizontal, 300.0f),
 				new UWidgetTreeLeaf{ UCreate<WSceneExplorer>{ "Scene Explorer" }(Ptr()) }
 			},
-			new UWidgetTreeLeaf{ UCreate<WViewController>{ "Scene View Controller" }() },
-			new UWidgetTreeLeaf{ UCreate<WViewController>{ "Scene View Controller" }() },
+			new UWidgetTreeLeaf{ UCreate<WViewController>{ "Scene View Controller" }(Ptr()) },
+			new UWidgetTreeLeaf{ UCreate<WViewController>{ "Scene View Controller" }(Ptr()) },
 		} },
 	} } };
 

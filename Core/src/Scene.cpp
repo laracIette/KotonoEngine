@@ -12,7 +12,6 @@ UScene::UScene(UPath const& path)
 	, timeScale_{ 1.0f }
 {
 	audioContext_.Init();
-	audioContext_.PlaySource("${ENGINE_DIRECTORY}/Audio/assets/honk.wav", true);
 
 	nlohmann::json json{};
 	SSerializer::Deserialize(json, path);

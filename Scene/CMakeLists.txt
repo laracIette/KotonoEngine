@@ -8,12 +8,14 @@ target_compile_features(KotonoScene PUBLIC cxx_std_23)
 set_target_properties(KotonoScene PROPERTIES FOLDER "KotonoEngine")
 
 set(KSCENE_HEADERS
+    "include/kotono_scene/AudioComponent.h"
     "include/kotono_scene/CameraComponent.h"
     "include/kotono_scene/DirectionalLightComponent.h"
     "include/kotono_scene/PointLightComponent.h"
     "include/kotono_scene/MeshComponent.h"
 )
 set(KSCENE_SOURCES
+    "src/AudioComponent.cpp"
     "src/CameraComponent.cpp"
     "src/DirectionalLightComponent.cpp"
     "src/PointLightComponent.cpp"
