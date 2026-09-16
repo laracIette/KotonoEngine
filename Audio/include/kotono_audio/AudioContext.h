@@ -10,6 +10,17 @@ class UAudioSource;
 class UAudioContext final
 {
 public:
+	struct AudioSourceCreateInfo
+	{
+		f32 volume{ 1.0f };
+		f32 pitch{ 1.0f };
+		f32 attenuationFactor{ 1.0f };
+		f32 attenuationStartDistance{ 1.0f };
+		f32 attenuationEndDistance{ 10.0f };
+		b8 isLooping{ false };
+	};
+
+public:
 	void Init();
 	void Cleanup();
 
@@ -19,8 +30,10 @@ public:
 	auto GetSource(EHandle handle) -> UAudioSource&;
 	void DeleteSource(EHandle handle);
 
-	/// One time play and delete
+	/// One time play and delete interface
 	void PlaySource(UPath const& path, b8 isLooping = false);
+	/// One time play and delete scene
+	void PlaySource(UPath const& path, glm::vec3 const& position, AudioSourceCreateInfo const& createInfo = {});
 
 	void SetListenerPosition(glm::vec3 const& position) const;
 	void SetListenerOrientation(glm::quat const& orientation) const;

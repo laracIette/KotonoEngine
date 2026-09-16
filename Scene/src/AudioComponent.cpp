@@ -27,8 +27,9 @@ void KAudioComponent::Spawn()
 		source.SetState(EAudioSourceState::Playing);
 		source.SetPosition(GetWorldPosition());
 		source.SetSpace(EAudioSourceSpace::Scene);
+		source.SetVolume(1.0f);
 		source.SetAttenuationFactor(1.0f);
-		source.SetAttenuationStartDistance(1.0f);
+		source.SetAttenuationStartDistance(5.0f);
 		source.SetAttenuationEndDistance(10.0f);
 	}
 }

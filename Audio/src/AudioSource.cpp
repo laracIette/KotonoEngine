@@ -139,14 +139,14 @@ void UAudioSource::SetState(EAudioSourceState state) const
     }
 }
 
-void UAudioSource::SetVolume(f32 volume) const
+void UAudioSource::SetVolume(VolumeRange volume) const
 {
-    setSource(source_, AL_GAIN, volume);
+    setSource<f32>(source_, AL_GAIN, volume);
 }
 
-void UAudioSource::SetPitch(f32 pitch) const
+void UAudioSource::SetPitch(PitchRange pitch) const
 {
-    setSource(source_, AL_PITCH, pitch);
+    setSource<f32>(source_, AL_PITCH, pitch);
 }
 
 void UAudioSource::SetIsLooping(b8 isLooping) const
@@ -170,19 +170,19 @@ void UAudioSource::SetSpace(EAudioSourceSpace space) const
     }
 }
 
-void UAudioSource::SetAttenuationFactor(f32 factor) const
+void UAudioSource::SetAttenuationFactor(AttenuationFactorRange factor) const
 {
-    setSource(source_, AL_ROLLOFF_FACTOR, factor);
+    setSource<f32>(source_, AL_ROLLOFF_FACTOR, factor);
 }
 
-void UAudioSource::SetAttenuationStartDistance(f32 distance) const
+void UAudioSource::SetAttenuationStartDistance(AttenuationDistanceRange distance) const
 {
-    setSource(source_, AL_REFERENCE_DISTANCE, distance);
+    setSource<f32>(source_, AL_REFERENCE_DISTANCE, distance);
 }
 
-void UAudioSource::SetAttenuationEndDistance(f32 distance) const
+void UAudioSource::SetAttenuationEndDistance(AttenuationDistanceRange distance) const
 {
-    setSource(source_, AL_MAX_DISTANCE, distance);
+    setSource<f32>(source_, AL_MAX_DISTANCE, distance);
 }
 
 void UAudioSource::Play() const

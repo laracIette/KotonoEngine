@@ -115,7 +115,21 @@ auto UAudioContext::GetSource(EHandle handle) -> UAudioSource&
 void UAudioContext::PlaySource(UPath const& path, b8 isLooping)
 {
     oneTimeSources_.emplace_back(path);
+    oneTimeSources_.back().SetSpace(EAudioSourceSpace::Interface);
     oneTimeSources_.back().SetIsLooping(isLooping);
+}
+
+void UAudioContext::PlaySource(UPath const& path, glm::vec3 const& position, AudioSourceCreateInfo const& createInfo)
+{
+    oneTimeSources_.emplace_back(path);
+    oneTimeSources_.back().SetSpace(EAudioSourceSpace::Scene);
+    oneTimeSources_.back().SetPosition(position);
+    oneTimeSources_.back().SetVolume(createInfo.volume);
+    oneTimeSources_.back().SetPitch(createInfo.pitch);
+    oneTimeSources_.back().SetAttenuationFactor(createInfo.attenuationFactor);
+    oneTimeSources_.back().SetAttenuationStartDistance(createInfo.attenuationStartDistance);
+    oneTimeSources_.back().SetAttenuationEndDistance(createInfo.attenuationEndDistance);
+    oneTimeSources_.back().SetIsLooping(createInfo.isLooping);
 }
 
 void UAudioContext::SetListenerPosition(glm::vec3 const& position) const

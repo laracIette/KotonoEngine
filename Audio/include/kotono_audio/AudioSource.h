@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/fwd.hpp>
+#include <kotono_common/Clamped.h>
 #include <kotono_common/Path.h>
 #include <kotono_common/types.h>
 enum class EAudioSourceState : u8
@@ -17,6 +18,12 @@ enum class EAudioSourceSpace : u8
 class UAudioSource final
 {
 public:
+	using VolumeRange = UClamped<f32, 0.0f, 1.0f>;
+	using PitchRange = UClamped<f32, 0.5f, 2.0f>;
+	using AttenuationFactorRange = UClamped<f32, 0.0f, 1.0f>;
+	using AttenuationDistanceRange = UClamped<f32, 0.0f, std::numeric_limits<f32>::max()>;
+
+public:
 	UAudioSource(UPath const& path);
 	~UAudioSource();
 
@@ -31,14 +38,14 @@ public:
 	auto GetAttenuationEndDistance() const -> f32;
 
 	void SetState(EAudioSourceState state) const;
-	void SetVolume(f32 volume) const;
-	void SetPitch(f32 pitch) const;
+	void SetVolume(VolumeRange volume) const;
+	void SetPitch(PitchRange pitch) const;
 	void SetIsLooping(b8 isLooping) const;
 	void SetPosition(glm::vec3 const& position) const;
 	void SetSpace(EAudioSourceSpace space) const;
-	void SetAttenuationFactor(f32 factor) const;
-	void SetAttenuationStartDistance(f32 distance) const;
-	void SetAttenuationEndDistance(f32 distance) const;
+	void SetAttenuationFactor(AttenuationFactorRange factor) const;
+	void SetAttenuationStartDistance(AttenuationDistanceRange distance) const;
+	void SetAttenuationEndDistance(AttenuationDistanceRange distance) const;
 
 	/// Sets state to State::Playing
 	void Play() const;
