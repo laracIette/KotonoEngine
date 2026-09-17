@@ -4,7 +4,6 @@
 #include <kotono_core/Interface.h>
 #include <kotono_core/Scene.h>
 #include <kotono_input/Keyboard.h>
-#include <kotono_input/Mouse.h>
 #include <kotono_interface/widgets.h>
 #include <kotono_math/math_utils.h>
 
@@ -49,7 +48,6 @@ void WViewController::Display(UWidgetDisplaySettings const& displaySettings)
     Keyboard.GetEventKey(EKey::D, EInputState::Down).AddListener(this, &Self::OnKeyboardDKeyDown);
     Keyboard.GetEventKey(EKey::Q, EInputState::Down).AddListener(this, &Self::OnKeyboardQKeyDown);
     Keyboard.GetEventKey(EKey::E, EInputState::Down).AddListener(this, &Self::OnKeyboardEKeyDown);
-    Mouse.GetEventVerticalScroll().AddListener(this, &Self::OnMouseVerticalScroll);
 }
 
 void WViewController::Remove()
@@ -62,7 +60,6 @@ void WViewController::Remove()
     Keyboard.GetEventKey(EKey::D, EInputState::Down).RemoveListener(this, &Self::OnKeyboardDKeyDown);
     Keyboard.GetEventKey(EKey::Q, EInputState::Down).RemoveListener(this, &Self::OnKeyboardQKeyDown);
     Keyboard.GetEventKey(EKey::E, EInputState::Down).RemoveListener(this, &Self::OnKeyboardEKeyDown);
-    Mouse.GetEventVerticalScroll().RemoveListener(this, &Self::OnMouseVerticalScroll);
 }
 
 b8 WViewController::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
@@ -87,6 +84,19 @@ b8 WViewController::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& positio
 		sceneTexture_->SetViewRotation(rotation); 
 		GetScene()->GetAudioContext().SetListenerOrientation(rotation);
 	}
+
+	return INPUT_HANDLED;
+}
+
+b8 WViewController::OnMouseScroll(glm::vec2 const& delta, glm::vec2 const& position)
+{
+	if (!isActive_)
+	{
+		return INPUT_UNHANDLED;
+	}
+	
+	speed_ += speed_ * delta.y / 10.0f;
+	speed_ = std::clamp(speed_, 0.1f, 100.0f);
 
 	return INPUT_HANDLED;
 }
@@ -135,17 +145,6 @@ void WViewController::OnKeyboardQKeyDown() const
 void WViewController::OnKeyboardEKeyDown() const
 {
 	Translate(WorldUpVector * GetInterface()->GetDeltaTime() * speed_);
-}
-
-void WViewController::OnMouseVerticalScroll(f32 delta)
-{
-	if (!isActive_)
-	{
-		return;
-	}
-
-	speed_ += speed_ * delta / 10.0f;
-	speed_ = std::clamp(speed_, 0.1f, 100.0f);
 }
 
 void WViewController::Translate(glm::vec3 const& delta) const

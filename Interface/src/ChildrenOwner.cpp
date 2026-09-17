@@ -98,6 +98,29 @@ b8 WChildrenOwner::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position
 	return INPUT_UNHANDLED;
 }
 
+b8 WChildrenOwner::OnMouseScroll(glm::vec2 const& delta, glm::vec2 const& position)
+{
+	for (auto const& child : children_ | std::views::reverse)
+	{
+		if (!child || !child->GetIsDisplayed())
+		{
+			continue;
+		}
+
+		if (!is_point_in_rect(position, child->GetPosition(), child->GetSize()))
+		{
+			continue;
+		}
+
+		if (child->OnMouseScroll(delta, position) == INPUT_HANDLED)
+		{
+			return INPUT_HANDLED;
+		}
+	}
+
+	return INPUT_UNHANDLED;
+}
+
 void WChildrenOwner::Refresh()
 {
 	if (GetShouldRefresh())

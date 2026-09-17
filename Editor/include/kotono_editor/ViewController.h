@@ -18,6 +18,7 @@ public:
 	void Remove() override;
 
 	b8 OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) override;
+	b8 OnMouseScroll(glm::vec2 const& delta, glm::vec2 const& position) override;
 
 private:
 	void OnKeyboardWKeyDown() const;
@@ -26,7 +27,6 @@ private:
 	void OnKeyboardDKeyDown() const;
 	void OnKeyboardQKeyDown() const;
 	void OnKeyboardEKeyDown() const;
-	void OnMouseVerticalScroll(f32 delta);
 
 	void Translate(glm::vec3 const& delta) const;
 

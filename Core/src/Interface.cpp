@@ -3,7 +3,6 @@
 #include "InterfaceRoot.h"
 #include <glm/gtx/string_cast.hpp>
 #include <kotono_common/log.h>
-#include <kotono_input/Mouse.h>
 
 UInterface::UInterface()
 {
@@ -33,12 +32,12 @@ void UInterface::PopulateSceneRenderGraph(USceneRenderGraph& sceneRenderGraph) c
 	}
 }
 
-void UInterface::Update(f32 deltaTime)
+void UInterface::Update(f32 deltaTime, glm::vec2 const& cursorPosition)
 {
 	deltaTime_ = deltaTime;
 	now_ += deltaTime;
 
-	UpdateFocusedWidgets();
+	UpdateFocusedWidgets(cursorPosition);
 
 	if (widget_)
 	{
@@ -62,9 +61,6 @@ void UInterface::BeginDraw(glm::uvec2 const& bounds)
 			},
 		});
 
-		Mouse.GetEventAnyButton().AddListener(widget_.Get(), &WInterfaceRoot::OnMouseButton);
-		Mouse.GetEventMove().AddListener(widget_.Get(), &WInterfaceRoot::OnMouseMove);
-
 		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Object", "Main window widget displayed with a size of: {0}", glm::to_string(bounds));
 	}
 }
@@ -73,22 +69,58 @@ void UInterface::EndDraw() const
 {
 	if (widget_)
 	{
-		widget_->Remove(); 
-		
-		Mouse.GetEventAnyButton().RemoveListener(widget_.Get(), &WInterfaceRoot::OnMouseButton);
-		Mouse.GetEventMove().RemoveListener(widget_.Get(), &WInterfaceRoot::OnMouseMove);
+		widget_->Remove();
 
 		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Object", "Main window widget removed");
 	}
 }
 
-void UInterface::UpdateFocusedWidgets()
+void UInterface::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) const
+{
+	if (widget_)
+	{
+		widget_->OnMouseButton(button, inputState, position);
+	}
+}
+
+void UInterface::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) const
+{
+	if (widget_)
+	{
+		widget_->OnMouseMove(delta, position);
+	}
+}
+
+void UInterface::OnMouseScroll(glm::vec2 const& delta, glm::vec2 const& position) const
+{
+	if (widget_)
+	{
+		widget_->OnMouseScroll(delta, position);
+	}
+}
+
+void UInterface::OpenWidgetInWindow(UPtr<WWidget> const& widget, glm::uvec2 const& windowExtent)
+{
+	if (!widget)
+	{
+		return;
+	}
+
+	pendingWindows_.emplace_back(widget, windowExtent);
+}
+
+void UInterface::ClearPendingWindows()
+{
+	pendingWindows_.clear();
+}
+
+void UInterface::UpdateFocusedWidgets(glm::vec2 const& cursorPosition)
 {
 	WidgetSet newFocusedWidgets{};
 
 	if (widget_)
 	{
-		widget_->PopulateFocusTree(newFocusedWidgets, Mouse.GetCursorPosition());
+		widget_->PopulateFocusTree(newFocusedWidgets, cursorPosition);
 	}
 
 	for (auto const& widget : newFocusedWidgets)

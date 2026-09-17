@@ -158,7 +158,7 @@ void WWidget::PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosit
 
 b8 WWidget::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position)
 {
-	if (!HasBuild())
+	if (!HasBuild() || !build_->GetIsDisplayed())
 	{
 		return INPUT_UNHANDLED;
 	}
@@ -175,7 +175,7 @@ b8 WWidget::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
 {
 	KT_LOG(ELogImportanceLevel::Medium, "Interface", "overlapping {0:30} | {1:100} | | position: {2:30} | size: {3:30} | | slot | position: {4:30} | bounds: {5:30}", GetName(), GetClassPath(), glm::to_string(GetPosition()), glm::to_string(GetSize()), glm::to_string(slotDisplaySettings_.position), glm::to_string(slotDisplaySettings_.bounds));
 	
-	if (!HasBuild())
+	if (!HasBuild() || !build_->GetIsDisplayed())
 	{
 		return INPUT_UNHANDLED;
 	}
@@ -183,6 +183,21 @@ b8 WWidget::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
 	if (is_point_in_rect(position, build_->GetPosition(), build_->GetSize()))
 	{
 		return build_->OnMouseMove(delta, position);
+	}
+
+	return INPUT_UNHANDLED;
+}
+
+b8 WWidget::OnMouseScroll(glm::vec2 const& delta, glm::vec2 const& position)
+{
+	if (!HasBuild() || !build_->GetIsDisplayed())
+	{
+		return INPUT_UNHANDLED;
+	}
+
+	if (is_point_in_rect(position, build_->GetPosition(), build_->GetSize()))
+	{
+		return build_->OnMouseScroll(delta, position);
 	}
 
 	return INPUT_UNHANDLED;

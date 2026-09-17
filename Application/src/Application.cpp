@@ -26,6 +26,7 @@ UApplication::UApplication()
     , window_{}
     , surface_{ window_, context_ }
     , renderer_{ device_, surface_ }
+    , mouse_{ window_ }
 {
 }
 
@@ -58,8 +59,8 @@ void UApplication::Init()
     device_.Init(surface_.GetSurface());
     renderer_.Init();
 
+    mouse_.Init();
     Keyboard.Init(window_);
-    Mouse.Init(window_);
 
     RegisterObjectClasses();
 
@@ -72,12 +73,13 @@ void UApplication::Init()
 
     interface_ = new UInterface{};
 
+    mouse_.GetEventAnyButton().AddListener(interface_, &UInterface::OnMouseButton);
+    mouse_.GetEventMove().AddListener(interface_, &UInterface::OnMouseMove);
+    mouse_.GetEventScroll().AddListener(interface_, &UInterface::OnMouseScroll);
+
 #   ifdef EDITOR
     Visualizer.Init();
-
-    mainWindow_ = UCreate<WMainWindow>{ "Main Window" }(interface_);
-
-    interface_->SetWidget(mainWindow_);
+    interface_->SetWidget(UCreate<WMainWindow>{ "Main Window" }(interface_));
 #   endif
 
     interface_->BeginDraw(window_.GetSize());
@@ -93,14 +95,22 @@ void UApplication::Update()
         averageUpdateTime_.Add(deltaTime_);
 
         Keyboard.Update();
-        Mouse.Update();
+        mouse_.Update();
 
         logUPSTimer_.Update(deltaTime_);
-        interface_->Update(deltaTime_);
+        interface_->Update(deltaTime_, mouse_.GetCursorPosition());
     }
 
     // Rendering
     {
+        //for (auto const& [widget, windowExtent] : interface_->GetPendingWindows())
+        //{
+        //    UWindow window{};
+        //    USurface surface{ window, context_ };
+        //    URenderer renderer{ device_, surface };
+        //}
+        //interface_->ClearPendingWindows();
+
         UInterfaceRenderGraph interfaceRenderGraph{};
         interface_->PopulateInterfaceRenderGraph(interfaceRenderGraph);
 
@@ -115,6 +125,10 @@ void UApplication::Cleanup()
 {
     if (interface_)
     {
+        mouse_.GetEventAnyButton().RemoveListener(interface_, &UInterface::OnMouseButton);
+        mouse_.GetEventMove().RemoveListener(interface_, &UInterface::OnMouseMove);
+        mouse_.GetEventScroll().RemoveListener(interface_, &UInterface::OnMouseScroll);
+
         interface_->EndDraw();
         delete interface_;
     }

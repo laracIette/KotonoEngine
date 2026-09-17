@@ -9,16 +9,10 @@ class WScrollable final : public WChildOwner
 public:
 	WScrollable(EAxis axis = EAxis::All);
 
-	void Display(UWidgetDisplaySettings const& displaySettings) override;
-	void Remove() override;
-
-	glm::vec2 GetContentSize(glm::vec2 bounds) const override;
+	b8 OnMouseScroll(glm::vec2 const& delta, glm::vec2 const& position) override;
 
 protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
-
-private:
-	void Scroll(glm::vec2 const& delta);
 
 private:
 	WritableProperty(EAxis, axis_, Axis);

@@ -5,19 +5,49 @@
 
 #define KT_LOG_IMPORTANCE_LEVEL_MOUSE ELogImportanceLevel::Low
 
-void mousebutton_callback_(GLFWwindow* window, i32 button, i32 action, i32 mods);
-void cursorpos_callback_(GLFWwindow* window, f64 xpos, f64 ypos);
-void scroll_callback_(GLFWwindow* window, f64 xoffset, f64 yoffset);
+static UEvent<GLFWwindow*, EButton, i32> EventMouseButton{};
+static UEvent<GLFWwindow*, glm::vec2> EventCursorPosition{};
+static UEvent<GLFWwindow*, glm::vec2> EventScroll{};
 
-void GMouse::Init(UWindow& window)
+static void mousebutton_callback_(GLFWwindow* window, i32 button, i32 action, i32 mods)
 {
-    window_ = window.GetGLFWWindow();
-    glfwSetMouseButtonCallback(window.GetGLFWWindow(), mousebutton_callback_);
-    glfwSetCursorPosCallback(window.GetGLFWWindow(), cursorpos_callback_);
-    glfwSetScrollCallback(window.GetGLFWWindow(), scroll_callback_);
+    EventMouseButton.Broadcast(window, static_cast<EButton>(button), action);
 }
 
-void GMouse::Update()
+static void cursorpos_callback_(GLFWwindow* window, f64 xpos, f64 ypos)
+{
+    EventCursorPosition.Broadcast(window, glm::vec2{ xpos, ypos });
+}
+
+static void scroll_callback_(GLFWwindow* window, f64 xoffset, f64 yoffset)
+{
+    EventScroll.Broadcast(window, glm::vec2{ xoffset, yoffset });
+}
+
+UMouse::UMouse(UWindow& window)
+    : window_{ window }
+{
+}
+
+void UMouse::Init()
+{
+    glfwSetMouseButtonCallback(window_.GetGLFWWindow(), mousebutton_callback_);
+    glfwSetCursorPosCallback(window_.GetGLFWWindow(), cursorpos_callback_);
+    glfwSetScrollCallback(window_.GetGLFWWindow(), scroll_callback_);
+
+    EventMouseButton.AddListener(this, &UMouse::UpdateButton);
+    EventCursorPosition.AddListener(this, &UMouse::UpdateCursorPosition);
+    EventScroll.AddListener(this, &UMouse::UpdateScrollDelta);
+}
+
+void UMouse::Cleanup()
+{
+    EventMouseButton.RemoveListener(this, &UMouse::UpdateButton);
+    EventCursorPosition.RemoveListener(this, &UMouse::UpdateCursorPosition);
+    EventScroll.RemoveListener(this, &UMouse::UpdateScrollDelta);
+}
+
+void UMouse::Update()
 {
     for (size button{ 0 }; button < ButtonCount; ++button)
     {
@@ -48,7 +78,7 @@ void GMouse::Update()
 
     if (scrollDelta_ != glm::vec2{ 0.0f, 0.0f })
     {
-        eventScroll_.Broadcast(scrollDelta_);
+        eventScroll_.Broadcast(scrollDelta_, cursorPosition_);
 
         if (scrollDelta_.x != 0.0f)
         {
@@ -63,9 +93,49 @@ void GMouse::Update()
     }
 }
 
-void GMouse::UpdateButton(EButton button, i32 action)
+glm::vec2 UMouse::GetCursorPositionDelta() const
 {
-	const size buttonIndex{ to_index(button) };
+    return cursorPosition_ - previousCursorPosition_;
+}
+
+f32 UMouse::GetHorizontalScrollDelta() const
+{
+    return scrollDelta_.x;
+}
+
+f32 UMouse::GetVerticalScrollDelta() const
+{
+    return scrollDelta_.y;
+}
+
+UEvent<>& UMouse::GetEventButton(EButton button, EInputState inputState)
+{
+    return buttonEvents_[to_index(button)][to_index(inputState)];
+}
+
+bool UMouse::GetButtonState(EButton button, EInputState inputState) const
+{
+    return buttonStates_[to_index(button)][to_index(inputState)];
+}
+
+void UMouse::HideCursor() const
+{
+    glfwSetInputMode(window_.GetGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
+void UMouse::ShowCursor() const
+{
+    glfwSetInputMode(window_.GetGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}
+
+void UMouse::UpdateButton(GLFWwindow* window, EButton button, i32 action)
+{
+    if (window != window_.GetGLFWWindow())
+    {
+        return;
+    }
+
+    const size buttonIndex{ to_index(button) };
 
     switch (action)
     {
@@ -96,53 +166,22 @@ void GMouse::UpdateButton(EButton button, i32 action)
     }
 }
 
-glm::vec2 GMouse::GetCursorPositionDelta() const
+void UMouse::UpdateCursorPosition(GLFWwindow* window, glm::vec2 const& position)
 {
-    return cursorPosition_ - previousCursorPosition_;
+    if (window != window_.GetGLFWWindow())
+    {
+        return;
+    }
+
+    cursorPosition_ = position;
 }
 
-f32 GMouse::GetHorizontalScrollDelta() const
+void UMouse::UpdateScrollDelta(GLFWwindow* window, glm::vec2 const& delta)
 {
-    return scrollDelta_.x;
-}
+    if (window != window_.GetGLFWWindow())
+    {
+        return;
+    }
 
-f32 GMouse::GetVerticalScrollDelta() const
-{
-    return scrollDelta_.y;
-}
-
-UEvent<>& GMouse::GetEventButton(EButton button, EInputState inputState)
-{
-    return buttonEvents_[to_index(button)][to_index(inputState)];
-}
-
-bool GMouse::GetButtonState(EButton button, EInputState inputState) const
-{
-    return buttonStates_[to_index(button)][to_index(inputState)];
-}
-
-void GMouse::HideCursor() const
-{
-    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-}
-
-void GMouse::ShowCursor() const
-{
-    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-}
-
-void mousebutton_callback_(GLFWwindow* window, i32 button, i32 action, i32 mods)
-{
-    Mouse.UpdateButton(static_cast<EButton>(button), action);
-}
-
-void cursorpos_callback_(GLFWwindow* window, f64 xpos, f64 ypos)
-{
-    Mouse.cursorPosition_ = { xpos, ypos };
-}
-
-void scroll_callback_(GLFWwindow* window, f64 xoffset, f64 yoffset)
-{
-    Mouse.scrollDelta_.x += static_cast<f32>(xoffset);
-    Mouse.scrollDelta_.y += static_cast<f32>(yoffset);
+    scrollDelta_ += delta;
 }

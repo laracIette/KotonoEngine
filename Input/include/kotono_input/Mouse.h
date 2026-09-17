@@ -2,26 +2,26 @@
 #include "Button.h"
 #include "InputState.h"
 #include <array>
-#include <glm/vec2.hpp>
+#include <glm/ext/vector_float2.hpp>
 #include <kotono_common/Event.h>
 #include <kotono_common/types.h>
 struct GLFWwindow;
 class UWindow;
-class GMouse final
+class UMouse final
 {
-	friend void mousebutton_callback_(GLFWwindow* window, i32 button, i32 action, i32 mods);
-	friend void cursorpos_callback_(GLFWwindow* window, f64 xpos, f64 ypos);
-	friend void scroll_callback_(GLFWwindow* window, f64 xoffset, f64 yoffset);
-
 public:
 	using EventEmptyType = UEvent<>;
 	using EventMoveType = UEvent<glm::vec2, glm::vec2>;
-	using EventScrollType = UEvent<glm::vec2>;
+	using EventScrollType = UEvent<glm::vec2, glm::vec2>;
 	using EventFloatType = UEvent<f32>;
 	using EventAnyButtonType = UEvent<EButton, EInputState, glm::vec2>;
 
 public:
-	void Init(UWindow& window);
+	UMouse(UWindow& window);
+
+	void Init();
+	void Cleanup();
+
 	void Update();
 
 	glm::vec2 GetCursorPositionDelta() const;
@@ -44,7 +44,12 @@ public:
 	EventAnyButtonType&	GetEventAnyButton() { return eventAnyButton_; }
 
 private:
-	GLFWwindow* window_;
+	void UpdateButton(GLFWwindow* window, EButton button, i32 action);
+	void UpdateCursorPosition(GLFWwindow* window, glm::vec2 const& position);
+	void UpdateScrollDelta(GLFWwindow* window, glm::vec2 const& delta);
+
+private:
+	UWindow& window_;
 
 	glm::vec2 previousCursorPosition_;
 	glm::vec2 cursorPosition_;
@@ -59,8 +64,4 @@ private:
 
 	std::array<std::array<EventEmptyType, InputStateCount>, ButtonCount> buttonEvents_;
 	std::array<std::array<b8, InputStateCount>, ButtonCount> buttonStates_;
-
-	void UpdateButton(EButton button, i32 action);
 };
-
-inline GMouse Mouse;
