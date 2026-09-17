@@ -98,7 +98,7 @@ b8 WChildrenOwner::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position
 	return INPUT_UNHANDLED;
 }
 
-b8 WChildrenOwner::OnMouseScroll(glm::vec2 const& delta, glm::vec2 const& position)
+b8 WChildrenOwner::OnMouseScroll(glm::vec2 const& delta)
 {
 	for (auto const& child : children_ | std::views::reverse)
 	{
@@ -107,12 +107,35 @@ b8 WChildrenOwner::OnMouseScroll(glm::vec2 const& delta, glm::vec2 const& positi
 			continue;
 		}
 
-		if (!is_point_in_rect(position, child->GetPosition(), child->GetSize()))
+		if (!child->GetIsFocused())
 		{
 			continue;
 		}
 
-		if (child->OnMouseScroll(delta, position) == INPUT_HANDLED)
+		if (child->OnMouseScroll(delta) == INPUT_HANDLED)
+		{
+			return INPUT_HANDLED;
+		}
+	}
+
+	return INPUT_UNHANDLED;
+}
+
+b8 WChildrenOwner::OnKeyboardKey(EKey key, EInputState inputState)
+{
+	for (auto const& child : children_ | std::views::reverse)
+	{
+		if (!child || !child->GetIsDisplayed())
+		{
+			continue;
+		}
+
+		if (!child->GetIsFocused())
+		{
+			continue;
+		}
+
+		if (child->OnKeyboardKey(key, inputState) == INPUT_HANDLED)
 		{
 			return INPUT_HANDLED;
 		}

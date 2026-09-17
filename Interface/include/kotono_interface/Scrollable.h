@@ -9,7 +9,7 @@ class WScrollable final : public WChildOwner
 public:
 	WScrollable(EAxis axis = EAxis::All);
 
-	b8 OnMouseScroll(glm::vec2 const& delta, glm::vec2 const& position) override;
+	b8 OnMouseScroll(glm::vec2 const& delta) override;
 
 protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;

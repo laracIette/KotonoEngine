@@ -188,16 +188,31 @@ b8 WWidget::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
 	return INPUT_UNHANDLED;
 }
 
-b8 WWidget::OnMouseScroll(glm::vec2 const& delta, glm::vec2 const& position)
+b8 WWidget::OnMouseScroll(glm::vec2 const& delta)
 {
 	if (!HasBuild() || !build_->GetIsDisplayed())
 	{
 		return INPUT_UNHANDLED;
 	}
 
-	if (is_point_in_rect(position, build_->GetPosition(), build_->GetSize()))
+	if (build_->GetIsFocused())
 	{
-		return build_->OnMouseScroll(delta, position);
+		return build_->OnMouseScroll(delta);
+	}
+
+	return INPUT_UNHANDLED;
+}
+
+b8 WWidget::OnKeyboardKey(EKey key, EInputState inputState)
+{
+	if (!HasBuild() || !build_->GetIsDisplayed())
+	{
+		return INPUT_UNHANDLED;
+	}
+
+	if (build_->GetIsFocused())
+	{
+		return build_->OnKeyboardKey(key, inputState);
 	}
 
 	return INPUT_UNHANDLED;

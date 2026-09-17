@@ -14,20 +14,12 @@ protected:
 	WidgetPtr Build() override;
 
 public:
-	void Display(UWidgetDisplaySettings const& displaySettings) override;
-	void Remove() override;
-
 	b8 OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) override;
-	b8 OnMouseScroll(glm::vec2 const& delta, glm::vec2 const& position) override;
+	b8 OnMouseScroll(glm::vec2 const& delta) override;
+
+	b8 OnKeyboardKey(EKey key, EInputState inputState) override;
 
 private:
-	void OnKeyboardWKeyDown() const;
-	void OnKeyboardAKeyDown() const;
-	void OnKeyboardSKeyDown() const;
-	void OnKeyboardDKeyDown() const;
-	void OnKeyboardQKeyDown() const;
-	void OnKeyboardEKeyDown() const;
-
 	void Translate(glm::vec3 const& delta) const;
 
 private:

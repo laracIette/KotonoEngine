@@ -12,6 +12,7 @@
 #include <kotono_common/types.h>
 #include <kotono_input/Button.h>
 #include <kotono_input/InputState.h>
+#include <kotono_input/Key.h>
 #include <string>
 #include <vector>
 
@@ -75,7 +76,9 @@ public:
 
 	virtual b8 OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position);
 	virtual b8 OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position);
-	virtual b8 OnMouseScroll(glm::vec2 const& delta, glm::vec2 const& position);
+	virtual b8 OnMouseScroll(glm::vec2 const& delta);
+
+	virtual b8 OnKeyboardKey(EKey key, EInputState inputState);
 
 	virtual void OnFocused();
 	virtual void OnUnfocused();

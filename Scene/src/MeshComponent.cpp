@@ -2,9 +2,7 @@
 
 #include <glm/gtc/matrix_inverse.hpp>
 #include <kotono_common/log.h>
-#include <kotono_core/Scene.h>
 #include <kotono_graphics/SceneRenderGraph.h>
-#include <kotono_input/Keyboard.h>
 
 KMeshComponent::KMeshComponent()
 {
@@ -13,8 +11,6 @@ KMeshComponent::KMeshComponent()
 
 KMeshComponent::~KMeshComponent()
 {
-    Keyboard.GetEventKey(EKey::N, EInputState::Pressed).RemoveListener(this, &KMeshComponent::SetMobilityStatic);
-    Keyboard.GetEventKey(EKey::M, EInputState::Pressed).RemoveListener(this, &KMeshComponent::SetMobilityDynamic);
 }
 
 void KMeshComponent::Init()
@@ -36,9 +32,6 @@ void KMeshComponent::Update(f32 deltaTime)
 void KMeshComponent::Spawn()
 {
     Base::Spawn();
-
-    Keyboard.GetEventKey(EKey::N, EInputState::Pressed).AddListener(this, &KMeshComponent::SetMobilityStatic);
-    Keyboard.GetEventKey(EKey::M, EInputState::Pressed).AddListener(this, &KMeshComponent::SetMobilityDynamic);
 
     spinTask_.eventUpdate.AddListener(this, &KMeshComponent::Spin);
 }

@@ -86,16 +86,31 @@ b8 WChildOwner::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
 	return INPUT_UNHANDLED;
 }
 
-b8 WChildOwner::OnMouseScroll(glm::vec2 const& delta, glm::vec2 const& position)
+b8 WChildOwner::OnMouseScroll(glm::vec2 const& delta)
 {
 	if (!child_ || !child_->GetIsDisplayed())
 	{
 		return INPUT_UNHANDLED;
 	}
 
-	if (is_point_in_rect(position, child_->GetPosition(), child_->GetSize()))
+	if (child_->GetIsFocused())
 	{
-		return child_->OnMouseScroll(delta, position);
+		return child_->OnMouseScroll(delta);
+	}
+
+	return INPUT_UNHANDLED;
+}
+
+b8 WChildOwner::OnKeyboardKey(EKey key, EInputState inputState)
+{
+	if (!child_ || !child_->GetIsDisplayed())
+	{
+		return INPUT_UNHANDLED;
+	}
+
+	if (child_->GetIsFocused())
+	{
+		return child_->OnKeyboardKey(key, inputState);
 	}
 
 	return INPUT_UNHANDLED;

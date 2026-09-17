@@ -26,6 +26,8 @@ static void scroll_callback_(GLFWwindow* window, f64 xoffset, f64 yoffset)
 
 UMouse::UMouse(UWindow& window)
     : window_{ window }
+    , eventButton_{}
+    , buttonStates_{}
 {
 }
 
@@ -55,8 +57,7 @@ void UMouse::Update()
         {
             if (buttonStates_[button][inputState])
             {
-                buttonEvents_[button][inputState].Broadcast();
-                eventAnyButton_.Broadcast(static_cast<EButton>(button), static_cast<EInputState>(inputState), cursorPosition_);
+                eventButton_.Broadcast(static_cast<EButton>(button), static_cast<EInputState>(inputState), cursorPosition_);
             }
         }
 
@@ -78,39 +79,14 @@ void UMouse::Update()
 
     if (scrollDelta_ != glm::vec2{ 0.0f, 0.0f })
     {
-        eventScroll_.Broadcast(scrollDelta_, cursorPosition_);
-
-        if (scrollDelta_.x != 0.0f)
-        {
-            eventHorizontalScroll_.Broadcast(scrollDelta_.x);
-        }
-        if (scrollDelta_.y != 0.0f)
-        {
-            eventVerticalScroll_.Broadcast(scrollDelta_.y);
-        }
-
+        eventScroll_.Broadcast(scrollDelta_);
         scrollDelta_ = { 0.0f, 0.0f };
     }
 }
 
-glm::vec2 UMouse::GetCursorPositionDelta() const
+auto UMouse::GetCursorPositionDelta() const -> glm::vec2
 {
     return cursorPosition_ - previousCursorPosition_;
-}
-
-f32 UMouse::GetHorizontalScrollDelta() const
-{
-    return scrollDelta_.x;
-}
-
-f32 UMouse::GetVerticalScrollDelta() const
-{
-    return scrollDelta_.y;
-}
-
-UEvent<>& UMouse::GetEventButton(EButton button, EInputState inputState)
-{
-    return buttonEvents_[to_index(button)][to_index(inputState)];
 }
 
 bool UMouse::GetButtonState(EButton button, EInputState inputState) const
@@ -141,7 +117,7 @@ void UMouse::UpdateButton(GLFWwindow* window, EButton button, i32 action)
     {
     case GLFW_PRESS:
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_MOUSE, "Input", "GLFW_PRESS button {}", (u8)button);
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_MOUSE, "Input", "GLFW_PRESS button {0}", (u8)button);
 
         buttonStates_[buttonIndex][to_index(EInputState::Released)] = false;
         buttonStates_[buttonIndex][to_index(EInputState::Up)] = false;
@@ -152,7 +128,7 @@ void UMouse::UpdateButton(GLFWwindow* window, EButton button, i32 action)
     }
     case GLFW_RELEASE:
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_MOUSE, "Input", "GLFW_RELEASE button {}", (u8)button);
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_MOUSE, "Input", "GLFW_RELEASE button {0}", (u8)button);
 
         buttonStates_[buttonIndex][to_index(EInputState::Pressed)] = false;
         buttonStates_[buttonIndex][to_index(EInputState::Down)] = false;

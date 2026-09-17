@@ -6,17 +6,40 @@
 
 #define KT_LOG_IMPORTANCE_LEVEL_KEYBOARD ELogImportanceLevel::Low
 
-void key_callback_(GLFWwindow* window, i32 key, i32 scancode, i32 action, i32 mods);
+static UEvent<GLFWwindow*, EKey, i32> EventKey{};
 
 constexpr i32 keyToGLFWKey(EKey key);
 constexpr EKey GLFWKeyToKey(i32 key);
 
-void GKeyboard::Init(UWindow& window)
+static void key_callback_(GLFWwindow* window, i32 key, i32 scancode, i32 action, i32 mods)
 {
-    glfwSetKeyCallback(window.GetGLFWWindow(), key_callback_);
+    if (action == GLFW_REPEAT)
+    {
+        return;
+    }
+
+    EventKey.Broadcast(window, GLFWKeyToKey(key), action);
 }
 
-void GKeyboard::Update()
+UKeyboard::UKeyboard(UWindow& window)
+    : window_{ window }
+    , eventKey_{}
+    , keyStates_{}
+{
+}
+
+void UKeyboard::Init()
+{
+    glfwSetKeyCallback(window_.GetGLFWWindow(), key_callback_);
+    EventKey.AddListener(this, &UKeyboard::UpdateKey);
+}
+
+void UKeyboard::Cleanup()
+{
+    EventKey.RemoveListener(this, &UKeyboard::UpdateKey);
+}
+
+void UKeyboard::Update()
 {
     for (size key{ 0 }; key < KeyCount; ++key)
     {
@@ -24,8 +47,7 @@ void GKeyboard::Update()
         {
             if (keyStates_[key][inputState])
             {
-                keyEvents_[key][inputState].Broadcast();
-                anyKeyEvents_[inputState].Broadcast(static_cast<EKey>(key));
+                eventKey_.Broadcast(static_cast<EKey>(key), static_cast<EInputState>(inputState));
             }
         }
 
@@ -40,15 +62,20 @@ void GKeyboard::Update()
     }
 }
 
-void GKeyboard::UpdateKey(EKey key, i32 action)
+void UKeyboard::UpdateKey(GLFWwindow* window, EKey key, i32 action)
 {
+    if (window != window_.GetGLFWWindow())
+    {
+        return;
+    }
+
     const size keyIndex{ to_index(key) };
 
     switch (action)
     {
     case GLFW_PRESS:
     {
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input", "GLFW_PRESS key {}", (u8)key);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input", "GLFW_PRESS key {0}", (u8)key);
 
         keyStates_[keyIndex][to_index(EInputState::Released)] = false;
         keyStates_[keyIndex][to_index(EInputState::Up)] = false;
@@ -59,7 +86,7 @@ void GKeyboard::UpdateKey(EKey key, i32 action)
     }
     case GLFW_RELEASE:
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input", "GLFW_RELEASE key {}", (u8)key);
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input", "GLFW_RELEASE key {0}", (u8)key);
 
         keyStates_[keyIndex][to_index(EInputState::Pressed)] = false;
         keyStates_[keyIndex][to_index(EInputState::Down)] = false;
@@ -73,29 +100,9 @@ void GKeyboard::UpdateKey(EKey key, i32 action)
     }
 }
 
-UEvent<>& GKeyboard::GetEventKey(EKey key, EInputState inputState)
-{
-    return keyEvents_[to_index(key)][to_index(inputState)];
-}
-
-b8 GKeyboard::GetKeyState(EKey key, EInputState inputState) const
+auto UKeyboard::GetKeyState(EKey key, EInputState inputState) const -> b8
 {
     return keyStates_[to_index(key)][to_index(inputState)];
-}
-
-UEvent<EKey>& GKeyboard::GetEventAnyKey(EInputState inputState)
-{
-    return anyKeyEvents_[to_index(inputState)];
-}
-
-void key_callback_(GLFWwindow* window, i32 key, i32 scancode, i32 action, i32 mods)
-{
-    if (action == GLFW_REPEAT)
-    {
-        return;
-    }
-
-    Keyboard.UpdateKey(GLFWKeyToKey(key), action);
 }
 
 constexpr i32 keyToGLFWKey(EKey key)

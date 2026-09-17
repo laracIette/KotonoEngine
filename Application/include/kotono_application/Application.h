@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/ext/vector_uint2.hpp>
 #include <kotono_common/Average.h>
+#include <kotono_input/Keyboard.h>
 #include <kotono_input/Mouse.h>
 #include <kotono_platform/Context.h>
 #include <kotono_platform/Device.h>
@@ -32,6 +33,7 @@ private:
 	URenderer renderer_;
 
 	UMouse mouse_;
+	UKeyboard keyboard_;
 
 	UInterface* interface_;
 

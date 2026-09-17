@@ -8,7 +8,7 @@ WScrollable::WScrollable(EAxis axis)
 {
 }
 
-b8 WScrollable::OnMouseScroll(glm::vec2 const& delta, glm::vec2 const& position)
+b8 WScrollable::OnMouseScroll(glm::vec2 const& delta)
 {
 	SetState([this, delta]() {
 		auto const bounds{ GetSize() };

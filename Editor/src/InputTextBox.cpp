@@ -1,7 +1,7 @@
 #include "InputTextBox.h"
-#include <kotono_input/Keyboard.h>
-#include <kotono_interface/widgets.h>
+
 #include <kotono_core/Interface.h>
+#include <kotono_interface/widgets.h>
 
 WInputTextBox::WInputTextBox()
 	: text_{ "" }
@@ -50,25 +50,105 @@ void WInputTextBox::Display(UWidgetDisplaySettings const& displaySettings)
 
 	holdAction_.SetActuationTime(actuationTime_);
 	holdAction_.SetRepeatTime(repeatTime_);
-
-	Keyboard.GetEventAnyKey(EInputState::Pressed).AddListener(this, &WInputTextBox::OnAnyKeyPressed);
-	Keyboard.GetEventAnyKey(EInputState::Released).AddListener(this, &WInputTextBox::OnAnyKeyReleased);
-	Keyboard.GetEventAnyKey(EInputState::Down).AddListener(this, &WInputTextBox::OnAnyKeyDown);
-
-	Keyboard.GetEventKey(EKey::Backspace, EInputState::Pressed).AddListener(this, &WInputTextBox::OnKeyBackspacePressed);
-	Keyboard.GetEventKey(EKey::Backspace, EInputState::Down).AddListener(this, &WInputTextBox::OnKeyBackspaceDown);
 }
 
 void WInputTextBox::Remove()
 {
 	Base::Remove();
+}
 
-	Keyboard.GetEventAnyKey(EInputState::Pressed).RemoveListener(this, &WInputTextBox::OnAnyKeyPressed);
-	Keyboard.GetEventAnyKey(EInputState::Released).RemoveListener(this, &WInputTextBox::OnAnyKeyReleased);
-	Keyboard.GetEventAnyKey(EInputState::Down).RemoveListener(this, &WInputTextBox::OnAnyKeyDown);
+b8 WInputTextBox::OnKeyboardKey(EKey key, EInputState inputState)
+{
+	if (!isSelected_)
+	{
+		return INPUT_UNHANDLED;
+	}
 
-	Keyboard.GetEventKey(EKey::Backspace, EInputState::Pressed).RemoveListener(this, &WInputTextBox::OnKeyBackspacePressed);
-	Keyboard.GetEventKey(EKey::Backspace, EInputState::Down).RemoveListener(this, &WInputTextBox::OnKeyBackspaceDown);
+	if (key == EKey::Backspace)
+	{
+		switch (inputState)
+		{
+		case EInputState::Pressed:
+		{
+			holdAction_.Reset();
+			return INPUT_HANDLED;
+		}
+		case EInputState::Down:
+		{
+			if (holdAction_.Update(GetInterface()->GetDeltaTime()))
+			{
+				SetState([this]() {
+					if (!text_.empty())
+					{
+						text_.pop_back();
+						if (onTextChanged_)
+						{
+							onTextChanged_(text_);
+						}
+					}
+				});
+				return INPUT_HANDLED;
+			}
+			break;
+		}
+		default:
+			break;
+		}
+	}
+	else
+	{
+		char const character{ keyToChar(key) };
+
+		switch (inputState)
+		{
+		case EInputState::Pressed:
+		{
+			if (currentWriteCharacter_ != character)
+			{
+				currentWriteCharacter_ = character;
+				holdAction_.Reset();
+			}
+			return INPUT_HANDLED;
+		}
+		case EInputState::Released:
+		{
+			if (currentWriteCharacter_ == character)
+			{
+				currentWriteCharacter_ = 0;
+			}
+			return INPUT_HANDLED;
+		}
+		case EInputState::Down:
+		{
+			if (currentWriteCharacter_ != character)
+			{
+				break;
+			}
+
+			if (!isalpha(character))
+			{
+				break;
+			}
+
+			if (holdAction_.Update(GetInterface()->GetDeltaTime()))
+			{
+				SetState([this, character]() {
+					text_.push_back(character);
+					if (onTextChanged_)
+					{
+						onTextChanged_(text_);
+					}
+				});
+				return INPUT_HANDLED;
+			}
+			break;
+		}
+		default:
+			break;
+		}
+	}
+
+	return INPUT_UNHANDLED;
 }
 
 std::string_view WInputTextBox::GetText() const
@@ -109,102 +189,6 @@ void WInputTextBox::SetActuationTime(f32 actuationTime)
 void WInputTextBox::SetRepeatTime(f32 repeatTime)
 {
 	repeatTime_ = repeatTime;
-}
-
-void WInputTextBox::OnKeyBackspacePressed()
-{
-	if (!isSelected_)
-	{
-		return;
-	}
-
-	holdAction_.Reset();
-}
-
-void WInputTextBox::OnKeyBackspaceDown()
-{
-	if (!isSelected_)
-	{
-		return;
-	}
-
-	if (holdAction_.Update(GetInterface()->GetDeltaTime()))
-	{
-		SetState([this]()
-		{
-			if (!text_.empty())
-			{
-				text_.pop_back();
-				if (onTextChanged_)
-				{
-					onTextChanged_(text_);
-				}
-			}
-		});
-	}
-}
-
-void WInputTextBox::OnAnyKeyPressed(EKey key)
-{
-	if (!isSelected_)
-	{
-		return;
-	}
-
-	const char character{ keyToChar(key) };
-
-	if (currentWriteCharacter_ != character)
-	{
-		currentWriteCharacter_ = character;
-		holdAction_.Reset();
-	}
-}
-
-void WInputTextBox::OnAnyKeyReleased(EKey key)
-{
-	if (!isSelected_)
-	{
-		return;
-	}
-
-	const char character{ keyToChar(key) };
-
-	if (currentWriteCharacter_ == character)
-	{
-		currentWriteCharacter_ = 0;
-	}
-}
-
-void WInputTextBox::OnAnyKeyDown(EKey key)
-{
-	const char character{ keyToChar(key) };
-
-	if (!isSelected_)
-	{
-		return;
-	}
-
-	if (currentWriteCharacter_ != character)
-	{
-		return;
-	}
-
-	if (!isalpha(character))
-	{
-		return;
-	}
-
-	if (holdAction_.Update(GetInterface()->GetDeltaTime()))
-	{
-		SetState([this, character]()
-		{
-			text_.push_back(character);
-			if (onTextChanged_)
-			{
-				onTextChanged_(text_);
-			}
-		});
-	}
 }
 
 #include "generated/InputTextBox.generated.inl"

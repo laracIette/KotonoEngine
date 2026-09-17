@@ -7,8 +7,6 @@
 #include <kotono_graphics/InterfaceRenderGraph.h>
 #include <kotono_graphics/SceneRenderGraph.h>
 #include <kotono_graphics/SpvCompiler.h>
-#include <kotono_input/Keyboard.h>
-#include <kotono_input/Mouse.h>
 #include <kotono_timing/Clock.h>
 
 #ifdef EDITOR
@@ -27,6 +25,7 @@ UApplication::UApplication()
     , surface_{ window_, context_ }
     , renderer_{ device_, surface_ }
     , mouse_{ window_ }
+    , keyboard_{ window_ }
 {
 }
 
@@ -60,7 +59,7 @@ void UApplication::Init()
     renderer_.Init();
 
     mouse_.Init();
-    Keyboard.Init(window_);
+    keyboard_.Init();
 
     RegisterObjectClasses();
 
@@ -73,9 +72,11 @@ void UApplication::Init()
 
     interface_ = new UInterface{};
 
-    mouse_.GetEventAnyButton().AddListener(interface_, &UInterface::OnMouseButton);
+    mouse_.GetEventButton().AddListener(interface_, &UInterface::OnMouseButton);
     mouse_.GetEventMove().AddListener(interface_, &UInterface::OnMouseMove);
     mouse_.GetEventScroll().AddListener(interface_, &UInterface::OnMouseScroll);
+
+    keyboard_.GetEventKey().AddListener(interface_, &UInterface::OnKeyboardKey);
 
 #   ifdef EDITOR
     Visualizer.Init();
@@ -94,8 +95,8 @@ void UApplication::Update()
         now_ = now;
         averageUpdateTime_.Add(deltaTime_);
 
-        Keyboard.Update();
         mouse_.Update();
+        keyboard_.Update();
 
         logUPSTimer_.Update(deltaTime_);
         interface_->Update(deltaTime_, mouse_.GetCursorPosition());
@@ -125,13 +126,18 @@ void UApplication::Cleanup()
 {
     if (interface_)
     {
-        mouse_.GetEventAnyButton().RemoveListener(interface_, &UInterface::OnMouseButton);
+        mouse_.GetEventButton().RemoveListener(interface_, &UInterface::OnMouseButton);
         mouse_.GetEventMove().RemoveListener(interface_, &UInterface::OnMouseMove);
         mouse_.GetEventScroll().RemoveListener(interface_, &UInterface::OnMouseScroll);
+
+        keyboard_.GetEventKey().RemoveListener(interface_, &UInterface::OnKeyboardKey);
 
         interface_->EndDraw();
         delete interface_;
     }
+
+    mouse_.Cleanup();
+    keyboard_.Cleanup();
 
     renderer_.Cleanup();
     device_.Cleanup();

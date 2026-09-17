@@ -3,7 +3,6 @@
 #include <glm/ext/quaternion_trigonometric.hpp>
 #include <kotono_core/Interface.h>
 #include <kotono_core/Scene.h>
-#include <kotono_input/Keyboard.h>
 #include <kotono_interface/widgets.h>
 #include <kotono_math/math_utils.h>
 
@@ -38,30 +37,6 @@ WidgetPtr WViewController::Build()
     return widgetTree.Widget();
 }
 
-void WViewController::Display(UWidgetDisplaySettings const& displaySettings)
-{
-    Base::Display(displaySettings);
-
-    Keyboard.GetEventKey(EKey::W, EInputState::Down).AddListener(this, &Self::OnKeyboardWKeyDown);
-    Keyboard.GetEventKey(EKey::A, EInputState::Down).AddListener(this, &Self::OnKeyboardAKeyDown);
-    Keyboard.GetEventKey(EKey::S, EInputState::Down).AddListener(this, &Self::OnKeyboardSKeyDown);
-    Keyboard.GetEventKey(EKey::D, EInputState::Down).AddListener(this, &Self::OnKeyboardDKeyDown);
-    Keyboard.GetEventKey(EKey::Q, EInputState::Down).AddListener(this, &Self::OnKeyboardQKeyDown);
-    Keyboard.GetEventKey(EKey::E, EInputState::Down).AddListener(this, &Self::OnKeyboardEKeyDown);
-}
-
-void WViewController::Remove()
-{
-    Base::Remove();
-
-    Keyboard.GetEventKey(EKey::W, EInputState::Down).RemoveListener(this, &Self::OnKeyboardWKeyDown);
-    Keyboard.GetEventKey(EKey::A, EInputState::Down).RemoveListener(this, &Self::OnKeyboardAKeyDown);
-    Keyboard.GetEventKey(EKey::S, EInputState::Down).RemoveListener(this, &Self::OnKeyboardSKeyDown);
-    Keyboard.GetEventKey(EKey::D, EInputState::Down).RemoveListener(this, &Self::OnKeyboardDKeyDown);
-    Keyboard.GetEventKey(EKey::Q, EInputState::Down).RemoveListener(this, &Self::OnKeyboardQKeyDown);
-    Keyboard.GetEventKey(EKey::E, EInputState::Down).RemoveListener(this, &Self::OnKeyboardEKeyDown);
-}
-
 b8 WViewController::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
 {
 	if (!isActive_)
@@ -88,7 +63,7 @@ b8 WViewController::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& positio
 	return INPUT_HANDLED;
 }
 
-b8 WViewController::OnMouseScroll(glm::vec2 const& delta, glm::vec2 const& position)
+b8 WViewController::OnMouseScroll(glm::vec2 const& delta)
 {
 	if (!isActive_)
 	{
@@ -101,59 +76,68 @@ b8 WViewController::OnMouseScroll(glm::vec2 const& delta, glm::vec2 const& posit
 	return INPUT_HANDLED;
 }
 
-void WViewController::OnKeyboardWKeyDown() const
+b8 WViewController::OnKeyboardKey(EKey key, EInputState inputState)
 {
-	if (sceneTexture_)
+	if (!isActive_)
+	{
+		return INPUT_UNHANDLED;
+	}
+
+	if (!sceneTexture_)
+	{
+		return INPUT_UNHANDLED;
+	}
+
+	if (inputState != EInputState::Down)
+	{
+		return INPUT_UNHANDLED;
+	}
+
+	switch (key)
+	{
+	case EKey::W:
 	{
 		auto const direction{ sceneTexture_->GetForwardVector() };
 		Translate(direction * GetInterface()->GetDeltaTime() * speed_);
+		return INPUT_HANDLED;
 	}
-}
-
-void WViewController::OnKeyboardAKeyDown() const
-{
-	if (sceneTexture_)
+	case EKey::A:
 	{
 		auto const direction{ sceneTexture_->GetRightVector() };
 		Translate(direction * GetInterface()->GetDeltaTime() * speed_);
+		return INPUT_HANDLED;
 	}
-}
-
-void WViewController::OnKeyboardSKeyDown() const
-{
-	if (sceneTexture_)
+	case EKey::S:
 	{
 		auto const direction{ -sceneTexture_->GetForwardVector() };
 		Translate(direction * GetInterface()->GetDeltaTime() * speed_);
+		return INPUT_HANDLED;
 	}
-}
-
-void WViewController::OnKeyboardDKeyDown() const
-{
-	if (sceneTexture_)
+	case EKey::D:
 	{
 		auto const direction{ -sceneTexture_->GetRightVector() };
 		Translate(direction * GetInterface()->GetDeltaTime() * speed_);
+		return INPUT_HANDLED;
 	}
-}
+	case EKey::Q:
+	{
+		Translate(-WorldUpVector * GetInterface()->GetDeltaTime() * speed_);
+		return INPUT_HANDLED;
+	}
+	case EKey::E:
+	{
+		Translate(WorldUpVector * GetInterface()->GetDeltaTime() * speed_);
+		return INPUT_HANDLED;
+	}
+	default:
+		break;
+	}
 
-void WViewController::OnKeyboardQKeyDown() const
-{
-	Translate(-WorldUpVector * GetInterface()->GetDeltaTime() * speed_);
-}
-
-void WViewController::OnKeyboardEKeyDown() const
-{
-	Translate(WorldUpVector * GetInterface()->GetDeltaTime() * speed_);
+	return INPUT_UNHANDLED;
 }
 
 void WViewController::Translate(glm::vec3 const& delta) const
 {
-	if (!isActive_)
-	{
-		return;
-	}
-
 	if (sceneTexture_)
 	{
 		auto const position{ sceneTexture_->GetViewPosition() + delta };

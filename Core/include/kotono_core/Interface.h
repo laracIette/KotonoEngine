@@ -6,6 +6,7 @@
 #include <span>
 #include <vector>
 enum class EButton : u8;
+enum class EKey : u8;
 enum class EInputState : u8;
 struct UInterfaceRenderGraph;
 struct USceneRenderGraph;
@@ -34,7 +35,9 @@ public:
 
 	void OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) const;
 	void OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) const;
-	void OnMouseScroll(glm::vec2 const& delta, glm::vec2 const& position) const;
+	void OnMouseScroll(glm::vec2 const& delta) const;
+
+	void OnKeyboardKey(EKey key, EInputState inputState) const;
 	
 	void OpenWidgetInWindow(UPtr<WWidget> const& widget, glm::uvec2 const& windowExtent);
 	void ClearPendingWindows();

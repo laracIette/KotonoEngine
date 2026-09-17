@@ -91,11 +91,19 @@ void UInterface::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) 
 	}
 }
 
-void UInterface::OnMouseScroll(glm::vec2 const& delta, glm::vec2 const& position) const
+void UInterface::OnMouseScroll(glm::vec2 const& delta) const
 {
 	if (widget_)
 	{
-		widget_->OnMouseScroll(delta, position);
+		widget_->OnMouseScroll(delta);
+	}
+}
+
+void UInterface::OnKeyboardKey(EKey key, EInputState inputState) const
+{
+	if (widget_)
+	{
+		widget_->OnKeyboardKey(key, inputState);
 	}
 }
 

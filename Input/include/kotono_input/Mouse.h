@@ -10,11 +10,9 @@ class UWindow;
 class UMouse final
 {
 public:
-	using EventEmptyType = UEvent<>;
 	using EventMoveType = UEvent<glm::vec2, glm::vec2>;
-	using EventScrollType = UEvent<glm::vec2, glm::vec2>;
-	using EventFloatType = UEvent<f32>;
-	using EventAnyButtonType = UEvent<EButton, EInputState, glm::vec2>;
+	using EventScrollType = UEvent<glm::vec2>;
+	using EventButtonType = UEvent<EButton, EInputState, glm::vec2>;
 
 public:
 	UMouse(UWindow& window);
@@ -24,24 +22,19 @@ public:
 
 	void Update();
 
-	glm::vec2 GetCursorPositionDelta() const;
-	f32 GetHorizontalScrollDelta() const;
-	f32 GetVerticalScrollDelta() const;
+	auto GetCursorPositionDelta() const -> glm::vec2;
 
-	EventEmptyType& GetEventButton(EButton button, EInputState inputState);
-	b8 GetButtonState(EButton button, EInputState inputState) const;
+	auto GetButtonState(EButton button, EInputState inputState) const -> b8;
 
 	void HideCursor() const;
 	void ShowCursor() const;
 
-	glm::vec2 const& GetPreviousCursorPosition() const { return previousCursorPosition_; }
-	glm::vec2 const& GetCursorPosition() const { return cursorPosition_; }
+	auto GetPreviousCursorPosition() const -> glm::vec2 { return previousCursorPosition_; }
+	auto GetCursorPosition() const -> glm::vec2 { return cursorPosition_; }
 
-	EventMoveType&		GetEventMove() { return eventMove_; }
-	EventScrollType&	GetEventScroll() { return eventScroll_; }
-	EventFloatType&		GetEventHorizontalScroll() { return eventHorizontalScroll_; }
-	EventFloatType&		GetEventVerticalScroll() { return eventVerticalScroll_; }
-	EventAnyButtonType&	GetEventAnyButton() { return eventAnyButton_; }
+	auto GetEventMove() -> EventMoveType& { return eventMove_; }
+	auto GetEventScroll() -> EventScrollType& { return eventScroll_; }
+	auto GetEventButton() -> EventButtonType& { return eventButton_; }
 
 private:
 	void UpdateButton(GLFWwindow* window, EButton button, i32 action);
@@ -57,11 +50,7 @@ private:
 
 	EventMoveType eventMove_;
 	EventScrollType eventScroll_;
-	EventFloatType eventHorizontalScroll_;
-	EventFloatType eventVerticalScroll_;
+	EventButtonType eventButton_;
 
-	EventAnyButtonType eventAnyButton_;
-
-	std::array<std::array<EventEmptyType, InputStateCount>, ButtonCount> buttonEvents_;
 	std::array<std::array<b8, InputStateCount>, ButtonCount> buttonStates_;
 };

@@ -21,6 +21,8 @@ public:
 	void Display(UWidgetDisplaySettings const& displaySettings) override;
 	void Remove() override;
 
+	b8 OnKeyboardKey(EKey key, EInputState inputState) override;
+
 public:
 	std::string_view GetText() const;
 	TextChangedFunction const& GetOnTextChanged() const;
@@ -31,14 +33,6 @@ public:
 	void SetOnTextChanged(TextChangedFunction const& onTextChanged);
 	void SetActuationTime(f32 actuationTime);
 	void SetRepeatTime(f32 repeatTime);
-
-private:
-	void OnKeyBackspacePressed();
-	void OnKeyBackspaceDown();
-
-	void OnAnyKeyPressed(EKey key);
-	void OnAnyKeyReleased(EKey key);
-	void OnAnyKeyDown(EKey key);
 
 private:
 	std::string text_;
