@@ -7,7 +7,6 @@
 #include <kotono_common/log.h>
 #include <kotono_graphics/InterfaceRenderGraph.h>
 #include <kotono_math/math_utils.h>
-#include <kotono_platform/glm_utils.h>
 
 static EFlex getUpdatedFlex(glm::vec2 const& left, glm::vec2 const& right) noexcept
 {

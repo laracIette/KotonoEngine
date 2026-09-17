@@ -8,13 +8,10 @@
 
 #define KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY ELogImportanceLevel::Medium
 
-SObjectFactory& SObjectFactory::Get()
-{
-	static SObjectFactory objectFactory{};
-	return objectFactory;
-}
+std::unordered_map<std::string_view, SObjectFactory::ObjectFactoryFunc> SObjectFactory::objectFactories_{};
+std::unordered_map<UGuid, UPtr<KObject>> SObjectFactory::registry_{};
 
-UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
+auto SObjectFactory::Get(UGuid const& guid) -> UPtr<KObject>
 {
 	// Check if already in registry
 	const auto registryIt{ registry_.find(guid) };
@@ -54,12 +51,12 @@ UPtr<KObject> SObjectFactory::Get(const UGuid& guid)
 	return nullptr;
 }
 
-void SObjectFactory::Register(const std::string_view className, const ObjectFactoryFunc& function)
+void SObjectFactory::Register(std::string_view className, ObjectFactoryFunc const& function)
 {
 	objectFactories_[className] = function;
 }
 
-UPtr<KObject> SObjectFactory::GetFactory(const std::string_view typeName) const
+auto SObjectFactory::GetFactory(std::string_view typeName) -> UPtr<KObject>
 {
     const auto it{ objectFactories_.find(typeName) };
     if (it != objectFactories_.end())
@@ -69,7 +66,7 @@ UPtr<KObject> SObjectFactory::GetFactory(const std::string_view typeName) const
     return nullptr;
 }
 
-UAutoRegister::UAutoRegister(const std::string_view className, const SObjectFactory::ObjectFactoryFunc& creator)
+UAutoRegister::UAutoRegister(std::string_view className, SObjectFactory::ObjectFactoryFunc const& creator)
 {
-	SObjectFactory::Get().Register(className, creator);
+	SObjectFactory::Register(className, creator);
 }

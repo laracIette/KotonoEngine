@@ -2,6 +2,7 @@
 #include <iostream>
 #include <kotono_common/log.h>
 #include <kotono_common/Path.h>
+#include <kotono_common/PathManager.h>
 #include <kotono_io/File.h>
 #include <kotono_io/Serializer.h>
 #include <kotono_reflection/Reflector.h>
@@ -37,14 +38,14 @@ void SGenerator::GenerateUpdated()
 	nlohmann::json json{};
 	SSerializer::Deserialize(json, RegistryPath);
 
-	const auto& reflectionResults{ Reflector.GetReflectionResults() };
-	for (const auto& reflectionResult : reflectionResults)
+	auto const& reflectionResults{ Reflector.GetReflectionResults() };
+	for (auto const& reflectionResult : reflectionResults)
 	{
 		const UFile file{ reflectionResult.path };
 
-		const auto entryPath{ reflectionResult.path.ToString() };
-		const auto ftime{ file.LastWriteTime() };
-		const auto formattedTime{ std::format("{0:%F}-{0:%T}", ftime) };
+		auto const entryPath{ reflectionResult.path.ToString() };
+		auto const ftime{ file.LastWriteTime() };
+		auto const formattedTime{ std::format("{0:%F}-{0:%T}", ftime) };
 
 		bool isInList{ false };
 		for (auto& header : json["headers"])
@@ -77,6 +78,38 @@ void SGenerator::GenerateUpdated()
 	SSerializer::Serialize(json, RegistryPath);
 }
 
+void SGenerator::GenerateRegistrator()
+{
+	std::ostringstream functionsCode;
+	std::ostringstream callCode;
+
+	auto const& reflectionResults{ Reflector.GetReflectionResults() };
+	for (auto const& reflectionResult : reflectionResults)
+	{
+		functionsCode << std::format("extern void Register_{0}();", reflectionResult.type.name) << std::endl;
+		callCode << std::format("	Register_{0}();", reflectionResult.type.name) << std::endl;
+	}
+
+	const std::string generatedCode{ 
+		std::format(
+R"(#pragma once
+{0}
+void RegisterObjectClasses()
+{{
+{1}
+}}
+)",
+			functionsCode.str(),
+			callCode.str()
+		)
+	};
+
+	UPath const filePath{ "${ENGINE_DIRECTORY}/Application/src/generated/ClassRegistrator.generated.inl" };
+	UFile{ filePath }.WriteString(generatedCode);
+
+	KT_LOG(ELogImportanceLevel::High, "Generator", "Generated class registrator");
+}
+
 void SGenerator::Generate(const UReflectionResult& reflectionResult)
 {
 	GenerateHeader(reflectionResult);
@@ -87,13 +120,13 @@ void SGenerator::Generate(const UReflectionResult& reflectionResult)
 
 void SGenerator::GenerateHeader(const UReflectionResult& reflectionResult)
 {
-	const auto classInfo{ GetClassInfo(reflectionResult) };
+	auto const classInfo{ GetClassInfo(reflectionResult) };
 
-	const std::string generatedCode{ !classInfo.base.has_value()
+	std::string const generatedCode{ !classInfo.base.has_value()
 		? std::format(
-R"(#define GENERATED_{0}() \
+R"(#pragma once
+#define GENERATED_{0}() \
 	private: \
-		static UAutoRegister register_; \
 		using Self = {1}; \
 	public: \
 		virtual void SerializeTo(nlohmann::json& json) const; \
@@ -105,9 +138,9 @@ R"(#define GENERATED_{0}() \
 			classInfo.name
 		)
 		: std::format(
-R"(#define GENERATED_{0}() \
+R"(#pragma once
+#define GENERATED_{0}() \
 	private: \
-		static UAutoRegister register_; \
 		using Self = {1}; \
 		using Base = {2}; \
 		using Base::Base; \
@@ -123,36 +156,39 @@ R"(#define GENERATED_{0}() \
 		)
 	};
 
-	const UPath fileDirectory{ reflectionResult.path.Directory() };
-	const UPath fileName{ reflectionResult.path.ToPath().filename().replace_extension(".generated.h") };
-	UFile(fileDirectory / "generated" / fileName).WriteString(generatedCode);
+	UPath const fileDirectory{ reflectionResult.path.Directory() };
+	UPath const fileName{ reflectionResult.path.ToPath().filename().replace_extension(".generated.h") };
+	UFile{ fileDirectory / "generated" / fileName }.WriteString(generatedCode);
 }
 
 void SGenerator::GenerateSource(const UReflectionResult& reflectionResult)
 {
-	const auto classInfo{ GetClassInfo(reflectionResult) };
+	auto const classInfo{ GetClassInfo(reflectionResult) };
 
 	std::ostringstream serializeCode;
-	for (const auto& variable : classInfo.variables)
+	for (auto const& variable : classInfo.variables)
 	{
 		serializeCode << std::format(R"(	USerialize<decltype({0})>{{}}(get(json, "{0}"), {0});)", variable.name) << std::endl;
 	}
 
 	std::ostringstream deserializeCode;
-	for (const auto& variable : classInfo.variables)
+	for (auto const& variable : classInfo.variables)
 	{
 		deserializeCode << std::format(R"(	if (contains(json, "{0}")) UDeserialize<decltype({0})>{{}}(get(json, "{0}"), {0});)", variable.name) << std::endl;
 	}
 
 	std::ostringstream memberVariablesCode;
-	for (const auto& variable : classInfo.variables)
+	for (auto const& variable : classInfo.variables)
 	{
 		memberVariablesCode << std::format(R"(		{{ "{0}", "{1}", offsetof(Self, {1}) }},)", variable.type, variable.name) << std::endl;
 	}
 
 	const std::string generatedCode{ !classInfo.base.has_value()
 		? std::format(
-R"(UAutoRegister {0}::register_{{ "{0}", []() {{ return UCreate<{0}>{{}}(); }} }};
+R"(void Register_{0}() 
+{{
+	UAutoRegister{{ "{0}", []() {{ return UCreate<{0}>{{}}(); }} }};
+}}
 
 void {0}::SerializeTo(nlohmann::json& json) const
 {{
@@ -182,7 +218,10 @@ UPtr<{0}> {0}::Ptr() const
 			memberVariablesCode.str()
 		)
 		: std::format(
-R"(UAutoRegister {0}::register_{{ "{0}", []() {{ return UCreate<{0}>{{}}(); }} }};
+R"(void Register_{0}() 
+{{
+	UAutoRegister{{ "{0}", []() {{ return UCreate<{0}>{{}}(); }} }};
+}}
 
 void {0}::SerializeTo(nlohmann::json& json) const
 {{

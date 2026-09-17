@@ -1,11 +1,11 @@
 #pragma once
-#include <filesystem>
+#include "Path.h"
 class SPathManager final
 {
 public:
-	static const std::filesystem::path& Engine();
-	static const std::filesystem::path& Project();
+	static UPath const& Engine();
+	static UPath const& Project();
 
 private:
-	static std::filesystem::path projectPath_;
+	static UPath projectPath_;
 };

@@ -1,12 +1,10 @@
 #include "PropertiesWindow.h"
+
 #include "ObjectProperties.h"
-#include <kotono_common/log.h>
-#include <kotono_input/Mouse.h>
-#include <kotono_interface/widgets.h>
 #include <kotono_core/ObjectManager.h>
 #include <kotono_core/SceneComponent.h>
 #include <kotono_core/SceneObject.h>
-#include <kotono_platform/glm_utils.h>
+#include <kotono_interface/widgets.h>
 
 WidgetPtr WPropertiesWindow::Build()
 {

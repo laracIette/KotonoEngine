@@ -12,17 +12,26 @@ private:
 	using ValueType = T;
 
 public:
-	constexpr UClamped(ValueType value) : value_{ Clamp(value) } {}
+	constexpr UClamped(ValueType value) : value_{ clamp(value) } {}
 
 	constexpr operator ValueType() const noexcept
 	{
 		return value_;
 	}
 
-private:
-	static constexpr ValueType Clamp(ValueType value) noexcept
+	static constexpr ValueType clamp(ValueType value) noexcept
 	{
 		return std::clamp(value, Min, Max);
+	}
+
+	static constexpr ValueType min() noexcept
+	{
+		return Min;
+	}
+
+	static constexpr ValueType max() noexcept
+	{
+		return Max;
 	}
 
 private:

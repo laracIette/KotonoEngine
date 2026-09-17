@@ -1,12 +1,12 @@
 #include "PathManager.h"
 
-const std::filesystem::path& SPathManager::Engine()
+UPath const& SPathManager::Engine()
 {
-    static std::filesystem::path engineDirectory{ ENGINE_DIRECTORY };
+    static UPath engineDirectory{ ENGINE_DIRECTORY };
     return engineDirectory;
 }
 
-const std::filesystem::path& SPathManager::Project()
+UPath const& SPathManager::Project()
 {
     return projectPath_;
 }

@@ -6,7 +6,7 @@
 #include <kotono_input/Keyboard.h>
 #include <kotono_input/Mouse.h>
 #include <kotono_interface/widgets.h>
-#include <kotono_platform/glm_utils.h>
+#include <kotono_math/math_utils.h>
 
 WViewController::WViewController()
 	: WViewController(nullptr)

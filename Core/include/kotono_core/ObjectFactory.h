@@ -1,8 +1,7 @@
 #pragma once
+#include "Guid.h"
 #include <functional>
 #include <string_view>
-#include "Guid.h"
-
 template <class T>
 class UPtr;
 class KObject;
@@ -14,30 +13,21 @@ private:
 	friend struct UAutoRegister;
 
 public:
-	SObjectFactory(const SObjectFactory&) = delete;
-	void operator=(const SObjectFactory&) = delete;
-
-private:
-	SObjectFactory() {}
-
-public:
 	using ObjectFactoryFunc = std::function<UPtr<KObject>()>;
 
-	static SObjectFactory& Get();
-
 public:
-	UPtr<KObject> Get(const UGuid& guid);
+	static auto Get(UGuid const& guid) -> UPtr<KObject>;
 
 private:
-	void Register(const std::string_view className, const ObjectFactoryFunc& function);
-	UPtr<KObject> GetFactory(const std::string_view typeName) const;
+	static void Register(std::string_view className, ObjectFactoryFunc const& function);
+	static auto GetFactory(std::string_view typeName) -> UPtr<KObject>;
 
 private:
-	std::unordered_map<std::string_view, ObjectFactoryFunc> objectFactories_;
-	std::unordered_map<UGuid, UPtr<KObject>> registry_;
+	static std::unordered_map<std::string_view, ObjectFactoryFunc> objectFactories_;
+	static std::unordered_map<UGuid, UPtr<KObject>> registry_;
 };
 
 struct UAutoRegister final
 {
-	UAutoRegister(const std::string_view className, const SObjectFactory::ObjectFactoryFunc& creator);
+	UAutoRegister(std::string_view className, SObjectFactory::ObjectFactoryFunc const& creator);
 };

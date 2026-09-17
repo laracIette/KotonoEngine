@@ -21,6 +21,7 @@ class SGenerator final
 public:
 	static void GenerateAll();
 	static void GenerateUpdated();
+	static void GenerateRegistrator();
 
 private:
 	static void Generate(const UReflectionResult& reflectionResult);

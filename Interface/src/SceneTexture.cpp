@@ -4,7 +4,7 @@
 #include <glm/ext/quaternion_trigonometric.hpp>
 #include <kotono_graphics/Color.h>
 #include <kotono_graphics/InterfaceRenderGraph.h>
-#include <kotono_platform/glm_utils.h>
+#include <kotono_math/math_utils.h>
 #include <kotono_timing/Clock.h>
 
 WSceneTexture::WSceneTexture()

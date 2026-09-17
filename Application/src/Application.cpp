@@ -1,5 +1,6 @@
 #include "Application.h"
 
+#include "ClassRegistrator.h"
 #include <GLFW/glfw3.h>
 #include <kotono_common/log.h>
 #include <kotono_core/Interface.h>
@@ -8,10 +9,6 @@
 #include <kotono_graphics/SpvCompiler.h>
 #include <kotono_input/Keyboard.h>
 #include <kotono_input/Mouse.h>
-#include <kotono_scene/AudioComponent.h>
-#include <kotono_scene/DirectionalLightComponent.h>
-#include <kotono_scene/MeshComponent.h>
-#include <kotono_scene/PointLightComponent.h>
 #include <kotono_timing/Clock.h>
 
 #ifdef EDITOR
@@ -64,6 +61,8 @@ void UApplication::Init()
     Keyboard.Init(window_);
     Mouse.Init(window_);
 
+    RegisterObjectClasses();
+
     logUPSTimer_.SetDuration(1.0f);
     logUPSTimer_.SetIsRepeat(true);
     logUPSTimer_.EventCompleted().AddListener(this, &UApplication::LogUPS);
@@ -82,14 +81,6 @@ void UApplication::Init()
 #   endif
 
     interface_->BeginDraw(window_.GetSize());
-
-    // force unused classes to compile, for registry
-    {
-        KAudioComponent{};
-        KDirectionalLightComponent{};
-        KMeshComponent{};
-        KPointLightComponent{};
-    }
 }
 
 void UApplication::Update()

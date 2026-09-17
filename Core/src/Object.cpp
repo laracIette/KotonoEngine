@@ -89,7 +89,7 @@ UPtr<KObject> KObject::Deserialize(const nlohmann::json& json)
 {
     UGuid guid{};
     UDeserialize<UGuid>{}(json, guid);
-    return SObjectFactory::Get().Get(guid);
+    return SObjectFactory::Get(guid);
 }
 
 #ifndef NDEBUG

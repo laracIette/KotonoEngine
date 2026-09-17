@@ -10,9 +10,11 @@ set_target_properties(KotonoApplication PROPERTIES FOLDER "KotonoEngine")
 
 set(KAPPLICATION_HEADERS
     "include/kotono_application/Application.h"
+    "include/kotono_application/ClassRegistrator.h"
 )
 set(KAPPLICATION_SOURCES
     "src/Application.cpp"
+    "src/ClassRegistrator.cpp"
 )
 
 target_sources(KotonoApplication

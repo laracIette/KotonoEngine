@@ -33,6 +33,6 @@ target_include_directories(KotonoInput
 )
 
 # Link libs
-target_link_libraries(KotonoInput PUBLIC
+target_link_libraries(KotonoInput PRIVATE
     KotonoPlatform
 )

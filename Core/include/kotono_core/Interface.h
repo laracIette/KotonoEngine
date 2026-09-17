@@ -19,11 +19,13 @@ public:
 
 	void BeginDraw(glm::uvec2 const& bounds);
 	void EndDraw() const;
+	
+	//void CreateWindow(glm::uvec2 const& position, glm::uvec2 const& size, UPtr<WWidget> const& widget);
 
-	glm::uvec2 GetBounds() const { return bounds_; }
+	auto GetBounds() const -> glm::uvec2 { return bounds_; }
 
-	f32 GetDeltaTime() const { return deltaTime_; }
-	f32 GetNow() const { return now_; }
+	auto GetDeltaTime() const -> f32 { return deltaTime_; }
+	auto GetNow() const -> f32 { return now_; }
 
 	void SetWidget(UPtr<WInterfaceRoot> const& widget) { widget_ = widget; }
 

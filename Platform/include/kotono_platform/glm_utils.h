@@ -3,27 +3,10 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/matrix_transform.hpp>
-#include <glm/ext/vector_float4.hpp>
 #include <glm/ext/vector_float3.hpp>
+#include <glm/ext/vector_float4.hpp>
 #include <kotono_common/types.h>
-
-inline constexpr glm::vec3 WorldRightVector{ 1.0f, 0.0f, 0.0f };
-inline constexpr glm::vec3 WorldUpVector{ 0.0f, 1.0f, 0.0f };
-inline constexpr glm::vec3 WorldForwardVector{ 0.0f, 0.0f, -1.0f };
-
-inline glm::mat4 calculate_reverse_z_infinite_perspective(f32 fovY, f32 aspect, f32 zNear) noexcept
-{
-    f32 const f{ 1.0f / std::tan(fovY / 2.0f) };
-
-    glm::mat4 result{ 0.0f }; // Initialize all elements to 0
-
-    result[0][0] = f / aspect;
-    result[1][1] = -f; // Flip y axis
-    result[2][3] = 1.0f; // w_clip = z_view 
-    result[3][2] = zNear; // z_clip = zNear * w_view (which is zNear * 1)
-
-    return result;
-}
+#include <kotono_math/math_utils.h>
 
 inline std::array<glm::vec3, 8> get_frustum_corners_world_space(
       glm::mat4 const& view
