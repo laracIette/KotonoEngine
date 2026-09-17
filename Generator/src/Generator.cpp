@@ -92,8 +92,7 @@ void SGenerator::GenerateRegistrator()
 
 	const std::string generatedCode{ 
 		std::format(
-R"(#pragma once
-{0}
+R"({0}
 void RegisterObjectClasses()
 {{
 {1}
