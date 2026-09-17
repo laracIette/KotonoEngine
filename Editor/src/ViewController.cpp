@@ -11,8 +11,8 @@ WViewController::WViewController()
 {
 }
 
-WViewController::WViewController(UPtr<WSceneContext> const& sceneContext)
-	: Base(sceneContext)
+WViewController::WViewController(UScene* scene)
+	: Base(scene)
 	, isActive_{ false }
 	, speed_{ 1.0f }
 	, sensitivity_{ 0.005f }

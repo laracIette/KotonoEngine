@@ -22,8 +22,7 @@ private:
 	};
 
 public:
-	UInterface();
-	~UInterface();
+	void Cleanup() const;
 
 	void PopulateInterfaceRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const;
 	void PopulateSceneRenderGraph(USceneRenderGraph& sceneRenderGraph) const;

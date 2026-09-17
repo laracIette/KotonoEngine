@@ -8,7 +8,7 @@ class WViewController final : public WSceneWidget
 
 public:
 	WViewController();
-	WViewController(UPtr<WSceneContext> const& sceneContext);
+	WViewController(UScene* scene);
 
 protected:
 	WidgetPtr Build() override;

@@ -4,7 +4,7 @@
 #include <kotono_common/log.h>
 #include <stdexcept>
 
-static UEvent<glm::uvec2> EventFramebufferSizeChanged{};
+static UEvent<GLFWwindow*, glm::uvec2> EventFramebufferSizeChanged{};
 
 static void framebuffersize_callback_(GLFWwindow* window, i32 width, i32 height)
 {
@@ -16,19 +16,19 @@ static void framebuffersize_callback_(GLFWwindow* window, i32 width, i32 height)
     }
 
     glm::uvec2 const size{ width, height };
-    EventFramebufferSizeChanged.Broadcast(size);
+    EventFramebufferSizeChanged.Broadcast(window, size);
 
-    KT_LOG(ELogImportanceLevel::High, "Platform", "window resized: {} x {}", width, height);
+    KT_LOG(ELogImportanceLevel::High, "Platform", "window resized: {0} x {0}", width, height);
 }
 
-void UWindow::Init()
+void UWindow::Init(glm::uvec2 const& extent)
 {
-    size_ = { 1600u, 900u };
+    extent_ = extent;
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    window_ = glfwCreateWindow(size_.x, size_.y, "Kotono Engine", nullptr, nullptr);
+    window_ = glfwCreateWindow(extent.x, extent.y, "Kotono Engine", nullptr, nullptr);
     if (!window_)
     {
         throw std::runtime_error("Failed to create GLFW window");
@@ -40,12 +40,12 @@ void UWindow::Init()
     glfwShowWindow(window_);
 }
 
-void UWindow::Cleanup()
+void UWindow::Cleanup() const
 {
     glfwDestroyWindow(window_);
 }
 
-bool UWindow::GetShouldClose() const
+auto UWindow::GetShouldClose() const -> b8
 {
     if (glfwWindowShouldClose(window_))
     {
@@ -56,8 +56,13 @@ bool UWindow::GetShouldClose() const
     return false;
 }
 
-void UWindow::OnFramebufferSizeChanged(glm::uvec2 const& size)
+void UWindow::OnFramebufferSizeChanged(GLFWwindow* window, glm::uvec2 const& size)
 {
-    size_ = size;
+    if (window != window_)
+    {
+        return;
+    }
+
+    extent_ = size;
     eventWindowResized_.Broadcast(size);
 }

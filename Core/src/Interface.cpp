@@ -4,11 +4,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <kotono_common/log.h>
 
-UInterface::UInterface()
-{
-}
-
-UInterface::~UInterface()
+void UInterface::Cleanup() const
 {
 	if (widget_)
 	{

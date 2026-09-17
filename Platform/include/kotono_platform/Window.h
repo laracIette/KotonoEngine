@@ -9,21 +9,21 @@ class UWindow final
 	friend void framebuffersize_callback_(GLFWwindow*, i32, i32);
 
 public:
-	void Init(); 
-	void Cleanup();
+	void Init(glm::uvec2 const& extent);
+	void Cleanup() const;
 
 	// Executes glfwPollEvents() when returns false
-	b8 GetShouldClose() const;
+	auto GetShouldClose() const -> b8;
 
-	GLFWwindow*			GetGLFWWindow() const { return window_; }
-	glm::uvec2 const&	GetSize() const { return size_; }
-	UEvent<glm::uvec2>& GetEventWindowResized() { return eventWindowResized_; }
+	auto GetGLFWWindow() const -> GLFWwindow* { return window_; }
+	auto GetExtent() const -> glm::uvec2 const& { return extent_; }
+	auto GetEventWindowResized() -> UEvent<glm::uvec2>& { return eventWindowResized_; }
 
 private:
-	void OnFramebufferSizeChanged(glm::uvec2 const& size);
+	void OnFramebufferSizeChanged(GLFWwindow* window, glm::uvec2 const& size);
 
 private:
 	GLFWwindow* window_;
-	glm::uvec2 size_;
+	glm::uvec2 extent_;
 	UEvent<glm::uvec2> eventWindowResized_;
 };

@@ -2,18 +2,14 @@
 #include "generated/SceneWidget.generated.h"
 #include "Widget.h"
 class UScene;
-class WSceneContext;
 class WSceneWidget : public WWidget
 {
 	GENERATED_WSCENEWIDGET()
 
 public:
 	//WSceneWidget() = delete; // register_ breaks if default constructor deleted
-	WSceneWidget(UPtr<WSceneContext> const& sceneContext);
-
-	UPtr<WSceneContext> const& GetSceneContext() const;
-	UScene* GetScene() const;
+	WSceneWidget(UScene* scene);
 
 private:
-	SERIALIZE UPtr<WSceneContext> sceneContext_;
+	ReadonlyProperty(UScene*, scene_, Scene, Value);
 };
