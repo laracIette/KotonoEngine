@@ -1,6 +1,10 @@
 #pragma once
 #include "generated/ChildOwner.generated.h"
 #include <kotono_core/Widget.h>
+
+#include <concepts>
+#include <tuple>
+
 class WChildOwner : public WWidget
 {
 	GENERATED_WCHILDOWNER()
@@ -25,26 +29,55 @@ public:
 
 	void Refresh() final;
 
-public:
-	void SetChild(const WidgetPtr& widget);
+	auto GetChild() const -> WidgetPtr const& { return child_; }
+	void SetChild(WidgetPtr const& widget);
 
 protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 
 private:
-	ReadonlyProperty(WidgetPtr, child_, Child);
+	WidgetPtr child_;
 };
 
+template <typename T>
+concept ChildOwner = requires(T& widget, WidgetPtr const& child)
+{
+	{ widget.GetChild() } -> std::convertible_to<WidgetPtr>;
+	widget.SetChild(child);
+};
+
+template <ChildOwner T>
 class UChildOwnerTree final : public UWidgetTree
 {
 public:
-	UChildOwnerTree(UPtr<WChildOwner> const& widget, UWidgetTree* child);
-	~UChildOwnerTree() override;
+	UChildOwnerTree(UPtr<T> const& widget, UWidgetTree* child)
+		: widget_{ widget }
+		, child_{ child }
+	{}
 
-	WidgetPtr Widget() const override;
-	void Link() const override;
+	~UChildOwnerTree() override
+	{
+		delete child_;
+	}
+
+	auto Widget() const -> WidgetPtr override
+	{
+		return widget_;
+	}
+
+	void Link() const override
+	{
+		if (child_)
+		{
+			child_->Link();
+			if (widget_)
+			{
+				widget_->SetChild(child_->Widget());
+			}
+		}
+	}
 
 private:
-	UPtr<WChildOwner> widget_;
+	UPtr<T> widget_;
 	UWidgetTree* child_;
 };

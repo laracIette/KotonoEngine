@@ -31,7 +31,6 @@ private:
 	std::vector<USecondaryWindowContext*> secondaryWindowContexts_;
 
 	f32 now_;
-	f32 deltaTime_;
 	UAverage<f32, 256> averageUpdateTime_;
 
 	UTimer logUPSTimer_;

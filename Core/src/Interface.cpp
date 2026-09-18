@@ -50,14 +50,13 @@ void UInterface::BeginDraw(glm::uvec2 const& bounds)
 		widget_->Display({
 			.position = { 0.0f, 0.0f },
 			.bounds = glm::vec2{ bounds },
-			.layer = 0,
 			.scissor{
 				.offset = { 0, 0 },
 				.extent = bounds
 			},
 		});
 
-		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Object", "Main window widget displayed with a size of: {0}", glm::to_string(bounds));
+		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Object", "Interface widget displayed with a size of: {0}", glm::to_string(bounds));
 	}
 }
 
@@ -67,7 +66,7 @@ void UInterface::EndDraw() const
 	{
 		widget_->Remove();
 
-		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Object", "Main window widget removed");
+		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Object", "Interface widget removed");
 	}
 }
 

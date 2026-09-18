@@ -46,6 +46,9 @@ public:																					\
 	void Set##PropertyName(Type const& value) { Name = value; }				\
 private:
 
+class KObject;
+using ObjectPtr = UPtr<KObject>;
+
 class UPath;
 
 class KObject
@@ -61,7 +64,6 @@ public:
 	virtual void PostConstruct();
 
 public:
-	const std::type_info& Type() const;
 	std::string TypeName() const;
 	UPath InstancePath() const;
 
@@ -80,8 +82,10 @@ public:
 
 	virtual std::string ToString() const;
 
+	operator std::string() const;
+
 public:
-	static UPtr<KObject> Deserialize(const nlohmann::json& json);
+	static ObjectPtr Deserialize(const nlohmann::json& json);
 
 protected:
 	UPtrOwner* const ptrOwner_;
@@ -101,9 +105,49 @@ public:
 	u32 sourceLine;
 
 private:
-	static std::unordered_set<UPtr<KObject>> debugRegistry_;
+	static std::unordered_set<ObjectPtr> debugRegistry_;
 #endif
 };
+
+
+
+template <typename MemFn, typename... Args>
+struct _MemberAction
+{
+	MemFn fn;
+	std::tuple<Args...> args;
+
+	template <typename T>
+	void Apply(T* ptr) const
+	{
+		std::apply([ptr, this](auto&&... unpacked_args) {
+			(ptr->*fn)(std::forward<decltype(unpacked_args)>(unpacked_args)...);
+		}, args);
+	}
+};
+
+template <std::derived_from<KObject> T, typename MemFn, typename... Args>
+	requires std::is_member_function_pointer_v<MemFn>
+		&& (std::is_invocable_v<MemFn, T*, Args...> || std::is_invocable_v<MemFn, T*>)
+UPtr<T> const& operator|(UPtr<T> const& object, _MemberAction<MemFn, Args...> const& action)
+{
+	action.Apply(object.Get());
+	return object;
+}
+
+template <typename MemFn, typename... Args>
+auto _Make(MemFn fn, Args&&... args)
+{
+	return _MemberAction<MemFn, std::decay_t<Args>...>{
+		fn, std::make_tuple(std::forward<Args>(args)...)
+	};
+}
+
+#define Apply _Make
+
+
+
+
 
 template <std::derived_from<KObject> T>
 struct UCreate final

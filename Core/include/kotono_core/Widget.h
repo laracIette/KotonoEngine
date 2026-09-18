@@ -24,15 +24,16 @@ using WidgetPtr = UPtr<WWidget>;
 using WidgetSet = USet<WidgetPtr>;
 using WidgetVector = std::vector<WidgetPtr>;
 
-#define StateProperty(Type, Name, PropertyName) private:												\
+#define StateProperty(Type, Name, PropertyName, ...) private:											\
 	Type Name;																							\
 public:																									\
-	const Type& Get##PropertyName() const noexcept { return Name; }										\
+	Type GET_PROP_ACCESS(__VA_ARGS__) Get##PropertyName() GET_FUNC_ACCESS(__VA_ARGS__) { return Name; } \
 	void Set##PropertyName(const Type& value) noexcept { SetState([this, value]() { Name = value; }); }	\
 private:
 
 struct UInterfaceRenderGraph;
 class UInterface;
+
 /// Base class of all widgets
 class WWidget : public KObject
 {
@@ -89,7 +90,6 @@ public:
 	auto GetPosition() const -> glm::vec2 { return slotDisplaySettings_.position; }
 	auto GetSize() const -> glm::vec2 { return slotDisplaySettings_.bounds; }
 	auto GetAspectRatio() const -> f32 { return slotDisplaySettings_.bounds.x / slotDisplaySettings_.bounds.y; }
-	auto GetLayer() const -> i32 { return slotDisplaySettings_.layer; }
 	auto GetScissor() const -> UScissor { return slotDisplaySettings_.scissor; }
 
 protected:
@@ -126,7 +126,7 @@ class UWidgetTree
 public:
 	virtual ~UWidgetTree() = default;
 
-	virtual WidgetPtr Widget() const = 0;
+	virtual auto Widget() const -> WidgetPtr = 0;
 	virtual void Link() const = 0;
 };
 
@@ -135,7 +135,7 @@ class UWidgetTreeLeaf final : public UWidgetTree
 public:
 	UWidgetTreeLeaf(WidgetPtr const& widget);
 
-	WidgetPtr Widget() const override;
+	auto Widget() const -> WidgetPtr override;
 	void Link() const override;
 
 private:

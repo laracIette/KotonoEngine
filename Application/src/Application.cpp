@@ -4,6 +4,7 @@
 #include "WindowContext.h"
 #include <GLFW/glfw3.h>
 #include <kotono_common/log.h>
+#include <kotono_core/Interface.h>
 #include <kotono_graphics/SpvCompiler.h>
 #include <kotono_interface/Text.h>
 #include <kotono_timing/Clock.h>
@@ -21,6 +22,8 @@ UApplication::UApplication()
     , device_{ context_ }
     , mainWindowContext_{ nullptr }
     , secondaryWindowContexts_{}
+    , averageUpdateTime_{}
+    , now_{ SClock::Now() }
 {
 }
 
@@ -111,30 +114,32 @@ void UApplication::Cleanup()
 void UApplication::Update()
 {
     f32 const now{ SClock::Now() };
-    deltaTime_ = now - now_;
+    f32 const deltaTime{ now - now_ };
     now_ = now;
-    averageUpdateTime_.Add(deltaTime_);
 
-    logUPSTimer_.Update(deltaTime_);
+    averageUpdateTime_.Add(deltaTime);
+    logUPSTimer_.Update(deltaTime);
 
-    mainWindowContext_->Update(deltaTime_);
+    std::vector<UInterface::PendingWindow> pendingWindows{};
 
-    for (auto* windowContext : secondaryWindowContexts_)
+    auto const updateAndPopulatePendingWindows{ [&pendingWindows, deltaTime](UWindowContext* windowContext) {
+        windowContext->Update(deltaTime);
+        pendingWindows.append_range(windowContext->GetInterface()->GetPendingWindows());
+        windowContext->GetInterface()->ClearPendingWindows();
+    } };
+
+    updateAndPopulatePendingWindows(mainWindowContext_);
+    std::ranges::for_each(secondaryWindowContexts_, updateAndPopulatePendingWindows);
+
+    for (auto const& [widget, windowExtent] : pendingWindows)
     {
-        windowContext->Update(deltaTime_);
+        secondaryWindowContexts_.push_back(new USecondaryWindowContext{ context_, device_ });
+        secondaryWindowContexts_.back()->Init(windowExtent, widget);
     }
 }
 
 void UApplication::DrawFrame()
 {
-    //for (auto const& [widget, windowExtent] : interface_->GetPendingWindows())
-    //{
-    //    UWindow window{};
-    //    USurface surface{ window, context_ };
-    //    URenderer renderer{ device_, surface };
-    //}
-    //interface_->ClearPendingWindows();
-
     mainWindowContext_->DrawFrame();
 
     for (auto* windowContext : secondaryWindowContexts_)

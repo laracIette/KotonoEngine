@@ -19,21 +19,20 @@ public:
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
 
 private:
-	ReadonlyProperty(b8, isPressed_, IsPressed);
-	ReadonlyProperty(b8, isSelected_, IsSelected);
-	WritableProperty(b8, isEnabled_, IsEnabled);
-	WritableProperty(b8, isSelectable_, IsSelectable);
+	ReadonlyProperty(b8, isPressed_, IsPressed, Value);
+	ReadonlyProperty(b8, isSelected_, IsSelected, Value);
+	WritableProperty(b8, isEnabled_, IsEnabled, Value);
+	WritableProperty(b8, isSelectable_, IsSelectable, Value);
 	WritableProperty(VoidCallback, onClicked_, OnClicked);
-	WritableProperty(VoidCallback, onPressed_, OnPressed);
 	WritableProperty(VoidCallback, onDown_, OnDown);
 	WritableProperty(VoidCallback, onActive_, OnActive);
 	WritableProperty(VoidCallback, onInactive_, OnInactive);
 	WritableProperty(VoidCallback, onSelected_, OnSelected);
 	WritableProperty(VoidCallback, onDeselected_, OnDeselected);
-	WritableProperty(UColor, normalColor_, NormalColor);
-	WritableProperty(UColor, focusedColor_, FocusedColor);
-	WritableProperty(UColor, pressedColor_, PressedColor);
-	WritableProperty(UColor, selectedColor_, SelectedColor);
-	WritableProperty(UColor, disabledColor_, DisabledColor);
+	WritableProperty(UColor, normalColor_, NormalColor, Value);
+	WritableProperty(UColor, focusedColor_, FocusedColor, Value);
+	WritableProperty(UColor, pressedColor_, PressedColor, Value);
+	WritableProperty(UColor, selectedColor_, SelectedColor, Value);
+	WritableProperty(UColor, disabledColor_, DisabledColor, Value);
 };
 

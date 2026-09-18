@@ -12,7 +12,7 @@ WSceneExplorerItem::WSceneExplorerItem(UPtr<TSceneObject> const& sceneObject)
 WidgetPtr WSceneExplorerItem::Build()
 {
 	UPtr button{ UCreate<WButton>{}() };
-	button->SetOnPressed([this]() {
+	button->SetOnActive([this]() {
 		ObjectManager.SetSelectedObject(sceneObject_);
 	});
 

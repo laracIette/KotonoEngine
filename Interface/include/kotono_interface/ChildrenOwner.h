@@ -1,6 +1,9 @@
 #pragma once
 #include "generated/ChildrenOwner.generated.h"
 #include <kotono_core/Widget.h>
+
+#include <concepts>
+
 class WChildrenOwner : public WWidget
 {
 	GENERATED_WCHILDRENOWNER()
@@ -22,25 +25,76 @@ public:
 	void Refresh() final;
 
 	void SetChildren(WidgetSet const& widgets);
+	void AddChild(WidgetPtr const& widget);
+	void RemoveChild(WidgetPtr const& widget);
+	void ReplaceChild(WidgetPtr const& oldWidget, WidgetPtr const& newWidget);
+
+	auto GetChildren() const -> WidgetSet const& { return children_; }
 
 protected:
 	size GetValidChildrenCount() const;
 
 private:
-	ReadonlyProperty(WidgetSet, children_, Children);
+	WidgetSet children_;
 };
 
+template <typename T>
+concept ChildrenOwner = requires(T & widget, WidgetSet const& children)
+{
+	{ widget.GetChildren() } -> std::convertible_to<WidgetSet>;
+	widget.SetChildren(children);
+};
+
+template <ChildrenOwner T>
 class UChildrenOwnerTree final : public UWidgetTree
 {
 public:
-	UChildrenOwnerTree(UPtr<WChildrenOwner> const& widget, std::span<UWidgetTree* const> children);
-	UChildrenOwnerTree(UPtr<WChildrenOwner> const& widget, std::initializer_list<UWidgetTree*> children);
-	~UChildrenOwnerTree() override;
+	UChildrenOwnerTree(UPtr<T> const& widget, std::span<UWidgetTree* const> children)
+		: widget_{ widget }
+		, children_{ children | std::ranges::to<std::vector>() }
+	{}
 
-	WidgetPtr Widget() const override;
-	void Link() const override;
+	UChildrenOwnerTree(UPtr<T> const& widget, std::initializer_list<UWidgetTree*> children)
+		: widget_{ widget }
+		, children_{ children | std::ranges::to<std::vector>() }
+	{}
+
+	~UChildrenOwnerTree() override
+	{
+		for (auto const* widgetTree : children_)
+		{
+			delete widgetTree;
+		}
+	}
+
+	auto Widget() const -> WidgetPtr override
+	{
+		return widget_;
+	}
+
+	void Link() const override
+	{
+		for (auto const* child : children_)
+		{
+			if (child)
+			{
+				child->Link();
+			}
+		}
+
+		if (widget_)
+		{
+			auto const widgets{ children_
+				| std::views::filter([](UWidgetTree const* child) { return child != nullptr; })
+				| std::views::transform([](UWidgetTree const* child) { return child->Widget(); })
+				| std::ranges::to<USet>()
+			};
+
+			widget_->SetChildren(widgets);
+		}
+	}
 
 private:
-	UPtr<WChildrenOwner> widget_;
+	UPtr<T> widget_;
 	std::vector<UWidgetTree*> children_;
 };

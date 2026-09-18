@@ -31,7 +31,7 @@ WidgetPtr WAssetExplorer::Build()
 
 	selectColor_ = UCreate<WColor>{ "Select Box Color" }(UColor::Mix(Colors::Blue, Colors::Cyan).WithAlpha(0.2f));
 	selectColor_->SetIsVisible(false);
-
+	
 	auto const widgetTree{ UChildrenOwnerTree{ UCreate<WColumn>{ "Asset Explorer Main Column" }(4.0f), {
 		new UChildrenOwnerTree{ UCreate<WRow>{ "Asset Explorer Navigation Row" }(4.0f), {
 			new UChildOwnerTree{ UCreate<WWrap>{}(),
@@ -70,6 +70,7 @@ WidgetPtr WAssetExplorer::Build()
 	} } }; 
 	widgetTree.Link();
 
+	auto a = WidgetPtr{ widgetTree.Widget() };
 	return widgetTree.Widget();
 }
 

@@ -26,7 +26,7 @@ glm::vec2 WChildOwner::GetContentSize(glm::vec2 bounds) const
 	{
 		return child_->GetContentSize(bounds);
 	}
-	return bounds;
+	return { 0.0f, 0.0f };
 }
 
 glm::vec2 WChildOwner::GetDesiredSize(const glm::vec2& bounds) const
@@ -123,13 +123,13 @@ void WChildOwner::Refresh()
 		return Base::Refresh();
 	}
 
-	if (child_ && child_->GetShouldRefresh())
+	if (child_)
 	{
 		child_->Refresh();
 	}
 }
 
-void WChildOwner::SetChild(const WidgetPtr& widget)
+void WChildOwner::SetChild(WidgetPtr const& widget)
 {
 	if (widget == child_)
 	{
@@ -153,39 +153,9 @@ void WChildOwner::SetChild(const WidgetPtr& widget)
 
 void WChildOwner::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
-	++displaySettings.layer;
-
 	if (child_)
 	{
 		child_->Display(displaySettings);
-	}
-}
-
-UChildOwnerTree::UChildOwnerTree(UPtr<WChildOwner> const& widget, UWidgetTree* child)
-	: widget_{ widget }
-	, child_{ child }
-{
-}
-
-UChildOwnerTree::~UChildOwnerTree()
-{
-	delete child_;
-}
-
-WidgetPtr UChildOwnerTree::Widget() const
-{
-	return widget_;
-}
-
-void UChildOwnerTree::Link() const
-{
-	if (child_)
-	{
-		child_->Link();
-		if (widget_)
-		{
-			widget_->SetChild(child_->Widget());
-		}
 	}
 }
 

@@ -74,6 +74,11 @@ void UWindowContext::Update(f32 deltaTime)
 
 void UWindowContext::DrawFrame()
 {
+	if (window_.GetIsMinimized())
+	{
+		return;
+	}
+
 	UInterfaceRenderGraph interfaceRenderGraph{};
 	interface_->PopulateInterfaceRenderGraph(interfaceRenderGraph);
 
@@ -99,7 +104,7 @@ void UWindowContext::OnWindowResized(glm::uvec2 const& extent) const
 
 void UMainWindowContext::InitSurface()
 {
-	window_.Init({ 1600u, 900u });
+	window_.Init({ 1600u, 900u }, "Kotono Engine");
 	surface_.Init();
 }
 
@@ -126,7 +131,7 @@ auto UMainWindowContext::GetSurface() const -> VkSurfaceKHR
 
 void USecondaryWindowContext::Init(glm::uvec2 const& extent, UPtr<WWidget> const& widget)
 {
-	window_.Init(extent);
+	window_.Init(extent, std::format("Kotono Engine - {0}", widget->GetName()));
 	surface_.Init();
 	renderer_.Init();
 

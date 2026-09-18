@@ -26,7 +26,7 @@ WidgetPtr WInputTextBox::Build()
 
 
 	UPtr button{ UCreate<WButton>{}() };
-	button->SetOnPressed([this]() {
+	button->SetOnActive([this]() {
 		SetState([this]() { isSelected_ = true; });
 	});
 

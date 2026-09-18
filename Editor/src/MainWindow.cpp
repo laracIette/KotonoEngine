@@ -2,6 +2,7 @@
 
 #include "AssetExplorer.h"
 #include "DefaultSceneContext.h"
+#include "Detachable.h"
 #include "PropertiesWindow.h"
 #include "UpdateTimeText.h"
 #include <kotono_core/ProjectSettings.h>
@@ -19,13 +20,15 @@ WidgetPtr WMainWindow::Build()
 				new UWidgetTreeLeaf{ UCreate<WUpdateTimeText>{ "Update Time Text" }() },
 			},
 		} },
-
+		
 		new UChildrenOwnerTree{ UCreate<WRow>{ "Center Row" }(10.0f), {
 			new UChildrenOwnerTree{ UCreate<WColumn>{ "Left Panel Column" }(10.0f), {
-				new UChildOwnerTree{ UCreate<WConstraint>{ "Left Panel Constraint" }(EAxis::Vertical, 525.0f),
-					new UWidgetTreeLeaf{ sceneContext }
+				new UWidgetTreeLeaf{ sceneContext },
+				new UChildOwnerTree{ UCreate<WConstraint>{ "Asset Explorer Constraint" }(EAxis::Vertical, 325.0f),
+					new UChildOwnerTree{ UCreate<WDetachable>{ "Asset Explorer" }(),
+						new UWidgetTreeLeaf{ UCreate<WAssetExplorer>{ "Asset Explorer" }() }
+					}
 				},
-				new UWidgetTreeLeaf{ UCreate<WAssetExplorer>{ "Asset Explorer" }() },
 			} },
 
 			new UChildOwnerTree{ UCreate<WWrap>{ "Right Panel Wrap" }(EAxis::Horizontal),

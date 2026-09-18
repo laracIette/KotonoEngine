@@ -14,7 +14,7 @@ class WInterfaceRoot;
 class WWidget;
 class UInterface final
 {
-private:
+public:
 	struct PendingWindow
 	{
 		UPtr<WWidget> widget;

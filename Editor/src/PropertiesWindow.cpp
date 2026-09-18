@@ -11,10 +11,10 @@ WidgetPtr WPropertiesWindow::Build()
     UPtr propertiesText{ UCreate<WText>{}() };
     propertiesText->SetText("Properties");
     propertiesText->SetSpacing(-20.0f);
-
+    
     UPtr propertiesTextStack{ UCreate<WStack>{}() };
     propertiesTextStack->SetChildren({ UCreate<WColor>{}(Colors::Black.WithAlpha(0.5f)), propertiesText });
-
+    
     UPtr propertiesTextWrap{ UCreate<WWrap>{}() };
     propertiesTextWrap->SetChild(propertiesTextStack);
 
@@ -22,7 +22,7 @@ WidgetPtr WPropertiesWindow::Build()
     objectProperties_ = UCreate<WObjectProperties>{}(ObjectManager.GetSelectedObject());
 
     mainList_ = UCreate<WList>{}();
-    mainList_->SetChildren({ propertiesTextWrap, objectProperties_ });
+    mainList_->SetChildren({ propertiesTextWrap, objectProperties_});
     mainList_->SetSpacing(10.0f);
 
     UPtr mainListPadding{ UCreate<WPadding>{}() };

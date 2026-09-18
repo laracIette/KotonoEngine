@@ -2,7 +2,6 @@
 #include <iostream>
 #include <kotono_common/log.h>
 #include <kotono_common/Path.h>
-#include <kotono_common/PathManager.h>
 #include <kotono_io/File.h>
 #include <kotono_io/Serializer.h>
 #include <kotono_reflection/Reflector.h>

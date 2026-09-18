@@ -12,7 +12,7 @@ WidgetPtr WSceneExplorerAddButton::Build()
 	text->SetText("Add");
 
 	UPtr button{ UCreate<WButton>{}() };
-	button->SetOnPressed([]() {
+	button->SetOnActive([]() {
 		throw std::runtime_error{ "unimplemented!" };
 	});
 

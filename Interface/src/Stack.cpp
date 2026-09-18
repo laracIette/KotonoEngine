@@ -50,7 +50,6 @@ void WStack::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	{
 		if (child)
 		{
-			++displaySettings.layer;
 			child->Display(displaySettings);
 		}
 	}

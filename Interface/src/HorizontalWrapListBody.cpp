@@ -49,8 +49,6 @@ EFlex WHorizontalWrapListBody::GetFlex() const
 
 void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
-	++displaySettings.layer;
-
 	auto const baseDisplaySettings{ displaySettings };
 
 	glm::vec2 rowSize{ 0.0f, 0.0f };

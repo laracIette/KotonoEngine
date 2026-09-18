@@ -105,9 +105,30 @@ public:
 		indices_.erase(it);
 	}
 
+	void Replace(IndicesMapConstIterator it, ValueType const& value)
+	{
+		if (it == indices_.end())
+		{
+			Add(value);
+			return;
+		}
+
+		IndexType const index{ it->second };
+
+		indices_.erase(it);
+
+		values_[index] = value;
+		indices_[value] = index;
+	}
+
 	void Remove(ValueType const& value)
 	{
 		Remove(Find(value));
+	}
+	
+	void Replace(ValueType const& oldValue, ValueType const& newValue)
+	{
+		Replace(Find(oldValue), newValue);
 	}
 
 	bool Contains(ValueType const& value) const

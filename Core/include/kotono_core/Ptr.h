@@ -1,7 +1,7 @@
 #pragma once
 #include <kotono_common/Pool.h>
+#include <string>
 #include <type_traits>
-#include <concepts>
 
 class UPtrBase
 {
@@ -49,7 +49,6 @@ private:
 	friend class UPtr;
 
 	using Owner = UPtrOwner;
-	friend Owner;
 
 	friend std::hash<UPtr>;
 
@@ -78,6 +77,14 @@ public:
 	template <typename From>
 		requires std::is_convertible_v<From*, PointerType*>
 	UPtr(UPtr<From> const& other) : UPtr()
+	{
+		SetOwner(other.owner_);
+	}
+
+	// Equivalent of static_cast
+	template <typename Base>
+		requires std::is_base_of_v<Base, PointerType>
+	UPtr(UPtr<Base> const& other) : UPtr()
 	{
 		SetOwner(other.owner_);
 	}
@@ -152,6 +159,11 @@ public:
 		return owner_ && owner_->Get();
 	}
 
+	operator std::string() const
+	{
+		return Get() ? Get()->operator std::string() : std::string{ "" };
+	}
+
 	constexpr Owner* GetOwner() const noexcept
 	{
 		return owner_;
@@ -187,6 +199,7 @@ private:
 	size index_;
 };
 
+// Equivalent of dynamic_cast
 template <typename Derived, typename Base>
 	requires std::is_base_of_v<Base, Derived>
 inline UPtr<Derived> TryCast(UPtr<Base> const& ptr)

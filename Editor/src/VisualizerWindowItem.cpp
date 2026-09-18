@@ -16,7 +16,7 @@ WidgetPtr WVisualizerWindowItem::Build()
     color->SetColor(isFieldVisible ? Colors::Green : Colors::Red);
 
     UPtr button{ UCreate<WButton>{}() };
-    button->SetOnPressed([this, isFieldVisible]() {
+    button->SetOnActive([this, isFieldVisible]() {
         SetState([this, isFieldVisible]() {
             Visualizer.SetIsFieldVisible(field_, !isFieldVisible);
         });

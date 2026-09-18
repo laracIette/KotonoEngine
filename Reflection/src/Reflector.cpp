@@ -41,7 +41,7 @@ const std::vector<UReflectionResult>& GReflector::GetReflectionResults() const
 
 UReflectionResult::TypeInfo GReflector::GetTypeInfo(std::string const& content) const
 {
-	std::regex const pattern{ R"((?:class)\s+([a-zA-Z_]\w*)\s*(?:final)?\s*(?::\s*(?:public|protected|private)?\s*([a-zA-Z_]\w*)\s*(?:<[^\{]*>)?\s*)?\{)" };
+	std::regex const pattern{ R"((?:class)\s+([a-zA-Z_]\w*)\s*(?:final)?\s*(?::\s*public\s+([a-zA-Z_]\w*)\s*(?:<[^>]*>)?(?:\s*,\s*[^{]+)?)?\{)" };
 	
 	std::string name{ "" };
 	std::optional<std::string> base{ std::nullopt };

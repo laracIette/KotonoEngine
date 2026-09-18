@@ -62,14 +62,20 @@ void WText::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) con
 	}
 }
 
-std::string WText::GetText() const
+auto WText::GetText() const -> std::string
 {
 	return text_;
 }
 
 void WText::SetText(UBindable<std::string> const& text)
 {
-	text_ = text;
+	if (text.GetIsValue() && text.Get() == "caca")
+	{
+		int a = {};
+	}
+
+	SetState([this, text]() { text_ = text; });
+	
 	SetCanCache(text.GetIsValue());
 }
 

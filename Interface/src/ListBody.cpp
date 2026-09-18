@@ -56,8 +56,6 @@ EFlex WListBody::GetFlex() const
 
 void WListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
-	++displaySettings.layer;
-
 	for (auto const& child : GetChildren())
 	{
 		if (child)

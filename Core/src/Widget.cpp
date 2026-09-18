@@ -173,7 +173,7 @@ b8 WWidget::OnMouseButton(EButton button, EInputState inputState, glm::vec2 cons
 
 b8 WWidget::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
 {
-	KT_LOG(ELogImportanceLevel::Medium, "Interface", "overlapping {0:30} | {1:100} | | position: {2:30} | size: {3:30} | | slot | position: {4:30} | bounds: {5:30}", GetName(), GetClassPath(), glm::to_string(GetPosition()), glm::to_string(GetSize()), glm::to_string(slotDisplaySettings_.position), glm::to_string(slotDisplaySettings_.bounds));
+	KT_LOG(ELogImportanceLevel::Medium, "Core", "overlapping {0:30} | {1:100} | | position: {2:30} | size: {3:30} | | slot | position: {4:30} | bounds: {5:30}", GetName(), GetClassPath(), glm::to_string(GetPosition()), glm::to_string(GetSize()), glm::to_string(slotDisplaySettings_.position), glm::to_string(slotDisplaySettings_.bounds));
 	
 	if (!HasBuild() || !build_->GetIsDisplayed())
 	{
@@ -235,16 +235,23 @@ b8 WWidget::GetShouldRefresh() const
 
 void WWidget::Refresh()
 {
-	isDirty_ = false;
-
-	if (isDisplayed_)
+	if (GetShouldRefresh())
 	{
-		Remove();
+		isDirty_ = false;
+
+		if (isDisplayed_)
+		{
+			Remove();
+		}
+
+		if (isVisible_)
+		{
+			Display(slotDisplaySettings_);
+		}
 	}
-
-	if (isVisible_)
+	else if (HasBuild())
 	{
-		Display(slotDisplaySettings_);
+		build_->Refresh();
 	}
 }
 
@@ -318,12 +325,12 @@ glm::mat4 WWidget::ModelMatrix() const
 	return TranslationMatrix() * RotationMatrix() * ScaleMatrix();
 }
 
-UWidgetTreeLeaf::UWidgetTreeLeaf(const WidgetPtr& widget)
+UWidgetTreeLeaf::UWidgetTreeLeaf(WidgetPtr const& widget)
 	: widget_{ widget }
 {
 }
 
-WidgetPtr UWidgetTreeLeaf::Widget() const
+auto UWidgetTreeLeaf::Widget() const -> WidgetPtr
 {
 	return widget_;
 }

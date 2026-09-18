@@ -44,11 +44,6 @@ b8 WButton::OnMouseButton(EButton button, EInputState inputState, glm::vec2 cons
 			onActive_();
 		}
 
-		if (onPressed_)
-		{
-			onPressed_();
-		}
-
 		return INPUT_HANDLED;
 	}
 	case EInputState::Released:

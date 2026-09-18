@@ -6,12 +6,13 @@
 #include <nlohmann/json.hpp>
 
 #ifndef NDEBUG
-std::unordered_set<UPtr<KObject>> KObject::debugRegistry_{};
+std::unordered_set<ObjectPtr> KObject::debugRegistry_{};
 #endif 
 
 KObject::KObject()
     : ptrOwner_{ new UPtrOwner{} }
-    , name_{ guid_ }
+    , guid_{}
+    , name_{}
 {
     ptrOwner_->Set(this);
 
@@ -32,17 +33,15 @@ KObject::~KObject()
 void KObject::PostConstruct()
 {
     type_ = TypeName();
-    SetName(std::format("{0}_{1}", TypeName(), GetGuid().ToString()));
-}
-
-const std::type_info& KObject::Type() const
-{
-    return typeid(*this);
+    if (name_.empty())
+    {
+        SetName(std::format("{0}_{1}", type_, GetGuid().ToString()));
+    }
 }
 
 std::string KObject::TypeName() const
 {
-    std::string_view name{ Type().name() };
+    std::string_view name{ typeid(*this).name() };
     return std::string{ name.substr(6) };
 }
 
@@ -85,6 +84,11 @@ std::string KObject::ToString() const
     return name_;
 }
 
+KObject::operator std::string() const
+{
+    return ToString();
+}
+
 UPtr<KObject> KObject::Deserialize(const nlohmann::json& json)
 {
     UGuid guid{};
@@ -102,7 +106,7 @@ void KObject::CheckDebugRegistry()
             if (object)
             {
                 KT_LOG(ELogImportanceLevel::High, "Object"
-                    , "{0:32s} | L{1:03d}: {2}"
+                    , "{0:48s} | L{1:03d}: {2}"
                     , object->ToString()
                     , object->sourceLine
                     , object->sourceFunc

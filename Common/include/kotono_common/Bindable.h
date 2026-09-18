@@ -30,14 +30,9 @@ public:
 
 	constexpr ValueType Get() const
 	{
-		if (std::holds_alternative<ValueType>(value_))
-		{
-			return std::get<ValueType>(value_);
-		}
-		else
-		{
-			return std::get<FuncType>(value_)();
-		}
+		return GetIsValue()
+			? std::get<ValueType>(value_)
+			: std::get<FuncType>(value_)();
 	}
 
 	constexpr operator ValueType() const

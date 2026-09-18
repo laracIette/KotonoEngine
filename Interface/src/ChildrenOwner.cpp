@@ -153,14 +153,14 @@ void WChildrenOwner::Refresh()
 
 	for (auto const& child : children_)
 	{
-		if (child && child->GetShouldRefresh())
+		if (child)
 		{
 			child->Refresh();
 		}
 	}
 }
 
-void WChildrenOwner::SetChildren(const WidgetSet& widgets)
+void WChildrenOwner::SetChildren(WidgetSet const& widgets)
 {
 	SetState([this, widgets]() {
 		for (auto const& child : children_)
@@ -171,14 +171,58 @@ void WChildrenOwner::SetChildren(const WidgetSet& widgets)
 			}
 		}
 
-		children_ = widgets;
+		children_.Clear();
 
-		for (auto const& child : children_)
+		for (auto const& child : widgets)
 		{
 			if (child)
 			{
 				child->SetParent(Ptr());
+				children_.push_back(child);
 			}
+		}
+	});
+}
+
+void WChildrenOwner::AddChild(WidgetPtr const& widget)
+{
+	if (!widget)
+	{
+		return;
+	}
+
+	SetState([this, widget]() {
+		widget->SetParent(Ptr());
+		children_.Add(widget);
+	});
+}
+
+void WChildrenOwner::RemoveChild(WidgetPtr const& widget)
+{
+	if (!widget)
+	{
+		return;
+	}
+
+	SetState([this, widget]() {
+		widget->SetParent(nullptr);
+		children_.Remove(widget);
+	});
+}
+
+void WChildrenOwner::ReplaceChild(WidgetPtr const& oldWidget, WidgetPtr const& newWidget)
+{
+	SetState([this, oldWidget, newWidget]() {
+		if (oldWidget)
+		{
+			oldWidget->SetParent(nullptr);
+		}
+
+		children_.Replace(oldWidget, newWidget);
+
+		if (newWidget)
+		{
+			newWidget->SetParent(Ptr());
 		}
 	});
 }
@@ -188,53 +232,6 @@ size WChildrenOwner::GetValidChildrenCount() const
 	return std::ranges::count_if(children_,
 		[](WidgetPtr const& child) { return child != nullptr; }
 	);
-}
-
-UChildrenOwnerTree::UChildrenOwnerTree(UPtr<WChildrenOwner> const& widget, std::span<UWidgetTree* const> children)
-	: widget_{ widget }
-	, children_{ children | std::ranges::to<std::vector>() }
-{
-}
-
-UChildrenOwnerTree::UChildrenOwnerTree(UPtr<WChildrenOwner> const& widget, std::initializer_list<UWidgetTree*> children)
-	: widget_{ widget }
-	, children_{ children | std::ranges::to<std::vector>() }
-{
-}
-
-UChildrenOwnerTree::~UChildrenOwnerTree()
-{
-	for (auto const* widgetTree : children_)
-	{
-		delete widgetTree;
-	}
-}
-
-WidgetPtr UChildrenOwnerTree::Widget() const
-{
-	return widget_;
-}
-
-void UChildrenOwnerTree::Link() const
-{
-	for (auto const* child : children_)
-	{
-		if (child)
-		{
-			child->Link();
-		}
-	}
-
-	if (widget_)
-	{
-		auto const widgets{ children_
-			| std::views::filter([](UWidgetTree const* child) { return child != nullptr; })
-			| std::views::transform([](UWidgetTree const* child) { return child->Widget(); })
-			| std::ranges::to<USet>()
-		};
-
-		widget_->SetChildren(widgets);
-	}
 }
 
 #include "generated/ChildrenOwner.generated.inl"

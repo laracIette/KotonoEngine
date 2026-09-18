@@ -88,8 +88,6 @@ void WColumn::DisplayInternal(UWidgetDisplaySettings displaySettings)
 		expandHeight /= static_cast<f32>(expandCount);
 	}
 
-	++displaySettings.layer;
-
 	for (auto const& child : GetChildren())
 	{
 		if (child)

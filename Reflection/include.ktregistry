@@ -43,6 +43,7 @@
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/AssetExplorerFile.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/AssetExplorerItem.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/DefaultSceneContext.h",
+        "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/Detachable.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/GameSpeedButton.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/GameStateButton.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/InputTextBox.h",
