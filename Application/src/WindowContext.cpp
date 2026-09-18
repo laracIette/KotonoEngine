@@ -6,6 +6,7 @@
 
 #ifdef EDITOR
 #include <kotono_editor/MainWindow.h>
+#include <kotono_editor/SecondaryWindow.h>
 #endif
 
 UWindowContext::UWindowContext(UContext& context, UDevice& device)
@@ -23,7 +24,7 @@ UWindowContext::~UWindowContext()
 	delete interface_;
 }
 
-void UWindowContext::InitInterface()
+void UWindowContext::InitInterface(UPtr<WInterfaceRoot> const& widget)
 {
 	window_.GetEventWindowResized().AddListener(this, &UWindowContext::OnWindowResized);
 
@@ -33,9 +34,8 @@ void UWindowContext::InitInterface()
 
 	keyboard_.GetEventKey().AddListener(interface_, &UInterface::OnKeyboardKey);
 
-#   ifdef EDITOR
-	interface_->SetWidget(UCreate<WMainWindow>{ "Main Window" }(interface_));
-#   endif
+	interface_->SetWidget(widget);
+	widget->SetInterface(interface_);
 
 	interface_->BeginDraw(window_.GetExtent());
 }
@@ -44,7 +44,6 @@ void UWindowContext::Cleanup()
 {
 	if (interface_)
 	{
-
 		mouse_.GetEventButton().RemoveListener(interface_, &UInterface::OnMouseButton);
 		mouse_.GetEventMove().RemoveListener(interface_, &UInterface::OnMouseMove);
 		mouse_.GetEventScroll().RemoveListener(interface_, &UInterface::OnMouseScroll);
@@ -84,7 +83,7 @@ void UWindowContext::DrawFrame()
 	renderer_.DrawFrame(sceneRenderGraph, interfaceRenderGraph);
 }
 
-auto UWindowContext::GetShouldClose() -> b8
+auto UWindowContext::GetShouldClose() const -> b8
 {
 	return window_.GetShouldClose();
 }
@@ -115,12 +114,17 @@ void UMainWindowContext::InitInput()
 	keyboard_.Init();
 }
 
+void UMainWindowContext::InitInterface()
+{
+	UWindowContext::InitInterface(UCreate<WMainWindow>{ "Main Window" }());
+}
+
 auto UMainWindowContext::GetSurface() const -> VkSurfaceKHR
 {
 	return surface_.GetSurface();
 }
 
-void USecondaryWindowContext::Init(glm::uvec2 const& extent)
+void USecondaryWindowContext::Init(glm::uvec2 const& extent, UPtr<WWidget> const& widget)
 {
 	window_.Init(extent);
 	surface_.Init();
@@ -129,5 +133,5 @@ void USecondaryWindowContext::Init(glm::uvec2 const& extent)
 	mouse_.Init();
 	keyboard_.Init();
 
-	InitInterface();
+	InitInterface(UCreate<WSecondaryWindow>{ "Secondary Window" }(widget));
 }

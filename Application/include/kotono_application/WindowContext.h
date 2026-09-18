@@ -5,6 +5,11 @@
 #include <kotono_platform/Surface.h>
 #include <kotono_platform/Window.h>
 #include <kotono_rendering/Renderer.h>
+#include <string_view>
+template <typename T>
+class UPtr;
+class WWidget;
+class WInterfaceRoot;
 class UContext;
 class UDevice;
 class UInterface;
@@ -14,14 +19,16 @@ public:
 	UWindowContext(UContext& context, UDevice& device);
 	virtual ~UWindowContext();
 
-	void InitInterface();
+	void InitInterface(UPtr<WInterfaceRoot> const& widget);
 	void Cleanup();
 
 	void Update(f32 deltaTime);
 	void DrawFrame();
 
 	// Executes glfwPollEvents() when returns false
-	auto GetShouldClose() -> b8;
+	auto GetShouldClose() const -> b8;
+
+	auto GetInterface() const -> UInterface* { return interface_; }
 
 private:
 	void OnWindowResized(glm::uvec2 const& extent) const;
@@ -45,6 +52,7 @@ public:
 	void InitSurface();
 	void InitRenderer();
 	void InitInput();
+	void InitInterface();
 
 	auto GetSurface() const -> VkSurfaceKHR;
 };
@@ -55,5 +63,5 @@ public:
 	using UWindowContext::UWindowContext;
 
 public:
-	void Init(glm::uvec2 const& extent);
+	void Init(glm::uvec2 const& extent, UPtr<WWidget> const& widget);
 };

@@ -2,11 +2,6 @@
 
 #include "SceneContext.h"
 
-WInterfaceRoot::WInterfaceRoot(UInterface* inInterface)
-	: interface_{ inInterface }
-{
-}
-
 void WInterfaceRoot::UpdateSceneContexts(f32 deltaTime) const
 {
 	for (auto const& sceneContext : sceneContexts_)

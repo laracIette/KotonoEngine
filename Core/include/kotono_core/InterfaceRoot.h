@@ -9,14 +9,12 @@ class WInterfaceRoot : public WWidget
 	GENERATED_WINTERFACEROOT()
 
 public:
-	//WInterfaceRoot() = delete; // register_ breaks if default constructor deleted
-	WInterfaceRoot(UInterface* inInterface);
-
 	void UpdateSceneContexts(f32 deltaTime) const;
 
 	void PopulateSceneRenderGraph(USceneRenderGraph& sceneRenderGraph) const;
 
-	UInterface* GetInterface() const override { assert(interface_); return interface_; }
+	auto GetInterface() const -> UInterface* override { assert(interface_); return interface_; }
+	void SetInterface(UInterface* inInterface) { interface_ = inInterface; }
 
 protected:
 	void AddSceneContext(UPtr<WSceneContext> const& sceneContext);

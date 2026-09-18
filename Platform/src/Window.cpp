@@ -47,13 +47,7 @@ void UWindow::Cleanup() const
 
 auto UWindow::GetShouldClose() const -> b8
 {
-    if (glfwWindowShouldClose(window_))
-    {
-        return true;
-    }
-
-    glfwPollEvents();
-    return false;
+    return glfwWindowShouldClose(window_);
 }
 
 void UWindow::OnFramebufferSizeChanged(GLFWwindow* window, glm::uvec2 const& size)

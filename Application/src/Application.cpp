@@ -1,9 +1,11 @@
 #include "Application.h"
 
 #include "ClassRegistrator.h"
+#include "WindowContext.h"
 #include <GLFW/glfw3.h>
 #include <kotono_common/log.h>
 #include <kotono_graphics/SpvCompiler.h>
+#include <kotono_interface/Text.h>
 #include <kotono_timing/Clock.h>
 
 #ifdef EDITOR
@@ -17,7 +19,8 @@
 UApplication::UApplication()
     : context_{}
     , device_{ context_ }
-    , mainWindowContext_{ context_, device_ }
+    , mainWindowContext_{ nullptr }
+    , secondaryWindowContexts_{}
 {
 }
 
@@ -25,8 +28,21 @@ void UApplication::Run()
 {
     Init();
 
-    while (!mainWindowContext_.GetShouldClose())
+    while (!mainWindowContext_->GetShouldClose())
     {
+        std::erase_if(secondaryWindowContexts_, [this](USecondaryWindowContext* windowContext) {
+            if (windowContext->GetShouldClose())
+            {
+                vkDeviceWaitIdle(device_.GetDevice());
+                windowContext->Cleanup();
+                delete windowContext;
+                return true;
+            }
+            return false;
+        });
+
+        glfwPollEvents();
+
         Update();
         DrawFrame();
     }
@@ -47,13 +63,18 @@ void UApplication::Init()
 
     RegisterObjectClasses();
 
-    context_.Init();
-    mainWindowContext_.InitSurface();
-    device_.Init(mainWindowContext_.GetSurface());
-    mainWindowContext_.InitRenderer();
+    mainWindowContext_ = new UMainWindowContext{ context_, device_ };
 
-    mainWindowContext_.InitInput();
-    mainWindowContext_.InitInterface();
+    context_.Init();
+    mainWindowContext_->InitSurface();
+    device_.Init(mainWindowContext_->GetSurface());
+    mainWindowContext_->InitRenderer();
+
+    mainWindowContext_->InitInput();
+    mainWindowContext_->InitInterface();
+
+    secondaryWindowContexts_.push_back(new USecondaryWindowContext{ context_, device_ });
+    secondaryWindowContexts_.back()->Init({ 640u, 480u }, UCreate<WText>{}("Secondary Window!"));
 
     logUPSTimer_.SetDuration(1.0f);
     logUPSTimer_.SetIsRepeat(true);
@@ -67,7 +88,15 @@ void UApplication::Init()
 
 void UApplication::Cleanup()
 {
-    mainWindowContext_.Cleanup();
+    for (auto* windowContext : secondaryWindowContexts_)
+    {
+        windowContext->Cleanup();
+        delete windowContext;
+    }
+    secondaryWindowContexts_.clear();
+
+    mainWindowContext_->Cleanup();
+    delete mainWindowContext_;
 
     device_.Cleanup();
     context_.Cleanup();
@@ -88,7 +117,12 @@ void UApplication::Update()
 
     logUPSTimer_.Update(deltaTime_);
 
-    mainWindowContext_.Update(deltaTime_);
+    mainWindowContext_->Update(deltaTime_);
+
+    for (auto* windowContext : secondaryWindowContexts_)
+    {
+        windowContext->Update(deltaTime_);
+    }
 }
 
 void UApplication::DrawFrame()
@@ -101,7 +135,12 @@ void UApplication::DrawFrame()
     //}
     //interface_->ClearPendingWindows();
 
-    mainWindowContext_.DrawFrame();
+    mainWindowContext_->DrawFrame();
+
+    for (auto* windowContext : secondaryWindowContexts_)
+    {
+        windowContext->DrawFrame();
+    }
 }
 
 void UApplication::LogUPS() const

@@ -1,4 +1,5 @@
 #pragma once
+#include "AllocatedBuffer.h"
 #include "QueueFamilyIndices.h"
 #include "SwapchainSupportDetails.h"
 #include <kotono_common/types.h>
@@ -6,7 +7,6 @@
 #include <vector>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
-struct UAllocatedBuffer;
 struct UAllocatedImage;
 struct UAllocatedImageCreateInfo;
 class UContext;
