@@ -1,11 +1,12 @@
 #include "SceneExplorerItem.h"
 
-#include <kotono_core/ObjectManager.h>
+#include <kotono_core/Scene.h>
 #include <kotono_core/SceneObject.h>
 #include <kotono_interface/widgets.h>
 
-WSceneExplorerItem::WSceneExplorerItem(UPtr<TSceneObject> const& sceneObject)
-	: sceneObject_{ sceneObject }
+WSceneExplorerItem::WSceneExplorerItem(UScene* scene, UPtr<TSceneObject> const& sceneObject)
+	: Base(scene)
+	, sceneObject_{ sceneObject }
 {
 }
 
@@ -13,7 +14,7 @@ WidgetPtr WSceneExplorerItem::Build()
 {
 	UPtr button{ UCreate<WButton>{}() };
 	button->SetOnActive([this]() {
-		ObjectManager.SetSelectedObject(sceneObject_);
+		GetScene()->SelectObject(sceneObject_);
 	});
 
 	const UChildOwnerTree widgetTree{ UCreate<WWrap>{}(),
@@ -31,17 +32,17 @@ void WSceneExplorerItem::Display(UWidgetDisplaySettings const& displaySettings)
 {
 	Base::Display(displaySettings);
 
-	ObjectManager.EventSelectedObjectChanged().AddListener(this, &Self::OnSelectedObjectChanged);
+	GetScene()->GetEventSelectedObjectChanged().AddListener(this, &Self::OnSelectedObjectChanged);
 }
 
 void WSceneExplorerItem::Remove()
 {
 	Base::Remove();
 
-	ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &Self::OnSelectedObjectChanged);
+	GetScene()->GetEventSelectedObjectChanged().RemoveListener(this, &Self::OnSelectedObjectChanged);
 }
 
-void WSceneExplorerItem::OnSelectedObjectChanged(UPtr<KObject> const& object)
+void WSceneExplorerItem::OnSelectedObjectChanged(UPtr<TSceneObject> const& sceneObject)
 {
 }
 

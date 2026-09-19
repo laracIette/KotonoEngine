@@ -4,10 +4,6 @@
 #include <kotono_core/Interface.h>
 #include <kotono_interface/widgets.h>
 
-static constexpr UColor NORMAL_COLOR{ Colors::White.WithValue(0.1f).WithAlpha(0.75f) };
-static constexpr UColor SELECTED_COLOR{ Colors::Blue.WithAlpha(0.3f) };
-static constexpr UColor FOCUSED_COLOR{ Colors::White.WithValue(0.15f).WithAlpha(0.75f) };
-
 WAssetExplorerItem::WAssetExplorerItem(UPtr<WAssetExplorer> const& assetExplorer, UPath const& path, OnClickedFunc const& onDoubleClicked)
     : assetExplorer_{ assetExplorer }
     , path_{ path }
@@ -20,30 +16,42 @@ WAssetExplorerItem::WAssetExplorerItem(UPtr<WAssetExplorer> const& assetExplorer
 
 WidgetPtr WAssetExplorerItem::Build()
 {
-    UPtr button{ UCreate<WButton>{ "Item Button" }() };
-    button->SetIsSelectable(true);
-    button->SetOnClicked([this]() {
-        if (isSelected_ && GetInterface()->GetNow() - lastClickedTime_ < doubleClickTreshold_)
-        {
-            if (onDoubleClicked_)
-            {
-                onDoubleClicked_(path_);
-            }
-        }
-        else
-        {
-            Select();
-        }
-    });
+    const auto widgetTree{ UChildOwnerTree{ UCreate<WBox>{ "Item Box" }()
+        | Apply(&WBox::SetSize, glm::vec2{ 128.0f }),
 
-    const auto widgetTree{ UChildOwnerTree{ UCreate<WBox>{ "Item Box" }(glm::vec2{ 128.0f }),
         new UChildrenOwnerTree{ UCreate<WStack>{ "Item Stack" }(), {
-            new UWidgetTreeLeaf{ button },
-            new UChildOwnerTree{ UCreate<WCenter>{ "Item Center" }(EAxis::All),
-                new UWidgetTreeLeaf{ UCreate<WText>{ "Item Text" }(path_.Name(), glm::vec2{ 16.0f, 20.0f }) }
+
+            new UWidgetTreeLeaf{ UCreate<WButton>{ "Item Button" }() 
+                | Apply(&WButton::SetIsSelectable, false)
+                | Apply(&WButton::SetOnClicked, [this]() {
+                    if (isSelected_ && GetInterface()->GetNow() - lastClickedTime_ < doubleClickTreshold_)
+                    {
+                        if (onDoubleClicked_)
+                        {
+                            onDoubleClicked_(path_);
+                        }
+                    }
+                    else
+                    {
+                        Select();
+                    }
+                })
             },
+
+            new UChildOwnerTree{ UCreate<WCenter>{ "Item Center" }()
+                | Apply(&WCenter::SetAxis, EAxis::All),
+
+                new UWidgetTreeLeaf{ UCreate<WText>{ "Item Text" }() 
+                    | Apply(&WText::SetText, path_.Name())
+                    | Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
+                }
+
+            },
+
         } }
+
     } };
+
     widgetTree.Link();
 
     return widgetTree.Widget();

@@ -11,19 +11,22 @@ struct USceneRenderGraph;
 class TSceneObject;
 class UScene final
 {
+private:
+	using SceneObject = UPtr<TSceneObject>;
+
 public:
 	explicit UScene(UPath const& path);
 	~UScene();
 
 	void Update(f32 deltaTime);
 
-	void Add(UPtr<TSceneObject> const& sceneObject);
-	void Remove(UPtr<TSceneObject> const& sceneObject);
+	void Add(SceneObject const& sceneObject);
+	void Remove(SceneObject const& sceneObject);
 
 	void SpawnSceneObjects();
-	void AddSpawnedSceneObject(UPtr<TSceneObject> const& sceneObject);
+	void AddSpawnedSceneObject(SceneObject const& sceneObject);
 
-	std::span<UPtr<TSceneObject> const> GetSceneObjects() const;
+	auto GetSceneObjects() const -> std::span<SceneObject const>;
 
 	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const;
 
@@ -31,9 +34,13 @@ public:
 	void PauseGame();
 	void StopGame();
 
+	void SelectObject(SceneObject const& sceneObject);
+
 	auto GetAudioContext() -> UAudioContext& { return audioContext_; }
 
-	auto GetEventSceneObjectsUpdated() -> UEvent<USet<UPtr<TSceneObject>>>& { return eventSceneObjectsUpdated_; }
+	auto GetEventSceneObjectsUpdated() -> UEvent<USet<SceneObject>>& { return eventSceneObjectsUpdated_; }
+	auto GetEventSelectedObjectChanged() -> UEvent<SceneObject>& { return eventSelectedObjectChanged_; }
+	auto GetSelectedObject() const -> SceneObject const& { return selectedObject_; }
 
 	auto GetEventGameStateChanged() -> UEvent<EGameState>& { return gameState_.GetEventValueChanged(); }
 	auto GetEventTimeScaleChanged() -> UEvent<f32>& { return timeScale_.GetEventValueChanged(); }
@@ -51,15 +58,17 @@ public:
 private:
 	void UpdateSceneObjects(f32 deltaTime) const;
 
-	b8 TrySetState(EGameState gameState);
+	auto TrySetState(EGameState gameState) -> b8;
 
 private:
 	UAudioContext audioContext_;
 
-	USet<UPtr<TSceneObject>> sceneObjects_;
-	USet<UPtr<TSceneObject>> spawnedSceneObjects_;
+	USet<SceneObject> sceneObjects_;
+	USet<SceneObject> spawnedSceneObjects_;
 
-	UEvent<USet<UPtr<TSceneObject>>> eventSceneObjectsUpdated_;
+	UEvent<USet<SceneObject>> eventSceneObjectsUpdated_;
+	UEvent<SceneObject> eventSelectedObjectChanged_;
+	SceneObject selectedObject_;
 
 	UNotify<EGameState> gameState_;
 	UNotify<f32> timeScale_;

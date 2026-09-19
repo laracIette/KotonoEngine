@@ -1,6 +1,5 @@
 #include "ObjectFactory.h"
 #include "Object.h"
-#include "ObjectManager.h"
 #include <kotono_common/log.h>
 #include <kotono_common/Path.h>
 #include <kotono_io/Serializer.h>

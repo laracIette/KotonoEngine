@@ -1,6 +1,7 @@
 #pragma once
 #include "generated/SceneExplorerRemoveButton.generated.h"
 #include <kotono_core/SceneWidget.h>
+class TSceneObject;
 class WButton;
 class WColor;
 class WSceneExplorerRemoveButton final : public WSceneWidget
@@ -15,7 +16,7 @@ public:
 	void Remove() override;
 
 private:
-	void OnSelectedObjectChanged(const UPtr<KObject> object) const;
+	void OnSelectedObjectChanged(UPtr<TSceneObject> const& sceneObject) const;
 
 private:
 	UPtr<WColor> bg_;

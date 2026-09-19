@@ -23,6 +23,6 @@ private:
 	size GetExpandCount() const;
 
 private:
-	StateProperty(f32, spacing_, Spacing);
+	StateProperty(f32, spacing_, Spacing, Value);
 };
 

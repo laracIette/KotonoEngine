@@ -76,9 +76,6 @@ void UApplication::Init()
     mainWindowContext_->InitInput();
     mainWindowContext_->InitInterface();
 
-    secondaryWindowContexts_.push_back(new USecondaryWindowContext{ context_, device_ });
-    secondaryWindowContexts_.back()->Init({ 640u, 480u }, UCreate<WText>{}("Secondary Window!"));
-
     logUPSTimer_.SetDuration(1.0f);
     logUPSTimer_.SetIsRepeat(true);
     logUPSTimer_.EventCompleted().AddListener(this, &UApplication::LogUPS);

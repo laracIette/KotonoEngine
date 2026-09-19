@@ -1,15 +1,13 @@
 #include "SceneExplorerRemoveButton.h"
 
-#include <kotono_interface/widgets.h>
-#include <kotono_core/Object.h>
-#include <kotono_core/ObjectManager.h>
 #include <kotono_core/Scene.h>
 #include <kotono_core/SceneObject.h>
+#include <kotono_interface/widgets.h>
 
 WidgetPtr WSceneExplorerRemoveButton::Build()
 {
     bg_ = UCreate<WColor>{}();
-    bg_->SetColor(ObjectManager.GetSelectedObject()
+    bg_->SetColor(GetScene()->GetSelectedObject()
         ? Colors::Red
         : Colors::Red.WithValue(0.1f)
     );
@@ -21,10 +19,10 @@ WidgetPtr WSceneExplorerRemoveButton::Build()
     button_ = UCreate<WButton>{}();
     button_->SetIsEnabled(false);
     button_->SetOnClicked([this]() {
-        if (UPtr selectedObject{ TryCast<TSceneObject>(ObjectManager.GetSelectedObject()) })
+        if (UPtr selectedObject{ GetScene()->GetSelectedObject() })
         {
             GetScene()->Remove(selectedObject);
-            ObjectManager.SetSelectedObject(nullptr);
+            GetScene()->SelectObject(nullptr);
             selectedObject->Delete();
         }
     });
@@ -45,23 +43,23 @@ void WSceneExplorerRemoveButton::Display(UWidgetDisplaySettings const& displaySe
 {
     Base::Display(displaySettings);
 
-    ObjectManager.EventSelectedObjectChanged().AddListener(this, &Self::OnSelectedObjectChanged);
+    GetScene()->GetEventSelectedObjectChanged().AddListener(this, &Self::OnSelectedObjectChanged);
 }
 
 void WSceneExplorerRemoveButton::Remove()
 {
     Base::Remove();
 
-    ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &Self::OnSelectedObjectChanged);
+    GetScene()->GetEventSelectedObjectChanged().RemoveListener(this, &Self::OnSelectedObjectChanged);
 }
 
-void WSceneExplorerRemoveButton::OnSelectedObjectChanged(const UPtr<KObject> object) const
+void WSceneExplorerRemoveButton::OnSelectedObjectChanged(UPtr<TSceneObject> const& sceneObject) const
 {
-    bg_->SetColor(object
+    bg_->SetColor(sceneObject
         ? Colors::Red
         : Colors::Red.WithValue(0.1f)
     );
-    button_->SetIsEnabled(object);
+    button_->SetIsEnabled(sceneObject);
 }
 
 #include "generated/SceneExplorerRemoveButton.generated.inl"

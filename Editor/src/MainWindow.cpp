@@ -10,39 +10,50 @@
 
 WidgetPtr WMainWindow::Build()
 {
-	auto const sceneContext{ UCreate<WDefaultSceneContext>{ "Scene Context" }(SProjectSettings::Get<std::string>("/startupScene")) };
-	AddSceneContext(sceneContext);
+	UPtr<WDefaultSceneContext> sceneContext;
 
-	const auto widgetTree{ UChildrenOwnerTree{ UCreate<WColumn>{ "Main Window Column" }(5.0f), {
+	const auto widgetTree{ UChildrenOwnerTree{ UCreate<WColumn>{ "Main Window Column" }()
+		| Apply(&WColumn::SetSpacing, 5.0f), {
+		
 		new UChildrenOwnerTree{ UCreate<WRow>{ "Top Row" }(), {
+
 			new UWidgetTreeLeaf{ UCreate<WSpacer>{ "Top Row Spacer" }(EAxis::Horizontal) },
+
 			new UChildOwnerTree{ UCreate<WWrap>{ "Times Wrap" }(),
+
 				new UWidgetTreeLeaf{ UCreate<WUpdateTimeText>{ "Update Time Text" }() },
+
 			},
 		} },
 		
-		new UChildrenOwnerTree{ UCreate<WRow>{ "Center Row" }(10.0f), {
-			new UChildrenOwnerTree{ UCreate<WColumn>{ "Left Panel Column" }(10.0f), {
-				new UWidgetTreeLeaf{ sceneContext },
-				new UChildOwnerTree{ UCreate<WConstraint>{ "Asset Explorer Constraint" }(EAxis::Vertical, 325.0f),
+		new UChildrenOwnerTree{ UCreate<WRow>{ "Center Row" }()
+			| Apply(&WRow::SetSpacing, 10.0f), {
+
+			new UChildrenOwnerTree{ UCreate<WColumn>{ "Left Panel Column" }()
+				| Apply(&WColumn::SetSpacing, 10.0f), {
+
+				new UWidgetTreeLeaf{ sceneContext = UCreate<WDefaultSceneContext>{ "Scene Context" }(SProjectSettings::Get<std::string>("/startupScene")) },
+
+				new UChildOwnerTree{ UCreate<WConstraint>{ "Asset Explorer Constraint" }()
+					| Apply(&WConstraint::SetAxis, EAxis::Vertical)
+					| Apply(&WConstraint::SetSize, 325.0f),
+
 					new UChildOwnerTree{ UCreate<WDetachable>{ "Asset Explorer" }(),
+
 						new UWidgetTreeLeaf{ UCreate<WAssetExplorer>{ "Asset Explorer" }() }
+
 					}
 				},
 			} },
 
-			new UChildOwnerTree{ UCreate<WWrap>{ "Right Panel Wrap" }(EAxis::Horizontal),
-				new UChildrenOwnerTree{ UCreate<WStack>{ "Right Panel Stack" }(), {
-					new UWidgetTreeLeaf{ UCreate<WColor>{ "Right Panel Background" }(Colors::White.WithValue(0.5f).WithAlpha(0.4f))},
-					new UChildOwnerTree{ UCreate<WPadding>{ "Right Panel Padding" }(UPadding::All(8.0f)),
-						new UChildrenOwnerTree{ UCreate<WColumn>{ "Right Panel Column" }(4.0f), {
-							new UWidgetTreeLeaf{ UCreate<WPropertiesWindow>{ "Properties Window" }() },
-						} }
-					},
-				} }
-			},
+			// todo, needs scene ptr (scene widget)
+			//new UWidgetTreeLeaf{ UCreate<WPropertiesWindow>{ "Properties Window" }(GetScene()) },
+
 		} },
+
 	} } };
+
+	AddSceneContext(sceneContext);
 
 	widgetTree.Link();
 

@@ -74,7 +74,7 @@ void WSceneExplorer::PopulateItemList(std::span<UPtr<TSceneObject> const> sceneO
 		WidgetSet items{};
 		for (auto const& sceneObject : sceneObjects)
 		{
-			items.Add(UCreate<WSceneExplorerItem>{}(sceneObject));
+			items.Add(UCreate<WSceneExplorerItem>{}(GetScene(), sceneObject));
 		}
 		itemList_->SetChildren(items);
 	}

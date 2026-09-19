@@ -14,63 +14,115 @@ WAssetExplorer::WAssetExplorer()
 }
 
 WidgetPtr WAssetExplorer::Build()
-{
-	UPtr upButton{ UCreate<WButton>{ "Directory Up Button" }() };
-	upButton->SetOnClicked([this]() { Push(path_.Directory()); });
+{	
+	auto const widgetTree{ UChildrenOwnerTree{ UCreate<WColumn>{ "Asset Explorer Main Column" }() 
+		| Apply(&WColumn::SetSpacing, 4.0f), {
 
-	UPtr previousButton{ UCreate<WButton>{ "Directory Prev Button" }() };
-	previousButton->SetOnClicked([this]() { NavigatePrevious(); });
+		new UChildrenOwnerTree{ UCreate<WRow>{ "Asset Explorer Navigation Row" }()
+			| Apply(&WRow::SetSpacing, 4.0f), {
 
-	UPtr nextButton{ UCreate<WButton>{ "Directory Next Button" }() };
-	nextButton->SetOnClicked([this]() { NavigateNext(); });
+			new UChildOwnerTree{ UCreate<WWrap>{}(),
 
-	itemList_ = UCreate<WHorizontalWrapList>{ "Item List" }();
-	itemList_->SetItemSpacing(10.0f);
-	itemList_->SetRowSpacing(10.0f);
+				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
+
+					new UWidgetTreeLeaf{ UCreate<WColor>{}() 
+						| Apply(&WColor::SetColor, Colors::White.WithValue(0.25f))
+					},
+
+					new UWidgetTreeLeaf{ UCreate<WButton>{ "Directory Up Button" }()
+						| Apply(&WButton::SetOnClicked, [this]() { Push(path_.Directory()); }) 
+					},
+
+					new UWidgetTreeLeaf{ UCreate<WText>{ "Directory Up Text" }()
+						| Apply(&WText::SetText, "Up")
+						| Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
+					},
+
+				} }
+
+			},
+
+			new UChildOwnerTree{ UCreate<WWrap>{}(),
+
+				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
+
+					new UWidgetTreeLeaf{ UCreate<WColor>{}()
+						| Apply(&WColor::SetColor, Colors::White.WithValue(0.25f))
+					},
+
+					new UWidgetTreeLeaf{ UCreate<WButton>{ "Directory Prev Button" }()
+						| Apply(&WButton::SetOnClicked, [this]() { NavigatePrevious(); })
+					},
+
+					new UWidgetTreeLeaf{ UCreate<WText>{ "Directory Prev Text" }()
+						| Apply(&WText::SetText, "Prev")
+						| Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
+					},
+
+				} }
+
+			},
+
+			new UChildOwnerTree{ UCreate<WWrap>{}(),
+
+				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
+
+					new UWidgetTreeLeaf{ UCreate<WColor>{}()
+						| Apply(&WColor::SetColor, Colors::White.WithValue(0.25f))
+					},
+
+					new UWidgetTreeLeaf{ UCreate<WButton>{ "Directory Next Button" }()
+						| Apply(&WButton::SetOnClicked, [this]() { NavigateNext(); })
+					},
+
+					new UWidgetTreeLeaf{ UCreate<WText>{ "Directory Next Text" }()
+						| Apply(&WText::SetText, "Next")
+						| Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
+					},
+
+				} }
+
+			},
+
+		} },
+
+		new UChildrenOwnerTree{ UCreate<WStack>{ "Item List Stack" }(), {
+
+			new UWidgetTreeLeaf{ UCreate<WColor>{ "Item List Background" }() 
+				| Apply(&WColor::SetColor, Colors::White.WithValue(0.05f))
+			},
+
+			new UChildOwnerTree{ UCreate<WPadding>{ "Item List Padding" }()
+				| Apply(&WPadding::SetPadding, UPadding::All(8.0f)),
+
+				new UWidgetTreeLeaf{ itemList_ = UCreate<WHorizontalWrapList>{ "Item List" }()
+					| Apply(&WHorizontalWrapList::SetItemSpacing, 10.0f)
+					| Apply(&WHorizontalWrapList::SetRowSpacing, 10.0f)
+				}
+
+			},
+
+			new UChildOwnerTree{ selectOffset_ = UCreate<WOffset>{ "Select Offset" }(),
+
+				new UChildOwnerTree{ selectBox_ = UCreate<WBox>{ "Select Box" }(),
+
+					new UWidgetTreeLeaf{ selectColor_= UCreate<WColor>{ "Select Box Color" }() 
+						| Apply(&WColor::SetColor, UColor::Mix(Colors::Blue, Colors::Cyan).WithAlpha(0.2f))
+						| Apply(&WColor::SetIsVisible, false)
+					}
+
+				}
+
+			},
+
+		} },
+
+	} } };
+
 	PopulateItemList();
 
-	selectColor_ = UCreate<WColor>{ "Select Box Color" }(UColor::Mix(Colors::Blue, Colors::Cyan).WithAlpha(0.2f));
-	selectColor_->SetIsVisible(false);
-	
-	auto const widgetTree{ UChildrenOwnerTree{ UCreate<WColumn>{ "Asset Explorer Main Column" }(4.0f), {
-		new UChildrenOwnerTree{ UCreate<WRow>{ "Asset Explorer Navigation Row" }(4.0f), {
-			new UChildOwnerTree{ UCreate<WWrap>{}(),
-				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-					new UWidgetTreeLeaf{ UCreate<WColor>{}(Colors::White.WithValue(0.25f)) },
-					new UWidgetTreeLeaf{ upButton },
-					new UWidgetTreeLeaf{ UCreate<WText>{ "Directory Up Text" }("Up", glm::vec2{ 16.0f, 20.0f }) },
-				} }
-			},
-			new UChildOwnerTree{ UCreate<WWrap>{}(),
-				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-					new UWidgetTreeLeaf{ UCreate<WColor>{}(Colors::White.WithValue(0.25f)) },
-					new UWidgetTreeLeaf{ previousButton },
-					new UWidgetTreeLeaf{ UCreate<WText>{ "Directory Prev Text" }("Prev", glm::vec2{ 16.0f, 20.0f }) },
-				} }
-			},
-			new UChildOwnerTree{ UCreate<WWrap>{}(),
-				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-					new UWidgetTreeLeaf{ UCreate<WColor>{}(Colors::White.WithValue(0.25f)) },
-					new UWidgetTreeLeaf{ nextButton },
-					new UWidgetTreeLeaf{ UCreate<WText>{ "Directory Next Text" }("Next", glm::vec2{ 16.0f, 20.0f }) },
-				} }
-			},
-		} },
-		new UChildrenOwnerTree{ UCreate<WStack>{ "Item List Stack" }(), {
-			new UWidgetTreeLeaf{ UCreate<WColor>{ "Item List Background" }(Colors::White.WithValue(0.05f)) },
-			new UChildOwnerTree{ UCreate<WPadding>{ "Item List Padding" }(UPadding::All(8.0f)),
-				new UWidgetTreeLeaf{ itemList_ }
-			},
-			new UChildOwnerTree{ selectOffset_ = UCreate<WOffset>{ "Select Offset" }(),
-				new UChildOwnerTree{ selectBox_ = UCreate<WBox>{ "Select Box" }(),
-					new UWidgetTreeLeaf{ selectColor_ }
-				}
-			},
-		} },
-	} } }; 
 	widgetTree.Link();
 
-	auto a = WidgetPtr{ widgetTree.Widget() };
 	return widgetTree.Widget();
 }
 

@@ -1,9 +1,10 @@
 #pragma once
 #include "generated/PropertiesWindow.generated.h"
-#include <kotono_core/Widget.h>
+#include <kotono_core/SceneWidget.h>
+class TSceneObject;
 class WList;
 class WObjectProperties;
-class WPropertiesWindow : public WWidget
+class WPropertiesWindow : public WSceneWidget
 {
 	GENERATED_WPROPERTIESWINDOW()
 
@@ -17,7 +18,7 @@ public:
 	void Remove() override;
 
 private:
-	void OnSelectedObjectChanged(UPtr<KObject> const& object);
+	void OnSelectedObjectChanged(UPtr<TSceneObject> const& sceneObject);
 
 private:
 	UPtr<WList> mainList_;

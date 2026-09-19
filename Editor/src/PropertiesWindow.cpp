@@ -1,8 +1,7 @@
 #include "PropertiesWindow.h"
 
 #include "ObjectProperties.h"
-#include <kotono_core/ObjectManager.h>
-#include <kotono_core/SceneComponent.h>
+#include <kotono_core/Scene.h>
 #include <kotono_core/SceneObject.h>
 #include <kotono_interface/widgets.h>
 
@@ -19,7 +18,7 @@ WidgetPtr WPropertiesWindow::Build()
     propertiesTextWrap->SetChild(propertiesTextStack);
 
 
-    objectProperties_ = UCreate<WObjectProperties>{}(ObjectManager.GetSelectedObject());
+    objectProperties_ = UCreate<WObjectProperties>{}(GetScene()->GetSelectedObject());
 
     mainList_ = UCreate<WList>{}();
     mainList_->SetChildren({ propertiesTextWrap, objectProperties_});
@@ -48,17 +47,17 @@ void WPropertiesWindow::Display(UWidgetDisplaySettings const& displaySettings)
 {
     Base::Display(displaySettings);
 
-    ObjectManager.EventSelectedObjectChanged().AddListener(this, &Self::OnSelectedObjectChanged);
+    GetScene()->GetEventSelectedObjectChanged().AddListener(this, &Self::OnSelectedObjectChanged);
 }
 
 void WPropertiesWindow::Remove()
 {
     Base::Remove();
 
-    ObjectManager.EventSelectedObjectChanged().RemoveListener(this, &Self::OnSelectedObjectChanged);
+    GetScene()->GetEventSelectedObjectChanged().RemoveListener(this, &Self::OnSelectedObjectChanged);
 }
 
-void WPropertiesWindow::OnSelectedObjectChanged(UPtr<KObject> const& object)
+void WPropertiesWindow::OnSelectedObjectChanged(UPtr<TSceneObject> const& sceneObject)
 {
     if (mainList_)
     {
@@ -68,7 +67,7 @@ void WPropertiesWindow::OnSelectedObjectChanged(UPtr<KObject> const& object)
             children.Remove(objectProperties_);
         }
 
-        UPtr newObjectProperties{ UCreate<WObjectProperties>{}(object) };
+        UPtr newObjectProperties{ UCreate<WObjectProperties>{}(sceneObject) };
         children.Add(newObjectProperties);
 
         mainList_->SetChildren(children);

@@ -12,9 +12,9 @@ protected:
 	WidgetPtr Build() override;
 
 public:
-	f32 GetItemSpacing() const;
-	f32 GetRowSpacing() const;
-	WidgetSet const& GetChildren() const;
+	auto GetItemSpacing() const -> f32;
+	auto GetRowSpacing() const -> f32;
+	auto GetChildren() const -> WidgetSet const&;
 
 	void SetItemSpacing(f32 itemSpacing);
 	void SetRowSpacing(f32 rowSpacing);
