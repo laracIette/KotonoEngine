@@ -81,3 +81,10 @@ private:
 	UPtr<T> widget_;
 	UWidgetTree* child_;
 };
+
+template <ChildOwner TOwner, std::derived_from<WWidget> TChild>
+UPtr<TOwner> const& operator|(UPtr<TOwner> const& owner, UPtr<TChild> const& child)
+{
+	owner->SetChild(child);
+	return owner;
+}

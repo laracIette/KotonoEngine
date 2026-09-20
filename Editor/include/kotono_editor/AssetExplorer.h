@@ -29,10 +29,8 @@ private:
 	void NavigatePrevious();
 	void NavigateNext();
 
-	void PopulateItemList();
-
-	void OnMousePreviousButtonPressed();
-	void OnMouseNextButtonPressed();
+	auto MakeItems() -> USet<UPtr<WAssetExplorerItem>>;
+	void UpdateItemList();
 
 private:
 	UPath path_;

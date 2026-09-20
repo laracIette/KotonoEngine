@@ -27,48 +27,43 @@ static std::string to_string(R&& range)
 
 WidgetPtr WDetachable::Build()
 {
-	auto const widgetTree{ UChildrenOwnerTree{ UCreate<WStack>{}(), {
-
-		new UWidgetTreeLeaf{ UCreate<WColor>{}() 
-			| Apply(&WColor::SetColor, Colors::White.WithValue(0.01f))
-		},
-
-		new UChildrenOwnerTree{ column_ = UCreate<WColumn>{}(), {
-
-			new UChildOwnerTree{ UCreate<WConstraint>{}()
-				| Apply(&WConstraint::SetAxis, EAxis::Vertical)
-				| Apply(&WConstraint::SetSize, 20.0f),
-
-				new UChildrenOwnerTree{ UCreate<WRow>{}(), {
-
-					new UChildOwnerTree{ UCreate<WWrap>{}(),
-
-						new UChildOwnerTree{ UCreate<WCenter>{}()
-							| Apply(&WCenter::SetAxis, EAxis::Vertical),
-
-							new UWidgetTreeLeaf{ UCreate<WText>{ "Name" }("Detachable")
-								| Apply(&WText::SetText, [this]() { return GetName(); })
-								| Apply(&WText::SetFontSize, glm::vec2{ 12.0f, 16.0f })
-							}
-
-						}
-					},
-
-					new UWidgetTreeLeaf{ UCreate<WButton>{}()
-						| Apply(&WButton::SetOnClicked, [this]() { Detach(); })
-					},
-				} }
-			},
-
+	return UCreate<WStack>{}()
+	| (
+		UCreate<WColor>{}() 
+		| Apply(&WColor::SetColor, Colors::White.WithValue(0.01f))
+	)
+	| (
+		column_ = UCreate<WColumn>{}()
+		| (
+			UCreate<WConstraint>{}()
+			| Apply(&WConstraint::SetAxis, EAxis::Vertical)
+			| Apply(&WConstraint::SetSize, 20.0f)
+			| (
+				UCreate<WRow>{}()
+				| (
+					UCreate<WWrap>{}()
+					| (
+						UCreate<WCenter>{}()
+						| Apply(&WCenter::SetAxis, EAxis::Vertical)
+						| (
+							UCreate<WText>{ "Name" }("Detachable")
+							| Apply(&WText::SetText, [this]() { return GetName(); })
+							| Apply(&WText::SetFontSize, glm::vec2{ 12.0f, 16.0f })
+						)
+					)
+				)
+				| (
+					UCreate<WButton>{}()
+					| Apply(&WButton::SetOnClicked, [this]() { Detach(); })
+				)
+			)
+		)
+		| (
 			//new UWidgetTreeLeaf{ child_ = UCreate<WText>{}("Loading...") },
-			new UWidgetTreeLeaf{ child_ = nullptr },
-
-		} },
-	} } };
-
-	widgetTree.Link();
-
-	return widgetTree.Widget();
+			child_ = nullptr
+		)
+	)
+	;
 }
 
 void WDetachable::SetChild(WidgetPtr const& widget)

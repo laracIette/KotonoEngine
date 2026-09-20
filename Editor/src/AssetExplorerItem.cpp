@@ -16,45 +16,38 @@ WAssetExplorerItem::WAssetExplorerItem(UPtr<WAssetExplorer> const& assetExplorer
 
 WidgetPtr WAssetExplorerItem::Build()
 {
-    const auto widgetTree{ UChildOwnerTree{ UCreate<WBox>{ "Item Box" }()
-        | Apply(&WBox::SetSize, glm::vec2{ 128.0f }),
-
-        new UChildrenOwnerTree{ UCreate<WStack>{ "Item Stack" }(), {
-
-            new UWidgetTreeLeaf{ UCreate<WButton>{ "Item Button" }() 
-                | Apply(&WButton::SetIsSelectable, false)
-                | Apply(&WButton::SetOnClicked, [this]() {
-                    if (isSelected_ && GetInterface()->GetNow() - lastClickedTime_ < doubleClickTreshold_)
+    return UCreate<WBox>{ "Item Box" }()
+    | Apply(&WBox::SetSize, glm::vec2{ 128.0f })
+    | (
+        UCreate<WStack>{ "Item Stack" }()
+        | (
+            UCreate<WButton>{ "Item Button" }() 
+            | Apply(&WButton::SetIsSelectable, false)
+            | Apply(&WButton::SetOnClicked, [this]() {
+                if (isSelected_ && GetInterface()->GetNow() - lastClickedTime_ < doubleClickTreshold_)
+                {
+                    if (onDoubleClicked_)
                     {
-                        if (onDoubleClicked_)
-                        {
-                            onDoubleClicked_(path_);
-                        }
+                        onDoubleClicked_(path_);
                     }
-                    else
-                    {
-                        Select();
-                    }
-                })
-            },
-
-            new UChildOwnerTree{ UCreate<WCenter>{ "Item Center" }()
-                | Apply(&WCenter::SetAxis, EAxis::All),
-
-                new UWidgetTreeLeaf{ UCreate<WText>{ "Item Text" }() 
-                    | Apply(&WText::SetText, path_.Name())
-                    | Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
                 }
-
-            },
-
-        } }
-
-    } };
-
-    widgetTree.Link();
-
-    return widgetTree.Widget();
+                else
+                {
+                    Select();
+                }
+            })
+        )
+        | (
+            UCreate<WCenter>{ "Item Center" }()
+            | Apply(&WCenter::SetAxis, EAxis::All)
+            | (
+                UCreate<WText>{ "Item Text" }() 
+                | Apply(&WText::SetText, path_.Name())
+                | Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
+            )
+        )
+    )
+    ;
 }
 
 void WAssetExplorerItem::Select()

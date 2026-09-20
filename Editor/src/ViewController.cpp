@@ -23,18 +23,33 @@ WViewController::WViewController(UScene* scene)
 
 WidgetPtr WViewController::Build()
 {
-    UPtr button{ UCreate<WButton>{ "Button" }() };
-    button->SetIsVisible(false);
-	button->SetOnActive([this]() { isActive_ = true; });
-	button->SetOnInactive([this]() { isActive_ = false; });
+	return sceneTexture_ = UCreate<WSceneTexture>{ "Scene Texture" }();
+}
 
-	auto const widgetTree{ UChildrenOwnerTree{ UCreate<WStack>{}(), {
-		new UWidgetTreeLeaf{ sceneTexture_ = UCreate<WSceneTexture>{ "Scene Texture" }() },
-		new UWidgetTreeLeaf{ button },
-	} } };
-	widgetTree.Link();
+b8 WViewController::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position)
+{
+	if (button != EButton::Left)
+	{
+		return INPUT_UNHANDLED;
+	}
 
-    return widgetTree.Widget();
+	switch (inputState)
+	{
+	case EInputState::Pressed:
+	{
+		isActive_ = true;
+		return INPUT_HANDLED;
+	}
+	case EInputState::Released:
+	{
+		isActive_ = false;
+		return INPUT_HANDLED;
+	}
+	default: 
+		break;
+	}
+
+	return INPUT_UNHANDLED;
 }
 
 b8 WViewController::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
@@ -134,6 +149,11 @@ b8 WViewController::OnKeyboardKey(EKey key, EInputState inputState)
 	}
 
 	return INPUT_UNHANDLED;
+}
+
+void WViewController::OnUnfocused()
+{
+	isActive_ = false;
 }
 
 void WViewController::Translate(glm::vec3 const& delta) const

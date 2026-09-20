@@ -39,10 +39,11 @@ private:
 };
 
 template <typename T>
-concept ChildrenOwner = requires(T & widget, WidgetSet const& children)
+concept ChildrenOwner = requires(T & widget, WidgetSet const& children, WidgetPtr const& child)
 {
 	{ widget.GetChildren() } -> std::convertible_to<WidgetSet>;
 	widget.SetChildren(children);
+	widget.AddChild(child);
 };
 
 template <ChildrenOwner T>
@@ -98,3 +99,10 @@ private:
 	UPtr<T> widget_;
 	std::vector<UWidgetTree*> children_;
 };
+
+template <ChildrenOwner TOwner, std::derived_from<WWidget> TChild>
+UPtr<TOwner> const& operator|(UPtr<TOwner> const& owner, UPtr<TChild> const& child)
+{
+	owner->AddChild(child);
+	return owner;
+}

@@ -12,52 +12,52 @@ WidgetPtr WMainWindow::Build()
 {
 	UPtr<WDefaultSceneContext> sceneContext;
 
-	const auto widgetTree{ UChildrenOwnerTree{ UCreate<WColumn>{ "Main Window Column" }()
-		| Apply(&WColumn::SetSpacing, 5.0f), {
-		
-		new UChildrenOwnerTree{ UCreate<WRow>{ "Top Row" }(), {
+	UPtr widget = UCreate<WColumn>{ "Main Window Column" }()
+	| Apply(&WColumn::SetSpacing, 5.0f)
+	| (
+		UCreate<WRow>{ "Top Row" }()
+		| (
+			UCreate<WSpacer>{ "Top Row Spacer" }(EAxis::Horizontal)
+		)
+		| (
+			UCreate<WWrap>{ "Times Wrap" }()
+			| (
 
-			new UWidgetTreeLeaf{ UCreate<WSpacer>{ "Top Row Spacer" }(EAxis::Horizontal) },
-
-			new UChildOwnerTree{ UCreate<WWrap>{ "Times Wrap" }(),
-
-				new UWidgetTreeLeaf{ UCreate<WUpdateTimeText>{ "Update Time Text" }() },
-
-			},
-		} },
-		
-		new UChildrenOwnerTree{ UCreate<WRow>{ "Center Row" }()
-			| Apply(&WRow::SetSpacing, 10.0f), {
-
-			new UChildrenOwnerTree{ UCreate<WColumn>{ "Left Panel Column" }()
-				| Apply(&WColumn::SetSpacing, 10.0f), {
-
-				new UWidgetTreeLeaf{ sceneContext = UCreate<WDefaultSceneContext>{ "Scene Context" }(SProjectSettings::Get<std::string>("/startupScene")) },
-
-				new UChildOwnerTree{ UCreate<WConstraint>{ "Asset Explorer Constraint" }()
-					| Apply(&WConstraint::SetAxis, EAxis::Vertical)
-					| Apply(&WConstraint::SetSize, 325.0f),
-
-					new UChildOwnerTree{ UCreate<WDetachable>{ "Asset Explorer" }(),
-
-						new UWidgetTreeLeaf{ UCreate<WAssetExplorer>{ "Asset Explorer" }() }
-
-					}
-				},
-			} },
-
-			// todo, needs scene ptr (scene widget)
-			//new UWidgetTreeLeaf{ UCreate<WPropertiesWindow>{ "Properties Window" }(GetScene()) },
-
-		} },
-
-	} } };
+				UCreate<WUpdateTimeText>{ "Update Time Text" }()
+			)
+		)
+	)
+	| (
+		UCreate<WRow>{ "Center Row" }()
+		| Apply(&WRow::SetSpacing, 10.0f)
+		| (
+			UCreate<WColumn>{ "Left Panel Column" }()
+			| Apply(&WColumn::SetSpacing, 10.0f)
+			| (
+				sceneContext = UCreate<WDefaultSceneContext>{ "Scene Context" }(SProjectSettings::Get<std::string>("/startupScene"))
+			)
+			| (
+				UCreate<WConstraint>{ "Asset Explorer Constraint" }()
+				| Apply(&WConstraint::SetAxis, EAxis::Vertical)
+				| Apply(&WConstraint::SetSize, 325.0f)
+				| (
+					UCreate<WDetachable>{ "Asset Explorer" }()
+					| (
+						UCreate<WAssetExplorer>{ "Asset Explorer" }()
+					)
+				)
+			)
+		)
+		// todo: needs scene ptr (scene widget)
+		//| (
+		//	UCreate<WPropertiesWindow>{ "Properties Window" }(GetScene())
+		//)
+	)
+	;
 
 	AddSceneContext(sceneContext);
 
-	widgetTree.Link();
-
-	return widgetTree.Widget();
+	return widget;
 }
 
 #include "generated/MainWindow.generated.inl"

@@ -15,115 +15,98 @@ WAssetExplorer::WAssetExplorer()
 
 WidgetPtr WAssetExplorer::Build()
 {	
-	auto const widgetTree{ UChildrenOwnerTree{ UCreate<WColumn>{ "Asset Explorer Main Column" }() 
-		| Apply(&WColumn::SetSpacing, 4.0f), {
-
-		new UChildrenOwnerTree{ UCreate<WRow>{ "Asset Explorer Navigation Row" }()
-			| Apply(&WRow::SetSpacing, 4.0f), {
-
-			new UChildOwnerTree{ UCreate<WWrap>{}(),
-
-				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-
-					new UWidgetTreeLeaf{ UCreate<WColor>{}() 
-						| Apply(&WColor::SetColor, Colors::White.WithValue(0.25f))
-					},
-
-					new UWidgetTreeLeaf{ UCreate<WButton>{ "Directory Up Button" }()
-						| Apply(&WButton::SetOnClicked, [this]() { Push(path_.Directory()); }) 
-					},
-
-					new UWidgetTreeLeaf{ UCreate<WText>{ "Directory Up Text" }()
-						| Apply(&WText::SetText, "Up")
-						| Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
-					},
-
-				} }
-
-			},
-
-			new UChildOwnerTree{ UCreate<WWrap>{}(),
-
-				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-
-					new UWidgetTreeLeaf{ UCreate<WColor>{}()
-						| Apply(&WColor::SetColor, Colors::White.WithValue(0.25f))
-					},
-
-					new UWidgetTreeLeaf{ UCreate<WButton>{ "Directory Prev Button" }()
-						| Apply(&WButton::SetOnClicked, [this]() { NavigatePrevious(); })
-					},
-
-					new UWidgetTreeLeaf{ UCreate<WText>{ "Directory Prev Text" }()
-						| Apply(&WText::SetText, "Prev")
-						| Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
-					},
-
-				} }
-
-			},
-
-			new UChildOwnerTree{ UCreate<WWrap>{}(),
-
-				new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-
-					new UWidgetTreeLeaf{ UCreate<WColor>{}()
-						| Apply(&WColor::SetColor, Colors::White.WithValue(0.25f))
-					},
-
-					new UWidgetTreeLeaf{ UCreate<WButton>{ "Directory Next Button" }()
-						| Apply(&WButton::SetOnClicked, [this]() { NavigateNext(); })
-					},
-
-					new UWidgetTreeLeaf{ UCreate<WText>{ "Directory Next Text" }()
-						| Apply(&WText::SetText, "Next")
-						| Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
-					},
-
-				} }
-
-			},
-
-		} },
-
-		new UChildrenOwnerTree{ UCreate<WStack>{ "Item List Stack" }(), {
-
-			new UWidgetTreeLeaf{ UCreate<WColor>{ "Item List Background" }() 
-				| Apply(&WColor::SetColor, Colors::White.WithValue(0.05f))
-			},
-
-			new UChildOwnerTree{ UCreate<WPadding>{ "Item List Padding" }()
-				| Apply(&WPadding::SetPadding, UPadding::All(8.0f)),
-
-				new UWidgetTreeLeaf{ itemList_ = UCreate<WHorizontalWrapList>{ "Item List" }()
-					| Apply(&WHorizontalWrapList::SetItemSpacing, 10.0f)
-					| Apply(&WHorizontalWrapList::SetRowSpacing, 10.0f)
-				}
-
-			},
-
-			new UChildOwnerTree{ selectOffset_ = UCreate<WOffset>{ "Select Offset" }(),
-
-				new UChildOwnerTree{ selectBox_ = UCreate<WBox>{ "Select Box" }(),
-
-					new UWidgetTreeLeaf{ selectColor_= UCreate<WColor>{ "Select Box Color" }() 
-						| Apply(&WColor::SetColor, UColor::Mix(Colors::Blue, Colors::Cyan).WithAlpha(0.2f))
-						| Apply(&WColor::SetIsVisible, false)
-					}
-
-				}
-
-			},
-
-		} },
-
-	} } };
-
-	PopulateItemList();
-
-	widgetTree.Link();
-
-	return widgetTree.Widget();
+	return UCreate<WColumn>{ "Asset Explorer Main Column" }() 
+	| Apply(&WColumn::SetSpacing, 4.0f)
+	| (
+		UCreate<WRow>{ "Asset Explorer Navigation Row" }()
+		| Apply(&WRow::SetSpacing, 4.0f)
+		| (
+			UCreate<WWrap>{}()
+			| (
+				UCreate<WStack>{}()
+				| (
+					UCreate<WColor>{}() 
+					| Apply(&WColor::SetColor, Colors::White.WithValue(0.25f))
+				)
+				| (
+					UCreate<WButton>{ "Directory Up Button" }()
+					| Apply(&WButton::SetOnClicked, [this]() { Push(path_.Directory()); })
+				)
+				| (
+					UCreate<WText>{ "Directory Up Text" }()
+					| Apply(&WText::SetText, "Up")
+					| Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
+				)
+			)
+		)
+		| (
+			UCreate<WWrap>{}()
+			| (
+				UCreate<WStack>{}() 
+				| (
+					UCreate<WColor>{}()
+					| Apply(&WColor::SetColor, Colors::White.WithValue(0.25f))
+				)
+				| (
+					UCreate<WButton>{ "Directory Prev Button" }()
+					| Apply(&WButton::SetOnClicked, [this]() { NavigatePrevious(); })
+				)
+				| (
+					UCreate<WText>{ "Directory Prev Text" }()
+					| Apply(&WText::SetText, "Prev")
+					| Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
+				)
+			)
+		)
+		| (
+			UCreate<WWrap>{}()
+			| (
+				UCreate<WStack>{}()
+				| (
+					UCreate<WColor>{}()
+					| Apply(&WColor::SetColor, Colors::White.WithValue(0.25f))
+				)
+				| (
+					UCreate<WButton>{ "Directory Next Button" }()
+					| Apply(&WButton::SetOnClicked, [this]() { NavigateNext(); })
+				)
+				| (
+					UCreate<WText>{ "Directory Next Text" }()
+					| Apply(&WText::SetText, "Next")
+					| Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
+				)
+			)
+		)
+	)
+	| (
+		UCreate<WStack>{ "Item List Stack" }()
+		| (
+			UCreate<WColor>{ "Item List Background" }() 
+			| Apply(&WColor::SetColor, Colors::White.WithValue(0.05f))
+		)
+		| (
+			UCreate<WPadding>{ "Item List Padding" }()
+			| Apply(&WPadding::SetPadding, UPadding::All(8.0f))
+			| (
+				itemList_ = UCreate<WHorizontalWrapList>{ "Item List" }()
+				| Apply(&WHorizontalWrapList::SetItemSpacing, 10.0f)
+				| Apply(&WHorizontalWrapList::SetRowSpacing, 10.0f)
+				| Apply(&WHorizontalWrapList::SetChildren, assetExplorerItems_ = MakeItems())
+			)
+		)
+		| (
+			selectOffset_ = UCreate<WOffset>{ "Select Offset" }()
+			| (
+				selectBox_ = UCreate<WBox>{ "Select Box" }()
+				| (
+					selectColor_ = UCreate<WColor>{ "Select Box Color" }() 
+					| Apply(&WColor::SetColor, UColor::Mix(Colors::Blue, Colors::Cyan).WithAlpha(0.2f))
+					| Apply(&WColor::SetIsVisible, false)
+				)
+			)
+		)
+	)
+	;
 }
 
 b8 WAssetExplorer::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position)
@@ -206,7 +189,7 @@ void WAssetExplorer::Push(UPath const& path)
 	++currentPathIndex_;
 	navigatedPaths_.erase(navigatedPaths_.begin() + currentPathIndex_, navigatedPaths_.end());
 	navigatedPaths_.push_back(path);
-	PopulateItemList();
+	UpdateItemList();
 }
 
 void WAssetExplorer::NavigatePrevious()
@@ -214,7 +197,7 @@ void WAssetExplorer::NavigatePrevious()
 	if (!navigatedPaths_.empty() && currentPathIndex_ > 0)
 	{
 		path_ = navigatedPaths_[--currentPathIndex_];
-		PopulateItemList();
+		UpdateItemList();
 	}
 }
 
@@ -223,29 +206,35 @@ void WAssetExplorer::NavigateNext()
 	if (!navigatedPaths_.empty() && currentPathIndex_ < navigatedPaths_.size() - 1)
 	{
 		path_ = navigatedPaths_[++currentPathIndex_];
-		PopulateItemList();
+		UpdateItemList();
 	}
 }
 
-void WAssetExplorer::PopulateItemList()
+auto WAssetExplorer::MakeItems() -> USet<UPtr<WAssetExplorerItem>>
+{
+	UFileExplorer const fileExplorer{ path_ };
+	auto const directories{ fileExplorer.GetDirectories() };
+	auto const files{ fileExplorer.GetFiles() };
+
+	USet<UPtr<WAssetExplorerItem>> items{};
+	for (auto const& directory : directories)
+	{
+		items.Add(UCreate<WAssetExplorerDirectory>{}(Ptr(), directory, [this](UPath const& path) { Push(path); }));
+	}
+	for (auto const& file : files)
+	{
+		items.Add(UCreate<WAssetExplorerFile>{}(Ptr(), file.Path()));
+	}
+	return items;
+}
+
+void WAssetExplorer::UpdateItemList()
 {
 	if (itemList_)
 	{
 		UAutoDelete<WWidget> const itemListChildren{ itemList_->GetChildren() };
 
-		UFileExplorer const fileExplorer{ path_ };
-		auto const directories{ fileExplorer.GetDirectories() };
-		auto const files{ fileExplorer.GetFiles() };
-
-		assetExplorerItems_.Clear();
-		for (auto const& directory : directories)
-		{
-			assetExplorerItems_.Add(UCreate<WAssetExplorerDirectory>{}(Ptr(), directory, [this](UPath const& path) { Push(path); }));
-		}
-		for (auto const& file : files)
-		{
-			assetExplorerItems_.Add(UCreate<WAssetExplorerFile>{}(Ptr(), file.Path()));
-		}
+		assetExplorerItems_ = MakeItems();
 		itemList_->SetChildren(assetExplorerItems_);
 	}
 }
