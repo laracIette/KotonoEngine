@@ -15,46 +15,26 @@ WInputTextBox::WInputTextBox()
 
 WidgetPtr WInputTextBox::Build()
 {
-	UPtr text{ UCreate<WText>{}() };
-	text->SetText(text_);
-	text->SetFontSize({ 15.0f, 18.0f });
-	text->SetSpacing(-5.0f);
-
-	UPtr textPadding{ UCreate<WPadding>{}() };
-	textPadding->SetChild(text);
-	textPadding->SetPadding(UPadding::All(4.0f));
-
-
-	UPtr button{ UCreate<WButton>{}() };
-	button->SetOnActive([this]() {
-		SetState([this]() { isSelected_ = true; });
-	});
-
-
-	UPtr bg{ UCreate<WColor>{}() };
-	bg->SetColor(isSelected_
-		? Colors::White.WithAlpha(0.15f)
-		: Colors::White.WithAlpha(0.05f)
+	return (
+		UCreate<WStack>{}()
+		| (
+			UCreate<WColor>{}()
+			| Apply(&WColor::SetColor, isSelected_ ? Colors::White.WithAlpha(0.15f) : Colors::White.WithAlpha(0.05f))
+		)
+		| (
+			UCreate<WButton>{}()
+			| Apply(&WButton::SetOnClicked, [this]() { SetState([this]() { isSelected_ = true; }); })
+		)
+		| (
+			UCreate<WPadding>{}()
+			| Apply(&WPadding::SetPadding, UPadding::All(4.0f))
+			| (
+				UCreate<WText>{}()
+				| Apply(&WText::SetText, text_)
+				| Apply(&WText::SetFontSize, glm::vec2{ 15.0f, 18.0f })
+			)
+		)
 	);
-
-
-	UPtr stack{ UCreate<WStack>{}() };
-	stack->SetChildren({ bg, button, textPadding });
-
-	return stack;
-}
-
-void WInputTextBox::Display(UWidgetDisplaySettings const& displaySettings)
-{
-	Base::Display(displaySettings);
-
-	holdAction_.SetActuationTime(actuationTime_);
-	holdAction_.SetRepeatTime(repeatTime_);
-}
-
-void WInputTextBox::Remove()
-{
-	Base::Remove();
 }
 
 b8 WInputTextBox::OnKeyboardKey(EKey key, EInputState inputState)
@@ -184,11 +164,13 @@ void WInputTextBox::SetOnTextChanged(TextChangedFunction const& onTextChanged)
 void WInputTextBox::SetActuationTime(f32 actuationTime)
 {
 	actuationTime_ = actuationTime;
+	holdAction_.SetActuationTime(actuationTime);
 }
 
 void WInputTextBox::SetRepeatTime(f32 repeatTime)
 {
 	repeatTime_ = repeatTime;
+	holdAction_.SetRepeatTime(repeatTime);
 }
 
 #include "generated/InputTextBox.generated.inl"

@@ -3,27 +3,6 @@
 #include <kotono_core/Interface.h>
 #include <kotono_core/InterfaceRoot.h>
 #include <kotono_interface/widgets.h>
-#include <ostream>
-
-template <std::ranges::range R>
-	requires std::is_convertible_v<std::ranges::range_value_t<R>, std::string>
-static std::string to_string(R&& range)
-{
-	std::ostringstream str{};
-	str << '[';
-
-	for (auto const& [index, item] : range | std::views::enumerate)
-	{
-		str << item.operator std::string();
-		if (index < range.size() - 1)
-		{
-			str << ", ";
-		}
-	}
-
-	str << ']';
-	return str.str();
-}
 
 WidgetPtr WDetachable::Build()
 {

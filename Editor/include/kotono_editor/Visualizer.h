@@ -1,17 +1,15 @@
 #pragma once
 #include "VisualizationField.h"
-#include <kotono_common/Event.h>
+#include <kotono_common/types.h>
 #include <unordered_map>
-class GVisualizer final
+class UVisualizer final
 {
 public:
 	void Init();
 
-	bool GetIsFieldVisible(const EVisualizationField field) const; 
-	void SetIsFieldVisible(const EVisualizationField field, const bool isVisible);
+	auto GetIsFieldVisible(EVisualizationField field) const -> b8; 
+	void SetIsFieldVisible(EVisualizationField field, b8 isVisible);
 
 private:
-	std::unordered_map<EVisualizationField, bool> fieldVisibilities_;
+	std::unordered_map<EVisualizationField, b8> fieldVisibilities_;
 };
-
-inline GVisualizer Visualizer;

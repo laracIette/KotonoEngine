@@ -8,8 +8,8 @@ WidgetPtr WGameSpeedButton::Build()
 	return (
 		UCreate<WRow>{}()
 		| (
-			UCreate<WText>{ "Game Speed Text" }("Game Speed Text")
-			| Apply(&WText::SetText, []() { return ""; })
+			UCreate<WText>{ "Game Speed Text" }()
+			| Apply(&WText::SetText, []() { return "unimplemented!"; })
 		)
 	);
 }

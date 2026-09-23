@@ -1,6 +1,6 @@
 #include "Visualizer.h"
 
-void GVisualizer::Init()
+void UVisualizer::Init()
 {
 	SetIsFieldVisible(EVisualizationField::SceneObject, true);
 	SetIsFieldVisible(EVisualizationField::SceneObjectBounds, true);
@@ -12,13 +12,13 @@ void GVisualizer::Init()
 	SetIsFieldVisible(EVisualizationField::InterfaceObjectWireframe, true);
 }
 
-bool GVisualizer::GetIsFieldVisible(const EVisualizationField field) const
+auto UVisualizer::GetIsFieldVisible(EVisualizationField field) const -> b8
 {
-	const auto it{ fieldVisibilities_.find(field) };
+	auto const it{ fieldVisibilities_.find(field) };
 	return it != fieldVisibilities_.end() ? it->second : false;
 }
 
-void GVisualizer::SetIsFieldVisible(const EVisualizationField field, const bool isVisible)
+void UVisualizer::SetIsFieldVisible(EVisualizationField field, b8 isVisible)
 {
 	fieldVisibilities_[field] = isVisible;
 }

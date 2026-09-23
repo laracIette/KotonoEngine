@@ -6,12 +6,7 @@
 #include <kotono_common/log.h>
 #include <kotono_core/Interface.h>
 #include <kotono_graphics/SpvCompiler.h>
-#include <kotono_interface/Text.h>
 #include <kotono_timing/Clock.h>
-
-#ifdef EDITOR
-#include <kotono_editor/Visualizer.h>
-#endif
 
 #ifndef NDEBUG
 #include <kotono_core/Object.h>
@@ -80,10 +75,6 @@ void UApplication::Init()
     logUPSTimer_.SetIsRepeat(true);
     logUPSTimer_.EventCompleted().AddListener(this, &UApplication::LogUPS);
     logUPSTimer_.Start();
-
-#   ifdef EDITOR
-    Visualizer.Init();
-#   endif
 }
 
 void UApplication::Cleanup()

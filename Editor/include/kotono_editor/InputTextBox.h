@@ -18,9 +18,6 @@ protected:
 	WidgetPtr Build() override;
 
 public:
-	void Display(UWidgetDisplaySettings const& displaySettings) override;
-	void Remove() override;
-
 	b8 OnKeyboardKey(EKey key, EInputState inputState) override;
 
 public:

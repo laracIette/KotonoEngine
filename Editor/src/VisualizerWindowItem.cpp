@@ -1,43 +1,40 @@
 #include "VisualizerWindowItem.h"
-#include "Visualizer.h"
+
 #include <kotono_interface/widgets.h>
 
-WVisualizerWindowItem::WVisualizerWindowItem(const EVisualizationField field, const std::string& name) 
-    : field_(field)
-    , name_(name)
+WVisualizerWindowItem::WVisualizerWindowItem(EVisualizationField field, std::string_view name) 
+    : field_{ field }
+    , name_{ name }
 {
 }
 
 WidgetPtr WVisualizerWindowItem::Build()
 {
-    const bool isFieldVisible{ Visualizer.GetIsFieldVisible(field_) };
+    b8 const isFieldVisible{ false };
 
-    UPtr color{ UCreate<WColor>{}() };
-    color->SetColor(isFieldVisible ? Colors::Green : Colors::Red);
-
-    UPtr button{ UCreate<WButton>{}() };
-    button->SetOnActive([this, isFieldVisible]() {
-        SetState([this, isFieldVisible]() {
-            Visualizer.SetIsFieldVisible(field_, !isFieldVisible);
-        });
-    });
-
-    UPtr stack{ UCreate<WStack>{}() };
-    stack->SetChildren({ color, button });
-
-    UPtr box{ UCreate<WBox>{}() };
-    box->SetChild(stack);
-    box->SetSize({ 25.0f, 25.0f });
-
-    UPtr text{ UCreate<WText>{}() };
-    text->SetText(name_);
-    text->SetFontSize({ 20.0f, 25.0f });
-    text->SetSpacing(-8.0f);
-
-    UPtr row{ UCreate<WRow>{}() };
-    row->SetChildren({ box, text });
-
-    return row;
+    return (
+        UCreate<WRow>{}()
+        | (
+            UCreate<WBox>{}()
+            | Apply(&WBox::SetSize, glm::vec2{ 25.0f, 25.0f })
+            | (
+                UCreate<WStack>{}()
+                | (
+                    UCreate<WColor>{}()
+                    | Apply(&WColor::SetColor, isFieldVisible ? Colors::Green : Colors::Red)
+                )
+                | (
+                    UCreate<WButton>{}()
+                    | Apply(&WButton::SetOnClicked, [this]() { throw std::runtime_error{ "unimplemented!" }; })
+                )
+            )
+        )
+        | (
+            UCreate<WText>{}()
+            | Apply(&WText::SetText, name_)
+            | Apply(&WText::SetFontSize, glm::vec2{ 20.0f, 25.0f })
+        )
+    );
 }
 
 #include "generated/VisualizerWindowItem.generated.inl"
