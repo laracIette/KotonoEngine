@@ -46,42 +46,6 @@ concept ChildOwner = requires(T& widget, WidgetPtr const& child)
 	widget.SetChild(child);
 };
 
-template <ChildOwner T>
-class UChildOwnerTree final : public UWidgetTree
-{
-public:
-	UChildOwnerTree(UPtr<T> const& widget, UWidgetTree* child)
-		: widget_{ widget }
-		, child_{ child }
-	{}
-
-	~UChildOwnerTree() override
-	{
-		delete child_;
-	}
-
-	auto Widget() const -> WidgetPtr override
-	{
-		return widget_;
-	}
-
-	void Link() const override
-	{
-		if (child_)
-		{
-			child_->Link();
-			if (widget_)
-			{
-				widget_->SetChild(child_->Widget());
-			}
-		}
-	}
-
-private:
-	UPtr<T> widget_;
-	UWidgetTree* child_;
-};
-
 template <ChildOwner TOwner, std::derived_from<WWidget> TChild>
 UPtr<TOwner> const& operator|(UPtr<TOwner> const& owner, UPtr<TChild> const& child)
 {

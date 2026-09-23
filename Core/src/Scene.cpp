@@ -78,7 +78,7 @@ void UScene::Remove(SceneObject const& sceneObject)
 	}
 
 	sceneObjects_.Remove(sceneObject);
-	sceneObject->scene_ = nullptr;
+	sceneObject->scene_ = nullptr; // todo: needed during object destruction, split destruction and despawn 
 	eventSceneObjectsUpdated_.Broadcast(sceneObjects_);
 }
 

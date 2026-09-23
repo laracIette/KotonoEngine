@@ -5,20 +5,21 @@
 
 WidgetPtr WList::Build()
 {
-	const auto widgetTree{ UChildOwnerTree{ UCreate<WScrollable>{ "List Scrollable" }(EAxis::Vertical),
-		new UWidgetTreeLeaf{ body_ = UCreate<WListBody>{ "List Body" }() }
-	} };
-	widgetTree.Link();
-
-	return widgetTree.Widget();
+	return (
+		UCreate<WScrollable>{ "List Scrollable" }()
+		| Apply(&WScrollable::SetAxis, EAxis::Vertical)
+		| (
+			body_ = UCreate<WListBody>{ "List Body" }()
+		)
+	);
 }
 
-f32 WList::GetSpacing() const
+auto WList::GetSpacing() const -> f32
 {
 	return body_->GetSpacing();
 }
 
-WidgetSet const& WList::GetChildren() const
+auto WList::GetChildren() const -> WidgetSet const&
 {
 	return body_->GetChildren();
 }
@@ -31,6 +32,11 @@ void WList::SetSpacing(f32 spacing)
 void WList::SetChildren(WidgetSet const& children)
 {
 	body_->SetChildren(children);
+}
+
+void WList::AddChild(WidgetPtr const& child)
+{
+	body_->AddChild(child);
 }
 
 #include "generated/List.generated.inl"

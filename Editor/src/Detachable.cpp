@@ -27,43 +27,44 @@ static std::string to_string(R&& range)
 
 WidgetPtr WDetachable::Build()
 {
-	return UCreate<WStack>{}()
-	| (
-		UCreate<WColor>{}() 
-		| Apply(&WColor::SetColor, Colors::White.WithValue(0.01f))
-	)
-	| (
-		column_ = UCreate<WColumn>{}()
+	return (
+		UCreate<WStack>{}()
 		| (
-			UCreate<WConstraint>{}()
-			| Apply(&WConstraint::SetAxis, EAxis::Vertical)
-			| Apply(&WConstraint::SetSize, 20.0f)
+			UCreate<WColor>{}() 
+			| Apply(&WColor::SetColor, Colors::White.WithValue(0.01f))
+		)
+		| (
+			column_ = UCreate<WColumn>{}()
 			| (
-				UCreate<WRow>{}()
+				UCreate<WConstraint>{}()
+				| Apply(&WConstraint::SetAxis, EAxis::Vertical)
+				| Apply(&WConstraint::SetSize, 20.0f)
 				| (
-					UCreate<WWrap>{}()
+					UCreate<WRow>{}()
 					| (
-						UCreate<WCenter>{}()
-						| Apply(&WCenter::SetAxis, EAxis::Vertical)
+						UCreate<WWrap>{}()
 						| (
-							UCreate<WText>{ "Name" }("Detachable")
-							| Apply(&WText::SetText, [this]() { return GetName(); })
-							| Apply(&WText::SetFontSize, glm::vec2{ 12.0f, 16.0f })
+							UCreate<WCenter>{}()
+							| Apply(&WCenter::SetAxis, EAxis::Vertical)
+							| (
+								UCreate<WText>{ "Name" }("Detachable")
+								| Apply(&WText::SetText, [this]() { return GetName(); })
+								| Apply(&WText::SetFontSize, glm::vec2{ 12.0f, 16.0f })
+							)
 						)
 					)
-				)
-				| (
-					UCreate<WButton>{}()
-					| Apply(&WButton::SetOnClicked, [this]() { Detach(); })
+					| (
+						UCreate<WButton>{}()
+						| Apply(&WButton::SetOnClicked, [this]() { Detach(); })
+					)
 				)
 			)
+			| (
+				//child_ = UCreate<WText>{}("Loading..."),
+				child_ = nullptr
+			)
 		)
-		| (
-			//new UWidgetTreeLeaf{ child_ = UCreate<WText>{}("Loading...") },
-			child_ = nullptr
-		)
-	)
-	;
+	);
 }
 
 void WDetachable::SetChild(WidgetPtr const& widget)

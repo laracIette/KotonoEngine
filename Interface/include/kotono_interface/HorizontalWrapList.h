@@ -19,6 +19,7 @@ public:
 	void SetItemSpacing(f32 itemSpacing);
 	void SetRowSpacing(f32 rowSpacing);
 	void SetChildren(WidgetSet const& children);
+	void AddChild(WidgetPtr const& child);
 
 private:
 	UPtr<WScrollable> scrollable_;

@@ -3,7 +3,6 @@
 #include <kotono_core/SceneWidget.h>
 class TSceneObject;
 class WButton;
-class WColor;
 class WSceneExplorerRemoveButton final : public WSceneWidget
 {
 	GENERATED_WSCENEEXPLORERREMOVEBUTTON()
@@ -19,7 +18,6 @@ private:
 	void OnSelectedObjectChanged(UPtr<TSceneObject> const& sceneObject) const;
 
 private:
-	UPtr<WColor> bg_;
 	UPtr<WButton> button_;
 };
 

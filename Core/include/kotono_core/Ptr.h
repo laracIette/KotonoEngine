@@ -56,11 +56,11 @@ public:
 	using PointerType = T;
 
 public:
-	UPtr() : owner_{ nullptr }, index_{ 0 } 
+	constexpr UPtr() : owner_{ nullptr }, index_{ 0 } 
 	{
 	}
 
-	UPtr(std::nullptr_t) : UPtr()
+	constexpr UPtr(std::nullptr_t) : UPtr()
 	{
 	}
 
@@ -139,6 +139,11 @@ public:
 		return (!owner_ && !ptr) || (owner_ && owner_->Get() == ptr);
 	}
 
+	constexpr bool operator==(std::nullptr_t) const noexcept
+	{
+		return !operator bool();
+	}
+
 	constexpr PointerType* Get() const noexcept
 	{
 		return static_cast<PointerType*>(owner_->Get());
@@ -170,7 +175,7 @@ public:
 	}
 
 private:
-	void SetOwner(Owner* owner)
+	constexpr void SetOwner(Owner* owner)
 	{
 		if (owner == owner_)
 		{

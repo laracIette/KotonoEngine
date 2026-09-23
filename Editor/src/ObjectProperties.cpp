@@ -1,19 +1,19 @@
 #include "ObjectProperties.h"
+
 #include "ValueBox.h"
 #include "ValueSliderFloat.h"
-#include <kotono_common/conversion_utils.h>
-#include <kotono_common/log.h>
-#include <kotono_interface/widgets.h>
-#include <kotono_core/Object.h>
 #include <glm/gtx/string_cast.hpp>
+#include <kotono_common/conversion_utils.h>
+#include <kotono_core/Object.h>
+#include <kotono_interface/widgets.h>
 
-static void* get_member_variable_pointer(void* object, const size offset) noexcept
+static void* get_member_variable_pointer(void* object, size offset) noexcept
 {
     return reinterpret_cast<void*>(reinterpret_cast<std::uintptr_t>(object) + offset);
 }
 
-WObjectProperties::WObjectProperties(const UPtr<KObject>& object)
-    : object_(object)
+WObjectProperties::WObjectProperties(ObjectPtr const& object)
+    : object_{ object }
 {
 }
 
@@ -21,45 +21,40 @@ WidgetPtr WObjectProperties::Build()
 {
     if (!object_)
     {
-        UPtr text{ UCreate<WText>{}() };
-        text->SetText("No object selected");
-        text->SetFontSize({ 16.0f, 20.0f });
-        return text;
+        return (
+            UCreate<WText>{}()
+            | Apply(&WText::SetText, "No object selected")
+            | Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
+        );
     }
 
-    const auto variables{ object_->GetMemberVariables() };
-
-    std::vector<UWidgetTree*> properties{};
-    for (const auto& variable : variables)
-    {
-        void* variablePtr{ get_member_variable_pointer(object_.Get(), variable.offset) };
-
-        UPtr propertyColumn{ UCreate<WColumn>{}() };
-        propertyColumn->SetSpacing(4.0f);
-
-        UPtr propertyText{ UCreate<WText>{}() };
-        propertyText->SetText(variable.name);
-        propertyText->SetFontSize({ 20.0f, 24.0f });
-        propertyText->SetSpacing(-6.0f);
-
-        properties.push_back(new UChildrenOwnerTree(propertyColumn, {
-            new UWidgetTreeLeaf(propertyText),
-            new UWidgetTreeLeaf(BuildMemberWidget(variable.type, variablePtr)),
-        }));
-    }
-
-    UPtr column{ UCreate<WColumn>{}() };
-    column->SetSpacing(5.0f);
-
-    const auto widgetTree{ UChildOwnerTree{ UCreate<WWrap>{}(),
-        new UChildrenOwnerTree{ column, properties }
-    } };
-    widgetTree.Link();
-
-    return widgetTree.Widget();
+    return (
+        UCreate<WWrap>{}()
+        | (
+            UCreate<WColumn>{}()
+            | Apply(&WColumn::SetSpacing, 5.0f)
+            | (
+                object_->GetMemberVariables()
+                | std::views::transform([this](UVariableInfo const& variable) {
+                    void* const variablePtr{ get_member_variable_pointer(object_.Get(), variable.offset) };
+                    return (
+                        UCreate<WColumn>{}()
+                        | Apply(&WColumn::SetSpacing, 4.0f)
+                        | (
+                            UCreate<WText>{}()
+                            | Apply(&WText::SetText, variable.name)
+                        )
+                        | (
+                            BuildMemberWidget(variable.type, variablePtr)
+                        )
+                    );
+                })
+            )
+        )
+    );
 }
 
-WidgetPtr WObjectProperties::BuildMemberWidget(const std::string& type, void* variablePtr)
+WidgetPtr WObjectProperties::BuildMemberWidget(std::string_view type, void* variablePtr)
 {
 	//if (Reflector.IsObjectType(type))
     {
@@ -67,69 +62,54 @@ WidgetPtr WObjectProperties::BuildMemberWidget(const std::string& type, void* va
     }
 	if (type == "f32")
     {
-        auto* floatPtr{ static_cast<f32*>(variablePtr) };
-
-        UPtr valueSlider{ UCreate<WValueSliderFloat>{}() };
-        valueSlider->SetValueToString([floatPtr]() {
-            return std::format("{0}", *floatPtr);
-        });
-        valueSlider->SetStringToValue([floatPtr](const std::string& value) {
-            *floatPtr = from_string<f32>(value);
-        });
-
-        return valueSlider;
+        auto* const floatPtr{ static_cast<f32*>(variablePtr) };
+        return (
+            UCreate<WValueSliderFloat>{}()
+            | Apply(&WValueSliderFloat::SetValueToString, [floatPtr]() { return std::format("{0}", *floatPtr); })
+            | Apply(&WValueSliderFloat::SetStringToValue, [floatPtr](std::string_view value) { *floatPtr = from_string<f32>(value); })
+        );
     }
 	if (type == "size")
     {
-        auto* sizePtr{ static_cast<size*>(variablePtr) };
-
-        UPtr valueBox{ UCreate<WValueBox>{}() };
-        valueBox->SetValueToString([sizePtr]() {
-            return std::format("{0}", *sizePtr);
-        });
-        valueBox->SetStringToValue([sizePtr](const std::string& value) {
-            *sizePtr = from_string<size>(value);
-        });
-
-        return valueBox;
+        auto* const sizePtr{ static_cast<size*>(variablePtr) };
+        return (
+            UCreate<WValueBox>{}()
+            | Apply(&WValueBox::SetValueToString, [sizePtr]() { return std::format("{0}", *sizePtr); })
+            | Apply(&WValueBox::SetStringToValue, [sizePtr](std::string_view value) { *sizePtr = from_string<size>(value); })
+        );
     }
     if (type == "std::string")
     {
-        auto* stringPtr{ static_cast<std::string*>(variablePtr) };
-
-        UPtr valueBox{ UCreate<WValueBox>{}() };
-        valueBox->SetValueToString([stringPtr]() {
-            return *stringPtr;
-        });
-        valueBox->SetStringToValue([stringPtr](const std::string& value) {
-            *stringPtr = value;
-        });
-
-        return valueBox;
+        auto* const stringPtr{ static_cast<std::string*>(variablePtr) };
+        return (
+            UCreate<WValueBox>{}()
+            | Apply(&WValueBox::SetValueToString, [stringPtr]() { return *stringPtr; })
+            | Apply(&WValueBox::SetStringToValue, [stringPtr](std::string_view value) { *stringPtr = value; })
+        );
     }
     if (type == "glm::vec2")
     {
-        UPtr text{ UCreate<WText>{}() };
-        text->SetText("Vec2 Editor Placeholder");
-        text->SetFontSize({ 18.0f, 22.0f });
-        text->SetSpacing(-5.0f);
-        return text;
+        return (
+            UCreate<WText>{}()
+            | Apply(&WText::SetText, "Vec2 Editor Placeholder")
+            | Apply(&WText::SetFontSize, glm::vec2{ 18.0f, 22.0f })
+        );
     }
     if (type == "glm::vec3")
     {
-        UPtr text{ UCreate<WText>{}() };
-        text->SetText("Vec3 Editor Placeholder");
-        text->SetFontSize({ 18.0f, 22.0f });
-        text->SetSpacing(-5.0f);
-        return text;
+        return (
+            UCreate<WText>{}()
+            | Apply(&WText::SetText, "Vec3 Editor Placeholder")
+            | Apply(&WText::SetFontSize, glm::vec2{ 18.0f, 22.0f })
+        );
     }
     if (type == "glm::vec4")
     {
-        UPtr text{ UCreate<WText>{}() };
-        text->SetText("Vec4 Editor Placeholder");
-        text->SetFontSize({ 18.0f, 22.0f });
-        text->SetSpacing(-5.0f);
-        return text;
+        return (
+            UCreate<WText>{}()
+            | Apply(&WText::SetText, "Vec4 Editor Placeholder")
+            | Apply(&WText::SetFontSize, glm::vec2{ 18.0f, 22.0f })
+        );
     }
     return nullptr;
 }

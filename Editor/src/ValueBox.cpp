@@ -1,19 +1,19 @@
 #include "ValueBox.h"
+
+#include "InputTextBox.h"
 #include <kotono_interface/widgets.h>
-#include <InputTextBox.h>
 
 WidgetPtr WValueBox::Build()
 {
-	UPtr inputTextBox{ UCreate<WInputTextBox>{}() };
-	inputTextBox->SetText(valueToString_ ? valueToString_() : "");
-	inputTextBox->SetOnTextChanged(stringToValue_);
-
-	const auto widgetTree{ UChildOwnerTree{ UCreate<WWrap>{}(EAxis::Vertical),
-		new UWidgetTreeLeaf{ inputTextBox }
-	} };
-	widgetTree.Link();
-
-	return widgetTree.Widget();
+	return (
+		UCreate<WWrap>{}()
+		| Apply(&WWrap::SetAxis, EAxis::Vertical)
+		| (
+			UCreate<WInputTextBox>{}()
+			| Apply(&WInputTextBox::SetText, valueToString_ ? valueToString_() : "")
+			| Apply(&WInputTextBox::SetOnTextChanged, stringToValue_)
+		)
+	);
 }
 
 #include "generated/ValueBox.generated.inl"

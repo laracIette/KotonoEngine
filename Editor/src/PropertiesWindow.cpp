@@ -7,40 +7,40 @@
 
 WidgetPtr WPropertiesWindow::Build()
 {
-    UPtr propertiesText{ UCreate<WText>{}() };
-    propertiesText->SetText("Properties");
-    propertiesText->SetSpacing(-20.0f);
-    
-    UPtr propertiesTextStack{ UCreate<WStack>{}() };
-    propertiesTextStack->SetChildren({ UCreate<WColor>{}(Colors::Black.WithAlpha(0.5f)), propertiesText });
-    
-    UPtr propertiesTextWrap{ UCreate<WWrap>{}() };
-    propertiesTextWrap->SetChild(propertiesTextStack);
-
-
-    objectProperties_ = UCreate<WObjectProperties>{}(GetScene()->GetSelectedObject());
-
-    mainList_ = UCreate<WList>{}();
-    mainList_->SetChildren({ propertiesTextWrap, objectProperties_});
-    mainList_->SetSpacing(10.0f);
-
-    UPtr mainListPadding{ UCreate<WPadding>{}() };
-    mainListPadding->SetPadding(UPadding::All(8.0f));
-
-    UPtr mainListBg{ UCreate<WColor>{}() };
-    mainListBg->SetColor(Colors::Black.WithAlpha(0.5f));
-
-    const auto widgetTree{ UChildOwnerTree{ UCreate<WWrap>{}(),
-        new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-            new UWidgetTreeLeaf{ mainListBg },
-            new UChildOwnerTree{ mainListPadding,
-                new UWidgetTreeLeaf{ mainList_ }
-            },
-        } }
-    } };
-    widgetTree.Link();
-
-    return widgetTree.Widget();
+    return (
+        UCreate<WWrap>{}()
+        | (
+            UCreate<WStack>{}()
+            | (
+                UCreate<WColor>{}()
+                | Apply(&WColor::SetColor, Colors::Black.WithValue(0.05f))
+            )
+            | (
+                UCreate<WPadding>{}()
+                | Apply(&WPadding::SetPadding, UPadding::All(8.0f))
+                | (
+                    mainList_ = UCreate<WList>{}()
+                    | Apply(&WList::SetSpacing, 10.0f)
+                    | (
+                        UCreate<WWrap>{}()
+                        | (
+                            UCreate<WStack>{}()
+                            | (
+                                UCreate<WColor>{}(Colors::Black.WithValue(0.05f))
+                            )
+                            | (
+                                UCreate<WText>{}()
+                                | Apply(&WText::SetText, "Properties")
+                            )
+                        )
+                    )
+                    | (
+                        objectProperties_ = UCreate<WObjectProperties>{}(GetScene()->GetSelectedObject())
+                    )
+                )
+            )
+        )
+    );
 }
 
 void WPropertiesWindow::Display(UWidgetDisplaySettings const& displaySettings)

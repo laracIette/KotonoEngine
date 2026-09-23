@@ -91,7 +91,7 @@ WidgetPtr WAssetExplorer::Build()
 				itemList_ = UCreate<WHorizontalWrapList>{ "Item List" }()
 				| Apply(&WHorizontalWrapList::SetItemSpacing, 10.0f)
 				| Apply(&WHorizontalWrapList::SetRowSpacing, 10.0f)
-				| Apply(&WHorizontalWrapList::SetChildren, assetExplorerItems_ = MakeItems())
+				| (assetExplorerItems_ = MakeItems())
 			)
 		)
 		| (

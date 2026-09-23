@@ -7,24 +7,37 @@
 
 WidgetPtr WDefaultSceneContext::Build()
 {
-	auto const widgetTree{ UChildrenOwnerTree{ UCreate<WColumn>{}(), {
-		new UChildOwnerTree{ UCreate<WWrap>{}(EAxis::Vertical), 
-			new UChildOwnerTree{ UCreate<WCenter>{ "Game State Center" }(EAxis::Horizontal),
-				new UWidgetTreeLeaf{ UCreate<WGameStateButton>{ "Game State Button" }(GetScene()) }
-			}
-		},
-		new UChildrenOwnerTree{ UCreate<WRow>{}(), {
-			new UChildOwnerTree{ UCreate<WConstraint>{ "Scene Explorer Constraint" }(EAxis::Horizontal, 300.0f),
-				new UWidgetTreeLeaf{ UCreate<WSceneExplorer>{ "Scene Explorer" }(GetScene()) }
-			},
-			new UWidgetTreeLeaf{ UCreate<WViewController>{ "Scene View Controller" }(GetScene()) },
-			new UWidgetTreeLeaf{ UCreate<WViewController>{ "Scene View Controller" }(GetScene()) },
-		} },
-	} } };
-
-	widgetTree.Link();
-
-	return widgetTree.Widget();
+	return (
+		UCreate<WColumn>{}()
+		| (
+			UCreate<WWrap>{}()
+			| Apply(&WWrap::SetAxis, EAxis::Vertical)
+			| (
+				UCreate<WCenter>{ "Game State Center" }()
+				| Apply(&WCenter::SetAxis, EAxis::Horizontal)
+				| (
+					UCreate<WGameStateButton>{ "Game State Button" }(GetScene())
+				)
+			)
+		)
+		| (
+			UCreate<WRow>{}()
+			| (
+				UCreate<WConstraint>{ "Scene Explorer Constraint" }(EAxis::Horizontal, 300.0f)
+				| Apply(&WConstraint::SetAxis, EAxis::Horizontal)
+				| Apply(&WConstraint::SetSize, 300.0f)
+				| (
+					UCreate<WSceneExplorer>{ "Scene Explorer" }(GetScene())
+				)
+			)
+			| (
+				UCreate<WViewController>{ "Scene View Controller" }(GetScene())
+			)
+			| (
+				UCreate<WViewController>{ "Scene View Controller" }(GetScene())
+			)
+		)
+	);
 }
 
 #include "generated/DefaultSceneContext.generated.inl"

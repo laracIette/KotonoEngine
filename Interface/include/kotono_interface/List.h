@@ -11,11 +11,12 @@ protected:
 	WidgetPtr Build() override;
 
 public:
-	f32 GetSpacing() const;
-	WidgetSet const& GetChildren() const;
+	auto GetSpacing() const -> f32;
+	auto GetChildren() const -> WidgetSet const&;
 
 	void SetSpacing(f32 spacing);
 	void SetChildren(WidgetSet const& children);
+	void AddChild(WidgetPtr const& child);
 
 private:
 	UPtr<WListBody> body_;

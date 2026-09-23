@@ -5,38 +5,32 @@
 #include <kotono_interface/widgets.h>
 
 WidgetPtr WSceneExplorerRemoveButton::Build()
-{
-    bg_ = UCreate<WColor>{}();
-    bg_->SetColor(GetScene()->GetSelectedObject()
-        ? Colors::Red
-        : Colors::Red.WithValue(0.1f)
-    );
-
-    UPtr text{ UCreate<WText>{}() };
-    text->SetFontSize({ 14.0f, 18.0f });
-    text->SetText("Remove");
-
-    button_ = UCreate<WButton>{}();
-    button_->SetIsEnabled(false);
-    button_->SetOnClicked([this]() {
-        if (UPtr selectedObject{ GetScene()->GetSelectedObject() })
-        {
-            GetScene()->Remove(selectedObject);
-            GetScene()->SelectObject(nullptr);
-            selectedObject->Delete();
-        }
-    });
-
-    const auto widgetTree{ UChildrenOwnerTree{ UCreate<WStack>{ "Remove Button Stack" }(), {
-        new UWidgetTreeLeaf{ button_ },
-        new UChildOwnerTree{ UCreate<WCenter>{}(),
-            new UWidgetTreeLeaf{ text },
-        },
-        new UWidgetTreeLeaf{ bg_ },
-    } } };
-    widgetTree.Link();
-
-    return widgetTree.Widget();
+{   
+    return (
+		UCreate<WStack>{ "Remove Button Stack" }()
+		| (
+			button_ = UCreate<WButton>{}()
+			| Apply(&WButton::SetNormalColor, Colors::Red.WithValue(0.8f))
+			| Apply(&WButton::SetDisabledColor, Colors::Red.WithValue(0.2f))
+			| Apply(&WButton::SetIsEnabled, false)
+			| Apply(&WButton::SetOnClicked, [this]() { 
+                if (UPtr selectedObject{ GetScene()->GetSelectedObject() })
+                {
+                    GetScene()->Remove(selectedObject);
+                    GetScene()->SelectObject(nullptr);
+                    selectedObject->Delete();
+                } 
+            })
+		)
+		| (
+			UCreate<WCenter>{}()
+			| (
+				UCreate<WText>{}()
+				| Apply(&WText::SetText, "Remove")
+				| Apply(&WText::SetFontSize, glm::vec2{ 14.0f, 18.0f })
+			)
+		)
+	);
 }
 
 void WSceneExplorerRemoveButton::Display(UWidgetDisplaySettings const& displaySettings)
@@ -55,11 +49,7 @@ void WSceneExplorerRemoveButton::Remove()
 
 void WSceneExplorerRemoveButton::OnSelectedObjectChanged(UPtr<TSceneObject> const& sceneObject) const
 {
-    bg_->SetColor(sceneObject
-        ? Colors::Red
-        : Colors::Red.WithValue(0.1f)
-    );
-    button_->SetIsEnabled(sceneObject);
+    button_->SetIsEnabled(sceneObject != nullptr);
 }
 
 #include "generated/SceneExplorerRemoveButton.generated.inl"

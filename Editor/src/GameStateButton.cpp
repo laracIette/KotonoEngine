@@ -10,38 +10,41 @@ static constexpr UColor STOPPED_COLOR{ Colors::Red.WithValue(0.2f) };
 
 WidgetPtr WGameStateButton::Build()
 {
-    playPauseButton_ = UCreate<WButton>{ "Play Pause Button" }();
-    playPauseButton_->SetNormalColor(PLAY_COLOR);
-    playPauseButton_->SetFocusedColor(playPauseButton_->GetNormalColor() * 0.9f);
-    playPauseButton_->SetOnClicked([this]() {
-        if (GetScene()->GetIsGamePlaying())
-        {
-            GetScene()->PauseGame();
-        }
-        else
-        {
-            GetScene()->PlayGame();
-        }
-    });
-
-    stopButton_ = UCreate<WButton>{ "Play Pause Button" }();
-    stopButton_->SetNormalColor(STOP_COLOR);
-    stopButton_->SetFocusedColor(stopButton_->GetNormalColor() * 0.9f);
-    stopButton_->SetDisabledColor(STOPPED_COLOR);
-    stopButton_->SetOnClicked([this]() { GetScene()->StopGame(); });
-    stopButton_->SetIsEnabled(!GetScene()->GetIsGameStopped());
-
-    auto const widgetTree{ UChildrenOwnerTree{ UCreate<WRow>{ "Main Row" }(5.0f), {
-        new UChildOwnerTree{ UCreate<WBox>{ "Play Pause Box" }(glm::vec2{ 64.0f, 64.0f }),
-            new UWidgetTreeLeaf{ playPauseButton_ }
-        },
-        new UChildOwnerTree{ UCreate<WBox>{ "Stop Box" }(glm::vec2{ 64.0f, 64.0f }),
-            new UWidgetTreeLeaf{ stopButton_ },
-        },
-    } } };
-    widgetTree.Link();
-
-    return widgetTree.Widget();
+    return (
+        UCreate<WRow>{ "Main Row" }()
+        | Apply(&WRow::SetSpacing, 5.0f)
+        | (
+            UCreate<WBox>{ "Play Pause Box" }()
+            | Apply(&WBox::SetSize, glm::vec2{ 64.0f, 64.0f })
+            | (
+                playPauseButton_ = UCreate<WButton>{ "Play Pause Button" }()
+                | Apply(&WButton::SetNormalColor, PLAY_COLOR)
+                | Apply(&WButton::SetFocusedColor, PLAY_COLOR * 0.9f)
+                | Apply(&WButton::SetOnClicked, [this]() {
+                    if (GetScene()->GetIsGamePlaying())
+                    {
+                        GetScene()->PauseGame();
+                    }
+                    else
+                    {
+                        GetScene()->PlayGame();
+                    }
+                })
+            )
+        )
+        | (
+            UCreate<WBox>{ "Stop Box" }()
+            | Apply(&WBox::SetSize, glm::vec2{ 64.0f, 64.0f })
+            | (
+                stopButton_ = UCreate<WButton>{ "Play Pause Button" }()
+                | Apply(&WButton::SetNormalColor, STOP_COLOR)
+                | Apply(&WButton::SetFocusedColor, STOP_COLOR * 0.9f)
+                | Apply(&WButton::SetDisabledColor, STOPPED_COLOR)
+                | Apply(&WButton::SetOnClicked, [this]() { GetScene()->StopGame(); })
+                | Apply(&WButton::SetIsEnabled, !GetScene()->GetIsGameStopped())
+            )
+        )
+    );
 }
 
 void WGameStateButton::Display(UWidgetDisplaySettings const& displaySettings)

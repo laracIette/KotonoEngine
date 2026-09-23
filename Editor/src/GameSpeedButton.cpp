@@ -5,16 +5,13 @@
 
 WidgetPtr WGameSpeedButton::Build()
 {
-	UPtr speedText{ UCreate<WText>{ "Game Speed Text" }("Game Speed Text") };
-	speedText->SetText([]() { return ""; });
-
-	auto const widgetTree{ UChildrenOwnerTree{ UCreate<WRow>{}(), {
-		new UWidgetTreeLeaf{ speedText },
-	} } };
-
-	widgetTree.Link();
-
-	return widgetTree.Widget();
+	return (
+		UCreate<WRow>{}()
+		| (
+			UCreate<WText>{ "Game Speed Text" }("Game Speed Text")
+			| Apply(&WText::SetText, []() { return ""; })
+		)
+	);
 }
 
 void WGameSpeedButton::Display(UWidgetDisplaySettings const& displaySettings)

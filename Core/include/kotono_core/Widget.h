@@ -120,24 +120,3 @@ private:
 	ReadonlyProperty(glm::vec2, contentSize_, ContentSize, Value);
 	ReadonlyProperty(glm::mat4, modelMatrix_, ModelMatrix);
 };
-
-class UWidgetTree
-{
-public:
-	virtual ~UWidgetTree() = default;
-
-	virtual auto Widget() const -> WidgetPtr = 0;
-	virtual void Link() const = 0;
-};
-
-class UWidgetTreeLeaf final : public UWidgetTree
-{
-public:
-	UWidgetTreeLeaf(WidgetPtr const& widget);
-
-	auto Widget() const -> WidgetPtr override;
-	void Link() const override;
-
-private:
-	WidgetPtr widget_;
-};

@@ -46,63 +46,16 @@ concept ChildrenOwner = requires(T & widget, WidgetSet const& children, WidgetPt
 	widget.AddChild(child);
 };
 
-template <ChildrenOwner T>
-class UChildrenOwnerTree final : public UWidgetTree
-{
-public:
-	UChildrenOwnerTree(UPtr<T> const& widget, std::span<UWidgetTree* const> children)
-		: widget_{ widget }
-		, children_{ children | std::ranges::to<std::vector>() }
-	{}
-
-	UChildrenOwnerTree(UPtr<T> const& widget, std::initializer_list<UWidgetTree*> children)
-		: widget_{ widget }
-		, children_{ children | std::ranges::to<std::vector>() }
-	{}
-
-	~UChildrenOwnerTree() override
-	{
-		for (auto const* widgetTree : children_)
-		{
-			delete widgetTree;
-		}
-	}
-
-	auto Widget() const -> WidgetPtr override
-	{
-		return widget_;
-	}
-
-	void Link() const override
-	{
-		for (auto const* child : children_)
-		{
-			if (child)
-			{
-				child->Link();
-			}
-		}
-
-		if (widget_)
-		{
-			auto const widgets{ children_
-				| std::views::filter([](UWidgetTree const* child) { return child != nullptr; })
-				| std::views::transform([](UWidgetTree const* child) { return child->Widget(); })
-				| std::ranges::to<USet>()
-			};
-
-			widget_->SetChildren(widgets);
-		}
-	}
-
-private:
-	UPtr<T> widget_;
-	std::vector<UWidgetTree*> children_;
-};
-
 template <ChildrenOwner TOwner, std::derived_from<WWidget> TChild>
 UPtr<TOwner> const& operator|(UPtr<TOwner> const& owner, UPtr<TChild> const& child)
 {
 	owner->AddChild(child);
+	return owner;
+}
+
+template <ChildrenOwner TOwner>
+UPtr<TOwner> const& operator|(UPtr<TOwner> const& owner, WidgetSet const& children)
+{
+	owner->SetChildren(children);
 	return owner;
 }

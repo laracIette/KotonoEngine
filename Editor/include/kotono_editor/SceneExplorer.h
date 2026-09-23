@@ -18,7 +18,9 @@ public:
 
 private:
 	void OnGameStateChanged(EGameState gameState) const;
-	void PopulateItemList(std::span<UPtr<TSceneObject> const> sceneObjects) const;
+
+	auto MakeItems(std::span<UPtr<TSceneObject> const> sceneObjects) const -> WidgetSet;
+	void UpdateItemList(std::span<UPtr<TSceneObject> const> sceneObjects) const;
 
 private:
 	UPtr<WList> itemList_;

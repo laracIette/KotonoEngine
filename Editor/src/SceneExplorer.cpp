@@ -8,37 +8,64 @@
 
 WidgetPtr WSceneExplorer::Build()
 {
-	itemList_ = UCreate<WList>{ "Scene Explorer Item List" }();
-	PopulateItemList(GetScene()->GetSceneObjects());
-
-	const UChildrenOwnerTree widgetTree(UCreate<WStack>{}(), {
-		new UWidgetTreeLeaf(UCreate<WColor>{}(Colors::White.WithValue(0.5f).WithAlpha(0.4f))),
-		new UChildOwnerTree(UCreate<WPadding>{}(UPadding::All(10.0f)),
-			new UChildrenOwnerTree(UCreate<WColumn>{}(10.0f), {
-				new UChildrenOwnerTree(UCreate<WRow>{}(), {
-					new UChildOwnerTree(UCreate<WBox>{ "Scene Explorer Add Button Box" }(glm::vec2{ 80.0f, 40.0f }),
-						new UWidgetTreeLeaf(UCreate<WSceneExplorerAddButton>{}(GetScene()))
-					),
-					new UWidgetTreeLeaf(UCreate<WSpacer>{}(EAxis::Horizontal)),
-					new UChildOwnerTree(UCreate<WBox>{ "Scene Explorer Remove Button Box" }(glm::vec2{ 80.0f, 40.0f }),
-						new UWidgetTreeLeaf(UCreate<WSceneExplorerRemoveButton>{}(GetScene()))
-					),
-				}),
-				new UWidgetTreeLeaf(UCreate<WText>{ "Scene Explorer Text" }("Scene Explorer")),
-				new UChildOwnerTree(UCreate<WPadding>{}(UPadding::All(5.0f)),
-					new UChildrenOwnerTree(UCreate<WStack>{}(), {
-						new UWidgetTreeLeaf(UCreate<WColor>{}(Colors::Black.WithAlpha(0.5f))),
-						new UChildOwnerTree(UCreate<WPadding>{}(UPadding::All(5.0f)),
-							new UWidgetTreeLeaf(itemList_)
-						),
-					})
-				),
-			})
-		),
-	});
-	widgetTree.Link();
-
-	return widgetTree.Widget();
+	return (
+		UCreate<WStack>{}()
+		| (
+			UCreate<WColor>{}()
+			| Apply(&WColor::SetColor, Colors::White.WithValue(0.5f).WithAlpha(0.4f))
+		)
+		| (
+			UCreate<WPadding>{}()
+			| Apply(&WPadding::SetPadding, UPadding::All(10.0f))
+			| (
+				UCreate<WColumn>{}()
+				| Apply(&WColumn::SetSpacing, 10.0f)
+				| (
+					UCreate<WRow>{}()
+					| (
+						UCreate<WBox>{ "Scene Explorer Add Button Box" }()
+						| Apply(&WBox::SetSize, glm::vec2{ 80.0f, 40.0f })
+						| (
+							UCreate<WSceneExplorerAddButton>{}(GetScene())
+						)
+					)
+					| (
+						UCreate<WSpacer>{}(EAxis::Horizontal)
+					)
+					| (
+						UCreate<WBox>{ "Scene Explorer Remove Button Box" }()
+						| Apply(&WBox::SetSize, glm::vec2{ 80.0f, 40.0f })
+						| (
+							UCreate<WSceneExplorerRemoveButton>{}(GetScene())
+						)
+					)
+				)
+				| (
+					UCreate<WText>{ "Scene Explorer Text" }()
+					| Apply(&WText::SetText, "Scene Explorer")
+				)
+				| (
+					UCreate<WPadding>{}()
+					| Apply(&WPadding::SetPadding, UPadding::All(5.0f))
+					| (
+						UCreate<WStack>{}()
+						| (
+							UCreate<WColor>{}()
+							| Apply(&WColor::SetColor, Colors::Black.WithAlpha(0.5f))
+						)
+						| (
+							UCreate<WPadding>{}()
+							| Apply(&WPadding::SetPadding, UPadding::All(5.0f))
+							| (
+								itemList_ = UCreate<WList>{ "Scene Explorer Item List" }()
+								| MakeItems(GetScene()->GetSceneObjects())
+							)
+						)
+					)
+				)
+			)
+		)
+	);
 }
 
 void WSceneExplorer::Display(UWidgetDisplaySettings const& displaySettings)
@@ -46,7 +73,7 @@ void WSceneExplorer::Display(UWidgetDisplaySettings const& displaySettings)
 	Base::Display(displaySettings);
 
 	GetScene()->GetEventGameStateChanged().AddListener(this, &Self::OnGameStateChanged);
-	GetScene()->GetEventSceneObjectsUpdated().AddListener(this, &Self::PopulateItemList);
+	GetScene()->GetEventSceneObjectsUpdated().AddListener(this, &Self::UpdateItemList);
 }
 
 void WSceneExplorer::Remove()
@@ -54,28 +81,33 @@ void WSceneExplorer::Remove()
 	Base::Remove();
 
 	GetScene()->GetEventGameStateChanged().RemoveListener(this, &Self::OnGameStateChanged);
-	GetScene()->GetEventSceneObjectsUpdated().RemoveListener(this, &Self::PopulateItemList);
+	GetScene()->GetEventSceneObjectsUpdated().RemoveListener(this, &Self::UpdateItemList);
 }
 
 void WSceneExplorer::OnGameStateChanged(EGameState gameState) const
 {
 	if (gameState != EGameState::Paused)
 	{
-		PopulateItemList(GetScene()->GetSceneObjects());
+		UpdateItemList(GetScene()->GetSceneObjects());
 	}
 }
 
-void WSceneExplorer::PopulateItemList(std::span<UPtr<TSceneObject> const> sceneObjects) const
+auto WSceneExplorer::MakeItems(std::span<UPtr<TSceneObject> const> sceneObjects) const -> WidgetSet
+{
+	return sceneObjects
+		| std::views::transform([this](UPtr<TSceneObject> const& sceneObject) {
+			return UCreate<WSceneExplorerItem>{}(GetScene(), sceneObject);
+		})
+		| std::ranges::to<USet>();
+}
+
+void WSceneExplorer::UpdateItemList(std::span<UPtr<TSceneObject> const> sceneObjects) const
 {
 	if (itemList_)
 	{
 		UAutoDelete<WWidget> const itemListChildren{ itemList_->GetChildren() };
 
-		WidgetSet items{};
-		for (auto const& sceneObject : sceneObjects)
-		{
-			items.Add(UCreate<WSceneExplorerItem>{}(GetScene(), sceneObject));
-		}
+		auto const items{ MakeItems(sceneObjects) };
 		itemList_->SetChildren(items);
 	}
 }

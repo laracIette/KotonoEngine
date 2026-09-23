@@ -325,18 +325,4 @@ glm::mat4 WWidget::ModelMatrix() const
 	return TranslationMatrix() * RotationMatrix() * ScaleMatrix();
 }
 
-UWidgetTreeLeaf::UWidgetTreeLeaf(WidgetPtr const& widget)
-	: widget_{ widget }
-{
-}
-
-auto UWidgetTreeLeaf::Widget() const -> WidgetPtr
-{
-	return widget_;
-}
-
-void UWidgetTreeLeaf::Link() const
-{
-}
-
 #include "generated/Widget.generated.inl"

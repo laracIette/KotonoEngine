@@ -6,14 +6,14 @@ class WObjectProperties : public WWidget
 	GENERATED_WOBJECTPROPERTIES()
 
 public:
-	WObjectProperties(const UPtr<KObject>& object);
+	WObjectProperties(ObjectPtr const& object);
 
 protected:
 	WidgetPtr Build() override;
 
 private:
-	WidgetPtr BuildMemberWidget(const std::string& type, void* variablePtr);
+	WidgetPtr BuildMemberWidget(std::string_view type, void* variablePtr);
 
 private:
-	UPtr<KObject> object_;
+	ObjectPtr object_;
 };

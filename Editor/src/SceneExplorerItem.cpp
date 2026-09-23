@@ -12,20 +12,21 @@ WSceneExplorerItem::WSceneExplorerItem(UScene* scene, UPtr<TSceneObject> const& 
 
 WidgetPtr WSceneExplorerItem::Build()
 {
-	UPtr button{ UCreate<WButton>{}() };
-	button->SetOnActive([this]() {
-		GetScene()->SelectObject(sceneObject_);
-	});
-
-	const UChildOwnerTree widgetTree{ UCreate<WWrap>{}(),
-		new UChildrenOwnerTree{ UCreate<WStack>{}(), {
-			new UWidgetTreeLeaf{ button },
-			new UWidgetTreeLeaf{ UCreate<WText>{}(sceneObject_ ? sceneObject_->GetName() : "") },
-		} }
-	};
-	widgetTree.Link();
-
-	return widgetTree.Widget();
+	return (
+		UCreate<WWrap>{}()
+		| (
+			UCreate<WStack>{}()
+			| (
+				UCreate<WButton>{}()
+				| Apply(&WButton::SetIsSelectable, true)
+				| Apply(&WButton::SetOnClicked, [this]() { GetScene()->SelectObject(sceneObject_); })
+			)
+			| (
+				UCreate<WText>{}()
+				| Apply(&WText::SetText, sceneObject_ ? sceneObject_->GetName() : "")
+			)
+		)
+	);
 }
 
 void WSceneExplorerItem::Display(UWidgetDisplaySettings const& displaySettings)
