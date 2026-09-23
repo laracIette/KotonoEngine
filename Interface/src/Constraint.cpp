@@ -11,19 +11,21 @@ WConstraint::WConstraint()
 {
 }
 
-glm::vec2 WConstraint::GetContentSize(glm::vec2 bounds) const
+glm::vec2 WConstraint::GetContentSize(glm::vec2 const& bounds) const
 {
+	glm::vec2 newBounds{ bounds };
+
 	switch (axis_)
 	{
 	case EAxis::Horizontal:
-		bounds.x = std::min(size_, bounds.x);
+		newBounds.x = std::min(size_, bounds.x);
 		break;
 	case EAxis::Vertical:
-		bounds.y = std::min(size_, bounds.y);
+		newBounds.y = std::min(size_, bounds.y);
 		break;
 	}
 
-	return Base::GetContentSize(bounds);
+	return Base::GetContentSize(newBounds);
 }
 
 glm::vec2 WConstraint::GetDesiredSize(const glm::vec2& bounds) const

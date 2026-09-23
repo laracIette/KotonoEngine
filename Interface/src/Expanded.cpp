@@ -1,6 +1,6 @@
 #include "Expanded.h"
 
-glm::vec2 WExpanded::GetContentSize(glm::vec2 bounds) const
+glm::vec2 WExpanded::GetContentSize(glm::vec2 const& bounds) const
 {
 	return bounds;
 }

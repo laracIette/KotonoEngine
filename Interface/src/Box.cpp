@@ -7,11 +7,9 @@ WBox::WBox(glm::vec2 const& size)
 {
 }
 
-glm::vec2 WBox::GetContentSize(glm::vec2 bounds) const
+glm::vec2 WBox::GetContentSize(glm::vec2 const& bounds) const
 {
-	bounds = glm::min(size_, bounds);
-
-	return Base::GetContentSize(bounds);
+	return glm::min(size_, bounds);
 }
 
 glm::vec2 WBox::GetDesiredSize(glm::vec2 const& bounds) const

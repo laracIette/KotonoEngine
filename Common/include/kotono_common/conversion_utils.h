@@ -12,8 +12,14 @@ static T from_string(std::string_view str, T defaultValue = T{})
     return ec == std::errc{} ? result : defaultValue;
 }
 
-template <std::ranges::range R>
+template <std::ranges::input_range R>
 static std::string to_string(R&& range)
 {
-	return std::format("{0}", std::forward<R>(range));
+	return std::format("{0} items: {1}", std::ranges::size(range), std::forward<R>(range));
+}
+
+template <typename T>
+static std::string to_string(T&& v)
+{
+	return std::format("{0}", std::forward<T>(v));
 }

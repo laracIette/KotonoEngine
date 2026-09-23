@@ -14,7 +14,7 @@ WText::WText(std::string_view text, glm::vec2 const& fontSize, f32 spacing)
 {
 }
 
-glm::vec2 WText::GetContentSize(glm::vec2 bounds) const
+glm::vec2 WText::GetContentSize(glm::vec2 const& bounds) const
 {
 	return glm::min(GetDesiredSize(bounds), bounds);
 }

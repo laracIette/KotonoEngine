@@ -62,29 +62,29 @@ public:
 	/// Stop displaying the widget
 	virtual void Remove();
 
-	virtual glm::vec2 GetContentSize(glm::vec2 bounds) const;
-	virtual glm::vec2 GetDesiredSize(glm::vec2 const& bounds) const;
+	virtual auto GetContentSize(glm::vec2 const& bounds) const -> glm::vec2;
+	virtual auto GetDesiredSize(glm::vec2 const& bounds) const -> glm::vec2;
 
-	virtual EExpand GetExpand() const;
-	virtual EFlex GetFlex() const;
+	virtual auto GetExpand() const -> EExpand;
+	virtual auto GetFlex() const -> EFlex;
 
-	std::string GetClassPath() const;
+	auto GetClassPath() const -> std::string;
 
-	virtual UInterface* GetInterface() const;
+	virtual auto GetInterface() const -> UInterface*;
 
 	virtual void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const;
 	virtual void PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosition) const;
 
-	virtual b8 OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position);
-	virtual b8 OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position);
-	virtual b8 OnMouseScroll(glm::vec2 const& delta);
+	virtual auto OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) -> b8;
+	virtual auto OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> b8;
+	virtual auto OnMouseScroll(glm::vec2 const& delta) -> b8;
 
-	virtual b8 OnKeyboardKey(EKey key, EInputState inputState);
+	virtual auto OnKeyboardKey(EKey key, EInputState inputState) -> b8;
 
 	virtual void OnFocused();
 	virtual void OnUnfocused();
 
-	b8 GetShouldRefresh() const;
+	auto GetShouldRefresh() const -> b8;
 	virtual void Refresh();
 
 	auto GetPosition() const -> glm::vec2 { return slotDisplaySettings_.position; }
@@ -99,14 +99,14 @@ protected:
 
 private:
 	void CacheBuild();
-	bool HasBuild() const;
-	bool IsVisible(UWidgetDisplaySettings const& displaySettings) const;
+	auto HasBuild() const -> b8;
+	auto IsVisible(UWidgetDisplaySettings const& displaySettings) const -> b8;
 	void MarkDirty();
 
-	glm::mat4 TranslationMatrix() const;
-	glm::mat4 RotationMatrix() const;
-	glm::mat4 ScaleMatrix() const;
-	glm::mat4 ModelMatrix() const;
+	auto TranslationMatrix() const -> glm::mat4;
+	auto RotationMatrix() const -> glm::mat4;
+	auto ScaleMatrix() const -> glm::mat4;
+	auto ModelMatrix() const -> glm::mat4;
 
 private:
 	WidgetPtr build_;

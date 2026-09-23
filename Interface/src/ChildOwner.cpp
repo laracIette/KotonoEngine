@@ -20,7 +20,7 @@ void WChildOwner::Remove()
 	}
 }
 
-glm::vec2 WChildOwner::GetContentSize(glm::vec2 bounds) const
+glm::vec2 WChildOwner::GetContentSize(glm::vec2 const& bounds) const
 {
 	if (child_)
 	{

@@ -54,6 +54,8 @@ void UScene::Update(f32 deltaTime)
 
 		deltaTime_ = deltaTime;
 		now_ += deltaTime;
+
+		InitSceneObjects();
 		UpdateSceneObjects(deltaTime);
 
 		audioContext_.Update();
@@ -177,22 +179,39 @@ void UScene::SelectObject(SceneObject const& sceneObject)
 	eventSelectedObjectChanged_.Broadcast(sceneObject);
 }
 
-void UScene::UpdateSceneObjects(f32 deltaTime) const
+void UScene::InitSceneObjects() const
 {
 	for (auto const& sceneObject : sceneObjects_)
 	{
+		if (!sceneObject)
+		{
+			continue;
+		}
+
 		if (!sceneObject->isInit_)
 		{
 			sceneObject->Init();
 			sceneObject->isInit_ = true;
 		}
 
-		if (sceneObject->GetCanUpdate())
+		sceneObject->InitSceneComponents();
+	}
+}
+
+void UScene::UpdateSceneObjects(f32 deltaTime) const
+{
+	for (auto const& sceneObject : sceneObjects_)
+	{	
+		if (!sceneObject)
+		{
+			continue;
+		}
+
+		if (sceneObject && sceneObject->GetCanUpdate())
 		{
 			sceneObject->Update(deltaTime);
 		}
 
-		sceneObject->InitSceneComponents();
 		sceneObject->UpdateSceneComponents(deltaTime);
 	}
 }

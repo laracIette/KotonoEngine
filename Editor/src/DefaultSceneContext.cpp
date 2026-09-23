@@ -23,7 +23,7 @@ WidgetPtr WDefaultSceneContext::Build()
 		| (
 			UCreate<WRow>{}()
 			| (
-				UCreate<WConstraint>{ "Scene Explorer Constraint" }(EAxis::Horizontal, 300.0f)
+				UCreate<WConstraint>{ "Scene Explorer Constraint" }()
 				| Apply(&WConstraint::SetAxis, EAxis::Horizontal)
 				| Apply(&WConstraint::SetSize, 300.0f)
 				| (

@@ -10,7 +10,7 @@ public:
 	WColumn(f32 spacing = 0.0f);
 
 public:
-	glm::vec2 GetContentSize(glm::vec2 bounds) const override;
+	glm::vec2 GetContentSize(glm::vec2 const& bounds) const override;
 	glm::vec2 GetDesiredSize(glm::vec2 const& bounds) const override;
 
 	EExpand GetExpand() const override;

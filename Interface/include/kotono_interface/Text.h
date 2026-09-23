@@ -18,7 +18,7 @@ private:
 public:
 	WText(std::string_view text = "", glm::vec2 const& fontSize = { 20.0f, 24.0f }, f32 spacing = 0.75f);
 
-	glm::vec2 GetContentSize(glm::vec2 bounds) const override;
+	glm::vec2 GetContentSize(glm::vec2 const& bounds) const override;
 	glm::vec2 GetDesiredSize(glm::vec2 const& bounds) const override;
 
 	EFlex GetFlex() const override;

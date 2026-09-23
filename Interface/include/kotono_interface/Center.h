@@ -10,7 +10,7 @@ public:
 	WCenter(const EAxis axis = EAxis::All);
 
 public:
-	glm::vec2 GetContentSize(glm::vec2 bounds) const override;
+	glm::vec2 GetContentSize(glm::vec2 const& bounds) const override;
 
 protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;

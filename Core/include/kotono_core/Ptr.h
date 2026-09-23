@@ -1,4 +1,5 @@
 #pragma once
+#include <format>
 #include <kotono_common/Pool.h>
 #include <string>
 #include <type_traits>
@@ -166,7 +167,7 @@ public:
 
 	operator std::string() const
 	{
-		return Get() ? Get()->operator std::string() : std::string{ "" };
+		return Get() ? Get()->operator std::string() : std::string{ "nullptr" };
 	}
 
 	constexpr Owner* GetOwner() const noexcept
@@ -223,4 +224,13 @@ struct std::hash<UPtr<T>>
 	{
 		return std::hash<void*>{}(ptr.owner_);
 	}
+};
+
+template <typename T, typename CharT>
+struct std::formatter<UPtr<T>, CharT> : std::formatter<std::string, CharT>
+{
+    auto format(UPtr<T> const& ptr, auto& ctx) const 
+	{
+        return std::format_to(ctx.out(), "{0}", ptr.operator std::string());
+    }
 };

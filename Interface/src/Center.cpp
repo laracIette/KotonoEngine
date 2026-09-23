@@ -5,7 +5,7 @@ WCenter::WCenter(const EAxis axis)
 {
 }
 
-glm::vec2 WCenter::GetContentSize(glm::vec2 bounds) const
+glm::vec2 WCenter::GetContentSize(glm::vec2 const& bounds) const
 {
 	return Base::GetContentSize(bounds);
 }

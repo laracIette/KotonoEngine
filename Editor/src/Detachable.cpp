@@ -1,5 +1,6 @@
 #include "Detachable.h"
 
+#include <kotono_common/conversion_utils.h>
 #include <kotono_core/Interface.h>
 #include <kotono_core/InterfaceRoot.h>
 #include <kotono_interface/widgets.h>
@@ -26,7 +27,7 @@ WidgetPtr WDetachable::Build()
 							UCreate<WCenter>{}()
 							| Apply(&WCenter::SetAxis, EAxis::Vertical)
 							| (
-								UCreate<WText>{ "Name" }("Detachable")
+								UCreate<WText>{ "Name" }()
 								| Apply(&WText::SetText, [this]() { return GetName(); })
 								| Apply(&WText::SetFontSize, glm::vec2{ 12.0f, 16.0f })
 							)
@@ -39,8 +40,7 @@ WidgetPtr WDetachable::Build()
 				)
 			)
 			| (
-				//child_ = UCreate<WText>{}("Loading..."),
-				child_ = nullptr
+				child_ = UCreate<WText>{}("Loading...")
 			)
 		)
 	);
@@ -55,7 +55,7 @@ void WDetachable::SetChild(WidgetPtr const& widget)
 
 	if (child_)
 	{
-		//child_->Delete();
+		child_->Delete();
 	}
 
 	child_ = widget;

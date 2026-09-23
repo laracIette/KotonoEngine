@@ -112,12 +112,6 @@ public:
 		size_ = 0;
 	}
 
-	auto operator[](this auto&& ctn, IndexType index) noexcept
-	{
-		assert(index < size_ && "Index out of bounds!");
-		return ctn.data_[index];
-	}
-
 	auto begin(this auto&& ctn) noexcept
 	{
 		return ctn.data_;
@@ -126,6 +120,12 @@ public:
 	auto end(this auto&& ctn) noexcept
 	{
 		return ctn.data_ + ctn.size_;
+	}
+
+	decltype(auto) operator[](this auto&& ctn, IndexType index) noexcept
+	{
+		assert(index < size_ && "Index out of bounds!");
+		return ctn.data_[index];
 	}
 
 private:

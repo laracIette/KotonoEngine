@@ -6,18 +6,21 @@ WSpacer::WSpacer(EAxis axis)
 {
 }
 
-glm::vec2 WSpacer::GetContentSize(glm::vec2 bounds) const
+glm::vec2 WSpacer::GetContentSize(glm::vec2 const& bounds) const
 {
+	glm::vec2 size{ bounds };
+
 	if (has_flag(axis_, EAxis::Horizontal))
 	{
-		bounds.y = 0.0f;
+		size.y = 0.0f;
 	}
 	if (has_flag(axis_, EAxis::Vertical))
 	{
-		bounds.x = 0.0f;
+		size.x = 0.0f;
 	}
 	
-	return bounds;
+	size = glm::min(size, bounds);
+	return size;
 }
 
 EExpand WSpacer::GetExpand() const

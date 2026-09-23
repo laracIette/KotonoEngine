@@ -2,9 +2,9 @@
 
 #include <glm/common.hpp>
 
-glm::vec2 WListBody::GetContentSize(glm::vec2 bounds) const
+glm::vec2 WListBody::GetContentSize(glm::vec2 const& bounds) const
 {
-	bounds.y = INFINITY;
+	glm::vec2 newBounds{ bounds.x, INFINITY };
 
 	glm::vec2 size{ 0.0f, 0.0f };
 
@@ -12,7 +12,7 @@ glm::vec2 WListBody::GetContentSize(glm::vec2 bounds) const
 	{
 		if (child)
 		{
-			auto const childSize{ child->GetContentSize(bounds) };
+			auto const childSize{ child->GetContentSize(newBounds) };
 			size.x = std::max(size.x, childSize.x);
 			size.y += childSize.y;
 		}
@@ -23,8 +23,8 @@ glm::vec2 WListBody::GetContentSize(glm::vec2 bounds) const
 		size.y += spacing_ * static_cast<f32>(GetChildren().size() - 1);
 	}
 
-	bounds = glm::min(size, bounds);
-	return bounds;
+	size = glm::min(size, newBounds);
+	return size;
 }
 
 glm::vec2 WListBody::GetDesiredSize(const glm::vec2& bounds) const

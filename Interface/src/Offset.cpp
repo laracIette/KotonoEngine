@@ -1,6 +1,6 @@
 #include "Offset.h"
 
-glm::vec2 WOffset::GetContentSize(glm::vec2 bounds) const
+glm::vec2 WOffset::GetContentSize(glm::vec2 const& bounds) const
 {
 	return Base::GetContentSize(bounds);
 }

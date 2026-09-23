@@ -1,14 +1,15 @@
 #include "Column.h"
+
 #include <algorithm>
-#include <kotono_common/enum_utils.h>
 #include <glm/common.hpp>
+#include <kotono_common/enum_utils.h>
 
 WColumn::WColumn(f32 spacing)
 	: spacing_{ spacing }
 {
 }
 
-glm::vec2 WColumn::GetContentSize(glm::vec2 bounds) const
+glm::vec2 WColumn::GetContentSize(glm::vec2 const& bounds) const
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
@@ -27,7 +28,7 @@ glm::vec2 WColumn::GetContentSize(glm::vec2 bounds) const
 		size.y += spacing_ * static_cast<f32>(GetValidChildrenCount() - 1);
 	}
 
-	bounds = glm::min(bounds, size);
+	size = glm::min(size, bounds);
 	return bounds;
 }
 

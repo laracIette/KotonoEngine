@@ -56,6 +56,7 @@ public:
 	void SetTimeScale(f32 timeScale) { timeScale_ = timeScale; }
 
 private:
+	void InitSceneObjects() const;
 	void UpdateSceneObjects(f32 deltaTime) const;
 
 	auto TrySetState(EGameState gameState) -> b8;

@@ -5,14 +5,14 @@ WPadding::WPadding(UPadding const& padding)
 {
 }
 
-glm::vec2 WPadding::GetContentSize(glm::vec2 bounds) const
+glm::vec2 WPadding::GetContentSize(glm::vec2 const& bounds) const
 {
-	bounds.x -= padding_.l;
-	bounds.x -= padding_.r;
-	bounds.y -= padding_.t;
-	bounds.y -= padding_.b;
-	
-	return bounds;
+	glm::vec2 const size{
+		bounds.x - padding_.l - padding_.r,
+		bounds.y - padding_.t - padding_.b
+	};	
+
+	return size;
 }
 
 glm::vec2 WPadding::GetDesiredSize(const glm::vec2& bounds) const

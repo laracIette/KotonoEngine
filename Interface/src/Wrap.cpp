@@ -1,4 +1,5 @@
 #include "Wrap.h"
+
 #include <glm/common.hpp>
 #include <kotono_common/enum_utils.h>
 
@@ -7,22 +8,24 @@ WWrap::WWrap(EAxis axis)
 {
 }
 
-glm::vec2 WWrap::GetContentSize(glm::vec2 bounds) const
+glm::vec2 WWrap::GetContentSize(glm::vec2 const& bounds) const
 {
+	glm::vec2 newBounds{ bounds };
+
 	if (GetChild())
 	{
 		auto const childDesiredSize{ GetChild()->GetDesiredSize(bounds) };
 		if (has_flag(axis_, EAxis::Horizontal))
 		{
-			bounds.x = std::min(bounds.x, childDesiredSize.x);
+			newBounds.x = std::min(bounds.x, childDesiredSize.x);
 		}
 		if (has_flag(axis_, EAxis::Vertical))
 		{
-			bounds.y = std::min(bounds.y, childDesiredSize.y);
+			newBounds.y = std::min(bounds.y, childDesiredSize.y);
 		}
 	}
 
-	return Base::GetContentSize(bounds);
+	return Base::GetContentSize(newBounds);
 }
 
 EExpand WWrap::GetExpand() const
