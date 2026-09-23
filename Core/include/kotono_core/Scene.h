@@ -24,7 +24,7 @@ public:
 	void Remove(SceneObject const& sceneObject);
 
 	void SpawnSceneObjects();
-	void AddSpawnedSceneObject(SceneObject const& sceneObject);
+	void DespawnSceneObjects();
 
 	auto GetSceneObjects() const -> std::span<SceneObject const>;
 
@@ -64,7 +64,7 @@ private:
 	UAudioContext audioContext_;
 
 	USet<SceneObject> sceneObjects_;
-	USet<SceneObject> spawnedSceneObjects_;
+	b8 areSceneObjectsSpawned_;
 
 	UEvent<USet<SceneObject>> eventSceneObjectsUpdated_;
 	UEvent<SceneObject> eventSelectedObjectChanged_;

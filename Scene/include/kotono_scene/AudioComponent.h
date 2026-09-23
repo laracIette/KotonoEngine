@@ -11,8 +11,8 @@ public:
 	KAudioComponent();
 	~KAudioComponent() override;
 
-public:
 	void Spawn() override;
+	void Despawn() override;
 
 private:
 	EHandle audioSourceHandle_;

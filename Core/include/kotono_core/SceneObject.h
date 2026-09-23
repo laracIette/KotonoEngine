@@ -1,12 +1,14 @@
 #pragma once
 #include "generated/SceneObject.generated.h"
 #include "Object.h"
+
 #include "CoordinateSpace.h"
-#include <algorithm>
 #include <kotono_common/Set.h>
+
 struct USceneRenderGraph;
 class UScene;
 class KSceneComponent; 
+
 class TSceneObject : public KObject
 {
 	GENERATED_TSCENEOBJECT()
@@ -23,18 +25,10 @@ protected:
 	virtual void Update(f32 deltaTime);
 
 public:
-	UScene* GetScene() const;
-	UPtr<KSceneComponent> GetRootComponent() const;
+	auto GetScene() const -> UScene*;
+	auto GetRootComponent() const -> UPtr<KSceneComponent>;
 
 	void SetParent(UPtr<TSceneObject> const& parent, ECoordinateSpace keepTransform);
-
-	template <std::derived_from<KSceneComponent> T>
-	UPtr<T> GetComponent() const
-	{
-		return std::find_first_of(sceneComponents_.begin(), sceneComponents_.end(),
-			[](const UPtr<KSceneComponent>& component) { return TryCast<T>(component); }
-		);
-	}
 
 	void AddComponent(UPtr<KSceneComponent> const& component);
 	void RemoveComponent(UPtr<KSceneComponent> const& component);
@@ -42,6 +36,7 @@ public:
 	void Deserialize() override;
 
 	virtual void Spawn();
+	virtual void Despawn();
 
 	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const;
 

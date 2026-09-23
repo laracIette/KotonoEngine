@@ -10,6 +10,8 @@ UScene::UScene(UPath const& path)
 	, deltaTime_{ 0.0f }
 	, now_{ 0.0f }
 	, timeScale_{ 1.0f }
+	, sceneObjects_{}
+	, areSceneObjectsSpawned_{ false }
 {
 	audioContext_.Init();
 
@@ -33,7 +35,7 @@ UScene::UScene(UPath const& path)
 
 UScene::~UScene()
 {
-	for (auto const& sceneObject : sceneObjects_)
+	for (auto const& sceneObject : USet<SceneObject>{ sceneObjects_ })
 	{
 		if (sceneObject)
 		{
@@ -67,6 +69,12 @@ void UScene::Add(SceneObject const& sceneObject)
 
 	sceneObjects_.Add(sceneObject);
 	sceneObject->scene_ = this;
+
+	if (areSceneObjectsSpawned_)
+	{
+		sceneObject->Spawn();
+	}
+
 	eventSceneObjectsUpdated_.Broadcast(sceneObjects_);
 }
 
@@ -77,27 +85,51 @@ void UScene::Remove(SceneObject const& sceneObject)
 		return;
 	}
 
+	if (areSceneObjectsSpawned_)
+	{
+		sceneObject->Despawn();
+	}
+
 	sceneObjects_.Remove(sceneObject);
-	sceneObject->scene_ = nullptr; // todo: needed during object destruction, split destruction and despawn 
+	sceneObject->scene_ = nullptr;
+
 	eventSceneObjectsUpdated_.Broadcast(sceneObjects_);
 }
 
 void UScene::SpawnSceneObjects()
 {
-	for (auto const& sceneObject : sceneObjects_)
-	{
-		sceneObject->Spawn();
-	}
-}
-
-void UScene::AddSpawnedSceneObject(SceneObject const& sceneObject)
-{
-	if (!sceneObject)
+	if (areSceneObjectsSpawned_)
 	{
 		return;
 	}
 
-	spawnedSceneObjects_.Add(sceneObject);
+	areSceneObjectsSpawned_ = true;
+
+	for (auto const& sceneObject : sceneObjects_)
+	{
+		if (sceneObject)
+		{
+			sceneObject->Spawn();
+		}
+	}
+}
+
+void UScene::DespawnSceneObjects()
+{
+	if (!areSceneObjectsSpawned_)
+	{
+		return;
+	}
+
+	areSceneObjectsSpawned_ = false;
+
+	for (auto const& sceneObject : sceneObjects_)
+	{
+		if (sceneObject)
+		{
+			sceneObject->Despawn();
+		}
+	}
 }
 
 auto UScene::GetSceneObjects() const -> std::span<SceneObject const>
@@ -107,7 +139,7 @@ auto UScene::GetSceneObjects() const -> std::span<SceneObject const>
 
 void UScene::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const
 {
-	for (auto const& sceneObject : spawnedSceneObjects_)
+	for (auto const& sceneObject : sceneObjects_)
 	{
 		if (sceneObject)
 		{
@@ -149,15 +181,15 @@ void UScene::UpdateSceneObjects(f32 deltaTime) const
 {
 	for (auto const& sceneObject : sceneObjects_)
 	{
-		if (sceneObject->GetCanUpdate())
-		{
-			sceneObject->Update(deltaTime);
-		}
-
 		if (!sceneObject->isInit_)
 		{
 			sceneObject->Init();
 			sceneObject->isInit_ = true;
+		}
+
+		if (sceneObject->GetCanUpdate())
+		{
+			sceneObject->Update(deltaTime);
 		}
 
 		sceneObject->InitSceneComponents();

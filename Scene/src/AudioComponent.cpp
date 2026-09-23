@@ -9,10 +9,6 @@ KAudioComponent::KAudioComponent()
 
 KAudioComponent::~KAudioComponent()
 {
-	if (audioSourceHandle_ != EHandle::Invalid)
-	{
-		GetScene()->GetAudioContext().DeleteSource(audioSourceHandle_);
-	}
 }
 
 void KAudioComponent::Spawn()
@@ -31,6 +27,16 @@ void KAudioComponent::Spawn()
 		source.SetAttenuationFactor(1.0f);
 		source.SetAttenuationStartDistance(5.0f);
 		source.SetAttenuationEndDistance(10.0f);
+	}
+}
+
+void KAudioComponent::Despawn()
+{
+	Base::Despawn();
+
+	if (audioSourceHandle_ != EHandle::Invalid)
+	{
+		GetScene()->GetAudioContext().DeleteSource(audioSourceHandle_);
 	}
 }
 

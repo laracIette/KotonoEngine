@@ -16,6 +16,7 @@ protected:
 
 public:
 	void Spawn() override;
+	void Despawn() override;
 
 	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const override;
 

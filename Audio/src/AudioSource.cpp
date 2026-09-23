@@ -196,7 +196,7 @@ void UAudioSource::Play() const
 void UAudioSource::Pause() const
 {
     AL_CHECK_THROW(
-        alSourcePlay(source_),
+        alSourcePause(source_),
         "couldn't pause source!"
     );
 }
@@ -204,7 +204,7 @@ void UAudioSource::Pause() const
 void UAudioSource::Rewind() const
 {
     AL_CHECK_THROW(
-        alSourcePlay(source_),
+        alSourceRewind(source_),
         "couldn't rewind source!"
     );
 }
@@ -212,7 +212,7 @@ void UAudioSource::Rewind() const
 void UAudioSource::Stop() const
 {
     AL_CHECK_THROW(
-        alSourcePlay(source_),
+        alSourceStop(source_),
         "couldn't stop source!"
     );
 }

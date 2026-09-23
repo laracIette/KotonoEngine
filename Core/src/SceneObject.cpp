@@ -10,6 +10,11 @@ TSceneObject::TSceneObject()
 
 TSceneObject::~TSceneObject()
 {
+	if (GetScene())
+	{
+		GetScene()->Remove(Ptr());
+	}
+
 	for (i64 i{ sceneComponents_.LastIndex() }; sceneComponents_.IsValidIndex(i); --i)
 	{
 		if (UPtr sceneComponent{ sceneComponents_[i] })
@@ -103,7 +108,7 @@ void TSceneObject::AddComponent(UPtr<KSceneComponent> const& component)
 	}
 }
 
-void TSceneObject::RemoveComponent(const UPtr<KSceneComponent>& component)
+void TSceneObject::RemoveComponent(UPtr<KSceneComponent> const& component)
 {
 	if (!component)
 	{
@@ -145,15 +150,24 @@ void TSceneObject::Deserialize()
 
 void TSceneObject::Spawn()
 {
-	for (auto& sceneComponent : sceneComponents_)
+	for (auto const& sceneComponent : sceneComponents_)
 	{
 		if (sceneComponent)
 		{
 			sceneComponent->Spawn();
 		}
 	}
+}
 
-	GetScene()->AddSpawnedSceneObject(Ptr());
+void TSceneObject::Despawn()
+{
+	for (auto const& sceneComponent : sceneComponents_)
+	{
+		if (sceneComponent)
+		{
+			sceneComponent->Despawn();
+		}
+	}
 }
 
 void TSceneObject::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const

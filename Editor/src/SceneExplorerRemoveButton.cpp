@@ -16,7 +16,6 @@ WidgetPtr WSceneExplorerRemoveButton::Build()
 			| Apply(&WButton::SetOnClicked, [this]() { 
                 if (UPtr selectedObject{ GetScene()->GetSelectedObject() })
                 {
-                    GetScene()->Remove(selectedObject);
                     GetScene()->SelectObject(nullptr);
                     selectedObject->Delete();
                 } 

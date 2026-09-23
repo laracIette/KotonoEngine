@@ -36,6 +36,13 @@ void KMeshComponent::Spawn()
     spinTask_.eventUpdate.AddListener(this, &KMeshComponent::Spin);
 }
 
+void KMeshComponent::Despawn()
+{
+    Base::Spawn();
+
+    spinTask_.eventUpdate.RemoveListener(this, &KMeshComponent::Spin);
+}
+
 void KMeshComponent::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const
 {
     auto const modelMatrix{ ModelMatrix() };

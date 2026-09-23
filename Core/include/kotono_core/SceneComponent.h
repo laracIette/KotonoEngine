@@ -8,9 +8,11 @@
 #include <kotono_common/Set.h>
 #include <kotono_graphics/Mobility.h>
 #include <kotono_graphics/Visibility.h>
+
 struct USceneRenderGraph;
 class TSceneObject;
 class UScene;
+
 class KSceneComponent : public KObject
 {
 	GENERATED_KSCENECOMPONENT()
@@ -27,27 +29,27 @@ protected:
 	virtual void Update(f32 deltaTime);
 
 public:
-	UScene* GetScene() const;
-	b8 CanSetTransform() const;
+	auto GetScene() const -> UScene*;
+	auto CanSetTransform() const -> b8;
 
-	glm::vec3 GetWorldPosition() const;
-	glm::quat GetWorldRotation() const;
-	glm::vec3 GetWorldScale() const;
+	auto GetWorldPosition() const -> glm::vec3;
+	auto GetWorldRotation() const -> glm::quat;
+	auto GetWorldScale() const -> glm::vec3;
 
-	glm::vec3 RightVector() const;
-	glm::vec3 UpVector() const;
-	glm::vec3 ForwardVector() const;
+	auto RightVector() const -> glm::vec3;
+	auto UpVector() const -> glm::vec3;
+	auto ForwardVector() const -> glm::vec3;
 
-	glm::mat4 TranslationMatrix() const;
-	glm::mat4 RotationMatrix() const;
-	glm::mat4 ScaleMatrix() const;
-	glm::mat4 ModelMatrix() const;
+	auto TranslationMatrix() const -> glm::mat4;
+	auto RotationMatrix() const -> glm::mat4;
+	auto ScaleMatrix() const -> glm::mat4;
+	auto ModelMatrix() const -> glm::mat4;
 
-	glm::vec3 GetScreenPosition() const;
+	auto GetScreenPosition() const -> glm::vec3;
 
 	void SetCanUpdate(b8 canUpdate);
-	virtual void SetVisibility(EVisibility visibility, b8 propagateToChildren = false);
-	virtual void SetMobility(EMobility mobility);
+	void SetVisibility(EVisibility visibility, b8 propagateToChildren = false);
+	void SetMobility(EMobility mobility);
 
 	void SetParent(UPtr<KSceneComponent> const& parent, ECoordinateSpace keepTransform);
 
@@ -63,12 +65,13 @@ public:
 	void Rotate(glm::quat const& rotation);
 	void Scale(glm::vec3 const& scale);
 
-	glm::vec3 GetDirection(UPtr<KSceneComponent const> const& target) const;
-	f32 GetDistance(UPtr<KSceneComponent const> const& other) const;
+	auto GetDirection(UPtr<KSceneComponent const> const& target) const -> glm::vec3;
+	auto GetDistance(UPtr<KSceneComponent const> const& other) const -> f32;
 
 	void Deserialize() override;
 
 	virtual void Spawn();
+	virtual void Despawn();
 
 	virtual void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const;
 
