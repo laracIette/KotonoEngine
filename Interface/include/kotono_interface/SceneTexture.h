@@ -1,16 +1,16 @@
 #pragma once
 #include "generated/SceneTexture.generated.h"
-#include <kotono_core/Widget.h>
+#include <kotono_core/SceneWidget.h>
 
 #include <glm/ext/quaternion_float.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <kotono_common/types.h>
-class WSceneTexture final : public WWidget
+class WSceneTexture final : public WSceneWidget
 {
 	GENERATED_WSCENETEXTURE()
 
 public:
-	WSceneTexture();
+	WSceneTexture(UScene* scene);
 
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
 

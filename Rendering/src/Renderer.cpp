@@ -3,6 +3,7 @@
 #include "Barriers.h"
 #include "DirectionalLight.h"
 #include "DrawCommand.h"
+#include "FrameContextBufferData.h"
 #include "IndexBuffer.h"
 #include "Material.h"
 #include "Model.h"
@@ -22,15 +23,14 @@
 #include <kotono_platform/vk_utils.h>
 #include <ranges>
 
-static constexpr bool IS_MULTI_THREADED{ false };
-
-static void JoinThread(std::thread& thread)
+struct USceneRenderView final
 {
-	if (thread.joinable())
-	{
-		thread.join();
-	}
-}
+	USceneRenderer::SceneRenderHandle sceneRender;
+	UFrameContextSceneView sceneView;
+	std::vector<UDrawCommand> sceneDrawCommands;
+	std::vector<UDirectionalLight> directionalLights;
+	std::vector<UPointLight> pointLights;
+};
 
 template <std::derived_from<AAsset> T>
 struct GetOrCreateResult
@@ -103,9 +103,6 @@ void URenderer::Cleanup()
 {
 	KT_LOG(ELogImportanceLevel::High, "Graphics", "cleaning up renderer");
 
-	JoinThread(renderThread_);
-	JoinThread(rhiThread_);
-
 	for (auto const* texture : textures_ | std::views::values)
 	{
 		texture->Cleanup(device_);
@@ -150,7 +147,7 @@ void URenderer::Cleanup()
 	KT_LOG(ELogImportanceLevel::High, "Graphics", "cleaned up renderer");
 }
 
-void URenderer::DrawFrame(USceneRenderGraph const& sceneRenderGraph, UInterfaceRenderGraph const& interfaceRenderGraph)
+void URenderer::DrawFrame(UInterfaceRenderGraph const& interfaceRenderGraph)
 {
 	u32 const frameIndex{ getGameThreadFrame(frameCount_) };
 
@@ -158,71 +155,42 @@ void URenderer::DrawFrame(USceneRenderGraph const& sceneRenderGraph, UInterfaceR
 
 	auto const interfaceDrawCommands{ MakeInterfaceDrawCommands(interfaceRenderGraph.drawDatas, frameIndex) };
 
-	auto const sceneDrawCommands{ MakeSceneDrawCommands(sceneRenderGraph.drawDatas, frameIndex) };
-	auto const pointLights{ MakePointLights(sceneRenderGraph.pointLightDatas) };
-
 	sceneRenderer_.RefreshAvailableSceneRenders(frameIndex);
 
 	auto const sceneRenderViews{ MakeSceneRenderViews(interfaceRenderGraph.drawDatas, frameIndex) };
 
 	sceneRenderer_.ClearUnusedSceneRenders(frameIndex);
 
-	for (auto const& [sceneRender, sceneView] : sceneRenderViews)
+	for (auto const& sceneRenderView : sceneRenderViews)
 	{
-		auto const directionalLights{ MakeDirectionalLights(sceneRenderGraph.directionalLightDatas, sceneView, sceneRender, frameIndex) };
-
 		sceneRenderer_.UpdateSceneBuffers(
 			  frameIndex
-			, sceneRender
-			, sceneView
-			, sceneDrawCommands
-			, directionalLights
-			, pointLights
+			, sceneRenderView.sceneRender
+			, sceneRenderView.sceneView
+			, sceneRenderView.sceneDrawCommands
+			, sceneRenderView.directionalLights
+			, sceneRenderView.pointLights
 			, defaultSampler_
 		);
 	}
 
 	interfaceRenderer_.UpdateInterfaceBuffers(interfaceDrawCommands, frameIndex);
 
-	if constexpr (IS_MULTI_THREADED)
+	if (!TryAcquireNextImage(frameIndex))
 	{
-		if (frameCount_ >= 1)
-		{
-			JoinThread(renderThread_);
-			u32 const renderThreadFrame{ getRenderThreadFrame(frameCount_) };
-			renderThread_ = std::thread{ &URenderer::RecordCommandBuffer, this, renderThreadFrame };
-		}
-
-		if (frameCount_ >= 2)
-		{
-			KT_LOG(ELogImportanceLevel::High, "Graphics", "frame {0} rendered", frameCount_);
-
-			JoinThread(rhiThread_);
-			device_.ExecuteSingleTimeCommands();
-			u32 const renderRHIFrame{ getRHIThreadFrame(frameCount_) };
-			rhiThread_ = std::thread{ &URenderer::SubmitCommandBuffer, this, renderRHIFrame };
-		}
+		KT_LOG(ELogImportanceLevel::High, "Graphics", "frame {0} skipped", frameCount_);
+		return;
 	}
-	else
-	{
-		if (!TryAcquireNextImage(frameIndex))
-		{
-			KT_LOG(ELogImportanceLevel::High, "Graphics", "frame {0} skipped", frameCount_);
-			return;
-		}
 
-		RecordCommandBuffer(
-			  frameIndex
-			, sceneRenderViews
-			, sceneDrawCommands
-			, interfaceDrawCommands
-			, sceneRenderGraph.directionalLightDatas.size()
-		);
+	RecordCommandBuffer(
+		  frameIndex
+		, sceneRenderViews
+		, interfaceDrawCommands
+	);
 
-		device_.ExecuteSingleTimeCommands();
+	device_.ExecuteSingleTimeCommands();
 
-		SubmitCommandBuffer(frameIndex);
-	}
+	SubmitCommandBuffer(frameIndex);
 
 	frameCount_++;
 }
@@ -241,10 +209,6 @@ void URenderer::InitSceneRendererResources()
 
 void URenderer::RecreateFrames()
 {
-	// Wait for CPU
-	JoinThread(renderThread_);
-	JoinThread(rhiThread_);
-
 	// Wait for GPU
 	vkDeviceWaitIdle(device_.GetDevice());
 
@@ -279,7 +243,7 @@ bool URenderer::TryAcquireNextImage(u32 frameIndex)
 	}
 	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
 	{
-		throw "failed to acquire swap chain image!";
+		throw std::runtime_error{ "failed to acquire swap chain image!" };
 	}
 
 	vkResetFences(device_.GetDevice(), 1, &frameDatas_[frameIndex].inFlightFence);
@@ -354,10 +318,8 @@ void URenderer::CreateSyncObjects()
 
 void URenderer::RecordCommandBuffer(
 	  u32 frameIndex
-	, std::span<SceneRenderView const> sceneRenderViews
-	, std::span<UDrawCommand const> sceneDrawCommands
+	, std::span<USceneRenderView const> sceneRenderViews
 	, std::span<UDrawCommand const> interfaceDrawCommands
-	, u32 directionalLightCount
 ) const
 {
 	VkCommandBuffer commandBuffer{ frameDatas_[frameIndex].commandBuffer };
@@ -368,9 +330,9 @@ void URenderer::RecordCommandBuffer(
 	pipelineResourceManager_.CmdBindDescriptorSet(commandBuffer);
 
 	// Scene
-	for (auto const handle : sceneRenderViews | std::views::transform(&SceneRenderView::sceneRender))
+	for (auto const& sceneRenderView : sceneRenderViews)
 	{
-		sceneRenderer_.CmdDrawScene(frameIndex, handle
+		sceneRenderer_.CmdDrawScene(frameIndex, sceneRenderView.sceneRender
 			, {
 				.commandBuffer = commandBuffer,
 				.clusterAABBPipeline = clusterAABBPipeline_,
@@ -382,8 +344,8 @@ void URenderer::RecordCommandBuffer(
 				.indexBuffer = indexBuffer_,
 			}
 			, {
-				.drawCommands = sceneDrawCommands,
-				.directionalLightCount = directionalLightCount,
+				.drawCommands = sceneRenderView.sceneDrawCommands,
+				.directionalLightCount = static_cast<u32>(sceneRenderView.directionalLights.size()),
 			}
 		);
 	}
@@ -549,18 +511,9 @@ void URenderer::SubmitCommandBuffer(u32 frameIndex)
 		result,
 		"failed to present swap chain image!"
 	);
-
-	if constexpr (IS_MULTI_THREADED)
-	{
-		if (!TryAcquireNextImage(frameIndex))
-		{
-			KT_LOG(ELogImportanceLevel::High, "Graphics", "frame {0} skipped", frameCount_);
-			return;
-		}
-	}
 }
 
-UFrameContextSceneView URenderer::MakeFrameContextSceneView(USceneView const& sceneView) const
+auto URenderer::MakeFrameContextSceneView(USceneView const& sceneView) const -> UFrameContextSceneView
 {
 	return {
 		.view = sceneView.view,
@@ -574,7 +527,7 @@ UFrameContextSceneView URenderer::MakeFrameContextSceneView(USceneView const& sc
 	};
 }
 
-std::vector<UDrawCommand> URenderer::MakeInterfaceDrawCommands(std::span<UInterfaceDrawData const> drawDatas, u32 frameIndex)
+auto URenderer::MakeInterfaceDrawCommands(std::span<UInterfaceDrawData const> drawDatas, u32 frameIndex) -> std::vector<UDrawCommand>
 {
 	return drawDatas
 		| std::views::filter(&UInterfaceDrawData::isVisible)
@@ -585,20 +538,7 @@ std::vector<UDrawCommand> URenderer::MakeInterfaceDrawCommands(std::span<UInterf
 			auto const* shader{ GetOrCreateShader(drawData.shader) };
 			auto const* model{ GetOrCreateModel(drawData.model) };
 
-			std::array<f32, 16> scalars{};
-			std::array<glm::vec4, 16> vectors{};
-			std::array<u32, 16> textures{};
-
-			std::ranges::copy(drawData.scalars | std::views::take(16), scalars.begin());
-			std::ranges::copy(drawData.vectors | std::views::take(16), vectors.begin());
-			std::ranges::copy(drawData.textures | std::views::take(16)
-				| std::views::transform([this, frameIndex](UInterfaceDrawData::Texture const& texture) {
-					return GetTextureHandle(texture, frameIndex);
-				})
-				, textures.begin()
-			);
-
-			return UDrawCommand{
+			UDrawCommand drawCommand{
 				.drawIndex = static_cast<u32>(index),
 				.pipeline = shader->GetPipeline(),
 				.vertexBufferAddress = model->GetVertexBufferAddress(),
@@ -609,15 +549,26 @@ std::vector<UDrawCommand> URenderer::MakeInterfaceDrawCommands(std::span<UInterf
 					.extent = { drawData.scissor.extent.x, drawData.scissor.extent.y },
 				},
 				.modelMatrix = drawData.modelMatrix,
-				.scalars = scalars,
-				.vectors = vectors,
-				.textures = textures,
+				.scalars = {},
+				.vectors = {},
+				.textures = {},
 			};
+			
+			std::ranges::copy(drawData.scalars, drawCommand.scalars.begin());
+			std::ranges::copy(drawData.vectors, drawCommand.vectors.begin());
+			std::ranges::copy(drawData.textures
+				| std::views::transform([this, frameIndex](UInterfaceDrawData::Texture const& texture) {
+					return GetTextureHandle(texture, frameIndex);
+				})
+				, drawCommand.textures.begin()
+			);
+
+			return drawCommand;
 		})
 		| std::ranges::to<std::vector>();
 }
 
-std::vector<UDrawCommand> URenderer::MakeSceneDrawCommands(std::span<USceneDrawData const> drawDatas, u32 frameIndex)
+auto URenderer::MakeSceneDrawCommands(std::span<USceneDrawData const> drawDatas, u32 frameIndex) -> std::vector<UDrawCommand>
 {
 	return drawDatas
 		| std::views::filter(&USceneDrawData::isVisible)
@@ -631,20 +582,7 @@ std::vector<UDrawCommand> URenderer::MakeSceneDrawCommands(std::span<USceneDrawD
 			
 			auto const materialData{ material->GetData() };
 
-			std::array<f32, 16> scalars{};
-			std::array<glm::vec4, 16> vectors{};
-			std::array<u32, 16> textures{};
-
-			std::ranges::copy(drawData.scalars | std::views::take(16), scalars.begin());
-			std::ranges::copy(drawData.vectors | std::views::take(16), vectors.begin());
-			std::ranges::copy(drawData.textures | std::views::take(16)
-				| std::views::transform([this, frameIndex](USceneDrawData::Texture const& texture) {
-					return GetTextureHandle(texture, frameIndex);
-				})
-				, textures.begin()
-			);
-
-			return UDrawCommand{
+			UDrawCommand drawCommand{
 				.drawIndex = static_cast<u32>(index),
 				.pipeline = shader->GetPipeline(),
 				.vertexBufferAddress = model->GetVertexBufferAddress(),
@@ -661,20 +599,31 @@ std::vector<UDrawCommand> URenderer::MakeSceneDrawCommands(std::span<USceneDrawD
 				.modelMatrix = drawData.modelMatrix,
 				.normalMatrix = drawData.normalMatrix,
 				.sortKey = drawData.sortKey,
-				.scalars = scalars,
-				.vectors = vectors,
-				.textures = textures,
+				.scalars = {},
+				.vectors = {},
+				.textures = {},
 			};
+
+			std::ranges::copy(drawData.scalars, drawCommand.scalars.begin());
+			std::ranges::copy(drawData.vectors, drawCommand.vectors.begin());
+			std::ranges::copy(drawData.textures
+				| std::views::transform([this](UPath const& texture) {
+					return GetOrCreateTexture(texture)->GetIndex();
+				})
+				, drawCommand.textures.begin()
+			);
+
+			return drawCommand;
 		})
 		| std::ranges::to<std::vector>();
 }
 
-std::vector<UDirectionalLight> URenderer::MakeDirectionalLights(
+auto URenderer::MakeDirectionalLights(
 	  std::span<UDirectionalLightData const> directionalLightDatas
 	, UFrameContextSceneView const& sceneView
-	, u32 sceneRender
+	, USceneRenderer::SceneRenderHandle sceneRender
 	, u32 frameIndex
-)
+) -> std::vector<UDirectionalLight>
 {
 	static auto* sampler{ GetOrCreateSampler("${ENGINE_DIRECTORY}/Graphics/assets/samplers/shadow.kasset") };
 
@@ -722,7 +671,7 @@ std::vector<UDirectionalLight> URenderer::MakeDirectionalLights(
 		| std::ranges::to<std::vector>();
 }
 
-std::vector<UPointLight> URenderer::MakePointLights(std::span<UPointLightData const> pointLightDatas) const
+auto URenderer::MakePointLights(std::span<UPointLightData const> pointLightDatas) const -> std::vector<UPointLight>
 {
 	return pointLightDatas
 		| std::views::transform([](UPointLightData const& pointLightData) {
@@ -736,25 +685,32 @@ std::vector<UPointLight> URenderer::MakePointLights(std::span<UPointLightData co
 		| std::ranges::to<std::vector>();
 }
 
-std::vector<URenderer::SceneRenderView> URenderer::MakeSceneRenderViews(std::span<UInterfaceDrawData const> drawDatas, u32 frameIndex)
+auto URenderer::MakeSceneRenderViews(std::span<UInterfaceDrawData const> drawDatas, u32 frameIndex) -> std::vector<USceneRenderView>
 {
 	return drawDatas
 		| std::views::transform(&UInterfaceDrawData::textures)
 		| std::views::join
 		| std::views::filter([](UInterfaceDrawData::Texture const& texture) {
-			return std::holds_alternative<USceneView>(texture);
+			return std::holds_alternative<UInterfaceDrawData::SceneRenderData>(texture);
 		})
 		| std::views::transform([this, frameIndex](UInterfaceDrawData::Texture const& texture) {
-			auto const& sceneView{ std::get<USceneView>(texture) };
-			return SceneRenderView{
-				.sceneRender = sceneRenderer_.GetSceneRender(sceneView.extent, frameIndex),
-				.sceneView = MakeFrameContextSceneView(sceneView),
+			auto const& [sceneView, sceneRenderGraph] { std::get<UInterfaceDrawData::SceneRenderData>(texture) };
+
+			auto const sceneRender{ sceneRenderer_.GetSceneRender(sceneView.extent, frameIndex) };
+			auto const frameContextSceneView{ MakeFrameContextSceneView(sceneView) };
+
+			return USceneRenderView{
+				.sceneRender = sceneRender,
+				.sceneView = frameContextSceneView,
+				.sceneDrawCommands = MakeSceneDrawCommands(sceneRenderGraph.drawDatas, frameIndex),
+				.directionalLights = MakeDirectionalLights(sceneRenderGraph.directionalLightDatas, frameContextSceneView, sceneRender, frameIndex),
+				.pointLights = MakePointLights(sceneRenderGraph.pointLightDatas),
 			};
 		})
 		| std::ranges::to<std::vector>();
 }
 
-ATexture* URenderer::GetOrCreateTexture(UPath const& path)
+auto URenderer::GetOrCreateTexture(UPath const& path) -> ATexture*
 {
 	auto const [exists, texture] { GetOrCreate(path, textures_) };
 	if (!exists)
@@ -767,7 +723,7 @@ ATexture* URenderer::GetOrCreateTexture(UPath const& path)
 	return texture;
 }
 
-AMaterial* URenderer::GetOrCreateMaterial(UPath const& path)
+auto URenderer::GetOrCreateMaterial(UPath const& path) -> AMaterial*
 {
 	auto const [exists, material] { GetOrCreate(path, materials_) };
 	if (!exists)
@@ -776,7 +732,7 @@ AMaterial* URenderer::GetOrCreateMaterial(UPath const& path)
 	return material;
 }
 
-ASampler* URenderer::GetOrCreateSampler(UPath const& path)
+auto URenderer::GetOrCreateSampler(UPath const& path) -> ASampler*
 {
 	auto const [exists, sampler] { GetOrCreate(path, samplers_) };
 	if (!exists)
@@ -800,7 +756,7 @@ ASampler* URenderer::GetOrCreateSampler(UPath const& path)
 	return sampler;
 }
 
-AModel* URenderer::GetOrCreateModel(UPath const& path)
+auto URenderer::GetOrCreateModel(UPath const& path) -> AModel*
 {
 	auto const [exists, model] { GetOrCreate(path, models_) };
 	if (!exists)
@@ -813,7 +769,7 @@ AModel* URenderer::GetOrCreateModel(UPath const& path)
 	return model;
 }
 
-AShader* URenderer::GetOrCreateShader(UPath const& path)
+auto URenderer::GetOrCreateShader(UPath const& path) -> AShader*
 {
 	auto const [exists, shader] { GetOrCreate(path, shaders_) };
 	if (!exists)
@@ -823,7 +779,7 @@ AShader* URenderer::GetOrCreateShader(UPath const& path)
 	return shader;
 }
 
-u32 URenderer::GetTextureHandle(std::variant<UPath, USceneView> const& texture, u32 frameIndex)
+auto URenderer::GetTextureHandle(UInterfaceDrawData::Texture const& texture, u32 frameIndex) -> u32
 {
 	if (std::holds_alternative<UPath>(texture))
 	{
@@ -832,7 +788,7 @@ u32 URenderer::GetTextureHandle(std::variant<UPath, USceneView> const& texture, 
 	}
 	else
 	{
-		auto const& sceneView{ std::get<USceneView>(texture) };
+		auto const& sceneView{ std::get<UInterfaceDrawData::SceneRenderData>(texture).sceneView };
 		return sceneRenderer_.GetSceneRenderTarget(sceneView.extent, frameIndex);
 	}
 }

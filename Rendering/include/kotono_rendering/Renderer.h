@@ -1,37 +1,25 @@
 #pragma once
-#include "FrameContextBuffer.h"
 #include "frames_in_flight.h"
-#include "GPUBuffers.h"
 #include "IndexBuffer.h"
 #include "InterfaceRenderer.h"
-#include "LightBuffers.h"
 #include "PipelineResourceManager.h"
-#include "PushConstants.h"
 #include "SceneRenderer.h"
-#include <flat_map>
-#include <kotono_common/Handle.h>
 #include <kotono_common/Path.h>
 #include <kotono_common/types.h>
-#include <kotono_platform/AllocatedImage.h>
+#include <kotono_graphics/InterfaceDrawData.h>
 #include <kotono_platform/Swapchain.h>
 #include <span>
-#include <thread>
 #include <unordered_map>
-#include <unordered_set>
-#include <variant>
 #include <vector>
-#include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
 struct UDirectionalLight;
 struct UDirectionalLightData;
 struct UDrawCommand;
-struct UInterfaceDrawData;
-struct USceneDrawData;
+struct UFrameContextSceneView;
 struct UInterfaceRenderGraph;
 struct UPointLight;
 struct UPointLightData;
-struct USceneRenderGraph;
-struct USceneView;
+struct USceneRenderView;
 class AMaterial;
 class AModel;
 class ASampler;
@@ -54,19 +42,13 @@ public:
 		u32		imageIndex;
 	};
 
-	struct SceneRenderView
-	{
-		u32 sceneRender;
-		UFrameContextSceneView sceneView;
-	};
-
 public:
 	explicit URenderer(UDevice& device, USurface& surface);
 
 	void Init();
 	void Cleanup();
 
-	void DrawFrame(USceneRenderGraph const& sceneRenderGraph, UInterfaceRenderGraph const& interfaceRenderGraph);
+	void DrawFrame(UInterfaceRenderGraph const& interfaceRenderGraph);
 
 private:
 	void InitSceneRendererResources();
@@ -79,7 +61,7 @@ private:
 	void CreateCommandPool(u32 frameIndex);
 	void CreateCommandBuffers();
 	void CreateCommandBuffer(u32 frameIndex);
-	void RecordCommandBuffer(u32 frameIndex, std::span<SceneRenderView const> sceneRenderViews, std::span<UDrawCommand const> sceneDrawCommands, std::span<UDrawCommand const> interfaceDrawCommands, u32 directionalLightCount) const;
+	void RecordCommandBuffer(u32 frameIndex, std::span<USceneRenderView const> sceneRenderViews, std::span<UDrawCommand const> interfaceDrawCommands) const;
 	void BeginCommandBuffer(VkCommandBuffer commandBuffer) const;
 
 	void CmdBarrierSwapchainNoneToWrite(VkCommandBuffer commandBuffer, u32 frameIndex) const;
@@ -92,29 +74,26 @@ private:
 
 	void CreateSyncObjects();
 
-	UFrameContextSceneView MakeFrameContextSceneView(USceneView const& sceneView) const;
-	std::vector<UDrawCommand> MakeInterfaceDrawCommands(std::span<UInterfaceDrawData const> drawDatas, u32 frameIndex);
-	std::vector<UDrawCommand> MakeSceneDrawCommands(std::span<USceneDrawData const> drawDatas, u32 frameIndex);
-	std::vector<UDirectionalLight> MakeDirectionalLights(std::span<UDirectionalLightData const> directionalLightDatas, UFrameContextSceneView const& sceneView, u32 sceneRender, u32 frameIndex);
-	std::vector<UPointLight> MakePointLights(std::span<UPointLightData const> pointLightDatas) const;
-	std::vector<SceneRenderView> MakeSceneRenderViews(std::span<UInterfaceDrawData const> drawDatas, u32 frameIndex);
+	auto MakeFrameContextSceneView(USceneView const& sceneView) const -> UFrameContextSceneView;
+	auto MakeInterfaceDrawCommands(std::span<UInterfaceDrawData const> drawDatas, u32 frameIndex) -> std::vector<UDrawCommand>;
+	auto MakeSceneDrawCommands(std::span<USceneDrawData const> drawDatas, u32 frameIndex) -> std::vector<UDrawCommand>;
+	auto MakeDirectionalLights(std::span<UDirectionalLightData const> directionalLightDatas, UFrameContextSceneView const& sceneView, USceneRenderer::SceneRenderHandle sceneRender, u32 frameIndex) -> std::vector<UDirectionalLight>;
+	auto MakePointLights(std::span<UPointLightData const> pointLightDatas) const -> std::vector<UPointLight>;
+	auto MakeSceneRenderViews(std::span<UInterfaceDrawData const> drawDatas, u32 frameIndex) -> std::vector<USceneRenderView>;
 
-	ATexture* GetOrCreateTexture(UPath const& path);
-	AMaterial* GetOrCreateMaterial(UPath const& path);
-	ASampler* GetOrCreateSampler(UPath const& path);
-	AModel* GetOrCreateModel(UPath const& path);
-	AShader* GetOrCreateShader(UPath const& path);
+	auto GetOrCreateTexture(UPath const& path) -> ATexture*;
+	auto GetOrCreateMaterial(UPath const& path) -> AMaterial*;
+	auto GetOrCreateSampler(UPath const& path) -> ASampler*;
+	auto GetOrCreateModel(UPath const& path) -> AModel*;
+	auto GetOrCreateShader(UPath const& path) -> AShader*;
 
-	u32 GetTextureHandle(std::variant<UPath, USceneView> const& texture, u32 frameIndex);
+	auto GetTextureHandle(UInterfaceDrawData::Texture const& texture, u32 frameIndex) -> u32;
 
 private:
 	UDevice& device_;
 
 	USwapchain swapchain_;
 	UFramesInFlightArray<FrameData> frameDatas_;
-
-	std::thread renderThread_;
-	std::thread rhiThread_;
 
 	u32 frameCount_;
 

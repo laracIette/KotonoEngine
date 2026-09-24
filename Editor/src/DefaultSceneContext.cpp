@@ -1,5 +1,6 @@
 #include "DefaultSceneContext.h"
 
+#include "Detachable.h"
 #include "GameStateButton.h"
 #include "SceneExplorer.h"
 #include "ViewController.h"
@@ -31,10 +32,16 @@ WidgetPtr WDefaultSceneContext::Build()
 				)
 			)
 			| (
-				UCreate<WViewController>{ "Scene View Controller" }(GetScene())
+				UCreate<WDetachable>{ "Game" }()
+				| (
+					UCreate<WViewController>{ "Scene View Controller" }(GetScene())
+				)
 			)
 			| (
-				UCreate<WViewController>{ "Scene View Controller" }(GetScene())
+				UCreate<WDetachable>{ "Game" }()
+				| (
+					UCreate<WViewController>{ "Scene View Controller" }(GetScene())
+				)
 			)
 		)
 	);

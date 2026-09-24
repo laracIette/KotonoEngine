@@ -19,8 +19,6 @@ public:
 
 	void Update(f32 deltaTime) const;
 
-	void PopulateSceneRenderGraph(USceneRenderGraph& sceneRenderGraph) const;
-
 private:
 	SERIALIZE UPath scenePath_;
 	ReadonlyProperty(UScene*, scene_, Scene, Value);

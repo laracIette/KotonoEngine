@@ -20,14 +20,6 @@ void UInterface::PopulateInterfaceRenderGraph(UInterfaceRenderGraph& interfaceRe
 	}
 }
 
-void UInterface::PopulateSceneRenderGraph(USceneRenderGraph& sceneRenderGraph) const
-{
-	if (widget_)
-	{
-		widget_->PopulateSceneRenderGraph(sceneRenderGraph);
-	}
-}
-
 void UInterface::Update(f32 deltaTime, glm::vec2 const& cursorPosition)
 {
 	deltaTime_ = deltaTime;

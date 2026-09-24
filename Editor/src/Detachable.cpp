@@ -1,9 +1,9 @@
 #include "Detachable.h"
 
-#include <kotono_common/conversion_utils.h>
 #include <kotono_core/Interface.h>
 #include <kotono_core/InterfaceRoot.h>
 #include <kotono_interface/widgets.h>
+#include <stdexcept>
 
 WidgetPtr WDetachable::Build()
 {
@@ -34,8 +34,25 @@ WidgetPtr WDetachable::Build()
 						)
 					)
 					| (
-						UCreate<WButton>{}()
-						| Apply(&WButton::SetOnClicked, [this]() { Detach(); })
+						UCreate<WSpacer>{}(EAxis::Horizontal)
+					)
+					| (
+						UCreate<WBox>{}()
+						| Apply(&WBox::SetSize, glm::vec2{ 16.0f, 16.0f })
+						| (
+							UCreate<WButton>{}()
+							| Apply(&WButton::SetOnClicked, [this]() { Detach(); })
+						)
+					)
+					| (
+						UCreate<WBox>{}()
+						| Apply(&WBox::SetSize, glm::vec2{ 16.0f, 16.0f })
+						| (
+							UCreate<WButton>{}()
+							| Apply(&WButton::SetIsEnabled, false)
+							| Apply(&WButton::SetOnClicked, [this]() { throw std::runtime_error{ "unimplemented!" }; })
+							| Apply(&WButton::SetNormalColor, Colors::Red)
+						)
 					)
 				)
 			)
@@ -68,7 +85,7 @@ void WDetachable::Detach()
 		return;
 	}
 
-	auto* oldInterface{ GetInterface() };
+	auto* const oldInterface{ GetInterface() };
 
 	if (UPtr asChildOwner{ TryCast<WChildOwner>(GetParent()) })
 	{

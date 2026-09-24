@@ -81,11 +81,7 @@ void UWindowContext::DrawFrame()
 
 	UInterfaceRenderGraph interfaceRenderGraph{};
 	interface_->PopulateInterfaceRenderGraph(interfaceRenderGraph);
-
-	USceneRenderGraph sceneRenderGraph{};
-	interface_->PopulateSceneRenderGraph(sceneRenderGraph);
-
-	renderer_.DrawFrame(sceneRenderGraph, interfaceRenderGraph);
+	renderer_.DrawFrame(interfaceRenderGraph);
 }
 
 auto UWindowContext::GetShouldClose() const -> b8

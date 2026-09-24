@@ -93,12 +93,12 @@ public:
 		return size_ * sizeof(ValueType);
 	}
 
-	constexpr IndexType capacity() const noexcept
+	static constexpr IndexType capacity() noexcept
 	{
 		return Capacity;
 	}
 
-	constexpr IndexType capacity_bytes() const noexcept
+	static constexpr IndexType capacity_bytes() noexcept
 	{
 		return Capacity * sizeof(ValueType);
 	}

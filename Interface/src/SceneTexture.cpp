@@ -2,13 +2,15 @@
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/quaternion_trigonometric.hpp>
+#include <kotono_core/Scene.h>
 #include <kotono_graphics/Color.h>
 #include <kotono_graphics/InterfaceRenderGraph.h>
 #include <kotono_math/math_utils.h>
 #include <kotono_timing/Clock.h>
 
-WSceneTexture::WSceneTexture()
-	: depthNear_{ 0.1f }
+WSceneTexture::WSceneTexture(UScene* scene)
+	: Base(scene)
+	, depthNear_{ 0.1f }
 	, verticalFOV_{ 90.0f }
 	, viewPosition_{ WorldUpVector + WorldForwardVector * 2.0f }
 	, viewRotation_{ glm::angleAxis(glm::radians(180.0f), WorldUpVector) }
@@ -28,6 +30,13 @@ void WSceneTexture::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGr
 		.depthNear = GetDepthNear(),
 	};
 
+	USceneRenderGraph sceneRenderGraph{};
+
+	if (GetScene())
+	{
+		GetScene()->PopulateRenderGraph(sceneRenderGraph);
+	}
+
 	interfaceRenderGraph.drawDatas.push_back({
 		.scissor = GetScissor(),
 		.modelMatrix = GetModelMatrix(),
@@ -35,7 +44,7 @@ void WSceneTexture::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGr
 		.model = "${ENGINE_DIRECTORY}/Graphics/assets/models/rectangle.obj",
 		.scalars = {},
 		.vectors = { Colors::White },
-		.textures = { sceneView },
+		.textures = { UInterfaceDrawData::SceneRenderData{ sceneView, std::move(sceneRenderGraph) } },
 		.isVisible = GetIsVisible(),
 	});
 }

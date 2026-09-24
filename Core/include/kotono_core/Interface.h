@@ -25,7 +25,6 @@ public:
 	void Cleanup() const;
 
 	void PopulateInterfaceRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const;
-	void PopulateSceneRenderGraph(USceneRenderGraph& sceneRenderGraph) const;
 
 	void Update(f32 deltaTime, glm::vec2 const& cursorPosition);
 

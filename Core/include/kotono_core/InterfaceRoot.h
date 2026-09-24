@@ -11,8 +11,6 @@ class WInterfaceRoot : public WWidget
 public:
 	void UpdateSceneContexts(f32 deltaTime) const;
 
-	void PopulateSceneRenderGraph(USceneRenderGraph& sceneRenderGraph) const;
-
 	auto GetInterface() const -> UInterface* override { assert(interface_); return interface_; }
 	void SetInterface(UInterface* inInterface) { interface_ = inInterface; }
 

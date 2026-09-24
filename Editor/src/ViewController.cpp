@@ -23,7 +23,7 @@ WViewController::WViewController(UScene* scene)
 
 WidgetPtr WViewController::Build()
 {
-	return sceneTexture_ = UCreate<WSceneTexture>{ "Scene Texture" }();
+	return sceneTexture_ = UCreate<WSceneTexture>{ "Scene Texture" }(GetScene());
 }
 
 b8 WViewController::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position)

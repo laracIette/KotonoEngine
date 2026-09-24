@@ -1,4 +1,5 @@
 #pragma once
+#include "SceneRenderGraph.h"
 #include "SceneView.h"
 #include "Scissor.h"
 #include <glm/ext/matrix_float4x4.hpp>
@@ -9,7 +10,13 @@
 #include <variant>
 struct UInterfaceDrawData final
 {
-	using Texture = std::variant<UPath, USceneView>;
+	struct SceneRenderData
+	{
+		USceneView sceneView;
+		USceneRenderGraph sceneRenderGraph;
+	};
+
+	using Texture = std::variant<UPath, SceneRenderData>;
 
 	UScissor scissor;
 

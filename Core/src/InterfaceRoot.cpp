@@ -13,17 +13,6 @@ void WInterfaceRoot::UpdateSceneContexts(f32 deltaTime) const
 	}
 }
 
-void WInterfaceRoot::PopulateSceneRenderGraph(USceneRenderGraph& sceneRenderGraph) const
-{
-	for (auto const& sceneContext : sceneContexts_)
-	{
-		if (sceneContext)
-		{
-			sceneContext->PopulateSceneRenderGraph(sceneRenderGraph);
-		}
-	}
-}
-
 void WInterfaceRoot::AddSceneContext(UPtr<WSceneContext> const& sceneContext)
 {
 	sceneContexts_.Add(sceneContext);

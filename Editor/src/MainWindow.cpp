@@ -3,7 +3,6 @@
 #include "AssetExplorer.h"
 #include "DefaultSceneContext.h"
 #include "Detachable.h"
-#include "PropertiesWindow.h"
 #include "UpdateTimeText.h"
 #include <kotono_core/ProjectSettings.h>
 #include <kotono_interface/widgets.h>
@@ -12,27 +11,23 @@ WidgetPtr WMainWindow::Build()
 {
 	UPtr<WDefaultSceneContext> sceneContext;
 
-	UPtr widget = UCreate<WColumn>{ "Main Window Column" }()
-	| Apply(&WColumn::SetSpacing, 5.0f)
-	| (
-		UCreate<WRow>{ "Top Row" }()
+	UPtr widget{ (
+		UCreate<WColumn>{ "Main Window Column" }()
+		| Apply(&WColumn::SetSpacing, 5.0f)
 		| (
-			UCreate<WSpacer>{ "Top Row Spacer" }(EAxis::Horizontal)
-		)
-		| (
-			UCreate<WWrap>{ "Times Wrap" }()
+			UCreate<WRow>{ "Top Row" }()
 			| (
-
-				UCreate<WUpdateTimeText>{ "Update Time Text" }()
+				UCreate<WSpacer>{ "Top Row Spacer" }(EAxis::Horizontal)
+			)
+			| (
+				UCreate<WWrap>{ "Times Wrap" }()
+				| (
+					UCreate<WUpdateTimeText>{ "Update Time Text" }()
+				)
 			)
 		)
-	)
-	| (
-		UCreate<WRow>{ "Center Row" }()
-		| Apply(&WRow::SetSpacing, 10.0f)
 		| (
-			UCreate<WColumn>{ "Left Panel Column" }()
-			| Apply(&WColumn::SetSpacing, 10.0f)
+			UCreate<WColumn>{}()
 			| (
 				sceneContext = UCreate<WDefaultSceneContext>{ "Scene Context" }(SProjectSettings::Get<std::string>("/startupScene"))
 			)
@@ -48,12 +43,7 @@ WidgetPtr WMainWindow::Build()
 				)
 			)
 		)
-		// todo: needs scene ptr (scene widget)
-		//| (
-		//	UCreate<WPropertiesWindow>{ "Properties Window" }(GetScene())
-		//)
-	)
-	;
+	) };
 
 	AddSceneContext(sceneContext);
 
