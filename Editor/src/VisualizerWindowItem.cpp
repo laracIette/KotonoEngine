@@ -2,37 +2,42 @@
 
 #include <kotono_interface/widgets.h>
 
-WVisualizerWindowItem::WVisualizerWindowItem(EVisualizationField field, std::string_view name) 
+WVisualizerWindowItem::WVisualizerWindowItem(ESceneVisibility field, std::string_view name) 
     : field_{ field }
     , name_{ name }
+    , isFieldVisible_{ true }
 {
 }
 
 WidgetPtr WVisualizerWindowItem::Build()
 {
-    b8 const isFieldVisible{ false };
-
     return (
-        UCreate<WRow>{}()
+        UCreate<WWrap>{}()
         | (
-            UCreate<WBox>{}()
-            | Apply(&WBox::SetSize, glm::vec2{ 25.0f, 25.0f })
+            UCreate<WRow>{}()
             | (
-                UCreate<WStack>{}()
+                UCreate<WCenter>{}()
+                | Apply(&WCenter::SetAxis, EAxis::Vertical)
                 | (
-                    UCreate<WColor>{}()
-                    | Apply(&WColor::SetColor, isFieldVisible ? Colors::Green : Colors::Red)
-                )
-                | (
-                    UCreate<WButton>{}()
-                    | Apply(&WButton::SetOnClicked, [this]() { throw std::runtime_error{ "unimplemented!" }; })
+                    UCreate<WBox>{}()
+                    | Apply(&WBox::SetSize, glm::vec2{ 16.0f, 16.0f })
+                    | (
+                        UCreate<WButton>{}()
+                        | Apply(&WButton::SetNormalColor, [this]() { return isFieldVisible_ ? Colors::Green : Colors::Red; })
+                        | Apply(&WButton::SetOnClicked, [this]() {
+                            if (onVisibilityChanged_)
+                            {   
+                                isFieldVisible_ = !isFieldVisible_;
+                                onVisibilityChanged_(field_, isFieldVisible_);
+                            }
+                        })
+                    )
                 )
             )
-        )
-        | (
-            UCreate<WText>{}()
-            | Apply(&WText::SetText, name_)
-            | Apply(&WText::SetFontSize, glm::vec2{ 20.0f, 25.0f })
+            | (
+                UCreate<WText>{}()
+                | Apply(&WText::SetText, name_)
+            )
         )
     );
 }

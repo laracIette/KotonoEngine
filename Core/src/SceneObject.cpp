@@ -170,13 +170,13 @@ void TSceneObject::Despawn()
 	}
 }
 
-void TSceneObject::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const
+void TSceneObject::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const
 {
 	for (auto const& sceneComponent : sceneComponents_)
 	{
 		if (sceneComponent)
 		{
-			sceneComponent->PopulateRenderGraph(sceneRenderGraph);
+			sceneComponent->PopulateRenderGraph(sceneRenderGraph, visibility);
 		}
 	}
 }

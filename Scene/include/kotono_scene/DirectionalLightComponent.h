@@ -12,7 +12,7 @@ public:
 
 	void Spawn() override;
 
-	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const override;
+	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const override;
 
 private:
 	SERIALIZE WritableProperty(UColor, color_, Color);

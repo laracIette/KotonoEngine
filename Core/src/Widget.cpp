@@ -22,7 +22,6 @@ WWidget::WWidget()
 	: build_{}
 	, isDirty_{ true }
 	, parent_{ nullptr }
-	, canCache_{ true }
 	, isVisible_{ true }
 	, slotDisplaySettings_{}
 	, contentSize_{}
@@ -253,7 +252,7 @@ void WWidget::OnUnfocused()
 
 b8 WWidget::GetShouldRefresh() const
 {
-	return isDirty_ || !canCache_;
+	return isDirty_ || !GetCanCache();
 }
 
 void WWidget::Refresh()
@@ -290,6 +289,11 @@ void WWidget::SetState(StateFunction const& function)
 
 void WWidget::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
+}
+
+auto WWidget::GetCanCache() const -> b8
+{
+	return true;
 }
 
 void WWidget::CacheBuild()

@@ -99,6 +99,8 @@ protected:
 
 	virtual void DisplayInternal(UWidgetDisplaySettings displaySettings);
 
+	virtual auto GetCanCache() const -> b8;
+
 private:
 	void CacheBuild();
 	auto HasBuild() const -> b8;
@@ -115,7 +117,6 @@ private:
 	UWidgetDisplaySettings slotDisplaySettings_;
 	b8 isDirty_;
 	WritableProperty(WidgetPtr, parent_, Parent);
-	WritableProperty(b8, canCache_, CanCache, Value);
 	WritableProperty(b8, isVisible_, IsVisible, Value);
 	ReadonlyProperty(b8, isDisplayed_, IsDisplayed, Value);
 	ReadonlyProperty(b8, isFocused_, IsFocused, Value);

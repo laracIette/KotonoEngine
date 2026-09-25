@@ -26,7 +26,8 @@ WidgetPtr WPropertiesWindow::Build()
                         | (
                             UCreate<WStack>{}()
                             | (
-                                UCreate<WColor>{}(Colors::Black.WithValue(0.05f))
+                                UCreate<WColor>{}()
+                                | Apply(&WColor::SetColor, Colors::Black.WithValue(0.05f))
                             )
                             | (
                                 UCreate<WText>{}()

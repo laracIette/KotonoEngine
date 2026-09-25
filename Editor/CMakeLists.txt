@@ -26,12 +26,10 @@ set(KEDITOR_HEADERS
     "include/kotono_editor/SceneExplorerRemoveButton.h"
     "include/kotono_editor/SecondaryWindow.h"
     "include/kotono_editor/UpdateTimeText.h"
-    "include/kotono_editor/VisualizationField.h"
     "include/kotono_editor/ValueBox.h"
     "include/kotono_editor/ValueSlider.h"
     "include/kotono_editor/ValueSliderFloat.h"
     "include/kotono_editor/ViewController.h"
-    "include/kotono_editor/Visualizer.h"
     "include/kotono_editor/VisualizerWindow.h"
     "include/kotono_editor/VisualizerWindowItem.h"
 )
@@ -58,7 +56,6 @@ set(KEDITOR_SOURCES
     "src/ValueSlider.cpp"
     "src/ValueSliderFloat.cpp"
     "src/ViewController.cpp"
-    "src/Visualizer.cpp"
     "src/VisualizerWindow.cpp"
     "src/VisualizerWindowItem.cpp"
 )

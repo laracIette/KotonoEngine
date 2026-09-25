@@ -18,6 +18,7 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/SceneDrawData.h"
     "include/kotono_graphics/SceneRenderGraph.h"
     "include/kotono_graphics/SceneView.h"
+    "include/kotono_graphics/SceneVisibility.h"
     "include/kotono_graphics/Scissor.h"
     "include/kotono_graphics/SpvCompiler.h"
     "include/kotono_graphics/Visibility.h"

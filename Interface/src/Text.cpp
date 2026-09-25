@@ -7,19 +7,19 @@
 #include <kotono_graphics/InterfaceRenderGraph.h>
 #include <kotono_math/math_utils.h>
 
-WText::WText(std::string_view text, glm::vec2 const& fontSize, f32 spacing)
-	: text_{ text }
-	, fontSize_{ fontSize }
-	, spacing_{ spacing }
+WText::WText()
+	: text_{}
+	, fontSize_{ 20.0f, 24.0f }
+	, spacing_{ 0.75f }
 {
 }
 
-glm::vec2 WText::GetContentSize(glm::vec2 const& bounds) const
+auto WText::GetContentSize(glm::vec2 const& bounds) const -> glm::vec2
 {
 	return glm::min(GetDesiredSize(bounds), bounds);
 }
 
-glm::vec2 WText::GetDesiredSize(glm::vec2 const& bounds) const
+auto WText::GetDesiredSize(glm::vec2 const& bounds) const -> glm::vec2
 {
 	auto const length{ GetText().length() };
 	if (length == 0)
@@ -35,12 +35,12 @@ glm::vec2 WText::GetDesiredSize(glm::vec2 const& bounds) const
 	return size;
 }
 
-EFlex WText::GetFlex() const
+auto WText::GetFlex() const -> EFlex
 {
 	return EFlex::None;
 }
 
-EExpand WText::GetExpand() const
+auto WText::GetExpand() const -> EExpand
 {
 	return EExpand::None;
 }
@@ -69,14 +69,7 @@ auto WText::GetText() const -> std::string
 
 void WText::SetText(UBindable<std::string> const& text)
 {
-	if (text.GetIsValue() && text.Get() == "caca")
-	{
-		int a = {};
-	}
-
 	SetState([this, text]() { text_ = text; });
-	
-	SetCanCache(text.GetIsValue());
 }
 
 void WText::DisplayInternal(UWidgetDisplaySettings displaySettings)
@@ -108,6 +101,11 @@ void WText::DisplayInternal(UWidgetDisplaySettings displaySettings)
 
 		characters_.emplace_back(characterPath, modelMatrix);
 	}
+}
+
+auto WText::GetCanCache() const -> b8
+{
+	return text_.GetIsValue();
 }
 
 #include "generated/Text.generated.inl"

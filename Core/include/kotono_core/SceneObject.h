@@ -5,6 +5,7 @@
 #include "CoordinateSpace.h"
 #include <kotono_common/Set.h>
 
+enum class ESceneVisibility : u32;
 struct USceneRenderGraph;
 class UScene;
 class KSceneComponent; 
@@ -38,7 +39,7 @@ public:
 	virtual void Spawn();
 	virtual void Despawn();
 
-	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const;
+	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const;
 
 private:
 	void InitSceneComponents();

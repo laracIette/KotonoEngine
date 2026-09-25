@@ -139,13 +139,13 @@ auto UScene::GetSceneObjects() const -> std::span<SceneObject const>
 	return sceneObjects_;
 }
 
-void UScene::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const
+void UScene::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const
 {
 	for (auto const& sceneObject : sceneObjects_)
 	{
 		if (sceneObject)
 		{
-			sceneObject->PopulateRenderGraph(sceneRenderGraph);
+			sceneObject->PopulateRenderGraph(sceneRenderGraph, visibility);
 		}
 	}
 }

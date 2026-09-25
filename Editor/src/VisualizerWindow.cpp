@@ -1,7 +1,30 @@
 #include "VisualizerWindow.h"
 
 #include "VisualizerWindowItem.h"
+#include <array>
+#include <kotono_common/enum_utils.h>
 #include <kotono_interface/widgets.h>
+
+struct VisibilityField
+{
+    ESceneVisibility visibility;
+    std::string_view name;
+};
+
+static constexpr std::array FIELDS{ 
+    VisibilityField{ ESceneVisibility::All, "All" },
+    VisibilityField{ ESceneVisibility::Mesh, "Mesh" },
+    VisibilityField{ ESceneVisibility::Bounds, "Bounds" },
+    VisibilityField{ ESceneVisibility::Collider, "Collider" },
+    VisibilityField{ ESceneVisibility::Wireframe, "Wireframe" },
+    VisibilityField{ ESceneVisibility::DirectionalLight, "Directional Light" },
+    VisibilityField{ ESceneVisibility::PointLight, "Point Light" },
+};
+
+WVisualizerWindow::WVisualizerWindow()
+    : sceneVisibility_{ ESceneVisibility::All }
+{
+}
 
 WidgetPtr WVisualizerWindow::Build()
 {
@@ -38,28 +61,27 @@ WidgetPtr WVisualizerWindow::Build()
                         UCreate<WList>{}()
                         | Apply(&WList::SetSpacing, 5.0f)
                         | (
-                            UCreate<WVisualizerWindowItem>{}(EVisualizationField::SceneObject, "Scene Object")
-                        )
-                        | (
-                            UCreate<WVisualizerWindowItem>{}(EVisualizationField::SceneObjectBounds, "Scene Object Bounds")
-                        )
-                        | (
-                            UCreate<WVisualizerWindowItem>{}(EVisualizationField::SceneObjectCollider, "Scene Object Collider")
-                        )
-                        | (
-                            UCreate<WVisualizerWindowItem>{}(EVisualizationField::SceneObjectWireframe, "Scene Object Wireframe")
-                        )
-                        | (
-                            UCreate<WVisualizerWindowItem>{}(EVisualizationField::InterfaceObject, "Interface Object")
-                        )
-                        | (
-                            UCreate<WVisualizerWindowItem>{}(EVisualizationField::InterfaceObjectBounds, "Interface Object Bounds")
-                        )
-                        | (
-                            UCreate<WVisualizerWindowItem>{}(EVisualizationField::InterfaceObjectCollider, "Interface Object Collider")
-                        )
-                        | (
-                            UCreate<WVisualizerWindowItem>{}(EVisualizationField::InterfaceObjectWireframe, "Interface Object Wireframe")
+                            FIELDS 
+                            | std::views::transform([this](VisibilityField const& field) {
+                                return (
+                                    UCreate<WVisualizerWindowItem>{}(field.visibility, field.name)
+                                    | Apply(&WVisualizerWindowItem::SetOnVisibilityChanged, [this](ESceneVisibility field, b8 isActive) {
+                                        if (isActive)
+                                        {
+                                            sceneVisibility_ |= field;
+                                        }
+                                        else
+                                        {
+                                            sceneVisibility_ &= ~field;
+                                        }
+
+                                        if (onSceneVisibilityChanged_)
+                                        {
+                                            onSceneVisibilityChanged_(sceneVisibility_);
+                                        }
+                                    })
+                                );
+                            })
                         )
                     )
                 )

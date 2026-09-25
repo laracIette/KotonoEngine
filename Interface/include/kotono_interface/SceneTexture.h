@@ -5,6 +5,8 @@
 #include <glm/ext/quaternion_float.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <kotono_common/types.h>
+#include <kotono_graphics/SceneVisibility.h>
+
 class WSceneTexture final : public WSceneWidget
 {
 	GENERATED_WSCENETEXTURE()
@@ -14,15 +16,17 @@ public:
 
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
 
-	glm::vec3 GetRightVector() const;
-	glm::vec3 GetUpVector() const;
-	glm::vec3 GetForwardVector() const;
-	glm::mat4 GetViewMatrix() const;
-	glm::mat4 GetProjectionMatrix() const;
+	auto GetViewMatrix() const -> glm::mat4;
+	auto GetProjectionMatrix() const -> glm::mat4;
+
+	void SetViewPosition(glm::vec3 const& position);
+	void SetViewRotation(glm::quat const& rotation);
 
 private:
-	WritableProperty(glm::vec3, viewPosition_, ViewPosition);
-	WritableProperty(glm::quat, viewRotation_, ViewRotation);
+	glm::vec3 viewPosition_;
+	glm::quat viewRotation_;
+
 	WritableProperty(f32, verticalFOV_, VerticalFOV);
 	WritableProperty(f32, depthNear_, DepthNear);
+	WritableProperty(ESceneVisibility, sceneVisibility_, SceneVisibility, Value);
 };

@@ -1,8 +1,10 @@
 #include "MeshComponent.h"
 
 #include <glm/gtc/matrix_inverse.hpp>
+#include <kotono_common/enum_utils.h>
 #include <kotono_common/log.h>
 #include <kotono_graphics/SceneRenderGraph.h>
+#include <kotono_graphics/SceneVisibility.h>
 
 KMeshComponent::KMeshComponent()
 {
@@ -43,21 +45,24 @@ void KMeshComponent::Despawn()
     spinTask_.eventUpdate.RemoveListener(this, &KMeshComponent::Spin);
 }
 
-void KMeshComponent::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const
+void KMeshComponent::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const
 {
-    auto const modelMatrix{ ModelMatrix() };
-    sceneRenderGraph.drawDatas.push_back({
-        .sortKey = {},
-        .modelMatrix = modelMatrix,
-        .normalMatrix = glm::mat4{ glm::inverseTranspose(glm::mat3{ modelMatrix }) },
-        .shader = shader_,
-        .material = material_,
-        .model = model_,
-        .scalars = {},
-        .vectors = {},
-        .textures = {},
-        .isVisible = true,
-    });
+    if (has_flag(visibility, ESceneVisibility::Mesh))
+    {
+        auto const modelMatrix{ ModelMatrix() };
+        sceneRenderGraph.drawDatas.push_back({
+            .sortKey = {},
+            .modelMatrix = modelMatrix,
+            .normalMatrix = glm::mat4{ glm::inverseTranspose(glm::mat3{ modelMatrix }) },
+            .shader = shader_,
+            .material = material_,
+            .model = model_,
+            .scalars = {},
+            .vectors = {},
+            .textures = {},
+            .isVisible = true,
+        });
+    }
 }
 
 void KMeshComponent::Spin(f32 deltaTime)

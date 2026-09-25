@@ -322,7 +322,7 @@ void KSceneComponent::Despawn()
 {
 }
 
-void KSceneComponent::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const
+void KSceneComponent::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const
 {
 }
 

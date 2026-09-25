@@ -16,13 +16,13 @@ private:
 	};
 
 public:
-	WText(std::string_view text = "", glm::vec2 const& fontSize = { 20.0f, 24.0f }, f32 spacing = 0.75f);
+	WText();
 
-	glm::vec2 GetContentSize(glm::vec2 const& bounds) const override;
-	glm::vec2 GetDesiredSize(glm::vec2 const& bounds) const override;
+	auto GetContentSize(glm::vec2 const& bounds) const -> glm::vec2 override;
+	auto GetDesiredSize(glm::vec2 const& bounds) const -> glm::vec2 override;
 
-	EFlex GetFlex() const override;
-	EExpand GetExpand() const override;
+	auto GetFlex() const -> EFlex override;
+	auto GetExpand() const -> EExpand override;
 
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
 
@@ -31,6 +31,8 @@ public:
 
 protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
+
+	auto GetCanCache() const -> b8 override;
 
 private:
 	UBindable<std::string> text_;

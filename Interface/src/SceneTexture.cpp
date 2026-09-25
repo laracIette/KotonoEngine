@@ -14,6 +14,7 @@ WSceneTexture::WSceneTexture(UScene* scene)
 	, verticalFOV_{ 90.0f }
 	, viewPosition_{ WorldUpVector + WorldForwardVector * 2.0f }
 	, viewRotation_{ glm::angleAxis(glm::radians(180.0f), WorldUpVector) }
+	, sceneVisibility_{ ESceneVisibility::All }
 {
 }
 
@@ -22,7 +23,7 @@ void WSceneTexture::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGr
 	USceneView const sceneView{
 		.view = GetViewMatrix(),
 		.proj = GetProjectionMatrix(),
-		.viewPos = GetViewPosition(),
+		.viewPos = viewPosition_,
 		.extent = GetSize(),
 		.time = SClock::Now(),
 		.fov = GetVerticalFOV(),
@@ -34,7 +35,7 @@ void WSceneTexture::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGr
 
 	if (GetScene())
 	{
-		GetScene()->PopulateRenderGraph(sceneRenderGraph);
+		GetScene()->PopulateRenderGraph(sceneRenderGraph, sceneVisibility_);
 	}
 
 	interfaceRenderGraph.drawDatas.push_back({
@@ -49,29 +50,26 @@ void WSceneTexture::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGr
 	});
 }
 
-glm::vec3 WSceneTexture::GetRightVector() const
+auto WSceneTexture::GetViewMatrix() const -> glm::mat4
 {
-	return viewRotation_ * WorldRightVector;
+	return glm::lookAt(viewPosition_, viewPosition_ + forward_vector(viewRotation_), up_vector(viewRotation_));
 }
 
-glm::vec3 WSceneTexture::GetUpVector() const
-{
-	return viewRotation_ * WorldUpVector;
-}
-
-glm::vec3 WSceneTexture::GetForwardVector() const
-{
-	return viewRotation_ * WorldForwardVector;
-}
-
-glm::mat4 WSceneTexture::GetViewMatrix() const
-{
-	return glm::lookAt(viewPosition_, viewPosition_ + GetForwardVector(), GetUpVector());
-}
-
-glm::mat4 WSceneTexture::GetProjectionMatrix() const
+auto WSceneTexture::GetProjectionMatrix() const -> glm::mat4
 {
 	return calculate_reverse_z_infinite_perspective(glm::radians(verticalFOV_), GetAspectRatio(), depthNear_);
+}
+
+void WSceneTexture::SetViewPosition(glm::vec3 const& position)
+{
+	viewPosition_ = position;
+	GetScene()->GetAudioContext().SetListenerPosition(position);
+}
+
+void WSceneTexture::SetViewRotation(glm::quat const& rotation)
+{
+	viewRotation_ = rotation;
+	GetScene()->GetAudioContext().SetListenerOrientation(rotation);
 }
 
 #include "generated/SceneTexture.generated.inl"

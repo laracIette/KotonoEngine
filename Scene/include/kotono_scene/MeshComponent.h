@@ -18,7 +18,7 @@ public:
 	void Spawn() override;
 	void Despawn() override;
 
-	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const override;
+	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const override;
 
 private:
 	// temp

@@ -2,7 +2,9 @@
 #include "generated/Button.generated.h"
 #include <kotono_core/Widget.h>
 
+#include <kotono_common/Bindable.h>
 #include <kotono_graphics/Color.h>
+
 /// Set the widget's bounds as pressable
 class WButton final : public WWidget
 {
@@ -18,7 +20,15 @@ public:
 
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
 
+	auto GetNormalColor() const -> UColor;
+	void SetNormalColor(UBindable<UColor> const& color);
+
+protected:
+	auto GetCanCache() const -> b8 override;
+
 private:
+	UBindable<UColor> normalColor_;
+
 	ReadonlyProperty(b8, isPressed_, IsPressed, Value);
 	ReadonlyProperty(b8, isSelected_, IsSelected, Value);
 	WritableProperty(b8, isEnabled_, IsEnabled, Value);
@@ -29,7 +39,6 @@ private:
 	WritableProperty(VoidCallback, onInactive_, OnInactive);
 	WritableProperty(VoidCallback, onSelected_, OnSelected);
 	WritableProperty(VoidCallback, onDeselected_, OnDeselected);
-	WritableProperty(UColor, normalColor_, NormalColor, Value);
 	WritableProperty(UColor, focusedColor_, FocusedColor, Value);
 	WritableProperty(UColor, pressedColor_, PressedColor, Value);
 	WritableProperty(UColor, selectedColor_, SelectedColor, Value);

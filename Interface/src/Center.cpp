@@ -5,9 +5,50 @@ WCenter::WCenter(const EAxis axis)
 {
 }
 
-glm::vec2 WCenter::GetContentSize(glm::vec2 const& bounds) const
+auto WCenter::GetContentSize(glm::vec2 const& bounds) const -> glm::vec2
 {
-	return Base::GetContentSize(bounds);
+	auto size{ Base::GetContentSize(bounds) };
+
+	switch (axis_)
+	{
+	case EAxis::Horizontal:
+		size.x = bounds.x;
+		break;
+	case EAxis::Vertical:
+		size.y = bounds.y;
+		break;
+	case EAxis::All:
+		size = bounds;
+		break;
+	}
+
+	return size;
+}
+
+auto WCenter::GetFlex() const -> EFlex
+{
+	switch (axis_)
+	{
+	case EAxis::Horizontal:
+		return EFlex::Horizontal;
+	case EAxis::Vertical:
+		return EFlex::Vertical;
+	default:
+		return EFlex::All;
+	}
+}
+
+auto WCenter::GetExpand() const -> EExpand
+{
+	switch (axis_)
+	{
+	case EAxis::Horizontal:
+		return EExpand::Horizontal;
+	case EAxis::Vertical:
+		return EExpand::Vertical;
+	default:
+		return EExpand::All;
+	}
 }
 
 void WCenter::DisplayInternal(UWidgetDisplaySettings displaySettings)

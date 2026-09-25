@@ -7,8 +7,11 @@
 #include <kotono_common/Path.h>
 #include <kotono_common/Set.h>
 #include <span>
+
+enum class ESceneVisibility : u32;
 struct USceneRenderGraph;
 class TSceneObject;
+
 class UScene final
 {
 private:
@@ -28,7 +31,7 @@ public:
 
 	auto GetSceneObjects() const -> std::span<SceneObject const>;
 
-	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const;
+	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const;
 
 	void PlayGame();
 	void PauseGame();

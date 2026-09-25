@@ -2,19 +2,25 @@
 #include "generated/VisualizerWindowItem.generated.h"
 #include <kotono_core/Widget.h>
 
-#include "VisualizationField.h"
+#include <kotono_graphics/SceneVisibility.h>
 
 class WVisualizerWindowItem : public WWidget
 {
 	GENERATED_WVISUALIZERWINDOWITEM()
 
+private:
+	using VisibilityChangedCallback = std::function<void(ESceneVisibility, b8)>;
+
 public:
-	WVisualizerWindowItem(EVisualizationField field, std::string_view name);
+	WVisualizerWindowItem(ESceneVisibility field, std::string_view name);
 
 protected:
 	WidgetPtr Build() override;
 
 private:
-	EVisualizationField field_;
+	ESceneVisibility field_;
 	std::string name_;
+	b8 isFieldVisible_;
+
+	WritableProperty(VisibilityChangedCallback, onVisibilityChanged_, OnVisibilityChanged);
 };

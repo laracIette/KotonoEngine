@@ -56,7 +56,8 @@ WidgetPtr WDetachable::Build()
 				)
 			)
 			| (
-				child_ = UCreate<WText>{}("Loading...")
+				child_ = UCreate<WText>{}()
+				| Apply(&WText::SetText, "Loading...")
 			)
 		)
 	);

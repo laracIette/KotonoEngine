@@ -3,6 +3,7 @@
 #include "PointLightData.h"
 #include "SceneDrawData.h"
 #include <vector>
+
 struct USceneRenderGraph final
 {
 	std::vector<USceneDrawData> drawDatas;

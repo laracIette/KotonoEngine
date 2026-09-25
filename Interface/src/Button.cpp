@@ -129,7 +129,7 @@ void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) c
 		if (isPressed_)		return pressedColor_;
 		if (isSelected_)	return selectedColor_;
 		if (GetIsFocused())	return focusedColor_;
-		return normalColor_;
+		return GetNormalColor();
 	} };
 
 	interfaceRenderGraph.drawDatas.push_back({
@@ -142,6 +142,21 @@ void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) c
 		.textures = { "${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg" },
 		.isVisible = GetIsVisible(),
 	});
+}
+
+auto WButton::GetNormalColor() const -> UColor
+{
+	return normalColor_;
+}
+
+void WButton::SetNormalColor(UBindable<UColor> const& color)
+{
+	normalColor_ = color;
+}
+
+auto WButton::GetCanCache() const -> b8
+{
+	return normalColor_.GetIsValue();
 }
 
 #include "generated/Button.generated.inl"

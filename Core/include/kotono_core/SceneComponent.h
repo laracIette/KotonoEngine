@@ -9,6 +9,7 @@
 #include <kotono_graphics/Mobility.h>
 #include <kotono_graphics/Visibility.h>
 
+enum class ESceneVisibility : u32;
 struct USceneRenderGraph;
 class TSceneObject;
 class UScene;
@@ -73,7 +74,7 @@ public:
 	virtual void Spawn();
 	virtual void Despawn();
 
-	virtual void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph) const;
+	virtual void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const;
 
 	auto GetRelativePosition() const -> glm::vec3 { return transform_.position; }
 	auto GetRelativeRotation() const -> glm::quat { return transform_.rotation; }

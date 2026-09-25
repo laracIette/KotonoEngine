@@ -1,5 +1,6 @@
 #pragma once
 #include <kotono_common/types.h>
+#include <limits>
 enum class EKey : u8
 {
 	Space = 0,
@@ -123,17 +124,17 @@ enum class EKey : u8
 	RightSuper,
 	Menu,
 	Last,
-	Unknown = UINT8_MAX
+	Unknown = std::numeric_limits<u8>::max()
 };
 
 inline constexpr size KeyCount{ 121 };
 
-inline constexpr size to_index(const EKey key)
+constexpr size to_index(EKey key)
 {
 	return static_cast<size>(key);
 }
 
-inline constexpr char keyToChar(const EKey key)
+constexpr char keyToChar(EKey key)
 {
 	switch (key)
 	{

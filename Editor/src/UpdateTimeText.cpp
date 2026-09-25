@@ -5,7 +5,7 @@
 
 WidgetPtr WUpdateTimeText::Build()
 {
-    return UCreate<WText>{ "Update Time Text" }("Update Time Text")
+    return UCreate<WText>{ "Update Time Text" }()
     | Apply(&WText::SetText, [this]() {
         f32 const delta{ GetInterface()->GetDeltaTime() };
         return std::format("{0:.8f}FPS / {1:.8f}s", 1.0f / delta, delta);
