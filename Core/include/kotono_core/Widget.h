@@ -62,6 +62,8 @@ public:
 	/// Stop displaying the widget
 	virtual void Remove();
 
+	virtual void Disown(WidgetPtr const& widget);
+
 	virtual auto GetContentSize(glm::vec2 const& bounds) const -> glm::vec2;
 	virtual auto GetDesiredSize(glm::vec2 const& bounds) const -> glm::vec2;
 

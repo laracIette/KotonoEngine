@@ -20,7 +20,25 @@ void WChildOwner::Remove()
 	}
 }
 
-glm::vec2 WChildOwner::GetContentSize(glm::vec2 const& bounds) const
+void WChildOwner::Disown(WidgetPtr const& widget)
+{
+	if (!widget)
+	{
+		return;
+	}
+
+	if (widget != child_)
+	{
+		return;
+	}
+
+	SetState([this, widget]() {
+		child_ = nullptr;
+		widget->SetParent(nullptr);
+	});
+}
+
+auto WChildOwner::GetContentSize(glm::vec2 const& bounds) const -> glm::vec2
 {
 	if (child_)
 	{
@@ -29,7 +47,7 @@ glm::vec2 WChildOwner::GetContentSize(glm::vec2 const& bounds) const
 	return { 0.0f, 0.0f };
 }
 
-glm::vec2 WChildOwner::GetDesiredSize(const glm::vec2& bounds) const
+auto WChildOwner::GetDesiredSize(const glm::vec2& bounds) const -> glm::vec2
 {
 	if (child_)
 	{
@@ -56,7 +74,7 @@ void WChildOwner::PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorP
 	}
 }
 
-b8 WChildOwner::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position)
+auto WChildOwner::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) -> b8
 {
 	if (!child_ || !child_->GetIsDisplayed())
 	{
@@ -71,7 +89,7 @@ b8 WChildOwner::OnMouseButton(EButton button, EInputState inputState, glm::vec2 
 	return INPUT_UNHANDLED;
 }
 
-b8 WChildOwner::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
+auto WChildOwner::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> b8
 {
 	if (!child_ || !child_->GetIsDisplayed())
 	{
@@ -86,7 +104,7 @@ b8 WChildOwner::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
 	return INPUT_UNHANDLED;
 }
 
-b8 WChildOwner::OnMouseScroll(glm::vec2 const& delta)
+auto WChildOwner::OnMouseScroll(glm::vec2 const& delta) -> b8
 {
 	if (!child_ || !child_->GetIsDisplayed())
 	{
@@ -101,7 +119,7 @@ b8 WChildOwner::OnMouseScroll(glm::vec2 const& delta)
 	return INPUT_UNHANDLED;
 }
 
-b8 WChildOwner::OnKeyboardKey(EKey key, EInputState inputState)
+auto WChildOwner::OnKeyboardKey(EKey key, EInputState inputState) -> b8
 {
 	if (!child_ || !child_->GetIsDisplayed())
 	{

@@ -3,7 +3,6 @@
 #include <kotono_core/Widget.h>
 
 #include <concepts>
-#include <tuple>
 
 class WChildOwner : public WWidget
 {
@@ -15,17 +14,19 @@ public:
 public:
 	void Remove() override;
 
-	glm::vec2 GetContentSize(glm::vec2 const& bounds) const override;
-	glm::vec2 GetDesiredSize(glm::vec2 const& bounds) const override;
+	void Disown(WidgetPtr const& widget) override;
+
+	auto GetContentSize(glm::vec2 const& bounds) const -> glm::vec2 override;
+	auto GetDesiredSize(glm::vec2 const& bounds) const -> glm::vec2 override;
 
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const final;
 	void PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosition) const final;
 
-	b8 OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) override;
-	b8 OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) override;
-	b8 OnMouseScroll(glm::vec2 const& delta) override;
+	auto OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) -> b8 override;
+	auto OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> b8 override;
+	auto OnMouseScroll(glm::vec2 const& delta) -> b8 override;
 
-	b8 OnKeyboardKey(EKey key, EInputState inputState) override;
+	auto OnKeyboardKey(EKey key, EInputState inputState) -> b8 override;
 
 	void Refresh() final;
 

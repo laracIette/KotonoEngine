@@ -89,7 +89,7 @@ public:
 
 	void Remove(IndicesMapConstIterator it)
 	{
-		if (it == indices_.end())
+		if (!IsValidIterator(it))
 		{
 			return;
 		}
@@ -107,7 +107,7 @@ public:
 
 	void Replace(IndicesMapConstIterator it, ValueType const& value)
 	{
-		if (it == indices_.end())
+		if (!IsValidIterator(it))
 		{
 			Add(value);
 			return;
@@ -155,6 +155,11 @@ public:
 	constexpr b8 IsValidIndex(i64 index) const noexcept
 	{
 		return values_.IsValidIndex(index);
+	}
+
+	constexpr b8 IsValidIterator(IndicesMapConstIterator it) const noexcept
+	{
+		return it != indices_.end();
 	}
 
 	constexpr auto begin(this auto&& self) noexcept(noexcept(std::ranges::begin(self.values_)))

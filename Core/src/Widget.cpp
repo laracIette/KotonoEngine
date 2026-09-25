@@ -36,6 +36,11 @@ WWidget::~WWidget()
 	{
 		build_->Delete();
 	}
+
+	if (GetParent())
+	{
+		GetParent()->Disown(Ptr());
+	}
 }
 
 void WWidget::PostConstruct()
@@ -80,6 +85,24 @@ void WWidget::Remove()
 	{
 		build_->Remove();
 	}
+}
+
+void WWidget::Disown(WidgetPtr const& widget)
+{
+	if (!widget)
+	{
+		return;
+	}
+
+	if (widget != build_)
+	{
+		return;
+	}
+
+	SetState([this, widget]() {
+		build_ = nullptr;
+		widget->SetParent(nullptr);
+	});
 }
 
 glm::vec2 WWidget::GetContentSize(glm::vec2 const& bounds) const

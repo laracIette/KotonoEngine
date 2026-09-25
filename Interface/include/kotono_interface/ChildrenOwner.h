@@ -13,6 +13,8 @@ public:
 
 	void Remove() override;
 
+	void Disown(WidgetPtr const& widget) override;
+
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const final;
 	void PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosition) const final;
 

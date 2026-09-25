@@ -49,8 +49,7 @@ WidgetPtr WDetachable::Build()
 						| Apply(&WBox::SetSize, glm::vec2{ 16.0f, 16.0f })
 						| (
 							UCreate<WButton>{}()
-							| Apply(&WButton::SetIsEnabled, false)
-							| Apply(&WButton::SetOnClicked, [this]() { throw std::runtime_error{ "unimplemented!" }; })
+							| Apply(&WButton::SetOnClicked, [this]() { Delete(); })
 							| Apply(&WButton::SetNormalColor, Colors::Red)
 						)
 					)
@@ -87,13 +86,9 @@ void WDetachable::Detach()
 
 	auto* const oldInterface{ GetInterface() };
 
-	if (UPtr asChildOwner{ TryCast<WChildOwner>(GetParent()) })
+	if (GetParent())
 	{
-		asChildOwner->SetChild(nullptr);
-	}
-	else if (UPtr asChildrenOwner{ TryCast<WChildrenOwner>(GetParent()) })
-	{
-		asChildrenOwner->RemoveChild(Ptr());
+		GetParent()->Disown(Ptr());
 	}
 
 	oldInterface->OpenWidgetInWindow(Ptr(), GetSize());

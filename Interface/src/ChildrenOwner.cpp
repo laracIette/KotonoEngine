@@ -6,7 +6,7 @@
 
 WChildrenOwner::~WChildrenOwner()
 {
-	for (auto const& child : children_)
+	for (auto const& child : WidgetSet{ children_ })
 	{
 		if (child)
 		{
@@ -25,6 +25,24 @@ void WChildrenOwner::Remove()
 		{
 			child->Remove();
 		}
+	}
+}
+
+void WChildrenOwner::Disown(WidgetPtr const& widget)
+{
+	if (!widget)
+	{
+		return;
+	}
+
+	auto const it{ children_.Find(widget) };
+
+	if (children_.IsValidIterator(it))
+	{
+		SetState([this, widget, it]() {
+			children_.Remove(it);
+			widget->SetParent(nullptr);
+		});
 	}
 }
 
