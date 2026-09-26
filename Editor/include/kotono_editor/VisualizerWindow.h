@@ -13,6 +13,7 @@ private:
 
 public:
 	WVisualizerWindow();
+	WVisualizerWindow(ESceneVisibility sceneVisibility);
 
 protected:
 	WidgetPtr Build() override;

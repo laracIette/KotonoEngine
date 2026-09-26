@@ -8,6 +8,7 @@ class WSceneWidget : public WWidget
 
 public:
 	//WSceneWidget() = delete; // register_ breaks if default constructor deleted
+	WSceneWidget();
 	WSceneWidget(UScene* scene);
 
 private:

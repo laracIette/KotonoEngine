@@ -21,8 +21,13 @@ static constexpr std::array FIELDS{
     VisibilityField{ ESceneVisibility::PointLight, "Point Light" },
 };
 
+WVisualizerWindow::WVisualizerWindow(ESceneVisibility sceneVisibility)
+    : sceneVisibility_{ sceneVisibility }
+{
+}
+
 WVisualizerWindow::WVisualizerWindow()
-    : sceneVisibility_{ ESceneVisibility::All }
+    : Self(ESceneVisibility::All)
 {
 }
 
@@ -64,16 +69,11 @@ WidgetPtr WVisualizerWindow::Build()
                             FIELDS 
                             | std::views::transform([this](VisibilityField const& field) {
                                 return (
-                                    UCreate<WVisualizerWindowItem>{}(field.visibility, field.name)
+                                    UCreate<WVisualizerWindowItem>{}(field.visibility, field.name, has_flag(sceneVisibility_, field.visibility))
                                     | Apply(&WVisualizerWindowItem::SetOnVisibilityChanged, [this](ESceneVisibility field, b8 isActive) {
-                                        if (isActive)
-                                        {
-                                            sceneVisibility_ |= field;
-                                        }
-                                        else
-                                        {
-                                            sceneVisibility_ &= ~field;
-                                        }
+                                        sceneVisibility_ = isActive
+                                            ? sceneVisibility_ | field
+                                            : sceneVisibility_ & ~field;
 
                                         if (onSceneVisibilityChanged_)
                                         {

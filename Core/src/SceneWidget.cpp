@@ -5,4 +5,9 @@ WSceneWidget::WSceneWidget(UScene* scene)
 {
 }
 
+WSceneWidget::WSceneWidget()
+	: Self(nullptr)
+{
+}
+
 #include "generated/SceneWidget.generated.inl"

@@ -2,10 +2,10 @@
 
 #include <kotono_interface/widgets.h>
 
-WVisualizerWindowItem::WVisualizerWindowItem(ESceneVisibility field, std::string_view name) 
+WVisualizerWindowItem::WVisualizerWindowItem(ESceneVisibility field, std::string_view name, b8 isFieldVisible) 
     : field_{ field }
     , name_{ name }
-    , isFieldVisible_{ true }
+    , isFieldVisible_{ isFieldVisible }
 {
 }
 

@@ -55,6 +55,7 @@
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/SceneExplorerItem.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/SceneExplorerRemoveButton.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/SecondaryWindow.h",
+        "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/SingleViewport.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/UpdateTimeText.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/ValueBox.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/ValueSlider.h",

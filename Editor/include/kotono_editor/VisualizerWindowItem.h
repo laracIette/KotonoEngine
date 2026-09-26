@@ -12,7 +12,7 @@ private:
 	using VisibilityChangedCallback = std::function<void(ESceneVisibility, b8)>;
 
 public:
-	WVisualizerWindowItem(ESceneVisibility field, std::string_view name);
+	WVisualizerWindowItem(ESceneVisibility field, std::string_view name, b8 isFieldVisible);
 
 protected:
 	WidgetPtr Build() override;
