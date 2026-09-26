@@ -1,153 +1,191 @@
 #pragma once
 #include <format>
-#include <kotono_common/Pool.h>
+#include <kotono_common/types.h>
 #include <string>
 #include <type_traits>
+#include <utility>
 
-class UPtrBase
+struct UPtrData
 {
-public:
-	virtual ~UPtrBase() = default;
-	virtual void Invalidate() noexcept = 0;
-};
-
-class UPtrOwner final
-{
-	template <typename T>
-	friend class UPtr;
-
-public:
-	UPtrOwner() : pointer_{ nullptr }, children_{} {}
-
-	~UPtrOwner()
-	{
-		for (UPtrBase* child : children_)
-		{
-			child->Invalidate();
-		}
-	}
-
-	constexpr void Set(void* pointer) noexcept
-	{
-		pointer_ = pointer;
-	}
-
-	constexpr void* Get() const noexcept
-	{
-		return pointer_;
-	}
-
-private:
-	void* pointer_;
-	UPool<UPtrBase*> children_;
+	void* pointer;
+	size count;
 };
 
 template <class T>
-class UPtr final : public UPtrBase
+class UPtr final
 {
 private:
 	template <typename U> 
 	friend class UPtr;
 
-	using Owner = UPtrOwner;
-
 	friend std::hash<UPtr>;
 
 public:
 	using PointerType = T;
+	using Data = UPtrData;
 
 public:
-	constexpr UPtr() : owner_{ nullptr }, index_{ 0 } 
+	constexpr UPtr() noexcept
+		: data_{ nullptr }
 	{
 	}
 
-	constexpr UPtr(std::nullptr_t) : UPtr()
+	constexpr UPtr(std::nullptr_t) noexcept
+		: data_{ nullptr }
 	{
 	}
 
-	UPtr(Owner* owner) : UPtr()
+	explicit constexpr UPtr(void* pointer) noexcept
+		: data_{ new Data{ pointer, 1 } }
 	{
-		SetOwner(owner);
 	}
 	
-	UPtr(UPtr const& other) : UPtr()
+	constexpr UPtr(UPtr&& other) noexcept
+		: data_{ std::exchange(other.data_, nullptr) }
 	{
-		SetOwner(other.owner_);
+	}
+
+	constexpr UPtr(UPtr const& other) noexcept
+		: data_{ other.data_ }
+	{
+		if (data_)
+		{
+			++data_->count;
+		}
 	}
 
 	template <typename From>
 		requires std::is_convertible_v<From*, PointerType*>
-	UPtr(UPtr<From> const& other) : UPtr()
+	constexpr UPtr(UPtr<From> const& other) noexcept
+		: data_{ other.data_ }
 	{
-		SetOwner(other.owner_);
+		if (data_)
+		{
+			++data_->count;
+		}
 	}
 
 	// Equivalent of static_cast
 	template <typename Base>
 		requires std::is_base_of_v<Base, PointerType>
-	UPtr(UPtr<Base> const& other) : UPtr()
+	constexpr UPtr(UPtr<Base> const& other) noexcept
+		: data_{ other.data_ }
 	{
-		SetOwner(other.owner_);
-	}
-
-	~UPtr() override
-	{
-		SetOwner(nullptr);
-	}
-
-	void Invalidate() noexcept override
-	{
-		owner_ = nullptr;
-	}
-
-	UPtr& operator=(std::nullptr_t)
-	{
-		SetOwner(nullptr);
-		return *this;
-	}
-
-	template <typename From>
-		requires std::is_convertible_v<From*, PointerType*>
-	UPtr& operator=(UPtr<From> const& other)
-	{
-		SetOwner(other.owner_);
-		return *this;
-	}
-
-	UPtr& operator=(UPtr const& other)
-	{
-		if (this != &other)
+		if (data_)
 		{
-			SetOwner(other.owner_);
+			++data_->count;
 		}
+	}
+
+	constexpr ~UPtr() noexcept
+	{
+		if (data_ && --data_->count == 0)
+		{
+			delete data_;
+		}
+	}
+
+	constexpr void Invalidate() noexcept
+	{
+		if (data_)
+		{
+			data_->pointer = nullptr;
+		}
+	}
+
+	constexpr UPtr& operator=(UPtr&& other) noexcept
+	{
+		if (this == &other)
+		{
+			return *this;
+		}
+
+		if (data_ && --data_->count == 0)
+		{
+			delete data_;
+		}
+
+		data_ = std::exchange(other.data_, nullptr);
+
 		return *this;
 	}
 
-	constexpr bool operator==(UPtr const& other) const noexcept
+	constexpr UPtr& operator=(std::nullptr_t) noexcept
 	{
-		return owner_ == other.owner_;
+		if (data_ && --data_->count == 0)
+		{
+			delete data_;
+		}
+		data_ = nullptr;
+		return *this;
 	}
 
 	template <typename From>
 		requires std::is_convertible_v<From*, PointerType*>
-	constexpr bool operator==(UPtr<From> const& other) const noexcept
+	constexpr UPtr& operator=(UPtr<From> const& other) noexcept
 	{
-		return owner_ == other.owner_;
+		if (data_ && --data_->count == 0)
+		{
+			delete data_;
+		}
+
+		data_ = other.data_;
+
+		if (data_)
+		{
+			++data_->count;
+		}
+
+		return *this;
 	}
 
-	constexpr bool operator==(PointerType* ptr) const noexcept
+	constexpr UPtr& operator=(UPtr const& other) noexcept
 	{
-		return (!owner_ && !ptr) || (owner_ && owner_->Get() == ptr);
+		if (this == &other)
+		{
+			return *this;
+		}
+
+		if (data_ && --data_->count == 0)
+		{
+			delete data_;
+		}
+
+		data_ = other.data_;
+
+		if (data_)
+		{
+			++data_->count;
+		}
+		
+		return *this;
 	}
 
-	constexpr bool operator==(std::nullptr_t) const noexcept
+	constexpr b8 operator==(UPtr const& other) const noexcept
 	{
-		return !operator bool();
+		return data_ == other.data_;
+	}
+
+	template <typename From>
+		requires std::is_convertible_v<From*, PointerType*>
+	constexpr b8 operator==(UPtr<From> const& other) const noexcept
+	{
+		return data_ == other.data_;
+	}
+
+	constexpr b8 operator==(std::nullptr_t) const noexcept
+	{
+		return !operator b8();
+	}
+
+	constexpr operator b8() const noexcept
+	{
+		return data_ && data_->pointer;
 	}
 
 	constexpr PointerType* Get() const noexcept
 	{
-		return static_cast<PointerType*>(owner_->Get());
+		return data_ ? static_cast<PointerType*>(data_->pointer) : nullptr;
 	}
 
 	constexpr PointerType* operator->() const noexcept
@@ -160,49 +198,13 @@ public:
 		return *Get();
 	}
 
-	constexpr operator bool() const noexcept
-	{
-		return owner_ && owner_->Get();
-	}
-
 	operator std::string() const
 	{
 		return Get() ? Get()->operator std::string() : std::string{ "nullptr" };
 	}
-
-	constexpr Owner* GetOwner() const noexcept
-	{
-		return owner_;
-	}
-
+	
 private:
-	constexpr void SetOwner(Owner* owner)
-	{
-		if (owner == owner_)
-		{
-			return;
-		}
-
-		if (owner_)
-		{
-			if (owner_->children_.RemoveAt(index_) == EPoolRemoveResult::ItemSwappedAndRemoved)
-			{
-				static_cast<UPtr*>(owner_->children_[index_])->index_ = index_;
-			}
-		}
-
-		owner_ = owner;
-		
-		if (owner_)
-		{
-			owner_->children_.Add(this);
-			index_ = owner_->children_.LastIndex();
-		}
-	}
-
-private:
-	Owner* owner_;
-	size index_;
+	Data* data_;
 };
 
 // Equivalent of dynamic_cast
@@ -212,7 +214,7 @@ inline UPtr<Derived> TryCast(UPtr<Base> const& ptr)
 {
 	if (ptr && dynamic_cast<Derived*>(ptr.Get()))
 	{
-		return UPtr<Derived>{ ptr.GetOwner() };
+		return UPtr<Derived>{ ptr };
 	}
 	return nullptr;
 }
@@ -222,7 +224,7 @@ struct std::hash<UPtr<T>>
 {
 	::size operator()(UPtr<T> const& ptr) const noexcept
 	{
-		return std::hash<void*>{}(ptr.owner_);
+		return std::hash<void*>{}(ptr.data_);
 	}
 };
 

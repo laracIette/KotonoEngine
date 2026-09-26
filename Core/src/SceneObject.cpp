@@ -51,7 +51,7 @@ void TSceneObject::SetParent(UPtr<TSceneObject> const& parent, ECoordinateSpace 
 		return;
 	}
 
-	if (parent == this)
+	if (parent == Ptr())
 	{
 		KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {0} to itself", GetName());
 		return;

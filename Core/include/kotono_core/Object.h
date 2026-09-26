@@ -88,7 +88,7 @@ public:
 	static ObjectPtr Deserialize(const nlohmann::json& json);
 
 protected:
-	UPtrOwner* const ptrOwner_;
+	ObjectPtr ptr_;
 
 private:
 	SERIALIZE std::string type_;

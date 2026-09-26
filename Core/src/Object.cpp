@@ -9,12 +9,10 @@ std::unordered_set<ObjectPtr> KObject::debugRegistry_{};
 #endif 
 
 KObject::KObject()
-    : ptrOwner_{ new UPtrOwner{} }
+    : ptr_{ this }
     , guid_{}
     , name_{}
 {
-    ptrOwner_->Set(this);
-
 #ifndef NDEBUG
     debugRegistry_.insert(Ptr());
 #endif
@@ -26,7 +24,7 @@ KObject::~KObject()
     debugRegistry_.erase(Ptr());
 #endif
 
-    delete ptrOwner_;
+    ptr_.Invalidate();
 }
 
 void KObject::PostConstruct()

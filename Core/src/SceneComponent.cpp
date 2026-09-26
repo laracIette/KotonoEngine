@@ -143,7 +143,7 @@ void KSceneComponent::SetParent(UPtr<KSceneComponent> const& parent, ECoordinate
         return;
     }
 
-    if (parent == this)
+    if (parent == Ptr())
     {
         KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {0} to itself", GetName());
         return;

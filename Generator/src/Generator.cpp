@@ -207,7 +207,7 @@ std::vector<UVariableInfo> {0}::GetMemberVariables() const
 
 UPtr<{0}> {0}::Ptr() const
 {{
-	return UPtr<{0}>{{ ptrOwner_ }};
+	return UPtr<{0}>{{ ptr_ }};
 }}
 )",
 			classInfo.name,
@@ -244,7 +244,7 @@ std::vector<UVariableInfo> {0}::GetMemberVariables() const
 
 UPtr<{0}> {0}::Ptr() const
 {{
-	return UPtr<{0}>{{ ptrOwner_ }};
+	return UPtr<{0}>{{ ptr_ }};
 }}
 )",
 			classInfo.name,
