@@ -22,23 +22,17 @@ WidgetPtr WDetachable::Build()
 				| (
 					UCreate<WRow>{}()
 					| (
-						UCreate<WWrap>{}()
+						UCreate<WAlign>{}()
+						| Apply(&WAlign::SetAlignment, UAlignment::Center())
 						| (
-							UCreate<WCenter>{}()
-							| Apply(&WCenter::SetAxis, EAxis::Vertical)
-							| (
-								UCreate<WText>{ "Name" }()
-								| Apply(&WText::SetText, [this]() { return GetName(); })
-								| Apply(&WText::SetFontSize, glm::vec2{ 12.0f, 16.0f })
-							)
+							UCreate<WText>{ "Name" }()
+							| Apply(&WText::SetText, [this]() { return GetName(); })
+							| Apply(&WText::SetFontSize, glm::vec2{ 12.0f, 16.0f })
 						)
 					)
 					| (
-						UCreate<WSpacer>{}(EAxis::Horizontal)
-					)
-					| (
 						UCreate<WBox>{}()
-						| Apply(&WBox::SetSize, glm::vec2{ 16.0f, 16.0f })
+						| Apply(&WBox::SetSize, glm::vec2{ 20.0f, 20.0f })
 						| (
 							UCreate<WButton>{}()
 							| Apply(&WButton::SetOnClicked, [this]() { Detach(); })
@@ -46,7 +40,7 @@ WidgetPtr WDetachable::Build()
 					)
 					| (
 						UCreate<WBox>{}()
-						| Apply(&WBox::SetSize, glm::vec2{ 16.0f, 16.0f })
+						| Apply(&WBox::SetSize, glm::vec2{ 20.0f, 20.0f })
 						| (
 							UCreate<WButton>{}()
 							| Apply(&WButton::SetOnClicked, [this]() { Delete(); })

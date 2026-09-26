@@ -13,7 +13,8 @@ WidgetPtr WSceneExplorerAddButton::Build()
 			| Apply(&WButton::SetOnClicked, []() { throw std::runtime_error{ "unimplemented!" }; })
 		)
 		| (
-			UCreate<WCenter>{}()
+			UCreate<WAlign>{}()
+			| Apply(&WAlign::SetAlignment, UAlignment::Center())
 			| (
 				UCreate<WText>{}()
 				| Apply(&WText::SetText, "Add")

@@ -38,8 +38,8 @@ WidgetPtr WAssetExplorerItem::Build()
             })
         )
         | (
-            UCreate<WCenter>{ "Item Center" }()
-            | Apply(&WCenter::SetAxis, EAxis::All)
+            UCreate<WAlign>{ "Item Center" }()
+            | Apply(&WAlign::SetAlignment, UAlignment::Center())
             | (
                 UCreate<WText>{ "Item Text" }() 
                 | Apply(&WText::SetText, path_.Name())

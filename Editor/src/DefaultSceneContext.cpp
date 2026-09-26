@@ -14,8 +14,8 @@ WidgetPtr WDefaultSceneContext::Build()
 			UCreate<WWrap>{}()
 			| Apply(&WWrap::SetAxis, EAxis::Vertical)
 			| (
-				UCreate<WCenter>{ "Game State Center" }()
-				| Apply(&WCenter::SetAxis, EAxis::Horizontal)
+				UCreate<WAlign>{}()
+				| Apply(&WAlign::SetAlignment, UAlignment::Center())
 				| (
 					UCreate<WGameStateButton>{ "Game State Button" }(GetScene())
 				)

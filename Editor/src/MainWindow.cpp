@@ -9,45 +9,41 @@
 
 WidgetPtr WMainWindow::Build()
 {
-	UPtr<WDefaultSceneContext> sceneContext;
-
-	UPtr widget{ (
+	UPtr const sceneContext{ UCreate<WDefaultSceneContext>{ "Scene Context" }(SProjectSettings::Get<std::string>("/startupScene")) };
+	AddSceneContext(sceneContext);
+	
+	return (
 		UCreate<WColumn>{ "Main Window Column" }()
 		| Apply(&WColumn::SetSpacing, 5.0f)
 		| (
-			UCreate<WRow>{ "Top Row" }()
+			UCreate<WWrap>{}()
+			| Apply(&WWrap::SetAxis, EAxis::Vertical)
 			| (
-				UCreate<WSpacer>{ "Top Row Spacer" }(EAxis::Horizontal)
-			)
-			| (
-				UCreate<WWrap>{ "Times Wrap" }()
+				UCreate<WAlign>{}()
+				| Apply(&WAlign::SetAlignment, UAlignment::Right())
 				| (
 					UCreate<WUpdateTimeText>{ "Update Time Text" }()
 				)
 			)
 		)
 		| (
-			UCreate<WColumn>{}()
+			UCreate<WRow>{}()
 			| (
-				sceneContext = UCreate<WDefaultSceneContext>{ "Scene Context" }(SProjectSettings::Get<std::string>("/startupScene"))
+				sceneContext
 			)
+		)
+		| (
+			UCreate<WConstraint>{ "Asset Explorer Constraint" }()
+			| Apply(&WConstraint::SetAxis, EAxis::Vertical)
+			| Apply(&WConstraint::SetSize, 250.0f)
 			| (
-				UCreate<WConstraint>{ "Asset Explorer Constraint" }()
-				| Apply(&WConstraint::SetAxis, EAxis::Vertical)
-				| Apply(&WConstraint::SetSize, 325.0f)
+				UCreate<WDetachable>{ "Asset Explorer" }()
 				| (
-					UCreate<WDetachable>{ "Asset Explorer" }()
-					| (
-						UCreate<WAssetExplorer>{ "Asset Explorer" }()
-					)
+					UCreate<WAssetExplorer>{ "Asset Explorer" }()
 				)
 			)
 		)
-	) };
-
-	AddSceneContext(sceneContext);
-
-	return widget;
+	);
 }
 
 #include "generated/MainWindow.generated.inl"

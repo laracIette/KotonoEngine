@@ -1,7 +1,7 @@
 #pragma once
+#include "Align.h"
 #include "Box.h"
 #include "Button.h"
-#include "Center.h"
 #include "Color.h"
 #include "Column.h"
 #include "Constraint.h"

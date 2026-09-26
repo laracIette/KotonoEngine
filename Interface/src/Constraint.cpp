@@ -28,7 +28,7 @@ glm::vec2 WConstraint::GetContentSize(glm::vec2 const& bounds) const
 	return Base::GetContentSize(newBounds);
 }
 
-glm::vec2 WConstraint::GetDesiredSize(const glm::vec2& bounds) const
+glm::vec2 WConstraint::GetDesiredSize(glm::vec2 const& bounds) const
 {
 	switch (axis_)
 	{
@@ -50,12 +50,7 @@ EExpand WConstraint::GetExpand() const
 
 EFlex WConstraint::GetFlex() const
 {
-	switch (axis_)
-	{
-	case EAxis::Horizontal:	return EFlex::Vertical;
-	case EAxis::Vertical:	return EFlex::Horizontal;
-	default:				return EFlex::None;
-	}
+	return EFlex::All;
 }
 
 void WConstraint::DisplayInternal(UWidgetDisplaySettings displaySettings)

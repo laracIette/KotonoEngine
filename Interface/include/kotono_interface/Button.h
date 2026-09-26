@@ -20,18 +20,21 @@ public:
 
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
 
+	auto GetIsEnabled() const -> b8;
 	auto GetNormalColor() const -> UColor;
+
+	void SetIsEnabled(UBindable<b8> const& isEnabled);
 	void SetNormalColor(UBindable<UColor> const& color);
 
 protected:
 	auto GetCanCache() const -> b8 override;
 
 private:
+	UBindable<b8> isEnabled_;
 	UBindable<UColor> normalColor_;
 
 	ReadonlyProperty(b8, isPressed_, IsPressed, Value);
 	ReadonlyProperty(b8, isSelected_, IsSelected, Value);
-	WritableProperty(b8, isEnabled_, IsEnabled, Value);
 	WritableProperty(b8, isSelectable_, IsSelectable, Value);
 	WritableProperty(VoidCallback, onClicked_, OnClicked);
 	WritableProperty(VoidCallback, onDown_, OnDown);

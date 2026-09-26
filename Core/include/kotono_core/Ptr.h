@@ -48,10 +48,7 @@ public:
 	constexpr UPtr(UPtr const& other) noexcept
 		: data_{ other.data_ }
 	{
-		if (data_)
-		{
-			++data_->count;
-		}
+		TryIncrementCount();
 	}
 
 	template <typename From>
@@ -59,10 +56,7 @@ public:
 	constexpr UPtr(UPtr<From> const& other) noexcept
 		: data_{ other.data_ }
 	{
-		if (data_)
-		{
-			++data_->count;
-		}
+		TryIncrementCount();
 	}
 
 	// Equivalent of static_cast
@@ -71,18 +65,12 @@ public:
 	constexpr UPtr(UPtr<Base> const& other) noexcept
 		: data_{ other.data_ }
 	{
-		if (data_)
-		{
-			++data_->count;
-		}
+		TryIncrementCount();
 	}
 
 	constexpr ~UPtr() noexcept
 	{
-		if (data_ && --data_->count == 0)
-		{
-			delete data_;
-		}
+		TryDecrementCount();
 	}
 
 	constexpr void Invalidate() noexcept
@@ -100,10 +88,7 @@ public:
 			return *this;
 		}
 
-		if (data_ && --data_->count == 0)
-		{
-			delete data_;
-		}
+		TryDecrementCount();
 
 		data_ = std::exchange(other.data_, nullptr);
 
@@ -112,10 +97,7 @@ public:
 
 	constexpr UPtr& operator=(std::nullptr_t) noexcept
 	{
-		if (data_ && --data_->count == 0)
-		{
-			delete data_;
-		}
+		TryDecrementCount();
 		data_ = nullptr;
 		return *this;
 	}
@@ -124,17 +106,11 @@ public:
 		requires std::is_convertible_v<From*, PointerType*>
 	constexpr UPtr& operator=(UPtr<From> const& other) noexcept
 	{
-		if (data_ && --data_->count == 0)
-		{
-			delete data_;
-		}
+		TryDecrementCount();
 
 		data_ = other.data_;
 
-		if (data_)
-		{
-			++data_->count;
-		}
+		TryIncrementCount();
 
 		return *this;
 	}
@@ -146,17 +122,11 @@ public:
 			return *this;
 		}
 
-		if (data_ && --data_->count == 0)
-		{
-			delete data_;
-		}
+		TryDecrementCount();
 
 		data_ = other.data_;
 
-		if (data_)
-		{
-			++data_->count;
-		}
+		TryIncrementCount();
 		
 		return *this;
 	}
@@ -203,6 +173,23 @@ public:
 		return Get() ? Get()->operator std::string() : std::string{ "nullptr" };
 	}
 	
+private:
+	constexpr void TryIncrementCount() const noexcept
+	{
+		if (data_)
+		{
+			++data_->count;
+		}
+	}
+
+	constexpr void TryDecrementCount() const noexcept
+	{
+		if (data_ && --data_->count == 0)
+		{
+			delete data_;
+		}
+	}
+
 private:
 	Data* data_;
 };

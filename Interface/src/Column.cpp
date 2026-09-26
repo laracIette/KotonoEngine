@@ -4,12 +4,7 @@
 #include <glm/common.hpp>
 #include <kotono_common/enum_utils.h>
 
-WColumn::WColumn(f32 spacing)
-	: spacing_{ spacing }
-{
-}
-
-glm::vec2 WColumn::GetContentSize(glm::vec2 const& bounds) const
+auto WColumn::GetContentSize(glm::vec2 const& bounds) const -> glm::vec2
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
@@ -32,7 +27,7 @@ glm::vec2 WColumn::GetContentSize(glm::vec2 const& bounds) const
 	return bounds;
 }
 
-glm::vec2 WColumn::GetDesiredSize(glm::vec2 const& bounds) const
+auto WColumn::GetDesiredSize(glm::vec2 const& bounds) const -> glm::vec2
 {
 	glm::vec2 size{};
 
@@ -54,12 +49,14 @@ glm::vec2 WColumn::GetDesiredSize(glm::vec2 const& bounds) const
 	return size;
 }
 
-EExpand WColumn::GetExpand() const
+auto WColumn::GetExpand() const -> EExpand
 {
-	return EExpand::Vertical;
+	return std::ranges::any_of(GetChildren(),
+		[](WidgetPtr const& child) { return child && has_flag(child->GetExpand(), EExpand::Horizontal); }
+	) ? EExpand::All : EExpand::Vertical;
 }
 
-EFlex WColumn::GetFlex() const
+auto WColumn::GetFlex() const -> EFlex
 {
 	return EFlex::All;
 }
@@ -112,7 +109,7 @@ void WColumn::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	}
 }
 
-size WColumn::GetExpandCount() const
+auto WColumn::GetExpandCount() const -> size
 {
 	return std::ranges::count_if(GetChildren(),
 		[](WidgetPtr const& child) { return child && has_flag(child->GetExpand(), EExpand::Vertical); }

@@ -4,12 +4,7 @@
 #include <glm/common.hpp>
 #include <kotono_common/enum_utils.h>
 
-WRow::WRow(f32 spacing)
-	: spacing_{ spacing }
-{
-}
-
-glm::vec2 WRow::GetContentSize(glm::vec2 const& bounds) const
+auto WRow::GetContentSize(glm::vec2 const& bounds) const -> glm::vec2
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
@@ -32,7 +27,7 @@ glm::vec2 WRow::GetContentSize(glm::vec2 const& bounds) const
 	return size;
 }
 
-glm::vec2 WRow::GetDesiredSize(glm::vec2 const& bounds) const
+auto WRow::GetDesiredSize(glm::vec2 const& bounds) const -> glm::vec2
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
@@ -54,12 +49,14 @@ glm::vec2 WRow::GetDesiredSize(glm::vec2 const& bounds) const
 	return size;
 }
 
-EExpand WRow::GetExpand() const
+auto WRow::GetExpand() const -> EExpand
 {
-	return EExpand::Horizontal;
+	return std::ranges::any_of(GetChildren(),
+		[](WidgetPtr const& child) { return child && has_flag(child->GetExpand(), EExpand::Vertical); }
+	) ? EExpand::All : EExpand::Horizontal;
 }
 
-EFlex WRow::GetFlex() const
+auto WRow::GetFlex() const -> EFlex
 {
 	return EFlex::All;
 }
@@ -112,7 +109,7 @@ void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	}
 }
  
-size WRow::GetExpandCount() const
+auto WRow::GetExpandCount() const -> size
 {
 	return std::ranges::count_if(GetChildren(),
 		[](WidgetPtr const& child) { return child && has_flag(child->GetExpand(), EExpand::Horizontal); }

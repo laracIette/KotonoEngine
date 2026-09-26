@@ -9,10 +9,10 @@ WidgetPtr WSceneExplorerRemoveButton::Build()
     return (
 		UCreate<WStack>{ "Remove Button Stack" }()
 		| (
-			button_ = UCreate<WButton>{}()
+			UCreate<WButton>{}()
 			| Apply(&WButton::SetNormalColor, Colors::Red.WithValue(0.8f))
 			| Apply(&WButton::SetDisabledColor, Colors::Red.WithValue(0.2f))
-			| Apply(&WButton::SetIsEnabled, false)
+			| Apply(&WButton::SetIsEnabled, [this]() { return GetScene()->GetSelectedObject() != nullptr; })
 			| Apply(&WButton::SetOnClicked, [this]() { 
                 if (UPtr selectedObject{ GetScene()->GetSelectedObject() })
                 {
@@ -22,7 +22,8 @@ WidgetPtr WSceneExplorerRemoveButton::Build()
             })
 		)
 		| (
-			UCreate<WCenter>{}()
+			UCreate<WAlign>{}()
+			| Apply(&WAlign::SetAlignment, UAlignment::Center())
 			| (
 				UCreate<WText>{}()
 				| Apply(&WText::SetText, "Remove")
@@ -30,25 +31,6 @@ WidgetPtr WSceneExplorerRemoveButton::Build()
 			)
 		)
 	);
-}
-
-void WSceneExplorerRemoveButton::Display(UWidgetDisplaySettings const& displaySettings)
-{
-    Base::Display(displaySettings);
-
-    GetScene()->GetEventSelectedObjectChanged().AddListener(this, &Self::OnSelectedObjectChanged);
-}
-
-void WSceneExplorerRemoveButton::Remove()
-{
-    Base::Remove();
-
-    GetScene()->GetEventSelectedObjectChanged().RemoveListener(this, &Self::OnSelectedObjectChanged);
-}
-
-void WSceneExplorerRemoveButton::OnSelectedObjectChanged(UPtr<TSceneObject> const& sceneObject) const
-{
-    button_->SetIsEnabled(sceneObject != nullptr);
 }
 
 #include "generated/SceneExplorerRemoveButton.generated.inl"

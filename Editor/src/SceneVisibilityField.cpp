@@ -16,8 +16,8 @@ WidgetPtr WSceneVisibilityField::Build()
         | (
             UCreate<WRow>{}()
             | (
-                UCreate<WCenter>{}()
-                | Apply(&WCenter::SetAxis, EAxis::Vertical)
+                UCreate<WAlign>{}()
+                | Apply(&WAlign::SetAlignment, UAlignment::Left())
                 | (
                     UCreate<WBox>{}()
                     | Apply(&WBox::SetSize, glm::vec2{ 16.0f, 16.0f })

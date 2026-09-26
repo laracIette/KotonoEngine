@@ -125,10 +125,10 @@ void WButton::OnUnfocused()
 void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
 {
 	auto const getColor{ [this]() {
-		if (!isEnabled_)	return disabledColor_;
-		if (isPressed_)		return pressedColor_;
-		if (isSelected_)	return selectedColor_;
-		if (GetIsFocused())	return focusedColor_;
+		if (!GetIsEnabled())	return disabledColor_;
+		if (isPressed_)			return pressedColor_;
+		if (isSelected_)		return selectedColor_;
+		if (GetIsFocused())		return focusedColor_;
 		return GetNormalColor();
 	} };
 
@@ -144,9 +144,19 @@ void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) c
 	});
 }
 
+auto WButton::GetIsEnabled() const -> b8
+{
+	return isEnabled_;
+}
+
 auto WButton::GetNormalColor() const -> UColor
 {
 	return normalColor_;
+}
+
+void WButton::SetIsEnabled(UBindable<b8> const& isEnabled)
+{
+	isEnabled_ = isEnabled;
 }
 
 void WButton::SetNormalColor(UBindable<UColor> const& color)
@@ -156,7 +166,8 @@ void WButton::SetNormalColor(UBindable<UColor> const& color)
 
 auto WButton::GetCanCache() const -> b8
 {
-	return normalColor_.GetIsValue();
+	return isEnabled_.GetIsValue()
+		&& normalColor_.GetIsValue();
 }
 
 #include "generated/Button.generated.inl"

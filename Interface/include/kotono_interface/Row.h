@@ -7,22 +7,19 @@ class WRow final : public WChildrenOwner
 	GENERATED_WROW()
 
 public:
-	WRow(f32 spacing = 0.0f);
+	auto GetContentSize(glm::vec2 const& bounds) const -> glm::vec2 override;
+	auto GetDesiredSize(glm::vec2 const& bounds) const -> glm::vec2 override;
 
-public:
-	glm::vec2 GetContentSize(glm::vec2 const& bounds) const override;
-	glm::vec2 GetDesiredSize(glm::vec2 const& bounds) const override;
-
-	EExpand GetExpand() const override;
-	EFlex GetFlex() const override;
+	auto GetExpand() const -> EExpand override;
+	auto GetFlex() const -> EFlex override;
 
 protected:	
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 
 private:
-	size GetExpandCount() const;
+	auto GetExpandCount() const -> size;
 
 private:
-	StateProperty(f32, spacing_, Spacing);
+	StateProperty(f32, spacing_, Spacing, Value);
 };
 

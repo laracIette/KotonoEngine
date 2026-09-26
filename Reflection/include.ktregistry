@@ -8,9 +8,9 @@
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/SceneWidget.h",
         "${ENGINE_DIRECTORY}/Core/include/kotono_core/Widget.h",
 
+        "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Align.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Box.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Button.h",
-        "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Center.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/ChildOwner.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/ChildrenOwner.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Color.h",

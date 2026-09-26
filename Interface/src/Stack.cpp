@@ -1,8 +1,9 @@
 #include "Stack.h"
 
 #include <glm/common.hpp>
+#include <kotono_common/enum_utils.h>
 
-glm::vec2 WStack::GetContentSize(glm::vec2 const& bounds) const
+auto WStack::GetContentSize(glm::vec2 const& bounds) const -> glm::vec2
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
@@ -19,7 +20,7 @@ glm::vec2 WStack::GetContentSize(glm::vec2 const& bounds) const
 	return size;
 }
 
-glm::vec2 WStack::GetDesiredSize(glm::vec2 const& bounds) const
+auto WStack::GetDesiredSize(glm::vec2 const& bounds) const -> glm::vec2
 {
 	glm::vec2 size{ 0.0f, 0.0f };
 
@@ -35,12 +36,28 @@ glm::vec2 WStack::GetDesiredSize(glm::vec2 const& bounds) const
 	return size;
 }
 
-EExpand WStack::GetExpand() const
+auto WStack::GetExpand() const -> EExpand
 {
-	return EExpand::All;
+	auto result{ EExpand::None };
+
+	for (auto const& child : GetChildren())
+	{
+		if (child)
+		{
+			auto const childExpand{ child->GetExpand() };
+			if (childExpand == EExpand::All)
+			{
+				return EExpand::All;
+			}
+
+			result |= childExpand;
+		}
+	}
+
+	return result;
 }
 
-EFlex WStack::GetFlex() const
+auto WStack::GetFlex() const -> EFlex
 {
 	return EFlex::All;
 }

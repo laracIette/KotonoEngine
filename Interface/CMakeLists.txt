@@ -8,9 +8,9 @@ target_compile_features(KotonoInterface PUBLIC cxx_std_23)
 set_target_properties(KotonoInterface PROPERTIES FOLDER "KotonoEngine")
 
 set(KINTERFACE_HEADERS
+    "include/kotono_interface/Align.h"
     "include/kotono_interface/Box.h"
     "include/kotono_interface/Button.h"
-    "include/kotono_interface/Center.h"
     "include/kotono_interface/ChildOwner.h"
     "include/kotono_interface/ChildrenOwner.h"
     "include/kotono_interface/Color.h"
@@ -34,9 +34,9 @@ set(KINTERFACE_HEADERS
     "include/kotono_interface/Wrap.h"
 )
 set(KINTERFACE_SOURCES
+    "src/Align.cpp"
     "src/Box.cpp"
     "src/Button.cpp"
-    "src/Center.cpp"
     "src/ChildOwner.cpp"
     "src/ChildrenOwner.cpp"
     "src/Color.cpp"
