@@ -1,15 +1,15 @@
-#include "VisualizerWindowItem.h"
+#include "SceneVisibilityField.h"
 
 #include <kotono_interface/widgets.h>
 
-WVisualizerWindowItem::WVisualizerWindowItem(ESceneVisibility field, std::string_view name, b8 isFieldVisible) 
+WSceneVisibilityField::WSceneVisibilityField(ESceneVisibility field, std::string_view name, b8 isFieldVisible) 
     : field_{ field }
     , name_{ name }
     , isFieldVisible_{ isFieldVisible }
 {
 }
 
-WidgetPtr WVisualizerWindowItem::Build()
+WidgetPtr WSceneVisibilityField::Build()
 {
     return (
         UCreate<WWrap>{}()
@@ -42,4 +42,4 @@ WidgetPtr WVisualizerWindowItem::Build()
     );
 }
 
-#include "generated/VisualizerWindowItem.generated.inl"
+#include "generated/SceneVisibilityField.generated.inl"

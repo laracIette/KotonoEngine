@@ -1,19 +1,19 @@
 #pragma once
-#include "generated/VisualizerWindow.generated.h"
+#include "generated/SceneVisibilityWindow.generated.h"
 #include <kotono_core/Widget.h>
 
 #include <kotono_graphics/SceneVisibility.h>
 
-class WVisualizerWindow : public WWidget
+class WSceneVisibilityWindow : public WWidget
 {
-	GENERATED_WVISUALIZERWINDOW()
+	GENERATED_WSCENEVISIBILITYWINDOW()
 
 private:
 	using SceneVisibilityChangedCallback = std::function<void(ESceneVisibility)>;
 
 public:
-	WVisualizerWindow();
-	WVisualizerWindow(ESceneVisibility sceneVisibility);
+	WSceneVisibilityWindow();
+	WSceneVisibilityWindow(ESceneVisibility sceneVisibility);
 
 protected:
 	WidgetPtr Build() override;

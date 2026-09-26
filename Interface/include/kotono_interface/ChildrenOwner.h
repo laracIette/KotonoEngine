@@ -31,13 +31,11 @@ public:
 	void RemoveChild(WidgetPtr const& widget);
 	void ReplaceChild(WidgetPtr const& oldWidget, WidgetPtr const& newWidget);
 
-	auto GetChildren() const -> WidgetSet const& { return children_; }
-
 protected:
 	size GetValidChildrenCount() const;
 
 private:
-	WidgetSet children_;
+	ReadonlyProperty(WidgetSet, children_, Children);
 };
 
 template <typename T>

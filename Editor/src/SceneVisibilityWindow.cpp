@@ -1,6 +1,6 @@
-#include "VisualizerWindow.h"
+#include "SceneVisibilityWindow.h"
 
-#include "VisualizerWindowItem.h"
+#include "SceneVisibilityField.h"
 #include <array>
 #include <kotono_common/enum_utils.h>
 #include <kotono_interface/widgets.h>
@@ -21,26 +21,25 @@ static constexpr std::array FIELDS{
     VisibilityField{ ESceneVisibility::PointLight, "Point Light" },
 };
 
-WVisualizerWindow::WVisualizerWindow(ESceneVisibility sceneVisibility)
+WSceneVisibilityWindow::WSceneVisibilityWindow(ESceneVisibility sceneVisibility)
     : sceneVisibility_{ sceneVisibility }
 {
 }
 
-WVisualizerWindow::WVisualizerWindow()
+WSceneVisibilityWindow::WSceneVisibilityWindow()
     : Self(ESceneVisibility::All)
 {
 }
 
-WidgetPtr WVisualizerWindow::Build()
+WidgetPtr WSceneVisibilityWindow::Build()
 {
     return (
-        UCreate<WBox>{}()
-        | Apply(&WBox::SetSize, glm::vec2{ 400.0f, 300.0f })
+        UCreate<WWrap>{}()
         | (
             UCreate<WStack>{}()
             | (
                 UCreate<WColor>{}()
-                | Apply(&WColor::SetColor, Colors::Blue.WithAlpha(0.5f))
+                | Apply(&WColor::SetColor, Colors::Blue.WithAlpha(0.2f))
             )
             | (
                 UCreate<WPadding>{}()
@@ -49,18 +48,8 @@ WidgetPtr WVisualizerWindow::Build()
                     UCreate<WColumn>{}()
                     | Apply(&WColumn::SetSpacing, 10.0f)
                     | (
-                        UCreate<WWrap>{}()
-                        | (
-                            UCreate<WStack>{}()
-                            | (
-                                UCreate<WColor>{}()
-                                | Apply(&WColor::SetColor, Colors::Black.WithAlpha(0.5f))
-                            )
-                            | (
-                                UCreate<WText>{}()
-                                | Apply(&WText::SetText, "Visualizer")
-                            )
-                        )
+                        UCreate<WText>{}()
+                        | Apply(&WText::SetText, "Scene Visibility")
                     )
                     | (
                         UCreate<WList>{}()
@@ -69,8 +58,8 @@ WidgetPtr WVisualizerWindow::Build()
                             FIELDS 
                             | std::views::transform([this](VisibilityField const& field) {
                                 return (
-                                    UCreate<WVisualizerWindowItem>{}(field.visibility, field.name, has_flag(sceneVisibility_, field.visibility))
-                                    | Apply(&WVisualizerWindowItem::SetOnVisibilityChanged, [this](ESceneVisibility field, b8 isActive) {
+                                    UCreate<WSceneVisibilityField>{}(field.visibility, field.name, has_flag(sceneVisibility_, field.visibility))
+                                    | Apply(&WSceneVisibilityField::SetOnVisibilityChanged, [this](ESceneVisibility field, b8 isActive) {
                                         sceneVisibility_ = isActive
                                             ? sceneVisibility_ | field
                                             : sceneVisibility_ & ~field;
@@ -90,4 +79,4 @@ WidgetPtr WVisualizerWindow::Build()
     );
 }
 
-#include "generated/VisualizerWindow.generated.inl"
+#include "generated/SceneVisibilityWindow.generated.inl"

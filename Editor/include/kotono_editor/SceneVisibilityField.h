@@ -1,18 +1,18 @@
 #pragma once
-#include "generated/VisualizerWindowItem.generated.h"
+#include "generated/SceneVisibilityField.generated.h"
 #include <kotono_core/Widget.h>
 
 #include <kotono_graphics/SceneVisibility.h>
 
-class WVisualizerWindowItem : public WWidget
+class WSceneVisibilityField : public WWidget
 {
-	GENERATED_WVISUALIZERWINDOWITEM()
+	GENERATED_WSCENEVISIBILITYFIELD()
 
 private:
 	using VisibilityChangedCallback = std::function<void(ESceneVisibility, b8)>;
 
 public:
-	WVisualizerWindowItem(ESceneVisibility field, std::string_view name, b8 isFieldVisible);
+	WSceneVisibilityField(ESceneVisibility field, std::string_view name, b8 isFieldVisible);
 
 protected:
 	WidgetPtr Build() override;

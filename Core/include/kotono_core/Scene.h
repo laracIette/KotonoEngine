@@ -43,7 +43,7 @@ public:
 
 	auto GetEventSceneObjectsUpdated() -> UEvent<USet<SceneObject>>& { return eventSceneObjectsUpdated_; }
 	auto GetEventSelectedObjectChanged() -> UEvent<SceneObject>& { return eventSelectedObjectChanged_; }
-	auto GetSelectedObject() const -> SceneObject const& { return selectedObject_; }
+	auto GetSelectedObject() const -> SceneObject { return selectedObject_; }
 
 	auto GetEventGameStateChanged() -> UEvent<EGameState>& { return gameState_.GetEventValueChanged(); }
 	auto GetEventTimeScaleChanged() -> UEvent<f32>& { return timeScale_.GetEventValueChanged(); }

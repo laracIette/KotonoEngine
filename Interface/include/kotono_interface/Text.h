@@ -3,6 +3,8 @@
 #include <kotono_core/Widget.h>
 
 #include <kotono_common/Bindable.h>
+#include <kotono_graphics/Font.h>
+
 /// Display a text
 class WText final : public WWidget
 {
@@ -38,6 +40,7 @@ private:
 	UBindable<std::string> text_;
 	StateProperty(glm::vec2, fontSize_, FontSize, Value);
 	StateProperty(f32, spacing_, Spacing, Value);
+	StateProperty(UFont, font_, Font);
 
 	std::vector<CharacterData> characters_;
 };

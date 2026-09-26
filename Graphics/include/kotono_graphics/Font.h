@@ -7,17 +7,18 @@ class UFont final
 public:
 	UFont(UPath const& path);
 
-	UPath const& Path() const;
-	f32 GetSize() const;
-	f32 GetSpacing() const;
+	auto Path() const -> UPath const&;
+	auto GetSize() const -> f32;
+	auto GetSpacing() const -> f32;
 
 	void SetSize(f32 size);
 	void SetSpacing(f32 spacing);
 
-	std::vector<UPath> GetTextPaths(std::string_view text) const;
+	auto GetCharacterPath(char character) const -> UPath;
+	auto GetTextPaths(std::string_view text) const -> std::vector<UPath>;
 
 private:
-	UPath const path_;
+	UPath path_;
 	// todo: unused yet, for sdf
 	f32 size_;
 	f32 spacing_;

@@ -50,17 +50,17 @@ UFont::UFont(UPath const& path)
     }
 }
 
-UPath const& UFont::Path() const
+auto UFont::Path() const -> UPath const&
 {
     return path_;
 }
 
-f32 UFont::GetSize() const
+auto UFont::GetSize() const -> f32
 {
     return size_;
 }
 
-f32 UFont::GetSpacing() const
+auto UFont::GetSpacing() const -> f32
 {
     return spacing_;
 }
@@ -75,11 +75,16 @@ void UFont::SetSpacing(f32 spacing)
     spacing_ = spacing;
 }
 
-std::vector<UPath> UFont::GetTextPaths(std::string_view text) const
+auto UFont::GetCharacterPath(char character) const -> UPath
+{
+    return characterPaths_[static_cast<size>(character)];
+}
+
+auto UFont::GetTextPaths(std::string_view text) const -> std::vector<UPath>
 {
     return text
-        | std::views::transform([this](char const character) { 
-            return characterPaths_[static_cast<size>(character)]; 
+        | std::views::transform([this](char character) { 
+            return GetCharacterPath(character); 
         })
         | std::ranges::to<std::vector>();
 }

@@ -10,13 +10,12 @@ protected:
 	WidgetPtr Build() override;
 
 public:
-	auto GetChild() const -> WidgetPtr const& { return child_; }
 	void SetChild(WidgetPtr const& widget);
 
 private:
 	void Detach();
 
 private:
-	WidgetPtr child_;
+	ReadonlyProperty(WidgetPtr, child_, Child, Value);
 	UPtr<WColumn> column_;
 };

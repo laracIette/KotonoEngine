@@ -54,14 +54,14 @@
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/SceneExplorerAddButton.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/SceneExplorerItem.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/SceneExplorerRemoveButton.h",
+        "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/SceneVisibilityField.h",
+        "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/SceneVisibilityWindow.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/SecondaryWindow.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/SingleViewport.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/UpdateTimeText.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/ValueBox.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/ValueSlider.h",
         "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/ValueSliderFloat.h",
-        "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/ViewController.h",
-        "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/VisualizerWindow.h",
-        "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/VisualizerWindowItem.h"
+        "${ENGINE_DIRECTORY}/Editor/include/kotono_editor/ViewController.h"
     ]
 }

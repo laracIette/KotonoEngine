@@ -35,7 +35,7 @@ public:
 	{
 	}
 
-	explicit constexpr UPtr(void* pointer) noexcept
+	explicit constexpr UPtr(PointerType* pointer) noexcept
 		: data_{ new Data{ pointer, 1 } }
 	{
 	}

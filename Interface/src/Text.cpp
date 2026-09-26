@@ -3,7 +3,6 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <kotono_core/Interface.h>
 #include <kotono_graphics/Color.h>
-#include <kotono_graphics/Font.h>
 #include <kotono_graphics/InterfaceRenderGraph.h>
 #include <kotono_math/math_utils.h>
 
@@ -11,6 +10,7 @@ WText::WText()
 	: text_{}
 	, fontSize_{ 20.0f, 24.0f }
 	, spacing_{ 0.75f }
+	, font_{ "${ENGINE_DIRECTORY}/Graphics/assets/fonts/default" }
 {
 }
 
@@ -37,7 +37,7 @@ auto WText::GetDesiredSize(glm::vec2 const& bounds) const -> glm::vec2
 
 auto WText::GetFlex() const -> EFlex
 {
-	return EFlex::None;
+	return EFlex::Horizontal;
 }
 
 auto WText::GetExpand() const -> EExpand
@@ -76,30 +76,49 @@ void WText::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
 	characters_.clear();
 
-	static UFont const font{ "${ENGINE_DIRECTORY}/Graphics/assets/fonts/default" };
-	auto const characterPaths{ font.GetTextPaths(GetText()) };
+	auto const characterPaths{ font_.GetTextPaths(GetText()) };
 
 	for (auto const& [index, characterPath] : characterPaths | std::views::enumerate)
-	{
-		if (fontSize_.x * spacing_ * (index + 1) > displaySettings.bounds.x)
+	{		
+		if (fontSize_.x * spacing_ * characterPaths.size() > displaySettings.bounds.x
+		 && (fontSize_.x * spacing_ * (index + 1)) + (fontSize_.x * spacing_ / 2.0f * 3) > displaySettings.bounds.x)
 		{
+			for (size i{ 0 }; i < 3; ++i)
+			{
+				glm::vec2 const offset{
+					fontSize_.x * 0.5f + (fontSize_.x * spacing_ * (index - 0.5f)) + (fontSize_.x * spacing_ / 2.0f * i),
+					fontSize_.y * 0.5f
+				};
+
+				auto const position{ GetPosition() + offset };
+
+				glm::vec2 const bounds{ GetInterface()->GetBounds() };
+				auto const modelMatrix{
+					glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(position, bounds), 0.0f })
+				  * glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(fontSize_, bounds), 1.0f })
+				};
+
+				characters_.emplace_back(font_.GetCharacterPath('.'), modelMatrix);
+			}
 			break;
 		}
+		else
+		{
+			glm::vec2 const offset{
+				fontSize_.x * 0.5f + fontSize_.x * spacing_ * index,
+				fontSize_.y * 0.5f
+			};
 
-		glm::vec2 const offset{
-			fontSize_.x * 0.5f + fontSize_.x * spacing_ * index,
-			fontSize_.y * 0.5f
-		};
+			auto const position{ GetPosition() + offset };
 
-		auto const position{ GetPosition() + offset };
+			glm::vec2 const bounds{ GetInterface()->GetBounds() };
+			auto const modelMatrix{
+				glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(position, bounds), 0.0f })
+			  * glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(fontSize_, bounds), 1.0f })
+			};
 
-		glm::vec2 const bounds{ GetInterface()->GetBounds() };
-		auto const modelMatrix{
-			glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(position, bounds), 0.0f })
-		  * glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(fontSize_, bounds), 1.0f })
-		};
-
-		characters_.emplace_back(characterPath, modelMatrix);
+			characters_.emplace_back(characterPath, modelMatrix);
+		}
 	}
 }
 

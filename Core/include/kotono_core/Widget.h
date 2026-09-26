@@ -116,7 +116,7 @@ private:
 	WidgetPtr build_;
 	UWidgetDisplaySettings slotDisplaySettings_;
 	b8 isDirty_;
-	WritableProperty(WidgetPtr, parent_, Parent);
+	WritableProperty(WidgetPtr, parent_, Parent, Value);
 	WritableProperty(b8, isVisible_, IsVisible, Value);
 	ReadonlyProperty(b8, isDisplayed_, IsDisplayed, Value);
 	ReadonlyProperty(b8, isFocused_, IsFocused, Value);

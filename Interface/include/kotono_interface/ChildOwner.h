@@ -30,14 +30,13 @@ public:
 
 	void Refresh() final;
 
-	auto GetChild() const -> WidgetPtr const& { return child_; }
 	void SetChild(WidgetPtr const& widget);
 
 protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 
 private:
-	WidgetPtr child_;
+	ReadonlyProperty(WidgetPtr, child_, Child, Value);
 };
 
 template <typename T>

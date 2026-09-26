@@ -1,21 +1,20 @@
 #include "SingleViewport.h"
 
 #include "ViewController.h"
-#include "VisualizerWindow.h"
-#include <kotono_common/enum_utils.h>
+#include "SceneVisibilityWindow.h"
 #include <kotono_interface/widgets.h>
+
+static constexpr auto DEFAULT_VISIBILITY{ ESceneVisibility::All };
 
 WidgetPtr WSingleViewport::Build()
 {
 	UPtr const sceneTexture{ UCreate<WSceneTexture>{ "Scene Texture" }(GetScene()) };
 
-	constexpr auto defaultVisibility{ ESceneVisibility::Mesh | ESceneVisibility::PointLight };
-
 	return (
 		UCreate<WStack>{}()
 		| (
 			sceneTexture
-			| Apply(&WSceneTexture::SetSceneVisibility, defaultVisibility)
+			| Apply(&WSceneTexture::SetSceneVisibility, DEFAULT_VISIBILITY)
 		)
 		| (
 			UCreate<WViewController>{ "Scene View Controller" }(GetScene())
@@ -27,8 +26,8 @@ WidgetPtr WSingleViewport::Build()
 			})
 		)
 		| (
-			UCreate<WVisualizerWindow>{ "Visualizer Window" }(defaultVisibility)
-			| Apply(&WVisualizerWindow::SetOnSceneVisibilityChanged, [sceneTexture](ESceneVisibility visibility) {
+			UCreate<WSceneVisibilityWindow>{ "Visualizer Window" }(DEFAULT_VISIBILITY)
+			| Apply(&WSceneVisibilityWindow::SetOnSceneVisibilityChanged, [sceneTexture](ESceneVisibility visibility) {
 				sceneTexture->SetSceneVisibility(visibility);
 			})
 		)
