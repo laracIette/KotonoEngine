@@ -1,13 +1,8 @@
 #include "Constraint.h"
 
-WConstraint::WConstraint(EAxis axis, f32 size)
-	: axis_{ axis }
-	, size_{ size }
-{
-}
-
 WConstraint::WConstraint()
-	: Self(EAxis::All, 64.0f)
+	: axis_{ EAxis::All }
+	, size_{ 64.0f }
 {
 }
 

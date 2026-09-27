@@ -7,7 +7,6 @@ class WConstraint final : public WChildOwner
 	GENERATED_WCONSTRAINT()
 
 public:
-	WConstraint(EAxis axis, f32 size);
 	WConstraint();
 
 	auto GetContentSize(glm::vec2 const& bounds) const -> glm::vec2 override;

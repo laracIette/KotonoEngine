@@ -9,24 +9,24 @@
 WidgetPtr WDefaultSceneContext::Build()
 {
 	return (
-		UCreate<WColumn>{}()
+		UCreate<WRow>{}()
 		| (
 			UCreate<WWrap>{}()
-			| Apply(&WWrap::SetAxis, EAxis::Vertical)
+			| Apply(&WWrap::SetAxis, EAxis::Horizontal)
 			| (
-				UCreate<WAlign>{}()
-				| Apply(&WAlign::SetAlignment, UAlignment::Center())
+				UCreate<WColumn>{}()
+				| Apply(&WColumn::SetSpacing, 5.0f)
 				| (
-					UCreate<WGameStateButton>{ "Game State Button" }(GetScene())
+					UCreate<WWrap>{}()
+					| Apply(&WWrap::SetAxis, EAxis::Vertical)
+					| (
+						UCreate<WAlign>{}()
+						| Apply(&WAlign::SetAlignment, UAlignment::Center())
+						| (
+							UCreate<WGameStateButton>{ "Game State Button" }(GetScene())
+						)
+					)
 				)
-			)
-		)
-		| (
-			UCreate<WRow>{}()
-			| (
-				UCreate<WConstraint>{ "Scene Explorer Constraint" }()
-				| Apply(&WConstraint::SetAxis, EAxis::Horizontal)
-				| Apply(&WConstraint::SetSize, 300.0f)
 				| (
 					UCreate<WDetachable>{ "Scene Explorer" }()
 					| (
@@ -34,11 +34,11 @@ WidgetPtr WDefaultSceneContext::Build()
 					)
 				)
 			)
+		)
+		| (
+			UCreate<WDetachable>{ "Game" }()
 			| (
-				UCreate<WDetachable>{ "Game" }()
-				| (
-					UCreate<WSingleViewport>{}(GetScene())
-				)
+				UCreate<WSingleViewport>{}(GetScene())
 			)
 		)
 	);
