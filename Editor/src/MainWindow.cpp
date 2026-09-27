@@ -14,7 +14,6 @@ WidgetPtr WMainWindow::Build()
 	
 	return (
 		UCreate<WColumn>{ "Main Window Column" }()
-		| Apply(&WColumn::SetSpacing, 5.0f)
 		| (
 			UCreate<WWrap>{}()
 			| Apply(&WWrap::SetAxis, EAxis::Vertical)
@@ -27,10 +26,7 @@ WidgetPtr WMainWindow::Build()
 			)
 		)
 		| (
-			UCreate<WRow>{}()
-			| (
-				sceneContext
-			)
+			sceneContext
 		)
 		| (
 			UCreate<WConstraint>{ "Asset Explorer Constraint" }()

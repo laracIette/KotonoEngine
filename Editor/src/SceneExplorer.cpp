@@ -41,10 +41,6 @@ WidgetPtr WSceneExplorer::Build()
 					)
 				)
 				| (
-					UCreate<WText>{ "Scene Explorer Text" }()
-					| Apply(&WText::SetText, "Scene Explorer")
-				)
-				| (
 					UCreate<WPadding>{}()
 					| Apply(&WPadding::SetPadding, UPadding::All(5.0f))
 					| (

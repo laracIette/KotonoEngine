@@ -3,7 +3,6 @@
 #include <kotono_core/Interface.h>
 #include <kotono_core/InterfaceRoot.h>
 #include <kotono_interface/widgets.h>
-#include <stdexcept>
 
 WidgetPtr WDetachable::Build()
 {
@@ -43,15 +42,16 @@ WidgetPtr WDetachable::Build()
 						| Apply(&WBox::SetSize, glm::vec2{ 20.0f, 20.0f })
 						| (
 							UCreate<WButton>{}()
-							| Apply(&WButton::SetOnClicked, [this]() { Delete(); })
+							| Apply(&WButton::SetOnClicked, [this]() { 
+								Delete(); 
+							})
 							| Apply(&WButton::SetNormalColor, Colors::Red)
 						)
 					)
 				)
 			)
 			| (
-				child_ = UCreate<WText>{}()
-				| Apply(&WText::SetText, "Loading...")
+				child_ = nullptr
 			)
 		)
 	);

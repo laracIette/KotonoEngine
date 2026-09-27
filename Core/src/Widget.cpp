@@ -261,11 +261,6 @@ void WWidget::Refresh()
 	{
 		isDirty_ = false;
 
-		if (isDisplayed_)
-		{
-			Remove();
-		}
-
 		if (isVisible_)
 		{
 			Display(slotDisplaySettings_);
@@ -279,6 +274,11 @@ void WWidget::Refresh()
 
 void WWidget::SetState(StateFunction const& function)
 {
+	if (isDisplayed_)
+	{
+		Remove();
+	}
+
 	if (function)
 	{
 		function();

@@ -28,7 +28,10 @@ WidgetPtr WDefaultSceneContext::Build()
 				| Apply(&WConstraint::SetAxis, EAxis::Horizontal)
 				| Apply(&WConstraint::SetSize, 300.0f)
 				| (
-					UCreate<WSceneExplorer>{ "Scene Explorer" }(GetScene())
+					UCreate<WDetachable>{ "Scene Explorer" }()
+					| (
+						UCreate<WSceneExplorer>{ "Scene Explorer" }(GetScene())
+					)
 				)
 			)
 			| (
