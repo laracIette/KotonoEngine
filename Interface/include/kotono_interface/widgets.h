@@ -14,6 +14,7 @@
 #include "Row.h"
 #include "SceneTexture.h"
 #include "Scrollable.h"
+#include "Socket.h"
 #include "Spacer.h"
 #include "Stack.h"
 #include "Text.h"

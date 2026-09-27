@@ -27,6 +27,7 @@
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Row.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/SceneTexture.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Scrollable.h",
+        "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Socket.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Spacer.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Stack.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Text.h",

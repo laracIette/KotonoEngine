@@ -1,7 +1,6 @@
 #include "Detachable.h"
 
 #include <kotono_core/Interface.h>
-#include <kotono_core/InterfaceRoot.h>
 #include <kotono_interface/widgets.h>
 
 WidgetPtr WDetachable::Build()
@@ -13,7 +12,7 @@ WidgetPtr WDetachable::Build()
 			| Apply(&WColor::SetColor, Colors::White.WithValue(0.01f))
 		)
 		| (
-			column_ = UCreate<WColumn>{}()
+			UCreate<WColumn>{}()
 			| (
 				UCreate<WConstraint>{}()
 				| Apply(&WConstraint::SetAxis, EAxis::Vertical)
@@ -51,42 +50,53 @@ WidgetPtr WDetachable::Build()
 				)
 			)
 			| (
-				child_ = nullptr
+				socket_ = UCreate<WSocket>{}()
 			)
 		)
 	);
 }
 
-void WDetachable::SetChild(WidgetPtr const& widget)
+auto WDetachable::GetChild() const -> WidgetPtr
 {
-	if (column_)
-	{
-		column_->ReplaceChild(child_, widget);
-	}
-
-	if (child_)
-	{
-		child_->Delete();
-	}
-
-	child_ = widget;
+	return socket_ ? socket_->GetChild() : nullptr;
 }
 
-void WDetachable::Detach()
+void WDetachable::SetChild(WidgetPtr const& widget)
 {
-	if (TryCast<WInterfaceRoot>(GetParent()))
+	if (!socket_)
 	{
 		return;
 	}
 
-	auto* const oldInterface{ GetInterface() };
+	UPtr const child{ GetChild() };
 
-	if (GetParent())
+	socket_->SetChild(widget);
+
+	if (child)
 	{
-		GetParent()->Disown(Ptr());
+		child->Delete();
+	}
+}
+
+void WDetachable::Detach()
+{
+	if (!socket_)
+	{
+		return;
 	}
 
-	oldInterface->OpenWidgetInWindow(Ptr(), GetSize());
+	UPtr const child{ GetChild() };
+
+	if (!child)
+	{
+		return;
+	}
+	
+	socket_->SetChild(nullptr);
+
+	GetInterface()->OpenWidgetInWindow(child, child->GetSize());
+
+	Delete();
 }
 
 #include "generated/Detachable.generated.inl"

@@ -2,6 +2,11 @@
 
 #include <kotono_math/math_utils.h>
 
+WChildOwner::WChildOwner()
+	: child_{ nullptr }
+{
+}
+
 WChildOwner::~WChildOwner()
 {
 	if (child_)

@@ -9,6 +9,7 @@ class WChildrenOwner : public WWidget
 	GENERATED_WCHILDRENOWNER()
 
 public:
+	WChildrenOwner();
 	~WChildrenOwner() override;
 
 	void Remove() override;

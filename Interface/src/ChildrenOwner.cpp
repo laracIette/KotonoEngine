@@ -4,6 +4,11 @@
 #include <kotono_math/math_utils.h>		 
 #include <ranges>
 
+WChildrenOwner::WChildrenOwner()
+	: children_{}
+{
+}
+
 WChildrenOwner::~WChildrenOwner()
 {
 	for (auto const& child : WidgetSet{ children_ })
