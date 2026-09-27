@@ -27,7 +27,7 @@ using WidgetVector = std::vector<WidgetPtr>;
 #define StateProperty(Type, Name, PropertyName, ...) private:											\
 	Type Name;																							\
 public:																									\
-	Type GET_PROP_ACCESS(__VA_ARGS__) Get##PropertyName() GET_FUNC_ACCESS(__VA_ARGS__) { return Name; } \
+	auto Get##PropertyName() GET_FUNC_ACCESS(__VA_ARGS__) -> Type GET_PROP_ACCESS(__VA_ARGS__) { return Name; } \
 	void Set##PropertyName(const Type& value) noexcept { SetState([this, value]() { Name = value; }); }	\
 private:
 
@@ -122,4 +122,5 @@ private:
 	ReadonlyProperty(b8, isFocused_, IsFocused, Value);
 	ReadonlyProperty(glm::vec2, contentSize_, ContentSize, Value);
 	ReadonlyProperty(glm::mat4, modelMatrix_, ModelMatrix);
+	StateProperty(glm::vec2, expandWeight_, ExpandWeight, Value);
 };

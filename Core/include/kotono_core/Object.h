@@ -36,13 +36,13 @@ using VoidCallback = std::function<void()>;
 #define ReadonlyProperty(Type, Name, PropertyName, ...) private:						\
 	Type Name;																			\
 public:																					\
-	Type GET_PROP_ACCESS(__VA_ARGS__) Get##PropertyName() GET_FUNC_ACCESS(__VA_ARGS__) { return Name; } \
+	auto Get##PropertyName() GET_FUNC_ACCESS(__VA_ARGS__) -> Type GET_PROP_ACCESS(__VA_ARGS__) { return Name; } \
 private:
 
 #define WritableProperty(Type, Name, PropertyName, ...) private:						\
 	Type Name;																			\
 public:																					\
-	Type GET_PROP_ACCESS(__VA_ARGS__) Get##PropertyName() GET_FUNC_ACCESS(__VA_ARGS__) { return Name; } \
+	auto Get##PropertyName() GET_FUNC_ACCESS(__VA_ARGS__) -> Type GET_PROP_ACCESS(__VA_ARGS__) { return Name; } \
 	void Set##PropertyName(Type const& value) { Name = value; }				\
 private:
 

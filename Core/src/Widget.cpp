@@ -3,7 +3,6 @@
 #include "Interface.h"
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
-#include <kotono_common/enum_utils.h>
 #include <kotono_common/log.h>
 #include <kotono_graphics/InterfaceRenderGraph.h>
 #include <kotono_math/math_utils.h>
@@ -26,6 +25,7 @@ WWidget::WWidget()
 	, slotDisplaySettings_{}
 	, contentSize_{}
 	, isDisplayed_{ false }
+	, expandWeight_{ 1.0f, 1.0f }
 {
 }
 

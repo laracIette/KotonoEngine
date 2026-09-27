@@ -81,10 +81,7 @@ void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	{
 		expandWidth -= spacing_ * static_cast<f32>(GetChildren().size() - 1);
 	}
-	if (size const expandCount{ GetExpandCount() })
-	{
-		expandWidth /= static_cast<f32>(expandCount);
-	}
+	expandWidth /= GetExpandWeight();
 
 	for (auto const& child : GetChildren())
 	{
@@ -94,7 +91,7 @@ void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 
 			if (has_flag(child->GetExpand(), EExpand::Horizontal))
 			{
-				settings.bounds.x = expandWidth;
+				settings.bounds.x = expandWidth * child->GetExpandWeight().x;
 			}
 
 			child->Display(settings);
@@ -109,11 +106,18 @@ void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	}
 }
  
-auto WRow::GetExpandCount() const -> size
+auto WRow::GetExpandWeight() const -> f32
 {
-	return std::ranges::count_if(GetChildren(),
-		[](WidgetPtr const& child) { return child && has_flag(child->GetExpand(), EExpand::Horizontal); }
-	);
+	return std::ranges::fold_left(GetChildren() 
+        | std::views::filter([](WidgetPtr const& child) { 
+            return child && has_flag(child->GetExpand(), EExpand::Horizontal); 
+        })
+        | std::views::transform([](WidgetPtr const& child) { 
+            return child->GetExpandWeight().x; 
+        }),
+        0.0f,
+        std::plus{}
+    );
 }
 
 #include "generated/Row.generated.inl"

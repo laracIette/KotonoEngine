@@ -81,10 +81,7 @@ void WColumn::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	{
 		expandHeight -= spacing_ * static_cast<f32>(GetChildren().size() - 1);
 	}
-	if (size const expandCount{ GetExpandCount() })
-	{
-		expandHeight /= static_cast<f32>(expandCount);
-	}
+	expandHeight /= GetExpandWeight();
 
 	for (auto const& child : GetChildren())
 	{
@@ -94,7 +91,7 @@ void WColumn::DisplayInternal(UWidgetDisplaySettings displaySettings)
 
 			if (has_flag(child->GetExpand(), EExpand::Vertical))
 			{
-				settings.bounds.y = expandHeight;
+				settings.bounds.y = expandHeight * child->GetExpandWeight().y;
 			}
 
 			child->Display(settings);
@@ -109,11 +106,18 @@ void WColumn::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	}
 }
 
-auto WColumn::GetExpandCount() const -> size
+auto WColumn::GetExpandWeight() const -> f32
 {
-	return std::ranges::count_if(GetChildren(),
-		[](WidgetPtr const& child) { return child && has_flag(child->GetExpand(), EExpand::Vertical); }
-	);
+	return std::ranges::fold_left(GetChildren() 
+        | std::views::filter([](WidgetPtr const& child) { 
+            return child && has_flag(child->GetExpand(), EExpand::Vertical); 
+        })
+        | std::views::transform([](WidgetPtr const& child) { 
+            return child->GetExpandWeight().y; 
+        }),
+        0.0f,
+        std::plus{}
+    );
 }
 
 #include "generated/Column.generated.inl"

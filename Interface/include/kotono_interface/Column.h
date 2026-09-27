@@ -17,7 +17,7 @@ protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 
 private:
-	auto GetExpandCount() const -> size;
+	auto GetExpandWeight() const -> f32;
 
 private:
 	StateProperty(f32, spacing_, Spacing, Value);
