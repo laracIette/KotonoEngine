@@ -2,26 +2,32 @@
 
 #include <kotono_graphics/InterfaceRenderGraph.h>
 
+static const UPath DEFAULT_TEXTURE{ "${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg" };
+
 static constexpr UColor DEFAULT_NORMAL{ Colors::White.WithValue(0.1f) };
 static constexpr UColor DEFAULT_FOCUSED{ Colors::White.WithValue(0.15f) };
 static constexpr UColor DEFAULT_PRESSED{ Colors::White.WithValue(0.25f) };
+static constexpr UColor DEFAULT_ACTIVATED{ Colors::White.WithValue(0.2f) };
 static constexpr UColor DEFAULT_SELECTED{ Colors::White.WithValue(0.2f) };
 static constexpr UColor DEFAULT_DISABLED{ DEFAULT_NORMAL.WithAlpha(0.5f) };
 
 WButton::WButton()
-	: isPressed_{ false }
+	: isEnabled_{ true }
+	, isPressed_{ false }
+	, isActivated_{ false }
 	, isSelected_{ false }
-	, isEnabled_{ true }
+	, isActivatable_{ false }
 	, isSelectable_{ false }
-	, normalColor_{ DEFAULT_NORMAL }
-	, focusedColor_{ DEFAULT_FOCUSED }
-	, pressedColor_{ DEFAULT_PRESSED }
-	, selectedColor_{ DEFAULT_SELECTED }
-	, disabledColor_{ DEFAULT_DISABLED }
+	, normalState_{ DEFAULT_TEXTURE, DEFAULT_NORMAL }
+	, focusedState_{ DEFAULT_TEXTURE, DEFAULT_FOCUSED }
+	, pressedState_{ DEFAULT_TEXTURE, DEFAULT_PRESSED }
+	, activatedState_{ DEFAULT_TEXTURE, DEFAULT_ACTIVATED }
+	, selectedState_{ DEFAULT_TEXTURE, DEFAULT_SELECTED }
+	, disabledState_{ DEFAULT_TEXTURE, DEFAULT_DISABLED }
 {
 }
 
-b8 WButton::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position)
+auto WButton::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) -> b8
 {
 	if (!isEnabled_)
 	{
@@ -39,9 +45,23 @@ b8 WButton::OnMouseButton(EButton button, EInputState inputState, glm::vec2 cons
 	{
 		isPressed_ = true;
 
-		if (onActive_)
+		if (onPressed_)
 		{
-			onActive_();
+			onPressed_();
+		}
+
+		if (isActivatable_)
+		{
+			isActivated_ = !isActivated_;
+
+			if (isActivated_ && onActivated_)
+			{
+				onActivated_();
+			}
+			else if (onDeactivated_)
+			{
+				onDeactivated_();
+			}
 		}
 
 		return INPUT_HANDLED;
@@ -55,9 +75,9 @@ b8 WButton::OnMouseButton(EButton button, EInputState inputState, glm::vec2 cons
 
 		isPressed_ = false;
 
-		if (onInactive_)
+		if (onReleased_)
 		{
-			onInactive_();
+			onReleased_();
 		}
 
 		if (onClicked_)
@@ -102,7 +122,7 @@ b8 WButton::OnMouseButton(EButton button, EInputState inputState, glm::vec2 cons
 	return INPUT_UNHANDLED;
 }
 
-b8 WButton::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
+auto WButton::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> b8
 {
 	return INPUT_UNHANDLED;
 }
@@ -115,22 +135,23 @@ void WButton::OnUnfocused()
 	{
 		isPressed_ = false;
 
-		if (onInactive_)
+		if (onReleased_)
 		{
-			onInactive_();
+			onReleased_();
 		}
 	}
 }
 
 void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
 {
-	auto const getColor{ [this]() {
-		if (!GetIsEnabled())	return disabledColor_;
-		if (isPressed_)			return pressedColor_;
-		if (isSelected_)		return selectedColor_;
-		if (GetIsFocused())		return focusedColor_;
-		return GetNormalColor();
-	} };
+	auto const state{ [this]() {
+		if (!GetIsEnabled())	return disabledState_;
+		if (isPressed_)			return pressedState_;
+		if (isSelected_)		return selectedState_;
+		if (isActivated_)		return activatedState_;
+		if (GetIsFocused())		return focusedState_;
+		return normalState_;
+	}() };
 
 	interfaceRenderGraph.drawDatas.push_back({
 		.scissor = GetScissor(),
@@ -138,36 +159,15 @@ void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) c
 		.shader = "${ENGINE_DIRECTORY}/Graphics/assets/shaders/shader2D.kasset",
 		.model = "${ENGINE_DIRECTORY}/Graphics/assets/models/rectangle.obj",
 		.scalars = {},
-		.vectors = { getColor() },
-		.textures = { "${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg" },
+		.vectors = { state.color },
+		.textures = { state.texture },
 		.isVisible = GetIsVisible(),
 	});
 }
 
-auto WButton::GetIsEnabled() const -> b8
-{
-	return isEnabled_;
-}
-
-auto WButton::GetNormalColor() const -> UColor
-{
-	return normalColor_;
-}
-
-void WButton::SetIsEnabled(UBindable<b8> const& isEnabled)
-{
-	isEnabled_ = isEnabled;
-}
-
-void WButton::SetNormalColor(UBindable<UColor> const& color)
-{
-	normalColor_ = color;
-}
-
 auto WButton::GetCanCache() const -> b8
 {
-	return isEnabled_.GetIsValue()
-		&& normalColor_.GetIsValue();
+	return isEnabled_.GetIsValue();
 }
 
 #include "generated/Button.generated.inl"

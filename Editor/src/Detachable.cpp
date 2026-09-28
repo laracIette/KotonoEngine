@@ -41,9 +41,7 @@ WidgetPtr WDetachable::Build()
 						| Apply(&WBox::SetSize, glm::vec2{ 20.0f, 20.0f })
 						| (
 							UCreate<WButton>{}()
-							| Apply(&WButton::SetOnClicked, [this]() { 
-								Delete(); 
-							})
+							| Apply(&WButton::SetOnClicked, [this]() { Delete(); })
 							| Apply(&WButton::SetNormalColor, Colors::Red)
 						)
 					)

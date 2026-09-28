@@ -23,12 +23,20 @@ WidgetPtr WSceneVisibilityField::Build()
                     | Apply(&WBox::SetSize, glm::vec2{ 16.0f, 16.0f })
                     | (
                         UCreate<WButton>{}()
-                        | Apply(&WButton::SetNormalColor, [this]() { return isFieldVisible_ ? Colors::Green : Colors::Red; })
-                        | Apply(&WButton::SetOnClicked, [this]() {
+                        | Apply(&WButton::SetIsActivatable, true)
+                        | Apply(&WButton::SetIsActivated, isFieldVisible_)
+                        | Apply(&WButton::SetNormalColor, Colors::Red)
+                        | Apply(&WButton::SetActivatedColor, Colors::Green)
+                        | Apply(&WButton::SetOnActivated, [this]() {
                             if (onVisibilityChanged_)
                             {   
-                                isFieldVisible_ = !isFieldVisible_;
-                                onVisibilityChanged_(field_, isFieldVisible_);
+                                onVisibilityChanged_(field_, true);
+                            }
+                        })
+                        | Apply(&WButton::SetOnDeactivated, [this]() {
+                            if (onVisibilityChanged_)
+                            {   
+                                onVisibilityChanged_(field_, false);
                             }
                         })
                     )

@@ -10,6 +10,8 @@ static constexpr UColor STOPPED_COLOR{ Colors::Red.WithValue(0.2f) };
 
 WidgetPtr WGameStateButton::Build()
 {
+    UPtr const playPauseButton{ UCreate<WButton>{ "Play Pause Button" }() };
+
     return (
         UCreate<WRow>{ "Main Row" }()
         | Apply(&WRow::SetSpacing, 5.0f)
@@ -17,61 +19,29 @@ WidgetPtr WGameStateButton::Build()
             UCreate<WBox>{ "Play Pause Box" }()
             | Apply(&WBox::SetSize, glm::vec2{ 64.0f, 64.0f })
             | (
-                playPauseButton_ = UCreate<WButton>{ "Play Pause Button" }()
+                playPauseButton
+                | Apply(&WButton::SetIsActivatable, true)
                 | Apply(&WButton::SetNormalColor, PLAY_COLOR)
-                | Apply(&WButton::SetFocusedColor, PLAY_COLOR * 0.9f)
-                | Apply(&WButton::SetOnClicked, [this]() {
-                    if (GetScene()->GetIsGamePlaying())
-                    {
-                        GetScene()->PauseGame();
-                    }
-                    else
-                    {
-                        GetScene()->PlayGame();
-                    }
-                })
+                | Apply(&WButton::SetActivatedColor, PAUSE_COLOR)
+                | Apply(&WButton::SetOnActivated, [this]() { GetScene()->PlayGame(); })
+                | Apply(&WButton::SetOnDeactivated, [this]() { GetScene()->PauseGame(); })
             )
         )
         | (
             UCreate<WBox>{ "Stop Box" }()
             | Apply(&WBox::SetSize, glm::vec2{ 64.0f, 64.0f })
             | (
-                stopButton_ = UCreate<WButton>{ "Play Pause Button" }()
+                UCreate<WButton>{ "Play Pause Button" }()
+                | Apply(&WButton::SetIsEnabled, [this]() { return !GetScene()->GetIsGameStopped(); })
                 | Apply(&WButton::SetNormalColor, STOP_COLOR)
-                | Apply(&WButton::SetFocusedColor, STOP_COLOR * 0.9f)
                 | Apply(&WButton::SetDisabledColor, STOPPED_COLOR)
-                | Apply(&WButton::SetOnClicked, [this]() { GetScene()->StopGame(); })
-                | Apply(&WButton::SetIsEnabled, !GetScene()->GetIsGameStopped())
+                | Apply(&WButton::SetOnClicked, [this, playPauseButton]() {
+                    GetScene()->StopGame();
+                    playPauseButton->SetIsActivated(false);
+                })
             )
         )
     );
-}
-
-void WGameStateButton::Display(UWidgetDisplaySettings const& displaySettings)
-{
-    Base::Display(displaySettings);
-
-    GetScene()->GetEventGameStateChanged().AddListener(this, &Self::OnGameStateChanged);
-}
-
-void WGameStateButton::Remove()
-{
-    Base::Remove();
-
-    GetScene()->GetEventGameStateChanged().RemoveListener(this, &Self::OnGameStateChanged);
-}
-
-void WGameStateButton::OnGameStateChanged(EGameState gameState) const
-{
-    if (playPauseButton_)
-    {
-        playPauseButton_->SetNormalColor(gameState == EGameState::Playing ? PAUSE_COLOR : PLAY_COLOR);
-        playPauseButton_->SetFocusedColor(playPauseButton_->GetNormalColor() * 0.9f);
-    }
-    if (stopButton_)
-    {
-        stopButton_->SetIsEnabled(gameState != EGameState::Stopped);
-    }
 }
 
 #include "generated/GameStateButton.generated.inl"

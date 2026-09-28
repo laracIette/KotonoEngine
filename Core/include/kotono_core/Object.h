@@ -7,9 +7,9 @@
 #include "VariableInfo.h"
 #include <concepts>
 #include <functional>
-#include <kotono_common/Asset.h>
 #include <kotono_common/Event.h>
 #include <kotono_common/log.h>
+#include <kotono_common/Path.h>
 #include <kotono_io/serialize_base.h>
 #include <nlohmann/json_fwd.hpp>
 #include <source_location>
@@ -48,8 +48,6 @@ private:
 
 class KObject;
 using ObjectPtr = UPtr<KObject>;
-
-class UPath;
 
 class KObject
 {

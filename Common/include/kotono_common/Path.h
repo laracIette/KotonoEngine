@@ -9,21 +9,27 @@ private:
 	friend struct std::hash<UPath>;
 
 public:
-	UPath(std::string const& source = "");
+	UPath();
+	UPath(std::string const& source);
 	UPath(std::string&& source);
 	UPath(char const* source);
+	UPath(UPath const& path);
+	UPath(UPath&& path);
 	UPath(std::filesystem::path const& source);
 
-	UPath Directory() const;
-	std::string Name() const;
-	std::string Extension() const;
-	std::string Stem() const;
-	b8 IsEmpty() const;
-	b8 IsFile() const;
-	b8 Exists() const;
+	auto Directory() const -> UPath;
+	auto Name() const -> std::string;
+	auto Extension() const -> std::string;
+	auto Stem() const -> std::string;
+	auto IsEmpty() const -> b8;
+	auto IsFile() const -> b8;
+	auto Exists() const -> b8;
 
-	std::string const& ToString() const;
-	std::filesystem::path ToPath() const;
+	auto ToString() const -> std::string const&;
+	auto ToPath() const -> std::filesystem::path;
+
+	UPath& operator=(UPath const& other);
+	UPath& operator=(UPath&& other);
 
 	operator std::string() const;
 	operator std::filesystem::path() const;

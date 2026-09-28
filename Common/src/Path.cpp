@@ -12,18 +12,33 @@ static constexpr void replace(std::string& str, std::string_view from, std::stri
     }
 }
 
-UPath::UPath(std::string const& source) 
-    : source_{ source }
+UPath::UPath()
+	: source_{}
 {
 }
 
-UPath::UPath(std::string&& source) 
-    : source_{ std::move(source) }
+UPath::UPath(std::string const& source)
+	: source_{ source }
+{
+}
+
+UPath::UPath(std::string&& source)
+	: source_{ std::move(source) }
 {
 }
 
 UPath::UPath(char const* source)
-    : source_{ source }
+	: source_{ source }
+{
+}
+
+UPath::UPath(UPath const& path)
+	: source_{ path.source_ }
+{
+}
+
+UPath::UPath(UPath&& path)
+	: source_{ std::move(path.source_) }
 {
 }
 
@@ -78,6 +93,21 @@ std::filesystem::path UPath::ToPath() const
     replace(result, "${ENGINE_DIRECTORY}", SPathManager::Engine().ToString());
     replace(result, "${PROJECT_DIRECTORY}", SPathManager::Project().ToString());
     return result;
+}
+
+UPath& UPath::operator=(UPath const& other)
+{
+    if (other != *this)
+    {
+        source_ = other.source_;
+    }
+    return *this;
+}
+
+UPath& UPath::operator=(UPath&& other)
+{
+    source_ = std::move(other.source_);
+    return *this;
 }
 
 UPath::operator std::string() const
