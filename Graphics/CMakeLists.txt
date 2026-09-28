@@ -14,6 +14,7 @@ set(KGRAPHICS_HEADERS
     "include/kotono_graphics/InterfaceDrawData.h"
     "include/kotono_graphics/InterfaceRenderGraph.h"
     "include/kotono_graphics/Mobility.h"
+    "include/kotono_graphics/Padding.h"
     "include/kotono_graphics/PointLightData.h"
     "include/kotono_graphics/SceneDrawData.h"
     "include/kotono_graphics/SceneRenderGraph.h"

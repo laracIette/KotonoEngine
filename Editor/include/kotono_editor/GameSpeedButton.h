@@ -7,12 +7,4 @@ class WGameSpeedButton final : public WSceneWidget
 
 protected:
 	WidgetPtr Build() override;
-
-public:
-	void Display(UWidgetDisplaySettings const& displaySettings) override;
-	void Remove() override;
-
-private:
-	void OnTimeScaleChanged(f32 timeScale) const;
-
 };

@@ -166,8 +166,7 @@ void WWidget::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) c
 
 void WWidget::PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosition) const
 {
-	if (is_point_in_rect(cursorPosition, GetScissor().offset, GetScissor().extent)
-	 && is_point_in_rect(cursorPosition, GetPosition(), GetContentSize()))
+	if (GetIsPointHovering(cursorPosition))
 	{
 		widgets.Add(Ptr());
 	}
@@ -185,7 +184,7 @@ b8 WWidget::OnMouseButton(EButton button, EInputState inputState, glm::vec2 cons
 		return INPUT_UNHANDLED;
 	}
 
-	if (is_point_in_rect(position, build_->GetPosition(), build_->GetSize()))
+	if (build_->GetIsPointHovering(position))
 	{
 		return build_->OnMouseButton(button, inputState, position);
 	}
@@ -202,7 +201,7 @@ b8 WWidget::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
 		return INPUT_UNHANDLED;
 	}
 
-	if (is_point_in_rect(position, build_->GetPosition(), build_->GetSize()))
+	if (build_->GetIsPointHovering(position))
 	{
 		return build_->OnMouseMove(delta, position);
 	}
@@ -270,6 +269,12 @@ void WWidget::Refresh()
 	{
 		build_->Refresh();
 	}
+}
+
+auto WWidget::GetIsPointHovering(glm::vec2 const& position) const -> b8
+{
+	return is_point_in_rect(position, GetScissor().offset, GetScissor().extent)
+		&& is_point_in_rect(position, GetPosition(), GetContentSize());
 }
 
 void WWidget::SetState(StateFunction const& function)

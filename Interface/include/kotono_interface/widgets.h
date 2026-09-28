@@ -5,6 +5,7 @@
 #include "Color.h"
 #include "Column.h"
 #include "Constraint.h"
+#include "Crop.h"
 #include "Expanded.h"
 #include "HorizontalWrapList.h"
 #include "Image.h"

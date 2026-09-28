@@ -10,7 +10,7 @@ concept ConvertibleToUnderlying = std::is_same_v<T, TEnum> || std::convertible_t
 template <ScopedEnum TEnum, ConvertibleToUnderlying<TEnum> TOther>
 constexpr TEnum operator&(TEnum left, TOther right) noexcept
 {
-    const auto l{ static_cast<std::underlying_type_t<TEnum>>(left) };
+    const auto l{ std::to_underlying(left) };
     const auto r{ static_cast<std::underlying_type_t<TEnum>>(right) };
     return static_cast<TEnum>(l & r);
 }
@@ -18,7 +18,7 @@ constexpr TEnum operator&(TEnum left, TOther right) noexcept
 template <ScopedEnum TEnum, ConvertibleToUnderlying<TEnum> TOther>
 constexpr TEnum operator|(TEnum left, TOther right) noexcept
 {
-    const auto l{ static_cast<std::underlying_type_t<TEnum>>(left) };
+    const auto l{ std::to_underlying(left) };
     const auto r{ static_cast<std::underlying_type_t<TEnum>>(right) };
     return static_cast<TEnum>(l | r);
 }
@@ -40,22 +40,20 @@ constexpr TEnum& operator|=(TEnum& left, TOther right) noexcept
 template <ScopedEnum T>
 constexpr T& operator++(T& value) noexcept
 {
-    using U = std::underlying_type_t<T>;
-    value = static_cast<T>(static_cast<U>(value) + U{ 1 });
+    value = static_cast<T>(++std::to_underlying(value));
     return value;
 }
 
 template <ScopedEnum T>
 constexpr T operator~(T value) noexcept
 {
-    using U = std::underlying_type_t<T>;
-    return static_cast<T>(~static_cast<U>(value));
+    return static_cast<T>(~std::to_underlying(value));
 }
 
 template <std::integral TInt, ScopedEnum TEnum>
 constexpr TInt operator<<(TInt left, TEnum right) noexcept
 {
-    const auto r{ static_cast<std::underlying_type_t<TEnum>>(right) };
+    const auto r{ std::to_underlying(right) };
     return left << r;
 }
 

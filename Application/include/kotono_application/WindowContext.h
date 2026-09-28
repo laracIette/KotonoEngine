@@ -63,5 +63,5 @@ public:
 	using UWindowContext::UWindowContext;
 
 public:
-	void Init(glm::uvec2 const& extent, UPtr<WWidget> const& widget);
+	void Init(glm::uvec2 const& extent, UPtr<WWidget> const& widget, std::string_view name);
 };

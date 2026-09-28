@@ -25,13 +25,13 @@ void UInterface::Update(f32 deltaTime, glm::vec2 const& cursorPosition)
 	deltaTime_ = deltaTime;
 	now_ += deltaTime;
 
-	UpdateFocusedWidgets(cursorPosition);
-
 	if (widget_)
 	{
 		widget_->UpdateSceneContexts(deltaTime);
 		widget_->Refresh();
 	}
+
+	UpdateFocusedWidgets(cursorPosition);
 }
 
 void UInterface::BeginDraw(glm::uvec2 const& bounds)
@@ -94,14 +94,14 @@ void UInterface::OnKeyboardKey(EKey key, EInputState inputState) const
 	}
 }
 
-void UInterface::OpenWidgetInWindow(UPtr<WWidget> const& widget, glm::uvec2 const& windowExtent)
+void UInterface::OpenWidgetInWindow(glm::uvec2 const& windowExtent, UPtr<WWidget> const& widget, std::string_view name)
 {
 	if (!widget)
 	{
 		return;
 	}
 
-	pendingWindows_.emplace_back(widget, windowExtent);
+	pendingWindows_.emplace_back(windowExtent, widget, std::string{ name });
 }
 
 void UInterface::ClearPendingWindows()

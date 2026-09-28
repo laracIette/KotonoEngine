@@ -1,6 +1,7 @@
 #include "DefaultSceneContext.h"
 
 #include "Detachable.h"
+#include "GameSpeedButton.h"
 #include "GameStateButton.h"
 #include "SceneExplorer.h"
 #include "SingleViewport.h"
@@ -15,22 +16,43 @@ WidgetPtr WDefaultSceneContext::Build()
 			| Apply(&WWrap::SetAxis, EAxis::Horizontal)
 			| (
 				UCreate<WColumn>{}()
-				| Apply(&WColumn::SetSpacing, 5.0f)
 				| (
 					UCreate<WWrap>{}()
 					| Apply(&WWrap::SetAxis, EAxis::Vertical)
 					| (
-						UCreate<WAlign>{}()
-						| Apply(&WAlign::SetAlignment, UAlignment::Center())
+						UCreate<WDetachable>{ "Game Buttons" }()
 						| (
-							UCreate<WGameStateButton>{ "Game State Button" }(GetScene())
+							UCreate<WColumn>{}()
+							| Apply(&WColumn::SetSpacing, 5.0f)
+							| (
+								UCreate<WWrap>{}()
+								| Apply(&WWrap::SetAxis, EAxis::Vertical)
+								| (
+									UCreate<WAlign>{}()
+									| Apply(&WAlign::SetAlignment, UAlignment::Center())
+									| (
+										UCreate<WGameStateButton>{ "Game State Button" }(GetScene())
+									)
+								)
+							)
+							| (
+								UCreate<WWrap>{}()
+								| Apply(&WWrap::SetAxis, EAxis::Vertical)
+								| (
+									UCreate<WAlign>{}()
+									| Apply(&WAlign::SetAlignment, UAlignment::Center())
+									| (
+										UCreate<WGameSpeedButton>{ "Game Speed Button" }(GetScene())
+									)
+								)
+							)
 						)
 					)
 				)
 				| (
 					UCreate<WDetachable>{ "Scene Explorer" }()
 					| (
-						UCreate<WSceneExplorer>{ "Scene Explorer" }(GetScene())
+						UCreate<WSceneExplorer>{}(GetScene())
 					)
 				)
 			)

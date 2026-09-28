@@ -8,7 +8,7 @@
 
 KMeshComponent::KMeshComponent()
 {
-    spinTask_.duration = 5.0f;
+    spinTask_.duration = 500.0f;
 }
 
 KMeshComponent::~KMeshComponent()

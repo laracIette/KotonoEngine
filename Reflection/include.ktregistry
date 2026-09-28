@@ -16,6 +16,7 @@
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Color.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Column.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Constraint.h",
+        "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Crop.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/Expanded.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/HorizontalWrapList.h",
         "${ENGINE_DIRECTORY}/Interface/include/kotono_interface/HorizontalWrapListBody.h",

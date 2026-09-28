@@ -84,7 +84,7 @@ b8 WChildrenOwner::OnMouseButton(EButton button, EInputState inputState, glm::ve
 			continue;
 		}
 
-		if (!is_point_in_rect(position, child->GetPosition(), child->GetSize()))
+		if (!child->GetIsPointHovering(position))
 		{
 			continue;
 		}
@@ -107,7 +107,7 @@ b8 WChildrenOwner::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position
 			continue;
 		}
 
-		if (!is_point_in_rect(position, child->GetPosition(), child->GetSize()))
+		if (!child->GetIsPointHovering(position))
 		{
 			continue;
 		}

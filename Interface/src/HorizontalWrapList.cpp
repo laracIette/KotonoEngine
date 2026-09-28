@@ -6,25 +6,28 @@
 WidgetPtr WHorizontalWrapList::Build()
 {
 	return (
-		scrollable_ = UCreate<WScrollable>{ "Horizontal Wrap List Scrollable" }()
-		| Apply(&WScrollable::SetAxis, EAxis::Vertical)
+		UCreate<WCrop>{}()
 		| (
-			body_ = UCreate<WHorizontalWrapListBody>{ "Horizontal Wrap List Body" }()
+			scrollable_ = UCreate<WScrollable>{ "Horizontal Wrap List Scrollable" }()
+			| Apply(&WScrollable::SetAxis, EAxis::Vertical)
+			| (
+				body_ = UCreate<WHorizontalWrapListBody>{ "Horizontal Wrap List Body" }()
+			)
 		)
 	);
 }
 
-f32 WHorizontalWrapList::GetItemSpacing() const
+auto WHorizontalWrapList::GetItemSpacing() const -> f32
 {
 	return body_->GetItemSpacing();
 }
 
-f32 WHorizontalWrapList::GetRowSpacing() const
+auto WHorizontalWrapList::GetRowSpacing() const -> f32
 {
 	return body_->GetRowSpacing();
 }
 
-WidgetSet const& WHorizontalWrapList::GetChildren() const
+auto WHorizontalWrapList::GetChildren() const -> WidgetSet const&
 {
 	return body_->GetChildren();
 }
@@ -42,7 +45,7 @@ void WHorizontalWrapList::SetRowSpacing(f32 rowSpacing)
 void WHorizontalWrapList::SetChildren(WidgetSet const& children)
 {
 	body_->SetChildren(children);
-	scrollable_->SetOffset(glm::vec2{ 0.0f });
+	scrollable_->SetOffset({ 0.0f, 0.0f });
 }
 
 void WHorizontalWrapList::AddChild(WidgetPtr const & child)

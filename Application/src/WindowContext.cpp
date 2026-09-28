@@ -125,9 +125,9 @@ auto UMainWindowContext::GetSurface() const -> VkSurfaceKHR
 	return surface_.GetSurface();
 }
 
-void USecondaryWindowContext::Init(glm::uvec2 const& extent, UPtr<WWidget> const& widget)
+void USecondaryWindowContext::Init(glm::uvec2 const& extent, UPtr<WWidget> const& widget, std::string_view name)
 {
-	window_.Init(extent, std::format("Kotono Engine - {0}", widget->GetName()));
+	window_.Init(extent, std::format("Kotono Engine - {0}", name));
 	surface_.Init();
 	renderer_.Init();
 

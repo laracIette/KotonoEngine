@@ -7,7 +7,7 @@ class WScrollable final : public WChildOwner
 	GENERATED_WSCROLLABLE()
 
 public:
-	WScrollable(EAxis axis = EAxis::All);
+	WScrollable();
 
 	b8 OnMouseScroll(glm::vec2 const& delta) override;
 

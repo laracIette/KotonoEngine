@@ -17,8 +17,9 @@ class UInterface final
 public:
 	struct PendingWindow
 	{
-		UPtr<WWidget> widget;
 		glm::uvec2 windowExtent;
+		UPtr<WWidget> widget;
+		std::string name;
 	};
 
 public:
@@ -37,7 +38,7 @@ public:
 
 	void OnKeyboardKey(EKey key, EInputState inputState) const;
 	
-	void OpenWidgetInWindow(UPtr<WWidget> const& widget, glm::uvec2 const& windowExtent);
+	void OpenWidgetInWindow(glm::uvec2 const& windowExtent, UPtr<WWidget> const& widget, std::string_view name);
 	void ClearPendingWindows();
 
 	auto GetBounds() const -> glm::uvec2 { return bounds_; }

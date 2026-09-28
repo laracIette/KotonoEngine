@@ -86,7 +86,7 @@ auto WChildOwner::OnMouseButton(EButton button, EInputState inputState, glm::vec
 		return INPUT_UNHANDLED;
 	}
 
-	if (is_point_in_rect(position, child_->GetPosition(), child_->GetSize()))
+	if (child_->GetIsPointHovering(position))
 	{
 		return child_->OnMouseButton(button, inputState, position);
 	}
@@ -101,7 +101,7 @@ auto WChildOwner::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
 		return INPUT_UNHANDLED;
 	}
 
-	if (is_point_in_rect(position, child_->GetPosition(), child_->GetSize()))
+	if (child_->GetIsPointHovering(position))
 	{
 		return child_->OnMouseMove(delta, position);
 	}

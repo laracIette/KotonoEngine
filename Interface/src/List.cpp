@@ -6,10 +6,13 @@
 WidgetPtr WList::Build()
 {
 	return (
-		UCreate<WScrollable>{ "List Scrollable" }()
-		| Apply(&WScrollable::SetAxis, EAxis::Vertical)
+		UCreate<WCrop>{}()
 		| (
-			body_ = UCreate<WListBody>{ "List Body" }()
+			scrollable_ = UCreate<WScrollable>{ "List Scrollable" }()
+			| Apply(&WScrollable::SetAxis, EAxis::Vertical)
+			| (
+				body_ = UCreate<WListBody>{ "List Body" }()
+			)
 		)
 	);
 }
@@ -32,6 +35,7 @@ void WList::SetSpacing(f32 spacing)
 void WList::SetChildren(WidgetSet const& children)
 {
 	body_->SetChildren(children);
+	scrollable_->SetOffset({ 0.0f, 0.0f });
 }
 
 void WList::AddChild(WidgetPtr const& child)

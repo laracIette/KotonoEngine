@@ -2,6 +2,7 @@
 #include "generated/List.generated.h"
 #include <kotono_core/Widget.h>
 class WListBody;
+class WScrollable;
 /// Defines a vertical container for widgets
 class WList final : public WWidget
 {
@@ -19,6 +20,7 @@ public:
 	void AddChild(WidgetPtr const& child);
 
 private:
+	UPtr<WScrollable> scrollable_;
 	UPtr<WListBody> body_;
 };
 

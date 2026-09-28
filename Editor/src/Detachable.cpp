@@ -94,7 +94,7 @@ void WDetachable::Detach()
 	
 	socket_->SetChild(nullptr);
 
-	GetInterface()->OpenWidgetInWindow(child, child->GetSize());
+	GetInterface()->OpenWidgetInWindow(child->GetSize(), child, GetName());
 
 	Delete();
 }

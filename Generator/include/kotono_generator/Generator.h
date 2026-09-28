@@ -24,9 +24,9 @@ public:
 	static void GenerateRegistrator();
 
 private:
-	static void Generate(const UReflectionResult& reflectionResult);
-	static void GenerateHeader(const UReflectionResult& reflectionResult);
-	static void GenerateSource(const UReflectionResult& reflectionResult);
+	static void Generate(UReflectionResult const& reflectionResult);
+	static void GenerateHeader(UReflectionResult const& reflectionResult);
+	static void GenerateSource(UReflectionResult const& reflectionResult);
 	 
-	static ClassInfo GetClassInfo(const UReflectionResult& reflectionResult);
+	static ClassInfo GetClassInfo(UReflectionResult const& reflectionResult);
 };

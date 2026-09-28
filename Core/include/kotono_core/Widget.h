@@ -89,6 +89,8 @@ public:
 	auto GetShouldRefresh() const -> b8;
 	virtual void Refresh();
 
+	auto GetIsPointHovering(glm::vec2 const& position) const -> b8;
+
 	auto GetPosition() const -> glm::vec2 { return slotDisplaySettings_.position; }
 	auto GetSize() const -> glm::vec2 { return slotDisplaySettings_.bounds; }
 	auto GetAspectRatio() const -> f32 { return slotDisplaySettings_.bounds.x / slotDisplaySettings_.bounds.y; }

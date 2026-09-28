@@ -108,7 +108,7 @@ void RegisterObjectClasses()
 	KT_LOG(ELogImportanceLevel::High, "Generator", "Generated class registrator");
 }
 
-void SGenerator::Generate(const UReflectionResult& reflectionResult)
+void SGenerator::Generate(UReflectionResult const& reflectionResult)
 {
 	GenerateHeader(reflectionResult);
 	GenerateSource(reflectionResult);
@@ -116,7 +116,7 @@ void SGenerator::Generate(const UReflectionResult& reflectionResult)
 	KT_LOG(ELogImportanceLevel::High, "Generator", "Generated {0}", reflectionResult.path.ToPath().string());
 }
 
-void SGenerator::GenerateHeader(const UReflectionResult& reflectionResult)
+void SGenerator::GenerateHeader(UReflectionResult const& reflectionResult)
 {
 	auto const classInfo{ GetClassInfo(reflectionResult) };
 
@@ -159,7 +159,7 @@ R"(#pragma once
 	UFile{ fileDirectory / "generated" / fileName }.WriteString(generatedCode);
 }
 
-void SGenerator::GenerateSource(const UReflectionResult& reflectionResult)
+void SGenerator::GenerateSource(UReflectionResult const& reflectionResult)
 {
 	auto const classInfo{ GetClassInfo(reflectionResult) };
 
@@ -185,7 +185,7 @@ void SGenerator::GenerateSource(const UReflectionResult& reflectionResult)
 		? std::format(
 R"(void Register_{0}() 
 {{
-	UAutoRegister{{ "{0}", []() {{ return UCreate<{0}>{{}}(); }} }};
+	UAutoRegister{{ "{0}", []() static {{ return UCreate<{0}>{{}}(); }} }};
 }}
 
 void {0}::SerializeTo(nlohmann::json& json) const
@@ -218,7 +218,7 @@ UPtr<{0}> {0}::Ptr() const
 		: std::format(
 R"(void Register_{0}() 
 {{
-	UAutoRegister{{ "{0}", []() {{ return UCreate<{0}>{{}}(); }} }};
+	UAutoRegister{{ "{0}", []() static {{ return UCreate<{0}>{{}}(); }} }};
 }}
 
 void {0}::SerializeTo(nlohmann::json& json) const
@@ -259,12 +259,12 @@ UPtr<{0}> {0}::Ptr() const
 	UFile{ fileDirectory / "generated" / fileName }.WriteString(generatedCode);
 }
 
-SGenerator::ClassInfo SGenerator::GetClassInfo(const UReflectionResult& reflectionResult)
+SGenerator::ClassInfo SGenerator::GetClassInfo(UReflectionResult const& reflectionResult)
 {
 	std::vector<ClassInfo::VariableInfo> variables;
 	std::ranges::copy(
 		reflectionResult.members
-		| std::views::transform([](const UReflectionResult::MemberInfo& member) { return ClassInfo::VariableInfo{ member.type, member.name }; })
+		| std::views::transform([](UReflectionResult::MemberInfo const& member) { return ClassInfo::VariableInfo{ member.type, member.name }; })
 		, std::back_inserter(variables)
 	);
 

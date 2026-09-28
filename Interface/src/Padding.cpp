@@ -30,13 +30,13 @@ glm::vec2 WPadding::GetDesiredSize(const glm::vec2& bounds) const
 
 void WPadding::DisplayInternal(UWidgetDisplaySettings displaySettings)
 {
+	displaySettings.position.x += padding_.l;
+	displaySettings.position.y += padding_.t;
+
 	displaySettings.bounds.x -= padding_.l;
 	displaySettings.bounds.x -= padding_.r;
 	displaySettings.bounds.y -= padding_.t;
 	displaySettings.bounds.y -= padding_.b;
-
-	displaySettings.position.x += padding_.l;
-	displaySettings.position.y += padding_.t;
 
 	Base::DisplayInternal(displaySettings);
 }

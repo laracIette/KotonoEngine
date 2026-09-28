@@ -119,10 +119,10 @@ void UApplication::Update()
     updateAndPopulatePendingWindows(mainWindowContext_);
     std::ranges::for_each(secondaryWindowContexts_, updateAndPopulatePendingWindows);
 
-    for (auto const& [widget, windowExtent] : pendingWindows)
+    for (auto const& [windowExtent, widget, name] : pendingWindows)
     {
         secondaryWindowContexts_.push_back(new USecondaryWindowContext{ context_, device_ });
-        secondaryWindowContexts_.back()->Init(windowExtent, widget);
+        secondaryWindowContexts_.back()->Init(windowExtent, widget, name);
     }
 }
 
