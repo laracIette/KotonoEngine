@@ -2,6 +2,7 @@
 #include "GameState.h"
 #include "Ptr.h"
 #include <kotono_audio/AudioContext.h>
+#include <kotono_common/Clamped.h>
 #include <kotono_common/Event.h>
 #include <kotono_common/Notify.h>
 #include <kotono_common/Path.h>
@@ -14,6 +15,9 @@ class TSceneObject;
 
 class UScene final
 {
+public:
+	using TimeScaleRange = UClamped<f32, 0.1f, 10.0f>;
+
 private:
 	using SceneObject = UPtr<TSceneObject>;
 
@@ -56,7 +60,7 @@ public:
 	auto GetNow() const -> f32 { return now_; }
 	auto GetTimeScale() const -> f32 { return timeScale_; }
 
-	void SetTimeScale(f32 timeScale) { timeScale_ = timeScale; }
+	void SetTimeScale(TimeScaleRange timeScale) { timeScale_ = timeScale; }
 
 private:
 	void InitSceneObjects() const;

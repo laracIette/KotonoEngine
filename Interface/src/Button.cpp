@@ -96,25 +96,6 @@ auto WButton::OnMouseButton(EButton button, EInputState inputState, glm::vec2 co
 
 		return INPUT_HANDLED;
 	}
-	case EInputState::Down:
-	{
-		if (!isEnabled_)
-		{
-			break;
-		}
-
-		if (!isPressed_)
-		{
-			break;
-		}
-
-		if (onDown_)
-		{
-			onDown_();
-		}
-
-		return INPUT_HANDLED;
-	}
 	default:
 		break;
 	}
@@ -124,7 +105,22 @@ auto WButton::OnMouseButton(EButton button, EInputState inputState, glm::vec2 co
 
 auto WButton::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> b8
 {
-	return INPUT_UNHANDLED;
+	if (!isEnabled_)
+	{
+		return INPUT_UNHANDLED;
+	}
+
+	if (!isPressed_)
+	{
+		return INPUT_UNHANDLED;
+	}
+	
+	if (onDrag_)
+	{
+		onDrag_(delta);
+	}
+
+	return INPUT_HANDLED;
 }
 
 void WButton::OnUnfocused()
@@ -147,9 +143,9 @@ void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) c
 	auto const state{ [this]() {
 		if (!GetIsEnabled())	return disabledState_;
 		if (isPressed_)			return pressedState_;
+		if (GetIsFocused())		return focusedState_;
 		if (isSelected_)		return selectedState_;
 		if (isActivated_)		return activatedState_;
-		if (GetIsFocused())		return focusedState_;
 		return normalState_;
 	}() };
 

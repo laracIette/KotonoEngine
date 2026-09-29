@@ -24,11 +24,14 @@ using WidgetPtr = UPtr<WWidget>;
 using WidgetSet = USet<WidgetPtr>;
 using WidgetVector = std::vector<WidgetPtr>;
 
-#define StateProperty(Type, Name, PropertyName, ...) private:											\
-	Type Name;																							\
-public:																									\
-	auto Get##PropertyName() GET_FUNC_ACCESS(__VA_ARGS__) -> Type GET_PROP_ACCESS(__VA_ARGS__) { return Name; } \
-	void Set##PropertyName(const Type& value) noexcept { SetState([this, value]() { Name = value; }); }	\
+#define StateSetter(Type, Variable, SetterName) \
+	void Set##SetterName(const Type& value) noexcept { SetState([this, value]() { Variable = value; }); }
+
+#define StateProperty(Type, Name, PropertyName, ...) private:	\
+	Type Name;													\
+public:															\
+	Getter(Type, Name, PropertyName, __VA_ARGS__)			\
+	StateSetter(Type, Name, PropertyName)					\
 private:
 
 struct UInterfaceRenderGraph;

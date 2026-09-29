@@ -33,17 +33,26 @@ using VoidCallback = std::function<void()>;
 #define GET_PROP_ACCESS(...) MACRO_CONCAT(PROP_ACCESS_, __VA_ARGS__)
 #define GET_FUNC_ACCESS(...) MACRO_CONCAT(FUNC_ACCESS_, __VA_ARGS__)
 
-#define ReadonlyProperty(Type, Name, PropertyName, ...) private:						\
-	Type Name;																			\
-public:																					\
-	auto Get##PropertyName() GET_FUNC_ACCESS(__VA_ARGS__) -> Type GET_PROP_ACCESS(__VA_ARGS__) { return Name; } \
+#define Getter(Type, Variable, GetterName, ...) \
+	auto Get##GetterName() GET_FUNC_ACCESS(__VA_ARGS__) -> Type GET_PROP_ACCESS(__VA_ARGS__) { return Variable; }
+
+#define Setter(Type, Variable, SetterName) \
+	void Set##SetterName(Type const& value) { Variable = value; }
+
+#define GetterAndSetter(Type, Variable, PropertyName, ...)	\
+	Getter(Type, Variable, PropertyName, __VA_ARGS__)		\
+	Setter(Type, Variable, PropertyName)
+	
+#define ReadonlyProperty(Type, Name, PropertyName, ...) private:	\
+	Type Name;														\
+public:																\
+	Getter(Type, Name, PropertyName, __VA_ARGS__)				\
 private:
 
-#define WritableProperty(Type, Name, PropertyName, ...) private:						\
-	Type Name;																			\
-public:																					\
-	auto Get##PropertyName() GET_FUNC_ACCESS(__VA_ARGS__) -> Type GET_PROP_ACCESS(__VA_ARGS__) { return Name; } \
-	void Set##PropertyName(Type const& value) { Name = value; }				\
+#define WritableProperty(Type, Name, PropertyName, ...) private:	\
+	Type Name;														\
+public:																\
+	GetterAndSetter(Type, Name, PropertyName, __VA_ARGS__)		\
 private:
 
 class KObject;
