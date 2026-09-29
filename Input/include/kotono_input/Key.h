@@ -123,16 +123,10 @@ enum class EKey : u8
 	RightAlt,
 	RightSuper,
 	Menu,
-	Last,
 	Unknown = std::numeric_limits<u8>::max()
 };
 
 inline constexpr size KeyCount{ 121 };
-
-constexpr size to_index(EKey key)
-{
-	return static_cast<size>(key);
-}
 
 constexpr char keyToChar(EKey key)
 {

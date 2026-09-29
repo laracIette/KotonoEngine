@@ -47,47 +47,52 @@ UPath::UPath(std::filesystem::path const& source)
 {
 }
 
-UPath UPath::Directory() const
+auto UPath::Directory() const -> UPath
 {
     return ToPath().parent_path();
 }
 
-std::string UPath::Name() const
+auto UPath::Name() const -> std::string
 {
     return ToPath().filename().string();
 }
 
-std::string UPath::Extension() const
+auto UPath::Extension() const -> std::string
 {
     return ToPath().extension().string();
 }
 
-std::string UPath::Stem() const
+auto UPath::Stem() const -> std::string
 {
     return ToPath().stem().string();
 }
 
-b8 UPath::IsEmpty() const
+auto UPath::HasDirectory() const -> b8
+{
+    return ToPath().has_parent_path();
+}
+
+auto UPath::IsEmpty() const -> b8
 {
     return source_.empty();
 }
 
-b8 UPath::IsFile() const
+auto UPath::IsFile() const -> b8
 {
     return is_regular_file(ToPath());
 }
 
-b8 UPath::Exists() const
+auto UPath::Exists() const -> b8
 {
     return exists(ToPath());
 }
 
-std::string const& UPath::ToString() const
+auto UPath::ToString() const -> std::string const&
 {
     return source_;
 }
 
-std::filesystem::path UPath::ToPath() const
+auto UPath::ToPath() const -> std::filesystem::path
 {
     std::string result{ source_ };
     replace(result, "${ENGINE_DIRECTORY}", SPathManager::Engine().ToString());
@@ -125,7 +130,7 @@ UPath::operator b8() const
     return !IsEmpty();
 }
 
-b8 UPath::operator==(UPath const& other) const noexcept
+auto UPath::operator==(UPath const& other) const noexcept -> b8
 {
     return source_ == other.source_;
 }

@@ -8,21 +8,17 @@ static constexpr UColor DEFAULT_NORMAL{ Colors::White.WithValue(0.1f) };
 static constexpr UColor DEFAULT_FOCUSED{ Colors::White.WithValue(0.15f) };
 static constexpr UColor DEFAULT_PRESSED{ Colors::White.WithValue(0.25f) };
 static constexpr UColor DEFAULT_ACTIVATED{ Colors::White.WithValue(0.2f) };
-static constexpr UColor DEFAULT_SELECTED{ Colors::White.WithValue(0.2f) };
 static constexpr UColor DEFAULT_DISABLED{ DEFAULT_NORMAL.WithAlpha(0.5f) };
 
 WButton::WButton()
 	: isEnabled_{ true }
 	, isPressed_{ false }
 	, isActivated_{ false }
-	, isSelected_{ false }
 	, isActivatable_{ false }
-	, isSelectable_{ false }
 	, normalState_{ DEFAULT_TEXTURE, DEFAULT_NORMAL }
 	, focusedState_{ DEFAULT_TEXTURE, DEFAULT_FOCUSED }
 	, pressedState_{ DEFAULT_TEXTURE, DEFAULT_PRESSED }
 	, activatedState_{ DEFAULT_TEXTURE, DEFAULT_ACTIVATED }
-	, selectedState_{ DEFAULT_TEXTURE, DEFAULT_SELECTED }
 	, disabledState_{ DEFAULT_TEXTURE, DEFAULT_DISABLED }
 {
 }
@@ -85,15 +81,6 @@ auto WButton::OnMouseButton(EButton button, EInputState inputState, glm::vec2 co
 			onClicked_();
 		}
 
-		if (isSelectable_ && !isSelected_)
-		{
-			isSelected_ = true;
-			if (onSelected_)
-			{
-				onSelected_();
-			}
-		}
-
 		return INPUT_HANDLED;
 	}
 	default:
@@ -144,7 +131,6 @@ void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) c
 		if (!GetIsEnabled())	return disabledState_;
 		if (isPressed_)			return pressedState_;
 		if (GetIsFocused())		return focusedState_;
-		if (isSelected_)		return selectedState_;
 		if (isActivated_)		return activatedState_;
 		return normalState_;
 	}() };
@@ -163,7 +149,8 @@ void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) c
 
 auto WButton::GetCanCache() const -> b8
 {
-	return isEnabled_.GetIsValue();
+	return Base::GetCanCache()
+		&& isEnabled_.GetIsValue();
 }
 
 #include "generated/Button.generated.inl"

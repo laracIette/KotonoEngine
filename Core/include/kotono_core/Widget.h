@@ -8,6 +8,7 @@
 #include "WidgetDisplaySettings.h"
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float2.hpp>
+#include <kotono_common/Bindable.h>
 #include <kotono_common/Set.h>
 #include <kotono_common/types.h>
 #include <kotono_input/Button.h>
@@ -94,10 +95,13 @@ public:
 
 	auto GetIsPointHovering(glm::vec2 const& position) const -> b8;
 
-	auto GetPosition() const -> glm::vec2 { return slotDisplaySettings_.position; }
-	auto GetSize() const -> glm::vec2 { return slotDisplaySettings_.bounds; }
-	auto GetAspectRatio() const -> f32 { return slotDisplaySettings_.bounds.x / slotDisplaySettings_.bounds.y; }
-	auto GetScissor() const -> UScissor { return slotDisplaySettings_.scissor; }
+	Getter(b8, isVisible_, IsVisible, Value);
+	Setter(UBindable<b8>, isVisible_, IsVisible);
+	
+	Getter(glm::vec2, slotDisplaySettings_.position, Position, Value);
+	Getter(glm::vec2, slotDisplaySettings_.bounds, Size, Value);
+	Getter(f32, slotDisplaySettings_.bounds.x / slotDisplaySettings_.bounds.y, AspectRatio, Value);
+	Getter(UScissor, slotDisplaySettings_.scissor, Scissor, Value);
 
 protected:
 	void SetState(StateFunction const& function);
@@ -121,8 +125,9 @@ private:
 	WidgetPtr build_;
 	UWidgetDisplaySettings slotDisplaySettings_;
 	b8 isDirty_;
+	UBindable<b8> isVisible_;
+
 	WritableProperty(WidgetPtr, parent_, Parent, Value);
-	WritableProperty(b8, isVisible_, IsVisible, Value);
 	ReadonlyProperty(b8, isDisplayed_, IsDisplayed, Value);
 	ReadonlyProperty(b8, isFocused_, IsFocused, Value);
 	ReadonlyProperty(glm::vec2, contentSize_, ContentSize, Value);

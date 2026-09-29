@@ -7,161 +7,109 @@
 #include <kotono_io/FileExplorer.h>
 
 WAssetExplorer::WAssetExplorer()
-	: path_{ "${ENGINE_DIRECTORY}" }
-	, navigatedPaths_{ path_ }
+	: currentDirectory_{ "${ENGINE_DIRECTORY}" }
+	, navigatedPaths_{ currentDirectory_ }
 	, currentPathIndex_{ 0 }
 {
 }
 
 WidgetPtr WAssetExplorer::Build()
 {	
-	return UCreate<WColumn>{ "Asset Explorer Main Column" }() 
-	| Apply(&WColumn::SetSpacing, 4.0f)
-	| (
-		UCreate<WRow>{ "Asset Explorer Navigation Row" }()
-		| Apply(&WRow::SetSpacing, 4.0f)
+	return (
+		UCreate<WColumn>{ "Asset Explorer Main Column" }() 
+		| Apply(&WColumn::SetSpacing, 4.0f)
 		| (
-			UCreate<WWrap>{}()
+			UCreate<WRow>{ "Asset Explorer Navigation Row" }()
+			| Apply(&WRow::SetSpacing, 4.0f)
 			| (
-				UCreate<WStack>{}()
+				UCreate<WWrap>{}()
 				| (
-					UCreate<WColor>{}() 
-					| Apply(&WColor::SetColor, Colors::White.WithValue(0.25f))
+					UCreate<WStack>{}()
+					| (
+						UCreate<WButton>{ "Directory Up Button" }()
+						| Apply(&WButton::SetOnClicked, [this]() { Push(currentDirectory_.Directory()); })
+					)
+					| (
+						UCreate<WText>{ "Directory Up Text" }()
+						| Apply(&WText::SetText, "Up")
+						| Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
+					)
 				)
+			)
+			| (
+				UCreate<WWrap>{}()
 				| (
-					UCreate<WButton>{ "Directory Up Button" }()
-					| Apply(&WButton::SetOnClicked, [this]() { Push(path_.Directory()); })
+					UCreate<WStack>{}()
+					| (
+						UCreate<WButton>{ "Directory Prev Button" }()
+						| Apply(&WButton::SetOnClicked, [this]() { NavigatePrevious(); })
+					)
+					| (
+						UCreate<WText>{ "Directory Prev Text" }()
+						| Apply(&WText::SetText, "Prev")
+						| Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
+					)
 				)
+			)
+			| (
+				UCreate<WWrap>{}()
 				| (
-					UCreate<WText>{ "Directory Up Text" }()
-					| Apply(&WText::SetText, "Up")
-					| Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
+					UCreate<WStack>{}()
+					| (
+						UCreate<WButton>{ "Directory Next Button" }()
+						| Apply(&WButton::SetOnClicked, [this]() { NavigateNext(); })
+					)
+					| (
+						UCreate<WText>{ "Directory Next Text" }()
+						| Apply(&WText::SetText, "Next")
+						| Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
+					)
 				)
 			)
 		)
 		| (
-			UCreate<WWrap>{}()
+			UCreate<WStack>{ "Item List Stack" }()
 			| (
-				UCreate<WStack>{}() 
+				UCreate<WColor>{ "Item List Background" }() 
+				| Apply(&WColor::SetColor, Colors::White.WithValue(0.05f))
+			)
+			| (
+				UCreate<WPadding>{ "Item List Padding" }()
+				| Apply(&WPadding::SetPadding, UPadding::All(8.0f))
 				| (
-					UCreate<WColor>{}()
-					| Apply(&WColor::SetColor, Colors::White.WithValue(0.25f))
-				)
-				| (
-					UCreate<WButton>{ "Directory Prev Button" }()
-					| Apply(&WButton::SetOnClicked, [this]() { NavigatePrevious(); })
-				)
-				| (
-					UCreate<WText>{ "Directory Prev Text" }()
-					| Apply(&WText::SetText, "Prev")
-					| Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
+					itemList_ = UCreate<WHorizontalWrapList>{ "Item List" }()
+					| Apply(&WHorizontalWrapList::SetItemSpacing, 10.0f)
+					| Apply(&WHorizontalWrapList::SetRowSpacing, 10.0f)
+					| (assetExplorerItems_ = MakeItems())
 				)
 			)
 		)
-		| (
-			UCreate<WWrap>{}()
-			| (
-				UCreate<WStack>{}()
-				| (
-					UCreate<WColor>{}()
-					| Apply(&WColor::SetColor, Colors::White.WithValue(0.25f))
-				)
-				| (
-					UCreate<WButton>{ "Directory Next Button" }()
-					| Apply(&WButton::SetOnClicked, [this]() { NavigateNext(); })
-				)
-				| (
-					UCreate<WText>{ "Directory Next Text" }()
-					| Apply(&WText::SetText, "Next")
-					| Apply(&WText::SetFontSize, glm::vec2{ 16.0f, 20.0f })
-				)
-			)
-		)
-	)
-	| (
-		UCreate<WStack>{ "Item List Stack" }()
-		| (
-			UCreate<WColor>{ "Item List Background" }() 
-			| Apply(&WColor::SetColor, Colors::White.WithValue(0.05f))
-		)
-		| (
-			UCreate<WPadding>{ "Item List Padding" }()
-			| Apply(&WPadding::SetPadding, UPadding::All(8.0f))
-			| (
-				itemList_ = UCreate<WHorizontalWrapList>{ "Item List" }()
-				| Apply(&WHorizontalWrapList::SetItemSpacing, 10.0f)
-				| Apply(&WHorizontalWrapList::SetRowSpacing, 10.0f)
-				| (assetExplorerItems_ = MakeItems())
-			)
-		)
-		| (
-			selectOffset_ = UCreate<WOffset>{ "Select Offset" }()
-			| (
-				selectBox_ = UCreate<WBox>{ "Select Box" }()
-				| (
-					selectColor_ = UCreate<WColor>{ "Select Box Color" }() 
-					| Apply(&WColor::SetColor, UColor::Mix(Colors::Blue, Colors::Cyan).WithAlpha(0.2f))
-					| Apply(&WColor::SetIsVisible, false)
-				)
-			)
-		)
-	)
-	;
+	);
 }
 
-b8 WAssetExplorer::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position)
+auto WAssetExplorer::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) -> b8
 {
 	if (Base::OnMouseButton(button, inputState, position))
 	{
 		return INPUT_HANDLED;
 	}
 
+	if (inputState != EInputState::Pressed)
+	{
+		return INPUT_UNHANDLED;
+	}
+
 	switch (button)
 	{
-	case EButton::Left:
-	{
-		switch (inputState)
-		{
-		case EInputState::Pressed:
-		{
-			auto const offset{ position - selectOffset_->GetPosition() };
-			selectOffset_->SetOffset(offset);
-			selectColor_->SetIsVisible(true);
-			return INPUT_HANDLED;
-		}
-		case EInputState::Released:
-		{
-			selectColor_->SetIsVisible(false);
-			return INPUT_HANDLED;
-		}
-		case EInputState::Down:
-		{
-			auto const size{ position - selectBox_->GetPosition() };
-			selectBox_->SetSize(size);
-			return INPUT_HANDLED;
-		}
-		default:
-			break;
-		}
-		break;
-	}
 	case EButton::Previous:
 	{
-		if (inputState == EInputState::Pressed)
-		{
-			NavigatePrevious();
-			return INPUT_HANDLED;
-		}
-		break;
+		NavigatePrevious();
+		return INPUT_HANDLED;
 	}
 	case EButton::Next:
 	{
-		if (inputState == EInputState::Pressed)
-		{
-			NavigateNext();
-			return INPUT_HANDLED;
-		}
-		break;
+		NavigateNext();
+		return INPUT_HANDLED;
 	}
 	default:
 		break;
@@ -170,11 +118,34 @@ b8 WAssetExplorer::OnMouseButton(EButton button, EInputState inputState, glm::ve
 	return INPUT_UNHANDLED;
 }
 
-void WAssetExplorer::DeselectOthers(UPtr<WAssetExplorerItem> const& item) const
+auto WAssetExplorer::OnKeyboardKey(EKey key, EInputState inputState) -> b8
+{
+	if (!GetIsFocused())
+	{
+		return INPUT_UNHANDLED;
+	}
+	
+	if (inputState != EInputState::Pressed)
+	{
+		return INPUT_UNHANDLED;
+	}
+
+	switch (key)
+	{
+	case EKey::Enter:
+		break;
+	default:
+		break;
+	}
+
+	return INPUT_HANDLED;
+}
+
+void WAssetExplorer::DeselectOthers(AssetExplorerItem const& item) const
 {
 	auto assets{ assetExplorerItems_ 
-		| std::views::filter([item](auto const& asset) { return asset != item; })
-		| std::views::filter(&UPtr<WAssetExplorerItem>::operator bool)
+		| std::views::filter([item](AssetExplorerItem const& asset) { return asset != item; })
+		| std::views::filter(&AssetExplorerItem::operator b8)
 	};
 
 	for (auto const& asset : assets)
@@ -185,7 +156,14 @@ void WAssetExplorer::DeselectOthers(UPtr<WAssetExplorerItem> const& item) const
 
 void WAssetExplorer::Push(UPath const& path)
 {
-	path_ = path;
+	assert(path.Exists());
+
+	if (path == currentDirectory_)
+	{
+		return;
+	}
+
+	currentDirectory_ = path;
 	++currentPathIndex_;
 	navigatedPaths_.erase(navigatedPaths_.begin() + currentPathIndex_, navigatedPaths_.end());
 	navigatedPaths_.push_back(path);
@@ -196,7 +174,7 @@ void WAssetExplorer::NavigatePrevious()
 {
 	if (!navigatedPaths_.empty() && currentPathIndex_ > 0)
 	{
-		path_ = navigatedPaths_[--currentPathIndex_];
+		currentDirectory_ = navigatedPaths_[--currentPathIndex_];
 		UpdateItemList();
 	}
 }
@@ -205,18 +183,18 @@ void WAssetExplorer::NavigateNext()
 {
 	if (!navigatedPaths_.empty() && currentPathIndex_ < navigatedPaths_.size() - 1)
 	{
-		path_ = navigatedPaths_[++currentPathIndex_];
+		currentDirectory_ = navigatedPaths_[++currentPathIndex_];
 		UpdateItemList();
 	}
 }
 
-auto WAssetExplorer::MakeItems() -> USet<UPtr<WAssetExplorerItem>>
+auto WAssetExplorer::MakeItems() -> USet<AssetExplorerItem>
 {
-	UFileExplorer const fileExplorer{ path_ };
+	UFileExplorer const fileExplorer{ currentDirectory_ };
 	auto const directories{ fileExplorer.GetDirectories() };
 	auto const files{ fileExplorer.GetFiles() };
 
-	USet<UPtr<WAssetExplorerItem>> items{};
+	USet<AssetExplorerItem> items{};
 	for (auto const& directory : directories)
 	{
 		items.Add(UCreate<WAssetExplorerDirectory>{}(Ptr(), directory, [this](UPath const& path) { Push(path); }));

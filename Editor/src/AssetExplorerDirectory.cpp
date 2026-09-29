@@ -1,7 +1,7 @@
 #include "AssetExplorerDirectory.h"
 
-WAssetExplorerDirectory::WAssetExplorerDirectory(UPtr<WAssetExplorer> const& assetExplorer, UPath const& path, const OnClickedFunc& onDoubleClicked)
-	: Base(assetExplorer, path, onDoubleClicked)
+WAssetExplorerDirectory::WAssetExplorerDirectory(UPtr<WAssetExplorer> const& assetExplorer, UPath const& path, OpenedCallback const& onOpened)
+	: Base(assetExplorer, path, onOpened)
 {
 }
 

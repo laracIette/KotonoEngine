@@ -13,8 +13,3 @@ enum class EInputState : u8
 };
 
 inline constexpr size InputStateCount{ 4 };
-
-constexpr size to_index(EInputState inputState)
-{
-	return static_cast<size>(inputState);
-}

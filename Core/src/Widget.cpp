@@ -298,7 +298,7 @@ void WWidget::DisplayInternal(UWidgetDisplaySettings displaySettings)
 
 auto WWidget::GetCanCache() const -> b8
 {
-	return true;
+	return isVisible_.GetIsValue();
 }
 
 void WWidget::CacheBuild()

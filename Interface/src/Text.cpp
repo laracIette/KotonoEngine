@@ -8,7 +8,7 @@
 
 WText::WText()
 	: text_{}
-	, fontSize_{ 20.0f, 24.0f }
+	, fontSize_{ 16.0f, 20.0f }
 	, spacing_{ 0.75f }
 	, font_{ "${ENGINE_DIRECTORY}/Graphics/assets/fonts/default" }
 {
@@ -124,7 +124,8 @@ void WText::DisplayInternal(UWidgetDisplaySettings displaySettings)
 
 auto WText::GetCanCache() const -> b8
 {
-	return text_.GetIsValue();
+	return Base::GetCanCache()
+		&& text_.GetIsValue();
 }
 
 #include "generated/Text.generated.inl"

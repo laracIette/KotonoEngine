@@ -9,10 +9,10 @@ class WAssetExplorerItem : public WWidget
 	GENERATED_WASSETEXPLORERITEM()
 
 public:
-	using OnClickedFunc = std::function<void(UPath const&)>;
+	using OpenedCallback = std::function<void(UPath const&)>;
 
 public:
-	WAssetExplorerItem(UPtr<WAssetExplorer> const& assetExplorer, UPath const& path, OnClickedFunc const& onDoubleClicked);
+	WAssetExplorerItem(UPtr<WAssetExplorer> const& assetExplorer, UPath const& path, OpenedCallback const& onopened);
 
 protected:
 	WidgetPtr Build() override;
@@ -26,9 +26,9 @@ protected:
 
 private:
 	UPtr<WAssetExplorer> assetExplorer_;
-	OnClickedFunc onDoubleClicked_;
+	OpenedCallback onOpened_;
 
 	b8 isSelected_;
 	f32 lastClickedTime_;
-	f32 doubleClickTreshold_;
+	f32 openTreshold_;
 };

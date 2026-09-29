@@ -51,13 +51,13 @@ void UKeyboard::Update()
             }
         }
 
-        if (keyStates_[key][to_index(EInputState::Pressed)])
+        if (keyStates_[key][std::to_underlying(EInputState::Pressed)])
         {
-            keyStates_[key][to_index(EInputState::Pressed)] = false;
+            keyStates_[key][std::to_underlying(EInputState::Pressed)] = false;
         }
-        else if (keyStates_[key][to_index(EInputState::Released)])
+        else if (keyStates_[key][std::to_underlying(EInputState::Released)])
         {
-            keyStates_[key][to_index(EInputState::Released)] = false;
+            keyStates_[key][std::to_underlying(EInputState::Released)] = false;
         }
     }
 }
@@ -69,30 +69,30 @@ void UKeyboard::UpdateKey(GLFWwindow* window, EKey key, i32 action)
         return;
     }
 
-    const size keyIndex{ to_index(key) };
+    const size keyIndex{ std::to_underlying(key) };
 
     switch (action)
     {
     case GLFW_PRESS:
     {
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input", "GLFW_PRESS key {0}", (u8)key);
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input", "GLFW_PRESS key {0}", std::to_underlying(key));
 
-        keyStates_[keyIndex][to_index(EInputState::Released)] = false;
-        keyStates_[keyIndex][to_index(EInputState::Up)] = false;
+        keyStates_[keyIndex][std::to_underlying(EInputState::Released)] = false;
+        keyStates_[keyIndex][std::to_underlying(EInputState::Up)] = false;
 
-        keyStates_[keyIndex][to_index(EInputState::Pressed)] = true;
-        keyStates_[keyIndex][to_index(EInputState::Down)] = true;
+        keyStates_[keyIndex][std::to_underlying(EInputState::Pressed)] = true;
+        keyStates_[keyIndex][std::to_underlying(EInputState::Down)] = true;
         break;
     }
     case GLFW_RELEASE:
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input", "GLFW_RELEASE key {0}", (u8)key);
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input", "GLFW_RELEASE key {0}", std::to_underlying(key));
 
-        keyStates_[keyIndex][to_index(EInputState::Pressed)] = false;
-        keyStates_[keyIndex][to_index(EInputState::Down)] = false;
+        keyStates_[keyIndex][std::to_underlying(EInputState::Pressed)] = false;
+        keyStates_[keyIndex][std::to_underlying(EInputState::Down)] = false;
 
-        keyStates_[keyIndex][to_index(EInputState::Released)] = true;
-        keyStates_[keyIndex][to_index(EInputState::Up)] = true;
+        keyStates_[keyIndex][std::to_underlying(EInputState::Released)] = true;
+        keyStates_[keyIndex][std::to_underlying(EInputState::Up)] = true;
         break;
     }
     default:
@@ -102,7 +102,7 @@ void UKeyboard::UpdateKey(GLFWwindow* window, EKey key, i32 action)
 
 auto UKeyboard::GetKeyState(EKey key, EInputState inputState) const -> b8
 {
-    return keyStates_[to_index(key)][to_index(inputState)];
+    return keyStates_[std::to_underlying(key)][std::to_underlying(inputState)];
 }
 
 constexpr i32 keyToGLFWKey(EKey key)
@@ -229,7 +229,6 @@ constexpr i32 keyToGLFWKey(EKey key)
     case EKey::RightAlt: return GLFW_KEY_RIGHT_ALT;
     case EKey::RightSuper: return GLFW_KEY_RIGHT_SUPER;
     case EKey::Menu: return GLFW_KEY_MENU;
-    case EKey::Last: return GLFW_KEY_LAST;
     default: return GLFW_KEY_UNKNOWN;
     }
 }

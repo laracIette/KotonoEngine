@@ -33,7 +33,8 @@ void WColor::SetColor(UBindable<UColor> const& color)
 
 auto WColor::GetCanCache() const -> b8
 {
-	return color_.GetIsValue();
+	return Base::GetCanCache()
+		&& color_.GetIsValue();
 }
 
 #include "generated/Color.generated.inl"

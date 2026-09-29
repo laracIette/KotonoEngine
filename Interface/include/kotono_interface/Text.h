@@ -2,7 +2,6 @@
 #include "generated/Text.generated.h"
 #include <kotono_core/Widget.h>
 
-#include <kotono_common/Bindable.h>
 #include <kotono_graphics/Font.h>
 
 /// Display a text

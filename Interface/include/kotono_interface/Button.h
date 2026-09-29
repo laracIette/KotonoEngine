@@ -2,7 +2,6 @@
 #include "generated/Button.generated.h"
 #include <kotono_core/Widget.h>
 
-#include <kotono_common/Bindable.h>
 #include <kotono_graphics/Color.h>
 
 
@@ -38,14 +37,12 @@ public:
 	GetterAndSetter(UColor, focusedState_.color, FocusedColor, Value);
 	GetterAndSetter(UColor, pressedState_.color, PressedColor, Value);
 	GetterAndSetter(UColor, activatedState_.color, ActivatedColor, Value);
-	GetterAndSetter(UColor, selectedState_.color, SelectedColor, Value);
 	GetterAndSetter(UColor, disabledState_.color, DisabledColor, Value);
 
 	GetterAndSetter(UPath, normalState_.texture, NormalTexture);
 	GetterAndSetter(UPath, focusedState_.texture, FocusedTexture);
 	GetterAndSetter(UPath, pressedState_.texture, PressedTexture);
 	GetterAndSetter(UPath, activatedState_.texture, ActivatedTexture);
-	GetterAndSetter(UPath, selectedState_.texture, SelectedTexture);
 	GetterAndSetter(UPath, disabledState_.texture, DisabledTexture);
 
 protected:
@@ -56,18 +53,14 @@ private:
 
 	ReadonlyProperty(b8, isPressed_, IsPressed, Value);
 	WritableProperty(b8, isActivated_, IsActivated, Value);
-	WritableProperty(b8, isSelected_, IsSelected, Value);
 
 	WritableProperty(b8, isActivatable_, IsActivatable, Value);
-	WritableProperty(b8, isSelectable_, IsSelectable, Value);
 
 	WritableProperty(VoidCallback, onClicked_, OnClicked);
 	WritableProperty(VoidCallback, onPressed_, OnPressed);
 	WritableProperty(VoidCallback, onReleased_, OnReleased);
 	WritableProperty(VoidCallback, onActivated_, OnActivated);
 	WritableProperty(VoidCallback, onDeactivated_, OnDeactivated);
-	WritableProperty(VoidCallback, onSelected_, OnSelected);
-	WritableProperty(VoidCallback, onDeselected_, OnDeselected);
 
 	WritableProperty(DragCallback, onDrag_, OnDrag);
 
@@ -75,7 +68,6 @@ private:
 	State focusedState_;
 	State pressedState_;
 	State activatedState_;
-	State selectedState_;
 	State disabledState_;
 };
 

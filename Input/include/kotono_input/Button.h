@@ -19,8 +19,3 @@ enum class EButton : u8
 };
 
 inline constexpr size ButtonCount{ 8 };
-
-constexpr size to_index(EButton button)
-{
-	return static_cast<size>(button);
-}

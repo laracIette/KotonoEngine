@@ -18,7 +18,6 @@ WidgetPtr WSceneExplorerItem::Build()
 			UCreate<WStack>{}()
 			| (
 				UCreate<WButton>{}()
-				| Apply(&WButton::SetIsSelectable, true)
 				| Apply(&WButton::SetOnClicked, [this]() { GetScene()->SelectObject(sceneObject_); })
 			)
 			| (
@@ -27,24 +26,6 @@ WidgetPtr WSceneExplorerItem::Build()
 			)
 		)
 	);
-}
-
-void WSceneExplorerItem::Display(UWidgetDisplaySettings const& displaySettings)
-{
-	Base::Display(displaySettings);
-
-	GetScene()->GetEventSelectedObjectChanged().AddListener(this, &Self::OnSelectedObjectChanged);
-}
-
-void WSceneExplorerItem::Remove()
-{
-	Base::Remove();
-
-	GetScene()->GetEventSelectedObjectChanged().RemoveListener(this, &Self::OnSelectedObjectChanged);
-}
-
-void WSceneExplorerItem::OnSelectedObjectChanged(UPtr<TSceneObject> const& sceneObject)
-{
 }
 
 #include "generated/SceneExplorerItem.generated.inl"

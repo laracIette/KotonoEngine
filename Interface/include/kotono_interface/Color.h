@@ -2,7 +2,6 @@
 #include "generated/Color.generated.h"
 #include <kotono_core/Widget.h>
 
-#include <kotono_common/Bindable.h>
 #include <kotono_graphics/Color.h>
 
 /// Fill the widget's bounds with a color

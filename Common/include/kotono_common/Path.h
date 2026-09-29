@@ -21,6 +21,7 @@ public:
 	auto Name() const -> std::string;
 	auto Extension() const -> std::string;
 	auto Stem() const -> std::string;
+	auto HasDirectory() const -> b8;
 	auto IsEmpty() const -> b8;
 	auto IsFile() const -> b8;
 	auto Exists() const -> b8;

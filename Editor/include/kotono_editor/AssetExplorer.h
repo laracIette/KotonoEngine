@@ -2,15 +2,15 @@
 #include "generated/AssetExplorer.generated.h"
 #include <kotono_core/Widget.h>
 
-#include <kotono_common/Path.h>
 class WAssetExplorerItem;
 class WHorizontalWrapList;
-class WBox;
-class WColor;
-class WOffset;
+
 class WAssetExplorer : public WWidget
 {
 	GENERATED_WASSETEXPLORER()
+
+private:
+	using AssetExplorerItem = UPtr<WAssetExplorerItem>;
 
 public:
 	WAssetExplorer();
@@ -19,9 +19,10 @@ protected:
 	WidgetPtr Build() override;
 
 public:
-	b8 OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) override;
+	auto OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) -> b8 override;
+	auto OnKeyboardKey(EKey key, EInputState inputState) -> b8 override;
 
-	void DeselectOthers(UPtr<WAssetExplorerItem> const& item) const;
+	void DeselectOthers(AssetExplorerItem const& item) const;
 
 private:
 	void Push(UPath const& path);
@@ -29,17 +30,13 @@ private:
 	void NavigatePrevious();
 	void NavigateNext();
 
-	auto MakeItems() -> USet<UPtr<WAssetExplorerItem>>;
+	auto MakeItems() -> USet<AssetExplorerItem>;
 	void UpdateItemList();
 
 private:
-	UPath path_;
+	UPath currentDirectory_;
 	std::vector<UPath> navigatedPaths_;
 	size currentPathIndex_;
 	UPtr<WHorizontalWrapList> itemList_;
-	USet<UPtr<WAssetExplorerItem>> assetExplorerItems_;
-
-	UPtr<WOffset> selectOffset_;
-	UPtr<WBox> selectBox_;
-	UPtr<WColor> selectColor_;
+	USet<AssetExplorerItem> assetExplorerItems_;
 };
