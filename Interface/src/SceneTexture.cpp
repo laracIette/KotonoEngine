@@ -6,7 +6,6 @@
 #include <kotono_graphics/Color.h>
 #include <kotono_graphics/InterfaceRenderGraph.h>
 #include <kotono_math/math_utils.h>
-#include <kotono_timing/Clock.h>
 
 WSceneTexture::WSceneTexture(UScene* scene)
 	: Base(scene)
@@ -25,7 +24,7 @@ void WSceneTexture::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGr
 		.proj = GetProjectionMatrix(),
 		.viewPos = viewPosition_,
 		.extent = GetSize(),
-		.time = SClock::Now(),
+		.time = GetScene()->GetNow(),
 		.fov = GetVerticalFOV(),
 		.aspectRatio = GetAspectRatio(),
 		.depthNear = GetDepthNear(),

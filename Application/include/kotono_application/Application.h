@@ -3,6 +3,7 @@
 #include <kotono_common/Average.h>
 #include <kotono_platform/Context.h>
 #include <kotono_platform/Device.h>
+#include <kotono_timing/Clock.h>
 #include <kotono_timing/Timer.h>
 #include <vector>
 class UMainWindowContext;
@@ -30,6 +31,7 @@ private:
 	UMainWindowContext* mainWindowContext_;
 	std::vector<USecondaryWindowContext*> secondaryWindowContexts_;
 
+	UClock clock_;
 	f32 now_;
 	UAverage<f32, 256> averageUpdateTime_;
 

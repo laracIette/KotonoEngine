@@ -6,7 +6,6 @@
 #include <kotono_common/log.h>
 #include <kotono_core/Interface.h>
 #include <kotono_graphics/SpvCompiler.h>
-#include <kotono_timing/Clock.h>
 
 #ifndef NDEBUG
 #include <kotono_core/Object.h>
@@ -17,8 +16,9 @@ UApplication::UApplication()
     , device_{ context_ }
     , mainWindowContext_{ nullptr }
     , secondaryWindowContexts_{}
+    , clock_{}
+    , now_{ 0.0f }
     , averageUpdateTime_{}
-    , now_{ SClock::Now() }
 {
 }
 
@@ -75,6 +75,8 @@ void UApplication::Init()
     logUPSTimer_.SetIsRepeat(true);
     logUPSTimer_.EventCompleted().AddListener(this, &UApplication::LogUPS);
     logUPSTimer_.Start();
+
+    clock_.Init();
 }
 
 void UApplication::Cleanup()
@@ -101,8 +103,10 @@ void UApplication::Cleanup()
 
 void UApplication::Update()
 {
-    f32 const now{ SClock::Now() };
-    f32 const deltaTime{ now - now_ };
+    clock_.Update();
+
+    auto const now{ clock_.Now<f32>() };
+    auto const deltaTime{ now - now_ };
     now_ = now;
 
     averageUpdateTime_.Add(deltaTime);
