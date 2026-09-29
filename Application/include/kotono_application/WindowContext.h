@@ -1,5 +1,6 @@
 #pragma once
 #include <kotono_common/types.h>
+#include <kotono_graphics/InterfaceRenderGraph.h>
 #include <kotono_input/Keyboard.h>
 #include <kotono_input/Mouse.h>
 #include <kotono_platform/Surface.h>
@@ -41,6 +42,7 @@ protected:
 	UKeyboard keyboard_;
 
 	UInterface* interface_;
+	UInterfaceRenderGraph interfaceRenderGraph_;
 };
 
 class UMainWindowContext final : public UWindowContext

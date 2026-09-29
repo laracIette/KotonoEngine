@@ -1,8 +1,6 @@
 #include "WindowContext.h"
 
 #include <kotono_core/Interface.h>
-#include <kotono_graphics/InterfaceRenderGraph.h>
-#include <kotono_graphics/SceneRenderGraph.h>
 
 #ifdef EDITOR
 #include <kotono_editor/MainWindow.h>
@@ -79,9 +77,9 @@ void UWindowContext::DrawFrame()
 		return;
 	}
 
-	UInterfaceRenderGraph interfaceRenderGraph{};
-	interface_->PopulateInterfaceRenderGraph(interfaceRenderGraph);
-	renderer_.DrawFrame(interfaceRenderGraph);
+	interfaceRenderGraph_.drawDatas.clear();
+	interface_->PopulateInterfaceRenderGraph(interfaceRenderGraph_);
+	renderer_.DrawFrame(interfaceRenderGraph_);
 }
 
 auto UWindowContext::GetShouldClose() const -> b8
