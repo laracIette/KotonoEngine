@@ -177,16 +177,16 @@ void WWidget::PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosit
 	}
 }
 
-b8 WWidget::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position)
+b8 WWidget::OnMouseButton(EButton button, EInputState inputState, EModifier modifier)
 {
 	if (!HasBuild() || !build_->GetIsDisplayed())
 	{
 		return INPUT_UNHANDLED;
 	}
 
-	if (build_->GetIsPointHovering(position))
+	if (build_->GetIsFocused())
 	{
-		return build_->OnMouseButton(button, inputState, position);
+		return build_->OnMouseButton(button, inputState, modifier);
 	}
 
 	return INPUT_UNHANDLED;
@@ -224,7 +224,7 @@ b8 WWidget::OnMouseScroll(glm::vec2 const& delta)
 	return INPUT_UNHANDLED;
 }
 
-b8 WWidget::OnKeyboardKey(EKey key, EInputState inputState)
+b8 WWidget::OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier)
 {
 	if (!HasBuild() || !build_->GetIsDisplayed())
 	{
@@ -233,7 +233,7 @@ b8 WWidget::OnKeyboardKey(EKey key, EInputState inputState)
 
 	if (build_->GetIsFocused())
 	{
-		return build_->OnKeyboardKey(key, inputState);
+		return build_->OnKeyboardKey(key, inputState, modifier);
 	}
 
 	return INPUT_UNHANDLED;

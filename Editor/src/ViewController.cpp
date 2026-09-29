@@ -21,7 +21,7 @@ WViewController::WViewController(UScene* scene)
 {
 }
 
-b8 WViewController::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position)
+b8 WViewController::OnMouseButton(EButton button, EInputState inputState, EModifier modifier)
 {
 	if (button != EButton::Left)
 	{
@@ -85,7 +85,7 @@ b8 WViewController::OnMouseScroll(glm::vec2 const& delta)
 	return INPUT_HANDLED;
 }
 
-b8 WViewController::OnKeyboardKey(EKey key, EInputState inputState)
+b8 WViewController::OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier)
 {
 	if (!isActive_)
 	{

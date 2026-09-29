@@ -19,8 +19,8 @@ protected:
 	WidgetPtr Build() override;
 
 public:
-	auto OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) -> b8 override;
-	auto OnKeyboardKey(EKey key, EInputState inputState) -> b8 override;
+	auto OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8 override;
+	auto OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) -> b8 override;
 
 	void DeselectOthers(AssetExplorerItem const& item) const;
 

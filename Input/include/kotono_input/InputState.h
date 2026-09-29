@@ -8,8 +8,6 @@ enum class EInputState : u8
 	Released,
 	/// Occurs every frame where the input is down.
 	Down,
-	/// Occurs every frame where the input is up.
-	Up
 };
 
-inline constexpr size InputStateCount{ 4 };
+inline constexpr size InputStateCount{ 3 };

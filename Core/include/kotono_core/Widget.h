@@ -14,6 +14,7 @@
 #include <kotono_input/Button.h>
 #include <kotono_input/InputState.h>
 #include <kotono_input/Key.h>
+#include <kotono_input/Modifier.h>
 #include <string>
 #include <vector>
 
@@ -81,11 +82,11 @@ public:
 	virtual void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const;
 	virtual void PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosition) const;
 
-	virtual auto OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) -> b8;
+	virtual auto OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8;
 	virtual auto OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> b8;
 	virtual auto OnMouseScroll(glm::vec2 const& delta) -> b8;
 
-	virtual auto OnKeyboardKey(EKey key, EInputState inputState) -> b8;
+	virtual auto OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) -> b8;
 
 	virtual void OnFocused();
 	virtual void OnUnfocused();

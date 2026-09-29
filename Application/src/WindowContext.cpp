@@ -26,11 +26,11 @@ void UWindowContext::InitInterface(UPtr<WInterfaceRoot> const& widget)
 {
 	window_.GetEventWindowResized().AddListener(this, &UWindowContext::OnWindowResized);
 
-	mouse_.GetEventButton().AddListener(interface_, &UInterface::OnMouseButton);
+	mouse_.GetEventButton().AddListener(this, &UWindowContext::OnMouseButton);
+	keyboard_.GetEventKey().AddListener(this, &UWindowContext::OnKeyboardKey);
+
 	mouse_.GetEventMove().AddListener(interface_, &UInterface::OnMouseMove);
 	mouse_.GetEventScroll().AddListener(interface_, &UInterface::OnMouseScroll);
-
-	keyboard_.GetEventKey().AddListener(interface_, &UInterface::OnKeyboardKey);
 
 	interface_->SetWidget(widget);
 	widget->SetInterface(interface_);
@@ -42,11 +42,11 @@ void UWindowContext::Cleanup()
 {
 	if (interface_)
 	{
-		mouse_.GetEventButton().RemoveListener(interface_, &UInterface::OnMouseButton);
+		mouse_.GetEventButton().RemoveListener(this, &UWindowContext::OnMouseButton);
+		keyboard_.GetEventKey().RemoveListener(this, &UWindowContext::OnKeyboardKey);
+
 		mouse_.GetEventMove().RemoveListener(interface_, &UInterface::OnMouseMove);
 		mouse_.GetEventScroll().RemoveListener(interface_, &UInterface::OnMouseScroll);
-
-		keyboard_.GetEventKey().RemoveListener(interface_, &UInterface::OnKeyboardKey);
 
 		interface_->EndDraw();
 		interface_->Cleanup();
@@ -93,6 +93,22 @@ void UWindowContext::OnWindowResized(glm::uvec2 const& extent) const
 	{
 		interface_->EndDraw();
 		interface_->BeginDraw(extent);
+	}
+}
+
+void UWindowContext::OnMouseButton(EButton button, EInputState inputState) const
+{
+	if (interface_)
+	{
+		interface_->OnMouseButton(button, inputState, keyboard_.GetModifier());
+	}
+}
+
+void UWindowContext::OnKeyboardKey(EKey key, EInputState inputState) const
+{
+	if (interface_)
+	{
+		interface_->OnKeyboardKey(key, inputState, keyboard_.GetModifier());
 	}
 }
 

@@ -1,6 +1,7 @@
 #include "Keyboard.h"
 
 #include <GLFW/glfw3.h>
+#include <kotono_common/enum_utils.h>
 #include <kotono_common/log.h>
 #include <kotono_platform/Window.h>
 
@@ -39,25 +40,50 @@ void UKeyboard::Cleanup()
     EventKey.RemoveListener(this, &UKeyboard::UpdateKey);
 }
 
+struct ModifierKeys
+{
+    EModifier modifier;
+    EKey primary, secondary;
+};
+
+static constexpr std::array MODIFIER_KEYS{
+    ModifierKeys{ EModifier::Shift,     EKey::LeftShift,      EKey::RightShift      },
+    ModifierKeys{ EModifier::Control,   EKey::LeftControl,    EKey::RightControl    },
+    ModifierKeys{ EModifier::Alt,       EKey::LeftAlt,        EKey::RightAlt        },
+    ModifierKeys{ EModifier::Super,     EKey::LeftSuper,      EKey::RightSuper      },
+    ModifierKeys{ EModifier::NumLock,   EKey::NumLock,        EKey::Unknown         },
+    ModifierKeys{ EModifier::CapsLock,  EKey::CapsLock,       EKey::Unknown         },
+};
+
 void UKeyboard::Update()
 {
+    modifier_ = EModifier::None;
+    for (auto const& [mod, k1, k2] : MODIFIER_KEYS)
+    {
+        if (GetIsKeyState(k1, EInputState::Down)
+         || (k2 != EKey::Unknown && GetIsKeyState(k2, EInputState::Down)))
+        {
+            modifier_ |= mod;
+        }
+    }
+
     for (size key{ 0 }; key < KeyCount; ++key)
     {
         for (size inputState{ 0 }; inputState < InputStateCount; ++inputState)
         {
-            if (keyStates_[key][inputState])
+            if (GetIsKeyState(key, inputState))
             {
                 eventKey_.Broadcast(static_cast<EKey>(key), static_cast<EInputState>(inputState));
             }
         }
 
-        if (keyStates_[key][std::to_underlying(EInputState::Pressed)])
+        if (GetIsKeyState(key, EInputState::Pressed))
         {
-            keyStates_[key][std::to_underlying(EInputState::Pressed)] = false;
+            SetIsKeyState(key, EInputState::Pressed, false);
         }
-        else if (keyStates_[key][std::to_underlying(EInputState::Released)])
+        else if (GetIsKeyState(key, EInputState::Released))
         {
-            keyStates_[key][std::to_underlying(EInputState::Released)] = false;
+            SetIsKeyState(key, EInputState::Released, false);
         }
     }
 }
@@ -69,40 +95,31 @@ void UKeyboard::UpdateKey(GLFWwindow* window, EKey key, i32 action)
         return;
     }
 
-    const size keyIndex{ std::to_underlying(key) };
-
     switch (action)
     {
     case GLFW_PRESS:
     {
 		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input", "GLFW_PRESS key {0}", std::to_underlying(key));
 
-        keyStates_[keyIndex][std::to_underlying(EInputState::Released)] = false;
-        keyStates_[keyIndex][std::to_underlying(EInputState::Up)] = false;
+        SetIsKeyState(key, EInputState::Released, false);
 
-        keyStates_[keyIndex][std::to_underlying(EInputState::Pressed)] = true;
-        keyStates_[keyIndex][std::to_underlying(EInputState::Down)] = true;
+        SetIsKeyState(key, EInputState::Pressed, true);
+        SetIsKeyState(key, EInputState::Down, true);
         break;
     }
     case GLFW_RELEASE:
     {
         KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input", "GLFW_RELEASE key {0}", std::to_underlying(key));
 
-        keyStates_[keyIndex][std::to_underlying(EInputState::Pressed)] = false;
-        keyStates_[keyIndex][std::to_underlying(EInputState::Down)] = false;
+        SetIsKeyState(key, EInputState::Pressed, false);
+        SetIsKeyState(key, EInputState::Down, false);
 
-        keyStates_[keyIndex][std::to_underlying(EInputState::Released)] = true;
-        keyStates_[keyIndex][std::to_underlying(EInputState::Up)] = true;
+        SetIsKeyState(key, EInputState::Released, true);
         break;
     }
     default:
         break;
     }
-}
-
-auto UKeyboard::GetKeyState(EKey key, EInputState inputState) const -> b8
-{
-    return keyStates_[std::to_underlying(key)][std::to_underlying(inputState)];
 }
 
 constexpr i32 keyToGLFWKey(EKey key)

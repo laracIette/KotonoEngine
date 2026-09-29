@@ -87,9 +87,9 @@ WidgetPtr WAssetExplorer::Build()
 	);
 }
 
-auto WAssetExplorer::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) -> b8
+auto WAssetExplorer::OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8
 {
-	if (Base::OnMouseButton(button, inputState, position))
+	if (Base::OnMouseButton(button, inputState, modifier))
 	{
 		return INPUT_HANDLED;
 	}
@@ -118,7 +118,7 @@ auto WAssetExplorer::OnMouseButton(EButton button, EInputState inputState, glm::
 	return INPUT_UNHANDLED;
 }
 
-auto WAssetExplorer::OnKeyboardKey(EKey key, EInputState inputState) -> b8
+auto WAssetExplorer::OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) -> b8
 {
 	if (!GetIsFocused())
 	{

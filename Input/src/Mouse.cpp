@@ -55,19 +55,19 @@ void UMouse::Update()
     {
         for (size inputState{ 0 }; inputState < InputStateCount; ++inputState)
         {
-            if (buttonStates_[button][inputState])
+            if (GetIsButtonState(button, inputState))
             {
-                eventButton_.Broadcast(static_cast<EButton>(button), static_cast<EInputState>(inputState), cursorPosition_);
+                eventButton_.Broadcast(static_cast<EButton>(button), static_cast<EInputState>(inputState));
             }
         }
 
-        if (buttonStates_[button][std::to_underlying(EInputState::Pressed)])
+        if (GetIsButtonState(button, EInputState::Pressed))
         {
-            buttonStates_[button][std::to_underlying(EInputState::Pressed)] = false;
+            SetIsButtonState(button, EInputState::Pressed, false);
         }
-        else if (buttonStates_[button][std::to_underlying(EInputState::Released)])
+        else if (GetIsButtonState(button, EInputState::Released))
         {
-            buttonStates_[button][std::to_underlying(EInputState::Released)] = false;
+            SetIsButtonState(button, EInputState::Released, false);
         }
     }
 
@@ -89,11 +89,6 @@ auto UMouse::GetCursorPositionDelta() const -> glm::vec2
     return cursorPosition_ - previousCursorPosition_;
 }
 
-bool UMouse::GetButtonState(EButton button, EInputState inputState) const
-{
-    return buttonStates_[std::to_underlying(button)][std::to_underlying(inputState)];
-}
-
 void UMouse::HideCursor() const
 {
     glfwSetInputMode(window_.GetGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -111,30 +106,26 @@ void UMouse::UpdateButton(GLFWwindow* window, EButton button, i32 action)
         return;
     }
 
-    const size buttonIndex{ std::to_underlying(button) };
-
     switch (action)
     {
     case GLFW_PRESS:
     {
         KT_LOG(KT_LOG_IMPORTANCE_LEVEL_MOUSE, "Input", "GLFW_PRESS button {0}", std::to_underlying(button));
 
-        buttonStates_[buttonIndex][std::to_underlying(EInputState::Released)] = false;
-        buttonStates_[buttonIndex][std::to_underlying(EInputState::Up)] = false;
+        SetIsButtonState(button, EInputState::Released, false);
 
-        buttonStates_[buttonIndex][std::to_underlying(EInputState::Pressed)] = true;
-        buttonStates_[buttonIndex][std::to_underlying(EInputState::Down)] = true;
+        SetIsButtonState(button, EInputState::Pressed, true);
+        SetIsButtonState(button, EInputState::Down, true);
         break;
     }
     case GLFW_RELEASE:
     {
         KT_LOG(KT_LOG_IMPORTANCE_LEVEL_MOUSE, "Input", "GLFW_RELEASE button {0}", std::to_underlying(button));
 
-        buttonStates_[buttonIndex][std::to_underlying(EInputState::Pressed)] = false;
-        buttonStates_[buttonIndex][std::to_underlying(EInputState::Down)] = false;
+        SetIsButtonState(button, EInputState::Pressed, false);
+        SetIsButtonState(button, EInputState::Down, false);
 
-        buttonStates_[buttonIndex][std::to_underlying(EInputState::Released)] = true;
-        buttonStates_[buttonIndex][std::to_underlying(EInputState::Up)] = true;
+        SetIsButtonState(button, EInputState::Released, true);
         break;
     }
     default:

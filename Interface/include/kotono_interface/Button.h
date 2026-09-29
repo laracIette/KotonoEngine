@@ -23,7 +23,7 @@ public:
 public:
 	WButton();
 
-	auto OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) -> b8 override;
+	auto OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8 override;
 	auto OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> b8 override;
 
 	void OnUnfocused() override;

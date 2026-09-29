@@ -1,11 +1,21 @@
 #pragma once
 #include <type_traits>
+#include <utility>
 
 template <typename T>
 concept ScopedEnum = std::is_scoped_enum_v<T>;
 
 template <typename T, typename TEnum>
 concept ConvertibleToUnderlying = std::is_same_v<T, TEnum> || std::convertible_to<T, std::underlying_type_t<TEnum>>;
+
+template <typename From, typename To>
+concept ConvertibleTo = std::is_same_v<From, To> || std::is_convertible_v<
+	std::conditional_t<std::is_scoped_enum_v<From>, 
+		std::underlying_type_t<From>, 
+		From
+	>, 
+	To
+>;
 
 template <ScopedEnum TEnum, ConvertibleToUnderlying<TEnum> TOther>
 constexpr TEnum operator&(TEnum left, TOther right) noexcept

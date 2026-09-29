@@ -37,7 +37,7 @@ WidgetPtr WInputTextBox::Build()
 	);
 }
 
-b8 WInputTextBox::OnKeyboardKey(EKey key, EInputState inputState)
+b8 WInputTextBox::OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier)
 {
 	if (!isSelected_)
 	{

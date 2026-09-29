@@ -22,6 +22,7 @@ set(KCOMMON_HEADERS
     "include/kotono_common/hash_utils.h"
     "include/kotono_common/log.h"
     "include/kotono_common/LogImportanceLevel.h"
+    "include/kotono_common/Matrix.h"
     "include/kotono_common/Notify.h"
     "include/kotono_common/Path.h"
     "include/kotono_common/PathManager.h"

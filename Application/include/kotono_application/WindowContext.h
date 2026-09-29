@@ -7,6 +7,7 @@
 #include <kotono_platform/Window.h>
 #include <kotono_rendering/Renderer.h>
 #include <string_view>
+
 template <typename T>
 class UPtr;
 class WWidget;
@@ -14,6 +15,7 @@ class WInterfaceRoot;
 class UContext;
 class UDevice;
 class UInterface;
+
 class UWindowContext
 {
 public:
@@ -33,6 +35,8 @@ public:
 
 private:
 	void OnWindowResized(glm::uvec2 const& extent) const;
+	void OnMouseButton(EButton button, EInputState inputState) const;
+	void OnKeyboardKey(EKey key, EInputState inputState) const;
 
 protected:
 	UWindow window_;

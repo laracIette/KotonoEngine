@@ -13,6 +13,7 @@ set(KINPUT_HEADERS
     "include/kotono_input/InputState.h"
     "include/kotono_input/Key.h"
     "include/kotono_input/Keyboard.h"
+    "include/kotono_input/Modifier.h"
     "include/kotono_input/Mouse.h"
 )
 set(KINPUT_SOURCES

@@ -62,11 +62,11 @@ void UInterface::EndDraw() const
 	}
 }
 
-void UInterface::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) const
+void UInterface::OnMouseButton(EButton button, EInputState inputState, EModifier modifier) const
 {
 	if (widget_)
 	{
-		widget_->OnMouseButton(button, inputState, position);
+		widget_->OnMouseButton(button, inputState, modifier);
 	}
 }
 
@@ -86,11 +86,11 @@ void UInterface::OnMouseScroll(glm::vec2 const& delta) const
 	}
 }
 
-void UInterface::OnKeyboardKey(EKey key, EInputState inputState) const
+void UInterface::OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) const
 {
 	if (widget_)
 	{
-		widget_->OnKeyboardKey(key, inputState);
+		widget_->OnKeyboardKey(key, inputState, modifier);
 	}
 }
 

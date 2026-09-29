@@ -23,7 +23,7 @@ WButton::WButton()
 {
 }
 
-auto WButton::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) -> b8
+auto WButton::OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8
 {
 	if (!isEnabled_)
 	{

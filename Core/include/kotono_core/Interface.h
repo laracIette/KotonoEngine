@@ -5,13 +5,16 @@
 #include <kotono_common/Set.h>
 #include <span>
 #include <vector>
+
 enum class EButton : u8;
 enum class EKey : u8;
 enum class EInputState : u8;
+enum class EModifier : u8;
 struct UInterfaceRenderGraph;
 struct USceneRenderGraph;
 class WInterfaceRoot;
 class WWidget;
+
 class UInterface final
 {
 public:
@@ -32,11 +35,11 @@ public:
 	void BeginDraw(glm::uvec2 const& bounds);
 	void EndDraw() const;
 
-	void OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) const;
+	void OnMouseButton(EButton button, EInputState inputState, EModifier modifier) const;
 	void OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) const;
 	void OnMouseScroll(glm::vec2 const& delta) const;
 
-	void OnKeyboardKey(EKey key, EInputState inputState) const;
+	void OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) const;
 	
 	void OpenWidgetInWindow(glm::uvec2 const& windowExtent, UPtr<WWidget> const& widget, std::string_view name);
 	void ClearPendingWindows();

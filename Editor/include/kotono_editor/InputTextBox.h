@@ -18,7 +18,7 @@ protected:
 	WidgetPtr Build() override;
 
 public:
-	b8 OnKeyboardKey(EKey key, EInputState inputState) override;
+	b8 OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) override;
 
 public:
 	std::string_view GetText() const;

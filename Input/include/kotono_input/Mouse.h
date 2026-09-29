@@ -1,18 +1,21 @@
 #pragma once
 #include "Button.h"
 #include "InputState.h"
-#include <array>
 #include <glm/ext/vector_float2.hpp>
+#include <kotono_common/enum_utils.h>
 #include <kotono_common/Event.h>
+#include <kotono_common/Matrix.h>
 #include <kotono_common/types.h>
+
 struct GLFWwindow;
 class UWindow;
+
 class UMouse final
 {
 public:
 	using EventMoveType = UEvent<glm::vec2, glm::vec2>;
 	using EventScrollType = UEvent<glm::vec2>;
-	using EventButtonType = UEvent<EButton, EInputState, glm::vec2>;
+	using EventButtonType = UEvent<EButton, EInputState>;
 
 public:
 	UMouse(UWindow& window);
@@ -23,8 +26,6 @@ public:
 	void Update();
 
 	auto GetCursorPositionDelta() const -> glm::vec2;
-
-	auto GetButtonState(EButton button, EInputState inputState) const -> b8;
 
 	void HideCursor() const;
 	void ShowCursor() const;
@@ -41,6 +42,18 @@ private:
 	void UpdateCursorPosition(GLFWwindow* window, glm::vec2 const& position);
 	void UpdateScrollDelta(GLFWwindow* window, glm::vec2 const& delta);
 
+	template <ConvertibleTo<size> TButton, ConvertibleTo<size> TInputState>
+	constexpr auto GetIsButtonState(TButton button, TInputState inputState) const noexcept -> b8
+	{
+		return buttonStates_[static_cast<size>(button), static_cast<size>(inputState)];
+	}
+	
+	template <ConvertibleTo<size> TButton, ConvertibleTo<size> TInputState>
+	constexpr void SetIsButtonState(TButton button, TInputState inputState, b8 value) noexcept
+	{
+		buttonStates_[static_cast<size>(button), static_cast<size>(inputState)] = value;
+	}
+
 private:
 	UWindow& window_;
 
@@ -52,5 +65,5 @@ private:
 	EventScrollType eventScroll_;
 	EventButtonType eventButton_;
 
-	std::array<std::array<b8, InputStateCount>, ButtonCount> buttonStates_;
+	UMatrix<b8, ButtonCount, InputStateCount> buttonStates_;
 };

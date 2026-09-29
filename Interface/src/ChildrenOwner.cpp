@@ -75,7 +75,7 @@ void WChildrenOwner::PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& curs
 	}
 }
 
-b8 WChildrenOwner::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position)
+b8 WChildrenOwner::OnMouseButton(EButton button, EInputState inputState, EModifier modifier)
 {
 	for (auto const& child : children_ | std::views::reverse)
 	{
@@ -84,12 +84,12 @@ b8 WChildrenOwner::OnMouseButton(EButton button, EInputState inputState, glm::ve
 			continue;
 		}
 
-		if (!child->GetIsPointHovering(position))
+		if (!child->GetIsFocused())
 		{
 			continue;
 		}
 
-		if (child->OnMouseButton(button, inputState, position) == INPUT_HANDLED)
+		if (child->OnMouseButton(button, inputState, modifier) == INPUT_HANDLED)
 		{
 			return INPUT_HANDLED;
 		}
@@ -144,7 +144,7 @@ b8 WChildrenOwner::OnMouseScroll(glm::vec2 const& delta)
 	return INPUT_UNHANDLED;
 }
 
-b8 WChildrenOwner::OnKeyboardKey(EKey key, EInputState inputState)
+b8 WChildrenOwner::OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier)
 {
 	for (auto const& child : children_ | std::views::reverse)
 	{
@@ -158,7 +158,7 @@ b8 WChildrenOwner::OnKeyboardKey(EKey key, EInputState inputState)
 			continue;
 		}
 
-		if (child->OnKeyboardKey(key, inputState) == INPUT_HANDLED)
+		if (child->OnKeyboardKey(key, inputState, modifier) == INPUT_HANDLED)
 		{
 			return INPUT_HANDLED;
 		}

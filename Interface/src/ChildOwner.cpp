@@ -79,16 +79,16 @@ void WChildOwner::PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorP
 	}
 }
 
-auto WChildOwner::OnMouseButton(EButton button, EInputState inputState, glm::vec2 const& position) -> b8
+auto WChildOwner::OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8
 {
 	if (!child_ || !child_->GetIsDisplayed())
 	{
 		return INPUT_UNHANDLED;
 	}
 
-	if (child_->GetIsPointHovering(position))
+	if (child_->GetIsFocused())
 	{
-		return child_->OnMouseButton(button, inputState, position);
+		return child_->OnMouseButton(button, inputState, modifier);
 	}
 
 	return INPUT_UNHANDLED;
@@ -124,7 +124,7 @@ auto WChildOwner::OnMouseScroll(glm::vec2 const& delta) -> b8
 	return INPUT_UNHANDLED;
 }
 
-auto WChildOwner::OnKeyboardKey(EKey key, EInputState inputState) -> b8
+auto WChildOwner::OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) -> b8
 {
 	if (!child_ || !child_->GetIsDisplayed())
 	{
@@ -133,7 +133,7 @@ auto WChildOwner::OnKeyboardKey(EKey key, EInputState inputState) -> b8
 
 	if (child_->GetIsFocused())
 	{
-		return child_->OnKeyboardKey(key, inputState);
+		return child_->OnKeyboardKey(key, inputState, modifier);
 	}
 
 	return INPUT_UNHANDLED;
