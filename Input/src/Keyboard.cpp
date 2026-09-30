@@ -1,16 +1,18 @@
 #include "Keyboard.h"
 
+#include <functional>
 #include <GLFW/glfw3.h>
 #include <kotono_common/enum_utils.h>
 #include <kotono_common/log.h>
 #include <kotono_platform/Window.h>
+#include <unordered_map>
 
 #define KT_LOG_IMPORTANCE_LEVEL_KEYBOARD ELogImportanceLevel::Low
 
-static UEvent<GLFWwindow*, EKey, i32> EventKey{};
+static std::unordered_map<GLFWwindow*, std::function<void(EKey, i32)>> KeyCallbacks{};
 
-constexpr i32 keyToGLFWKey(EKey key);
-constexpr EKey GLFWKeyToKey(i32 key);
+static constexpr i32 keyToGLFWKey(EKey key);
+static constexpr EKey GLFWKeyToKey(i32 key);
 
 static void key_callback_(GLFWwindow* window, i32 key, i32 scancode, i32 action, i32 mods)
 {
@@ -19,7 +21,12 @@ static void key_callback_(GLFWwindow* window, i32 key, i32 scancode, i32 action,
         return;
     }
 
-    EventKey.Broadcast(window, GLFWKeyToKey(key), action);
+    auto const it{ KeyCallbacks.find(window) };
+
+    if (it != KeyCallbacks.end() && it->second)
+    {
+        it->second(GLFWKeyToKey(key), action);
+    }
 }
 
 UKeyboard::UKeyboard(UWindow& window)
@@ -32,12 +39,12 @@ UKeyboard::UKeyboard(UWindow& window)
 void UKeyboard::Init()
 {
     glfwSetKeyCallback(window_.GetGLFWWindow(), key_callback_);
-    EventKey.AddListener(this, &UKeyboard::UpdateKey);
+    KeyCallbacks.try_emplace(window_.GetGLFWWindow(), [this](EKey key, i32 action) { UpdateKey(key, action); });
 }
 
 void UKeyboard::Cleanup()
 {
-    EventKey.RemoveListener(this, &UKeyboard::UpdateKey);
+    KeyCallbacks.erase(window_.GetGLFWWindow());
 }
 
 struct ModifierKeys
@@ -88,13 +95,8 @@ void UKeyboard::Update()
     }
 }
 
-void UKeyboard::UpdateKey(GLFWwindow* window, EKey key, i32 action)
+void UKeyboard::UpdateKey(EKey key, i32 action)
 {
-    if (window != window_.GetGLFWWindow())
-    {
-        return;
-    }
-
     switch (action)
     {
     case GLFW_PRESS:

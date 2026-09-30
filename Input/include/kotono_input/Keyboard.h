@@ -7,7 +7,6 @@
 #include <kotono_common/Matrix.h>
 #include <kotono_common/types.h>
 
-struct GLFWwindow;
 class UWindow;
 
 class UKeyboard final
@@ -27,7 +26,7 @@ public:
 	auto GetModifier() const -> EModifier { return modifier_; }
 
 private:
-	void UpdateKey(GLFWwindow* window, EKey key, i32 action);
+	void UpdateKey(EKey key, i32 action);
 	
 	template <ConvertibleTo<size> TKey, ConvertibleTo<size> TInputState>
 	constexpr auto GetIsKeyState(TKey key, TInputState inputState) const noexcept -> b8

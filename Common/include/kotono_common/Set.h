@@ -30,6 +30,12 @@ public:
 	{
 	}
 
+	USet(USet&& set) 
+		: values_(std::move(set.values_))
+		, indices_(std::move(set.indices_))
+	{
+	}
+
 	template <std::input_iterator It, std::sentinel_for<It> Sentinel>
 	USet(It begin, Sentinel end)
 		: values_(begin, end)
@@ -67,6 +73,13 @@ public:
 		return *this;
 	}
 
+	USet& operator=(USet&& set)
+	{
+		values_ = std::move(set.values_);
+		indices_ = std::move(set.indices_);
+		return *this;
+	}
+
 	template <typename T>
 		requires std::constructible_from<ValueType, T&&>
 	void Add(T&& value)
@@ -79,7 +92,7 @@ public:
 		values_.Add(std::forward<T>(value));
 
 		ValueType const& insertedValue{ values_.back() };
-		indices_[insertedValue] = values_.LastIndex();
+		indices_.try_emplace(insertedValue, values_.LastIndex());
 	}
 
 	auto Find(this auto&& self, ValueType const& value)
@@ -99,7 +112,7 @@ public:
 		if (values_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
 		{
 			ValueType const& movedValue{ values_[index] };
-			indices_[movedValue] = index;
+			indices_.insert_or_assign(movedValue, index);
 		}
 
 		indices_.erase(it);
@@ -118,7 +131,7 @@ public:
 		indices_.erase(it);
 
 		values_[index] = value;
-		indices_[value] = index;
+		indices_.insert_or_assign(value, index);
 	}
 
 	void Remove(ValueType const& value)
@@ -207,7 +220,7 @@ private:
 	{
 		for (auto const& [index, value] : values_ | std::views::enumerate)
 		{
-			indices_[value] = static_cast<IndexType>(index);
+			indices_.try_emplace(value, static_cast<IndexType>(index));
 		}
 	}
 

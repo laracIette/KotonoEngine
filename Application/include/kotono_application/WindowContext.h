@@ -28,7 +28,6 @@ public:
 	void Update(f32 deltaTime);
 	void DrawFrame();
 
-	// Executes glfwPollEvents() when returns false
 	auto GetShouldClose() const -> b8;
 
 	auto GetInterface() const -> UInterface* { return interface_; }

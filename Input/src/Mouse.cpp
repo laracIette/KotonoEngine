@@ -1,27 +1,45 @@
 #include "Mouse.h"
+
+#include <functional>
 #include <GLFW/glfw3.h>
 #include <kotono_common/log.h> 
 #include <kotono_platform/Window.h>
+#include <unordered_map>
 
 #define KT_LOG_IMPORTANCE_LEVEL_MOUSE ELogImportanceLevel::Low
 
-static UEvent<GLFWwindow*, EButton, i32> EventMouseButton{};
-static UEvent<GLFWwindow*, glm::vec2> EventCursorPosition{};
-static UEvent<GLFWwindow*, glm::vec2> EventScroll{};
+static std::unordered_map<GLFWwindow*, std::function<void(EButton, i32)>> ButtonCallbacks{};
+static std::unordered_map<GLFWwindow*, std::function<void(glm::vec2)>> CursorPositionCallbacks{};
+static std::unordered_map<GLFWwindow*, std::function<void(glm::vec2)>> ScrollCallbacks{};
 
 static void mousebutton_callback_(GLFWwindow* window, i32 button, i32 action, i32 mods)
-{
-    EventMouseButton.Broadcast(window, static_cast<EButton>(button), action);
+{   
+    auto const it{ ButtonCallbacks.find(window) };
+
+    if (it != ButtonCallbacks.end() && it->second)
+    {
+        it->second(static_cast<EButton>(button), action);
+    }
 }
 
 static void cursorpos_callback_(GLFWwindow* window, f64 xpos, f64 ypos)
 {
-    EventCursorPosition.Broadcast(window, glm::vec2{ xpos, ypos });
+    auto const it{ CursorPositionCallbacks.find(window) };
+
+    if (it != CursorPositionCallbacks.end() && it->second)
+    {
+        it->second(glm::vec2{ xpos, ypos });
+    }
 }
 
 static void scroll_callback_(GLFWwindow* window, f64 xoffset, f64 yoffset)
 {
-    EventScroll.Broadcast(window, glm::vec2{ xoffset, yoffset });
+    auto const it{ ScrollCallbacks.find(window) };
+
+    if (it != ScrollCallbacks.end() && it->second)
+    {
+        it->second(glm::vec2{ xoffset, yoffset });
+    }
 }
 
 UMouse::UMouse(UWindow& window)
@@ -36,17 +54,17 @@ void UMouse::Init()
     glfwSetMouseButtonCallback(window_.GetGLFWWindow(), mousebutton_callback_);
     glfwSetCursorPosCallback(window_.GetGLFWWindow(), cursorpos_callback_);
     glfwSetScrollCallback(window_.GetGLFWWindow(), scroll_callback_);
-
-    EventMouseButton.AddListener(this, &UMouse::UpdateButton);
-    EventCursorPosition.AddListener(this, &UMouse::UpdateCursorPosition);
-    EventScroll.AddListener(this, &UMouse::UpdateScrollDelta);
+    
+    ButtonCallbacks.try_emplace(window_.GetGLFWWindow(), [this](EButton button, i32 action) { UpdateButton(button, action); });
+    CursorPositionCallbacks.try_emplace(window_.GetGLFWWindow(), [this](glm::vec2 const& position) { UpdateCursorPosition(position); });
+    ScrollCallbacks.try_emplace(window_.GetGLFWWindow(), [this](glm::vec2 const& delta) { UpdateScrollDelta(delta); });
 }
 
 void UMouse::Cleanup()
 {
-    EventMouseButton.RemoveListener(this, &UMouse::UpdateButton);
-    EventCursorPosition.RemoveListener(this, &UMouse::UpdateCursorPosition);
-    EventScroll.RemoveListener(this, &UMouse::UpdateScrollDelta);
+    ButtonCallbacks.erase(window_.GetGLFWWindow());
+    CursorPositionCallbacks.erase(window_.GetGLFWWindow());
+    ScrollCallbacks.erase(window_.GetGLFWWindow());
 }
 
 void UMouse::Update()
@@ -99,13 +117,8 @@ void UMouse::ShowCursor() const
     glfwSetInputMode(window_.GetGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
-void UMouse::UpdateButton(GLFWwindow* window, EButton button, i32 action)
+void UMouse::UpdateButton(EButton button, i32 action)
 {
-    if (window != window_.GetGLFWWindow())
-    {
-        return;
-    }
-
     switch (action)
     {
     case GLFW_PRESS:
@@ -133,22 +146,12 @@ void UMouse::UpdateButton(GLFWwindow* window, EButton button, i32 action)
     }
 }
 
-void UMouse::UpdateCursorPosition(GLFWwindow* window, glm::vec2 const& position)
+void UMouse::UpdateCursorPosition(glm::vec2 const& position)
 {
-    if (window != window_.GetGLFWWindow())
-    {
-        return;
-    }
-
     cursorPosition_ = position;
 }
 
-void UMouse::UpdateScrollDelta(GLFWwindow* window, glm::vec2 const& delta)
+void UMouse::UpdateScrollDelta(glm::vec2 const& delta)
 {
-    if (window != window_.GetGLFWWindow())
-    {
-        return;
-    }
-
     scrollDelta_ += delta;
 }

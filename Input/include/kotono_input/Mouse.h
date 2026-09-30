@@ -7,7 +7,6 @@
 #include <kotono_common/Matrix.h>
 #include <kotono_common/types.h>
 
-struct GLFWwindow;
 class UWindow;
 
 class UMouse final
@@ -38,9 +37,9 @@ public:
 	auto GetEventButton() -> EventButtonType& { return eventButton_; }
 
 private:
-	void UpdateButton(GLFWwindow* window, EButton button, i32 action);
-	void UpdateCursorPosition(GLFWwindow* window, glm::vec2 const& position);
-	void UpdateScrollDelta(GLFWwindow* window, glm::vec2 const& delta);
+	void UpdateButton(EButton button, i32 action);
+	void UpdateCursorPosition(glm::vec2 const& position);
+	void UpdateScrollDelta(glm::vec2 const& delta);
 
 	template <ConvertibleTo<size> TButton, ConvertibleTo<size> TInputState>
 	constexpr auto GetIsButtonState(TButton button, TInputState inputState) const noexcept -> b8

@@ -1,16 +1,22 @@
 #include "Window.h"
 
+#include <functional>
 #include <GLFW/glfw3.h>
 #include <glm/vector_relational.hpp>
 #include <kotono_common/log.h>
 #include <stdexcept>
+#include <unordered_map>
 
-static UEvent<GLFWwindow*, glm::uvec2> EventFramebufferSizeChanged{};
+static std::unordered_map<GLFWwindow*, std::function<void(glm::uvec2)>> FramebufferSizeChangedCallbacks{};
 
 static void framebuffersize_callback_(GLFWwindow* window, i32 width, i32 height)
-{
-    glm::uvec2 const size{ width, height };
-    EventFramebufferSizeChanged.Broadcast(window, size);
+{        
+    auto const it{ FramebufferSizeChangedCallbacks.find(window) };
+
+    if (it != FramebufferSizeChangedCallbacks.end() && it->second)
+    {
+        it->second(glm::uvec2{ width, height });
+    }
 
     KT_LOG(ELogImportanceLevel::High, "Platform", "window resized: {0} x {0}", width, height);
 }
@@ -32,13 +38,15 @@ void UWindow::Init(glm::uvec2 const& extent, std::string_view name)
     }
 
     glfwSetFramebufferSizeCallback(window_, framebuffersize_callback_);
-    EventFramebufferSizeChanged.AddListener(this, &UWindow::OnFramebufferSizeChanged);
+    FramebufferSizeChangedCallbacks.try_emplace(window_, [this](glm::uvec2 const& size) { OnFramebufferSizeChanged(size); });
 
     glfwShowWindow(window_);
 }
 
 void UWindow::Cleanup() const
 {
+    FramebufferSizeChangedCallbacks.erase(window_);
+
     glfwDestroyWindow(window_);
 }
 
@@ -47,13 +55,8 @@ auto UWindow::GetShouldClose() const -> b8
     return glfwWindowShouldClose(window_);
 }
 
-void UWindow::OnFramebufferSizeChanged(GLFWwindow* window, glm::uvec2 const& size)
+void UWindow::OnFramebufferSizeChanged(glm::uvec2 const& size)
 {
-    if (window != window_)
-    {
-        return;
-    }
-
     if (glm::any(glm::equal(size, glm::uvec2{ 0, 0 })))
     {
         isMinimized_ = true;

@@ -19,7 +19,7 @@ public:
 	auto GetIsMinimized() const -> b8 { return isMinimized_; }
 
 private:
-	void OnFramebufferSizeChanged(GLFWwindow* window, glm::uvec2 const& size);
+	void OnFramebufferSizeChanged(glm::uvec2 const& size);
 
 private:
 	GLFWwindow* window_;
