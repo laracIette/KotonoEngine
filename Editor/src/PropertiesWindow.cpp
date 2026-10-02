@@ -8,36 +8,33 @@
 WidgetPtr WPropertiesWindow::Build()
 {
     return (
-        UCreate<WWrap>{}()
+        UCreate<WStack>{}()
         | (
-            UCreate<WStack>{}()
+            UCreate<WColor>{}()
+            | Apply(&WColor::SetColor, Colors::Black.WithValue(0.05f))
+        )
+        | (
+            UCreate<WPadding>{}()
+            | Apply(&WPadding::SetPadding, UPadding::All(8.0f))
             | (
-                UCreate<WColor>{}()
-                | Apply(&WColor::SetColor, Colors::Black.WithValue(0.05f))
-            )
-            | (
-                UCreate<WPadding>{}()
-                | Apply(&WPadding::SetPadding, UPadding::All(8.0f))
+                mainList_ = UCreate<WList>{}()
+                | Apply(&WList::SetSpacing, 10.0f)
                 | (
-                    mainList_ = UCreate<WList>{}()
-                    | Apply(&WList::SetSpacing, 10.0f)
+                    UCreate<WWrap>{}()
                     | (
-                        UCreate<WWrap>{}()
+                        UCreate<WStack>{}()
                         | (
-                            UCreate<WStack>{}()
-                            | (
-                                UCreate<WColor>{}()
-                                | Apply(&WColor::SetColor, Colors::Black.WithValue(0.05f))
-                            )
-                            | (
-                                UCreate<WText>{}()
-                                | Apply(&WText::SetText, "Properties")
-                            )
+                            UCreate<WColor>{}()
+                            | Apply(&WColor::SetColor, Colors::Black.WithValue(0.05f))
+                        )
+                        | (
+                            UCreate<WText>{}()
+                            | Apply(&WText::SetText, "Properties")
                         )
                     )
-                    | (
-                        objectProperties_ = UCreate<WObjectProperties>{}(GetScene()->GetSelectedObject())
-                    )
+                )
+                | (
+                    objectProperties_ = UCreate<WObjectProperties>{}(GetScene()->GetSelectedObject())
                 )
             )
         )
@@ -62,21 +59,15 @@ void WPropertiesWindow::OnSelectedObjectChanged(UPtr<TSceneObject> const& sceneO
 {
     if (mainList_)
     {
-        auto children{ mainList_->GetChildren() };
-        if (objectProperties_)
-        {
-            children.Remove(objectProperties_);
-        }
+        UPtr const newObjectProperties{ UCreate<WObjectProperties>{}(sceneObject) };
 
-        UPtr newObjectProperties{ UCreate<WObjectProperties>{}(sceneObject) };
-        children.Add(newObjectProperties);
-
-        mainList_->SetChildren(children);
+        mainList_->ReplaceChild(objectProperties_, newObjectProperties);
 
         if (objectProperties_)
         {
             objectProperties_->Delete();
         }
+
         objectProperties_ = newObjectProperties;
     }
 }

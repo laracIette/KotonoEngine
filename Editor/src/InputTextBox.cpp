@@ -8,7 +8,6 @@ WInputTextBox::WInputTextBox()
 	, onTextChanged_{}
 	, actuationTime_{ 0.5f }
 	, repeatTime_{ 0.05f }
-	, isSelected_{ false }
 	, currentWriteCharacter_{ 0 }
 {
 }
@@ -19,19 +18,14 @@ WidgetPtr WInputTextBox::Build()
 		UCreate<WStack>{}()
 		| (
 			UCreate<WColor>{}()
-			| Apply(&WColor::SetColor, isSelected_ ? Colors::White.WithAlpha(0.15f) : Colors::White.WithAlpha(0.05f))
-		)
-		| (
-			UCreate<WButton>{}()
-			| Apply(&WButton::SetOnClicked, [this]() { SetState([this]() { isSelected_ = true; }); })
+			| Apply(&WColor::SetColor, [this]() { return GetIsFocused() ? Colors::White.WithAlpha(0.15f) : Colors::White.WithAlpha(0.05f); })
 		)
 		| (
 			UCreate<WPadding>{}()
 			| Apply(&WPadding::SetPadding, UPadding::All(4.0f))
 			| (
 				UCreate<WText>{}()
-				| Apply(&WText::SetText, text_)
-				| Apply(&WText::SetFontSize, glm::vec2{ 15.0f, 18.0f })
+				| Apply(&WText::SetText, [this]() { return valueToString_ ? valueToString_() : ""; })
 			)
 		)
 	);
@@ -39,11 +33,6 @@ WidgetPtr WInputTextBox::Build()
 
 b8 WInputTextBox::OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier)
 {
-	if (!isSelected_)
-	{
-		return INPUT_UNHANDLED;
-	}
-
 	if (key == EKey::Backspace)
 	{
 		switch (inputState)
@@ -129,36 +118,6 @@ b8 WInputTextBox::OnKeyboardKey(EKey key, EInputState inputState, EModifier modi
 	}
 
 	return INPUT_UNHANDLED;
-}
-
-std::string_view WInputTextBox::GetText() const
-{
-	return text_;
-}
-
-WInputTextBox::TextChangedFunction const& WInputTextBox::GetOnTextChanged() const
-{
-	return onTextChanged_;
-}
-
-f32 WInputTextBox::GetActuationTime() const
-{
-	return actuationTime_;
-}
-
-f32 WInputTextBox::GetRepeatTime() const
-{
-	return repeatTime_;
-}
-
-void WInputTextBox::SetText(std::string_view text)
-{
-	text_ = text;
-}
-
-void WInputTextBox::SetOnTextChanged(TextChangedFunction const& onTextChanged)
-{
-	onTextChanged_ = onTextChanged;
 }
 
 void WInputTextBox::SetActuationTime(f32 actuationTime)

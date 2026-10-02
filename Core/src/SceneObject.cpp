@@ -4,7 +4,11 @@
 #include "SceneComponent.h"
 #include <kotono_common/log.h>
 
-TSceneObject::TSceneObject()
+TSceneObject::TSceneObject() 
+	: isInit_{ false }
+	, scene_{ nullptr }
+	, canUpdate_{ false }
+	, dummy_{ 0 }
 {
 }
 
@@ -17,7 +21,7 @@ TSceneObject::~TSceneObject()
 
 	for (i64 i{ sceneComponents_.LastIndex() }; sceneComponents_.IsValidIndex(i); --i)
 	{
-		if (UPtr sceneComponent{ sceneComponents_[i] })
+		if (UPtr const sceneComponent{ sceneComponents_[i] })
 		{
 			sceneComponent->Delete();
 		}
@@ -75,7 +79,7 @@ void TSceneObject::SetParent(UPtr<TSceneObject> const& parent, ECoordinateSpace 
 		parent_->children_.Add(Ptr());
 	}
 
-	if (UPtr rootComponent{ GetRootComponent() })
+	if (UPtr const rootComponent{ GetRootComponent() })
 	{
 		rootComponent->SetParent(parent_ ? parent_->GetRootComponent() : nullptr, keepTransform);
 	}
@@ -118,7 +122,7 @@ void TSceneObject::RemoveComponent(UPtr<KSceneComponent> const& component)
 
 	sceneComponents_.Remove(component);
 
-	for (auto& sceneComponent : sceneComponents_)
+	for (auto const& sceneComponent : sceneComponents_)
 	{
 		if (sceneComponent->GetParent() == component)
 		{
@@ -131,7 +135,7 @@ void TSceneObject::Deserialize()
 {
 	Base::Deserialize();
 
-	for (auto& sceneComponent : sceneComponents_)
+	for (auto const& sceneComponent : sceneComponents_)
 	{
 		if (sceneComponent)
 		{
@@ -139,7 +143,7 @@ void TSceneObject::Deserialize()
 		}
 	}
 
-	for (auto& sceneObject : children_)
+	for (auto const& sceneObject : children_)
 	{
 		if (sceneObject)
 		{
@@ -183,7 +187,7 @@ void TSceneObject::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESce
 
 void TSceneObject::InitSceneComponents()
 {
-	for (auto& sceneComponent : sceneComponents_)
+	for (auto const& sceneComponent : sceneComponents_)
 	{
 		if (sceneComponent && !sceneComponent->isInit_)
 		{
@@ -195,7 +199,7 @@ void TSceneObject::InitSceneComponents()
 
 void TSceneObject::UpdateSceneComponents(f32 deltaTime)
 {
-	for (auto& sceneComponent : sceneComponents_)
+	for (auto const& sceneComponent : sceneComponents_)
 	{
 		if (sceneComponent->GetCanUpdate())
 		{

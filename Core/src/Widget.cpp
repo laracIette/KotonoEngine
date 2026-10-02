@@ -17,14 +17,18 @@ static EFlex getUpdatedFlex(glm::vec2 const& left, glm::vec2 const& right) noexc
 	return EFlex::Vertical;
 }
 
+static auto isVisible(UWidgetDisplaySettings const& displaySettings) -> b8
+{
+	return is_overlapping(displaySettings.position, displaySettings.bounds, displaySettings.scissor.offset, displaySettings.scissor.extent);
+}
+
 WWidget::WWidget() 
-	: build_{}
+	: build_{ nullptr }
 	, isDirty_{ true }
-	, parent_{ nullptr }
 	, isVisible_{ true }
-	, slotDisplaySettings_{}
-	, contentSize_{}
+	, parent_{ nullptr }
 	, isDisplayed_{ false }
+	, isFocused_{ false }
 	, expandWeight_{ 1.0f, 1.0f }
 {
 }
@@ -70,7 +74,7 @@ void WWidget::Display(UWidgetDisplaySettings const& displaySettings)
 		build_->Display(displaySettings);
 	}
 	// If build_ is this, call DisplayInternal
-	else if (IsVisible(displaySettings))
+	else if (isVisible(displaySettings))
 	{
 		DisplayInternal(displaySettings);
 	}
@@ -104,7 +108,7 @@ void WWidget::Disown(WidgetPtr const& widget)
 	});
 }
 
-glm::vec2 WWidget::GetContentSize(glm::vec2 const& bounds) const
+auto WWidget::GetContentSize(glm::vec2 const& bounds) const -> glm::vec2
 {
 	if (HasBuild())
 	{
@@ -114,25 +118,7 @@ glm::vec2 WWidget::GetContentSize(glm::vec2 const& bounds) const
 	return bounds;
 }
 
-EExpand WWidget::GetExpand() const
-{
-	if (HasBuild())
-	{
-		return build_->GetExpand();
-	}
-	return EExpand::All;
-}
-
-EFlex WWidget::GetFlex() const
-{
-	if (HasBuild())
-	{
-		return build_->GetFlex();
-	}
-	return EFlex::All;
-}
-
-glm::vec2 WWidget::GetDesiredSize(glm::vec2 const& bounds) const
+auto WWidget::GetDesiredSize(glm::vec2 const& bounds) const -> glm::vec2
 {
 	if (HasBuild())
 	{
@@ -141,7 +127,25 @@ glm::vec2 WWidget::GetDesiredSize(glm::vec2 const& bounds) const
 	return { 0.0f, 0.0f };
 }
 
-std::string WWidget::GetClassPath() const
+auto WWidget::GetExpand() const -> EExpand
+{
+	if (HasBuild())
+	{
+		return build_->GetExpand();
+	}
+	return EExpand::All;
+}
+
+auto WWidget::GetFlex() const -> EFlex
+{
+	if (HasBuild())
+	{
+		return build_->GetFlex();
+	}
+	return EFlex::All;
+}
+
+auto WWidget::GetClassPath() const -> std::string
 {
 	if (parent_)
 	{
@@ -177,7 +181,7 @@ void WWidget::PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosit
 	}
 }
 
-b8 WWidget::OnMouseButton(EButton button, EInputState inputState, EModifier modifier)
+auto WWidget::OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8
 {
 	if (!HasBuild() || !build_->GetIsDisplayed())
 	{
@@ -192,7 +196,7 @@ b8 WWidget::OnMouseButton(EButton button, EInputState inputState, EModifier modi
 	return INPUT_UNHANDLED;
 }
 
-b8 WWidget::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
+auto WWidget::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> b8
 {
 	KT_LOG(ELogImportanceLevel::Medium, "Core", "overlapping {0:30} | {1:100} | | position: {2:30} | size: {3:30} | | slot | position: {4:30} | bounds: {5:30}", GetName(), GetClassPath(), glm::to_string(GetPosition()), glm::to_string(GetSize()), glm::to_string(slotDisplaySettings_.position), glm::to_string(slotDisplaySettings_.bounds));
 	
@@ -209,7 +213,7 @@ b8 WWidget::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
 	return INPUT_UNHANDLED;
 }
 
-b8 WWidget::OnMouseScroll(glm::vec2 const& delta)
+auto WWidget::OnMouseScroll(glm::vec2 const& delta) -> b8
 {
 	if (!HasBuild() || !build_->GetIsDisplayed())
 	{
@@ -224,7 +228,7 @@ b8 WWidget::OnMouseScroll(glm::vec2 const& delta)
 	return INPUT_UNHANDLED;
 }
 
-b8 WWidget::OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier)
+auto WWidget::OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) -> b8
 {
 	if (!HasBuild() || !build_->GetIsDisplayed())
 	{
@@ -249,7 +253,7 @@ void WWidget::OnUnfocused()
 	isFocused_ = false;
 }
 
-b8 WWidget::GetShouldRefresh() const
+auto WWidget::GetShouldRefresh() const -> b8
 {
 	return isDirty_ || !GetCanCache();
 }
@@ -315,11 +319,6 @@ bool WWidget::HasBuild() const
 	return build_ && build_ != Ptr();
 }
 
-bool WWidget::IsVisible(UWidgetDisplaySettings const& displaySettings) const
-{
-	return is_overlapping(displaySettings.position, displaySettings.bounds, displaySettings.scissor.offset, displaySettings.scissor.extent);
-}
-
 void WWidget::MarkDirty()
 {
 	isDirty_ = true;
@@ -335,24 +334,24 @@ void WWidget::MarkDirty()
 	}
 }
 
-glm::mat4 WWidget::TranslationMatrix() const
+auto WWidget::TranslationMatrix() const -> glm::mat4
 {
 	glm::vec2 const bounds{ GetInterface()->GetBounds() };
 	return glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(GetPosition() + GetSize() / 2.0f, bounds), 0.0f });
 }
 
-glm::mat4 WWidget::RotationMatrix() const
+auto WWidget::RotationMatrix() -> glm::mat4
 {
 	return glm::rotate(glm::identity<glm::mat4>(), 0.0f, -WorldForwardVector);
 }
 
-glm::mat4 WWidget::ScaleMatrix() const
+auto WWidget::ScaleMatrix() const -> glm::mat4
 {
 	glm::vec2 const bounds{ GetInterface()->GetBounds() };
 	return glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(GetSize(), bounds), 1.0f });
 }
 
-glm::mat4 WWidget::ModelMatrix() const
+auto WWidget::ModelMatrix() const -> glm::mat4
 {
 	return TranslationMatrix() * RotationMatrix() * ScaleMatrix();
 }

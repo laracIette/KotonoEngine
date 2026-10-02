@@ -52,4 +52,6 @@ private:
 	ReadonlyProperty(UPtr<TSceneObject>, parent_, Parent);
 	SERIALIZE USet<UPtr<KSceneComponent>> sceneComponents_;
 	SERIALIZE USet<UPtr<TSceneObject>> children_;
+
+	SERIALIZE f32 dummy_;
 };

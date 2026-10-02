@@ -1,6 +1,6 @@
 #include "Object.h"
+
 #include "ObjectFactory.h"
-#include <kotono_common/Path.h>
 #include <kotono_io/Serializer.h>
 #include <nlohmann/json.hpp>
 
@@ -64,6 +64,11 @@ nlohmann::json KObject::WriteJson() const
 void KObject::Delete()
 {
     delete this;
+}
+
+auto KObject::GetMemberVariablePointer(size offset) const -> void*
+{
+    return reinterpret_cast<void*>(reinterpret_cast<std::uintptr_t>(this) + offset);
 }
 
 void KObject::Serialize() const

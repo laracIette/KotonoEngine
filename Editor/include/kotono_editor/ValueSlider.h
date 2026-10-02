@@ -1,16 +1,48 @@
 #pragma once
 #include "generated/ValueSlider.generated.h"
-#include "ValueBox.h"
-class WValueSlider : public WValueBox
+#include <kotono_core/Widget.h>
+
+#include <kotono_common/conversion_utils.h>
+
+class WValueSlider : public WWidget
 {
 	GENERATED_WVALUESLIDER()
 
 public:
-	void Display(UWidgetDisplaySettings const& displaySettings) override;
-	void Remove() override;
+	using ValueToStringFunc = std::function<std::string()>;
+	using TextChangedCallback = std::function<void(std::string_view)>;
+	using SlideCallback = std::function<void(f32)>;
 
 protected:
-	virtual std::string Clamp(const std::string& value) const;
-	virtual std::string Increment(const std::string& value) const;
-	virtual std::string Decrement(const std::string& value) const;
+	WidgetPtr Build() override;
+	
+private:
+	WritableProperty(ValueToStringFunc, valueToString_, ValueToString);
+	WritableProperty(TextChangedCallback, onTextChanged_, OnTextChanged);
+	WritableProperty(SlideCallback, onSlide_, OnSlide);
+
+public:
+	template <std::floating_point T>
+	static auto FromPointer(T* value) -> WidgetPtr
+	{
+		assert(value != nullptr);
+		return (
+			UCreate<WValueSlider>{}()
+			| Apply(&WValueSlider::SetValueToString, [value]() { return to_string<T>(*value); })
+			| Apply(&WValueSlider::SetOnTextChanged, [value](std::string_view text) { *value = from_string<T>(text); })
+			| Apply(&WValueSlider::SetOnSlide, [value](f32 delta){ *value += delta * std::max(0.01f, std::abs(*value * 0.01f)); })
+		);
+	}
+
+	template <std::integral T>
+	static auto FromPointer(T* value) -> WidgetPtr
+	{
+		assert(value != nullptr);
+		return (
+			UCreate<WValueSlider>{}()
+			| Apply(&WValueSlider::SetValueToString, [value]() { return to_string(*value); })
+			| Apply(&WValueSlider::SetOnTextChanged, [value](std::string_view text) { *value = from_string<T>(text); })
+			| Apply(&WValueSlider::SetOnSlide, [value](f32 delta) { *value += delta; })
+		);
+	}
 };

@@ -1,5 +1,6 @@
 #pragma once
 #include <charconv>
+#include <concepts>
 #include <format>
 #include <ranges>
 #include <string_view>
@@ -22,4 +23,10 @@ template <typename T>
 static std::string to_string(T&& v)
 {
 	return std::format("{0}", std::forward<T>(v));
+}
+
+template <std::floating_point T>
+static std::string to_string(T v)
+{
+	return std::format("{0:f}", v);
 }

@@ -27,7 +27,7 @@ using WidgetSet = USet<WidgetPtr>;
 using WidgetVector = std::vector<WidgetPtr>;
 
 #define StateSetter(Type, Variable, SetterName) \
-	void Set##SetterName(const Type& value) noexcept { SetState([this, value]() { Variable = value; }); }
+	void Set##SetterName(const Type& value) { SetState([this, value]() { Variable = value; }); }
 
 #define StateProperty(Type, Name, PropertyName, ...) private:	\
 	Type Name;													\
@@ -114,11 +114,10 @@ protected:
 private:
 	void CacheBuild();
 	auto HasBuild() const -> b8;
-	auto IsVisible(UWidgetDisplaySettings const& displaySettings) const -> b8;
 	void MarkDirty();
 
 	auto TranslationMatrix() const -> glm::mat4;
-	auto RotationMatrix() const -> glm::mat4;
+	static auto RotationMatrix() -> glm::mat4;
 	auto ScaleMatrix() const -> glm::mat4;
 	auto ModelMatrix() const -> glm::mat4;
 

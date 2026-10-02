@@ -9,7 +9,8 @@ class WInputTextBox : public WWidget
 {
 	GENERATED_WINPUTTEXTBOX()
 
-	using TextChangedFunction = std::function<void(std::string const&)>;
+	using TextChangedCallback = std::function<void(std::string_view)>;
+	using ValueToStringFunc = std::function<std::string()>;
 
 public:
 	WInputTextBox();
@@ -21,23 +22,18 @@ public:
 	b8 OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) override;
 
 public:
-	std::string_view GetText() const;
-	TextChangedFunction const& GetOnTextChanged() const;
-	f32 GetActuationTime() const;
-	f32 GetRepeatTime() const;
-
-	void SetText(std::string_view text);
-	void SetOnTextChanged(TextChangedFunction const& onTextChanged);
 	void SetActuationTime(f32 actuationTime);
 	void SetRepeatTime(f32 repeatTime);
 
 private:
 	std::string text_;
-	TextChangedFunction onTextChanged_;
-	f32 actuationTime_;
-	f32 repeatTime_;
 
-	b8 isSelected_;
+	WritableProperty(TextChangedCallback, onTextChanged_, OnTextChanged);
+	WritableProperty(ValueToStringFunc, valueToString_, ValueToString);
+
+	ReadonlyProperty(f32, actuationTime_, ActuationTime, Value);
+	ReadonlyProperty(f32, repeatTime_, RepeatTime, Value);
+
 	UInputHoldAction holdAction_;
 	char currentWriteCharacter_;
 };

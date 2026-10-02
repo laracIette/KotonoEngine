@@ -31,7 +31,6 @@ set(KEDITOR_HEADERS
     "include/kotono_editor/UpdateTimeText.h"
     "include/kotono_editor/ValueBox.h"
     "include/kotono_editor/ValueSlider.h"
-    "include/kotono_editor/ValueSliderFloat.h"
     "include/kotono_editor/ViewController.h"
 )
 set(KEDITOR_SOURCES
@@ -58,7 +57,6 @@ set(KEDITOR_SOURCES
     "src/UpdateTimeText.cpp"
     "src/ValueBox.cpp"
     "src/ValueSlider.cpp"
-    "src/ValueSliderFloat.cpp"
     "src/ViewController.cpp"
 )
 

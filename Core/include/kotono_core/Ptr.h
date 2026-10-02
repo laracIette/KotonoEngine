@@ -73,7 +73,7 @@ public:
 		TryDecrementCount();
 	}
 
-	constexpr void Invalidate() noexcept
+	constexpr void Invalidate() const noexcept
 	{
 		if (data_)
 		{

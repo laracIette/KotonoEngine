@@ -6,13 +6,9 @@
 WidgetPtr WValueBox::Build()
 {
 	return (
-		UCreate<WWrap>{}()
-		| Apply(&WWrap::SetAxis, EAxis::Vertical)
-		| (
-			UCreate<WInputTextBox>{}()
-			| Apply(&WInputTextBox::SetText, valueToString_ ? valueToString_() : "")
-			| Apply(&WInputTextBox::SetOnTextChanged, stringToValue_)
-		)
+		UCreate<WInputTextBox>{}()
+		| Apply(&WInputTextBox::SetValueToString, [this]() { return valueToString_ ? valueToString_() : ""; })
+		| Apply(&WInputTextBox::SetOnTextChanged, [this](std::string_view text) { if (onTextChanged_) onTextChanged_(text); })
 	);
 }
 

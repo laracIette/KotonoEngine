@@ -5,6 +5,7 @@
 #include "ObjectFactory.h"
 #include "Ptr.h"
 #include "VariableInfo.h"
+#include <cassert>
 #include <concepts>
 #include <functional>
 #include <kotono_common/Event.h>
@@ -82,6 +83,8 @@ public:
 	/// Cleanup and delete the object immediately
 	void Delete();
 
+	auto GetMemberVariablePointer(size offset) const -> void*;
+
 	/// Serialize and write to the object's path
 	virtual void Serialize() const;
 	/// Read from the object's path and deserialize
@@ -138,6 +141,7 @@ template <std::derived_from<KObject> T, typename MemFn, typename... Args>
 		&& (std::is_invocable_v<MemFn, T*, Args...> || std::is_invocable_v<MemFn, T*>)
 UPtr<T> const& operator|(UPtr<T> const& object, _MemberAction<MemFn, Args...> const& action)
 {
+	assert(object != nullptr);
 	action.Apply(object.Get());
 	return object;
 }

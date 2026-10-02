@@ -40,7 +40,7 @@ private:
 };
 
 template <typename T>
-concept ChildrenOwner = requires(T & widget, WidgetSet const& children, WidgetPtr const& child)
+concept ChildrenOwner = requires(T& widget, WidgetSet const& children, WidgetPtr const& child)
 {
 	{ widget.GetChildren() } -> std::convertible_to<WidgetSet>;
 	widget.SetChildren(children);

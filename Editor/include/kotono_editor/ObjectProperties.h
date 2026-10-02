@@ -12,8 +12,5 @@ protected:
 	WidgetPtr Build() override;
 
 private:
-	WidgetPtr BuildMemberWidget(std::string_view type, void* variablePtr);
-
-private:
 	ObjectPtr object_;
 };

@@ -1,18 +1,33 @@
 #pragma once
 #include "generated/ValueBox.generated.h"
 #include <kotono_core/Widget.h>
+
+template <typename T>
+concept StringCompatible = std::convertible_to<const T&, std::string> && std::assignable_from<T&, std::string_view>;
+
 class WValueBox : public WWidget
 {
 	GENERATED_WVALUEBOX()
 
 public:
-	using ValueToStringFunction = std::function<std::string()>;
-	using StringToValueFunction = std::function<void(const std::string&)>;
+	using ValueToStringFunc = std::function<std::string()>;
+	using TextChangedCallback = std::function<void(std::string_view)>;
 
 protected:
 	WidgetPtr Build() override;
 
+public:
+	static auto FromPointer(StringCompatible auto* value) -> WidgetPtr
+	{
+		assert(value != nullptr);
+		return (
+			UCreate<WValueBox>{}()
+			| Apply(&WValueBox::SetValueToString, [value]() { return *value; })
+			| Apply(&WValueBox::SetOnTextChanged, [value](std::string_view text) { *value = text; })
+		);
+	}
+
 private:
-	WritableProperty(ValueToStringFunction, valueToString_, ValueToString);
-	WritableProperty(StringToValueFunction, stringToValue_, StringToValue);
+	WritableProperty(ValueToStringFunc, valueToString_, ValueToString);
+	WritableProperty(TextChangedCallback, onTextChanged_, OnTextChanged);
 };

@@ -43,4 +43,9 @@ void WList::AddChild(WidgetPtr const& child)
 	body_->AddChild(child);
 }
 
+void WList::ReplaceChild(WidgetPtr const& oldWidget, WidgetPtr const& newWidget)
+{
+	body_->ReplaceChild(oldWidget, newWidget);
+}
+
 #include "generated/List.generated.inl"
