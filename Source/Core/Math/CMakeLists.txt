@@ -7,11 +7,11 @@ target_compile_features(KotonoMath PUBLIC cxx_std_23)
 
 set_target_properties(KotonoMath PROPERTIES FOLDER "KotonoEngine/Core")
 
-set(KMATH_HEADERS
-    "math_utils/math_utils.h"
+set(KMATH_PUBLIC_HEADERS
+    "Public/math_utils/math_utils.h"
 )
 set(KMATH_SOURCES
-    "math_utils/math_utils.cpp"
+    "Private/math_utils/math_utils.cpp"
 )
 
 target_compile_definitions(KotonoMath PUBLIC
@@ -23,11 +23,12 @@ target_compile_definitions(KotonoMath PUBLIC
 )
 
 target_sources(KotonoMath
-    PRIVATE ${KMATH_HEADERS}
+    PUBLIC ${KMATH_PUBLIC_HEADERS}
     PRIVATE ${KMATH_SOURCES}
 )
 
 target_include_directories(KotonoMath
-    PUBLIC  "${ENGINE_PATH}/Source/ThirdParty/glm/include"
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
+    PUBLIC "${ENGINE_PATH}/Source/ThirdParty/glm/include"
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
 )

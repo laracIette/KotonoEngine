@@ -7,35 +7,36 @@ target_compile_features(KotonoGraphics PUBLIC cxx_std_23)
 
 set_target_properties(KotonoGraphics PROPERTIES FOLDER "KotonoEngine/Core")
 
-set(KGRAPHICS_HEADERS
-    "Color.h"
-    "Mobility.h"
-    "Padding.h"
-    "SceneView.h"
-    "SceneVisibility.h"
-    "Scissor.h"
-    "Visibility.h"
-    "Font/Font.h"
-    "RenderGraph/DirectionalLightData.h"
-    "RenderGraph/InterfaceDrawData.h"
-    "RenderGraph/InterfaceRenderGraph.h"
-    "RenderGraph/PointLightData.h"
-    "RenderGraph/SceneDrawData.h"
-    "RenderGraph/SceneRenderGraph.h"
-    "SpvCompiler/SpvCompiler.h"
+set(KGRAPHICS_PUBLIC_HEADERS
+    "Public/Color.h"
+    "Public/Mobility.h"
+    "Public/Padding.h"
+    "Public/SceneView.h"
+    "Public/SceneVisibility.h"
+    "Public/Scissor.h"
+    "Public/Visibility.h"
+    "Public/Font/Font.h"
+    "Public/RenderGraph/DirectionalLightData.h"
+    "Public/RenderGraph/InterfaceDrawData.h"
+    "Public/RenderGraph/InterfaceRenderGraph.h"
+    "Public/RenderGraph/PointLightData.h"
+    "Public/RenderGraph/SceneDrawData.h"
+    "Public/RenderGraph/SceneRenderGraph.h"
+    "Public/SpvCompiler/SpvCompiler.h"
 )
 set(KGRAPHICS_SOURCES
-    "Font/Font.cpp"
-    "SpvCompiler/SpvCompiler.cpp"
+    "Private/Font/Font.cpp"
+    "Private/SpvCompiler/SpvCompiler.cpp"
 )
 
 target_sources(KotonoGraphics
-    PRIVATE ${KGRAPHICS_HEADERS}
+    PUBLIC ${KGRAPHICS_PUBLIC_HEADERS}
     PRIVATE ${KGRAPHICS_SOURCES}
 )
 
 target_include_directories(KotonoGraphics
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
 )
 
 # Shader folder included for IDE visibility (not compiled)

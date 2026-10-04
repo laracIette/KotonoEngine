@@ -40,36 +40,37 @@ target_compile_features(KotonoPlatform PUBLIC cxx_std_23)
 
 set_target_properties(KotonoPlatform PROPERTIES FOLDER "KotonoEngine/Core")
 
-set(KPLATFORM_HEADERS
-    "AllocatedBuffer.h"
-    "AllocatedImage.h"
-    "glm_utils.h"
-    "QueueFamilyIndices.h"
-    "SwapchainSupportDetails.h"
-    "Context/Context.h"
-    "Device/Device.h"
-    "Surface/Surface.h"
-    "Swapchain/Swapchain.h"
-    "vk_utils/vk_utils.h"
-    "Window/Window.h"
+set(KPLATFORM_PUBLIC_HEADERS
+    "Public/AllocatedBuffer.h"
+    "Public/AllocatedImage.h"
+    "Public/glm_utils.h"
+    "Public/QueueFamilyIndices.h"
+    "Public/SwapchainSupportDetails.h"
+    "Public/Context/Context.h"
+    "Public/Device/Device.h"
+    "Public/Surface/Surface.h"
+    "Public/Swapchain/Swapchain.h"
+    "Public/vk_utils/vk_utils.h"
+    "Public/Window/Window.h"
 )
 set(KPLATFORM_SOURCES
-    "Context/Context.cpp"
-    "Device/Device.cpp"
-    "Surface/Surface.cpp"
-    "Swapchain/Swapchain.cpp"
-    "vk_utils/vk_utils.cpp"
-    "Window/Window.cpp"
+    "Private/Context/Context.cpp"
+    "Private/Device/Device.cpp"
+    "Private/Surface/Surface.cpp"
+    "Private/Swapchain/Swapchain.cpp"
+    "Private/vk_utils/vk_utils.cpp"
+    "Private/Window/Window.cpp"
 )
 
 target_sources(KotonoPlatform
-    PRIVATE ${KPLATFORM_HEADERS}
+    PUBLIC ${KPLATFORM_PUBLIC_HEADERS}
     PRIVATE ${KPLATFORM_SOURCES}
 )
 
 target_include_directories(KotonoPlatform
-    PUBLIC  "${ENGINE_PATH}/Source/ThirdParty/vma/include"
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
+    PUBLIC "${ENGINE_PATH}/Source/ThirdParty/vma/include"
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
 )
 
 # Preprocessor defines for all builds

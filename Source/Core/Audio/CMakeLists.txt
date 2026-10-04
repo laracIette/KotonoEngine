@@ -59,26 +59,30 @@ target_compile_features(KotonoAudio PUBLIC cxx_std_23)
 
 set_target_properties(KotonoAudio PROPERTIES FOLDER "KotonoEngine/Core")
 
-set(KAUDIO_HEADERS
-    "al_utils/al_utils.h"
-    "AudioContext/AudioContext.h"
-    "AudioDataWAV/AudioDataWAV.h"
-    "AudioSource/AudioSource.h"
+set(KAUDIO_PUBLIC_HEADERS
+    "Public/AudioContext/AudioContext.h"
+    "Public/AudioSource/AudioSource.h"
+)
+set(KAUDIO_PRIVATE_HEADERS
+    "Private/al_utils/al_utils.h"
+    "Private/AudioDataWAV/AudioDataWAV.h"
 )
 set(KAUDIO_SOURCES
-    "al_utils/al_utils.cpp"
-    "AudioContext/AudioContext.cpp"
-    "AudioDataWAV/AudioDataWAV.cpp"
-    "AudioSource/AudioSource.cpp"
+    "Private/al_utils/al_utils.cpp"
+    "Private/AudioContext/AudioContext.cpp"
+    "Private/AudioDataWAV/AudioDataWAV.cpp"
+    "Private/AudioSource/AudioSource.cpp"
 )
 
 target_sources(KotonoAudio
-    PRIVATE ${KAUDIO_HEADERS}
+    PUBLIC ${KAUDIO_PUBLIC_HEADERS}
+    PRIVATE ${KAUDIO_PRIVATE_HEADERS}
     PRIVATE ${KAUDIO_SOURCES}
 )
 
 target_include_directories(KotonoAudio
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
 )
 
 target_compile_definitions(KotonoAudio PUBLIC

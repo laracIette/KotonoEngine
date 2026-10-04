@@ -8,24 +8,28 @@ target_compile_features(KotonoApplication PUBLIC cxx_std_23)
 set_target_properties(KotonoApplication PROPERTIES FOLDER "KotonoEngine")
 
 
-set(KAPPLICATION_HEADERS
-    "Application/Application.h"
-    "ClassRegistrator/ClassRegistrator.h"
-    "WindowContext/WindowContext.h"
+set(KAPPLICATION_PUBLIC_HEADERS
+    "Public/Application/Application.h"
+)
+set(KAPPLICATION_PRIVATE_HEADERS
+    "Private/ClassRegistrator/ClassRegistrator.h"
+    "Private/WindowContext/WindowContext.h"
 )
 set(KAPPLICATION_SOURCES
-    "Application/Application.cpp"
-    "ClassRegistrator/ClassRegistrator.cpp"
-    "WindowContext/WindowContext.cpp"
+    "Private/Application/Application.cpp"
+    "Private/ClassRegistrator/ClassRegistrator.cpp"
+    "Private/WindowContext/WindowContext.cpp"
 )
 
 target_sources(KotonoApplication
-    PRIVATE ${KAPPLICATION_HEADERS}
+    PUBLIC ${KAPPLICATION_PUBLIC_HEADERS}
+    PRIVATE ${KAPPLICATION_PRIVATE_HEADERS}
     PRIVATE ${KAPPLICATION_SOURCES}
 )
 
 target_include_directories(KotonoApplication
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
 )
 
 if (TARGET KotonoEditor)

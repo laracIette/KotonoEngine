@@ -7,21 +7,22 @@ target_compile_features(KotonoReflection PUBLIC cxx_std_23)
 
 set_target_properties(KotonoReflection PROPERTIES FOLDER "KotonoEngine/Core")
 
-set(KREFLECTION_HEADERS
-    "ReflectionResult.h"
-    "Reflector/Reflector.h"
+set(KREFLECTION_PUBLIC_HEADERS
+    "Public/ReflectionResult.h"
+    "Public/Reflector/Reflector.h"
 )
 set(KREFLECTION_SOURCES
-    "Reflector/Reflector.cpp"
+    "Private/Reflector/Reflector.cpp"
 )
 
 target_sources(KotonoReflection
-    PRIVATE ${KREFLECTION_HEADERS}
+    PUBLIC ${KREFLECTION_PUBLIC_HEADERS}
     PRIVATE ${KREFLECTION_SOURCES}
 )
 
 target_include_directories(KotonoReflection
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
 )
 
 target_link_libraries(KotonoReflection PUBLIC

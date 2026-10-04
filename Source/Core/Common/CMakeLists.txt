@@ -7,42 +7,43 @@ target_compile_features(KotonoCommon PUBLIC cxx_std_23)
 
 set_target_properties(KotonoCommon PROPERTIES FOLDER "KotonoEngine/Core")
 
-set(KCOMMON_HEADERS
-    "Average.h"
-    "Bindable.h"
-    "Cached.h"
-    "Clamped.h"
-    "conversion_utils.h"
-    "enum_utils.h"
-    "Handle.h"
-    "hash_utils.h"
-    "Notify.h"
-    "types.h"
-    "Asset/Asset.h"
-    "Containers/FixedHeapContainer.h"
-    "Containers/Matrix.h"
-    "Containers/Pool.h"
-    "Containers/Set.h"
-    "Event/Delegate.h"
-    "Event/Event.h"
-    "Logging/log.h"
-    "Logging/LogImportanceLevel.h"
-    "Path/Path.h"
-    "Path/PathManager.h"
+set(KCOMMON_PUBLIC_HEADERS
+    "Public/Average.h"
+    "Public/Bindable.h"
+    "Public/Cached.h"
+    "Public/Clamped.h"
+    "Public/conversion_utils.h"
+    "Public/enum_utils.h"
+    "Public/Handle.h"
+    "Public/hash_utils.h"
+    "Public/Notify.h"
+    "Public/types.h"
+    "Public/Asset/Asset.h"
+    "Public/Containers/FixedHeapContainer.h"
+    "Public/Containers/Matrix.h"
+    "Public/Containers/Pool.h"
+    "Public/Containers/Set.h"
+    "Public/Event/Delegate.h"
+    "Public/Event/Event.h"
+    "Public/Logging/log.h"
+    "Public/Logging/LogImportanceLevel.h"
+    "Public/Path/Path.h"
+    "Public/Path/PathManager.h"
 )
 set(KCOMMON_SOURCES
-    "Asset/Asset.cpp"
-    "Path/Path.cpp"
-    "Path/PathManager.cpp"
+    "Private/Asset/Asset.cpp"
+    "Private/Path/Path.cpp"
+    "Private/Path/PathManager.cpp"
 )
 
 target_sources(KotonoCommon
-    PRIVATE ${KCOMMON_HEADERS}
+    PUBLIC ${KCOMMON_PUBLIC_HEADERS}
     PRIVATE ${KCOMMON_SOURCES}
 )
 
 target_include_directories(KotonoCommon
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
 )
 
 target_compile_definitions(KotonoCommon PUBLIC
