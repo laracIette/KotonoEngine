@@ -1,4 +1,5 @@
 #include "Generator.h"
+
 #include <kotono_common/PathManager.h>
 #include <kotono_reflection/Reflector.h>
 
