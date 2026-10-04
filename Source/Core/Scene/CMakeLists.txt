@@ -5,21 +5,21 @@ add_library(KotonoScene STATIC)
 
 target_compile_features(KotonoScene PUBLIC cxx_std_23)
 
-set_target_properties(KotonoScene PROPERTIES FOLDER "KotonoEngine")
+set_target_properties(KotonoScene PROPERTIES FOLDER "KotonoEngine/Core")
 
 set(KSCENE_HEADERS
-    "include/kotono_scene/AudioComponent.h"
-    "include/kotono_scene/CameraComponent.h"
-    "include/kotono_scene/DirectionalLightComponent.h"
-    "include/kotono_scene/PointLightComponent.h"
-    "include/kotono_scene/MeshComponent.h"
+    "AudioComponent/AudioComponent.h"
+    "CameraComponent/CameraComponent.h"
+    "DirectionalLightComponent/DirectionalLightComponent.h"
+    "PointLightComponent/PointLightComponent.h"
+    "MeshComponent/MeshComponent.h"
 )
 set(KSCENE_SOURCES
-    "src/AudioComponent.cpp"
-    "src/CameraComponent.cpp"
-    "src/DirectionalLightComponent.cpp"
-    "src/PointLightComponent.cpp"
-    "src/MeshComponent.cpp"
+    "AudioComponent/AudioComponent.cpp"
+    "CameraComponent/CameraComponent.cpp"
+    "DirectionalLightComponent/DirectionalLightComponent.cpp"
+    "PointLightComponent/PointLightComponent.cpp"
+    "MeshComponent/MeshComponent.cpp"
 )
 
 target_sources(KotonoScene
@@ -27,13 +27,10 @@ target_sources(KotonoScene
     PRIVATE ${KSCENE_SOURCES}
 )
 
-# Include directories
 target_include_directories(KotonoScene
-    PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_scene"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-# Link libs
 target_link_libraries(KotonoScene PUBLIC
-    KotonoCore
+    KotonoObject
 )

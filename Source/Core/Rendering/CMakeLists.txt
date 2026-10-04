@@ -53,54 +53,54 @@ add_library(KotonoRendering STATIC)
 
 target_compile_features(KotonoRendering PUBLIC cxx_std_23)
 
-set_target_properties(KotonoRendering PROPERTIES FOLDER "KotonoEngine")
+set_target_properties(KotonoRendering PROPERTIES FOLDER "KotonoEngine/Core")
 
 set(KRENDERING_HEADERS
-    "include/kotono_rendering/Barriers.h"
-    "include/kotono_rendering/DirectionalLight.h"
-    "include/kotono_rendering/DrawCommand.h"
-    "include/kotono_rendering/DrawDataBufferData.h"
-    "include/kotono_rendering/FrameContextBuffer.h"
-    "include/kotono_rendering/FrameContextBufferData.h"
-    "include/kotono_rendering/frames_in_flight.h"
-    "include/kotono_rendering/GPUBuffers.h"
-    "include/kotono_rendering/IndexBuffer.h"
-    "include/kotono_rendering/InterfaceRender.h"
-    "include/kotono_rendering/InterfaceRenderer.h"
-    "include/kotono_rendering/LightBuffers.h"
-    "include/kotono_rendering/Material.h"
-    "include/kotono_rendering/MaterialBufferData.h"
-    "include/kotono_rendering/Model.h"
-    "include/kotono_rendering/ParametersBufferData.h"
-    "include/kotono_rendering/PipelineResourceManager.h"
-    "include/kotono_rendering/PointLight.h"
-    "include/kotono_rendering/PushConstants.h"
-    "include/kotono_rendering/Renderer.h"
-    "include/kotono_rendering/Sampler.h"
-    "include/kotono_rendering/SceneRender.h"
-    "include/kotono_rendering/SceneRenderer.h"
-    "include/kotono_rendering/Shader.h"
-    "include/kotono_rendering/Texture.h"
-    "include/kotono_rendering/TransformBufferData.h"
+    "DirectionalLight.h"
+    "DrawCommand.h"
+    "DrawDataBufferData.h"
+    "FrameContextBufferData.h"
+    "frames_in_flight.h"
+    "MaterialBufferData.h"
+    "ParametersBufferData.h"
+    "PointLight.h"
+    "PushConstants.h"
+    "TransformBufferData.h"
+    "Barriers/Barriers.h"
+    "FrameContextBuffer/FrameContextBuffer.h"
+    "GPUBuffers/GPUBuffers.h"
+    "IndexBuffer/IndexBuffer.h"
+    "InterfaceRender/InterfaceRender.h"
+    "InterfaceRenderer/InterfaceRenderer.h"
+    "LightBuffers/LightBuffers.h"
+    "Material/Material.h"
+    "Model/Model.h"
+    "PipelineResourceManager/PipelineResourceManager.h"
+    "Renderer/Renderer.h"
+    "Sampler/Sampler.h"
+    "SceneRender/SceneRender.h"
+    "SceneRenderer/SceneRenderer.h"
+    "Shader/Shader.h"
+    "Texture/Texture.h"
 )
 set(KRENDERING_SOURCES
-    "src/Barriers.cpp"
-    "src/FrameContextBuffer.cpp"
-    "src/GPUBuffers.cpp"
-    "src/implementations.cpp"
-    "src/IndexBuffer.cpp"
-    "src/InterfaceRender.cpp"
-    "src/InterfaceRenderer.cpp"    
-    "src/LightBuffers.cpp"
-    "src/Material.cpp"
-    "src/Model.cpp"
-    "src/PipelineResourceManager.cpp"
-    "src/Renderer.cpp"
-    "src/Sampler.cpp"
-    "src/SceneRender.cpp"
-    "src/SceneRenderer.cpp"
-    "src/Shader.cpp"
-    "src/Texture.cpp"
+    "implementations.cpp"
+    "Barriers/Barriers.cpp"
+    "FrameContextBuffer/FrameContextBuffer.cpp"
+    "GPUBuffers/GPUBuffers.cpp"
+    "IndexBuffer/IndexBuffer.cpp"
+    "InterfaceRender/InterfaceRender.cpp"
+    "InterfaceRenderer/InterfaceRenderer.cpp"
+    "LightBuffers/LightBuffers.cpp"
+    "Material/Material.cpp"
+    "Model/Model.cpp"
+    "PipelineResourceManager/PipelineResourceManager.cpp"
+    "Renderer/Renderer.cpp"
+    "Sampler/Sampler.cpp"
+    "SceneRender/SceneRender.cpp"
+    "SceneRenderer/SceneRenderer.cpp"
+    "Shader/Shader.cpp"
+    "Texture/Texture.cpp"
 )
 
 target_sources(KotonoRendering
@@ -108,13 +108,9 @@ target_sources(KotonoRendering
     PRIVATE ${KRENDERING_SOURCES}
 )
 
-set(THIRD_PARTY_DIR "${ENGINE_PATH}/ThirdParty")
-
-# Include directories
-target_include_directories(KotonoRendering    
-    PRIVATE "${THIRD_PARTY_DIR}/stbimage/include"
-    PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_rendering"
+target_include_directories(KotonoRendering
+    PRIVATE "${ENGINE_PATH}/Source/ThirdParty/stbimage/include"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
 # Preprocessor defines for all builds
@@ -122,12 +118,10 @@ target_compile_definitions(KotonoRendering PUBLIC
     ASSIMP_BUILD_NO_EXPORT
 )
 
-# Link system + third-party libs
 target_link_libraries(KotonoRendering PRIVATE
     assimp::assimp
 )
 
-# Link libs
 target_link_libraries(KotonoRendering PUBLIC
     KotonoGraphics
     KotonoPlatform

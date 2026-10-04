@@ -5,19 +5,19 @@ add_library(KotonoIO STATIC)
 
 target_compile_features(KotonoIO PUBLIC cxx_std_23)
 
-set_target_properties(KotonoIO PROPERTIES FOLDER "KotonoEngine")
+set_target_properties(KotonoIO PROPERTIES FOLDER "KotonoEngine/Core")
 
 set(KIO_HEADERS
-    "include/kotono_io/File.h"
-    "include/kotono_io/FileExplorer.h"
-    "include/kotono_io/serialize_base.h"
-    "include/kotono_io/Serializer.h"
+    "File/File.h"
+    "FileExplorer/FileExplorer.h"
+    "serialize_base/serialize_base.h"
+    "Serializer/Serializer.h"
 )
 set(KIO_SOURCES
-    "src/File.cpp"
-    "src/FileExplorer.cpp"
-    "src/serialize_base.cpp"
-    "src/Serializer.cpp"
+    "File/File.cpp"
+    "FileExplorer/FileExplorer.cpp"
+    "serialize_base/serialize_base.cpp"
+    "Serializer/Serializer.cpp"
 )
 
 target_sources(KotonoIO
@@ -25,16 +25,11 @@ target_sources(KotonoIO
     PRIVATE ${KIO_SOURCES}
 )
 
-set(THIRD_PARTY_DIR "${ENGINE_PATH}/ThirdParty")
-
-# Include directories
 target_include_directories(KotonoIO
-    PUBLIC  "${THIRD_PARTY_DIR}/nlohmann/include"
-    PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_io"
+    PUBLIC  "${ENGINE_PATH}/Source/ThirdParty/nlohmann/include"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-# Link libs
 target_link_libraries(KotonoIO PUBLIC
     KotonoCommon
 )

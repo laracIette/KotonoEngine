@@ -5,15 +5,15 @@ add_library(KotonoMath STATIC)
 
 target_compile_features(KotonoMath PUBLIC cxx_std_23)
 
-set_target_properties(KotonoMath PROPERTIES FOLDER "KotonoEngine")
+set_target_properties(KotonoMath PROPERTIES FOLDER "KotonoEngine/Core")
 
 set(KMATH_HEADERS
-    "include/kotono_math/math_utils.h"
+    "math_utils/math_utils.h"
 )
 set(KMATH_SOURCES
-    "src/math_utils.cpp"
+    "math_utils/math_utils.cpp"
 )
-    
+
 target_compile_definitions(KotonoMath PUBLIC
     GLM_FORCE_RADIANS
     GLM_FORCE_LEFT_HANDED
@@ -27,11 +27,7 @@ target_sources(KotonoMath
     PRIVATE ${KMATH_SOURCES}
 )
 
-set(THIRD_PARTY_DIR "${ENGINE_PATH}/ThirdParty")
-
-# Include directories
 target_include_directories(KotonoMath
-    PUBLIC  "${THIRD_PARTY_DIR}/glm/include"
-    PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_math"
+    PUBLIC  "${ENGINE_PATH}/Source/ThirdParty/glm/include"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
 )

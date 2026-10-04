@@ -38,28 +38,28 @@ add_library(KotonoPlatform STATIC)
 
 target_compile_features(KotonoPlatform PUBLIC cxx_std_23)
 
-set_target_properties(KotonoPlatform PROPERTIES FOLDER "KotonoEngine")
+set_target_properties(KotonoPlatform PROPERTIES FOLDER "KotonoEngine/Core")
 
 set(KPLATFORM_HEADERS
-    "include/kotono_platform/AllocatedBuffer.h"
-    "include/kotono_platform/AllocatedImage.h"
-    "include/kotono_platform/Context.h"
-    "include/kotono_platform/Device.h"
-    "include/kotono_platform/glm_utils.h"
-    "include/kotono_platform/QueueFamilyIndices.h"
-    "include/kotono_platform/Surface.h"
-    "include/kotono_platform/Swapchain.h"
-    "include/kotono_platform/SwapchainSupportDetails.h"
-    "include/kotono_platform/vk_utils.h"
-    "include/kotono_platform/Window.h"
+    "AllocatedBuffer.h"
+    "AllocatedImage.h"
+    "glm_utils.h"
+    "QueueFamilyIndices.h"
+    "SwapchainSupportDetails.h"
+    "Context/Context.h"
+    "Device/Device.h"
+    "Surface/Surface.h"
+    "Swapchain/Swapchain.h"
+    "vk_utils/vk_utils.h"
+    "Window/Window.h"
 )
 set(KPLATFORM_SOURCES
-    "src/Context.cpp"
-    "src/Device.cpp"
-    "src/Surface.cpp"
-    "src/Swapchain.cpp"
-    "src/vk_utils.cpp"
-    "src/Window.cpp"
+    "Context/Context.cpp"
+    "Device/Device.cpp"
+    "Surface/Surface.cpp"
+    "Swapchain/Swapchain.cpp"
+    "vk_utils/vk_utils.cpp"
+    "Window/Window.cpp"
 )
 
 target_sources(KotonoPlatform
@@ -67,13 +67,9 @@ target_sources(KotonoPlatform
     PRIVATE ${KPLATFORM_SOURCES}
 )
 
-set(THIRD_PARTY_DIR "${ENGINE_PATH}/ThirdParty")
-
-# Include directories
 target_include_directories(KotonoPlatform
-    PUBLIC  "${THIRD_PARTY_DIR}/vma/include"
-    PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_platform"
+    PUBLIC  "${ENGINE_PATH}/Source/ThirdParty/vma/include"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
 # Preprocessor defines for all builds
@@ -83,13 +79,11 @@ target_compile_definitions(KotonoPlatform PUBLIC
     VK_USE_PLATFORM_WIN32_KHR
 )
 
-# Link system + third-party libs
 target_link_libraries(KotonoPlatform PUBLIC
     glfw
     Vulkan::Vulkan
 )
 
-# Link libs
 target_link_libraries(KotonoPlatform PUBLIC
     KotonoCommon
     KotonoMath

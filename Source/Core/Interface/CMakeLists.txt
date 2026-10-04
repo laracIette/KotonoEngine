@@ -5,62 +5,62 @@ add_library(KotonoInterface STATIC)
 
 target_compile_features(KotonoInterface PUBLIC cxx_std_23)
 
-set_target_properties(KotonoInterface PROPERTIES FOLDER "KotonoEngine")
+set_target_properties(KotonoInterface PROPERTIES FOLDER "KotonoEngine/Core")
 
 set(KINTERFACE_HEADERS
-    "include/kotono_interface/Align.h"
-    "include/kotono_interface/Box.h"
-    "include/kotono_interface/Button.h"
-    "include/kotono_interface/ChildOwner.h"
-    "include/kotono_interface/ChildrenOwner.h"
-    "include/kotono_interface/Color.h"
-    "include/kotono_interface/Column.h"
-    "include/kotono_interface/Constraint.h"
-    "include/kotono_interface/Crop.h"
-    "include/kotono_interface/Expanded.h"
-    "include/kotono_interface/HorizontalWrapList.h"
-    "include/kotono_interface/HorizontalWrapListBody.h"
-    "include/kotono_interface/Image.h"
-    "include/kotono_interface/List.h"
-    "include/kotono_interface/ListBody.h"
-    "include/kotono_interface/Offset.h"
-    "include/kotono_interface/Padding.h"
-    "include/kotono_interface/Row.h"
-    "include/kotono_interface/SceneTexture.h"
-    "include/kotono_interface/Scrollable.h"
-    "include/kotono_interface/Socket.h"
-    "include/kotono_interface/Spacer.h"
-    "include/kotono_interface/Stack.h"
-    "include/kotono_interface/Text.h"
-    "include/kotono_interface/widgets.h"
-    "include/kotono_interface/Wrap.h"
+    "widgets.h"
+    "Align/Align.h"
+    "Box/Box.h"
+    "Button/Button.h"
+    "ChildOwner/ChildOwner.h"
+    "ChildrenOwner/ChildrenOwner.h"
+    "Color/Color.h"
+    "Column/Column.h"
+    "Constraint/Constraint.h"
+    "Crop/Crop.h"
+    "Expanded/Expanded.h"
+    "HorizontalWrapList/HorizontalWrapList.h"
+    "HorizontalWrapListBody/HorizontalWrapListBody.h"
+    "Image/Image.h"
+    "List/List.h"
+    "ListBody/ListBody.h"
+    "Offset/Offset.h"
+    "Padding/Padding.h"
+    "Row/Row.h"
+    "SceneTexture/SceneTexture.h"
+    "Scrollable/Scrollable.h"
+    "Socket/Socket.h"
+    "Spacer/Spacer.h"
+    "Stack/Stack.h"
+    "Text/Text.h"
+    "Wrap/Wrap.h"
 )
 set(KINTERFACE_SOURCES
-    "src/Align.cpp"
-    "src/Box.cpp"
-    "src/Button.cpp"
-    "src/ChildOwner.cpp"
-    "src/ChildrenOwner.cpp"
-    "src/Color.cpp"
-    "src/Column.cpp"
-    "src/Constraint.cpp"
-    "src/Crop.cpp"
-    "src/Expanded.cpp"
-    "src/HorizontalWrapList.cpp"
-    "src/HorizontalWrapListBody.cpp"
-    "src/Image.cpp"
-    "src/List.cpp"
-    "src/ListBody.cpp"
-    "src/Offset.cpp"
-    "src/Padding.cpp"
-    "src/Row.cpp"
-    "src/SceneTexture.cpp"
-    "src/Scrollable.cpp"
-    "src/Socket.cpp"
-    "src/Spacer.cpp"
-    "src/Stack.cpp"
-    "src/Text.cpp"
-    "src/Wrap.cpp"
+    "Align/Align.cpp"
+    "Box/Box.cpp"
+    "Button/Button.cpp"
+    "ChildOwner/ChildOwner.cpp"
+    "ChildrenOwner/ChildrenOwner.cpp"
+    "Color/Color.cpp"
+    "Column/Column.cpp"
+    "Constraint/Constraint.cpp"
+    "Crop/Crop.cpp"
+    "Expanded/Expanded.cpp"
+    "HorizontalWrapList/HorizontalWrapList.cpp"
+    "HorizontalWrapListBody/HorizontalWrapListBody.cpp"
+    "Image/Image.cpp"
+    "List/List.cpp"
+    "ListBody/ListBody.cpp"
+    "Offset/Offset.cpp"
+    "Padding/Padding.cpp"
+    "Row/Row.cpp"
+    "SceneTexture/SceneTexture.cpp"
+    "Scrollable/Scrollable.cpp"
+    "Socket/Socket.cpp"
+    "Spacer/Spacer.cpp"
+    "Stack/Stack.cpp"
+    "Text/Text.cpp"
+    "Wrap/Wrap.cpp"
 )
 
 target_sources(KotonoInterface
@@ -68,13 +68,10 @@ target_sources(KotonoInterface
     PRIVATE ${KINTERFACE_SOURCES}
 )
 
-# Include directories
 target_include_directories(KotonoInterface
-    PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_interface"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-# Link libs
 target_link_libraries(KotonoInterface PUBLIC
-    KotonoCore
+    KotonoObject
 )

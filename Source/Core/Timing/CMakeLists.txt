@@ -5,21 +5,21 @@ add_library(KotonoTiming STATIC)
 
 target_compile_features(KotonoTiming PUBLIC cxx_std_23)
 
-set_target_properties(KotonoTiming PROPERTIES FOLDER "KotonoEngine")
+set_target_properties(KotonoTiming PROPERTIES FOLDER "KotonoEngine/Core")
 
 set(KTIMING_HEADERS
-    "include/kotono_timing/Clock.h"
-    "include/kotono_timing/Stopwatch.h"
-    "include/kotono_timing/Task.h"
-    "include/kotono_timing/TimeContext.h"
-    "include/kotono_timing/Timer.h"
+    "Clock/Clock.h"
+    "Stopwatch/Stopwatch.h"
+    "Task/Task.h"
+    "TimeContext/TimeContext.h"
+    "Timer/Timer.h"
 )
 set(KTIMING_SOURCES
-    "src/Clock.cpp"
-    "src/Stopwatch.cpp"
-    "src/Task.cpp"
-    "src/TimeContext.cpp"
-    "src/Timer.cpp"
+    "Clock/Clock.cpp"
+    "Stopwatch/Stopwatch.cpp"
+    "Task/Task.cpp"
+    "TimeContext/TimeContext.cpp"
+    "Timer/Timer.cpp"
 )
 
 target_sources(KotonoTiming
@@ -27,13 +27,10 @@ target_sources(KotonoTiming
     PRIVATE ${KTIMING_SOURCES}
 )
 
-# Include directories
 target_include_directories(KotonoTiming
-    PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_timing"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-# Link libs
 target_link_libraries(KotonoTiming PUBLIC
     KotonoCommon
 )

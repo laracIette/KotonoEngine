@@ -1,66 +1,63 @@
 cmake_minimum_required(VERSION 4.2)
-project(KotonoCore LANGUAGES C CXX)
+project(KotonoObject LANGUAGES C CXX)
 
-add_library(KotonoCore STATIC)
+add_library(KotonoObject STATIC)
 
-target_compile_features(KotonoCore PUBLIC cxx_std_23)
+target_compile_features(KotonoObject PUBLIC cxx_std_23)
 
-set_target_properties(KotonoCore PROPERTIES FOLDER "KotonoEngine")
+set_target_properties(KotonoObject PROPERTIES FOLDER "KotonoEngine/Core")
 
-set(KCORE_HEADERS
-    "include/kotono_core/Axis.h"
-    "include/kotono_core/CoordinateSpace.h"
-    "include/kotono_core/Expand.h"
-    "include/kotono_core/Flex.h"
-    "include/kotono_core/GameState.h"
-    "include/kotono_core/Guid.h"
-    "include/kotono_core/Interface.h"
-    "include/kotono_core/InterfaceRoot.h"
-    "include/kotono_core/Object.h"
-    "include/kotono_core/ObjectFactory.h"
-    "include/kotono_core/ProjectSettings.h"
-    "include/kotono_core/Ptr.h"
-    "include/kotono_core/Scene.h"
-    "include/kotono_core/SceneComponent.h"
-    "include/kotono_core/SceneContext.h"
-    "include/kotono_core/SceneObject.h"
-    "include/kotono_core/SceneWidget.h"
-    "include/kotono_core/serialize_glm.h"
-    "include/kotono_core/Transform.h"
-    "include/kotono_core/VariableInfo.h"
-    "include/kotono_core/Widget.h"
-    "include/kotono_core/WidgetDisplaySettings.h"
+set(KOBJECT_HEADERS
+    "Axis.h"
+    "CoordinateSpace.h"
+    "Expand.h"
+    "Flex.h"
+    "GameState.h"
+    "Ptr.h"
+    "VariableInfo.h"
+    "WidgetDisplaySettings.h"
+    "Guid/Guid.h"
+    "Interface/Interface.h"
+    "InterfaceRoot/InterfaceRoot.h"
+    "Object/Object.h"
+    "ObjectFactory/ObjectFactory.h"
+    "ProjectSettings/ProjectSettings.h"
+    "Scene/Scene.h"
+    "SceneComponent/SceneComponent.h"
+    "SceneContext/SceneContext.h"
+    "SceneObject/SceneObject.h"
+    "SceneWidget/SceneWidget.h"
+    "serialize_glm/serialize_glm.h"
+    "Transform/Transform.h"
+    "Widget/Widget.h"
 )
-set(KCORE_SOURCES
-    "src/Guid.cpp"
-    "src/Interface.cpp"
-    "src/InterfaceRoot.cpp"
-    "src/Object.cpp"
-    "src/ObjectFactory.cpp"
-    "src/ProjectSettings.cpp"
-    "src/Scene.cpp"
-    "src/SceneComponent.cpp"
-    "src/SceneContext.cpp"
-    "src/SceneObject.cpp"
-    "src/SceneWidget.cpp"
-    "src/serialize_glm.cpp"
-    "src/Transform.cpp"
-    "src/Widget.cpp"
-)
-
-target_sources(KotonoCore
-    PRIVATE ${KCORE_HEADERS}
-    PRIVATE ${KCORE_SOURCES}
+set(KOBJECT_SOURCES
+    "Guid/Guid.cpp"
+    "Interface/Interface.cpp"
+    "InterfaceRoot/InterfaceRoot.cpp"
+    "Object/Object.cpp"
+    "ObjectFactory/ObjectFactory.cpp"
+    "ProjectSettings/ProjectSettings.cpp"
+    "Scene/Scene.cpp"
+    "SceneComponent/SceneComponent.cpp"
+    "SceneContext/SceneContext.cpp"
+    "SceneObject/SceneObject.cpp"
+    "SceneWidget/SceneWidget.cpp"
+    "serialize_glm/serialize_glm.cpp"
+    "Transform/Transform.cpp"
+    "Widget/Widget.cpp"
 )
 
-# Include directories
-target_include_directories(KotonoCore
-    PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_core"
+target_sources(KotonoObject
+    PRIVATE ${KOBJECT_HEADERS}
+    PRIVATE ${KOBJECT_SOURCES}
 )
 
-# Link libs
-target_link_libraries(KotonoCore PUBLIC
+target_include_directories(KotonoObject
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+target_link_libraries(KotonoObject PUBLIC
     KotonoAudio
     KotonoInput
     KotonoGraphics
@@ -76,4 +73,4 @@ add_custom_target(RunKotonoGenerator
 
 set_target_properties(RunKotonoGenerator PROPERTIES FOLDER "KotonoEngine/UtilityTargets")
 
-add_dependencies(KotonoCore RunKotonoGenerator)
+add_dependencies(KotonoObject RunKotonoGenerator)

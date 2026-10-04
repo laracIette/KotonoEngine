@@ -5,35 +5,35 @@ add_library(KotonoCommon STATIC)
 
 target_compile_features(KotonoCommon PUBLIC cxx_std_23)
 
-set_target_properties(KotonoCommon PROPERTIES FOLDER "KotonoEngine")
+set_target_properties(KotonoCommon PROPERTIES FOLDER "KotonoEngine/Core")
 
 set(KCOMMON_HEADERS
-    "include/kotono_common/Asset.h"
-    "include/kotono_common/Average.h"
-    "include/kotono_common/Bindable.h"
-    "include/kotono_common/Cached.h"
-    "include/kotono_common/Clamped.h"
-    "include/kotono_common/conversion_utils.h"
-    "include/kotono_common/Delegate.h"
-    "include/kotono_common/enum_utils.h"
-    "include/kotono_common/Event.h"
-    "include/kotono_common/FixedHeapContainer.h"
-    "include/kotono_common/Handle.h"
-    "include/kotono_common/hash_utils.h"
-    "include/kotono_common/log.h"
-    "include/kotono_common/LogImportanceLevel.h"
-    "include/kotono_common/Matrix.h"
-    "include/kotono_common/Notify.h"
-    "include/kotono_common/Path.h"
-    "include/kotono_common/PathManager.h"
-    "include/kotono_common/Pool.h"
-    "include/kotono_common/Set.h"
-    "include/kotono_common/types.h"
+    "Average.h"
+    "Bindable.h"
+    "Cached.h"
+    "Clamped.h"
+    "conversion_utils.h"
+    "enum_utils.h"
+    "Handle.h"
+    "hash_utils.h"
+    "Notify.h"
+    "types.h"
+    "Asset/Asset.h"
+    "Containers/FixedHeapContainer.h"
+    "Containers/Matrix.h"
+    "Containers/Pool.h"
+    "Containers/Set.h"
+    "Event/Delegate.h"
+    "Event/Event.h"
+    "Logging/log.h"
+    "Logging/LogImportanceLevel.h"
+    "Path/Path.h"
+    "Path/PathManager.h"
 )
 set(KCOMMON_SOURCES
-    "src/Asset.cpp"
-    "src/Path.cpp"
-    "src/PathManager.cpp"
+    "Asset/Asset.cpp"
+    "Path/Path.cpp"
+    "Path/PathManager.cpp"
 )
 
 target_sources(KotonoCommon
@@ -41,13 +41,10 @@ target_sources(KotonoCommon
     PRIVATE ${KCOMMON_SOURCES}
 )
 
-# Include directories
 target_include_directories(KotonoCommon
-    PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_common"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-# Preprocessor defines for all builds
 target_compile_definitions(KotonoCommon PUBLIC
     NOMINMAX
     ENGINE_DIRECTORY="${ENGINE_PATH}"

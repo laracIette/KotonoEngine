@@ -57,19 +57,19 @@ add_library(KotonoAudio STATIC)
 
 target_compile_features(KotonoAudio PUBLIC cxx_std_23)
 
-set_target_properties(KotonoAudio PROPERTIES FOLDER "KotonoEngine")
+set_target_properties(KotonoAudio PROPERTIES FOLDER "KotonoEngine/Core")
 
 set(KAUDIO_HEADERS
-    "include/kotono_audio/al_utils.h"
-    "include/kotono_audio/AudioContext.h"
-    "include/kotono_audio/AudioDataWAV.h"
-    "include/kotono_audio/AudioSource.h"
+    "al_utils/al_utils.h"
+    "AudioContext/AudioContext.h"
+    "AudioDataWAV/AudioDataWAV.h"
+    "AudioSource/AudioSource.h"
 )
 set(KAUDIO_SOURCES
-    "src/al_utils.cpp"
-    "src/AudioContext.cpp"
-    "src/AudioDataWAV.cpp"
-    "src/AudioSource.cpp"
+    "al_utils/al_utils.cpp"
+    "AudioContext/AudioContext.cpp"
+    "AudioDataWAV/AudioDataWAV.cpp"
+    "AudioSource/AudioSource.cpp"
 )
 
 target_sources(KotonoAudio
@@ -78,16 +78,13 @@ target_sources(KotonoAudio
 )
 
 target_include_directories(KotonoAudio
-    PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_audio"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-# Preprocessor defines for all builds
 target_compile_definitions(KotonoAudio PUBLIC
     AL_LIBTYPE_STATIC
 )
 
-# Link third-party libs
 target_link_libraries(KotonoAudio PRIVATE
     OpenAL::OpenAL
     dr_libs

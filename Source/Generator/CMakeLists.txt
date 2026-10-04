@@ -9,11 +9,11 @@ set_target_properties(KotonoGenerator PROPERTIES FOLDER "KotonoEngine")
 
 # Collect sources
 set(KGENERATOR_HEADERS
-    "include/kotono_generator/Generator.h"
+    "Generator/Generator.h"
 )
 set(KGENERATOR_SOURCES
-    "src/Generator.cpp"
-    "src/main.cpp"
+    "Generator/Generator.cpp"
+    "main.cpp"
 )
 
 target_sources(KotonoGenerator
@@ -21,11 +21,8 @@ target_sources(KotonoGenerator
     PRIVATE ${KGENERATOR_SOURCES}
 )
 
-# Include directories
 target_include_directories(KotonoGenerator
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/kotono_generator"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-# Link libs
 target_link_libraries(KotonoGenerator PRIVATE KotonoReflection)
