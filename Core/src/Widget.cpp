@@ -24,7 +24,7 @@ static auto isVisible(UWidgetDisplaySettings const& displaySettings) -> b8
 
 WWidget::WWidget() 
 	: build_{ nullptr }
-	, isDirty_{ true }
+	, isDirty_{ false }
 	, isVisible_{ true }
 	, parent_{ nullptr }
 	, isDisplayed_{ false }
@@ -46,13 +46,6 @@ WWidget::~WWidget()
 	}
 }
 
-void WWidget::PostConstruct()
-{
-	Base::PostConstruct();
-
-	CacheBuild();
-}
-
 WidgetPtr WWidget::Build()
 {
 	return Ptr();
@@ -60,6 +53,8 @@ WidgetPtr WWidget::Build()
 
 void WWidget::Display(UWidgetDisplaySettings const& displaySettings)
 {
+	CacheBuild();
+	
 	isDisplayed_ = true;
 
 	slotDisplaySettings_ = displaySettings;
@@ -275,6 +270,24 @@ void WWidget::Refresh()
 	}
 }
 
+void WWidget::CacheBuild()
+{
+	if (!build_)
+	{
+		build_ = Build();
+		if (HasBuild())
+		{
+			build_->SetParent(Ptr());
+		}
+		MarkDirty();
+	}
+	
+	if (HasBuild())
+	{
+		build_->CacheBuild();
+	}
+}
+
 auto WWidget::GetIsPointHovering(glm::vec2 const& position) const -> b8
 {
 	return is_point_in_rect(position, GetScissor().offset, GetScissor().extent)
@@ -303,15 +316,6 @@ void WWidget::DisplayInternal(UWidgetDisplaySettings displaySettings)
 auto WWidget::GetCanCache() const -> b8
 {
 	return isVisible_.GetIsValue();
-}
-
-void WWidget::CacheBuild()
-{
-	build_ = Build();
-	if (HasBuild())
-	{
-		build_->SetParent(Ptr());
-	}
 }
 
 bool WWidget::HasBuild() const

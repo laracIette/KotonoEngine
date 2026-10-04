@@ -6,12 +6,15 @@ class WDetachable final : public WWidget
 {
 	GENERATED_WDETACHABLE()
 
+public:
+	WDetachable();
+	
 protected:
 	WidgetPtr Build() override;
 
 public:
 	auto GetChild() const -> WidgetPtr;
-	void SetChild(WidgetPtr const& widget);
+	void SetChild(WidgetPtr const& widget) const;
 
 private:
 	void Detach();

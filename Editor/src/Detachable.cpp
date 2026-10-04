@@ -3,6 +3,11 @@
 #include <kotono_core/Interface.h>
 #include <kotono_interface/widgets.h>
 
+WDetachable::WDetachable()
+{
+	socket_ = UCreate<WSocket>{}();
+}
+
 WidgetPtr WDetachable::Build()
 {
 	return (
@@ -48,7 +53,7 @@ WidgetPtr WDetachable::Build()
 				)
 			)
 			| (
-				socket_ = UCreate<WSocket>{}()
+				socket_
 			)
 		)
 	);
@@ -59,14 +64,9 @@ auto WDetachable::GetChild() const -> WidgetPtr
 	return socket_ ? socket_->GetChild() : nullptr;
 }
 
-void WDetachable::SetChild(WidgetPtr const& widget)
+void WDetachable::SetChild(WidgetPtr const& widget) const
 {
-	if (!socket_)
-	{
-		return;
-	}
-
-	UPtr const child{ GetChild() };
+	UPtr const child{ socket_->GetChild() };
 
 	socket_->SetChild(widget);
 
@@ -78,11 +78,6 @@ void WDetachable::SetChild(WidgetPtr const& widget)
 
 void WDetachable::Detach()
 {
-	if (!socket_)
-	{
-		return;
-	}
-
 	UPtr const child{ GetChild() };
 
 	if (!child)

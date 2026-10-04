@@ -27,18 +27,9 @@ KObject::~KObject()
     ptr_.Invalidate();
 }
 
-void KObject::PostConstruct()
-{
-    type_ = TypeName();
-    if (name_.empty())
-    {
-        SetName(std::format("{0}_{1}", type_, GetGuid().ToString()));
-    }
-}
-
 std::string KObject::TypeName() const
 {
-    std::string_view name{ typeid(*this).name() };
+    std::string_view const name{ typeid(*this).name() };
     return std::string{ name.substr(6) };
 }
 

@@ -3,15 +3,21 @@
 #include "HorizontalWrapListBody.h"
 #include "widgets.h"
 
+WHorizontalWrapList::WHorizontalWrapList()
+{
+	scrollable_ = UCreate<WScrollable>{ "Horizontal Wrap List Scrollable" }();
+	body_ = UCreate<WHorizontalWrapListBody>{ "Horizontal Wrap List Body" }();
+}
+
 WidgetPtr WHorizontalWrapList::Build()
 {
 	return (
 		UCreate<WCrop>{}()
 		| (
-			scrollable_ = UCreate<WScrollable>{ "Horizontal Wrap List Scrollable" }()
+			scrollable_
 			| Apply(&WScrollable::SetAxis, EAxis::Vertical)
 			| (
-				body_ = UCreate<WHorizontalWrapListBody>{ "Horizontal Wrap List Body" }()
+				body_
 			)
 		)
 	);

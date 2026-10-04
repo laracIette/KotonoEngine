@@ -152,6 +152,14 @@ void WChildOwner::Refresh()
 	}
 }
 
+void WChildOwner::CacheBuild()
+{
+	if (child_)
+	{
+		child_->CacheBuild();
+	}
+}
+
 void WChildOwner::SetChild(WidgetPtr const& widget)
 {
 	if (widget == child_)

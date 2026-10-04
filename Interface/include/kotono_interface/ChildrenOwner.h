@@ -26,6 +26,7 @@ public:
 	auto OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) -> b8 override;
 	
 	void Refresh() final;
+	void CacheBuild() final;
 
 	void SetChildren(WidgetSet const& widgets);
 	void AddChild(WidgetPtr const& widget);

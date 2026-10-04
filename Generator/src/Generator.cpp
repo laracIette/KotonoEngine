@@ -130,7 +130,8 @@ R"(#pragma once
 		virtual void SerializeTo(nlohmann::json& json) const; \
 		virtual void DeserializeFrom(const nlohmann::json& json); \
 		virtual std::vector<UVariableInfo> GetMemberVariables() const; \
-		UPtr<{1}> Ptr() const;
+		UPtr<{1}> Ptr() const; \
+	private:
 )",
 			to_upper(classInfo.name),
 			classInfo.name
@@ -146,7 +147,8 @@ R"(#pragma once
 		void SerializeTo(nlohmann::json& json) const override; \
 		void DeserializeFrom(const nlohmann::json& json) override; \
 		std::vector<UVariableInfo> GetMemberVariables() const override; \
-		UPtr<{1}> Ptr() const;
+		UPtr<{1}> Ptr() const; \
+	private:
 )",
 			to_upper(classInfo.name),
 			classInfo.name,

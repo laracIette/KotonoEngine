@@ -64,14 +64,14 @@ class KObject
 	GENERATED_KOBJECT()
 
 	friend class SObjectFactory;
+	
+	template <std::derived_from<KObject> T>
+	friend struct UCreate;
 
 public:
 	KObject();
 	virtual ~KObject();
-
-	virtual void PostConstruct();
-
-public:
+	
 	std::string TypeName() const;
 	UPath InstancePath() const;
 
@@ -156,10 +156,6 @@ auto _Make(MemFn fn, Args&&... args)
 
 #define Apply _Make
 
-
-
-
-
 template <std::derived_from<KObject> T>
 struct UCreate final
 {
@@ -180,13 +176,16 @@ public:
 	UPtr<T> operator()(Args&&... args) const
 	{
 		T* object{ new T{ std::forward<Args>(args)... } };
-
+		object->type_ = object->TypeName();
+			
 		if (!name_.empty())
 		{
 			object->SetName(name_);
 		}
-
-		object->PostConstruct();
+		else
+		{
+			object->SetName(std::format("{0}_{1}", object->type_, object->GetGuid().ToString()));
+		}
 
 #	ifndef NDEBUG
 		object->sourceFile = loc_.file_name();

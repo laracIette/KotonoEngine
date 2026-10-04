@@ -183,6 +183,17 @@ void WChildrenOwner::Refresh()
 	}
 }
 
+void WChildrenOwner::CacheBuild()
+{
+	for (auto const& child : children_)
+	{
+		if (child)
+		{
+			child->CacheBuild();
+		}
+	}
+}
+
 void WChildrenOwner::SetChildren(WidgetSet const& widgets)
 {
 	SetState([this, widgets]() {

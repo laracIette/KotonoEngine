@@ -54,8 +54,6 @@ public:
 	WWidget();
 	~WWidget() override;
 
-	void PostConstruct() override;
-
 protected:
 	/// Create the widget tree to display
 	virtual WidgetPtr Build();
@@ -93,6 +91,8 @@ public:
 
 	auto GetShouldRefresh() const -> b8;
 	virtual void Refresh();
+	
+	virtual void CacheBuild();
 
 	auto GetIsPointHovering(glm::vec2 const& position) const -> b8;
 
@@ -112,7 +112,6 @@ protected:
 	virtual auto GetCanCache() const -> b8;
 
 private:
-	void CacheBuild();
 	auto HasBuild() const -> b8;
 	void MarkDirty();
 
