@@ -19,12 +19,12 @@ auto SObjectFactory::Get(UGuid const& guid) -> UPtr<KObject>
 	{
 		if (UPtr object{ registryIt->second })
 		{
-			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Core", "found object {}", object->GetName());
+			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Object", "found object {0}", object->GetName());
 			return object;
 		}
 	}
 
-	const UPath path{ UPath("${PROJECT_DIRECTORY}/assets/objects") / std::format("{}.kobject", guid.ToString())};
+	const UPath path{ UPath{ "${PROJECT_DIRECTORY}/Assets/objects" } / std::format("{0}.kobject", guid.ToString())};
 
 	// Add to registry
 	nlohmann::json json{};
@@ -33,21 +33,21 @@ auto SObjectFactory::Get(UGuid const& guid) -> UPtr<KObject>
 	const auto it{ json.find("type_") };
 	if (it == json.end())
 	{
-		KT_LOG(ELogImportanceLevel::High, "Core", "missing element type_ in json");
+		KT_LOG(ELogImportanceLevel::High, "Object", "missing element type_ in json");
 		return nullptr;
 	}
 
 	const auto type{ it->get<std::string>() };
 	if (UPtr object{ GetFactory(type) })
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Core", "created object {}", object->GetName());
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Object", "created object {0}", object->GetName());
 		object->guid_ = guid;
 		object->Deserialize();
 		registry_[guid] = object;
 		return object;
 	}
 
-	KT_LOG(ELogImportanceLevel::High, "Core", "missing value for type {} in object factories", type);
+	KT_LOG(ELogImportanceLevel::High, "Object", "missing value for type {0} in object factories", type);
 	return nullptr;
 }
 

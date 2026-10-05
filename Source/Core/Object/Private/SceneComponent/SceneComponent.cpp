@@ -6,7 +6,7 @@
 #include <math_utils/math_utils.h>
 #include <stdexcept>
 
-KSceneComponent::KSceneComponent() 
+KSceneComponent::KSceneComponent()
     : owner_{}
     , visibility_{ EVisibility::Visible }
     , canUpdate_{ true }
@@ -139,25 +139,25 @@ void KSceneComponent::SetParent(UPtr<KSceneComponent> const& parent, ECoordinate
 {
     if (!parent && !parent_)
     {
-        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {0}, it's already null", GetName());
+        KT_LOG(ELogImportanceLevel::High, "Object", "couldn't set the parent of {0}, it's already null", GetName());
         return;
     }
 
     if (parent == Ptr())
     {
-        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {0} to itself", GetName());
+        KT_LOG(ELogImportanceLevel::High, "Object", "couldn't set the parent of {0} to itself", GetName());
         return;
     }
 
     if (parent == parent_)
     {
-        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {0} to its current parent", GetName());
+        KT_LOG(ELogImportanceLevel::High, "Object", "couldn't set the parent of {0} to its current parent", GetName());
         return;
     }
 
     if (!CanSetTransform())
     {
-        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the parent of {0}, its mobility is static", GetName());
+        KT_LOG(ELogImportanceLevel::High, "Object", "couldn't set the parent of {0}, its mobility is static", GetName());
         return;
     }
 
@@ -198,7 +198,7 @@ void KSceneComponent::SetRelativePosition(glm::vec3 const& relativePosition)
 {
     if (!CanSetTransform())
     {
-        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the position of {}, its mobility is static", GetName());
+        KT_LOG(ELogImportanceLevel::High, "Object", "couldn't set the position of {}, its mobility is static", GetName());
         return;
     }
 
@@ -215,7 +215,7 @@ void KSceneComponent::SetRelativeRotation(glm::quat const& relativeRotation)
 {
     if (!CanSetTransform())
     {
-        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the rotation of {}, its mobility is static", GetName());
+        KT_LOG(ELogImportanceLevel::High, "Object", "couldn't set the rotation of {}, its mobility is static", GetName());
         return;
     }
 
@@ -232,7 +232,7 @@ void KSceneComponent::SetRelativeScale(glm::vec3 const& relativeScale)
 {
     if (!CanSetTransform())
     {
-        KT_LOG(ELogImportanceLevel::High, "Core", "couldn't set the scale of {}, its mobility is static", GetName());
+        KT_LOG(ELogImportanceLevel::High, "Object", "couldn't set the scale of {}, its mobility is static", GetName());
         return;
     }
 
@@ -330,7 +330,7 @@ void KSceneComponent::AddChild(UPtr<KSceneComponent> const& component)
 {
     if (!component)
     {
-        KT_LOG(ELogImportanceLevel::High, "Core", "can't add a null scene component");
+        KT_LOG(ELogImportanceLevel::High, "Object", "can't add a null scene component");
         return;
     }
 
@@ -342,7 +342,7 @@ void KSceneComponent::RemoveChild(UPtr<KSceneComponent> const& component)
 {
     if (!component)
     {
-        KT_LOG(ELogImportanceLevel::High, "Core", "can't add a null scene component");
+        KT_LOG(ELogImportanceLevel::High, "Object", "can't add a null scene component");
         return;
     }
 

@@ -22,7 +22,7 @@ static constexpr auto isVisible(UWidgetDisplaySettings const& displaySettings) n
 	return is_overlapping(displaySettings.position, displaySettings.bounds, displaySettings.scissor.offset, displaySettings.scissor.extent);
 }
 
-WWidget::WWidget() 
+WWidget::WWidget()
 	: build_{ nullptr }
 	, isDirty_{ false }
 	, isVisible_{ true }
@@ -54,7 +54,7 @@ WidgetPtr WWidget::Build()
 void WWidget::Display(UWidgetDisplaySettings const& displaySettings)
 {
 	CacheBuild();
-	
+
 	isDisplayed_ = true;
 
 	slotDisplaySettings_ = displaySettings;
@@ -193,8 +193,8 @@ auto WWidget::OnMouseButton(EButton button, EInputState inputState, EModifier mo
 
 auto WWidget::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> b8
 {
-	KT_LOG(ELogImportanceLevel::Medium, "Core", "overlapping {0:30} | {1:100} | | position: {2:30} | size: {3:30} | | slot | position: {4:30} | bounds: {5:30}", GetName(), GetClassPath(), glm::to_string(GetPosition()), glm::to_string(GetSize()), glm::to_string(slotDisplaySettings_.position), glm::to_string(slotDisplaySettings_.bounds));
-	
+	KT_LOG(ELogImportanceLevel::Medium, "Object", "overlapping {0:30} | {1:100} | | position: {2:30} | size: {3:30} | | slot | position: {4:30} | bounds: {5:30}", GetName(), GetClassPath(), glm::to_string(GetPosition()), glm::to_string(GetSize()), glm::to_string(slotDisplaySettings_.position), glm::to_string(slotDisplaySettings_.bounds));
+
 	if (!HasBuild() || !build_->GetIsDisplayed())
 	{
 		return INPUT_UNHANDLED;
@@ -281,7 +281,7 @@ void WWidget::CacheBuild()
 		}
 		MarkDirty();
 	}
-	
+
 	if (HasBuild())
 	{
 		build_->CacheBuild();

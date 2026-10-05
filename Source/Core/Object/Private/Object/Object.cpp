@@ -35,7 +35,7 @@ std::string KObject::TypeName() const
 
 UPath KObject::InstancePath() const
 {
-    return "${PROJECT_DIRECTORY}/assets/objects/" + GetGuid().ToString() + ".kobject";
+    return "${PROJECT_DIRECTORY}/Assets/objects/" + GetGuid().ToString() + ".kobject";
 }
 
 nlohmann::json KObject::ReadJson() const

@@ -1,17 +1,6 @@
 cmake_minimum_required(VERSION 4.2)
 project(KotonoEngine LANGUAGES C CXX)
 
-# --- Global settings ---
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
-# --- Enable multithreaded compilation on MSVC ---
-if (MSVC)
-    add_compile_options(/sdl)
-endif()
-
-# --- Add all modules (subprojects) ---
 add_subdirectory(ThirdParty/dr_libs)
 
 add_subdirectory(Core/Common)
