@@ -1,4 +1,5 @@
 #include "HorizontalWrapListBody.h"
+
 #include <glm/common.hpp>
 
 glm::vec2 WHorizontalWrapListBody::GetContentSize(glm::vec2 const& bounds) const

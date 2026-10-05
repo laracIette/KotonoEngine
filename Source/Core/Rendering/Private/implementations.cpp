@@ -1,4 +1,4 @@
-#include <kotono_common/LogImportanceLevel.h>
+#include <Logging/LogImportanceLevel.h>
 
 #ifndef NDEBUG
 

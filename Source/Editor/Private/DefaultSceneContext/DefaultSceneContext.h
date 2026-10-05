@@ -1,6 +1,7 @@
 #pragma once
 #include "generated/DefaultSceneContext.generated.h"
-#include <kotono_core/SceneContext.h>
+#include <SceneContext/SceneContext.h>
+
 class WDefaultSceneContext final : public WSceneContext
 {
 	GENERATED_WDEFAULTSCENECONTEXT()

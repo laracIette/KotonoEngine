@@ -8,71 +8,73 @@ target_compile_features(KotonoInterface PUBLIC cxx_std_23)
 set_target_properties(KotonoInterface PROPERTIES FOLDER "KotonoEngine/Core")
 
 set(KINTERFACE_PUBLIC_HEADERS
-    "Public/widgets.h"
-    "Public/Align/Align.h"
-    "Public/Box/Box.h"
-    "Public/Button/Button.h"
+    "Public/core_widgets.h"
+    "Public/CoreWidgets/Align/Align.h"
+    "Public/CoreWidgets/Box/Box.h"
+    "Public/CoreWidgets/Button/Button.h"
     "Public/ChildOwner/ChildOwner.h"
     "Public/ChildrenOwner/ChildrenOwner.h"
-    "Public/Color/Color.h"
-    "Public/Column/Column.h"
-    "Public/Constraint/Constraint.h"
-    "Public/Crop/Crop.h"
-    "Public/Expanded/Expanded.h"
-    "Public/HorizontalWrapList/HorizontalWrapList.h"
-    "Public/Image/Image.h"
-    "Public/List/List.h"
-    "Public/Offset/Offset.h"
-    "Public/Padding/Padding.h"
-    "Public/Row/Row.h"
-    "Public/SceneTexture/SceneTexture.h"
-    "Public/Scrollable/Scrollable.h"
-    "Public/Socket/Socket.h"
-    "Public/Spacer/Spacer.h"
-    "Public/Stack/Stack.h"
-    "Public/Text/Text.h"
-    "Public/Wrap/Wrap.h"
+    "Public/CoreWidgets/Color/Color.h"
+    "Public/CoreWidgets/Column/Column.h"
+    "Public/CoreWidgets/Constraint/Constraint.h"
+    "Public/CoreWidgets/Crop/Crop.h"
+    "Public/CoreWidgets/Expanded/Expanded.h"
+    "Public/CoreWidgets/HorizontalWrapList/HorizontalWrapList.h"
+    "Public/CoreWidgets/Image/Image.h"
+    "Public/CoreWidgets/List/List.h"
+    "Public/CoreWidgets/Offset/Offset.h"
+    "Public/CoreWidgets/Padding/Padding.h"
+    "Public/CoreWidgets/Row/Row.h"
+    "Public/CoreWidgets/SceneTexture/SceneTexture.h"
+    "Public/CoreWidgets/Scrollable/Scrollable.h"
+    "Public/CoreWidgets/Socket/Socket.h"
+    "Public/CoreWidgets/Spacer/Spacer.h"
+    "Public/CoreWidgets/Stack/Stack.h"
+    "Public/CoreWidgets/Text/Text.h"
+    "Public/CoreWidgets/Wrap/Wrap.h"
 )
 set(KINTERFACE_PRIVATE_HEADERS
     "Private/HorizontalWrapListBody/HorizontalWrapListBody.h"
     "Private/ListBody/ListBody.h"
 )
 set(KINTERFACE_SOURCES
-    "Private/Align/Align.cpp"
-    "Private/Box/Box.cpp"
-    "Private/Button/Button.cpp"
+    "Private/CoreWidgets/Align/Align.cpp"
+    "Private/CoreWidgets/Box/Box.cpp"
+    "Private/CoreWidgets/Button/Button.cpp"
     "Private/ChildOwner/ChildOwner.cpp"
     "Private/ChildrenOwner/ChildrenOwner.cpp"
-    "Private/Color/Color.cpp"
-    "Private/Column/Column.cpp"
-    "Private/Constraint/Constraint.cpp"
-    "Private/Crop/Crop.cpp"
-    "Private/Expanded/Expanded.cpp"
-    "Private/HorizontalWrapList/HorizontalWrapList.cpp"
+    "Private/CoreWidgets/Color/Color.cpp"
+    "Private/CoreWidgets/Column/Column.cpp"
+    "Private/CoreWidgets/Constraint/Constraint.cpp"
+    "Private/CoreWidgets/Crop/Crop.cpp"
+    "Private/CoreWidgets/Expanded/Expanded.cpp"
+    "Private/CoreWidgets/HorizontalWrapList/HorizontalWrapList.cpp"
     "Private/HorizontalWrapListBody/HorizontalWrapListBody.cpp"
-    "Private/Image/Image.cpp"
-    "Private/List/List.cpp"
+    "Private/CoreWidgets/Image/Image.cpp"
+    "Private/CoreWidgets/List/List.cpp"
     "Private/ListBody/ListBody.cpp"
-    "Private/Offset/Offset.cpp"
-    "Private/Padding/Padding.cpp"
-    "Private/Row/Row.cpp"
-    "Private/SceneTexture/SceneTexture.cpp"
-    "Private/Scrollable/Scrollable.cpp"
-    "Private/Socket/Socket.cpp"
-    "Private/Spacer/Spacer.cpp"
-    "Private/Stack/Stack.cpp"
-    "Private/Text/Text.cpp"
-    "Private/Wrap/Wrap.cpp"
+    "Private/CoreWidgets/Offset/Offset.cpp"
+    "Private/CoreWidgets/Padding/Padding.cpp"
+    "Private/CoreWidgets/Row/Row.cpp"
+    "Private/CoreWidgets/SceneTexture/SceneTexture.cpp"
+    "Private/CoreWidgets/Scrollable/Scrollable.cpp"
+    "Private/CoreWidgets/Socket/Socket.cpp"
+    "Private/CoreWidgets/Spacer/Spacer.cpp"
+    "Private/CoreWidgets/Stack/Stack.cpp"
+    "Private/CoreWidgets/Text/Text.cpp"
+    "Private/CoreWidgets/Wrap/Wrap.cpp"
 )
 
 target_sources(KotonoInterface
-    PUBLIC ${KINTERFACE_PUBLIC_HEADERS}
-    PRIVATE ${KINTERFACE_PRIVATE_HEADERS}
-    PRIVATE ${KINTERFACE_SOURCES}
+    PRIVATE
+        ${KINTERFACE_SOURCES}
+        ${KINTERFACE_PRIVATE_HEADERS}
+    PUBLIC FILE_SET HEADERS
+        BASE_DIRS Public
+        FILES ${KINTERFACE_PUBLIC_HEADERS}
 )
 
 target_include_directories(KotonoInterface
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
 )
 

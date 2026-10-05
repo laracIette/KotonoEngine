@@ -1,6 +1,6 @@
-#include "ChildOwner.h"
+#include "ChildOwner/ChildOwner.h"
 
-#include <kotono_math/math_utils.h>
+#include <math_utils/math_utils.h>
 
 WChildOwner::WChildOwner()
 	: child_{ nullptr }

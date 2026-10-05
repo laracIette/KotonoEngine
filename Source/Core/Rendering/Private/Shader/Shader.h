@@ -1,9 +1,11 @@
 #pragma once
-#include <kotono_common/Asset.h>
-#include <kotono_common/Path.h>
+#include <Asset/Asset.h>
+
 #include <span>
 #include <vulkan/vulkan_core.h>
+
 class UDevice;
+
 enum class EPipelinePass : u8
 {
 	Compute,

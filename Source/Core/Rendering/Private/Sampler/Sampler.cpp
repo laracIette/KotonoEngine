@@ -1,9 +1,9 @@
 #include "Sampler.h"
 
-#include <kotono_io/serialize_base.h>
-#include <kotono_io/Serializer.h>
-#include <kotono_platform/Device.h>
-#include <kotono_platform/vk_utils.h>
+#include <serialize_base/serialize_base.h>
+#include <Serializer/Serializer.h>
+#include <Device/Device.h>
+#include <vk_utils/vk_utils.h>
 #include <nlohmann/json.hpp>
 
 ASampler::ASampler(UPath const& path)

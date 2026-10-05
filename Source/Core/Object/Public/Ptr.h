@@ -1,6 +1,6 @@
 #pragma once
 #include <format>
-#include <kotono_common/types.h>
+#include <types.h>
 #include <string>
 #include <type_traits>
 #include <utility>

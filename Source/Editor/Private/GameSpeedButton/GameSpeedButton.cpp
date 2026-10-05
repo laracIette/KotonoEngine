@@ -1,7 +1,7 @@
 #include "GameSpeedButton.h"
 
-#include <kotono_core/Scene.h>
-#include <kotono_interface/widgets.h>
+#include <Scene/Scene.h>
+#include <core_widgets.h>
 
 WidgetPtr WGameSpeedButton::Build()
 {

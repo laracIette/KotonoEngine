@@ -1,7 +1,7 @@
 #include "Material.h"
 
-#include <kotono_io/serialize_base.h>
-#include <kotono_io/Serializer.h>
+#include <serialize_base/serialize_base.h>
+#include <Serializer/Serializer.h>
 #include <nlohmann/json.hpp>
 
 AMaterial::AMaterial(UPath const& path)

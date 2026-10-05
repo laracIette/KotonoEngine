@@ -1,6 +1,6 @@
 #include "SceneVisibilityField.h"
 
-#include <kotono_interface/widgets.h>
+#include <core_widgets.h>
 
 WSceneVisibilityField::WSceneVisibilityField(ESceneVisibility field, std::string_view name, b8 isFieldVisible) 
     : field_{ field }

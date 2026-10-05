@@ -1,17 +1,17 @@
 #pragma once
 #include "generated/Object.generated.h"
 
-#include "Guid.h"
-#include "ObjectFactory.h"
+#include "Guid/Guid.h"
+#include "ObjectFactory/ObjectFactory.h"
 #include "Ptr.h"
 #include "VariableInfo.h"
 #include <cassert>
 #include <concepts>
 #include <functional>
-#include <kotono_common/Event.h>
-#include <kotono_common/log.h>
-#include <kotono_common/Path.h>
-#include <kotono_io/serialize_base.h>
+#include <Event/Event.h>
+#include <Logging/log.h>
+#include <Path/Path.h>
+#include <serialize_base/serialize_base.h>
 #include <nlohmann/json_fwd.hpp>
 #include <source_location>
 #include <string>

@@ -6,10 +6,11 @@
 #include <new>
 #include <type_traits>
 #include <utility>
-template <typename T, ::size Capacity>
+
 /// <summary>
-/// An contiguous container with a fixed capacity allocated on the heap
+/// A contiguous container with a fixed capacity allocated on the heap
 /// </summary>
+template <typename T, ::size Capacity>
 class UFixedHeapContainer final
 {
 private:

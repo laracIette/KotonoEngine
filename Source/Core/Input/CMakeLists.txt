@@ -23,12 +23,14 @@ set(KINPUT_SOURCES
 )
 
 target_sources(KotonoInput
-    PUBLIC ${KINPUT_PUBLIC_HEADERS}
-    PRIVATE ${KINPUT_SOURCES}
+    PRIVATE
+        ${KINPUT_SOURCES}
+    PUBLIC FILE_SET HEADERS
+        BASE_DIRS Public
+        FILES ${KINPUT_PUBLIC_HEADERS}
 )
 
 target_include_directories(KotonoInput
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
 )
 

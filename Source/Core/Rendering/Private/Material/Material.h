@@ -1,7 +1,6 @@
 #pragma once
-#include <kotono_common/Asset.h>
-#include <kotono_common/Path.h>
-#include <kotono_common/types.h>
+#include <Asset/Asset.h>
+
 class AMaterial final : public AAsset
 {
 public:

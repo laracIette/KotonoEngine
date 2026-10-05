@@ -1,9 +1,9 @@
 #pragma once
 #include "generated/SceneObject.generated.h"
-#include "Object.h"
+#include "Object/Object.h"
 
 #include "CoordinateSpace.h"
-#include <kotono_common/Set.h>
+#include <Containers/Set.h>
 
 enum class ESceneVisibility : u32;
 struct USceneRenderGraph;

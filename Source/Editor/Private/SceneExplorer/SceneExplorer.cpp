@@ -1,10 +1,10 @@
 #include "SceneExplorer.h"
 
-#include "SceneExplorerAddButton.h"
-#include "SceneExplorerItem.h"
-#include "SceneExplorerRemoveButton.h"
-#include <kotono_core/Scene.h>
-#include <kotono_interface/widgets.h>
+#include "SceneExplorerAddButton/SceneExplorerAddButton.h"
+#include "SceneExplorerItem/SceneExplorerItem.h"
+#include "SceneExplorerRemoveButton/SceneExplorerRemoveButton.h"
+#include <Scene/Scene.h>
+#include <core_widgets.h>
 
 WidgetPtr WSceneExplorer::Build()
 {

@@ -1,7 +1,8 @@
 #pragma once
-#include <kotono_common/Path.h>
-#include <kotono_io/Serializer.h>
+#include <Path/Path.h>
+#include <Serializer/Serializer.h>
 #include <nlohmann/json.hpp>
+
 class SProjectSettings final
 {
 public:

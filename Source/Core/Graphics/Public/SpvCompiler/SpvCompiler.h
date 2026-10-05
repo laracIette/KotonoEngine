@@ -8,6 +8,6 @@ public:
 
 private:
 	static bool DependenciesUpdated();
-	static bool Compile(const std::filesystem::path& path);
+	static bool Compile(std::filesystem::path const& path);
 };
 

@@ -1,8 +1,8 @@
 #pragma once
 #include "generated/SceneVisibilityWindow.generated.h"
-#include <kotono_core/Widget.h>
+#include <Widget/Widget.h>
 
-#include <kotono_graphics/SceneVisibility.h>
+#include <SceneVisibility.h>
 
 class WSceneVisibilityWindow : public WWidget
 {

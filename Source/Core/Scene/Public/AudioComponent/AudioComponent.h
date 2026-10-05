@@ -1,8 +1,9 @@
 #pragma once
 #include "generated/AudioComponent.generated.h"
-#include <kotono_core/SceneComponent.h>
+#include <SceneComponent/SceneComponent.h>
 
-#include <kotono_common/Handle.h>
+#include <Handle.h>
+
 class KAudioComponent final : public KSceneComponent
 {
 	GENERATED_KAUDIOCOMPONENT()

@@ -1,5 +1,5 @@
 #pragma once
-#include <kotono_common/types.h>
+#include <types.h>
 struct UMaterialBufferData final
 {
 	u32 albedoIndex;

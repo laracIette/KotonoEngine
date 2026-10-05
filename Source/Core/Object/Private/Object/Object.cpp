@@ -1,7 +1,7 @@
-#include "Object.h"
+#include "Object/Object.h"
 
-#include "ObjectFactory.h"
-#include <kotono_io/Serializer.h>
+#include "ObjectFactory/ObjectFactory.h"
+#include <Serializer/Serializer.h>
 #include <nlohmann/json.hpp>
 
 #ifndef NDEBUG

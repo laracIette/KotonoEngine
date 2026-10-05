@@ -1,10 +1,11 @@
 ﻿#include "Generator.h"
+
 #include <iostream>
-#include <kotono_common/log.h>
-#include <kotono_common/Path.h>
-#include <kotono_io/File.h>
-#include <kotono_io/Serializer.h>
-#include <kotono_reflection/Reflector.h>
+#include <Logging/log.h>
+#include <Path/Path.h>
+#include <File/File.h>
+#include <Serializer/Serializer.h>
+#include <Reflector/Reflector.h>
 #include <nlohmann/json.hpp>
 #include <ranges>
 

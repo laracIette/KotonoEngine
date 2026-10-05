@@ -1,10 +1,11 @@
 #pragma once
 #include "FrameContextBufferData.h"
-#include <kotono_common/types.h>
-#include <kotono_platform/AllocatedBuffer.h>
+#include <types.h>
+#include <AllocatedBuffer.h>
 #include <vulkan/vulkan_core.h>
+
 class UDevice;
-class UPipelineResourceManager;
+
 class UFrameContextBuffer final
 {
     using Data = UFrameContextBufferData;

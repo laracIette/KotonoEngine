@@ -1,9 +1,10 @@
 #pragma once
 #include <glm/ext/vector_float3.hpp>
 #include <glm/ext/vector_float4.hpp>
-#include <kotono_common/types.h>
-#include <kotono_io/serialize_base.h>
-#include <kotono_math/math_utils.h>
+#include <types.h>
+#include <serialize_base/serialize_base.h>
+#include <math_utils/math_utils.h>
+
 struct UColor final
 {
 	struct RGB { f32 r, g, b; };
@@ -18,19 +19,19 @@ struct UColor final
 	};
 	f32 a;
 
-	constexpr UColor(f32 red, f32 green, f32 blue, f32 alpha)
+	constexpr UColor(f32 red, f32 green, f32 blue, f32 alpha) noexcept
 		: r{ red }, g{ green }, b{ blue }, a{ alpha }
 	{}
 
-	constexpr UColor() 
+	constexpr UColor() noexcept
 		: UColor(0.0f, 0.0f, 0.0f, 1.0f)
 	{}
 
-	constexpr UColor(f32 red, f32 green, f32 blue) 
+	constexpr UColor(f32 red, f32 green, f32 blue) noexcept
 		: UColor(red, green, blue, 1.0f)
 	{}
 
-	constexpr UColor(f32 value) 
+	constexpr UColor(f32 value) noexcept
 		: UColor(value, value, value, 1.0f)
 	{}
 

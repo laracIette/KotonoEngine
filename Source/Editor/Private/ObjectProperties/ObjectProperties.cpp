@@ -1,10 +1,9 @@
 #include "ObjectProperties.h"
 
-#include "ValueBox.h"
-#include "ValueSlider.h"
+#include "ValueBox/ValueBox.h"
+#include "ValueSlider/ValueSlider.h"
 #include <glm/gtx/string_cast.hpp>
-#include <kotono_core/Object.h>
-#include <kotono_interface/widgets.h>
+#include <core_widgets.h>
 
 static auto buildMemberWidget(std::string_view type, void* variablePtr) -> WidgetPtr
 {

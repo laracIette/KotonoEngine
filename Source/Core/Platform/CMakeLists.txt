@@ -63,13 +63,15 @@ set(KPLATFORM_SOURCES
 )
 
 target_sources(KotonoPlatform
-    PUBLIC ${KPLATFORM_PUBLIC_HEADERS}
-    PRIVATE ${KPLATFORM_SOURCES}
+    PRIVATE
+        ${KPLATFORM_SOURCES}
+    PUBLIC FILE_SET HEADERS
+        BASE_DIRS Public
+        FILES ${KPLATFORM_PUBLIC_HEADERS}
 )
 
 target_include_directories(KotonoPlatform
     PUBLIC "${ENGINE_PATH}/Source/ThirdParty/vma/include"
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
 )
 

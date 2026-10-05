@@ -1,4 +1,4 @@
-#include "SecondaryWindow.h"
+#include "SecondaryWindow/SecondaryWindow.h"
 
 WSecondaryWindow::WSecondaryWindow(WidgetPtr const& widget)
 	: widget_{ widget }

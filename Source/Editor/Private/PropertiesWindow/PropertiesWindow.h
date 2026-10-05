@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/PropertiesWindow.generated.h"
-#include <kotono_core/SceneWidget.h>
+#include <SceneWidget/SceneWidget.h>
 
 class TSceneObject;
 class WList;

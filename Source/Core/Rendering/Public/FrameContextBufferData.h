@@ -2,7 +2,7 @@
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/ext/vector_uint2.hpp>
-#include <kotono_common/types.h>
+#include <types.h>
 #include <vulkan/vulkan_core.h>
 struct UFrameContextBufferData
 {

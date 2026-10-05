@@ -1,5 +1,5 @@
 #pragma once
-#include <kotono_common/types.h>
+#include <types.h>
 enum class EButton : u8
 {
 	Button1 = 0,

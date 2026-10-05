@@ -1,8 +1,8 @@
-#include "Serializer.h"
+#include "Serializer/Serializer.h"
 
-#include "File.h"
-#include <kotono_common/log.h>
-#include <kotono_common/Path.h>
+#include "File/File.h"
+#include <Logging/log.h>
+#include <Path/Path.h>
 #include <nlohmann/json.hpp> 
 
 #define KT_LOG_IMPORTANCE_LEVEL_SERIALIZER ELogImportanceLevel::High

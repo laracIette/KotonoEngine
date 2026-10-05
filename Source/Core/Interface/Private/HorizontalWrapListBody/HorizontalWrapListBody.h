@@ -1,6 +1,7 @@
 #pragma once
 #include "generated/HorizontalWrapListBody.generated.h"
-#include "ChildrenOwner.h"
+#include "ChildrenOwner/ChildrenOwner.h"
+
 class WHorizontalWrapListBody final : public WChildrenOwner
 {
 	GENERATED_WHORIZONTALWRAPLISTBODY()

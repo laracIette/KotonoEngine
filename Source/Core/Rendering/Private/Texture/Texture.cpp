@@ -1,7 +1,7 @@
 #include "Texture.h"
 
-#include <kotono_platform/AllocatedBuffer.h>
-#include <kotono_platform/Device.h>
+#include <AllocatedBuffer.h>
+#include <Device/Device.h>
 #include <stbimage/stb_image.h>
 
 ATexture::ATexture(UPath const& path) 

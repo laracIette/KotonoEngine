@@ -1,5 +1,5 @@
 #pragma once
-#include <kotono_common/types.h>
+#include <types.h>
 enum class EAxis : u8
 {
 	Horizontal = 0x01,

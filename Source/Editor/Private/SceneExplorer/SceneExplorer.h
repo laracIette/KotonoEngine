@@ -1,10 +1,13 @@
 #pragma once
 #include "generated/SceneExplorer.generated.h"
-#include <kotono_core/SceneWidget.h>
+#include <SceneWidget/SceneWidget.h>
+
 #include <span>
+
 class TSceneObject;
 class WList;
 enum class EGameState : u8;
+
 class WSceneExplorer : public WSceneWidget
 {
 	GENERATED_WSCENEEXPLORER()

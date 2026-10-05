@@ -1,6 +1,6 @@
-#include "FrameContextBuffer.h"
+#include "FrameContextBuffer/FrameContextBuffer.h"
 
-#include <kotono_platform/Device.h>
+#include <Device/Device.h>
 
 UFrameContextBuffer::UFrameContextBuffer(UDevice& device)
     : device_{ device }

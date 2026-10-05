@@ -1,11 +1,11 @@
-#include "Surface.h"
+#include "Surface/Surface.h"
 
-#include "Context.h"
-#include "vk_utils.h"
-#include "Window.h"
+#include "Context/Context.h"
+#include "vk_utils/vk_utils.h"
+#include "Window/Window.h"
 #include <algorithm>
 #include <GLFW/glfw3.h>
-#include <kotono_common/types.h>
+#include <types.h>
 #include <limits>
 
 USurface::USurface(UWindow& window, UContext& context)

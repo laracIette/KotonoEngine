@@ -1,9 +1,10 @@
-#include "SpvCompiler.h"
+#include "SpvCompiler/SpvCompiler.h"
+
 #include <format>
-#include <kotono_common/log.h>
-#include <kotono_common/Path.h>
-#include <kotono_io/File.h>
-#include <kotono_io/Serializer.h>
+#include <Logging/log.h>
+#include <Path/Path.h>
+#include <File/File.h>
+#include <Serializer/Serializer.h>
 #include <nlohmann/json.hpp>
 
 #define KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER ELogImportanceLevel::High

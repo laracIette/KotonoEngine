@@ -1,13 +1,13 @@
-#include "InterfaceRender.h"
+#include "InterfaceRender/InterfaceRender.h"
 
 #include "DrawCommand.h"
 #include "DrawDataBufferData.h"
-#include "IndexBuffer.h"
+#include "IndexBuffer/IndexBuffer.h"
 #include "ParametersBufferData.h"
-#include "PipelineResourceManager.h"
+#include "PipelineResourceManager/PipelineResourceManager.h"
 #include "PushConstants.h"
 #include "TransformBufferData.h"
-#include <kotono_platform/Device.h>
+#include <Device/Device.h>
 #include <ranges>
 #include <vector>
 

@@ -1,7 +1,7 @@
-#include "ChildrenOwner.h"
+#include "ChildrenOwner/ChildrenOwner.h"
 
 #include <algorithm>
-#include <kotono_math/math_utils.h>		 
+#include <math_utils/math_utils.h>		 
 #include <ranges>
 
 WChildrenOwner::WChildrenOwner()

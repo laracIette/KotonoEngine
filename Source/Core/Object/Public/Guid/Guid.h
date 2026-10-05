@@ -1,8 +1,9 @@
 #pragma once
 #include <array>
-#include <kotono_common/types.h>
-#include <kotono_io/serialize_base.h>
+#include <types.h>
+#include <serialize_base/serialize_base.h>
 #include <string>
+
 class UGuid final
 {
 private:

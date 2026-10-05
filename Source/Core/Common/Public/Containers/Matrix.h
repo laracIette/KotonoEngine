@@ -1,6 +1,7 @@
 #pragma once
+#include "types.h"
 #include <array>
-#include <kotono_common/types.h>
+
 template <typename T, size Cols, size Rows>
 class UMatrix
 {

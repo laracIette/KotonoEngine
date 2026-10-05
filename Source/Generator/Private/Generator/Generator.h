@@ -2,7 +2,9 @@
 #include <optional>
 #include <string>
 #include <vector>
+
 struct UReflectionResult;
+
 class SGenerator final
 {
 	struct ClassInfo

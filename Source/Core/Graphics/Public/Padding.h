@@ -1,5 +1,5 @@
 #pragma once
-#include <kotono_common/types.h>
+#include <types.h>
 struct UPadding final
 {
 	f32 l, t, r, b;

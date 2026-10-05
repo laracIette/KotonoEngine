@@ -1,13 +1,14 @@
 #pragma once
-#include <glm/ext/vector_uint2.hpp>
-#include <kotono_common/Average.h>
-#include <kotono_platform/Context.h>
-#include <kotono_platform/Device.h>
-#include <kotono_timing/Clock.h>
-#include <kotono_timing/Timer.h>
+#include <Average.h>
+#include <Context/Context.h>
+#include <Device/Device.h>
+#include <Clock/Clock.h>
+#include <Timer/Timer.h>
 #include <vector>
+
 class UMainWindowContext;
 class USecondaryWindowContext;
+
 class UApplication final
 {
 public:

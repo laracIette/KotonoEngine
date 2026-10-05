@@ -1,13 +1,13 @@
 #pragma once
 #include "generated/SceneComponent.generated.h"
-#include "Object.h"
+#include "Object/Object.h"
 
 #include "CoordinateSpace.h"
-#include "Transform.h"
-#include <kotono_common/Event.h>
-#include <kotono_common/Set.h>
-#include <kotono_graphics/Mobility.h>
-#include <kotono_graphics/Visibility.h>
+#include "Transform/Transform.h"
+#include <Event/Event.h>
+#include <Containers/Set.h>
+#include <Mobility.h>
+#include <Visibility.h>
 
 enum class ESceneVisibility : u32;
 struct USceneRenderGraph;

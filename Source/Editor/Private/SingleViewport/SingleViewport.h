@@ -1,6 +1,7 @@
 #pragma once
 #include "generated/SingleViewport.generated.h"
-#include <kotono_core/SceneWidget.h>
+#include <SceneWidget/SceneWidget.h>
+
 class WSingleViewport final : public WSceneWidget
 {
 	GENERATED_WSINGLEVIEWPORT()

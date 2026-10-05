@@ -1,14 +1,16 @@
 #pragma once
+#include <Asset/Asset.h>
+
 #include <glm/ext/vector_float2.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/ext/vector_float4.hpp>
-#include <kotono_common/Asset.h>
-#include <kotono_common/Path.h>
-#include <kotono_common/types.h>
-#include <kotono_platform/AllocatedBuffer.h>
+#include <types.h>
+#include <AllocatedBuffer.h>
 #include <span>
+
 class UDevice;
 class UIndexBuffer;
+
 struct UVertex
 {
 	glm::vec3 position;

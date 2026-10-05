@@ -1,10 +1,11 @@
 #pragma once
-#include "FrameContextBuffer.h"
-#include <kotono_common/types.h>
-#include <kotono_platform/AllocatedBuffer.h>
+#include "FrameContextBuffer/FrameContextBuffer.h"
+#include <types.h>
+#include <AllocatedBuffer.h>
 #include <span>
 #include <vector>
 #include <vulkan/vulkan_core.h>
+
 struct UDrawCommand;
 struct UDrawDataBufferData;
 struct UTransformBufferData;
@@ -12,6 +13,7 @@ struct UParametersBufferData;
 class UDevice;
 class UIndexBuffer;
 class UPipelineResourceManager;
+
 class UInterfaceRender final
 {
 public:

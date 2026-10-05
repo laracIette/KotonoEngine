@@ -1,9 +1,9 @@
 #pragma once
 #include "frames_in_flight.h"
-#include "SceneRender.h"
+#include "SceneRender/SceneRender.h"
 #include <glm/ext/vector_uint2.hpp>
 #include <glm/gtx/hash.hpp>
-#include <kotono_common/types.h>
+#include <types.h>
 #include <span>
 #include <unordered_map>
 #include <vulkan/vulkan_core.h>

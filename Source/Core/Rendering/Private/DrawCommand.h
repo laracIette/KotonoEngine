@@ -2,8 +2,9 @@
 #include <array>
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float4.hpp>
-#include <kotono_common/types.h>
+#include <types.h>
 #include <vulkan/vulkan_core.h>
+
 struct UDrawCommand final
 {
 	u32 drawIndex;

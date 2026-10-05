@@ -1,7 +1,7 @@
 #pragma once
 #include <glm/ext/vector_uint2.hpp>
-#include <kotono_common/Event.h>
-#include <kotono_common/types.h>
+#include <Event/Event.h>
+#include <types.h>
 #include <string_view>
 struct GLFWwindow;
 class UWindow final

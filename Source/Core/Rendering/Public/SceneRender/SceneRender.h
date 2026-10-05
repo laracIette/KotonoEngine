@@ -1,14 +1,15 @@
 #pragma once
-#include "FrameContextBuffer.h"
-#include "GPUBuffers.h"
-#include "LightBuffers.h"
+#include "FrameContextBuffer/FrameContextBuffer.h"
+#include "GPUBuffers/GPUBuffers.h"
+#include "LightBuffers/LightBuffers.h"
 #include <glm/ext/vector_uint2.hpp>
-#include <kotono_common/types.h>
-#include <kotono_platform/AllocatedBuffer.h>
-#include <kotono_platform/AllocatedImage.h>
+#include <types.h>
+#include <AllocatedBuffer.h>
+#include <AllocatedImage.h>
 #include <span>
 #include <vector>
 #include <vulkan/vulkan_core.h>
+
 struct UDrawCommand;
 struct UFrameContextSceneView;
 struct UDrawDataBufferData;
@@ -19,6 +20,7 @@ class UDevice;
 class UIndexBuffer;
 class UPipelineResourceManager;
 class USwapchain;
+
 struct USceneRenderContext final
 {
 	VkCommandBuffer	commandBuffer;
@@ -32,11 +34,13 @@ struct USceneRenderContext final
 
 	UIndexBuffer const& indexBuffer;
 };
+
 struct USceneRenderData final
 {
 	std::span<UDrawCommand const> drawCommands;
 	u32 directionalLightCount;
 };
+
 class USceneRender final
 {
 public:
@@ -50,20 +54,22 @@ public:
 
 	void UpdateBuffers(UFrameContextSceneView const& sceneView, std::span<UDrawCommand const> drawCommands, std::span<UDirectionalLight const> directionalLights, std::span<UPointLight const> pointLights, u32 samplerIndex) const;
 
-	/// Step 1: Depth
-	/// - Out: Depth
-	/// 
-	/// Step 2: GBuffer
-	/// - In: Depth
-	/// - Out: Albedo, Normal, ORM
-	/// 
-	/// Step 3: Color
-	/// - In: Depth, Albedo, Normal, ORM
-	/// - Out: Color
-	/// 
-	/// Step 4: Post-process
-	/// - In: Color
-	/// - Out: Post-process
+	/**
+	 * Step 1: Depth
+	 * - Out: Depth
+	 * 
+	 * Step 2: GBuffer
+	 * - In: Depth
+	 * - Out: Albedo, Normal, ORM
+	 * 
+	 * Step 3: Color
+	 * - In: Depth, Albedo, Normal, ORM
+	 * - Out: Color
+	 * 
+	 * Step 4: Post-process
+	 * - In: Color
+	 * - Out: Post-process
+	 **/
 	void CmdDraw(USceneRenderContext const& renderContext, USceneRenderData const& renderData) const;
 
 private:

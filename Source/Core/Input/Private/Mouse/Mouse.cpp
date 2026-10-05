@@ -1,9 +1,9 @@
-#include "Mouse.h"
+#include "Mouse/Mouse.h"
 
 #include <functional>
 #include <GLFW/glfw3.h>
-#include <kotono_common/log.h> 
-#include <kotono_platform/Window.h>
+#include <Logging/log.h> 
+#include <Window/Window.h>
 #include <unordered_map>
 
 #define KT_LOG_IMPORTANCE_LEVEL_MOUSE ELogImportanceLevel::Low

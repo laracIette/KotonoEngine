@@ -1,0 +1,32 @@
+#pragma once
+#include "generated/HorizontalWrapList.generated.h"
+#include <Widget/Widget.h>
+
+class WHorizontalWrapListBody;
+class WScrollable;
+
+/// Defines an horizontal container for widgets that wraps the content to multiple rows
+class WHorizontalWrapList final : public WWidget
+{
+	GENERATED_WHORIZONTALWRAPLIST()
+
+public:
+	WHorizontalWrapList();
+	
+protected:
+	WidgetPtr Build() override;
+
+public:
+	auto GetItemSpacing() const -> f32;
+	auto GetRowSpacing() const -> f32;
+	auto GetChildren() const -> WidgetSet const&;
+
+	void SetItemSpacing(f32 itemSpacing);
+	void SetRowSpacing(f32 rowSpacing);
+	void SetChildren(WidgetSet const& children);
+	void AddChild(WidgetPtr const& child);
+
+private:
+	UPtr<WScrollable> scrollable_;
+	UPtr<WHorizontalWrapListBody> body_;
+};

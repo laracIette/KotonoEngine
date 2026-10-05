@@ -1,10 +1,10 @@
-#include "Swapchain.h"
+#include "Swapchain/Swapchain.h"
 
-#include "Device.h"
-#include "Surface.h"
-#include "vk_utils.h"
+#include "Device/Device.h"
+#include "Surface/Surface.h"
+#include "vk_utils/vk_utils.h"
 #include <array>
-#include <kotono_common/log.h>
+#include <Logging/log.h>
 
 static VkSurfaceFormatKHR chooseSurfaceFormat(std::span<VkSurfaceFormatKHR const> availableFormats)
 {

@@ -1,12 +1,12 @@
 #include "DefaultSceneContext.h"
 
-#include "Detachable.h"
-#include "GameSpeedButton.h"
-#include "GameStateButton.h"
-#include "PropertiesWindow.h"
-#include "SceneExplorer.h"
-#include "SingleViewport.h"
-#include <kotono_interface/widgets.h>
+#include "Detachable/Detachable.h"
+#include "GameSpeedButton/GameSpeedButton.h"
+#include "GameStateButton/GameStateButton.h"
+#include "PropertiesWindow/PropertiesWindow.h"
+#include "SceneExplorer/SceneExplorer.h"
+#include "SingleViewport/SingleViewport.h"
+#include <core_widgets.h>
 
 WidgetPtr WDefaultSceneContext::Build()
 {

@@ -1,4 +1,4 @@
-#include "serialize_glm.h"
+#include "serialize_glm/serialize_glm.h"
 
 #include <glm/ext/quaternion_float.hpp>
 #include <glm/ext/vector_float2.hpp>

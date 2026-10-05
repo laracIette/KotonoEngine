@@ -1,10 +1,10 @@
 #include "AssetExplorer.h"
 
-#include "AssetExplorerDirectory.h"
-#include "AssetExplorerFile.h"
-#include <kotono_interface/widgets.h>
-#include <kotono_io/File.h>
-#include <kotono_io/FileExplorer.h>
+#include "AssetExplorerDirectory/AssetExplorerDirectory.h"
+#include "AssetExplorerFile/AssetExplorerFile.h"
+#include <core_widgets.h>
+#include <File/File.h>
+#include <FileExplorer/FileExplorer.h>
 
 WAssetExplorer::WAssetExplorer()
 	: currentDirectory_{ "${ENGINE_DIRECTORY}" }

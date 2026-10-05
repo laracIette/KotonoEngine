@@ -1,4 +1,4 @@
-#include "SceneWidget.h"
+#include "SceneWidget/SceneWidget.h"
 
 WSceneWidget::WSceneWidget(UScene* scene)
 	: scene_{ scene }

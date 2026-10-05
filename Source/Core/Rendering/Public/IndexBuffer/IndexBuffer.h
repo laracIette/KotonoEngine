@@ -1,9 +1,11 @@
 #pragma once
-#include <kotono_common/types.h>
-#include <kotono_platform/AllocatedBuffer.h>
+#include <types.h>
+#include <AllocatedBuffer.h>
 #include <span>
 #include <vulkan/vulkan_core.h>
+
 class UDevice;
+
 class UIndexBuffer final
 {
 public:

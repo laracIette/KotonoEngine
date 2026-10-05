@@ -1,8 +1,10 @@
 #pragma once
 #include "generated/SceneContext.generated.h"
-#include <kotono_core/Widget.h>
+#include "Widget/Widget.h"
+
 struct USceneRenderGraph;
 class UScene;
+
 /// <summary>
 /// Base class for a widget managing a scene
 /// </summary>

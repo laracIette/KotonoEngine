@@ -37,12 +37,14 @@ set(KCOMMON_SOURCES
 )
 
 target_sources(KotonoCommon
-    PUBLIC ${KCOMMON_PUBLIC_HEADERS}
-    PRIVATE ${KCOMMON_SOURCES}
+    PRIVATE
+        ${KCOMMON_SOURCES}
+    PUBLIC FILE_SET HEADERS
+        BASE_DIRS Public
+        FILES ${KCOMMON_PUBLIC_HEADERS}
 )
 
 target_include_directories(KotonoCommon
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
 )
 

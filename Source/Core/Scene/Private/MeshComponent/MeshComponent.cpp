@@ -1,10 +1,10 @@
-#include "MeshComponent.h"
+#include "MeshComponent/MeshComponent.h"
 
 #include <glm/gtc/matrix_inverse.hpp>
-#include <kotono_common/enum_utils.h>
-#include <kotono_common/log.h>
-#include <kotono_graphics/SceneRenderGraph.h>
-#include <kotono_graphics/SceneVisibility.h>
+#include <enum_utils.h>
+#include <Logging/log.h>
+#include <RenderGraph/SceneRenderGraph.h>
+#include <SceneVisibility.h>
 
 KMeshComponent::KMeshComponent()
 {

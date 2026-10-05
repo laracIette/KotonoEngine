@@ -1,6 +1,6 @@
 #pragma once
 #include "AllocatedImage.h"
-#include <kotono_common/types.h>
+#include <types.h>
 #include <span>
 #include <vector>
 #include <vulkan/vulkan_core.h>

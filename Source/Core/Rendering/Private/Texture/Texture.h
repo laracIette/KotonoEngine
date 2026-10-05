@@ -1,9 +1,11 @@
 #pragma once
+#include <Asset/Asset.h>
+
 #include <glm/ext/vector_uint2.hpp>
-#include <kotono_common/Asset.h>
-#include <kotono_common/Path.h>
-#include <kotono_platform/AllocatedImage.h>
+#include <AllocatedImage.h>
+
 class UDevice;
+
 class ATexture final : public AAsset
 {
 public:

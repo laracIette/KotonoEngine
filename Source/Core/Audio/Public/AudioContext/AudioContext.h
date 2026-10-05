@@ -1,12 +1,10 @@
 #pragma once
-#include "AudioSource.h"
-#include <kotono_common/Handle.h>
-#include <kotono_common/Path.h>
+#include "AudioSource/AudioSource.h"
+#include <Handle.h>
+#include <Path/Path.h>
 #include <vector>
-enum class EAudioSourceState : u8;
 struct ALCdevice;
 struct ALCcontext;
-class UAudioSource;
 class UAudioContext final
 {
 public:

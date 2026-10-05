@@ -1,6 +1,7 @@
 #pragma once
 #include "generated/MainWindow.generated.h"
-#include <kotono_core/InterfaceRoot.h>
+#include <InterfaceRoot/InterfaceRoot.h>
+
 class WMainWindow final : public WInterfaceRoot
 {
 	GENERATED_WMAINWINDOW()

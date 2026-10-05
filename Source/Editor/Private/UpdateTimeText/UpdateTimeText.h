@@ -1,6 +1,7 @@
 #pragma once
 #include "generated/UpdateTimeText.generated.h"
-#include <kotono_core/Widget.h>
+#include <Widget/Widget.h>
+
 class WUpdateTimeText : public WWidget
 {
 	GENERATED_WUPDATETIMETEXT()

@@ -1,12 +1,12 @@
 #pragma once
 #include "GameState.h"
 #include "Ptr.h"
-#include <kotono_audio/AudioContext.h>
-#include <kotono_common/Clamped.h>
-#include <kotono_common/Event.h>
-#include <kotono_common/Notify.h>
-#include <kotono_common/Path.h>
-#include <kotono_common/Set.h>
+#include <AudioContext/AudioContext.h>
+#include <Clamped.h>
+#include <Event/Event.h>
+#include <Notify.h>
+#include <Path/Path.h>
+#include <Containers/Set.h>
 #include <span>
 
 enum class ESceneVisibility : u32;

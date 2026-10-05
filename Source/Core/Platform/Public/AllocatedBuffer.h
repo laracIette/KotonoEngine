@@ -1,5 +1,5 @@
 #pragma once
-#include "vk_utils.h"
+#include "vk_utils/vk_utils.h"
 #include <span>
 #include <stdexcept>
 #include <type_traits>

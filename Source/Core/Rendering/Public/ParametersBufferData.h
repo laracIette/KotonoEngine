@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
-#include <glm/vec4.hpp>
-#include <kotono_common/types.h>
+#include <glm/ext/vector_float4.hpp>
+#include <types.h>
 struct UParametersBufferData
 {
     std::array<f32, 16>         scalars;

@@ -1,7 +1,9 @@
 #pragma once
 #include "generated/SceneWidget.generated.h"
-#include "Widget.h"
+#include "Widget/Widget.h"
+
 class UScene;
+
 class WSceneWidget : public WWidget
 {
 	GENERATED_WSCENEWIDGET()

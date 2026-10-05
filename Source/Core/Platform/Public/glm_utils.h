@@ -5,8 +5,8 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/ext/vector_float4.hpp>
-#include <kotono_common/types.h>
-#include <kotono_math/math_utils.h>
+#include <types.h>
+#include <math_utils/math_utils.h>
 
 inline std::array<glm::vec3, 8> get_frustum_corners_world_space(
       glm::mat4 const& view

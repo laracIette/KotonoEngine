@@ -1,8 +1,8 @@
-#include "PointLightComponent.h"
+#include "PointLightComponent/PointLightComponent.h"
 
-#include <kotono_common/enum_utils.h>
-#include <kotono_graphics/SceneRenderGraph.h>
-#include <kotono_graphics/SceneVisibility.h>
+#include <enum_utils.h>
+#include <RenderGraph/SceneRenderGraph.h>
+#include <SceneVisibility.h>
 
 KPointLightComponent::KPointLightComponent()
 	: range_{ 3.0f }

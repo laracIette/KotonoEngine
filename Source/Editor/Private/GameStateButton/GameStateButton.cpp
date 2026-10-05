@@ -1,7 +1,7 @@
 #include "GameStateButton.h"
 
-#include <kotono_core/Scene.h>
-#include <kotono_interface/widgets.h>
+#include <Scene/Scene.h>
+#include <core_widgets.h>
 
 static constexpr UColor PLAY_COLOR{ Colors::Green };
 static constexpr UColor PAUSE_COLOR{ Colors::White.WithValue(0.5f) };

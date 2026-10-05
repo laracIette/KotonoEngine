@@ -2,7 +2,7 @@
 #include "AllocatedBuffer.h"
 #include "QueueFamilyIndices.h"
 #include "SwapchainSupportDetails.h"
-#include <kotono_common/types.h>
+#include <types.h>
 #include <unordered_set>
 #include <vector>
 #include <vma/vk_mem_alloc.h>

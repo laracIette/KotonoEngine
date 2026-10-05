@@ -1,7 +1,7 @@
 #include "UpdateTimeText.h"
 
-#include <kotono_core/Interface.h>
-#include <kotono_interface/widgets.h>
+#include <Interface/Interface.h>
+#include <core_widgets.h>
 
 WidgetPtr WUpdateTimeText::Build()
 {

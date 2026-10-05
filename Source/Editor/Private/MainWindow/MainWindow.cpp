@@ -1,11 +1,11 @@
-#include "MainWindow.h"
+#include "MainWindow/MainWindow.h"
 
-#include "AssetExplorer.h"
-#include "DefaultSceneContext.h"
-#include "Detachable.h"
-#include "UpdateTimeText.h"
-#include <kotono_core/ProjectSettings.h>
-#include <kotono_interface/widgets.h>
+#include "AssetExplorer/AssetExplorer.h"
+#include "DefaultSceneContext/DefaultSceneContext.h"
+#include "Detachable/Detachable.h"
+#include "UpdateTimeText/UpdateTimeText.h"
+#include <ProjectSettings/ProjectSettings.h>
+#include <core_widgets.h>
 
 WidgetPtr WMainWindow::Build()
 {

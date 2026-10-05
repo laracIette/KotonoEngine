@@ -1,10 +1,10 @@
 ﻿#include "Shader.h"
 
-#include <kotono_common/log.h>
-#include <kotono_io/File.h>
-#include <kotono_io/Serializer.h>
-#include <kotono_platform/Device.h>
-#include <kotono_platform/vk_utils.h>
+#include <Logging/log.h>
+#include <File/File.h>
+#include <Serializer/Serializer.h>
+#include <Device/Device.h>
+#include <vk_utils/vk_utils.h>
 #include <nlohmann/json.hpp>
 
 AShader::AShader(UPath const& path)

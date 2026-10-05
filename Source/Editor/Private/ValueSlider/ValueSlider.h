@@ -1,8 +1,8 @@
 #pragma once
 #include "generated/ValueSlider.generated.h"
-#include <kotono_core/Widget.h>
+#include <Widget/Widget.h>
 
-#include <kotono_common/conversion_utils.h>
+#include <conversion_utils.h>
 
 class WValueSlider : public WWidget
 {

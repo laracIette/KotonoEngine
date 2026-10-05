@@ -1,5 +1,5 @@
 #pragma once
-#include <kotono_common/types.h>
+#include <types.h>
 enum class EInputState : u8
 {
 	/// Occurs the first frame where the input is down.

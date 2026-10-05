@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/Widget.generated.h"
-#include "Object.h"
+#include "Object/Object.h"
 
 #include "Axis.h"
 #include "Expand.h"
@@ -8,13 +8,13 @@
 #include "WidgetDisplaySettings.h"
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float2.hpp>
-#include <kotono_common/Bindable.h>
-#include <kotono_common/Set.h>
-#include <kotono_common/types.h>
-#include <kotono_input/Button.h>
-#include <kotono_input/InputState.h>
-#include <kotono_input/Key.h>
-#include <kotono_input/Modifier.h>
+#include <Bindable.h>
+#include <Containers/Set.h>
+#include <types.h>
+#include <Button.h>
+#include <InputState.h>
+#include <Key.h>
+#include <Modifier.h>
 #include <string>
 #include <vector>
 

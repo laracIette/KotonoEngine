@@ -1,6 +1,6 @@
-#include "GPUBuffers.h"
+#include "GPUBuffers/GPUBuffers.h"
 
-#include <kotono_platform/Device.h>
+#include <Device/Device.h>
 
 static constexpr u32 CLUSTER_AABB_COUNT{ 16 * 9 * 24 };
 

@@ -1,13 +1,13 @@
-#include "Widget.h"
+#include "Widget/Widget.h"
 
-#include "Interface.h"
+#include "Interface/Interface.h"
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
-#include <kotono_common/log.h>
-#include <kotono_graphics/InterfaceRenderGraph.h>
-#include <kotono_math/math_utils.h>
+#include <Logging/log.h>
+#include <RenderGraph/InterfaceRenderGraph.h>
+#include <math_utils/math_utils.h>
 
-static EFlex getUpdatedFlex(glm::vec2 const& left, glm::vec2 const& right) noexcept
+static constexpr auto getUpdatedFlex(glm::vec2 const& left, glm::vec2 const& right) noexcept -> EFlex
 {
 	if (left.x != right.x)
 	{
@@ -17,7 +17,7 @@ static EFlex getUpdatedFlex(glm::vec2 const& left, glm::vec2 const& right) noexc
 	return EFlex::Vertical;
 }
 
-static auto isVisible(UWidgetDisplaySettings const& displaySettings) -> b8
+static constexpr auto isVisible(UWidgetDisplaySettings const& displaySettings) noexcept -> b8
 {
 	return is_overlapping(displaySettings.position, displaySettings.bounds, displaySettings.scissor.offset, displaySettings.scissor.extent);
 }

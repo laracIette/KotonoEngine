@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/ValueBox.generated.h"
-#include <kotono_core/Widget.h>
+#include <Widget/Widget.h>
 
 template <typename T>
 concept StringCompatible = std::convertible_to<const T&, std::string> && std::assignable_from<T&, std::string_view>;

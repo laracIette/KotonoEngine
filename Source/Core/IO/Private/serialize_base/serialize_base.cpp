@@ -1,5 +1,5 @@
-#include "serialize_base.h"
-#include <kotono_common/Path.h>
+#include "serialize_base/serialize_base.h"
+#include <Path/Path.h>
 #include <nlohmann/json.hpp>
 
 b8 contains(nlohmann::json const& json, std::string_view name)

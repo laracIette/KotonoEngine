@@ -23,12 +23,14 @@ set(KSCENE_SOURCES
 )
 
 target_sources(KotonoScene
-    PUBLIC ${KSCENE_PUBLIC_HEADERS}
-    PRIVATE ${KSCENE_SOURCES}
+    PRIVATE
+        ${KSCENE_SOURCES}
+    PUBLIC FILE_SET HEADERS
+        BASE_DIRS Public
+        FILES ${KSCENE_PUBLIC_HEADERS}
 )
 
 target_include_directories(KotonoScene
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
 )
 

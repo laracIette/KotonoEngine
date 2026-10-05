@@ -1,6 +1,6 @@
-#include "InputHoldAction.h"
+#include "InputHoldAction/InputHoldAction.h"
 
-bool UInputHoldAction::Update(const f32 delta)
+b8 UInputHoldAction::Update(f32 delta)
 {
 	currentTime_ += delta;
 
@@ -40,12 +40,12 @@ f32 UInputHoldAction::GetRepeatTime() const
 	return repeatTime_;
 }
 
-void UInputHoldAction::SetActuationTime(const f32 actuationTime)
+void UInputHoldAction::SetActuationTime(f32 actuationTime)
 {
 	actuationTime_ = actuationTime;
 }
 
-void UInputHoldAction::SetRepeatTime(const f32 repeatTime)
+void UInputHoldAction::SetRepeatTime(f32 repeatTime)
 {
 	repeatTime_ = repeatTime;
 }

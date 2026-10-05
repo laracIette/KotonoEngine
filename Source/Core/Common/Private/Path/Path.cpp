@@ -1,5 +1,6 @@
-#include "Path.h"
-#include "PathManager.h"
+#include "Path/Path.h"
+
+#include "Path/PathManager.h"
 #include <ranges>
 #include <algorithm>
 

@@ -1,9 +1,11 @@
 #pragma once
 #include <glm/ext/vector_float4.hpp>
-#include <kotono_common/types.h>
-#include <kotono_platform/AllocatedBuffer.h>
+#include <types.h>
+#include <AllocatedBuffer.h>
 #include <vulkan/vulkan_core.h>
+
 class UDevice;
+
 class UGPUBuffers final
 {
 public:

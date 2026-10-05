@@ -1,5 +1,5 @@
 #include "Barriers.h"
-#include <kotono_common/types.h>
+#include <types.h>
 #include <vector>
 
 namespace Barriers

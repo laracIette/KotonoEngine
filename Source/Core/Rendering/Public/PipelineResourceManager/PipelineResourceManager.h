@@ -1,8 +1,10 @@
 #pragma once
-#include <kotono_common/types.h>
+#include <types.h>
 #include <vector>
 #include <vulkan/vulkan_core.h>
+
 class UDevice;
+
 class UPipelineResourceManager final
 {
 public:

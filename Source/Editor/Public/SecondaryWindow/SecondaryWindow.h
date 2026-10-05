@@ -1,6 +1,7 @@
 #pragma once
 #include "generated/SecondaryWindow.generated.h"
-#include <kotono_core/InterfaceRoot.h>
+#include <InterfaceRoot/InterfaceRoot.h>
+
 class WSecondaryWindow final : public WInterfaceRoot
 {
 	GENERATED_WSECONDARYWINDOW()

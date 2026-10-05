@@ -1,17 +1,17 @@
-#include "SceneRender.h"
+#include "SceneRender/SceneRender.h"
 
-#include "Barriers.h"
+#include "Barriers/Barriers.h"
 #include "DrawCommand.h"
 #include "DrawDataBufferData.h"
-#include "IndexBuffer.h"
+#include "IndexBuffer/IndexBuffer.h"
 #include "MaterialBufferData.h"
 #include "ParametersBufferData.h"
-#include "PipelineResourceManager.h"
+#include "PipelineResourceManager/PipelineResourceManager.h"
 #include "PushConstants.h"
 #include "TransformBufferData.h"
 #include <array>
-#include <kotono_platform/Device.h>
-#include <kotono_platform/Swapchain.h>
+#include <Device/Device.h>
+#include <Swapchain/Swapchain.h>
 #include <ranges>
 
 static constexpr u32 MAX_DRAW_DATAS{ 65536 };

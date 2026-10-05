@@ -1,10 +1,10 @@
-#include "LightBuffers.h"
+#include "LightBuffers/LightBuffers.h"
 
-#include "Barriers.h"
+#include "Barriers/Barriers.h"
 #include "DirectionalLight.h"
-#include "PipelineResourceManager.h"
+#include "PipelineResourceManager/PipelineResourceManager.h"
 #include "PointLight.h"
-#include <kotono_platform/Device.h>
+#include <Device/Device.h>
 #include <ranges>
 
 static constexpr u32 MAX_DIRECTIONAL_LIGHTS{ 2 };

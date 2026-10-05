@@ -1,5 +1,5 @@
 #pragma once
-#include <kotono_common/types.h>
+#include <types.h>
 enum class EFlex : u8
 {
 	None = 0x00,

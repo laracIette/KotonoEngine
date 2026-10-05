@@ -1,6 +1,7 @@
 #pragma once
 #include "generated/CameraComponent.generated.h"
-#include <kotono_core/SceneComponent.h>
+#include <SceneComponent/SceneComponent.h>
+
 class KCameraComponent : public KSceneComponent
 {
 	GENERATED_KCAMERACOMPONENT()

@@ -1,8 +1,8 @@
-#include "SceneObject.h"
+#include "SceneObject/SceneObject.h"
 
-#include "Scene.h"
-#include "SceneComponent.h"
-#include <kotono_common/log.h>
+#include "Scene/Scene.h"
+#include "SceneComponent/SceneComponent.h"
+#include <Logging/log.h>
 
 TSceneObject::TSceneObject() 
 	: isInit_{ false }

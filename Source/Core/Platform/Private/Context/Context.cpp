@@ -1,10 +1,10 @@
-#include "Context.h"
+#include "Context/Context.h"
 
-#include "vk_utils.h"
+#include "vk_utils/vk_utils.h"
 #include <array>
 #include <GLFW/glfw3.h>
-#include <kotono_common/log.h>
-#include <kotono_common/types.h>
+#include <Logging/log.h>
+#include <types.h>
 #include <print>
 #include <vector>
 

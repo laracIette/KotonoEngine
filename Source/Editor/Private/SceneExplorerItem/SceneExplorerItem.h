@@ -1,7 +1,9 @@
 #pragma once
 #include "generated/SceneExplorerItem.generated.h"
-#include <kotono_core/SceneWidget.h>
+#include <SceneWidget/SceneWidget.h>
+
 class TSceneObject;
+
 class WSceneExplorerItem : public WSceneWidget
 {
 	GENERATED_WSCENEEXPLORERITEM()

@@ -1,6 +1,6 @@
 #pragma once
-#include "vk_utils.h"
-#include <kotono_common/types.h>
+#include "vk_utils/vk_utils.h"
+#include <types.h>
 #include <stdexcept>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>

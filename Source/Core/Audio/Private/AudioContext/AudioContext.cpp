@@ -1,6 +1,6 @@
-#include "AudioContext.h"
+#include "AudioContext/AudioContext.h"
 
-#include "al_utils.h"
+#include "al_utils/al_utils.h"
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <array>

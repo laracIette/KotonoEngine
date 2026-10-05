@@ -1,7 +1,7 @@
-#include "InterfaceRenderer.h"
+#include "InterfaceRenderer/InterfaceRenderer.h"
 
 #include "DrawCommand.h"
-#include "InterfaceRender.h"
+#include "InterfaceRender/InterfaceRender.h"
 
 UInterfaceRenderer::UInterfaceRenderer(UDevice& device, UPipelineResourceManager& pipelineResourceManager)
 	: device_{ device }

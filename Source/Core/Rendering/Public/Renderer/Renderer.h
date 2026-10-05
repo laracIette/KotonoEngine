@@ -1,17 +1,18 @@
 #pragma once
 #include "frames_in_flight.h"
-#include "IndexBuffer.h"
-#include "InterfaceRenderer.h"
-#include "PipelineResourceManager.h"
-#include "SceneRenderer.h"
-#include <kotono_common/Path.h>
-#include <kotono_common/types.h>
-#include <kotono_graphics/InterfaceDrawData.h>
-#include <kotono_platform/Swapchain.h>
+#include "IndexBuffer/IndexBuffer.h"
+#include "InterfaceRenderer/InterfaceRenderer.h"
+#include "PipelineResourceManager/PipelineResourceManager.h"
+#include "SceneRenderer/SceneRenderer.h"
+#include <Path/Path.h>
+#include <types.h>
+#include <RenderGraph/InterfaceDrawData.h>
+#include <Swapchain/Swapchain.h>
 #include <span>
 #include <unordered_map>
 #include <vector>
 #include <vulkan/vulkan_core.h>
+
 struct UDirectionalLight;
 struct UDirectionalLightData;
 struct UDrawCommand;
@@ -27,6 +28,7 @@ class AShader;
 class ATexture;
 class UDevice;
 class USurface;
+
 class URenderer final
 {
 public:

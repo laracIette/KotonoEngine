@@ -1,6 +1,7 @@
 #pragma once
 #include "generated/AssetExplorerDirectory.generated.h"
-#include "AssetExplorerItem.h"
+#include "AssetExplorerItem/AssetExplorerItem.h"
+
 class WAssetExplorerDirectory : public WAssetExplorerItem
 {
 	GENERATED_WASSETEXPLORERDIRECTORY()

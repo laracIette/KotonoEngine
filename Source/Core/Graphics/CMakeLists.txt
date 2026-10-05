@@ -30,26 +30,18 @@ set(KGRAPHICS_SOURCES
 )
 
 target_sources(KotonoGraphics
-    PUBLIC ${KGRAPHICS_PUBLIC_HEADERS}
-    PRIVATE ${KGRAPHICS_SOURCES}
+    PRIVATE
+        ${KGRAPHICS_SOURCES}
+    PUBLIC FILE_SET HEADERS
+        BASE_DIRS Public
+        FILES ${KGRAPHICS_PUBLIC_HEADERS}
 )
 
 target_include_directories(KotonoGraphics
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
 )
 
-# Shader folder included for IDE visibility (not compiled)
-file(GLOB_RECURSE KGRAPHICS_SHADERS CONFIGURE_DEPENDS "${ENGINE_PATH}/Shaders/*")
-set_source_files_properties(${KGRAPHICS_SHADERS} PROPERTIES HEADER_FILE_ONLY TRUE)
-source_group(TREE "${ENGINE_PATH}/Shaders" PREFIX "Shaders" FILES ${KGRAPHICS_SHADERS})
-target_sources(KotonoGraphics PRIVATE ${KGRAPHICS_SHADERS})
-
-file(GLOB_RECURSE KGRAPHICS_ASSETS CONFIGURE_DEPENDS "${ENGINE_PATH}/Assets/*")
-set_source_files_properties(${KGRAPHICS_ASSETS} PROPERTIES HEADER_FILE_ONLY TRUE)
-source_group(TREE "${ENGINE_PATH}/Assets" PREFIX "Assets" FILES ${KGRAPHICS_ASSETS})
-target_sources(KotonoGraphics PRIVATE ${KGRAPHICS_ASSETS})
-
 target_link_libraries(KotonoGraphics PUBLIC
+    KotonoMath
     KotonoIO
 )

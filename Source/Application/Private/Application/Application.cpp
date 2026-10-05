@@ -1,14 +1,14 @@
-#include "Application.h"
+#include "Application/Application.h"
 
-#include "ClassRegistrator.h"
-#include "WindowContext.h"
+#include "ClassRegistrator/ClassRegistrator.h"
+#include "WindowContext/WindowContext.h"
 #include <GLFW/glfw3.h>
-#include <kotono_common/log.h>
-#include <kotono_core/Interface.h>
-#include <kotono_graphics/SpvCompiler.h>
+#include <Logging/log.h>
+#include <Interface/Interface.h>
+#include <SpvCompiler/SpvCompiler.h>
 
 #ifndef NDEBUG
-#include <kotono_core/Object.h>
+#include <Object/Object.h>
 #endif
 
 UApplication::UApplication()

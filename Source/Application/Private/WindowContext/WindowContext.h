@@ -1,11 +1,11 @@
 #pragma once
-#include <kotono_common/types.h>
-#include <kotono_graphics/InterfaceRenderGraph.h>
-#include <kotono_input/Keyboard.h>
-#include <kotono_input/Mouse.h>
-#include <kotono_platform/Surface.h>
-#include <kotono_platform/Window.h>
-#include <kotono_rendering/Renderer.h>
+#include <types.h>
+#include <RenderGraph/InterfaceRenderGraph.h>
+#include <Keyboard/Keyboard.h>
+#include <Mouse/Mouse.h>
+#include <Surface/Surface.h>
+#include <Window/Window.h>
+#include <Renderer/Renderer.h>
 #include <string_view>
 
 template <typename T>

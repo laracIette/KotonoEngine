@@ -1,11 +1,13 @@
 #pragma once
 #include "frames_in_flight.h"
-#include "InterfaceRender.h"
-#include <kotono_common/types.h>
+#include "InterfaceRender/InterfaceRender.h"
+#include <types.h>
 #include <span>
+
 struct UDrawCommand;
 class UDevice;
 class UPipelineResourceManager;
+
 class UInterfaceRenderer final
 {
 public:

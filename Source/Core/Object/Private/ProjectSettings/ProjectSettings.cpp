@@ -1,4 +1,4 @@
-#include "ProjectSettings.h"
+#include "ProjectSettings/ProjectSettings.h"
 
 const UPath& SProjectSettings::Path()
 {

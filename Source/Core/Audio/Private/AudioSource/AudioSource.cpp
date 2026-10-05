@@ -1,7 +1,7 @@
-#include "AudioSource.h"
+#include "AudioSource/AudioSource.h"
 
-#include "al_utils.h"
-#include "AudioDataWAV.h"
+#include "al_utils/al_utils.h"
+#include "AudioDataWAV/AudioDataWAV.h"
 #include <AL/al.h>
 #include <concepts>
 #include <glm/ext/vector_float3.hpp>

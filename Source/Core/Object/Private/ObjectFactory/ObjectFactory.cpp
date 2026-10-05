@@ -1,8 +1,9 @@
-#include "ObjectFactory.h"
-#include "Object.h"
-#include <kotono_common/log.h>
-#include <kotono_common/Path.h>
-#include <kotono_io/Serializer.h>
+#include "ObjectFactory/ObjectFactory.h"
+
+#include "Object/Object.h"
+#include <Logging/log.h>
+#include <Path/Path.h>
+#include <Serializer/Serializer.h>
 #include <nlohmann/json.hpp>
 
 #define KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY ELogImportanceLevel::Medium

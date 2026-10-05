@@ -1,7 +1,9 @@
 #pragma once
 #include "generated/MeshComponent.generated.h"
-#include <kotono_core/SceneComponent.h>
-#include <kotono_timing/Task.h>
+#include <SceneComponent/SceneComponent.h>
+
+#include <Task/Task.h>
+
 class KMeshComponent : public KSceneComponent
 {
 	GENERATED_KMESHCOMPONENT()

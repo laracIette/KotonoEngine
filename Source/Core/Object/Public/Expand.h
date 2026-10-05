@@ -1,5 +1,5 @@
 #pragma once
-#include <kotono_common/types.h>
+#include <types.h>
 enum class EExpand : u8
 {
 	None = 0x00,

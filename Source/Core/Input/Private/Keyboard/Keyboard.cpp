@@ -1,10 +1,10 @@
-#include "Keyboard.h"
+#include "Keyboard/Keyboard.h"
 
 #include <functional>
 #include <GLFW/glfw3.h>
-#include <kotono_common/enum_utils.h>
-#include <kotono_common/log.h>
-#include <kotono_platform/Window.h>
+#include <enum_utils.h>
+#include <Logging/log.h>
+#include <Window/Window.h>
 #include <unordered_map>
 
 #define KT_LOG_IMPORTANCE_LEVEL_KEYBOARD ELogImportanceLevel::Low

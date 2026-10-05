@@ -1,9 +1,9 @@
-#include "SceneComponent.h"
+#include "SceneComponent/SceneComponent.h"
 
-#include "SceneObject.h"
+#include "SceneObject/SceneObject.h"
 #include <glm/gtc/quaternion.hpp>
-#include <kotono_common/log.h>
-#include <kotono_math/math_utils.h>
+#include <Logging/log.h>
+#include <math_utils/math_utils.h>
 #include <stdexcept>
 
 KSceneComponent::KSceneComponent() 

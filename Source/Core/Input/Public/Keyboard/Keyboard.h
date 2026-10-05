@@ -2,10 +2,10 @@
 #include "InputState.h"
 #include "Key.h"
 #include "Modifier.h"
-#include <kotono_common/enum_utils.h>
-#include <kotono_common/Event.h>
-#include <kotono_common/Matrix.h>
-#include <kotono_common/types.h>
+#include <enum_utils.h>
+#include <Event/Event.h>
+#include <Containers/Matrix.h>
+#include <types.h>
 
 class UWindow;
 

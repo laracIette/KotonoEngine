@@ -1,6 +1,6 @@
 #include "SceneExplorerAddButton.h"
 
-#include <kotono_interface/widgets.h>
+#include <core_widgets.h>
 
 WidgetPtr WSceneExplorerAddButton::Build()
 {

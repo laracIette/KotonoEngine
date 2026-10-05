@@ -1,7 +1,9 @@
 #pragma once
 #include "generated/DirectionalLightComponent.generated.h"
-#include <kotono_core/SceneComponent.h>
-#include <kotono_graphics/Color.h>
+#include <SceneComponent/SceneComponent.h>
+
+#include <Color.h>
+
 class KDirectionalLightComponent : public KSceneComponent
 {
 	GENERATED_KDIRECTIONALLIGHTCOMPONENT()

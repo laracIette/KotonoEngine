@@ -1,13 +1,13 @@
-#include "Device.h"
+#include "Device/Device.h"
 
 #include "AllocatedBuffer.h"
 #include "AllocatedImage.h"
-#include "Context.h"
-#include "vk_utils.h"
+#include "Context/Context.h"
+#include "vk_utils/vk_utils.h"
 #include <algorithm>
 #include <array>
 #include <bit>
-#include <kotono_common/log.h>
+#include <Logging/log.h>
 #include <ranges>
 #include <Windows.h>
 

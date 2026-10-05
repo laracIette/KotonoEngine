@@ -1,9 +1,9 @@
 #include "PropertiesWindow.h"
 
-#include "ObjectProperties.h"
-#include <kotono_core/Scene.h>
-#include <kotono_core/SceneObject.h>
-#include <kotono_interface/widgets.h>
+#include "ObjectProperties/ObjectProperties.h"
+#include <Scene/Scene.h>
+#include <SceneObject/SceneObject.h>
+#include <core_widgets.h>
 
 WidgetPtr WPropertiesWindow::Build()
 {

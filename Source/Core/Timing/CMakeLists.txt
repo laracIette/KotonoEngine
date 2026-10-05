@@ -23,12 +23,14 @@ set(KTIMING_SOURCES
 )
 
 target_sources(KotonoTiming
-    PUBLIC ${KTIMING_PUBLIC_HEADERS}
-    PRIVATE ${KTIMING_SOURCES}
+    PRIVATE
+        ${KTIMING_SOURCES}
+    PUBLIC FILE_SET HEADERS
+        BASE_DIRS Public
+        FILES ${KTIMING_PUBLIC_HEADERS}
 )
 
 target_include_directories(KotonoTiming
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
 )
 

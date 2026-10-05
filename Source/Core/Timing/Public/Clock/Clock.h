@@ -1,6 +1,6 @@
 #pragma once
 #include <concepts>
-#include <kotono_common/types.h>
+#include <types.h>
 /// Clock helper class, time is expressed in seconds
 class UClock final
 {

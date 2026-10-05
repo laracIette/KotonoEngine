@@ -1,8 +1,8 @@
 #include "AssetExplorerItem.h"
 
-#include "AssetExplorer.h"
-#include <kotono_core/Interface.h>
-#include <kotono_interface/widgets.h>
+#include "AssetExplorer/AssetExplorer.h"
+#include <Interface/Interface.h>
+#include <core_widgets.h>
 
 WAssetExplorerItem::WAssetExplorerItem(UPtr<WAssetExplorer> const& assetExplorer, UPath const& path, OpenedCallback const& onOpened)
     : assetExplorer_{ assetExplorer }

@@ -1,7 +1,7 @@
-#include "Scene.h"
+#include "Scene/Scene.h"
 
-#include "SceneObject.h"
-#include <kotono_io/Serializer.h>
+#include "SceneObject/SceneObject.h"
+#include <Serializer/Serializer.h>
 #include <nlohmann/json.hpp>
 #include <vector>
 

@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/ChildrenOwner.generated.h"
-#include <kotono_core/Widget.h>
+#include <Widget/Widget.h>
 
 #include <concepts>
 

@@ -1,10 +1,12 @@
 #pragma once
 #include "generated/InputTextBox.generated.h"
-#include <kotono_core/Widget.h>
+#include <Widget/Widget.h>
 
-#include <kotono_input/InputHoldAction.h>
+#include <InputHoldAction/InputHoldAction.h>
+
 enum class EKey : u8;
 enum class EInputState : u8;
+
 class WInputTextBox : public WWidget
 {
 	GENERATED_WINPUTTEXTBOX()

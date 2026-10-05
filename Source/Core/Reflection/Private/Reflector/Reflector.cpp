@@ -1,8 +1,8 @@
-#include "Reflector.h"
+#include "Reflector/Reflector.h"
 
-#include <kotono_common/Path.h>
-#include <kotono_io/File.h>
-#include <kotono_io/Serializer.h>
+#include <Path/Path.h>
+#include <File/File.h>
+#include <Serializer/Serializer.h>
 #include <nlohmann/json.hpp>
 #include <ranges>
 #include <regex>

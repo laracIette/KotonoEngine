@@ -1,5 +1,5 @@
 #pragma once
-#include <kotono_common/types.h>
+#include <types.h>
 #include <limits>
 enum class EKey : u8
 {

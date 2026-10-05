@@ -1,9 +1,11 @@
 #pragma once
-#include <kotono_common/Asset.h>
-#include <kotono_common/Path.h>
-#include <kotono_common/types.h>
+#include <Asset/Asset.h>
+
+#include <types.h>
 #include <vulkan/vulkan_core.h>
+
 class UDevice;
+
 class ASampler final : public AAsset
 {
 public:

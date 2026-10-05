@@ -1,6 +1,6 @@
-#include "FileExplorer.h"
+#include "FileExplorer/FileExplorer.h"
 
-#include "File.h"
+#include "File/File.h"
 
 UFileExplorer::UFileExplorer() :
     directoryPath_{ ENGINE_DIRECTORY }

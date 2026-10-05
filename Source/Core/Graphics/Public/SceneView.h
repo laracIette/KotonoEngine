@@ -2,7 +2,7 @@
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float2.hpp>
 #include <glm/ext/vector_float3.hpp>
-#include <kotono_common/types.h>
+#include <types.h>
 struct USceneView final
 {
     glm::mat4 view;

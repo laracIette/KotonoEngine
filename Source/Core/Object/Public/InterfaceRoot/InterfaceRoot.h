@@ -1,9 +1,10 @@
 #pragma once
 #include "generated/InterfaceRoot.generated.h"
-#include "Widget.h"
-#include <cassert>
+#include "Widget/Widget.h"
+
 struct USceneRenderGraph;
 class WSceneContext;
+
 class WInterfaceRoot : public WWidget
 {
 	GENERATED_WINTERFACEROOT()

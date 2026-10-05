@@ -22,13 +22,15 @@ set(KAPPLICATION_SOURCES
 )
 
 target_sources(KotonoApplication
-    PUBLIC ${KAPPLICATION_PUBLIC_HEADERS}
-    PRIVATE ${KAPPLICATION_PRIVATE_HEADERS}
-    PRIVATE ${KAPPLICATION_SOURCES}
+    PRIVATE
+        ${KAPPLICATION_SOURCES}
+        ${KAPPLICATION_PRIVATE_HEADERS}
+    PUBLIC FILE_SET HEADERS
+        BASE_DIRS Public
+        FILES ${KAPPLICATION_PUBLIC_HEADERS}
 )
 
 target_include_directories(KotonoApplication
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
 )
 
@@ -45,3 +47,13 @@ else()
         KotonoScene
     )
 endif()
+
+file(GLOB_RECURSE KSHADERS CONFIGURE_DEPENDS "${ENGINE_PATH}/Shaders/*")
+set_source_files_properties(${KSHADERS} PROPERTIES HEADER_FILE_ONLY TRUE)
+source_group(TREE "${ENGINE_PATH}/Shaders" PREFIX "Shaders" FILES ${KSHADERS})
+target_sources(KotonoApplication PRIVATE ${KSHADERS})
+
+file(GLOB_RECURSE KASSETS CONFIGURE_DEPENDS "${ENGINE_PATH}/Assets/*")
+set_source_files_properties(${KASSETS} PROPERTIES HEADER_FILE_ONLY TRUE)
+source_group(TREE "${ENGINE_PATH}/Assets" PREFIX "Assets" FILES ${KASSETS})
+target_sources(KotonoApplication PRIVATE ${KASSETS})

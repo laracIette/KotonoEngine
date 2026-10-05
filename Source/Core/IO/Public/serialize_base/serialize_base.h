@@ -1,5 +1,5 @@
 #pragma once
-#include <kotono_common/types.h>
+#include <types.h>
 #include <nlohmann/json_fwd.hpp>
 #include <ranges>
 #include <type_traits>

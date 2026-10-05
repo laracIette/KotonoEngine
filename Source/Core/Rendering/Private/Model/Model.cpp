@@ -7,8 +7,8 @@
 #include <glm/ext/vector_float3.hpp>
 #include <glm/geometric.hpp>
 #include <glm/gtx/hash.hpp>
-#include <kotono_common/hash_utils.h>
-#include <kotono_platform/Device.h>
+#include <hash_utils.h>
+#include <Device/Device.h>
 #include <unordered_map>
 
 AModel::AModel(UPath const& path) 

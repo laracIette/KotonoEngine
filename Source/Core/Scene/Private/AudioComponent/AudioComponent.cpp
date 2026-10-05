@@ -1,6 +1,6 @@
-#include "AudioComponent.h"
+#include "AudioComponent/AudioComponent.h"
 
-#include <kotono_core/Scene.h>
+#include <Scene/Scene.h>
 
 KAudioComponent::KAudioComponent()
 	: audioSourceHandle_{ EHandle::Invalid }

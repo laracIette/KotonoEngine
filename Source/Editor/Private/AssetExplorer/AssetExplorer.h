@@ -1,6 +1,6 @@
 #pragma once
 #include "generated/AssetExplorer.generated.h"
-#include <kotono_core/Widget.h>
+#include <Widget/Widget.h>
 
 class WAssetExplorerItem;
 class WHorizontalWrapList;

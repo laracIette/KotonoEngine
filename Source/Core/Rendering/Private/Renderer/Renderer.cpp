@@ -1,26 +1,26 @@
-#include "Renderer.h"
+#include "Renderer/Renderer.h"
 
-#include "Barriers.h"
+#include "Barriers/Barriers.h"
 #include "DirectionalLight.h"
 #include "DrawCommand.h"
 #include "FrameContextBufferData.h"
-#include "IndexBuffer.h"
-#include "Material.h"
-#include "Model.h"
-#include "PipelineResourceManager.h"
+#include "IndexBuffer/IndexBuffer.h"
+#include "Material/Material.h"
+#include "Model/Model.h"
+#include "PipelineResourceManager/PipelineResourceManager.h"
 #include "PointLight.h"
-#include "Sampler.h"
-#include "Shader.h"
-#include "Texture.h"
+#include "Sampler/Sampler.h"
+#include "Shader/Shader.h"
+#include "Texture/Texture.h"
 #include <cassert>
-#include <kotono_common/log.h>
-#include <kotono_graphics/InterfaceRenderGraph.h>
-#include <kotono_graphics/SceneRenderGraph.h>
-#include <kotono_graphics/SceneView.h>
-#include <kotono_platform/Device.h>
-#include <kotono_platform/glm_utils.h>
-#include <kotono_platform/Swapchain.h>
-#include <kotono_platform/vk_utils.h>
+#include <Logging/log.h>
+#include <RenderGraph/InterfaceRenderGraph.h>
+#include <RenderGraph/SceneRenderGraph.h>
+#include <SceneView.h>
+#include <Device/Device.h>
+#include <glm_utils.h>
+#include <Swapchain/Swapchain.h>
+#include <vk_utils/vk_utils.h>
 #include <ranges>
 
 struct USceneRenderView final

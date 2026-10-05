@@ -1,6 +1,6 @@
-#include "InterfaceRoot.h"
+#include "InterfaceRoot/InterfaceRoot.h"
 
-#include "SceneContext.h"
+#include "SceneContext/SceneContext.h"
 
 void WInterfaceRoot::UpdateSceneContexts(f32 deltaTime) const
 {

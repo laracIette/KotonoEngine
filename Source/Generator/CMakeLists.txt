@@ -7,7 +7,6 @@ target_compile_features(KotonoGenerator PRIVATE cxx_std_23)
 
 set_target_properties(KotonoGenerator PROPERTIES FOLDER "KotonoEngine")
 
-# Collect sources
 set(KGENERATOR_PRIVATE_HEADERS
     "Private/Generator/Generator.h"
 )
@@ -17,12 +16,12 @@ set(KGENERATOR_SOURCES
 )
 
 target_sources(KotonoGenerator
-    PRIVATE ${KGENERATOR_PRIVATE_HEADERS}
-    PRIVATE ${KGENERATOR_SOURCES}
+    PRIVATE
+        ${KGENERATOR_SOURCES}
+        ${KGENERATOR_PRIVATE_HEADERS}
 )
 
 target_include_directories(KotonoGenerator
-    PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
 )
 

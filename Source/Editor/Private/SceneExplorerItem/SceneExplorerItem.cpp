@@ -1,8 +1,8 @@
 #include "SceneExplorerItem.h"
 
-#include <kotono_core/Scene.h>
-#include <kotono_core/SceneObject.h>
-#include <kotono_interface/widgets.h>
+#include <Scene/Scene.h>
+#include <SceneObject/SceneObject.h>
+#include <core_widgets.h>
 
 WSceneExplorerItem::WSceneExplorerItem(UScene* scene, UPtr<TSceneObject> const& sceneObject)
 	: Base(scene)

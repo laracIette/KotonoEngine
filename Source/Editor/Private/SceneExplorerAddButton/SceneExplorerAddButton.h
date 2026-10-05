@@ -1,6 +1,7 @@
 #pragma once
 #include "generated/SceneExplorerAddButton.generated.h"
-#include <kotono_core/SceneWidget.h>
+#include <SceneWidget/SceneWidget.h>
+
 class WSceneExplorerAddButton final : public WSceneWidget
 {
 	GENERATED_WSCENEEXPLORERADDBUTTON()

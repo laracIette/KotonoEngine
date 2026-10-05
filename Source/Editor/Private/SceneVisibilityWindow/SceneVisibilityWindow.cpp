@@ -1,9 +1,9 @@
 #include "SceneVisibilityWindow.h"
 
-#include "SceneVisibilityField.h"
+#include "SceneVisibilityField/SceneVisibilityField.h"
 #include <array>
-#include <kotono_common/enum_utils.h>
-#include <kotono_interface/widgets.h>
+#include <enum_utils.h>
+#include <core_widgets.h>
 
 struct VisibilityField
 {

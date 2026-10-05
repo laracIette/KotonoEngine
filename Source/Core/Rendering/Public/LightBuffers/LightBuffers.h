@@ -1,15 +1,17 @@
 #pragma once
-#include <kotono_common/types.h>
-#include <kotono_platform/AllocatedBuffer.h>
-#include <kotono_platform/AllocatedImage.h>
+#include <types.h>
+#include <AllocatedBuffer.h>
+#include <AllocatedImage.h>
 #include <span>
 #include <vector>
 #include <vulkan/vulkan_core.h>
+
 struct UDirectionalLight;
 struct UFrameContextSceneView;
 struct UPointLight;
 class UDevice;
 class UPipelineResourceManager;
+
 class ULightBuffers final
 {
 public:

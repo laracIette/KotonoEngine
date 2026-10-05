@@ -1,8 +1,8 @@
-#include "Interface.h"
+#include "Interface/Interface.h"
 
-#include "InterfaceRoot.h"
+#include "InterfaceRoot/InterfaceRoot.h"
 #include <glm/gtx/string_cast.hpp>
-#include <kotono_common/log.h>
+#include <Logging/log.h>
 
 void UInterface::Cleanup() const
 {

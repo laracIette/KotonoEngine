@@ -1,10 +1,10 @@
-#include "PipelineResourceManager.h"
+#include "PipelineResourceManager/PipelineResourceManager.h"
 
 #include "PushConstants.h"
 #include <array>
 #include <cassert>
-#include <kotono_platform/Device.h>
-#include <kotono_platform/vk_utils.h>
+#include <Device/Device.h>
+#include <vk_utils/vk_utils.h>
 
 static constexpr u32 MAX_TEXTURES{ 65536 };
 static constexpr u32 MAX_TEXTURE_ARRAYS{ 1024 };

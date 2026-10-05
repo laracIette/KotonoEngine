@@ -1,10 +1,10 @@
 #include "WindowContext.h"
 
-#include <kotono_core/Interface.h>
+#include <Interface/Interface.h>
 
 #ifdef EDITOR
-#include <kotono_editor/MainWindow.h>
-#include <kotono_editor/SecondaryWindow.h>
+#include <MainWindow/MainWindow.h>
+#include <SecondaryWindow/SecondaryWindow.h>
 #endif
 
 UWindowContext::UWindowContext(UContext& context, UDevice& device)

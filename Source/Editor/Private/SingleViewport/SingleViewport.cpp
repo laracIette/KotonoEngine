@@ -1,8 +1,8 @@
 #include "SingleViewport.h"
 
-#include "ViewController.h"
-#include "SceneVisibilityWindow.h"
-#include <kotono_interface/widgets.h>
+#include "SecondaryWindow/SecondaryWindow.h"
+#include "SceneVisibilityWindow/SceneVisibilityWindow.h"
+#include <core_widgets.h>
 
 static constexpr auto DEFAULT_VISIBILITY{ ESceneVisibility::All };
 

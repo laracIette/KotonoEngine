@@ -1,7 +1,7 @@
 #pragma once
 #include <concepts>
 #include <functional>
-#include <kotono_common/types.h>
+#include <types.h>
 class UStopwatch final
 {
 public:

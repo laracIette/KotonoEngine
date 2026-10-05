@@ -23,12 +23,14 @@ target_compile_definitions(KotonoMath PUBLIC
 )
 
 target_sources(KotonoMath
-    PUBLIC ${KMATH_PUBLIC_HEADERS}
-    PRIVATE ${KMATH_SOURCES}
+    PRIVATE
+        ${KMATH_SOURCES}
+    PUBLIC FILE_SET HEADERS
+        BASE_DIRS Public
+        FILES ${KMATH_PUBLIC_HEADERS}
 )
 
 target_include_directories(KotonoMath
     PUBLIC "${ENGINE_PATH}/Source/ThirdParty/glm/include"
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
 )

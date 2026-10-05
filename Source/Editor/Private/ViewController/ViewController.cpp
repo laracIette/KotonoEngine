@@ -1,9 +1,9 @@
 #include "ViewController.h"
 
 #include <glm/ext/quaternion_trigonometric.hpp>
-#include <kotono_core/Interface.h>
-#include <kotono_core/Scene.h>
-#include <kotono_math/math_utils.h>
+#include <Interface/Interface.h>
+#include <Scene/Scene.h>
+#include <math_utils/math_utils.h>
 
 WViewController::WViewController()
 	: WViewController(nullptr)

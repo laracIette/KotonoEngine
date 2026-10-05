@@ -1,7 +1,7 @@
-#include "Generator.h"
+#include "Generator/Generator.h"
 
-#include <kotono_common/PathManager.h>
-#include <kotono_reflection/Reflector.h>
+#include <Path/PathManager.h>
+#include <Reflector/Reflector.h>
 
 UPath SPathManager::projectPath_{ "" };
 

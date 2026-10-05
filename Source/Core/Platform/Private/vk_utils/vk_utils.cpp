@@ -1,7 +1,7 @@
-#include "vk_utils.h"
+#include "vk_utils/vk_utils.h"
 
 #include <format>
-#include <kotono_common/types.h>
+#include <types.h>
 #include <stdexcept>
 #include <vulkan/vulkan_core.h>
 

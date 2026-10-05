@@ -1,4 +1,4 @@
-#include "SceneRenderer.h"
+#include "SceneRenderer/SceneRenderer.h"
 
 #include "DrawCommand.h"
 #include <array>

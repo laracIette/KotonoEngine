@@ -2,8 +2,10 @@
 #include <array>
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float3.hpp>
-#include <kotono_common/types.h>
+#include <types.h>
+
 inline constexpr u32 NUM_DIRECTIONAL_CASCADES{ 4 };
+
 struct UDirectionalLight final
 {
 	glm::vec3 direction;

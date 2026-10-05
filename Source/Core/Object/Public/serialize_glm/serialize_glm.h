@@ -1,6 +1,6 @@
 #pragma once
 #include <glm/fwd.hpp>
-#include <kotono_io/serialize_base.h>
+#include <serialize_base/serialize_base.h>
 
 template <>
 struct USerialize<glm::vec2>

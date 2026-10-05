@@ -1,7 +1,7 @@
 #pragma once
 #include <dr_libs/dr_wav.h>
-#include <kotono_common/Path.h>
-#include <kotono_common/types.h>
+#include <Path/Path.h>
+#include <types.h>
 struct UAudioDataWAV final
 {
 	UAudioDataWAV(UPath const& path);

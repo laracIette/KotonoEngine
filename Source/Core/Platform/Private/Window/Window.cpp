@@ -1,9 +1,9 @@
-#include "Window.h"
+#include "Window/Window.h"
 
 #include <functional>
 #include <GLFW/glfw3.h>
 #include <glm/vector_relational.hpp>
-#include <kotono_common/log.h>
+#include <Logging/log.h>
 #include <stdexcept>
 #include <unordered_map>
 
