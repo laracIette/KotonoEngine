@@ -1,8 +1,7 @@
 #include "Path/Path.h"
 
-#include "Path/PathManager.h"
-#include <ranges>
 #include <algorithm>
+#include <ranges>
 
 static constexpr void replace(std::string& str, std::string_view from, std::string_view to)
 {
@@ -11,6 +10,11 @@ static constexpr void replace(std::string& str, std::string_view from, std::stri
     {
         str.replace(start_pos, from.length(), to);
     }
+}
+
+UPath operator/(UPath const& r, UPath const& l)
+{
+    return std::format("{0}/{1}", r.source_, l.source_);
 }
 
 UPath::UPath()
@@ -96,8 +100,8 @@ auto UPath::ToString() const -> std::string const&
 auto UPath::ToPath() const -> std::filesystem::path
 {
     std::string result{ source_ };
-    replace(result, "${ENGINE_DIRECTORY}", SPathManager::Engine().ToString());
-    replace(result, "${PROJECT_DIRECTORY}", SPathManager::Project().ToString());
+    replace(result, "${ENGINE_DIRECTORY}", enginePath_);
+    replace(result, "${PROJECT_DIRECTORY}", projectPath_);
     return result;
 }
 
@@ -149,9 +153,4 @@ auto UPath::operator==(UPath const& other) const noexcept -> b8
 size std::hash<UPath>::operator()(UPath const& p) const noexcept
 {
     return std::hash<std::string>{}(p.source_);
-}
-
-UPath operator/(UPath const& r, UPath const& l)
-{
-    return std::format("{0}/{1}", r.source_, l.source_);
 }

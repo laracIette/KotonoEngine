@@ -28,12 +28,10 @@ set(KCOMMON_PUBLIC_HEADERS
     "Public/Logging/log.h"
     "Public/Logging/LogImportanceLevel.h"
     "Public/Path/Path.h"
-    "Public/Path/PathManager.h"
 )
 set(KCOMMON_SOURCES
     "Private/Asset/Asset.cpp"
     "Private/Path/Path.cpp"
-    "Private/Path/PathManager.cpp"
 )
 
 target_sources(KotonoCommon

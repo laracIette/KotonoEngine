@@ -8,6 +8,8 @@
 class UPath final
 {
 private:
+	friend UPath operator/(UPath const& r, UPath const& l);
+
 	friend struct std::hash<UPath>;
 
 public:
@@ -43,10 +45,11 @@ public:
 
 	b8 operator==(UPath const& other) const noexcept;
 
-	friend UPath operator/(UPath const& r, UPath const& l);
-
 private:
 	std::string source_;
+
+	static std::string_view enginePath_;
+	static std::string_view projectPath_;
 };
 
 template<>

@@ -1,9 +1,10 @@
 #include "Generator/Generator.h"
 
-#include <Path/PathManager.h>
+#include <Path/Path.h>
 #include <Reflector/Reflector.h>
 
-UPath SPathManager::projectPath_{ "" };
+std::string_view UPath::enginePath_{ ENGINE_DIRECTORY };
+std::string_view UPath::projectPath_{ "" };
 
 int main()
 {
