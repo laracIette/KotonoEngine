@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/SecondaryWindow.generated.h"
+#include "SecondaryWindow.generated.h"
 #include <InterfaceRoot/InterfaceRoot.h>
 
 class WSecondaryWindow final : public WInterfaceRoot

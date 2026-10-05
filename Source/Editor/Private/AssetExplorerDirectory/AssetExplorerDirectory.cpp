@@ -5,4 +5,4 @@ WAssetExplorerDirectory::WAssetExplorerDirectory(UPtr<WAssetExplorer> const& ass
 {
 }
 
-#include "generated/AssetExplorerDirectory.generated.inl"
+#include "AssetExplorerDirectory.generated.inl"

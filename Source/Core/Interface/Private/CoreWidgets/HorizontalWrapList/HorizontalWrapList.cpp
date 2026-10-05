@@ -59,4 +59,4 @@ void WHorizontalWrapList::AddChild(WidgetPtr const & child)
 	body_->AddChild(child);
 }
 
-#include "generated/HorizontalWrapList.generated.inl"
+#include "HorizontalWrapList.generated.inl"

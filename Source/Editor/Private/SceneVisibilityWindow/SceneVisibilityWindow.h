@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/SceneVisibilityWindow.generated.h"
+#include "SceneVisibilityWindow.generated.h"
 #include <Widget/Widget.h>
 
 #include <SceneVisibility.h>

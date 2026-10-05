@@ -24,4 +24,4 @@ WidgetPtr WSceneExplorerAddButton::Build()
 	);
 }
 
-#include "generated/SceneExplorerAddButton.generated.inl"
+#include "SceneExplorerAddButton.generated.inl"

@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/SceneWidget.generated.h"
+#include "SceneWidget.generated.h"
 #include "Widget/Widget.h"
 
 class UScene;

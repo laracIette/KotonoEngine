@@ -32,4 +32,4 @@ void KDirectionalLightComponent::PopulateRenderGraph(USceneRenderGraph& sceneRen
 	}
 }
 
-#include "generated/DirectionalLightComponent.generated.inl"
+#include "DirectionalLightComponent.generated.inl"

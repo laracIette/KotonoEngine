@@ -10,4 +10,4 @@ WidgetPtr WSecondaryWindow::Build()
 	return widget_;
 }
 
-#include "generated/SecondaryWindow.generated.inl"
+#include "SecondaryWindow.generated.inl"

@@ -79,4 +79,4 @@ WidgetPtr WSceneVisibilityWindow::Build()
     );
 }
 
-#include "generated/SceneVisibilityWindow.generated.inl"
+#include "SceneVisibilityWindow.generated.inl"

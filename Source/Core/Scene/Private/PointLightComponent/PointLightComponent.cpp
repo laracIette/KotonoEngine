@@ -29,4 +29,4 @@ void KPointLightComponent::PopulateRenderGraph(USceneRenderGraph& sceneRenderGra
 	}
 }
 
-#include "generated/PointLightComponent.generated.inl"
+#include "PointLightComponent.generated.inl"

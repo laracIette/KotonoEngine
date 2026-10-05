@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/UpdateTimeText.generated.h"
+#include "UpdateTimeText.generated.h"
 #include <Widget/Widget.h>
 
 class WUpdateTimeText : public WWidget

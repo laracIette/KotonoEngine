@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/AssetExplorer.generated.h"
+#include "AssetExplorer.generated.h"
 #include <Widget/Widget.h>
 
 class WAssetExplorerItem;

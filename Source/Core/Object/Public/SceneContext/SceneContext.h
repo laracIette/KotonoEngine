@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/SceneContext.generated.h"
+#include "SceneContext.generated.h"
 #include "Widget/Widget.h"
 
 struct USceneRenderGraph;

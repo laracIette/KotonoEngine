@@ -2,7 +2,7 @@
 
 #include <RenderGraph/InterfaceRenderGraph.h>
 
-static const UPath DEFAULT_TEXTURE{ "${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg" };
+static const UPath DEFAULT_TEXTURE{ "${ENGINE_DIRECTORY}/Assets/textures/white_texture.jpg" };
 
 static constexpr UColor DEFAULT_NORMAL{ Colors::White.WithValue(0.1f) };
 static constexpr UColor DEFAULT_FOCUSED{ Colors::White.WithValue(0.15f) };
@@ -138,8 +138,8 @@ void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) c
 	interfaceRenderGraph.drawDatas.push_back({
 		.scissor = GetScissor(),
 		.modelMatrix = GetModelMatrix(),
-		.shader = "${ENGINE_DIRECTORY}/Graphics/assets/shaders/shader2D.kasset",
-		.model = "${ENGINE_DIRECTORY}/Graphics/assets/models/rectangle.obj",
+		.shader = "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset",
+		.model = "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj",
 		.scalars = {},
 		.vectors = { state.color },
 		.textures = { state.texture },
@@ -153,4 +153,4 @@ auto WButton::GetCanCache() const -> b8
 		&& isEnabled_.GetIsValue();
 }
 
-#include "generated/Button.generated.inl"
+#include "Button.generated.inl"

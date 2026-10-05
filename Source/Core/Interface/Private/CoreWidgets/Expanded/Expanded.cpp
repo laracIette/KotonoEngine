@@ -10,4 +10,4 @@ EFlex WExpanded::GetFlex() const
 	return EFlex::All;
 }
 
-#include "generated/Expanded.generated.inl"
+#include "Expanded.generated.inl"

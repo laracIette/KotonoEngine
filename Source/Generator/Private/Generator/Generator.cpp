@@ -1,15 +1,16 @@
 ﻿#include "Generator.h"
 
+#include <File/File.h>
 #include <iostream>
 #include <Logging/log.h>
-#include <Path/Path.h>
-#include <File/File.h>
-#include <Serializer/Serializer.h>
-#include <Reflector/Reflector.h>
 #include <nlohmann/json.hpp>
+#include <Path/Path.h>
 #include <ranges>
+#include <Reflector/Reflector.h>
+#include <Serializer/Serializer.h>
 
-static const UPath RegistryPath{ "${ENGINE_DIRECTORY}/Generator/generated.ktregistry" };
+static const UPath RegistryPath{ "${ENGINE_DIRECTORY}/Cache/Generator/generated.ktregistry" };
+static const UPath GeneratedPath{ "${ENGINE_DIRECTORY}/Cache/Generator/Generated" };
 
 static std::string to_upper(std::string s)
 {
@@ -103,7 +104,7 @@ void RegisterObjectClasses()
 		)
 	};
 
-	UPath const filePath{ "${ENGINE_DIRECTORY}/Application/src/generated/ClassRegistrator.generated.inl" };
+	UPath const filePath{ GeneratedPath / "ClassRegistrator.generated.inl" };
 	UFile{ filePath }.WriteString(generatedCode);
 
 	KT_LOG(ELogImportanceLevel::High, "Generator", "Generated class registrator");
@@ -157,9 +158,8 @@ R"(#pragma once
 		)
 	};
 
-	UPath const fileDirectory{ reflectionResult.path.Directory() };
 	UPath const fileName{ reflectionResult.path.ToPath().filename().replace_extension(".generated.h") };
-	UFile{ fileDirectory / "generated" / fileName }.WriteString(generatedCode);
+	UFile{ GeneratedPath / fileName }.WriteString(generatedCode);
 }
 
 void SGenerator::GenerateSource(UReflectionResult const& reflectionResult)
@@ -257,9 +257,8 @@ UPtr<{0}> {0}::Ptr() const
 		)
 	};
 
-	const UPath fileDirectory{ reflectionResult.path.Directory().Directory().Directory() / "src" };
 	const UPath fileName{ reflectionResult.path.ToPath().filename().replace_extension(".generated.inl") };
-	UFile{ fileDirectory / "generated" / fileName }.WriteString(generatedCode);
+	UFile{ GeneratedPath / fileName }.WriteString(generatedCode);
 }
 
 SGenerator::ClassInfo SGenerator::GetClassInfo(UReflectionResult const& reflectionResult)

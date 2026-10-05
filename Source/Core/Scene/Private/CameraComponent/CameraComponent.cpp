@@ -1,3 +1,3 @@
 #include "CameraComponent/CameraComponent.h"
 
-#include "generated/CameraComponent.generated.inl"
+#include "CameraComponent.generated.inl"

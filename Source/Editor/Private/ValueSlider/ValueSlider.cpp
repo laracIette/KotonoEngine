@@ -19,4 +19,4 @@ WidgetPtr WValueSlider::Build()
 	);
 }
 
-#include "generated/ValueSlider.generated.inl"
+#include "ValueSlider.generated.inl"

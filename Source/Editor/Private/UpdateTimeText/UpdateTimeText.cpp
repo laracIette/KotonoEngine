@@ -13,4 +13,4 @@ WidgetPtr WUpdateTimeText::Build()
     ;
 }
 
-#include "generated/UpdateTimeText.generated.inl"
+#include "UpdateTimeText.generated.inl"

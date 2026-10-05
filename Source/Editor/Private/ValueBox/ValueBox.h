@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/ValueBox.generated.h"
+#include "ValueBox.generated.h"
 #include <Widget/Widget.h>
 
 template <typename T>

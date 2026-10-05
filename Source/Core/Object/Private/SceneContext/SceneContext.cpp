@@ -29,4 +29,4 @@ void WSceneContext::Update(f32 deltaTime) const
 	}
 }
 
-#include "generated/SceneContext.generated.inl"
+#include "SceneContext.generated.inl"

@@ -1,11 +1,11 @@
 {
   "shaders": [
     {
-      "path": "${ENGINE_DIRECTORY}/Graphics/shaders/vert/flatColor2D.vert.spv",
+      "path": "${ENGINE_DIRECTORY}/Shaders/vert/flatColor2D.vert.spv",
       "shaderStage": 1
     },
     {
-      "path": "${ENGINE_DIRECTORY}/Graphics/shaders/frag/flatColor.frag.spv",
+      "path": "${ENGINE_DIRECTORY}/Shaders/frag/flatColor.frag.spv",
       "shaderStage": 16
     }
   ],

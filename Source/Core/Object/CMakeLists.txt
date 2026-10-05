@@ -57,6 +57,7 @@ target_sources(KotonoObject
 )
 
 target_include_directories(KotonoObject
+    PUBLIC "${ENGINE_PATH}/Cache/Generator/Generated"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
 )
 

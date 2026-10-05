@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/SingleViewport.generated.h"
+#include "SingleViewport.generated.h"
 #include <SceneWidget/SceneWidget.h>
 
 class WSingleViewport final : public WSceneWidget

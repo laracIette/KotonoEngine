@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/GameSpeedButton.generated.h"
+#include "GameSpeedButton.generated.h"
 #include <SceneWidget/SceneWidget.h>
 
 class WGameSpeedButton final : public WSceneWidget

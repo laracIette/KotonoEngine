@@ -1,17 +1,17 @@
 #include "Reflector/Reflector.h"
 
-#include <Path/Path.h>
 #include <File/File.h>
-#include <Serializer/Serializer.h>
 #include <nlohmann/json.hpp>
+#include <Path/Path.h>
 #include <ranges>
 #include <regex>
+#include <Serializer/Serializer.h>
 
 void GReflector::Reflect()
 {
 	nlohmann::json json{};
-	const UPath includePath{ "${ENGINE_DIRECTORY}/Reflection/include.ktregistry" };
-	SSerializer::Deserialize(json, includePath);
+	UPath const reflectPath{ "${ENGINE_DIRECTORY}/reflect.ktregistry" };
+	SSerializer::Deserialize(json, reflectPath);
 
 	for (const auto& file : json.at("files"))
 	{

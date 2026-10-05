@@ -178,4 +178,4 @@ std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDesiredSizes(const glm::ve
 	return rowSizes;
 }
 
-#include "generated/HorizontalWrapListBody.generated.inl"
+#include "HorizontalWrapListBody.generated.inl"

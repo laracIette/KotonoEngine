@@ -54,4 +54,4 @@ void WList::ReplaceChild(WidgetPtr const& oldWidget, WidgetPtr const& newWidget)
 	body_->ReplaceChild(oldWidget, newWidget);
 }
 
-#include "generated/List.generated.inl"
+#include "List.generated.inl"

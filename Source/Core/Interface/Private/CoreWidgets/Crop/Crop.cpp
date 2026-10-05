@@ -16,4 +16,4 @@ void WCrop::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	Base::DisplayInternal(displaySettings);
 }
 
-#include "generated/Crop.generated.inl"
+#include "Crop.generated.inl"

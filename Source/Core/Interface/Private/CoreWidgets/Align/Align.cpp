@@ -35,4 +35,4 @@ void WAlign::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	Base::DisplayInternal(displaySettings);
 }
 
-#include "generated/Align.generated.inl"
+#include "Align.generated.inl"

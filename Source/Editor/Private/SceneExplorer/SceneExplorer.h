@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/SceneExplorer.generated.h"
+#include "SceneExplorer.generated.h"
 #include <SceneWidget/SceneWidget.h>
 
 #include <span>

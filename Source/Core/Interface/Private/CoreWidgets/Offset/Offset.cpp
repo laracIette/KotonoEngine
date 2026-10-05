@@ -12,4 +12,4 @@ void WOffset::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	Base::DisplayInternal(displaySettings);
 }
 
-#include "generated/Offset.generated.inl"
+#include "Offset.generated.inl"

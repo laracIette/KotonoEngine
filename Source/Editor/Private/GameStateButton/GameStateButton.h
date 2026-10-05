@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/GameStateButton.generated.h"
+#include "GameStateButton.generated.h"
 #include <SceneWidget/SceneWidget.h>
 
 class WGameStateButton final : public WSceneWidget

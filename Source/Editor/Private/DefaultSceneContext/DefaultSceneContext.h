@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/DefaultSceneContext.generated.h"
+#include "DefaultSceneContext.generated.h"
 #include <SceneContext/SceneContext.h>
 
 class WDefaultSceneContext final : public WSceneContext

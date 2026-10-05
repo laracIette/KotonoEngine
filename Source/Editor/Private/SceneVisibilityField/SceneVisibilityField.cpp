@@ -50,4 +50,4 @@ WidgetPtr WSceneVisibilityField::Build()
     );
 }
 
-#include "generated/SceneVisibilityField.generated.inl"
+#include "SceneVisibilityField.generated.inl"

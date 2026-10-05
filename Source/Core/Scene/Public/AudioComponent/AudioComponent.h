@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/AudioComponent.generated.h"
+#include "AudioComponent.generated.h"
 #include <SceneComponent/SceneComponent.h>
 
 #include <Handle.h>

@@ -69,4 +69,4 @@ void WListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	}
 }
 
-#include "generated/ListBody.generated.inl"
+#include "ListBody.generated.inl"

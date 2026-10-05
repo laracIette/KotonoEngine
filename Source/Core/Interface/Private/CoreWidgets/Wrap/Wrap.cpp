@@ -61,4 +61,4 @@ void WWrap::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	Base::DisplayInternal(displaySettings);
 }
 
-#include "generated/Wrap.generated.inl"
+#include "Wrap.generated.inl"

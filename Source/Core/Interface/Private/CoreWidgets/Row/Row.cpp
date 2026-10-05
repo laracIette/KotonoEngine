@@ -120,4 +120,4 @@ auto WRow::GetExpandWeight() const -> f32
     );
 }
 
-#include "generated/Row.generated.inl"
+#include "Row.generated.inl"

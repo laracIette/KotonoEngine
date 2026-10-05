@@ -42,4 +42,4 @@ WidgetPtr WMainWindow::Build()
 	);
 }
 
-#include "generated/MainWindow.generated.inl"
+#include "MainWindow.generated.inl"

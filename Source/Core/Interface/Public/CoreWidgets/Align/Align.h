@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/Align.generated.h"
+#include "Align.generated.h"
 #include "ChildOwner/ChildOwner.h"
 
 struct UAlignment final

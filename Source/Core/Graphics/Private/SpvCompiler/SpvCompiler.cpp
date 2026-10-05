@@ -1,17 +1,16 @@
 #include "SpvCompiler/SpvCompiler.h"
 
+#include <File/File.h>
 #include <format>
 #include <Logging/log.h>
-#include <Path/Path.h>
-#include <File/File.h>
-#include <Serializer/Serializer.h>
 #include <nlohmann/json.hpp>
+#include <Path/Path.h>
+#include <Serializer/Serializer.h>
 
 #define KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER ELogImportanceLevel::High
 
-static const UPath ShadersPath{ "${ENGINE_DIRECTORY}/Graphics/shaders" };
+static const UPath ShadersPath{ "${ENGINE_DIRECTORY}/Shaders" };
 static const UPath ShaderRegistryPath{ ShadersPath / "shaders.ktregistry" };
-
 static const UPath DependencyRegistryPath{ ShadersPath / "dependencies.ktregistry" };
 static const std::array DependencyPaths{
     "common.glsl",

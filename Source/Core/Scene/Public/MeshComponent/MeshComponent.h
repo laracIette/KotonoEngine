@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/MeshComponent.generated.h"
+#include "MeshComponent.generated.h"
 #include <SceneComponent/SceneComponent.h>
 
 #include <Task/Task.h>

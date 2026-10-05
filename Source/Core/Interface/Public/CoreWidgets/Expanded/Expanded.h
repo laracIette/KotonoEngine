@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/Expanded.generated.h"
+#include "Expanded.generated.h"
 #include "ChildOwner/ChildOwner.h"
 
 /// Fills the entirety of the available parent space

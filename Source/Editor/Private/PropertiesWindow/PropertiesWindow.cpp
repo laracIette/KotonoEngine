@@ -72,4 +72,4 @@ void WPropertiesWindow::OnSelectedObjectChanged(UPtr<TSceneObject> const& sceneO
     }
 }
 
-#include "generated/PropertiesWindow.generated.inl"
+#include "PropertiesWindow.generated.inl"

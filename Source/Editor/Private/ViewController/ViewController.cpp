@@ -150,4 +150,4 @@ void WViewController::Translate(glm::vec3 const& delta)
 	}
 }
 
-#include "generated/ViewController.generated.inl"
+#include "ViewController.generated.inl"

@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/Object.generated.h"
+#include "Object.generated.h"
 
 #include "Guid/Guid.h"
 #include "ObjectFactory/ObjectFactory.h"

@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/AssetExplorerFile.generated.h"
+#include "AssetExplorerFile.generated.h"
 #include "AssetExplorerItem/AssetExplorerItem.h"
 
 class WAssetExplorerFile : public WAssetExplorerItem

@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/Padding.generated.h"
+#include "Padding.generated.h"
 #include "ChildOwner/ChildOwner.h"
 
 #include <Padding.h>

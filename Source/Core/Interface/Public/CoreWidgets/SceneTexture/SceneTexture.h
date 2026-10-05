@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/SceneTexture.generated.h"
+#include "SceneTexture.generated.h"
 #include <SceneWidget/SceneWidget.h>
 
 #include <glm/ext/quaternion_float.hpp>

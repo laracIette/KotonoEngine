@@ -12,11 +12,11 @@ void WColor::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) co
 	interfaceRenderGraph.drawDatas.push_back({
 		.scissor = GetScissor(),
 		.modelMatrix = GetModelMatrix(),
-		.shader = "${ENGINE_DIRECTORY}/Graphics/assets/shaders/shader2D.kasset",
-		.model = "${ENGINE_DIRECTORY}/Graphics/assets/models/rectangle.obj",
+		.shader = "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset",
+		.model = "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj",
 		.scalars = {},
 		.vectors = { GetColor() },
-		.textures = { "${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg" },
+		.textures = { "${ENGINE_DIRECTORY}/Assets/textures/white_texture.jpg" },
 		.isVisible = GetIsVisible(),
 	});
 }
@@ -37,4 +37,4 @@ auto WColor::GetCanCache() const -> b8
 		&& color_.GetIsValue();
 }
 
-#include "generated/Color.generated.inl"
+#include "Color.generated.inl"

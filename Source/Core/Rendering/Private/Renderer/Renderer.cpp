@@ -197,14 +197,14 @@ void URenderer::DrawFrame(UInterfaceRenderGraph const& interfaceRenderGraph)
 
 void URenderer::InitSceneRendererResources()
 {
-	defaultSampler_ = GetOrCreateSampler("${ENGINE_DIRECTORY}/Graphics/assets/samplers/default.kasset")->GetIndex();
+	defaultSampler_ = GetOrCreateSampler("${ENGINE_DIRECTORY}/Assets/samplers/default.kasset")->GetIndex();
 
-	clusterAABBPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Graphics/assets/shaders/clusterAABB.kasset")->GetPipeline();
-	lightBinningPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Graphics/assets/shaders/lightBinning.kasset")->GetPipeline();
-	shadowPrePassPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Graphics/assets/shaders/shadowPrePass.kasset")->GetPipeline();
-	depthPrePassPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Graphics/assets/shaders/depthPrePass.kasset")->GetPipeline();
-	deferredLightingPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Graphics/assets/shaders/deferredLighting.kasset")->GetPipeline();
-	postProcessPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Graphics/assets/shaders/postProcess.kasset")->GetPipeline();
+	clusterAABBPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Assets/shaders/clusterAABB.kasset")->GetPipeline();
+	lightBinningPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Assets/shaders/lightBinning.kasset")->GetPipeline();
+	shadowPrePassPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Assets/shaders/shadowPrePass.kasset")->GetPipeline();
+	depthPrePassPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Assets/shaders/depthPrePass.kasset")->GetPipeline();
+	deferredLightingPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Assets/shaders/deferredLighting.kasset")->GetPipeline();
+	postProcessPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Assets/shaders/postProcess.kasset")->GetPipeline();
 }
 
 void URenderer::RecreateFrames()
@@ -625,7 +625,7 @@ auto URenderer::MakeDirectionalLights(
 	, u32 frameIndex
 ) -> std::vector<UDirectionalLight>
 {
-	static auto* sampler{ GetOrCreateSampler("${ENGINE_DIRECTORY}/Graphics/assets/samplers/shadow.kasset") };
+	auto* const sampler{ GetOrCreateSampler("${ENGINE_DIRECTORY}/Assets/samplers/shadow.kasset") };
 
 	std::array<f32, NUM_DIRECTIONAL_CASCADES + 1> const cascadeSplits{
 		sceneView.depthNear,
@@ -654,7 +654,7 @@ auto URenderer::MakeDirectionalLights(
 
 	return directionalLightDatas
 		| std::views::enumerate
-		| std::views::transform([this, makeLightViewProjs, sceneRender, frameIndex](auto&& tuple) {
+		| std::views::transform([this, sampler, makeLightViewProjs, sceneRender, frameIndex](auto&& tuple) {
 			auto const& [index, directionalLightData] { tuple };
 
 			return UDirectionalLight{

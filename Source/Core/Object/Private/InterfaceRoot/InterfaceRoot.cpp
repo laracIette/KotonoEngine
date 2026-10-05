@@ -23,4 +23,4 @@ void WInterfaceRoot::RemoveSceneContext(UPtr<WSceneContext> const& sceneContext)
 	sceneContexts_.Remove(sceneContext);
 }
 
-#include "generated/InterfaceRoot.generated.inl"
+#include "InterfaceRoot.generated.inl"

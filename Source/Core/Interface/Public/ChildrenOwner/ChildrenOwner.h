@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/ChildrenOwner.generated.h"
+#include "ChildrenOwner.generated.h"
 #include <Widget/Widget.h>
 
 #include <concepts>

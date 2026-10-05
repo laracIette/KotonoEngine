@@ -108,4 +108,4 @@ void WSceneExplorer::UpdateItemList(std::span<UPtr<TSceneObject> const> sceneObj
 	}
 }
 
-#include "generated/SceneExplorer.generated.inl"
+#include "SceneExplorer.generated.inl"

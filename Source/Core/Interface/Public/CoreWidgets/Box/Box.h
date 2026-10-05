@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/Box.generated.h"
+#include "Box.generated.h"
 #include "ChildOwner/ChildOwner.h"
 
 /// Set bounds for the child widget to be contained within

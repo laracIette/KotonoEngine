@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/SceneExplorerAddButton.generated.h"
+#include "SceneExplorerAddButton.generated.h"
 #include <SceneWidget/SceneWidget.h>
 
 class WSceneExplorerAddButton final : public WSceneWidget

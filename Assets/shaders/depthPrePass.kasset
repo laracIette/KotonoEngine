@@ -1,7 +1,7 @@
 {
   "shaders": [
     {
-      "path": "${ENGINE_DIRECTORY}/Graphics/shaders/vert/depthPrePass.vert.spv",
+      "path": "${ENGINE_DIRECTORY}/Shaders/vert/depthPrePass.vert.spv",
       "shaderStage": 1
     }
   ],

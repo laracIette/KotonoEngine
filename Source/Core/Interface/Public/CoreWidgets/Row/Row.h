@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/Row.generated.h"
+#include "Row.generated.h"
 #include "ChildrenOwner/ChildrenOwner.h"
 
 /// Defines an horizontal container for widgets

@@ -190,5 +190,5 @@ void WChildOwner::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	}
 }
 
-#include "generated/ChildOwner.generated.inl"
+#include "ChildOwner.generated.inl"
 

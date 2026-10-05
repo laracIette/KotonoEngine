@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/Constraint.generated.h"
+#include "Constraint.generated.h"
 #include "ChildOwner/ChildOwner.h"
 
 /// Constraints the bounds of the child widget given an axis

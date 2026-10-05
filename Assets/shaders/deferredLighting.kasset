@@ -1,11 +1,11 @@
 {
   "shaders": [
     {
-      "path": "${ENGINE_DIRECTORY}/Graphics/shaders/vert/fullscreenTriangle.vert.spv",
+      "path": "${ENGINE_DIRECTORY}/Shaders/vert/fullscreenTriangle.vert.spv",
       "shaderStage": 1
     },
     {
-      "path": "${ENGINE_DIRECTORY}/Graphics/shaders/frag/deferredLighting.frag.spv",
+      "path": "${ENGINE_DIRECTORY}/Shaders/frag/deferredLighting.frag.spv",
       "shaderStage": 16
     }
   ],

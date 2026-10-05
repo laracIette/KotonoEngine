@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/Offset.generated.h"
+#include "Offset.generated.h"
 #include "ChildOwner/ChildOwner.h"
 
 /// Offset the position of the child widget

@@ -29,7 +29,7 @@ static std::unordered_map<char, std::string_view> const CHARACTER_NAMES =
 	{'<', "lesser"}, {'>', "greater"},
 };
 
-static UPath const DEFAULT_TEXTURE{ "${ENGINE_DIRECTORY}/Graphics/assets/textures/white_texture.jpg" };
+static UPath const DEFAULT_TEXTURE{ "${ENGINE_DIRECTORY}/Assets/textures/white_texture.jpg" };
 
 UFont::UFont(UPath const& path) 
     : path_{ path }

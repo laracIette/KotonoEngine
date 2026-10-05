@@ -44,4 +44,4 @@ WidgetPtr WGameStateButton::Build()
     );
 }
 
-#include "generated/GameStateButton.generated.inl"
+#include "GameStateButton.generated.inl"

@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/Widget.generated.h"
+#include "Widget.generated.h"
 #include "Object/Object.h"
 
 #include "Axis.h"

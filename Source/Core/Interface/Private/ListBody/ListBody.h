@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/ListBody.generated.h"
+#include "ListBody.generated.h"
 #include "ChildrenOwner/ChildrenOwner.h"
 
 class WListBody final : public WChildrenOwner

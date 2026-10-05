@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/ValueSlider.generated.h"
+#include "ValueSlider.generated.h"
 #include <Widget/Widget.h>
 
 #include <conversion_utils.h>

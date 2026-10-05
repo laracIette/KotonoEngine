@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/Color.generated.h"
+#include "Color.generated.h"
 #include <Widget/Widget.h>
 
 #include <Color.h>

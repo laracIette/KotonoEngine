@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/PropertiesWindow.generated.h"
+#include "PropertiesWindow.generated.h"
 #include <SceneWidget/SceneWidget.h>
 
 class TSceneObject;

@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/ObjectProperties.generated.h"
+#include "ObjectProperties.generated.h"
 #include <Widget/Widget.h>
 
 class WObjectProperties : public WWidget

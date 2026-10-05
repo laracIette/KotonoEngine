@@ -10,7 +10,7 @@ WText::WText()
 	: text_{}
 	, fontSize_{ 16.0f, 20.0f }
 	, spacing_{ 0.75f }
-	, font_{ "${ENGINE_DIRECTORY}/Graphics/assets/fonts/default" }
+	, font_{ "${ENGINE_DIRECTORY}/Assets/fonts/default" }
 {
 }
 
@@ -52,8 +52,8 @@ void WText::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) con
 		interfaceRenderGraph.drawDatas.push_back({
 			.scissor = GetScissor(),
 			.modelMatrix = modelMatrix,
-			.shader = "${ENGINE_DIRECTORY}/Graphics/assets/shaders/shader2D.kasset",
-			.model = "${ENGINE_DIRECTORY}/Graphics/assets/models/rectangle.obj",
+			.shader = "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset",
+			.model = "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj",
 			.scalars = {},
 			.vectors = { Colors::White },
 			.textures = { characterPath },
@@ -128,4 +128,4 @@ auto WText::GetCanCache() const -> b8
 		&& text_.GetIsValue();
 }
 
-#include "generated/Text.generated.inl"
+#include "Text.generated.inl"

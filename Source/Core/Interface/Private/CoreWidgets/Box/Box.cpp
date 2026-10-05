@@ -34,4 +34,4 @@ void WBox::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	Base::DisplayInternal(displaySettings);
 }
 
-#include "generated/Box.generated.inl"
+#include "Box.generated.inl"

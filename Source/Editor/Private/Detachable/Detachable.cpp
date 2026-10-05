@@ -92,4 +92,4 @@ void WDetachable::Detach()
 	Delete();
 }
 
-#include "generated/Detachable.generated.inl"
+#include "Detachable.generated.inl"

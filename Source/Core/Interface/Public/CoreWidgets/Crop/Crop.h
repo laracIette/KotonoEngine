@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/Crop.generated.h"
+#include "Crop.generated.h"
 #include "ChildOwner/ChildOwner.h"
 
 #include <Padding.h>

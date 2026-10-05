@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/List.generated.h"
+#include "List.generated.h"
 #include <Widget/Widget.h>
 
 class WListBody;

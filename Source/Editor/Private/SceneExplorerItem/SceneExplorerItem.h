@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/SceneExplorerItem.generated.h"
+#include "SceneExplorerItem.generated.h"
 #include <SceneWidget/SceneWidget.h>
 
 class TSceneObject;

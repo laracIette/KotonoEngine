@@ -120,4 +120,4 @@ auto WColumn::GetExpandWeight() const -> f32
     );
 }
 
-#include "generated/Column.generated.inl"
+#include "Column.generated.inl"

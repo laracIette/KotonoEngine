@@ -39,4 +39,4 @@ WidgetPtr WGameSpeedButton::Build()
 	);
 }
 
-#include "generated/GameSpeedButton.generated.inl"
+#include "GameSpeedButton.generated.inl"

@@ -12,8 +12,8 @@ void WImage::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) co
 	interfaceRenderGraph.drawDatas.push_back({
 		.scissor = GetScissor(),
 		.modelMatrix = GetModelMatrix(),
-		.shader = "${ENGINE_DIRECTORY}/Graphics/assets/shaders/shader2D.kasset",
-		.model = "${ENGINE_DIRECTORY}/Graphics/assets/models/rectangle.obj",
+		.shader = "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset",
+		.model = "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj",
 		.scalars = {},
 		.vectors = { Colors::White },
 		.textures = { path_ },
@@ -21,4 +21,4 @@ void WImage::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) co
 	});
 }
 
-#include "generated/Image.generated.inl"
+#include "Image.generated.inl"

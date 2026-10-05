@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/SceneObject.generated.h"
+#include "SceneObject.generated.h"
 #include "Object/Object.h"
 
 #include "CoordinateSpace.h"

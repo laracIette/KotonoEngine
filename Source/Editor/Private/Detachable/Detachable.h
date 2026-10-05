@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/Detachable.generated.h"
+#include "Detachable.generated.h"
 #include <Widget/Widget.h>
 
 class WSocket;

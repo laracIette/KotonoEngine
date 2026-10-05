@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/MainWindow.generated.h"
+#include "MainWindow.generated.h"
 #include <InterfaceRoot/InterfaceRoot.h>
 
 class WMainWindow final : public WInterfaceRoot

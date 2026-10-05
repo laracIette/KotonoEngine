@@ -22,4 +22,4 @@ WAssetExplorerFile::WAssetExplorerFile(UPtr<WAssetExplorer> const& assetExplorer
 {
 }
 
-#include "generated/AssetExplorerFile.generated.inl"
+#include "AssetExplorerFile.generated.inl"

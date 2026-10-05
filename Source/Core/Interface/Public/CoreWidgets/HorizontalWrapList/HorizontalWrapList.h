@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/HorizontalWrapList.generated.h"
+#include "HorizontalWrapList.generated.h"
 #include <Widget/Widget.h>
 
 class WHorizontalWrapListBody;

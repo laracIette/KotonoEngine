@@ -132,4 +132,4 @@ void WInputTextBox::SetRepeatTime(f32 repeatTime)
 	holdAction_.SetRepeatTime(repeatTime);
 }
 
-#include "generated/InputTextBox.generated.inl"
+#include "InputTextBox.generated.inl"

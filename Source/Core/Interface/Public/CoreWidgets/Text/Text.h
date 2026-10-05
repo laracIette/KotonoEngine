@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/Text.generated.h"
+#include "Text.generated.h"
 #include <Widget/Widget.h>
 
 #include <Font/Font.h>

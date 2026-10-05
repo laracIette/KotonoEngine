@@ -115,4 +115,4 @@ void KObject::CheckDebugRegistry()
 }
 #endif
 
-#include "generated/Object.generated.inl"
+#include "Object.generated.inl"

@@ -33,4 +33,4 @@ WidgetPtr WSceneExplorerRemoveButton::Build()
 	);
 }
 
-#include "generated/SceneExplorerRemoveButton.generated.inl"
+#include "SceneExplorerRemoveButton.generated.inl"

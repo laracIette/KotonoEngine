@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/ViewController.generated.h"
+#include "ViewController.generated.h"
 #include <SceneWidget/SceneWidget.h>
 
 #include <glm/ext/quaternion_float.hpp>

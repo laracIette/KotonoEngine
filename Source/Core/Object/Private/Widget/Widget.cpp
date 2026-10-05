@@ -360,4 +360,4 @@ auto WWidget::ModelMatrix() const -> glm::mat4
 	return TranslationMatrix() * RotationMatrix() * ScaleMatrix();
 }
 
-#include "generated/Widget.generated.inl"
+#include "Widget.generated.inl"

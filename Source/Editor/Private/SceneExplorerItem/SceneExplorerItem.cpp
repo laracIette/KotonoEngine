@@ -28,4 +28,4 @@ WidgetPtr WSceneExplorerItem::Build()
 	);
 }
 
-#include "generated/SceneExplorerItem.generated.inl"
+#include "SceneExplorerItem.generated.inl"

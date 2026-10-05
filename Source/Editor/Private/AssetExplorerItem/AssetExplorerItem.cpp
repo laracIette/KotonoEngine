@@ -66,4 +66,4 @@ void WAssetExplorerItem::Deselect()
     isSelected_ = false;
 }
 
-#include "generated/AssetExplorerItem.generated.inl"
+#include "AssetExplorerItem.generated.inl"

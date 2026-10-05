@@ -404,9 +404,7 @@ FodyWeavers.xsd
 
 # --- Kotono Engine ---
 
-*.spv
-*.generated.h
-*.generated.inl
-generated.ktregistry
+Cache/
+Shaders/**/*.spv
 Shaders/shaders.ktregistry
 Shaders/dependencies.ktregistry

@@ -40,8 +40,8 @@ void WSceneTexture::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGr
 	interfaceRenderGraph.drawDatas.push_back({
 		.scissor = GetScissor(),
 		.modelMatrix = GetModelMatrix(),
-		.shader = "${ENGINE_DIRECTORY}/Graphics/assets/shaders/shader2D.kasset",
-		.model = "${ENGINE_DIRECTORY}/Graphics/assets/models/rectangle.obj",
+		.shader = "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset",
+		.model = "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj",
 		.scalars = {},
 		.vectors = { Colors::White },
 		.textures = { UInterfaceDrawData::SceneRenderData{ sceneView, std::move(sceneRenderGraph) } },
@@ -71,4 +71,4 @@ void WSceneTexture::SetViewRotation(glm::quat const& rotation)
 	GetScene()->GetAudioContext().SetListenerOrientation(rotation);
 }
 
-#include "generated/SceneTexture.generated.inl"
+#include "SceneTexture.generated.inl"

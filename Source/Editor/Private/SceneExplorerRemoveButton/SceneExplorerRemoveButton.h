@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/SceneExplorerRemoveButton.generated.h"
+#include "SceneExplorerRemoveButton.generated.h"
 #include <SceneWidget/SceneWidget.h>
 
 class WSceneExplorerRemoveButton final : public WSceneWidget

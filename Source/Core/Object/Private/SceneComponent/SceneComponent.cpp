@@ -350,4 +350,4 @@ void KSceneComponent::RemoveChild(UPtr<KSceneComponent> const& component)
     eventTransformUpdated_.RemoveListener(&component->GetEventTransformUpdated(), &UEvent<>::Broadcast<>);
 }
 
-#include "generated/SceneComponent.generated.inl"
+#include "SceneComponent.generated.inl"

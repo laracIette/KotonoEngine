@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/Stack.generated.h"
+#include "Stack.generated.h"
 #include "ChildrenOwner/ChildrenOwner.h"
 
 /// Display widgets on top of each other

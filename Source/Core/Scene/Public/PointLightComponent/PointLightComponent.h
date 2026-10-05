@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/PointLightComponent.generated.h"
+#include "PointLightComponent.generated.h"
 #include <SceneComponent/SceneComponent.h>
 
 #include <Color.h>

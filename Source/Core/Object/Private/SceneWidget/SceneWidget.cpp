@@ -10,4 +10,4 @@ WSceneWidget::WSceneWidget()
 {
 }
 
-#include "generated/SceneWidget.generated.inl"
+#include "SceneWidget.generated.inl"

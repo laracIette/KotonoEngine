@@ -41,4 +41,4 @@ void WPadding::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	Base::DisplayInternal(displaySettings);
 }
 
-#include "generated/Padding.generated.inl"
+#include "Padding.generated.inl"

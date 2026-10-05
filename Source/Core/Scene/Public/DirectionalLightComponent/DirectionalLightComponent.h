@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/DirectionalLightComponent.generated.h"
+#include "DirectionalLightComponent.generated.h"
 #include <SceneComponent/SceneComponent.h>
 
 #include <Color.h>

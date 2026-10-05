@@ -2,6 +2,7 @@
 
 #include "SecondaryWindow/SecondaryWindow.h"
 #include "SceneVisibilityWindow/SceneVisibilityWindow.h"
+#include "ViewController/ViewController.h"
 #include <core_widgets.h>
 
 static constexpr auto DEFAULT_VISIBILITY{ ESceneVisibility::All };
@@ -34,4 +35,4 @@ WidgetPtr WSingleViewport::Build()
 	);
 }
 
-#include "generated/SingleViewport.generated.inl"
+#include "SingleViewport.generated.inl"

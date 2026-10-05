@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/Spacer.generated.h"
+#include "Spacer.generated.h"
 #include <Widget/Widget.h>
 
 /// Fills the entirety of the available parent space

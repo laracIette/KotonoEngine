@@ -268,4 +268,4 @@ size WChildrenOwner::GetValidChildrenCount() const
 	);
 }
 
-#include "generated/ChildrenOwner.generated.inl"
+#include "ChildrenOwner.generated.inl"

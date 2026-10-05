@@ -1,11 +1,11 @@
 {
   "shaders": [
     {
-      "path": "${ENGINE_DIRECTORY}/Graphics/shaders/vert/shader2D.vert.spv",
+      "path": "${ENGINE_DIRECTORY}/Shaders/vert/shader2D.vert.spv",
       "shaderStage": 1
     },
     {
-      "path": "${ENGINE_DIRECTORY}/Graphics/shaders/frag/shader2D.frag.spv",
+      "path": "${ENGINE_DIRECTORY}/Shaders/frag/shader2D.frag.spv",
       "shaderStage": 16
     }
   ],

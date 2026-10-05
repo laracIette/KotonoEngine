@@ -55,4 +55,4 @@ void WScrollable::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	Base::DisplayInternal(displaySettings);
 }
 
-#include "generated/Scrollable.generated.inl"
+#include "Scrollable.generated.inl"

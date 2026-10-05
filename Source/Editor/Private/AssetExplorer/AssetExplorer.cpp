@@ -217,4 +217,4 @@ void WAssetExplorer::UpdateItemList()
 	}
 }
 
-#include "generated/AssetExplorer.generated.inl"
+#include "AssetExplorer.generated.inl"

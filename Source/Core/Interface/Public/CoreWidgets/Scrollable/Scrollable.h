@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/Scrollable.generated.h"
+#include "Scrollable.generated.h"
 #include "ChildOwner/ChildOwner.h"
 
 /// Makes the child of this widget scrollable while cropping the overflowing content

@@ -71,4 +71,4 @@ WidgetPtr WDefaultSceneContext::Build()
 	);
 }
 
-#include "generated/DefaultSceneContext.generated.inl"
+#include "DefaultSceneContext.generated.inl"

@@ -1,8 +1,8 @@
 {
-  "albedo": "${ENGINE_DIRECTORY}/Graphics/assets/textures/default_texture.jpg",
-  "normal": "${ENGINE_DIRECTORY}/Graphics/assets/textures/default_normal.jpg",
-  "orm": "${ENGINE_DIRECTORY}/Graphics/assets/textures/default_orm.jpg",
-  "emissive": "${ENGINE_DIRECTORY}/Graphics/assets/textures/black_texture.jpg",
+  "albedo": "${ENGINE_DIRECTORY}/Assets/textures/default_texture.jpg",
+  "normal": "${ENGINE_DIRECTORY}/Assets/textures/default_normal.jpg",
+  "orm": "${ENGINE_DIRECTORY}/Assets/textures/default_orm.jpg",
+  "emissive": "${ENGINE_DIRECTORY}/Assets/textures/black_texture.jpg",
   "materialType": 0,
-  "sampler": "${ENGINE_DIRECTORY}/Graphics/assets/samplers/default.kasset"
+  "sampler": "${ENGINE_DIRECTORY}/Assets/samplers/default.kasset"
 }

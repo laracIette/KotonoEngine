@@ -84,4 +84,4 @@ void KMeshComponent::SetMobilityDynamic()
     KT_LOG(ELogImportanceLevel::High, "Core", "{0}", GetName());
 }
 
-#include "generated/MeshComponent.generated.inl"
+#include "MeshComponent.generated.inl"

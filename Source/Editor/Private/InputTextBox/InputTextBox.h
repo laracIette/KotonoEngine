@@ -1,5 +1,5 @@
 #pragma once
-#include "generated/InputTextBox.generated.h"
+#include "InputTextBox.generated.h"
 #include <Widget/Widget.h>
 
 #include <InputHoldAction/InputHoldAction.h>

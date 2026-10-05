@@ -208,4 +208,4 @@ void TSceneObject::UpdateSceneComponents(f32 deltaTime)
 	}
 }
 
-#include "generated/SceneObject.generated.inl"
+#include "SceneObject.generated.inl"

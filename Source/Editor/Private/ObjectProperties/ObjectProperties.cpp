@@ -128,4 +128,4 @@ WidgetPtr WObjectProperties::Build()
     );
 }
 
-#include "generated/ObjectProperties.generated.inl"
+#include "ObjectProperties.generated.inl"

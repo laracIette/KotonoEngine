@@ -40,4 +40,4 @@ void KAudioComponent::Despawn()
 	}
 }
 
-#include "generated/AudioComponent.generated.inl"
+#include "AudioComponent.generated.inl"

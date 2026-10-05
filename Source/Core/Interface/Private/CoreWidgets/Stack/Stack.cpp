@@ -73,4 +73,4 @@ void WStack::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	}
 }
 
-#include "generated/Stack.generated.inl"
+#include "Stack.generated.inl"
