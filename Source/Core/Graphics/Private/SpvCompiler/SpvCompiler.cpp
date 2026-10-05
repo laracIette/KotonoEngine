@@ -10,26 +10,31 @@
 #define KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER ELogImportanceLevel::High
 
 static const UPath ShadersPath{ "${ENGINE_DIRECTORY}/Shaders" };
-static const UPath ShaderRegistryPath{ ShadersPath / "shaders.ktregistry" };
-static const UPath DependencyRegistryPath{ ShadersPath / "dependencies.ktregistry" };
+static const UPath CompiledShadersPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/Compiled" };
+static const UPath CompiledRegistryPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/compiled.ktregistry" };
+static const UPath DependenciesRegistryPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/dependencies.ktregistry" };
+
 static const std::array DependencyPaths{
-    "common.glsl",
-    "common_frag.glsl",
-    "common_vert.glsl",
-    "common_comp.glsl",
+    ShadersPath / "common.glsl",
+    ShadersPath / "common_frag.glsl",
+    ShadersPath / "common_vert.glsl",
+    ShadersPath / "common_comp.glsl",
 };
 
 void SSpvCompiler::CompileAll()
 {
     KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "Clearing registry...");
 
-    SSerializer::Serialize(nlohmann::json::object(), ShaderRegistryPath);
+    SSerializer::Serialize(nlohmann::json::object(), CompiledRegistryPath);
     CompileUpdated();
 }
 
 void SSpvCompiler::CompileUpdated()
 {
-    if (DependenciesUpdated())
+    // Create the compiled shaders directory if it doesn't exist
+    std::filesystem::create_directories(CompiledShadersPath);
+
+    if (HasDependenciesUpdated())
     {
         return CompileAll();
     }
@@ -37,7 +42,7 @@ void SSpvCompiler::CompileUpdated()
     KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "compiling updated spirv shaders");
 
     nlohmann::json json{};
-    SSerializer::Deserialize(json, ShaderRegistryPath);
+    SSerializer::Deserialize(json, CompiledRegistryPath);
 
     for (const auto* directory : { "vert", "frag", "comp" })
     {
@@ -54,7 +59,7 @@ void SSpvCompiler::CompileUpdated()
             const auto time{ entry.last_write_time() };
             const auto formattedTime{ std::format("{0:%F}-{0:%T}", time) };
 
-            bool isInList{ false };
+            b8 isInList{ false };
             for (auto& shader : json["shaders"])
             {
                 if (shader["path"] != entryPath)
@@ -87,24 +92,24 @@ void SSpvCompiler::CompileUpdated()
         }
     }
 
-    SSerializer::Serialize(json, ShaderRegistryPath);
+    SSerializer::Serialize(json, CompiledRegistryPath);
 
     KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "compiled updated spirv shaders");
 }
 
-bool SSpvCompiler::DependenciesUpdated()
+auto SSpvCompiler::HasDependenciesUpdated() -> b8
 {
     nlohmann::json json{};
-    SSerializer::Deserialize(json, DependencyRegistryPath);
+    SSerializer::Deserialize(json, DependenciesRegistryPath);
     
-    bool updated{ false };
+    b8 updated{ false };
     for (const auto& dependencyPath : DependencyPaths)
     {
-        const UFile dependencyFile{ ShadersPath / dependencyPath };
-        const auto time{ dependencyFile.LastWriteTime() };
-        const auto formattedTime{ std::format("{0:%F}-{0:%T}", time) };
+        UFile const dependencyFile{ dependencyPath };
+        auto const time{ dependencyFile.LastWriteTime() };
+        auto const formattedTime{ std::format("{0:%F}-{0:%T}", time) };
         
-        bool isInList{ false };
+        b8 isInList{ false };
         for (auto& dependency : json["dependencies"])
         {
             if (dependency["path"] != dependencyPath)
@@ -132,28 +137,30 @@ bool SSpvCompiler::DependenciesUpdated()
         }
     }
 
-    SSerializer::Serialize(json, DependencyRegistryPath);
+    SSerializer::Serialize(json, DependenciesRegistryPath);
     return updated;
 }
 
-bool SSpvCompiler::Compile(const std::filesystem::path& path)
+auto SSpvCompiler::Compile(UPath const& path) -> b8
 {
-    // user must have vulkan bin in environment variables path
+    UPath const filePath{ CompiledShadersPath / path.Name() + ".spv" };
+
+    // User must have vulkan bin in environment variables path
     std::string command;
 #ifdef NDEBUG
-    command = std::format("glslc \"{0}\" -o \"{0}.spv\"", path.string());
+    command = std::format("glslc \"{0}\" -o \"{1}\"", path.ToPath().string(), filePath.ToPath().string());
 #else
-    command = std::format("glslc \"{0}\" -o \"{0}.spv\" -g", path.string());
+    command = std::format("glslc \"{0}\" -o \"{1}\" -g", path.ToPath().string(), filePath.ToPath().string());
 #endif
-    const bool result{ std::system(command.c_str()) == 0 };
+    b8 const result{ std::system(command.c_str()) == 0 };
 
     if (result)
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "Successfully compiled shader {0}", path.string());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "Successfully compiled shader {0}", filePath.ToPath().string());
     }
     else
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "Found errors while compiling shader {0}", path.string());
+        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "Found errors while compiling shader {0}", filePath.ToPath().string());
     }
 
     return result;

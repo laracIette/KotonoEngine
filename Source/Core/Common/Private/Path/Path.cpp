@@ -131,6 +131,16 @@ UPath::operator b8() const
     return !IsEmpty();
 }
 
+auto UPath::operator+(char const* string) const -> UPath
+{
+    return std::format("{0}{1}", source_, string);
+}
+
+auto UPath::operator+(std::string_view string) const -> UPath
+{
+    return std::format("{0}{1}", source_, string);
+}
+
 auto UPath::operator==(UPath const& other) const noexcept -> b8
 {
     return source_ == other.source_;

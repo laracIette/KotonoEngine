@@ -1,4 +1,4 @@
 {
-  "path": "${ENGINE_DIRECTORY}/Shaders/comp/clusterAABB.comp.spv",
+  "path": "${ENGINE_DIRECTORY}/Shaders/comp/clusterAABB.comp",
   "pipelinePass": 0
 }

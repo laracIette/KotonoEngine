@@ -1,11 +1,11 @@
 {
   "shaders": [
     {
-      "path": "${ENGINE_DIRECTORY}/Shaders/vert/gbuffer.vert.spv",
+      "path": "${ENGINE_DIRECTORY}/Shaders/vert/gbuffer.vert",
       "shaderStage": 1
     },
     {
-      "path": "${ENGINE_DIRECTORY}/Shaders/frag/gbuffer.frag.spv",
+      "path": "${ENGINE_DIRECTORY}/Shaders/frag/gbuffer.frag",
       "shaderStage": 16
     }
   ],

@@ -3,6 +3,8 @@
 #include <concepts>
 #include <filesystem>
 #include <string>
+#include <string_view>
+
 class UPath final
 {
 private:
@@ -35,6 +37,9 @@ public:
 	operator std::string() const;
 	operator std::filesystem::path() const;
 	operator b8() const;
+
+	auto operator+(char const* string) const -> UPath;
+	auto operator+(std::string_view string) const -> UPath;
 
 	b8 operator==(UPath const& other) const noexcept;
 

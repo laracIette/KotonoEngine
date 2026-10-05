@@ -1,5 +1,6 @@
 #pragma once
-#include <filesystem>
+#include <Path/Path.h>
+#include <types.h>
 class SSpvCompiler final
 {
 public:
@@ -7,7 +8,7 @@ public:
 	static void CompileUpdated();
 
 private:
-	static bool DependenciesUpdated();
-	static bool Compile(std::filesystem::path const& path);
+	static auto HasDependenciesUpdated() -> b8;
+	static auto Compile(UPath const& path) -> b8;
 };
 

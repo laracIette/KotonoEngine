@@ -7,6 +7,8 @@
 #include <vk_utils/vk_utils.h>
 #include <nlohmann/json.hpp>
 
+static const UPath CompiledShadersPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/Compiled" };
+
 AShader::AShader(UPath const& path)
 	: AAsset(path)
 	, pipeline_{ VK_NULL_HANDLE }
@@ -68,7 +70,8 @@ void AShader::CreateGraphicsPipeline(UDevice& device, VkPipelineLayout pipelineL
 	for (auto const& shader : json["shaders"])
 	{
 		UPath const path{ shader["path"] };
-		std::vector const shaderCode{ UFile{ path }.ReadBinary() };
+		UFile const file{ CompiledShadersPath / path.Name() + ".spv" };
+		std::vector const shaderCode{ file.ReadBinary() };
 
 		VkShaderModule const shaderModule{ CreateShaderModule(device, shaderCode) };
 		shaderModules.push_back(shaderModule);
@@ -225,7 +228,8 @@ void AShader::CreateComputePipeline(UDevice& device, VkPipelineLayout pipelineLa
 	SSerializer::Deserialize(json, GetPath());
 
 	UPath const path{ json["path"] };
-	std::vector const shaderCode{ UFile{ path }.ReadBinary() };
+	UFile const file{ CompiledShadersPath / path.Name() + ".spv" };
+	std::vector const shaderCode{ file.ReadBinary() };
 
 	VkShaderModule const shaderModule{ CreateShaderModule(device, shaderCode) };
 

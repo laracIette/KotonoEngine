@@ -1,4 +1,4 @@
 {
-  "path": "${ENGINE_DIRECTORY}/Shaders/comp/lightBinning.comp.spv",
+  "path": "${ENGINE_DIRECTORY}/Shaders/comp/lightBinning.comp",
   "pipelinePass": 0
 }

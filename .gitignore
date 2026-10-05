@@ -405,6 +405,3 @@ FodyWeavers.xsd
 # --- Kotono Engine ---
 
 Cache/
-Shaders/**/*.spv
-Shaders/shaders.ktregistry
-Shaders/dependencies.ktregistry
