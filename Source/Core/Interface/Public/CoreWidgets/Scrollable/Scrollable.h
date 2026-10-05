@@ -1,11 +1,12 @@
 #pragma once
-#include "Scrollable.generated.h"
 #include "ChildOwner/ChildOwner.h"
+
+#include "Scrollable.generated.h"
 
 /// Makes the child of this widget scrollable while cropping the overflowing content
 class WScrollable final : public WChildOwner
 {
-	GENERATED_WSCROLLABLE()
+	GENERATED()
 
 public:
 	WScrollable();

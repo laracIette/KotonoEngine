@@ -1,13 +1,14 @@
 #pragma once
-#include "Padding.generated.h"
 #include "ChildOwner/ChildOwner.h"
 
 #include <Padding.h>
 
+#include "Padding.generated.h"
+
 /// Shrink the bounds of the child widget
 class WPadding final : public WChildOwner
 {
-	GENERATED_WPADDING()
+	GENERATED()
 
 public:
 	WPadding(UPadding const& padding = UPadding::Zero());

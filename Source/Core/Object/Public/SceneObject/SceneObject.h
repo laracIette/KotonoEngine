@@ -1,9 +1,10 @@
 #pragma once
-#include "SceneObject.generated.h"
 #include "Object/Object.h"
 
 #include "CoordinateSpace.h"
 #include <Containers/Set.h>
+
+#include "SceneObject.generated.h"
 
 enum class ESceneVisibility : u32;
 struct USceneRenderGraph;
@@ -12,7 +13,7 @@ class KSceneComponent;
 
 class TSceneObject : public KObject
 {
-	GENERATED_TSCENEOBJECT()
+	GENERATED()
 
 private:
 	friend UScene;

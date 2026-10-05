@@ -1,10 +1,11 @@
 #pragma once
-#include "SingleViewport.generated.h"
 #include <SceneWidget/SceneWidget.h>
+
+#include "SingleViewport.generated.h"
 
 class WSingleViewport final : public WSceneWidget
 {
-	GENERATED_WSINGLEVIEWPORT()
+	GENERATED()
 
 protected:
 	WidgetPtr Build() override;

@@ -1,8 +1,9 @@
 #pragma once
-#include "Socket.generated.h"
 #include "ChildOwner/ChildOwner.h"
+
+#include "Socket.generated.h"
 
 class WSocket final : public WChildOwner
 {
-	GENERATED_WSOCKET()
+	GENERATED()
 };

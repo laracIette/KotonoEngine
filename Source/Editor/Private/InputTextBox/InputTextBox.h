@@ -1,15 +1,16 @@
 #pragma once
-#include "InputTextBox.generated.h"
 #include <Widget/Widget.h>
 
 #include <InputHoldAction/InputHoldAction.h>
+
+#include "InputTextBox.generated.h"
 
 enum class EKey : u8;
 enum class EInputState : u8;
 
 class WInputTextBox : public WWidget
 {
-	GENERATED_WINPUTTEXTBOX()
+	GENERATED()
 
 	using TextChangedCallback = std::function<void(std::string_view)>;
 	using ValueToStringFunc = std::function<std::string()>;

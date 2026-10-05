@@ -1,12 +1,13 @@
 #pragma once
-#include "DirectionalLightComponent.generated.h"
 #include <SceneComponent/SceneComponent.h>
 
 #include <Color.h>
 
+#include "DirectionalLightComponent.generated.h"
+
 class KDirectionalLightComponent : public KSceneComponent
 {
-	GENERATED_KDIRECTIONALLIGHTCOMPONENT()
+	GENERATED()
 
 public:
 	KDirectionalLightComponent();

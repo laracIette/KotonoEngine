@@ -1,10 +1,11 @@
 #pragma once
-#include "ListBody.generated.h"
 #include "ChildrenOwner/ChildrenOwner.h"
+
+#include "ListBody.generated.h"
 
 class WListBody final : public WChildrenOwner
 {
-	GENERATED_WLISTBODY()
+	GENERATED()
 
 public:
 	glm::vec2 GetContentSize(glm::vec2 const& bounds) const override;

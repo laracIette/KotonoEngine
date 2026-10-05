@@ -1,10 +1,11 @@
 #pragma once
-#include "SecondaryWindow.generated.h"
 #include <InterfaceRoot/InterfaceRoot.h>
+
+#include "SecondaryWindow.generated.h"
 
 class WSecondaryWindow final : public WInterfaceRoot
 {
-	GENERATED_WSECONDARYWINDOW()
+	GENERATED()
 
 public:
 	WSecondaryWindow(WidgetPtr const& widget);

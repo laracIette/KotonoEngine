@@ -1,12 +1,13 @@
 #pragma once
-#include "AudioComponent.generated.h"
 #include <SceneComponent/SceneComponent.h>
 
 #include <Handle.h>
 
+#include "AudioComponent.generated.h"
+
 class KAudioComponent final : public KSceneComponent
 {
-	GENERATED_KAUDIOCOMPONENT()
+	GENERATED()
 
 public:
 	KAudioComponent();

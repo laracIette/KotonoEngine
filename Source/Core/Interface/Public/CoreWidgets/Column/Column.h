@@ -1,11 +1,12 @@
 #pragma once
-#include "Column.generated.h"
 #include "ChildrenOwner/ChildrenOwner.h"
+
+#include "Column.generated.h"
 
 /// Defines a vertical container for widgets
 class WColumn final : public WChildrenOwner
 {
-	GENERATED_WCOLUMN()
+	GENERATED()
 
 public:
 	auto GetContentSize(glm::vec2 const& bounds) const -> glm::vec2 override;

@@ -1,10 +1,11 @@
 #pragma once
-#include "GameStateButton.generated.h"
 #include <SceneWidget/SceneWidget.h>
+
+#include "GameStateButton.generated.h"
 
 class WGameStateButton final : public WSceneWidget
 {
-	GENERATED_WGAMESTATEBUTTON()
+	GENERATED()
 
 protected:
 	WidgetPtr Build() override;

@@ -1,12 +1,13 @@
 #pragma once
-#include "ChildOwner.generated.h"
 #include <Widget/Widget.h>
 
 #include <concepts>
 
+#include "ChildOwner.generated.h"
+
 class WChildOwner : public WWidget
 {
-	GENERATED_WCHILDOWNER()
+	GENERATED()
 
 public:
 	WChildOwner();

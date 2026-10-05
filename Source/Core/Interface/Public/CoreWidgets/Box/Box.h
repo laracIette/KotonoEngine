@@ -1,11 +1,12 @@
 #pragma once
-#include "Box.generated.h"
 #include "ChildOwner/ChildOwner.h"
+
+#include "Box.generated.h"
 
 /// Set bounds for the child widget to be contained within
 class WBox final : public WChildOwner
 {
-	GENERATED_WBOX()
+	GENERATED()
 
 public:
 	WBox(glm::vec2 const& size = { 64.0f, 64.0f });

@@ -1,13 +1,14 @@
 #pragma once
-#include "ViewController.generated.h"
 #include <SceneWidget/SceneWidget.h>
 
 #include <glm/ext/quaternion_float.hpp>
 #include <glm/ext/vector_float3.hpp>
 
+#include "ViewController.generated.h"
+
 class WViewController final : public WSceneWidget
 {
-	GENERATED_WVIEWCONTROLLER()
+	GENERATED()
 
 private:
 	using LookCallback = std::function<void(glm::quat)>;

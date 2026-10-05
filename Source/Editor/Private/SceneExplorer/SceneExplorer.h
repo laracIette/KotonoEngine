@@ -1,8 +1,9 @@
 #pragma once
-#include "SceneExplorer.generated.h"
 #include <SceneWidget/SceneWidget.h>
 
 #include <span>
+
+#include "SceneExplorer.generated.h"
 
 class TSceneObject;
 class WList;
@@ -10,7 +11,7 @@ enum class EGameState : u8;
 
 class WSceneExplorer : public WSceneWidget
 {
-	GENERATED_WSCENEEXPLORER()
+	GENERATED()
 
 protected:
 	WidgetPtr Build() override;

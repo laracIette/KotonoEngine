@@ -1,12 +1,13 @@
 #pragma once
-#include "MeshComponent.generated.h"
 #include <SceneComponent/SceneComponent.h>
 
 #include <Task/Task.h>
 
+#include "MeshComponent.generated.h"
+
 class KMeshComponent : public KSceneComponent
 {
-	GENERATED_KMESHCOMPONENT()
+	GENERATED()
 
 public:
 	KMeshComponent();

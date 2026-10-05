@@ -12,18 +12,6 @@
 static const UPath RegistryPath{ "${ENGINE_DIRECTORY}/Cache/Generator/generated.ktregistry" };
 static const UPath GeneratedPath{ "${ENGINE_DIRECTORY}/Cache/Generator/Generated" };
 
-static std::string to_upper(std::string s)
-{
-	std::ranges::transform(
-		s, s.begin(), [](unsigned char c)
-		{
-			return static_cast<char>(std::toupper(c));
-		}
-	);
-
-	return s;
-}
-
 void SGenerator::GenerateAll()
 {
 	KT_LOG(ELogImportanceLevel::High, "Generator", "Clearing registry...");
@@ -125,34 +113,42 @@ void SGenerator::GenerateHeader(UReflectionResult const& reflectionResult)
 	std::string const generatedCode{ !classInfo.base.has_value()
 		? std::format(
 R"(#pragma once
-#define GENERATED_{0}() \
+
+#ifdef GENERATED
+#undef GENERATED
+#endif
+
+#define GENERATED() \
 	private: \
-		using Self = {1}; \
+		using Self = {0}; \
 	public: \
 		virtual void SerializeTo(nlohmann::json& json) const; \
 		virtual void DeserializeFrom(const nlohmann::json& json); \
 		virtual std::vector<UVariableInfo> GetMemberVariables() const; \
-		UPtr<{1}> Ptr() const; \
+		UPtr<{0}> Ptr() const; \
 	private:
 )",
-			to_upper(classInfo.name),
 			classInfo.name
 		)
 		: std::format(
 R"(#pragma once
-#define GENERATED_{0}() \
+
+#ifdef GENERATED
+#undef GENERATED
+#endif
+
+#define GENERATED() \
 	private: \
-		using Self = {1}; \
-		using Base = {2}; \
+		using Self = {0}; \
+		using Base = {1}; \
 		using Base::Base; \
 	public: \
 		void SerializeTo(nlohmann::json& json) const override; \
 		void DeserializeFrom(const nlohmann::json& json) override; \
 		std::vector<UVariableInfo> GetMemberVariables() const override; \
-		UPtr<{1}> Ptr() const; \
+		UPtr<{0}> Ptr() const; \
 	private:
 )",
-			to_upper(classInfo.name),
 			classInfo.name,
 			classInfo.base.value()
 		)

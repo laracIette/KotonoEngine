@@ -1,12 +1,13 @@
 #pragma once
-#include "ValueSlider.generated.h"
 #include <Widget/Widget.h>
 
 #include <conversion_utils.h>
 
+#include "ValueSlider.generated.h"
+
 class WValueSlider : public WWidget
 {
-	GENERATED_WVALUESLIDER()
+	GENERATED()
 
 public:
 	using ValueToStringFunc = std::function<std::string()>;

@@ -1,11 +1,12 @@
 #pragma once
-#include "Constraint.generated.h"
 #include "ChildOwner/ChildOwner.h"
+
+#include "Constraint.generated.h"
 
 /// Constraints the bounds of the child widget given an axis
 class WConstraint final : public WChildOwner
 {
-	GENERATED_WCONSTRAINT()
+	GENERATED()
 
 public:
 	WConstraint();

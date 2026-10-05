@@ -1,8 +1,9 @@
 #pragma once
-#include "CameraComponent.generated.h"
 #include <SceneComponent/SceneComponent.h>
+
+#include "CameraComponent.generated.h"
 
 class KCameraComponent : public KSceneComponent
 {
-	GENERATED_KCAMERACOMPONENT()
+	GENERATED()
 };

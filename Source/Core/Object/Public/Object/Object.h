@@ -1,6 +1,4 @@
 #pragma once
-#include "Object.generated.h"
-
 #include "Guid/Guid.h"
 #include "ObjectFactory/ObjectFactory.h"
 #include "Ptr.h"
@@ -16,6 +14,8 @@
 #include <source_location>
 #include <string>
 #include <unordered_set>
+
+#include "Object.generated.h"
 
 using VoidCallback = std::function<void()>;
 
@@ -61,7 +61,7 @@ using ObjectPtr = UPtr<KObject>;
 
 class KObject
 {
-	GENERATED_KOBJECT()
+	GENERATED()
 
 	friend class SObjectFactory;
 	

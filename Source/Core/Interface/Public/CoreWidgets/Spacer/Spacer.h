@@ -1,11 +1,12 @@
 #pragma once
-#include "Spacer.generated.h"
 #include <Widget/Widget.h>
+
+#include "Spacer.generated.h"
 
 /// Fills the entirety of the available parent space
 class WSpacer final : public WWidget
 {
-	GENERATED_WSPACER()
+	GENERATED()
 
 public:
 	WSpacer(EAxis axis);

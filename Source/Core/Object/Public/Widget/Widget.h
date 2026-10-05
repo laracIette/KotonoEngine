@@ -1,5 +1,4 @@
 #pragma once
-#include "Widget.generated.h"
 #include "Object/Object.h"
 
 #include "Axis.h"
@@ -17,6 +16,8 @@
 #include <Modifier.h>
 #include <string>
 #include <vector>
+
+#include "Widget.generated.h"
 
 inline constexpr b8 INPUT_HANDLED{ true };
 inline constexpr b8 INPUT_UNHANDLED{ false };
@@ -42,7 +43,7 @@ class UInterface;
 /// Base class of all widgets
 class WWidget : public KObject
 {
-	GENERATED_WWIDGET()
+	GENERATED()
 
 private:
 	friend class UInterface;

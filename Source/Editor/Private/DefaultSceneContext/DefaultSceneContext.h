@@ -1,10 +1,11 @@
 #pragma once
-#include "DefaultSceneContext.generated.h"
 #include <SceneContext/SceneContext.h>
+
+#include "DefaultSceneContext.generated.h"
 
 class WDefaultSceneContext final : public WSceneContext
 {
-	GENERATED_WDEFAULTSCENECONTEXT()
+	GENERATED()
 
 protected:
 	WidgetPtr Build() override;

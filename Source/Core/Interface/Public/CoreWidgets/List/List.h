@@ -1,6 +1,7 @@
 #pragma once
-#include "List.generated.h"
 #include <Widget/Widget.h>
+
+#include "List.generated.h"
 
 class WListBody;
 class WScrollable;
@@ -8,7 +9,7 @@ class WScrollable;
 /// Defines a vertical container for widgets
 class WList final : public WWidget
 {
-	GENERATED_WLIST()
+	GENERATED()
 
 public:
 	WList();

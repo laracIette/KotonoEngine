@@ -1,10 +1,11 @@
 #pragma once
-#include "MainWindow.generated.h"
 #include <InterfaceRoot/InterfaceRoot.h>
+
+#include "MainWindow.generated.h"
 
 class WMainWindow final : public WInterfaceRoot
 {
-	GENERATED_WMAINWINDOW()
+	GENERATED()
 
 protected:
 	WidgetPtr Build() override;

@@ -1,5 +1,4 @@
 #pragma once
-#include "SceneTexture.generated.h"
 #include <SceneWidget/SceneWidget.h>
 
 #include <glm/ext/quaternion_float.hpp>
@@ -7,9 +6,11 @@
 #include <types.h>
 #include <SceneVisibility.h>
 
+#include "SceneTexture.generated.h"
+
 class WSceneTexture final : public WSceneWidget
 {
-	GENERATED_WSCENETEXTURE()
+	GENERATED()
 
 public:
 	WSceneTexture(UScene* scene);

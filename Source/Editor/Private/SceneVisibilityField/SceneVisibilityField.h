@@ -1,12 +1,13 @@
 #pragma once
-#include "SceneVisibilityField.generated.h"
 #include <Widget/Widget.h>
 
 #include <SceneVisibility.h>
 
+#include "SceneVisibilityField.generated.h"
+
 class WSceneVisibilityField : public WWidget
 {
-	GENERATED_WSCENEVISIBILITYFIELD()
+	GENERATED()
 
 private:
 	using VisibilityChangedCallback = std::function<void(ESceneVisibility, b8)>;

@@ -1,6 +1,7 @@
 #pragma once
-#include "SceneContext.generated.h"
 #include "Widget/Widget.h"
+
+#include "SceneContext.generated.h"
 
 struct USceneRenderGraph;
 class UScene;
@@ -10,7 +11,7 @@ class UScene;
 /// </summary>
 class WSceneContext : public WWidget
 {
-	GENERATED_WSCENECONTEXT()
+	GENERATED()
 
 public:
 	//WSceneContext() = delete; // register_ breaks if default constructor deleted

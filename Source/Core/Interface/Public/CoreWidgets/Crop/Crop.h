@@ -1,12 +1,13 @@
 #pragma once
-#include "Crop.generated.h"
 #include "ChildOwner/ChildOwner.h"
 
 #include <Padding.h>
 
+#include "Crop.generated.h"
+
 class WCrop final : public WChildOwner
 {
-	GENERATED_WCROP()
+	GENERATED()
 
 protected:
 	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;

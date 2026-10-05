@@ -1,10 +1,11 @@
 #pragma once
-#include "ObjectProperties.generated.h"
 #include <Widget/Widget.h>
+
+#include "ObjectProperties.generated.h"
 
 class WObjectProperties : public WWidget
 {
-	GENERATED_WOBJECTPROPERTIES()
+	GENERATED()
 
 public:
 	WObjectProperties(ObjectPtr const& object);

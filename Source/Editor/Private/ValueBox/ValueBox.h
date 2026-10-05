@@ -1,13 +1,14 @@
 #pragma once
-#include "ValueBox.generated.h"
 #include <Widget/Widget.h>
+
+#include "ValueBox.generated.h"
 
 template <typename T>
 concept StringCompatible = std::convertible_to<const T&, std::string> && std::assignable_from<T&, std::string_view>;
 
 class WValueBox : public WWidget
 {
-	GENERATED_WVALUEBOX()
+	GENERATED()
 
 public:
 	using ValueToStringFunc = std::function<std::string()>;

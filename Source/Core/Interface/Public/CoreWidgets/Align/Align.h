@@ -1,6 +1,7 @@
 #pragma once
-#include "Align.generated.h"
 #include "ChildOwner/ChildOwner.h"
+
+#include "Align.generated.h"
 
 struct UAlignment final
 {
@@ -26,7 +27,7 @@ struct UAlignment final
 
 class WAlign final : public WChildOwner
 {
-	GENERATED_WALIGN()
+	GENERATED()
 
 public:
 	WAlign();

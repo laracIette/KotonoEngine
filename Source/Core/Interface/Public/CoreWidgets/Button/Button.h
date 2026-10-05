@@ -1,13 +1,14 @@
 #pragma once
-#include "Button.generated.h"
 #include <Widget/Widget.h>
 
 #include <Color.h>
 
+#include "Button.generated.h"
+
 /// Set the widget's bounds as interactable
 class WButton final : public WWidget
 {
-	GENERATED_WBUTTON()
+	GENERATED()
 
 public:
 	using DragCallback = std::function<void(glm::vec2)>;

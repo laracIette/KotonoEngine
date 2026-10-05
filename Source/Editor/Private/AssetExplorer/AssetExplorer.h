@@ -1,13 +1,14 @@
 #pragma once
-#include "AssetExplorer.generated.h"
 #include <Widget/Widget.h>
+
+#include "AssetExplorer.generated.h"
 
 class WAssetExplorerItem;
 class WHorizontalWrapList;
 
 class WAssetExplorer : public WWidget
 {
-	GENERATED_WASSETEXPLORER()
+	GENERATED()
 
 private:
 	using AssetExplorerItem = UPtr<WAssetExplorerItem>;

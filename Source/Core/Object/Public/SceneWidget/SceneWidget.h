@@ -1,12 +1,13 @@
 #pragma once
-#include "SceneWidget.generated.h"
 #include "Widget/Widget.h"
+
+#include "SceneWidget.generated.h"
 
 class UScene;
 
 class WSceneWidget : public WWidget
 {
-	GENERATED_WSCENEWIDGET()
+	GENERATED()
 
 public:
 	//WSceneWidget() = delete; // register_ breaks if default constructor deleted

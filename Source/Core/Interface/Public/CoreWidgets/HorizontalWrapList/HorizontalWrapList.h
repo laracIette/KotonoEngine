@@ -1,6 +1,7 @@
 #pragma once
-#include "HorizontalWrapList.generated.h"
 #include <Widget/Widget.h>
+
+#include "HorizontalWrapList.generated.h"
 
 class WHorizontalWrapListBody;
 class WScrollable;
@@ -8,7 +9,7 @@ class WScrollable;
 /// Defines an horizontal container for widgets that wraps the content to multiple rows
 class WHorizontalWrapList final : public WWidget
 {
-	GENERATED_WHORIZONTALWRAPLIST()
+	GENERATED()
 
 public:
 	WHorizontalWrapList();

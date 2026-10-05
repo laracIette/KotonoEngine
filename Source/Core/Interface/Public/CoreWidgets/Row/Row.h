@@ -1,11 +1,12 @@
 #pragma once
-#include "Row.generated.h"
 #include "ChildrenOwner/ChildrenOwner.h"
+
+#include "Row.generated.h"
 
 /// Defines an horizontal container for widgets
 class WRow final : public WChildrenOwner
 {
-	GENERATED_WROW()
+	GENERATED()
 
 public:
 	auto GetContentSize(glm::vec2 const& bounds) const -> glm::vec2 override;

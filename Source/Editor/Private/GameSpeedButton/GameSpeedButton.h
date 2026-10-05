@@ -1,10 +1,11 @@
 #pragma once
-#include "GameSpeedButton.generated.h"
 #include <SceneWidget/SceneWidget.h>
+
+#include "GameSpeedButton.generated.h"
 
 class WGameSpeedButton final : public WSceneWidget
 {
-	GENERATED_WGAMESPEEDBUTTON()
+	GENERATED()
 
 protected:
 	WidgetPtr Build() override;

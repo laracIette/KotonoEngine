@@ -1,6 +1,7 @@
 #pragma once
-#include "PropertiesWindow.generated.h"
 #include <SceneWidget/SceneWidget.h>
+
+#include "PropertiesWindow.generated.h"
 
 class TSceneObject;
 class WList;
@@ -8,7 +9,7 @@ class WObjectProperties;
 
 class WPropertiesWindow : public WSceneWidget
 {
-	GENERATED_WPROPERTIESWINDOW()
+	GENERATED()
 
 protected:
 	WidgetPtr Build() override;

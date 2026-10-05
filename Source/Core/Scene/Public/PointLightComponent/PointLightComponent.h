@@ -1,12 +1,13 @@
 #pragma once
-#include "PointLightComponent.generated.h"
 #include <SceneComponent/SceneComponent.h>
 
 #include <Color.h>
 
+#include "PointLightComponent.generated.h"
+
 class KPointLightComponent : public KSceneComponent
 {
-	GENERATED_KPOINTLIGHTCOMPONENT()
+	GENERATED()
 
 public:
 	KPointLightComponent();

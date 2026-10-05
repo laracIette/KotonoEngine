@@ -1,10 +1,11 @@
 #pragma once
-#include "SceneExplorerAddButton.generated.h"
 #include <SceneWidget/SceneWidget.h>
+
+#include "SceneExplorerAddButton.generated.h"
 
 class WSceneExplorerAddButton final : public WSceneWidget
 {
-	GENERATED_WSCENEEXPLORERADDBUTTON()
+	GENERATED()
 
 protected:
 	WidgetPtr Build() override;

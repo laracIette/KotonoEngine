@@ -1,11 +1,12 @@
 #pragma once
-#include "Image.generated.h"
 #include <Widget/Widget.h>
+
+#include "Image.generated.h"
 
 /// Display an image over the widget's bounds
 class WImage final : public WWidget
 {
-	GENERATED_WIMAGE()
+	GENERATED()
 
 public:
 	WImage(UPath const& path = "${ENGINE_DIRECTORY}/Assets/textures/default_texture.jpg");

@@ -1,13 +1,14 @@
 #pragma once
-#include "Text.generated.h"
 #include <Widget/Widget.h>
 
 #include <Font/Font.h>
 
+#include "Text.generated.h"
+
 /// Display a text
 class WText final : public WWidget
 {
-	GENERATED_WTEXT()
+	GENERATED()
 
 private:
 	struct CharacterData

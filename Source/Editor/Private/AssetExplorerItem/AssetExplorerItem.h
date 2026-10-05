@@ -1,12 +1,13 @@
 #pragma once
-#include "AssetExplorerItem.generated.h"
 #include <Widget/Widget.h>
+
+#include "AssetExplorerItem.generated.h"
 
 class WAssetExplorer;
 
 class WAssetExplorerItem : public WWidget
 {
-	GENERATED_WASSETEXPLORERITEM()
+	GENERATED()
 
 public:
 	using OpenedCallback = std::function<void(UPath const&)>;

@@ -1,11 +1,12 @@
 #pragma once
-#include "Wrap.generated.h"
 #include "ChildOwner/ChildOwner.h"
+
+#include "Wrap.generated.h"
 
 /// Fills the entirety of the available parent space
 class WWrap final : public WChildOwner
 {
-	GENERATED_WWRAP()
+	GENERATED()
 
 public:
 	WWrap(EAxis axis = EAxis::All);

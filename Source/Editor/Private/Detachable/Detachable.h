@@ -1,12 +1,13 @@
 #pragma once
-#include "Detachable.generated.h"
 #include <Widget/Widget.h>
+
+#include "Detachable.generated.h"
 
 class WSocket;
 
 class WDetachable final : public WWidget
 {
-	GENERATED_WDETACHABLE()
+	GENERATED()
 
 public:
 	WDetachable();

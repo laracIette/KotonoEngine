@@ -1,11 +1,12 @@
 #pragma once
-#include "Stack.generated.h"
 #include "ChildrenOwner/ChildrenOwner.h"
+
+#include "Stack.generated.h"
 
 /// Display widgets on top of each other
 class WStack final : public WChildrenOwner
 {
-	GENERATED_WSTACK()
+	GENERATED()
 
 public:
 	glm::vec2 GetContentSize(glm::vec2 const& bounds) const override;

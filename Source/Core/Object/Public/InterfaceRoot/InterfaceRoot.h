@@ -1,13 +1,14 @@
 #pragma once
-#include "InterfaceRoot.generated.h"
 #include "Widget/Widget.h"
+
+#include "InterfaceRoot.generated.h"
 
 struct USceneRenderGraph;
 class WSceneContext;
 
 class WInterfaceRoot : public WWidget
 {
-	GENERATED_WINTERFACEROOT()
+	GENERATED()
 
 public:
 	void UpdateSceneContexts(f32 deltaTime) const;

@@ -1,13 +1,14 @@
 #pragma once
-#include "Color.generated.h"
 #include <Widget/Widget.h>
 
 #include <Color.h>
 
+#include "Color.generated.h"
+
 /// Fill the widget's bounds with a color
 class WColor final : public WWidget
 {
-	GENERATED_WCOLOR()
+	GENERATED()
 
 public:
 	WColor();

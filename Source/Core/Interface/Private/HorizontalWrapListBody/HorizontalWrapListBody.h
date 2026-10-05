@@ -1,10 +1,11 @@
 #pragma once
-#include "HorizontalWrapListBody.generated.h"
 #include "ChildrenOwner/ChildrenOwner.h"
+
+#include "HorizontalWrapListBody.generated.h"
 
 class WHorizontalWrapListBody final : public WChildrenOwner
 {
-	GENERATED_WHORIZONTALWRAPLISTBODY()
+	GENERATED()
 
 public:
 	glm::vec2 GetContentSize(glm::vec2 const& bounds) const override;

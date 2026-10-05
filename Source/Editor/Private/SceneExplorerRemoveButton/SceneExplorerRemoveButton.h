@@ -1,10 +1,11 @@
 #pragma once
-#include "SceneExplorerRemoveButton.generated.h"
 #include <SceneWidget/SceneWidget.h>
+
+#include "SceneExplorerRemoveButton.generated.h"
 
 class WSceneExplorerRemoveButton final : public WSceneWidget
 {
-	GENERATED_WSCENEEXPLORERREMOVEBUTTON()
+	GENERATED()
 
 protected:
 	WidgetPtr Build() override;

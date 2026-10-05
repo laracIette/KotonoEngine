@@ -1,10 +1,11 @@
 #pragma once
-#include "UpdateTimeText.generated.h"
 #include <Widget/Widget.h>
+
+#include "UpdateTimeText.generated.h"
 
 class WUpdateTimeText : public WWidget
 {
-	GENERATED_WUPDATETIMETEXT()
+	GENERATED()
 
 protected:
 	WidgetPtr Build() override;
