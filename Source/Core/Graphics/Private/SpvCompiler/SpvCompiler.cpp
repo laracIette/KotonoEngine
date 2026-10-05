@@ -10,9 +10,15 @@
 #define KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER ELogImportanceLevel::High
 
 static const UPath ShadersPath{ "${ENGINE_DIRECTORY}/Shaders" };
-static const UPath CompiledShadersPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/Compiled" };
-static const UPath CompiledRegistryPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/compiled.ktregistry" };
-static const UPath DependenciesRegistryPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/dependencies.ktregistry" };
+#ifdef NDEBUG
+static const UPath CompiledShadersPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/Release/Compiled" };
+static const UPath CompiledRegistryPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/Release/compiled.ktregistry" };
+static const UPath DependenciesRegistryPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/Release/dependencies.ktregistry" };
+#else
+static const UPath CompiledShadersPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/Debug/Compiled" };
+static const UPath CompiledRegistryPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/Debug/compiled.ktregistry" };
+static const UPath DependenciesRegistryPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/Debug/dependencies.ktregistry" };
+#endif
 
 static const std::array DependencyPaths{
     ShadersPath / "common.glsl",

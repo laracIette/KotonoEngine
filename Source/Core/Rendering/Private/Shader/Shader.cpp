@@ -7,7 +7,11 @@
 #include <vk_utils/vk_utils.h>
 #include <nlohmann/json.hpp>
 
-static const UPath CompiledShadersPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/Compiled" };
+#ifdef NDEBUG
+static const UPath CompiledShadersPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/Release/Compiled" };
+#else
+static const UPath CompiledShadersPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/Debug/Compiled" };
+#endif
 
 AShader::AShader(UPath const& path)
 	: AAsset(path)
