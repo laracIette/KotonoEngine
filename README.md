@@ -40,6 +40,8 @@ Kotono features an asset system which helps simplify the workflow for creating r
 
 Kotono supports multi-windowing, secondary windows can currently be created by detaching a [Detachable Widget](https://github.com/laracIette/KotonoEngine/blob/42603a3fbc84a5e61ef86cc8e58d1fd273c4351c/Source/Editor/Private/Detachable/Detachable.h) from the interface.
 
+**Note**: Shaders are automatically compiled on update from the [Shaders](https://github.com/laracIette/KotonoEngine/tree/42603a3fbc84a5e61ef86cc8e58d1fd273c4351c/Shaders/) folder, the compiled SPIR-V can be found in the *Cache/Shaders/* directory, clearing the cache will automatically recompile them the next time you open a Kotono application.
+
 ### Object system
 
 In Kotono, all instantiable objects inherit from a base [Object](https://github.com/laracIette/KotonoEngine/blob/42603a3fbc84a5e61ef86cc8e58d1fd273c4351c/Source/Core/Object/Public/Object/Object.h) class, this class provides a bunch of utilities such as debug information (source file, line, ...), automatic serialization and deserialization using the *GENERATED()* reflection macro combined with the *SERIALIZE* macro on serializable fields.
@@ -49,6 +51,8 @@ Every object must be instantiated using the *UCreate* struct, this struct provid
 The object header also provides macros such as *ReadonlyProperty* or *WritableProperty* for convenience. These macros generate getters and setters given a set of parameters.
 
 Spawnable objects are built using the [Scene Object](https://github.com/laracIette/KotonoEngine/blob/42603a3fbc84a5e61ef86cc8e58d1fd273c4351c/Source/Core/Object/Public/SceneObject/SceneObject.h) class which owns various [Scene Components](https://github.com/laracIette/KotonoEngine/blob/42603a3fbc84a5e61ef86cc8e58d1fd273c4351c/Source/Core/Object/Public/SceneComponent/SceneComponent.h). The scene object acts as a handle and parent for scene components that contain the actual gameplay logic.
+
+**Note**: Each [Object](https://github.com/laracIette/KotonoEngine/blob/42603a3fbc84a5e61ef86cc8e58d1fd273c4351c/Source/Core/Object/Public/Object/Object.h) class needs to include its generated header and source files. Each class file has to be included in the [Reflection Registry](https://github.com/laracIette/KotonoEngine/blob/42603a3fbc84a5e61ef86cc8e58d1fd273c4351c/reflect.ktregistry). The generated files can be found in the *Cache/Generator/* directory, clearing the cache will automatically re-generate them the next time you build the Kotono Engine.
 
 ### Editor
 
