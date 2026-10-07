@@ -14,7 +14,7 @@ WidgetPtr WSceneExplorerRemoveButton::Build()
 			| Apply(&WButton::SetDisabledColor, Colors::Red.WithValue(0.2f))
 			| Apply(&WButton::SetIsEnabled, [this]() { return GetScene()->GetSelectedObject() != nullptr; })
 			| Apply(&WButton::SetOnClicked, [this]() { 
-                if (UPtr selectedObject{ GetScene()->GetSelectedObject() })
+                if (UPtr const selectedObject{ GetScene()->GetSelectedObject() })
                 {
                     GetScene()->SelectObject(nullptr);
                     selectedObject->Delete();

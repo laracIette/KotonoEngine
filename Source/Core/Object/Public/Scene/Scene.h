@@ -1,17 +1,15 @@
 #pragma once
 #include "GameState.h"
-#include "Ptr.h"
+#include "SceneObject/SceneObject.h"
 #include <AudioContext/AudioContext.h>
 #include <Clamped.h>
 #include <Event/Event.h>
 #include <Notify.h>
-#include <Path/Path.h>
 #include <Containers/Set.h>
 #include <span>
 
 enum class ESceneVisibility : u32;
 struct USceneRenderGraph;
-class TSceneObject;
 
 class UScene final
 {
@@ -19,7 +17,7 @@ public:
 	using TimeScaleRange = UClamped<f32, 0.1f, 10.0f>;
 
 private:
-	using SceneObject = UPtr<TSceneObject>;
+	using SceneObjectPtr = UPtr<TSceneObject>;
 
 public:
 	explicit UScene(UPath const& path);
@@ -27,13 +25,13 @@ public:
 
 	void Update(f32 deltaTime);
 
-	void Add(SceneObject const& sceneObject);
-	void Remove(SceneObject const& sceneObject);
+	void Add(SceneObjectPtr const& sceneObject);
+	void Remove(SceneObjectPtr const& sceneObject);
 
 	void SpawnSceneObjects();
 	void DespawnSceneObjects();
 
-	auto GetSceneObjects() const -> std::span<SceneObject const>;
+	auto GetSceneObjects() const -> std::span<SceneObjectPtr const>;
 
 	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const;
 
@@ -41,13 +39,13 @@ public:
 	void PauseGame();
 	void StopGame();
 
-	void SelectObject(SceneObject const& sceneObject);
+	void SelectObject(SceneObjectPtr const& sceneObject);
 
 	auto GetAudioContext() -> UAudioContext& { return audioContext_; }
 
-	auto GetEventSceneObjectsUpdated() -> UEvent<USet<SceneObject>>& { return eventSceneObjectsUpdated_; }
-	auto GetEventSelectedObjectChanged() -> UEvent<SceneObject>& { return eventSelectedObjectChanged_; }
-	auto GetSelectedObject() const -> SceneObject { return selectedObject_; }
+	auto GetEventSceneObjectsUpdated() -> UEvent<USet<SceneObjectPtr>>& { return eventSceneObjectsUpdated_; }
+	auto GetEventSelectedObjectChanged() -> UEvent<SceneObjectPtr>& { return eventSelectedObjectChanged_; }
+	auto GetSelectedObject() const -> SceneObjectPtr { return selectedObject_; }
 
 	auto GetEventGameStateChanged() -> UEvent<EGameState>& { return gameState_.GetEventValueChanged(); }
 	auto GetEventTimeScaleChanged() -> UEvent<f32>& { return timeScale_.GetEventValueChanged(); }
@@ -61,6 +59,12 @@ public:
 	auto GetTimeScale() const -> f32 { return timeScale_; }
 
 	void SetTimeScale(TimeScaleRange timeScale) { timeScale_ = timeScale; }
+	
+	template <std::derived_from<TSceneObject> T>
+	auto GetSelectedObject() -> UPtr<T>
+	{
+		return TryCast<T>(selectedObject_);
+	}
 
 private:
 	void InitSceneObjects() const;
@@ -71,12 +75,12 @@ private:
 private:
 	UAudioContext audioContext_;
 
-	USet<SceneObject> sceneObjects_;
+	USet<SceneObjectPtr> sceneObjects_;
 	b8 areSceneObjectsSpawned_;
 
-	UEvent<USet<SceneObject>> eventSceneObjectsUpdated_;
-	UEvent<SceneObject> eventSelectedObjectChanged_;
-	SceneObject selectedObject_;
+	UEvent<USet<SceneObjectPtr>> eventSceneObjectsUpdated_;
+	UEvent<SceneObjectPtr> eventSelectedObjectChanged_;
+	SceneObjectPtr selectedObject_;
 
 	UNotify<EGameState> gameState_;
 	UNotify<f32> timeScale_;

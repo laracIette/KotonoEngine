@@ -11,12 +11,15 @@ set(KCOMMON_PUBLIC_HEADERS
     "Public/Average.h"
     "Public/Bindable.h"
     "Public/Cached.h"
+    "Public/check.h"
     "Public/Clamped.h"
     "Public/conversion_utils.h"
     "Public/enum_utils.h"
     "Public/Handle.h"
     "Public/hash_utils.h"
+    "Public/macro_utils.h"
     "Public/Notify.h"
+    "Public/properties.h"
     "Public/types.h"
     "Public/Asset/Asset.h"
     "Public/Containers/FixedHeapContainer.h"
@@ -27,6 +30,7 @@ set(KCOMMON_PUBLIC_HEADERS
     "Public/Event/Event.h"
     "Public/Logging/log.h"
     "Public/Logging/LogImportanceLevel.h"
+    "Public/Logging/LogSeverity.h"
     "Public/Path/Path.h"
 )
 set(KCOMMON_SOURCES

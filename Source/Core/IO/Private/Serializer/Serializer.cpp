@@ -7,41 +7,41 @@
 
 #define KT_LOG_IMPORTANCE_LEVEL_SERIALIZER ELogImportanceLevel::High
 
-void SSerializer::Serialize(nlohmann::json const& json, UPath const& path)
+void SSerializer::Serialize(nlohmann::json const& fromJson, UPath const& toPath)
 {
-	if (path.IsEmpty())
+	if (toPath.IsEmpty())
 	{
 		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO", "can't write data to empty path");
 		return;
 	}
 
-	if (json.is_null())
+	if (fromJson.is_null())
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO", "can't write null json to {0}", path.ToString());
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO", "can't write null json to {0}", toPath.ToString());
 		return;
 	}
 
-	const UFile file{ path };
-	const std::string jsonString{ json.dump(4) };
+	const UFile file{ toPath };
+	const std::string jsonString{ fromJson.dump(4) };
 
 	file.WriteString(jsonString);
 }
 
-void SSerializer::Deserialize(nlohmann::json& json, UPath const& path)
+void SSerializer::Deserialize(nlohmann::json& toJson, UPath const& fromPath)
 {
-	if (path.IsEmpty())
+	if (fromPath.IsEmpty())
 	{
 		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO", "can't read data from empty path");
 		return;
 	}
 
-	const UFile file{ path };
+	const UFile file{ fromPath };
 	if (!file.Exists())
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO", "file at path {0} doesn't exist", path.ToString());
+		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO", "file at path {0} doesn't exist", fromPath.ToString());
 		return;
 	}
 
 	std::istringstream stream{ file.ReadString() };
-	stream >> json;
+	stream >> toJson;
 }

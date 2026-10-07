@@ -1,13 +1,14 @@
 #pragma once
-#include "Guid/Guid.h"
-#include "ObjectFactory/ObjectFactory.h"
+#include "check.h"
+#include "properties.h"
 #include "Ptr.h"
 #include "VariableInfo.h"
+#include "Guid/Guid.h"
+#include "ObjectFactory/ObjectFactory.h"
 #include <cassert>
 #include <concepts>
 #include <functional>
 #include <Event/Event.h>
-#include <Logging/log.h>
 #include <Path/Path.h>
 #include <serialize_base/serialize_base.h>
 #include <nlohmann/json_fwd.hpp>
@@ -18,43 +19,6 @@
 #include "Object.generated.h"
 
 using VoidCallback = std::function<void()>;
-
-#define PROP_ACCESS_ const&
-#define PROP_ACCESS_Value 
-#define PROP_ACCESS_Reference &
-#define PROP_ACCESS_ConstReference const&
-
-#define FUNC_ACCESS_ const
-#define FUNC_ACCESS_Value const
-#define FUNC_ACCESS_Reference 
-#define FUNC_ACCESS_ConstReference const
-
-#define MACRO_CONCAT(a, b) a##b
-
-#define GET_PROP_ACCESS(...) MACRO_CONCAT(PROP_ACCESS_, __VA_ARGS__)
-#define GET_FUNC_ACCESS(...) MACRO_CONCAT(FUNC_ACCESS_, __VA_ARGS__)
-
-#define Getter(Type, Variable, GetterName, ...) \
-	auto Get##GetterName() GET_FUNC_ACCESS(__VA_ARGS__) -> Type GET_PROP_ACCESS(__VA_ARGS__) { return Variable; }
-
-#define Setter(Type, Variable, SetterName) \
-	void Set##SetterName(Type const& value) { Variable = value; }
-
-#define GetterAndSetter(Type, Variable, PropertyName, ...)	\
-	Getter(Type, Variable, PropertyName, __VA_ARGS__)		\
-	Setter(Type, Variable, PropertyName)
-	
-#define ReadonlyProperty(Type, Name, PropertyName, ...) private:	\
-	Type Name;														\
-public:																\
-	Getter(Type, Name, PropertyName, __VA_ARGS__)				\
-private:
-
-#define WritableProperty(Type, Name, PropertyName, ...) private:	\
-	Type Name;														\
-public:																\
-	GetterAndSetter(Type, Name, PropertyName, __VA_ARGS__)		\
-private:
 
 class KObject;
 using ObjectPtr = UPtr<KObject>;
@@ -74,11 +38,6 @@ public:
 	
 	std::string TypeName() const;
 	UPath InstancePath() const;
-
-	/// Read json from disk
-	nlohmann::json ReadJson() const;
-	/// Write the object to json
-	nlohmann::json WriteJson() const;
 
 	/// Cleanup and delete the object immediately
 	void Delete();
@@ -119,8 +78,6 @@ private:
 #endif
 };
 
-
-
 template <typename MemFn, typename... Args>
 struct _MemberAction
 {
@@ -130,8 +87,8 @@ struct _MemberAction
 	template <typename T>
 	void Apply(T* ptr) const
 	{
-		std::apply([ptr, this](auto&&... unpacked_args) {
-			(ptr->*fn)(std::forward<decltype(unpacked_args)>(unpacked_args)...);
+		std::apply([ptr, this](auto&&... unpackedArgs) {
+			(ptr->*fn)(std::forward<decltype(unpackedArgs)>(unpackedArgs)...);
 		}, args);
 	}
 };

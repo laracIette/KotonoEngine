@@ -18,7 +18,7 @@ UScene::UScene(UPath const& path)
 	nlohmann::json json{};
 	SSerializer::Deserialize(json, path);
 
-	std::vector<SceneObject> sceneObjects{};
+	std::vector<SceneObjectPtr> sceneObjects{};
 	UDeserialize<decltype(sceneObjects)>{}(json["sceneObjects"], sceneObjects);
 
 	for (auto const& sceneObject : sceneObjects)
@@ -35,7 +35,7 @@ UScene::UScene(UPath const& path)
 
 UScene::~UScene()
 {
-	for (auto const& sceneObject : USet<SceneObject>{ sceneObjects_ })
+	for (auto const& sceneObject : USet<SceneObjectPtr>{ sceneObjects_ })
 	{
 		if (sceneObject)
 		{
@@ -62,7 +62,7 @@ void UScene::Update(f32 deltaTime)
 	}
 }
 
-void UScene::Add(SceneObject const& sceneObject)
+void UScene::Add(SceneObjectPtr const& sceneObject)
 {
 	if (!sceneObject)
 	{
@@ -80,7 +80,7 @@ void UScene::Add(SceneObject const& sceneObject)
 	eventSceneObjectsUpdated_.Broadcast(sceneObjects_);
 }
 
-void UScene::Remove(SceneObject const& sceneObject)
+void UScene::Remove(SceneObjectPtr const& sceneObject)
 {
 	if (!sceneObject)
 	{
@@ -134,7 +134,7 @@ void UScene::DespawnSceneObjects()
 	}
 }
 
-auto UScene::GetSceneObjects() const -> std::span<SceneObject const>
+auto UScene::GetSceneObjects() const -> std::span<SceneObjectPtr const>
 {
 	return sceneObjects_;
 }
@@ -168,7 +168,7 @@ void UScene::StopGame()
 	}
 }
 
-void UScene::SelectObject(SceneObject const& sceneObject)
+void UScene::SelectObject(SceneObjectPtr const& sceneObject)
 {
 	if (sceneObject == selectedObject_)
 	{

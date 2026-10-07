@@ -38,20 +38,6 @@ UPath KObject::InstancePath() const
     return "${PROJECT_DIRECTORY}/Assets/objects/" + GetGuid().ToString() + ".kobject";
 }
 
-nlohmann::json KObject::ReadJson() const
-{
-    nlohmann::json json{};
-    SSerializer::Deserialize(json, InstancePath());
-    return json;
-}
-
-nlohmann::json KObject::WriteJson() const
-{
-    nlohmann::json json{};
-    SerializeTo(json);
-    return json;
-}
-
 void KObject::Delete()
 {
     delete this;
@@ -64,12 +50,16 @@ auto KObject::GetMemberVariablePointer(size offset) const -> void*
 
 void KObject::Serialize() const
 {
-    SSerializer::Serialize(WriteJson(), InstancePath());
+    nlohmann::json json{};
+    SerializeTo(json);
+    SSerializer::Serialize(json, InstancePath());
 }
 
 void KObject::Deserialize()
 {
-    DeserializeFrom(ReadJson());
+    nlohmann::json json{};
+    SSerializer::Deserialize(json, InstancePath());
+    DeserializeFrom(json);
 }
 
 std::string KObject::ToString() const
@@ -94,7 +84,7 @@ void KObject::CheckDebugRegistry()
 {
     if (!debugRegistry_.empty())
     {
-        for (auto& object : debugRegistry_)
+        for (auto const& object : debugRegistry_)
         {
             if (object)
             {
@@ -110,7 +100,8 @@ void KObject::CheckDebugRegistry()
                 KT_LOG(ELogImportanceLevel::High, "Object", "NULL");
             }
         }
-        throw "KObject::debugRegistry_ must be empty when quitting the application.";
+        
+        throw std::runtime_error{ "KObject::debugRegistry_ must be empty when quitting the application." };
     }
 }
 #endif
