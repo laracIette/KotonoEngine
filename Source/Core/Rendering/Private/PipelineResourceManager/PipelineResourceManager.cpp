@@ -2,7 +2,7 @@
 
 #include "PushConstants.h"
 #include <array>
-#include <cassert>
+#include <check.h>
 #include <Device/Device.h>
 #include <vk_utils/vk_utils.h>
 
@@ -251,15 +251,15 @@ void UPipelineResourceManager::CreateDescriptorSet()
 	vkAllocateDescriptorSets(device_.GetDevice(), &allocInfo, &descriptorSet_);
 }
 
-u32 UPipelineResourceManager::AllocateSlot(ResourcePool& resourcePool) const
+u32 UPipelineResourceManager::AllocateSlot(ResourcePool& resourcePool)
 {
 	if (!resourcePool.freeSlots.empty())
 	{
-		const u32 slot{ resourcePool.freeSlots.back() };
+		u32 const slot{ resourcePool.freeSlots.back() };
 		resourcePool.freeSlots.pop_back();
 		return slot;
 	}
-	assert(resourcePool.nextSlot < resourcePool.maxSlots);
+	Check(Abort, resourcePool.nextSlot < resourcePool.maxSlots, "resourcePool has ran out of available slots!");
 	return resourcePool.nextSlot++;
 }
 

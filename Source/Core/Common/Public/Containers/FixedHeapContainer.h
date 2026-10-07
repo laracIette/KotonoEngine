@@ -1,6 +1,6 @@
 #pragma once
+#include "check.h"
 #include "types.h"
-#include <cassert>
 #include <concepts>
 #include <memory>
 #include <new>
@@ -73,7 +73,7 @@ public:
 		requires std::constructible_from<ValueType, Args...>
 	ValueType& emplace_back(Args&&... args) noexcept(std::is_nothrow_constructible_v<ValueType, Args...>)
 	{
-		assert(size_ < Capacity && "UFixedHeapContainer capacity exceeded!");
+		Check(Abort, size_ < Capacity, "UFixedHeapContainer capacity exceeded!");
 		T* const ptr{ std::construct_at(&data_[size_], std::forward<Args>(args)...) };
 		++size_;
 		return *ptr;
@@ -125,7 +125,7 @@ public:
 
 	decltype(auto) operator[](this auto&& ctn, IndexType index) noexcept
 	{
-		assert(index < size_ && "Index out of bounds!");
+		Check(Abort, index < size_, "Index out of bounds!");
 		return ctn.data_[index];
 	}
 

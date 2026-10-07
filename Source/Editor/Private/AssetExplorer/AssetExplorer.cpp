@@ -156,7 +156,7 @@ void WAssetExplorer::DeselectOthers(AssetExplorerItem const& item) const
 
 void WAssetExplorer::Push(UPath const& path)
 {
-	assert(path.Exists());
+	Check(Throw, path.Exists(), "path is invalid");
 
 	if (path == currentDirectory_)
 	{

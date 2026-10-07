@@ -13,7 +13,7 @@
 #include <print>
 
 template<typename... Args>
-void _log_internal(ELogSeverity severity, char const* category, char const* funcName, std::format_string<Args...> format, Args&&... args)
+inline void _log_internal(ELogSeverity severity, char const* category, char const* funcName, std::format_string<Args...> format, Args&&... args)
 {
     switch (severity)
     {

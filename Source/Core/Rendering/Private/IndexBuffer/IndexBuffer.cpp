@@ -1,6 +1,6 @@
 #include "IndexBuffer/IndexBuffer.h"
 
-#include <cassert>
+#include <check.h>
 #include <Device/Device.h>
 
 static constexpr u32 MAX_INDICES{ 1 << 20 };
@@ -41,7 +41,7 @@ u32 UIndexBuffer::RegisterIndices(std::span<u32 const> indices)
 {
     u32 const oldIndex{ indexCount_ };
     u32 const newIndex{ indexCount_ + static_cast<u32>(indices.size()) };
-    assert(newIndex <= MAX_INDICES);
+    Check(Abort, newIndex <= MAX_INDICES, "index count exceeds MAX_INDICES!");
 
     device_.StagingUpload(
           indices.data()

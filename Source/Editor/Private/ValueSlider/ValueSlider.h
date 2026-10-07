@@ -26,7 +26,7 @@ public:
 	template <std::floating_point T>
 	static auto FromPointer(T* value) -> WidgetPtr
 	{
-		assert(value != nullptr);
+		Check(Abort, value, "value is null");
 		return (
 			UCreate<WValueSlider>{}()
 			| Apply(&WValueSlider::SetValueToString, [value]() { return to_string<T>(*value); })
@@ -38,7 +38,7 @@ public:
 	template <std::integral T>
 	static auto FromPointer(T* value) -> WidgetPtr
 	{
-		assert(value != nullptr);
+		Check(Abort, value, "value is null");
 		return (
 			UCreate<WValueSlider>{}()
 			| Apply(&WValueSlider::SetValueToString, [value]() { return to_string(*value); })

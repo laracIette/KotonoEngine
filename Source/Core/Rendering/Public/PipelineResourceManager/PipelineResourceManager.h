@@ -42,7 +42,7 @@ private:
 	void CreateDescriptorPool();
 	void CreateDescriptorSet();
 
-	u32 AllocateSlot(ResourcePool& resourcePool) const;
+	static u32 AllocateSlot(ResourcePool& resourcePool);
 
 	void WriteDescriptorSet(VkSampler sampler, VkImageView imageView, const VkImageLayout imageLayout, const u32 binding, const u32 slot, const VkDescriptorType descriptorType) const;
 

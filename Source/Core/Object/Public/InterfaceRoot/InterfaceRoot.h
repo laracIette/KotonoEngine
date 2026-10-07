@@ -13,7 +13,7 @@ class WInterfaceRoot : public WWidget
 public:
 	void UpdateSceneContexts(f32 deltaTime) const;
 
-	auto GetInterface() const -> UInterface* override { assert(interface_); return interface_; }
+	auto GetInterface() const -> UInterface* override { return interface_; }
 	void SetInterface(UInterface* inInterface) { interface_ = inInterface; }
 
 protected:

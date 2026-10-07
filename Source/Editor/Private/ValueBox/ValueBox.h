@@ -20,7 +20,7 @@ protected:
 public:
 	static auto FromPointer(StringCompatible auto* value) -> WidgetPtr
 	{
-		assert(value != nullptr);
+		Check(Abort, value, "value is null");
 		return (
 			UCreate<WValueBox>{}()
 			| Apply(&WValueBox::SetValueToString, [value]() { return *value; })

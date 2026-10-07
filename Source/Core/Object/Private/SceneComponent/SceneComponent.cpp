@@ -37,7 +37,7 @@ void KSceneComponent::Update(f32 deltaTime)
 
 auto KSceneComponent::GetScene() const -> UScene*
 {
-    assert(GetOwner());
+    Check(Abort, GetOwner(), "Owner is null!");
     return GetOwner()->GetScene();
 }
 

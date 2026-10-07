@@ -5,7 +5,6 @@
 #include "VariableInfo.h"
 #include "Guid/Guid.h"
 #include "ObjectFactory/ObjectFactory.h"
-#include <cassert>
 #include <concepts>
 #include <functional>
 #include <Event/Event.h>
@@ -98,7 +97,7 @@ template <std::derived_from<KObject> T, typename MemFn, typename... Args>
 		&& (std::is_invocable_v<MemFn, T*, Args...> || std::is_invocable_v<MemFn, T*>)
 UPtr<T> const& operator|(UPtr<T> const& object, _MemberAction<MemFn, Args...> const& action)
 {
-	assert(object != nullptr);
+	Check(Abort, object, "object is null!");
 	action.Apply(object.Get());
 	return object;
 }

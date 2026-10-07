@@ -1,5 +1,6 @@
 #include "Window/Window.h"
 
+#include <check.h>
 #include <functional>
 #include <GLFW/glfw3.h>
 #include <glm/vector_relational.hpp>
@@ -23,7 +24,7 @@ static void framebuffersize_callback_(GLFWwindow* window, i32 width, i32 height)
 
 void UWindow::Init(glm::uvec2 const& extent, std::string_view name)
 {
-    assert(!glm::any(glm::equal(extent, glm::uvec2{ 0, 0 })));
+    Check(Abort, !glm::any(glm::equal(extent, glm::uvec2{ 0, 0 })), "requested window area is 0!");
 
     extent_ = extent; 
     isMinimized_ = false;

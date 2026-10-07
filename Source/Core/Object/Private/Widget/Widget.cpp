@@ -151,7 +151,7 @@ auto WWidget::GetClassPath() const -> std::string
 
 UInterface* WWidget::GetInterface() const
 {
-	Check(Throw, parent_, "parent_ is nullptr");
+	Check(Abort, parent_, "parent_ is null!");
 	return parent_->GetInterface();
 }
 

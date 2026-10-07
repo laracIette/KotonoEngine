@@ -12,7 +12,7 @@
 #include "Sampler/Sampler.h"
 #include "Shader/Shader.h"
 #include "Texture/Texture.h"
-#include <cassert>
+#include <check.h>
 #include <Logging/log.h>
 #include <RenderGraph/InterfaceRenderGraph.h>
 #include <RenderGraph/SceneRenderGraph.h>
@@ -48,7 +48,7 @@ static GetOrCreateResult<T> GetOrCreate(UPath const& path, std::unordered_map<UP
 		return { true, it->second };
 	}
 
-	assert(path.IsFile());
+	Check(Abort, path.IsFile(), "path is not a file!");
 
 	T* texture{ new T{ path } };
 	registry[path] = texture;
