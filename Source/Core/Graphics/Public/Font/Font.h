@@ -5,7 +5,7 @@
 class UFont final
 {
 public:
-	UFont(UPath const& path);
+	explicit UFont(UPath const& path);
 
 	auto Path() const -> UPath const&;
 	auto GetSize() const -> f32;

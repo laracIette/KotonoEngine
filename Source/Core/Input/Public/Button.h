@@ -18,4 +18,4 @@ enum class EButton : u8
 	Last = Button8
 };
 
-inline constexpr size ButtonCount{ 8 };
+inline constexpr size BUTTON_COUNT{ 8 };

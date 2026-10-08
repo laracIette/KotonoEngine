@@ -164,5 +164,5 @@ void UDeserialize<std::string>::operator()(nlohmann::json const& json, std::stri
 
 void UDeserialize<UPath>::operator()(nlohmann::json const& json, UPath& v) const
 {
-    v = json.get<std::string>();
+    v = UPath{ json.get<std::string>() };
 }

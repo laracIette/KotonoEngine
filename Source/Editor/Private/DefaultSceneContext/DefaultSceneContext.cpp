@@ -7,6 +7,7 @@
 #include "SceneExplorer/SceneExplorer.h"
 #include "SingleViewport/SingleViewport.h"
 #include <core_widgets.h>
+#include <Scene/Scene.h>
 
 WidgetPtr WDefaultSceneContext::Build()
 {
@@ -15,6 +16,26 @@ WidgetPtr WDefaultSceneContext::Build()
 		| (
 			UCreate<WColumn>{}()
 			| Apply(&WColumn::SetExpandWeight, glm::vec2{ 0.33f, 1.0f })
+			| (
+				UCreate<WWrap>{}()
+				| Apply(&WWrap::SetAxis, EAxis::Vertical)
+				| (
+					UCreate<WStack>{}()
+					| (
+						UCreate<WButton>{}()
+						| Apply(&WButton::SetIsEnabled, [this]() { return GetScene()->GetIsGameStopped(); })
+						| Apply(&WButton::SetOnClicked, [this]() { GetScene()->Serialize(); })
+					)
+					| (
+						UCreate<WAlign>{}()
+						| Apply(&WAlign::SetAlignment, UAlignment::Center())
+						| (
+							UCreate<WText>{}()
+							| Apply(&WText::SetText, "Save Scene")
+						)
+					)
+				)
+			)
 			| (
 				UCreate<WWrap>{}()
 				| Apply(&WWrap::SetAxis, EAxis::Vertical)

@@ -1,5 +1,6 @@
 #include "Path/Path.h"
 
+#include "check.h"
 #include <algorithm>
 #include <ranges>
 
@@ -12,28 +13,8 @@ static constexpr void replace(std::string& str, std::string_view from, std::stri
     }
 }
 
-UPath operator/(UPath const& r, UPath const& l)
-{
-    return std::format("{0}/{1}", r.source_, l.source_);
-}
-
-UPath::UPath()
-	: source_{}
-{
-}
-
-UPath::UPath(std::string const& source)
-	: source_{ source }
-{
-}
-
-UPath::UPath(std::string&& source)
-	: source_{ std::move(source) }
-{
-}
-
-UPath::UPath(char const* source)
-	: source_{ source }
+UPath::UPath(UPath&& path) noexcept
+	: source_{ std::move(path.source_) }
 {
 }
 
@@ -42,14 +23,40 @@ UPath::UPath(UPath const& path)
 {
 }
 
-UPath::UPath(UPath&& path)
-	: source_{ std::move(path.source_) }
+UPath::UPath(std::string&& source) noexcept
+	: source_{ std::move(source) }
+{
+}
+
+UPath::UPath(std::string const& source)
+	: source_{ source }
+{
+}
+
+UPath::UPath(char const* source)
+	: source_{ source }
 {
 }
 
 UPath::UPath(std::filesystem::path const& source)
     : source_{ source.string() }
 {
+}
+
+UPath& UPath::operator=(UPath const& other)
+{
+	if (this == &other)
+	{
+		return *this;
+	}
+	source_ = other.source_;
+	return *this;
+}
+
+UPath& UPath::operator=(UPath&& other) noexcept
+{
+	source_ = std::move(other.source_);
+	return *this;
 }
 
 auto UPath::Directory() const -> UPath
@@ -105,19 +112,17 @@ auto UPath::ToPath() const -> std::filesystem::path
     return result;
 }
 
-UPath& UPath::operator=(UPath const& other)
+void UPath::Remove() const
 {
-    if (other != *this)
-    {
-        source_ = other.source_;
-    }
-    return *this;
-}
-
-UPath& UPath::operator=(UPath&& other)
-{
-    source_ = std::move(other.source_);
-    return *this;
+	if (!Exists())
+	{
+		return;
+	}
+	
+	std::error_code error;
+	remove_all(ToPath(), error);
+	
+	Check(Error, !error, "an error occured while removing a path: {0}", error.message());
 }
 
 UPath::operator std::string() const
@@ -135,14 +140,24 @@ UPath::operator b8() const
     return !IsEmpty();
 }
 
+auto UPath::operator/(std::string_view string) const -> UPath
+{
+	return UPath{ std::format("{0}/{1}", source_, string) };
+}
+
+auto UPath::operator/(UPath const& path) const -> UPath
+{
+	return UPath{ std::format("{0}/{1}", source_, path.source_) };
+}
+
 auto UPath::operator+(char const* string) const -> UPath
 {
-    return std::format("{0}{1}", source_, string);
+    return UPath{ std::format("{0}{1}", source_, string) };
 }
 
 auto UPath::operator+(std::string_view string) const -> UPath
 {
-    return std::format("{0}{1}", source_, string);
+    return UPath{ std::format("{0}{1}", source_, string) };
 }
 
 auto UPath::operator==(UPath const& other) const noexcept -> b8

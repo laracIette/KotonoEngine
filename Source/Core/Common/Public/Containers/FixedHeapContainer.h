@@ -56,16 +56,14 @@ public:
 
 	UFixedHeapContainer& operator=(UFixedHeapContainer&& other) noexcept
 	{
-		if (this != &other)
+		if (data_)
 		{
-			if (data_)
-			{
-				clear();
-				::operator delete[](data_, std::align_val_t{ alignof(ValueType) });
-			}
-			data_ = std::exchange(other.data_, nullptr);
-			size_ = std::exchange(other.size_, 0);
+			clear();
+			::operator delete[](data_, std::align_val_t{ alignof(ValueType) });
 		}
+		data_ = std::exchange(other.data_, nullptr);
+		size_ = std::exchange(other.size_, 0);
+		
 		return *this;
 	}
 

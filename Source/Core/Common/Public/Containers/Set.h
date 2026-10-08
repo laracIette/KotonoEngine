@@ -67,14 +67,14 @@ public:
 		PopulateIndices();
 	}
 
-	USet& operator=(USet&& set) noexcept
+	auto operator=(USet&& set) noexcept -> USet&
 	{
 		values_ = std::move(set.values_);
 		indices_ = std::move(set.indices_);
 		return *this;
 	}
 
-	USet& operator=(USet const& set)
+	auto operator=(USet const& set) -> USet&
 	{
 		if (this == &set)
 		{

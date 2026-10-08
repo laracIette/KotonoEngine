@@ -18,7 +18,7 @@ void SObjectFactory::Register(std::string_view className, ObjectFactoryFunc&& fu
 
 auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 {
-	// Check if already in registry
+	// Check if already in registry and valid
 	auto const registryIt{ registry_.Find(guid) };
 	if (registry_.IsValidIterator(registryIt))
 	{
@@ -35,11 +35,12 @@ auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 	// Add to registry
 	nlohmann::json json{};
 	SSerializer::Deserialize(json, assetPath);
+	SSerializer::Serialize(json, tempPath);
 
 	auto const it{ json.find("type_") };
 	if (it == json.end())
 	{
-		KT_LOG(ELogImportanceLevel::High, "Object", "missing element type_ in json");
+		KT_LOG_SEVERITY(ELogImportanceLevel::High, ELogSeverity::Warning, "Object", "missing element type_ in json");
 		return nullptr;
 	}
 
@@ -49,7 +50,7 @@ auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Object", "created object {0}", object->GetName());
 		object->guid_ = guid;
 		object->Deserialize();
-		registry_.TryEmplace(guid, object);
+		registry_.InsertOrAssign(guid, object);
 		return object;
 	}
 
@@ -60,7 +61,7 @@ auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 auto SObjectFactory::GetFactory(std::string_view typeName) -> ObjectPtr
 {
     auto const it{ objectFactories_.Find(typeName) };
-    if (objectFactories_.IsValidIterator(it))
+    if (objectFactories_.IsValidIterator(it) && it->second)
     {
         return it->second();
     }

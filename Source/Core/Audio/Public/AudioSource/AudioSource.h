@@ -24,7 +24,7 @@ public:
 	using AttenuationDistanceRange = UClamped<f32, 0.0f, std::numeric_limits<f32>::max()>;
 
 public:
-	UAudioSource(UPath const& path);
+	explicit UAudioSource(UPath const& path);
 	~UAudioSource();
 
 	auto GetState() const -> EAudioSourceState;

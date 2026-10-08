@@ -6,7 +6,7 @@
 #include <types.h>
 #include <span>
 #include <unordered_map>
-#include <vulkan/vulkan_core.h>
+
 struct UDrawCommand;
 struct UDirectionalLight;
 struct UPointLight;
@@ -16,6 +16,7 @@ struct USceneRenderData;
 class UDevice;
 class UPipelineResourceManager;
 class USwapchain;
+
 class USceneRenderer final
 {
 public:

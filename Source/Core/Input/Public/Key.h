@@ -126,9 +126,9 @@ enum class EKey : u8
 	Unknown = std::numeric_limits<u8>::max()
 };
 
-inline constexpr size KeyCount{ 121 };
+inline constexpr size KEY_COUNT{ 121 };
 
-constexpr char keyToChar(EKey key)
+constexpr auto keyToChar(EKey key) noexcept -> char
 {
 	switch (key)
 	{

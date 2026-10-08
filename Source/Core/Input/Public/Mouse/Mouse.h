@@ -17,10 +17,10 @@ public:
 	using EventButtonType = UEvent<EButton, EInputState>;
 
 public:
-	UMouse(UWindow& window);
+	explicit UMouse(UWindow& window);
 
 	void Init();
-	void Cleanup();
+	void Cleanup() const;
 
 	void Update();
 
@@ -64,5 +64,5 @@ private:
 	EventScrollType eventScroll_;
 	EventButtonType eventButton_;
 
-	UMatrix<b8, ButtonCount, InputStateCount> buttonStates_;
+	UMatrix<b8, BUTTON_COUNT, INPUT_STATE_COUNT> buttonStates_;
 };

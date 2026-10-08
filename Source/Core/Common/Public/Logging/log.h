@@ -13,7 +13,7 @@
 #include <print>
 
 template<typename... Args>
-inline void _log_internal(ELogSeverity severity, char const* category, char const* funcName, std::format_string<Args...> format, Args&&... args)
+inline void log_internal(ELogSeverity severity, char const* category, char const* funcName, std::format_string<Args...> format, Args&&... args)
 {
     switch (severity)
     {
@@ -37,7 +37,7 @@ inline void _log_internal(ELogSeverity severity, char const* category, char cons
     {                                                                               \
         if constexpr (KT_SHOULD_LOG(Level))											\
 		{																			\
-			_log_internal(Severity, Category, __FUNCTION__, Format, __VA_ARGS__);	\
+			log_internal(Severity, Category, __FUNCTION__, Format, __VA_ARGS__);	\
 		}																			\
     } while (false)
 

@@ -15,10 +15,10 @@ public:
 	using EventKeyType = UEvent<EKey, EInputState>;
 
 public:
-	UKeyboard(UWindow& window);
+	explicit UKeyboard(UWindow& window);
 
 	void Init();
-	void Cleanup();
+	void Cleanup() const;
 
 	void Update();
 
@@ -46,5 +46,5 @@ private:
 	EventKeyType eventKey_;
 	EModifier modifier_;
 
-	UMatrix<b8, KeyCount, InputStateCount> keyStates_;
+	UMatrix<b8, KEY_COUNT, INPUT_STATE_COUNT> keyStates_;
 };

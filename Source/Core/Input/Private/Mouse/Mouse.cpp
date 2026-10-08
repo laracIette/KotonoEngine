@@ -4,19 +4,18 @@
 #include <GLFW/glfw3.h>
 #include <Logging/log.h> 
 #include <Window/Window.h>
-#include <unordered_map>
+#include <Containers/Map.h>
 
 #define KT_LOG_IMPORTANCE_LEVEL_MOUSE ELogImportanceLevel::Low
 
-static std::unordered_map<GLFWwindow*, std::function<void(EButton, i32)>> ButtonCallbacks{};
-static std::unordered_map<GLFWwindow*, std::function<void(glm::vec2)>> CursorPositionCallbacks{};
-static std::unordered_map<GLFWwindow*, std::function<void(glm::vec2)>> ScrollCallbacks{};
+static UMap<GLFWwindow*, std::function<void(EButton, i32)>> ButtonCallbacks{};
+static UMap<GLFWwindow*, std::function<void(glm::vec2)>> CursorPositionCallbacks{};
+static UMap<GLFWwindow*, std::function<void(glm::vec2)>> ScrollCallbacks{};
 
 static void mousebutton_callback_(GLFWwindow* window, i32 button, i32 action, i32 mods)
 {   
-    auto const it{ ButtonCallbacks.find(window) };
-
-    if (it != ButtonCallbacks.end() && it->second)
+    auto const it{ ButtonCallbacks.Find(window) };
+    if (ButtonCallbacks.IsValidIterator(it) && it->second)
     {
         it->second(static_cast<EButton>(button), action);
     }
@@ -24,9 +23,8 @@ static void mousebutton_callback_(GLFWwindow* window, i32 button, i32 action, i3
 
 static void cursorpos_callback_(GLFWwindow* window, f64 xpos, f64 ypos)
 {
-    auto const it{ CursorPositionCallbacks.find(window) };
-
-    if (it != CursorPositionCallbacks.end() && it->second)
+    auto const it{ CursorPositionCallbacks.Find(window) };
+    if (CursorPositionCallbacks.IsValidIterator(it) && it->second)
     {
         it->second(glm::vec2{ xpos, ypos });
     }
@@ -34,9 +32,8 @@ static void cursorpos_callback_(GLFWwindow* window, f64 xpos, f64 ypos)
 
 static void scroll_callback_(GLFWwindow* window, f64 xoffset, f64 yoffset)
 {
-    auto const it{ ScrollCallbacks.find(window) };
-
-    if (it != ScrollCallbacks.end() && it->second)
+    auto const it{ ScrollCallbacks.Find(window) };
+    if (ScrollCallbacks.IsValidIterator(it) && it->second)
     {
         it->second(glm::vec2{ xoffset, yoffset });
     }
@@ -55,23 +52,23 @@ void UMouse::Init()
     glfwSetCursorPosCallback(window_.GetGLFWWindow(), cursorpos_callback_);
     glfwSetScrollCallback(window_.GetGLFWWindow(), scroll_callback_);
     
-    ButtonCallbacks.try_emplace(window_.GetGLFWWindow(), [this](EButton button, i32 action) { UpdateButton(button, action); });
-    CursorPositionCallbacks.try_emplace(window_.GetGLFWWindow(), [this](glm::vec2 const& position) { UpdateCursorPosition(position); });
-    ScrollCallbacks.try_emplace(window_.GetGLFWWindow(), [this](glm::vec2 const& delta) { UpdateScrollDelta(delta); });
+    ButtonCallbacks.TryEmplace(window_.GetGLFWWindow(), [this](EButton button, i32 action) { UpdateButton(button, action); });
+    CursorPositionCallbacks.TryEmplace(window_.GetGLFWWindow(), [this](glm::vec2 const& position) { UpdateCursorPosition(position); });
+    ScrollCallbacks.TryEmplace(window_.GetGLFWWindow(), [this](glm::vec2 const& delta) { UpdateScrollDelta(delta); });
 }
 
-void UMouse::Cleanup()
+void UMouse::Cleanup() const
 {
-    ButtonCallbacks.erase(window_.GetGLFWWindow());
-    CursorPositionCallbacks.erase(window_.GetGLFWWindow());
-    ScrollCallbacks.erase(window_.GetGLFWWindow());
+    ButtonCallbacks.Remove(window_.GetGLFWWindow());
+    CursorPositionCallbacks.Remove(window_.GetGLFWWindow());
+    ScrollCallbacks.Remove(window_.GetGLFWWindow());
 }
 
 void UMouse::Update()
 {
-    for (size button{ 0 }; button < ButtonCount; ++button)
+    for (size button{ 0 }; button < BUTTON_COUNT; ++button)
     {
-        for (size inputState{ 0 }; inputState < InputStateCount; ++inputState)
+        for (size inputState{ 0 }; inputState < INPUT_STATE_COUNT; ++inputState)
         {
             if (GetIsButtonState(button, inputState))
             {

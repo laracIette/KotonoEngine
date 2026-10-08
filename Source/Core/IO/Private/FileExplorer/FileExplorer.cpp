@@ -29,7 +29,7 @@ std::vector<UPath> UFileExplorer::GetDirectories() const
     {
         if (entry.is_directory())
         {
-            directories.push_back(entry.path().string());
+            directories.push_back(entry.path());
         }
     }
     return directories;
@@ -42,7 +42,7 @@ std::vector<UFile> UFileExplorer::Find(const std::string& name) const
     {
         if (entry.is_regular_file() && entry.path().filename().string().find(name) != std::string::npos)
         {
-            files.push_back(UFile(entry.path()));
+            files.push_back(UFile{ entry.path() });
         }
     }
     return files;

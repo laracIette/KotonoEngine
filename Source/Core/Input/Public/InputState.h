@@ -10,4 +10,4 @@ enum class EInputState : u8
 	Down,
 };
 
-inline constexpr size InputStateCount{ 3 };
+inline constexpr size INPUT_STATE_COUNT{ 3 };

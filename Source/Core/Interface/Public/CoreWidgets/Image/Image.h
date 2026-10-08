@@ -9,7 +9,7 @@ class WImage final : public WWidget
 	GENERATED()
 
 public:
-	WImage(UPath const& path = "${ENGINE_DIRECTORY}/Assets/textures/default_texture.jpg");
+	WImage();
 
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
 

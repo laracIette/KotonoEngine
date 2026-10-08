@@ -52,12 +52,11 @@ void UApplication::Run()
 
 void UApplication::Init()
 {
+	UPath{ "{PROJECT_DIRECTORY}/Temp" }.Remove();
+	
     SSpvCompiler::CompileUpdated();
 
-    if (glfwInit() == GLFW_FALSE)
-    {
-        throw std::runtime_error{ "Failed to initialize GLFW" };
-    }
+	Check(Abort, glfwInit() == GLFW_TRUE, "failed to initialize GLFW!");
 
     RegisterObjectClasses();
 

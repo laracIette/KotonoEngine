@@ -50,8 +50,16 @@ constexpr TEnum& operator|=(TEnum& left, TOther right) noexcept
 template <ScopedEnum T>
 constexpr T& operator++(T& value) noexcept
 {
-    value = static_cast<T>(++std::to_underlying(value));
-    return value;
+	value = static_cast<T>(std::to_underlying(value) + 1);
+	return value;
+}
+
+template <ScopedEnum T>
+constexpr T operator++(T& value, i32) noexcept
+{
+	T const temp{ value };
+	++value;
+	return temp;
 }
 
 template <ScopedEnum T>

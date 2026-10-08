@@ -9,7 +9,9 @@
 #include <glm/gtx/hash.hpp>
 #include <hash_utils.h>
 #include <Device/Device.h>
-#include <unordered_map>
+#include <Containers/Map.h>
+#include <check.h>
+
 
 AModel::AModel(UPath const& path) 
 	: AAsset(path)
@@ -55,7 +57,7 @@ std::span<u32 const> AModel::GetIndices() const
 void AModel::Load()
 {
 	Assimp::Importer importer{};
-	const aiScene* scene{ importer.ReadFile(GetPath().ToPath().string().c_str()
+	aiScene const* scene{ importer.ReadFile(GetPath().ToPath().string().c_str()
 		, aiProcess_Triangulate
 		| aiProcess_FlipUVs
 		| aiProcess_MakeLeftHanded
@@ -64,20 +66,17 @@ void AModel::Load()
 		| aiProcess_GenSmoothNormals
 	) };
 
-	if (!scene || !scene->HasMeshes())
-	{
-		throw std::runtime_error("Failed to load model: " + GetPath().ToString());
-	}
+	Check(Throw, scene && scene->HasMeshes(), "failed to load model: {0}", GetPath().ToString());
 
-	std::unordered_map<UVertex, u32> uniqueVertices{};
+	UMap<UVertex, u32> uniqueVertices{};
 
 	for (u32 m{ 0 }; m < scene->mNumMeshes; ++m)
 	{
-		const aiMesh* mesh{ scene->mMeshes[m] };
+		aiMesh const* mesh{ scene->mMeshes[m] };
 
 		for (u32 i{ 0 }; i < mesh->mNumFaces; ++i)
 		{
-			const aiFace& face{ mesh->mFaces[i] };
+			aiFace const& face{ mesh->mFaces[i] };
 
 			for (u32 j{ 0 }; j < face.mNumIndices; ++j)
 			{
@@ -113,14 +112,15 @@ void AModel::Load()
 					.uv = { uv.x, uv.y },
 					.tangent = { T, handedness },
 				};
-
-				if (!uniqueVertices.contains(vertex))
+				
+				auto const [it, emplaced] { uniqueVertices.TryEmplace(vertex, static_cast<u32>(vertices_.size())) };
+				if (emplaced)
 				{
 					uniqueVertices[vertex] = static_cast<u32>(vertices_.size());
 					vertices_.push_back(vertex);
 				}
 
-				indices_.push_back(uniqueVertices[vertex]);
+				indices_.push_back(uniqueVertices.At(vertex));
 			}
 		}
 	}

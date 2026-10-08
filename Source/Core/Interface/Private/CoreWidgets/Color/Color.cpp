@@ -10,14 +10,14 @@ WColor::WColor()
 void WColor::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
 {
 	interfaceRenderGraph.drawDatas.push_back({
-		.scissor = GetScissor(),
-		.modelMatrix = GetModelMatrix(),
-		.shader = "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset",
-		.model = "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj",
-		.scalars = {},
-		.vectors = { GetColor() },
-		.textures = { "${ENGINE_DIRECTORY}/Assets/textures/white_texture.jpg" },
-		.isVisible = GetIsVisible(),
+		.scissor{ GetScissor() },
+		.modelMatrix{ GetModelMatrix() },
+		.shader{ "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset" },
+		.model{ "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj" },
+		.scalars{},
+		.vectors{ GetColor() },
+		.textures{ UPath{ "${ENGINE_DIRECTORY}/Assets/textures/white_texture.jpg" } },
+		.isVisible{ GetIsVisible() },
 	});
 }
 

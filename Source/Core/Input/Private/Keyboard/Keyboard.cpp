@@ -5,14 +5,31 @@
 #include <enum_utils.h>
 #include <Logging/log.h>
 #include <Window/Window.h>
-#include <unordered_map>
+#include <Containers/Map.h>
 
 #define KT_LOG_IMPORTANCE_LEVEL_KEYBOARD ELogImportanceLevel::Low
 
-static std::unordered_map<GLFWwindow*, std::function<void(EKey, i32)>> KeyCallbacks{};
+static UMap<GLFWwindow*, std::function<void(EKey, i32)>> KeyCallbacks{};
 
-static constexpr i32 keyToGLFWKey(EKey key);
-static constexpr EKey GLFWKeyToKey(i32 key);
+namespace
+{
+	struct ModifierKeys final
+	{
+		EModifier modifier;
+		EKey primary, secondary;
+	};
+}
+
+static constexpr std::array MODIFIER_KEYS{
+	ModifierKeys{ EModifier::Shift,     EKey::LeftShift,      EKey::RightShift      },
+	ModifierKeys{ EModifier::Control,   EKey::LeftControl,    EKey::RightControl    },
+	ModifierKeys{ EModifier::Alt,       EKey::LeftAlt,        EKey::RightAlt        },
+	ModifierKeys{ EModifier::Super,     EKey::LeftSuper,      EKey::RightSuper      },
+	ModifierKeys{ EModifier::NumLock,   EKey::NumLock,        EKey::Unknown         },
+	ModifierKeys{ EModifier::CapsLock,  EKey::CapsLock,       EKey::Unknown         },
+};
+
+static constexpr auto GLFWKeyToKey(i32 key) noexcept -> EKey;
 
 static void key_callback_(GLFWwindow* window, i32 key, i32 scancode, i32 action, i32 mods)
 {
@@ -21,46 +38,31 @@ static void key_callback_(GLFWwindow* window, i32 key, i32 scancode, i32 action,
         return;
     }
 
-    auto const it{ KeyCallbacks.find(window) };
-
-    if (it != KeyCallbacks.end() && it->second)
+    auto const it{ KeyCallbacks.Find(window) };
+    if (KeyCallbacks.IsValidIterator(it) && it->second)
     {
         it->second(GLFWKeyToKey(key), action);
     }
 }
 
 UKeyboard::UKeyboard(UWindow& window)
-    : window_{ window }
-    , eventKey_{}
-    , keyStates_{}
+	: window_{window}
+	, eventKey_{}
+	, modifier_{}
+	, keyStates_{}
 {
 }
 
 void UKeyboard::Init()
 {
     glfwSetKeyCallback(window_.GetGLFWWindow(), key_callback_);
-    KeyCallbacks.try_emplace(window_.GetGLFWWindow(), [this](EKey key, i32 action) { UpdateKey(key, action); });
+    KeyCallbacks.TryEmplace(window_.GetGLFWWindow(), [this](EKey key, i32 action) { UpdateKey(key, action); });
 }
 
-void UKeyboard::Cleanup()
+void UKeyboard::Cleanup() const
 {
-    KeyCallbacks.erase(window_.GetGLFWWindow());
+    KeyCallbacks.Remove(window_.GetGLFWWindow());
 }
-
-struct ModifierKeys
-{
-    EModifier modifier;
-    EKey primary, secondary;
-};
-
-static constexpr std::array MODIFIER_KEYS{
-    ModifierKeys{ EModifier::Shift,     EKey::LeftShift,      EKey::RightShift      },
-    ModifierKeys{ EModifier::Control,   EKey::LeftControl,    EKey::RightControl    },
-    ModifierKeys{ EModifier::Alt,       EKey::LeftAlt,        EKey::RightAlt        },
-    ModifierKeys{ EModifier::Super,     EKey::LeftSuper,      EKey::RightSuper      },
-    ModifierKeys{ EModifier::NumLock,   EKey::NumLock,        EKey::Unknown         },
-    ModifierKeys{ EModifier::CapsLock,  EKey::CapsLock,       EKey::Unknown         },
-};
 
 void UKeyboard::Update()
 {
@@ -74,9 +76,9 @@ void UKeyboard::Update()
         }
     }
 
-    for (size key{ 0 }; key < KeyCount; ++key)
+    for (size key{ 0 }; key < KEY_COUNT; ++key)
     {
-        for (size inputState{ 0 }; inputState < InputStateCount; ++inputState)
+        for (size inputState{ 0 }; inputState < INPUT_STATE_COUNT; ++inputState)
         {
             if (GetIsKeyState(key, inputState))
             {
@@ -124,135 +126,7 @@ void UKeyboard::UpdateKey(EKey key, i32 action)
     }
 }
 
-constexpr i32 keyToGLFWKey(EKey key)
-{
-    switch (key)
-    {
-    case EKey::Space: return GLFW_KEY_SPACE;
-    case EKey::Apostrophe: return GLFW_KEY_APOSTROPHE;
-    case EKey::Comma: return GLFW_KEY_COMMA;
-    case EKey::Minus: return GLFW_KEY_MINUS;
-    case EKey::Period: return GLFW_KEY_PERIOD;
-    case EKey::Slash: return GLFW_KEY_SLASH;
-    case EKey::Num0: return GLFW_KEY_0;
-    case EKey::Num1: return GLFW_KEY_1;
-    case EKey::Num2: return GLFW_KEY_2;
-    case EKey::Num3: return GLFW_KEY_3;
-    case EKey::Num4: return GLFW_KEY_4;
-    case EKey::Num5: return GLFW_KEY_5;
-    case EKey::Num6: return GLFW_KEY_6;
-    case EKey::Num7: return GLFW_KEY_7;
-    case EKey::Num8: return GLFW_KEY_8;
-    case EKey::Num9: return GLFW_KEY_9;
-    case EKey::Semicolon: return GLFW_KEY_SEMICOLON;
-    case EKey::Equal: return GLFW_KEY_EQUAL;
-    case EKey::A: return GLFW_KEY_A;
-    case EKey::B: return GLFW_KEY_B;
-    case EKey::C: return GLFW_KEY_C;
-    case EKey::D: return GLFW_KEY_D;
-    case EKey::E: return GLFW_KEY_E;
-    case EKey::F: return GLFW_KEY_F;
-    case EKey::G: return GLFW_KEY_G;
-    case EKey::H: return GLFW_KEY_H;
-    case EKey::I: return GLFW_KEY_I;
-    case EKey::J: return GLFW_KEY_J;
-    case EKey::K: return GLFW_KEY_K;
-    case EKey::L: return GLFW_KEY_L;
-    case EKey::M: return GLFW_KEY_M;
-    case EKey::N: return GLFW_KEY_N;
-    case EKey::O: return GLFW_KEY_O;
-    case EKey::P: return GLFW_KEY_P;
-    case EKey::Q: return GLFW_KEY_Q;
-    case EKey::R: return GLFW_KEY_R;
-    case EKey::S: return GLFW_KEY_S;
-    case EKey::T: return GLFW_KEY_T;
-    case EKey::U: return GLFW_KEY_U;
-    case EKey::V: return GLFW_KEY_V;
-    case EKey::W: return GLFW_KEY_W;
-    case EKey::X: return GLFW_KEY_X;
-    case EKey::Y: return GLFW_KEY_Y;
-    case EKey::Z: return GLFW_KEY_Z;
-    case EKey::LeftBracket: return GLFW_KEY_LEFT_BRACKET;
-    case EKey::Backslash: return GLFW_KEY_BACKSLASH;
-    case EKey::RightBracket: return GLFW_KEY_RIGHT_BRACKET;
-    case EKey::GraveAccent: return GLFW_KEY_GRAVE_ACCENT;
-    case EKey::World1: return GLFW_KEY_WORLD_1;
-    case EKey::World2: return GLFW_KEY_WORLD_2;
-    case EKey::Escape: return GLFW_KEY_ESCAPE;
-    case EKey::Enter: return GLFW_KEY_ENTER;
-    case EKey::Tab: return GLFW_KEY_TAB;
-    case EKey::Backspace: return GLFW_KEY_BACKSPACE;
-    case EKey::Insert: return GLFW_KEY_INSERT;
-    case EKey::Delete: return GLFW_KEY_DELETE;
-    case EKey::Right: return GLFW_KEY_RIGHT;
-    case EKey::Left: return GLFW_KEY_LEFT;
-    case EKey::Down: return GLFW_KEY_DOWN;
-    case EKey::Up: return GLFW_KEY_UP;
-    case EKey::PageUp: return GLFW_KEY_PAGE_UP;
-    case EKey::PageDown: return GLFW_KEY_PAGE_DOWN;
-    case EKey::Home: return GLFW_KEY_HOME;
-    case EKey::End: return GLFW_KEY_END;
-    case EKey::CapsLock: return GLFW_KEY_CAPS_LOCK;
-    case EKey::ScrollLock: return GLFW_KEY_SCROLL_LOCK;
-    case EKey::NumLock: return GLFW_KEY_NUM_LOCK;
-    case EKey::PrintScreen: return GLFW_KEY_PRINT_SCREEN;
-    case EKey::Pause: return GLFW_KEY_PAUSE;
-    case EKey::F1: return GLFW_KEY_F1;
-    case EKey::F2: return GLFW_KEY_F2;
-    case EKey::F3: return GLFW_KEY_F3;
-    case EKey::F4: return GLFW_KEY_F4;
-    case EKey::F5: return GLFW_KEY_F5;
-    case EKey::F6: return GLFW_KEY_F6;
-    case EKey::F7: return GLFW_KEY_F7;
-    case EKey::F8: return GLFW_KEY_F8;
-    case EKey::F9: return GLFW_KEY_F9;
-    case EKey::F10: return GLFW_KEY_F10;
-    case EKey::F11: return GLFW_KEY_F11;
-    case EKey::F12: return GLFW_KEY_F12;
-    case EKey::F13: return GLFW_KEY_F13;
-    case EKey::F14: return GLFW_KEY_F14;
-    case EKey::F15: return GLFW_KEY_F15;
-    case EKey::F16: return GLFW_KEY_F16;
-    case EKey::F17: return GLFW_KEY_F17;
-    case EKey::F18: return GLFW_KEY_F18;
-    case EKey::F19: return GLFW_KEY_F19;
-    case EKey::F20: return GLFW_KEY_F20;
-    case EKey::F21: return GLFW_KEY_F21;
-    case EKey::F22: return GLFW_KEY_F22;
-    case EKey::F23: return GLFW_KEY_F23;
-    case EKey::F24: return GLFW_KEY_F24;
-    case EKey::F25: return GLFW_KEY_F25;
-    case EKey::Keypad0: return GLFW_KEY_KP_0;
-    case EKey::Keypad1: return GLFW_KEY_KP_1;
-    case EKey::Keypad2: return GLFW_KEY_KP_2;
-    case EKey::Keypad3: return GLFW_KEY_KP_3;
-    case EKey::Keypad4: return GLFW_KEY_KP_4;
-    case EKey::Keypad5: return GLFW_KEY_KP_5;
-    case EKey::Keypad6: return GLFW_KEY_KP_6;
-    case EKey::Keypad7: return GLFW_KEY_KP_7;
-    case EKey::Keypad8: return GLFW_KEY_KP_8;
-    case EKey::Keypad9: return GLFW_KEY_KP_9;
-    case EKey::KeypadDecimal: return GLFW_KEY_KP_DECIMAL;
-    case EKey::KeypadDivide: return GLFW_KEY_KP_DIVIDE;
-    case EKey::KeypadMultiply: return GLFW_KEY_KP_MULTIPLY;
-    case EKey::KeypadSubtract: return GLFW_KEY_KP_SUBTRACT;
-    case EKey::KeypadAdd: return GLFW_KEY_KP_ADD;
-    case EKey::KeypadEnter: return GLFW_KEY_KP_ENTER;
-    case EKey::KeypadEqual: return GLFW_KEY_KP_EQUAL;
-    case EKey::LeftShift: return GLFW_KEY_LEFT_SHIFT;
-    case EKey::LeftControl: return GLFW_KEY_LEFT_CONTROL;
-    case EKey::LeftAlt: return GLFW_KEY_LEFT_ALT;
-    case EKey::LeftSuper: return GLFW_KEY_LEFT_SUPER;
-    case EKey::RightShift: return GLFW_KEY_RIGHT_SHIFT;
-    case EKey::RightControl: return GLFW_KEY_RIGHT_CONTROL;
-    case EKey::RightAlt: return GLFW_KEY_RIGHT_ALT;
-    case EKey::RightSuper: return GLFW_KEY_RIGHT_SUPER;
-    case EKey::Menu: return GLFW_KEY_MENU;
-    default: return GLFW_KEY_UNKNOWN;
-    }
-}
-
-constexpr EKey GLFWKeyToKey(i32 key)
+constexpr auto GLFWKeyToKey(i32 key) noexcept -> EKey
 {
     switch (key)
     {

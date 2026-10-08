@@ -10,7 +10,7 @@ WText::WText()
 	: text_{}
 	, fontSize_{ 16.0f, 20.0f }
 	, spacing_{ 0.75f }
-	, font_{ "${ENGINE_DIRECTORY}/Assets/fonts/default" }
+	, font_{ UPath{ "${ENGINE_DIRECTORY}/Assets/fonts/default" } }
 {
 }
 
@@ -50,14 +50,14 @@ void WText::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) con
 	for (auto const& [characterPath, modelMatrix] : characters_)
 	{
 		interfaceRenderGraph.drawDatas.push_back({
-			.scissor = GetScissor(),
-			.modelMatrix = modelMatrix,
-			.shader = "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset",
-			.model = "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj",
-			.scalars = {},
-			.vectors = { Colors::White },
-			.textures = { characterPath },
-			.isVisible = GetIsVisible(),
+			.scissor{ GetScissor() },
+			.modelMatrix{ modelMatrix },
+			.shader{ "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset" },
+			.model{ "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj" },
+			.scalars{},
+			.vectors{ Colors::White },
+			.textures{ characterPath },
+			.isVisible{ GetIsVisible() },
 		});
 	}
 }

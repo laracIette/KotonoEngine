@@ -3,7 +3,9 @@
 #include <Event/Event.h>
 #include <types.h>
 #include <string_view>
+
 struct GLFWwindow;
+
 class UWindow final
 {
 public:

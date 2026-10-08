@@ -67,13 +67,13 @@ public:
 		}
 	}
 	
-	UPool& operator=(UPool&& pool) noexcept
+	auto operator=(UPool&& pool) noexcept -> UPool&
 	{
 		data_ = std::move(pool.data_);
 		return *this;
 	}
 
-	UPool& operator=(UPool const& pool)
+	auto operator=(UPool const& pool) -> UPool&
 	{
 		if (this == &pool)
 		{

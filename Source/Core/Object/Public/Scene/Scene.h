@@ -4,6 +4,7 @@
 #include <AudioContext/AudioContext.h>
 #include <Clamped.h>
 #include <Event/Event.h>
+#include <Path/Path.h>
 #include <Notify.h>
 #include <Containers/Set.h>
 #include <span>
@@ -31,7 +32,8 @@ public:
 	void SpawnSceneObjects();
 	void DespawnSceneObjects();
 
-	auto GetSceneObjects() const -> std::span<SceneObjectPtr const>;
+	void Serialize() const;
+	void Deserialize();
 
 	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const;
 
@@ -42,6 +44,8 @@ public:
 	void SelectObject(SceneObjectPtr const& sceneObject);
 
 	auto GetAudioContext() -> UAudioContext& { return audioContext_; }
+
+	auto GetSceneObjects() const -> std::span<SceneObjectPtr const> { return sceneObjects_; }
 
 	auto GetEventSceneObjectsUpdated() -> UEvent<USet<SceneObjectPtr>>& { return eventSceneObjectsUpdated_; }
 	auto GetEventSelectedObjectChanged() -> UEvent<SceneObjectPtr>& { return eventSelectedObjectChanged_; }
@@ -69,10 +73,13 @@ public:
 private:
 	void InitSceneObjects() const;
 	void UpdateSceneObjects(f32 deltaTime) const;
+	void DeleteSceneObjects() const;
 
 	auto TrySetState(EGameState gameState) -> b8;
 
 private:
+	UPath path_;
+	
 	UAudioContext audioContext_;
 
 	USet<SceneObjectPtr> sceneObjects_;

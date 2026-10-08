@@ -11,10 +11,12 @@ class UMap final
 {
 private:
 	using UnorderedMapType = std::unordered_map<KeyType, ValueType>;
+	using UnorderedMapValueType = UnorderedMapType::value_type;
 	using UnorderedMapIterator = UnorderedMapType::iterator;
 	using UnorderedMapConstIterator = UnorderedMapType::const_iterator;
 	
 public:
+	using value_type = UnorderedMapValueType;
 	using iterator = UnorderedMapIterator;
 	using const_iterator = UnorderedMapConstIterator;
 	
@@ -31,13 +33,18 @@ public:
 	{
 	}	
 	
-	UMap& operator=(UMap&& map) noexcept
+	UMap(std::initializer_list<UnorderedMapValueType> list)
+		: data_(list.begin(), list.end())
+	{
+	}
+	
+	auto operator=(UMap&& map) noexcept -> UMap&
 	{
 		data_ = std::move(map.data_);
 		return *this;
 	}
 
-	UMap& operator=(UMap const& map)
+	auto operator=(UMap const& map) -> UMap&
 	{
 		if (this == &map)
 		{
@@ -56,10 +63,20 @@ public:
 	{
 		return std::ranges::end(self.data_);
 	}
-
-	decltype(auto) operator[](this auto&& self, KeyType const& key) noexcept(noexcept(self.data_[key]))
+	
+	decltype(auto) At(this auto&& self, KeyType const& key)
 	{
-		return self.data_[key];
+		return self.data_.at(key);
+	}
+
+	auto operator[](KeyType&& key) -> ValueType&
+	{
+		return data_[std::move(key)];
+	}
+
+	auto operator[](KeyType const& key) -> ValueType&
+	{
+		return data_[key];
 	}
 	
 	void Clear() noexcept
@@ -67,18 +84,18 @@ public:
 		data_.clear();
 	}
 	
-	template <typename... TVals>
-		requires std::constructible_from<ValueType, TVals...>
-	auto TryEmplace(KeyType&& key, TVals&&... value)
+	template <typename... TArgs>
+		requires std::constructible_from<ValueType, TArgs...>
+	auto TryEmplace(KeyType&& key, TArgs&&... value)
 	{
-		return data_.try_emplace(std::move(key), std::forward<TVals>(value)...);
+		return data_.try_emplace(std::move(key), std::forward<TArgs>(value)...);
 	}
 	
-	template <typename... TVals>
-		requires std::constructible_from<ValueType, TVals...>
-	auto TryEmplace(KeyType const& key, TVals&&... value)
+	template <typename... TArgs>
+		requires std::constructible_from<ValueType, TArgs...>
+	auto TryEmplace(KeyType const& key, TArgs&&... value)
 	{
-		return data_.try_emplace(key, std::forward<TVals>(value)...);
+		return data_.try_emplace(key, std::forward<TArgs>(value)...);
 	}
 	
 	auto Find(this auto&& self, KeyType const& key)

@@ -1,9 +1,9 @@
 #include "Font/Font.h"
 
 #include <ranges>
-#include <unordered_map>
+#include <Containers/Map.h>
 
-static std::unordered_map<char, std::string_view> const CHARACTER_NAMES =
+static UMap<char, std::string_view> const CHARACTER_NAMES
 {
     {'a', "a"}, {'A', "ua"}, {'b', "b"}, {'B', "ub"},
     {'c', "c"}, {'C', "uc"}, {'d', "d"}, {'D', "ud"},
@@ -40,7 +40,7 @@ UFont::UFont(UPath const& path)
 
     for (auto const& [character, name] : CHARACTER_NAMES)
     {
-        auto const fontCharacterPath{ path_ / std::format("{0}.png", name) };
+        auto const fontCharacterPath{ path_ / name + ".png" };
 
         if (fontCharacterPath.Exists())
         {

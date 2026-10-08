@@ -6,42 +6,24 @@
 #include <vector>
 
 UScene::UScene(UPath const& path)
-	: gameState_{ EGameState::Stopped }
-	, deltaTime_{ 0.0f }
-	, now_{ 0.0f }
-	, timeScale_{ 1.0f }
+	: path_{ path }
 	, sceneObjects_{}
 	, areSceneObjectsSpawned_{ false }
+	, gameState_{ EGameState::Stopped }
+	, timeScale_{ 1.0f }
+	, deltaTime_{ 0.0f }
+	, now_{ 0.0f }
 {
 	audioContext_.Init();
 
-	nlohmann::json json{};
-	SSerializer::Deserialize(json, path);
-
-	std::vector<SceneObjectPtr> sceneObjects{};
-	UDeserialize<decltype(sceneObjects)>{}(json["sceneObjects"], sceneObjects);
-
-	for (auto const& sceneObject : sceneObjects)
-	{
-		if (sceneObject)
-		{
-			sceneObject->scene_ = this;
-			sceneObjects_.Add(sceneObject);
-		}
-	}
+	Deserialize();
 
 	SpawnSceneObjects();
 }
 
 UScene::~UScene()
 {
-	for (auto const& sceneObject : USet<SceneObjectPtr>{ sceneObjects_ })
-	{
-		if (sceneObject)
-		{
-			sceneObject->Delete();
-		}
-	}
+	DeleteSceneObjects();
 
 	audioContext_.Cleanup();
 }
@@ -134,9 +116,35 @@ void UScene::DespawnSceneObjects()
 	}
 }
 
-auto UScene::GetSceneObjects() const -> std::span<SceneObjectPtr const>
+void UScene::Serialize() const
 {
-	return sceneObjects_;
+	for (auto const& sceneObject : sceneObjects_)
+	{
+		if (sceneObject)
+		{
+			sceneObject->Serialize();
+		}
+	}
+	
+	nlohmann::json json{};
+	USerialize<decltype(sceneObjects_)>{}(json["sceneObjects"], sceneObjects_);
+
+	SSerializer::Serialize(json, path_);
+}
+
+void UScene::Deserialize()
+{
+	nlohmann::json json{};
+	SSerializer::Deserialize(json, path_);
+	UDeserialize<decltype(sceneObjects_)>{}(json["sceneObjects"], sceneObjects_);
+	
+	for (auto const& sceneObject : sceneObjects_)
+	{
+		if (sceneObject)
+		{
+			sceneObject->scene_ = this;
+		}
+	}
 }
 
 void UScene::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const
@@ -165,6 +173,12 @@ void UScene::StopGame()
 	if (TrySetState(EGameState::Stopped))
 	{
 		now_ = 0.0f;
+		
+		DespawnSceneObjects();
+		DeleteSceneObjects();
+		
+		Deserialize();
+		SpawnSceneObjects();
 	}
 }
 
@@ -213,6 +227,17 @@ void UScene::UpdateSceneObjects(f32 deltaTime) const
 		}
 
 		sceneObject->UpdateSceneComponents(deltaTime);
+	}
+}
+
+void UScene::DeleteSceneObjects() const
+{
+	for (auto const& sceneObject : USet<SceneObjectPtr>{ sceneObjects_ })
+	{
+		if (sceneObject)
+		{
+			sceneObject->Delete();
+		}
 	}
 }
 

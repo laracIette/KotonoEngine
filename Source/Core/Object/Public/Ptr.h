@@ -113,6 +113,15 @@ public:
 
 	constexpr auto operator=(UPtr&& other) noexcept -> UPtr&
 	{
+		TryDecrementCount();
+
+		data_ = std::exchange(other.data_, nullptr);
+
+		return *this;
+	}
+
+	constexpr auto operator=(UPtr const& other) noexcept -> UPtr&
+	{
 		if (this == &other)
 		{
 			return *this;
@@ -120,8 +129,10 @@ public:
 
 		TryDecrementCount();
 
-		data_ = std::exchange(other.data_, nullptr);
+		data_ = other.data_;
 
+		TryIncrementCount();
+		
 		return *this;
 	}
 
@@ -142,22 +153,6 @@ public:
 
 		TryIncrementCount();
 
-		return *this;
-	}
-
-	constexpr auto operator=(UPtr const& other) noexcept -> UPtr&
-	{
-		if (this == &other)
-		{
-			return *this;
-		}
-
-		TryDecrementCount();
-
-		data_ = other.data_;
-
-		TryIncrementCount();
-		
 		return *this;
 	}
 

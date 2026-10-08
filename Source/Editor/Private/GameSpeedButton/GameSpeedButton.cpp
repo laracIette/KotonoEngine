@@ -1,6 +1,7 @@
 #include "GameSpeedButton.h"
 
 #include <Scene/Scene.h>
+#include <ValueSlider/ValueSlider.h>
 #include <core_widgets.h>
 
 WidgetPtr WGameSpeedButton::Build()
@@ -8,23 +9,14 @@ WidgetPtr WGameSpeedButton::Build()
 	return (
 		UCreate<WRow>{}()
 		| (
-			UCreate<WStack>{}()
-			| (
-				UCreate<WButton>{ "Speed Up Button" }()
-				| Apply(&WButton::SetNormalColor, Colors::Transparent)
-				| Apply(&WButton::SetPressedColor, Colors::Transparent)
-				| Apply(&WButton::SetFocusedColor, Colors::Transparent)
-				| Apply(&WButton::SetOnDrag, [this](glm::vec2 const& delta) { 
-					auto const scale{ GetScene()->GetTimeScale() };
-					GetScene()->SetTimeScale(scale + delta.x * 0.01f);
-				})
-			)
-			| (
-				UCreate<WText>{ "Game Speed Text" }()
-				| Apply(&WText::SetText, [this]() { 
-					return std::format("x{0:.2f}", GetScene()->GetTimeScale());
-				})
-			)
+			UCreate<WValueSlider>{}()
+			| Apply(&WValueSlider::SetValueToString, [this]() { return to_string<f32>(GetScene()->GetTimeScale()); })
+			| Apply(&WValueSlider::SetOnTextChanged, [this](std::string_view text) { GetScene()->SetTimeScale(from_string<f32>(text)); })
+			| Apply(&WValueSlider::SetOnSlide, [this](f32 delta) {
+				auto scale{ GetScene()->GetTimeScale() };
+				scale += delta * std::max(0.01f, std::abs(scale * 0.01f));
+				GetScene()->SetTimeScale(scale);
+			})
 		)
 		| (
 			UCreate<WConstraint>{}()

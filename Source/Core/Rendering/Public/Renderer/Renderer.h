@@ -9,7 +9,7 @@
 #include <RenderGraph/InterfaceDrawData.h>
 #include <Swapchain/Swapchain.h>
 #include <span>
-#include <unordered_map>
+#include <Containers/Map.h>
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
@@ -113,9 +113,9 @@ private:
 	VkPipeline postProcessPipeline_;
 	u32 defaultSampler_;
 
-	std::unordered_map<UPath, ATexture*> textures_;
-	std::unordered_map<UPath, AMaterial*> materials_;
-	std::unordered_map<UPath, ASampler*> samplers_;
-	std::unordered_map<UPath, AModel*> models_;
-	std::unordered_map<UPath, AShader*> shaders_;
+	UMap<UPath, ATexture*> textures_;
+	UMap<UPath, AMaterial*> materials_;
+	UMap<UPath, ASampler*> samplers_;
+	UMap<UPath, AModel*> models_;
+	UMap<UPath, AShader*> shaders_;
 };

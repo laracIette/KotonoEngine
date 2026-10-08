@@ -53,7 +53,7 @@ void KObject::Serialize() const
 void KObject::Deserialize()
 {
     nlohmann::json json{};
-    SSerializer::Deserialize(json, GetAssetPath());
+    SSerializer::Deserialize(json, GetTempPath());
     DeserializeFrom(json);
 }
 

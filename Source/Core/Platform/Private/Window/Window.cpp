@@ -6,15 +6,14 @@
 #include <glm/vector_relational.hpp>
 #include <Logging/log.h>
 #include <stdexcept>
-#include <unordered_map>
+#include <Containers/Map.h>
 
-static std::unordered_map<GLFWwindow*, std::function<void(glm::uvec2)>> FramebufferSizeChangedCallbacks{};
+static UMap<GLFWwindow*, std::function<void(glm::uvec2)>> FramebufferSizeChangedCallbacks{};
 
 static void framebuffersize_callback_(GLFWwindow* window, i32 width, i32 height)
 {        
-    auto const it{ FramebufferSizeChangedCallbacks.find(window) };
-
-    if (it != FramebufferSizeChangedCallbacks.end() && it->second)
+    auto const it{ FramebufferSizeChangedCallbacks.Find(window) };
+    if (FramebufferSizeChangedCallbacks.IsValidIterator(it) && it->second)
     {
         it->second(glm::uvec2{ width, height });
     }
@@ -33,20 +32,17 @@ void UWindow::Init(glm::uvec2 const& extent, std::string_view name)
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
     window_ = glfwCreateWindow(extent.x, extent.y, name.data(), nullptr, nullptr);
-    if (!window_)
-    {
-        throw std::runtime_error("Failed to create GLFW window");
-    }
+	Check(Abort, window_, "failed to create GLFW window!");
 
     glfwSetFramebufferSizeCallback(window_, framebuffersize_callback_);
-    FramebufferSizeChangedCallbacks.try_emplace(window_, [this](glm::uvec2 const& size) { OnFramebufferSizeChanged(size); });
+    FramebufferSizeChangedCallbacks.TryEmplace(window_, [this](glm::uvec2 const& size) { OnFramebufferSizeChanged(size); });
 
     glfwShowWindow(window_);
 }
 
 void UWindow::Cleanup() const
 {
-    FramebufferSizeChangedCallbacks.erase(window_);
+    FramebufferSizeChangedCallbacks.Remove(window_);
 
     glfwDestroyWindow(window_);
 }

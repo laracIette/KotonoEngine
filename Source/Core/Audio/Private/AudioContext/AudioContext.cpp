@@ -1,9 +1,11 @@
 #include "AudioContext/AudioContext.h"
 
 #include "al_utils/al_utils.h"
+#include <enum_utils.h>
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <array>
+#include <check.h>
 #include <glm/ext/quaternion_float.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <span>
@@ -38,113 +40,123 @@ static void setListener(ALenum param, T value)
     );
 }
 
+UAudioContext::UAudioContext()
+	: device_{ nullptr }
+	, context_{ nullptr }
+	, currentHandle_{ 0 }
+{
+}
+
 void UAudioContext::Init()
 {
-    device_ = alcOpenDevice(nullptr); // Select the default device
-    if (!device_)
-    {
-        throw std::runtime_error{ "Failed to open OpenAL device" };
-    }
+	device_ = alcOpenDevice(nullptr);
+	if (!device_)
+	{
+		throw std::runtime_error{ "Failed to open OpenAL device" };
+	}
 
-    context_ = alcCreateContext(device_, nullptr);
-    if (!context_)
-    {
-        throw std::runtime_error{ "Failed to create OpenAL context" };
-    }
+	context_ = alcCreateContext(device_, nullptr);
+	if (!context_)
+	{
+		throw std::runtime_error{ "Failed to create OpenAL context" };
+	}
 
-    alcMakeContextCurrent(context_);
+	alcMakeContextCurrent(context_);
 
-    AL_CHECK_THROW(
-        alDistanceModel(AL_LINEAR_DISTANCE_CLAMPED),
-        "couldn't set the context's distance model!"
-    );
+	AL_CHECK_THROW(
+		alDistanceModel(AL_LINEAR_DISTANCE_CLAMPED),
+		"couldn't set the context's distance model!"
+	);
 
-    setListener(AL_GAIN, 1.0f);
+	setListener(AL_GAIN, 1.0f);
 }
 
 void UAudioContext::Cleanup()
 {
-    sources_.clear();
-    oneTimeSources_.clear();
+	sources_.Clear();
+	oneTimeSources_.clear();
 
-    alcMakeContextCurrent(nullptr);
-    alcDestroyContext(context_);
-    alcCloseDevice(device_);
+	alcMakeContextCurrent(nullptr);
+	alcDestroyContext(context_);
+	alcCloseDevice(device_);
 }
 
 void UAudioContext::Update()
 {
-    for (auto const& source : oneTimeSources_)
-    {
-        if (source.GetState() == EAudioSourceState::Initial)
-        {
-            source.Play();
-        }
-    }
+	for (auto const& source : oneTimeSources_)
+	{
+		if (source.GetState() == EAudioSourceState::Initial)
+		{
+			source.Play();
+		}
+	}
 
-    std::erase_if(oneTimeSources_, [](UAudioSource const& source) { 
-        return source.GetState() == EAudioSourceState::Stopped; 
-    });
+	std::erase_if(oneTimeSources_, [](UAudioSource const& source) { 
+		return source.GetState() == EAudioSourceState::Stopped; 
+	});
 }
 
 auto UAudioContext::CreateSource(UPath const& path) -> EHandle
 {
-    if (!freeSourceSlots_.empty())
-    {
-        EHandle const handle{ freeSourceSlots_.back() };
-        freeSourceSlots_.pop_back();
-        sources_.emplace(sources_.begin() + static_cast<size>(handle), path);
-        return handle;
-    }
+	if (!freeSourceSlots_.empty())
+	{
+		EHandle const handle{ freeSourceSlots_.back() };
+		freeSourceSlots_.pop_back();
+		sources_.TryEmplace(handle, path);
+		return handle;
+	}
     
-    sources_.emplace_back(path);
-    return static_cast<EHandle>(sources_.size() - 1);
-}
-
-void UAudioContext::DeleteSource(EHandle handle)
-{
-    sources_[static_cast<size>(handle)].Stop();
-    freeSourceSlots_.push_back(handle);
+	sources_.TryEmplace(currentHandle_, path);
+	return currentHandle_++;
 }
 
 auto UAudioContext::GetSource(EHandle handle) -> UAudioSource&
 {
-    return sources_[static_cast<size>(handle)];
+	Check(Abort, handle != EHandle::Invalid, "handle is invalid");
+	return sources_.At(handle);
+}
+
+void UAudioContext::DeleteSource(EHandle handle)
+{
+	Check(ErrorReturn, handle != EHandle::Invalid, "handle is invalid");
+	
+	sources_.Remove(handle);
+	freeSourceSlots_.push_back(handle);
 }
 
 void UAudioContext::PlaySource(UPath const& path, b8 isLooping)
 {
-    oneTimeSources_.emplace_back(path);
-    oneTimeSources_.back().SetSpace(EAudioSourceSpace::Interface);
-    oneTimeSources_.back().SetIsLooping(isLooping);
+	oneTimeSources_.emplace_back(path);
+	oneTimeSources_.back().SetSpace(EAudioSourceSpace::Interface);
+	oneTimeSources_.back().SetIsLooping(isLooping);
 }
 
 void UAudioContext::PlaySource(UPath const& path, glm::vec3 const& position, AudioSourceCreateInfo const& createInfo)
 {
-    oneTimeSources_.emplace_back(path);
-    oneTimeSources_.back().SetSpace(EAudioSourceSpace::Scene);
-    oneTimeSources_.back().SetPosition(position);
-    oneTimeSources_.back().SetVolume(createInfo.volume);
-    oneTimeSources_.back().SetPitch(createInfo.pitch);
-    oneTimeSources_.back().SetAttenuationFactor(createInfo.attenuationFactor);
-    oneTimeSources_.back().SetAttenuationStartDistance(createInfo.attenuationStartDistance);
-    oneTimeSources_.back().SetAttenuationEndDistance(createInfo.attenuationEndDistance);
-    oneTimeSources_.back().SetIsLooping(createInfo.isLooping);
+	oneTimeSources_.emplace_back(path);
+	oneTimeSources_.back().SetSpace(EAudioSourceSpace::Scene);
+	oneTimeSources_.back().SetPosition(position);
+	oneTimeSources_.back().SetVolume(createInfo.volume);
+	oneTimeSources_.back().SetPitch(createInfo.pitch);
+	oneTimeSources_.back().SetAttenuationFactor(createInfo.attenuationFactor);
+	oneTimeSources_.back().SetAttenuationStartDistance(createInfo.attenuationStartDistance);
+	oneTimeSources_.back().SetAttenuationEndDistance(createInfo.attenuationEndDistance);
+	oneTimeSources_.back().SetIsLooping(createInfo.isLooping);
 }
 
 void UAudioContext::SetListenerPosition(glm::vec3 const& position) const
 {
-    setListener(AL_POSITION, position * glm::vec3{ 1.0f, 1.0f, -1.0f });
+	setListener(AL_POSITION, position * glm::vec3{ 1.0f, 1.0f, -1.0f });
 }
 
 void UAudioContext::SetListenerOrientation(glm::quat const& orientation) const
 {
-    glm::vec3 const forward{ orientation * glm::vec3{ 0.0f, 0.0f, -1.0f } };
-    glm::vec3 const up{ orientation * glm::vec3{ 0.0f, 1.0f, 0.0f } };
+	glm::vec3 const forward{ orientation * glm::vec3{ 0.0f, 0.0f, -1.0f } };
+	glm::vec3 const up{ orientation * glm::vec3{ 0.0f, 1.0f, 0.0f } };
 
-    std::array const values{
-        forward.x, forward.y, forward.z,
-        up.x, up.y, up.z
-    };
-    setListener(AL_ORIENTATION, values);
+	std::array const values{
+		forward.x, forward.y, forward.z,
+		up.x, up.y, up.z
+	};
+	setListener(AL_ORIENTATION, values);
 }

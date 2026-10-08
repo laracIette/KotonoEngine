@@ -1,6 +1,5 @@
 #pragma once
 #include "types.h"
-#include <concepts>
 #include <filesystem>
 #include <string>
 #include <string_view>
@@ -8,18 +7,19 @@
 class UPath final
 {
 private:
-	friend UPath operator/(UPath const& r, UPath const& l);
-
 	friend struct std::hash<UPath>;
 
 public:
-	UPath();
-	UPath(std::string const& source);
-	UPath(std::string&& source);
-	UPath(char const* source);
+	UPath() = default;
+	UPath(UPath&& path) noexcept;
 	UPath(UPath const& path);
-	UPath(UPath&& path);
+	explicit UPath(std::string&& source) noexcept;
+	explicit UPath(std::string const& source);
+	explicit UPath(char const* source);
 	UPath(std::filesystem::path const& source);
+
+	auto operator=(UPath const& other) -> UPath&;
+	auto operator=(UPath&& other) noexcept -> UPath&;
 
 	auto Directory() const -> UPath;
 	auto Name() const -> std::string;
@@ -32,18 +32,21 @@ public:
 
 	auto ToString() const -> std::string const&;
 	auto ToPath() const -> std::filesystem::path;
-
-	UPath& operator=(UPath const& other);
-	UPath& operator=(UPath&& other);
+	
+	/// Remove file or directory
+	void Remove() const;
 
 	operator std::string() const;
 	operator std::filesystem::path() const;
 	operator b8() const;
 
+	auto operator/(std::string_view string) const -> UPath;
+	auto operator/(UPath const& path) const -> UPath;
+	
 	auto operator+(char const* string) const -> UPath;
 	auto operator+(std::string_view string) const -> UPath;
 
-	b8 operator==(UPath const& other) const noexcept;
+	auto operator==(UPath const& other) const noexcept -> b8;
 
 private:
 	std::string source_;

@@ -136,14 +136,14 @@ void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) c
 	}() };
 
 	interfaceRenderGraph.drawDatas.push_back({
-		.scissor = GetScissor(),
-		.modelMatrix = GetModelMatrix(),
-		.shader = "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset",
-		.model = "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj",
-		.scalars = {},
-		.vectors = { state.color },
-		.textures = { state.texture },
-		.isVisible = GetIsVisible(),
+		.scissor{ GetScissor() },
+		.modelMatrix{ GetModelMatrix() },
+		.shader{ "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset" },
+		.model{ "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj" },
+		.scalars{},
+		.vectors{ state.color },
+		.textures{ state.texture },
+		.isVisible{ GetIsVisible() },
 	});
 }
 

@@ -32,18 +32,21 @@ struct USceneRenderView final
 	std::vector<UPointLight> pointLights;
 };
 
-template <std::derived_from<AAsset> T>
-struct GetOrCreateResult
+namespace
 {
-	b8 exists;
-	T* value;
-};
+	template <std::derived_from<AAsset> T>
+	struct GetOrCreateResult final
+	{
+		b8 exists;
+		T* value;
+	};
+}
 
 template <std::derived_from<AAsset> T>
-static GetOrCreateResult<T> GetOrCreate(UPath const& path, std::unordered_map<UPath, T*>& registry)
+static auto getOrCreate(UPath const& path, UMap<UPath, T*>& registry) -> GetOrCreateResult<T>
 {
-	auto const it{ registry.find(path) };
-	if (it != registry.end())
+	auto const it{ registry.Find(path) };
+	if (registry.IsValidIterator(it))
 	{
 		return { true, it->second };
 	}
@@ -51,23 +54,23 @@ static GetOrCreateResult<T> GetOrCreate(UPath const& path, std::unordered_map<UP
 	Check(Abort, path.IsFile(), "path is not a file!");
 
 	T* texture{ new T{ path } };
-	registry[path] = texture;
+	registry.TryEmplace(path, texture);
 	return { false, texture };
 }
 
-static constexpr u32 getGameThreadFrame(u32 frameCount)
+static constexpr auto getGameThreadFrame(u32 frameCount) noexcept -> u32
 {
 	// Prepare game thread for render thread
 	return frameCount % static_cast<u32>(KT_FRAMES_IN_FLIGHT);
 }
 
-static constexpr u32 getRenderThreadFrame(u32 frameCount)
+static constexpr auto getRenderThreadFrame(u32 frameCount) noexcept -> u32
 {
 	// Prepare render thread for RHI thread
 	return ((frameCount + KT_FRAMES_IN_FLIGHT) - 1) % static_cast<u32>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
 }
 
-static constexpr u32 getRHIThreadFrame(u32 frameCount)
+static constexpr auto getRHIThreadFrame(u32 frameCount) noexcept -> u32
 {
 	// Prepare RHI thread for game thread
 	return ((frameCount + KT_FRAMES_IN_FLIGHT) - 2) % static_cast<u32>(KT_FRAMES_IN_FLIGHT); // avoid negative with + KT_FRAMES_IN_FLIGHT
@@ -197,14 +200,14 @@ void URenderer::DrawFrame(UInterfaceRenderGraph const& interfaceRenderGraph)
 
 void URenderer::InitSceneRendererResources()
 {
-	defaultSampler_ = GetOrCreateSampler("${ENGINE_DIRECTORY}/Assets/samplers/default.kasset")->GetIndex();
+	defaultSampler_ = GetOrCreateSampler(UPath{ "${ENGINE_DIRECTORY}/Assets/samplers/default.kasset" })->GetIndex();
 
-	clusterAABBPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Assets/shaders/clusterAABB.kasset")->GetPipeline();
-	lightBinningPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Assets/shaders/lightBinning.kasset")->GetPipeline();
-	shadowPrePassPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Assets/shaders/shadowPrePass.kasset")->GetPipeline();
-	depthPrePassPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Assets/shaders/depthPrePass.kasset")->GetPipeline();
-	deferredLightingPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Assets/shaders/deferredLighting.kasset")->GetPipeline();
-	postProcessPipeline_ = GetOrCreateShader("${ENGINE_DIRECTORY}/Assets/shaders/postProcess.kasset")->GetPipeline();
+	clusterAABBPipeline_ = GetOrCreateShader(UPath{ "${ENGINE_DIRECTORY}/Assets/shaders/clusterAABB.kasset" })->GetPipeline();
+	lightBinningPipeline_ = GetOrCreateShader(UPath{ "${ENGINE_DIRECTORY}/Assets/shaders/lightBinning.kasset" })->GetPipeline();
+	shadowPrePassPipeline_ = GetOrCreateShader(UPath{ "${ENGINE_DIRECTORY}/Assets/shaders/shadowPrePass.kasset" })->GetPipeline();
+	depthPrePassPipeline_ = GetOrCreateShader(UPath{ "${ENGINE_DIRECTORY}/Assets/shaders/depthPrePass.kasset" })->GetPipeline();
+	deferredLightingPipeline_ = GetOrCreateShader(UPath{ "${ENGINE_DIRECTORY}/Assets/shaders/deferredLighting.kasset" })->GetPipeline();
+	postProcessPipeline_ = GetOrCreateShader(UPath{ "${ENGINE_DIRECTORY}/Assets/shaders/postProcess.kasset" })->GetPipeline();
 }
 
 void URenderer::RecreateFrames()
@@ -625,7 +628,7 @@ auto URenderer::MakeDirectionalLights(
 	, u32 frameIndex
 ) -> std::vector<UDirectionalLight>
 {
-	auto* const sampler{ GetOrCreateSampler("${ENGINE_DIRECTORY}/Assets/samplers/shadow.kasset") };
+	auto* const sampler{ GetOrCreateSampler(UPath{ "${ENGINE_DIRECTORY}/Assets/samplers/shadow.kasset" }) };
 
 	std::array<f32, NUM_DIRECTIONAL_CASCADES + 1> const cascadeSplits{
 		sceneView.depthNear,
@@ -712,7 +715,7 @@ auto URenderer::MakeSceneRenderViews(std::span<UInterfaceDrawData const> drawDat
 
 auto URenderer::GetOrCreateTexture(UPath const& path) -> ATexture*
 {
-	auto const [exists, texture] { GetOrCreate(path, textures_) };
+	auto const [exists, texture] { getOrCreate(path, textures_) };
 	if (!exists)
 	{
 		texture->Init(device_);
@@ -725,7 +728,7 @@ auto URenderer::GetOrCreateTexture(UPath const& path) -> ATexture*
 
 auto URenderer::GetOrCreateMaterial(UPath const& path) -> AMaterial*
 {
-	auto const [exists, material] { GetOrCreate(path, materials_) };
+	auto const [exists, material] { getOrCreate(path, materials_) };
 	if (!exists)
 	{
 	}
@@ -734,7 +737,7 @@ auto URenderer::GetOrCreateMaterial(UPath const& path) -> AMaterial*
 
 auto URenderer::GetOrCreateSampler(UPath const& path) -> ASampler*
 {
-	auto const [exists, sampler] { GetOrCreate(path, samplers_) };
+	auto const [exists, sampler] { getOrCreate(path, samplers_) };
 	if (!exists)
 	{
 		sampler->Init(device_);
@@ -758,7 +761,7 @@ auto URenderer::GetOrCreateSampler(UPath const& path) -> ASampler*
 
 auto URenderer::GetOrCreateModel(UPath const& path) -> AModel*
 {
-	auto const [exists, model] { GetOrCreate(path, models_) };
+	auto const [exists, model] { getOrCreate(path, models_) };
 	if (!exists)
 	{
 		model->Init(device_);
@@ -771,7 +774,7 @@ auto URenderer::GetOrCreateModel(UPath const& path) -> AModel*
 
 auto URenderer::GetOrCreateShader(UPath const& path) -> AShader*
 {
-	auto const [exists, shader] { GetOrCreate(path, shaders_) };
+	auto const [exists, shader] { getOrCreate(path, shaders_) };
 	if (!exists)
 	{
 		shader->Init(device_, pipelineResourceManager_.GetPipelineLayout(), swapchain_.GetFormat());

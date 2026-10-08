@@ -1,10 +1,13 @@
 #pragma once
 #include "AudioSource/AudioSource.h"
 #include <Handle.h>
+#include <Containers/Map.h>
 #include <Path/Path.h>
 #include <vector>
+
 struct ALCdevice;
 struct ALCcontext;
+
 class UAudioContext final
 {
 public:
@@ -19,6 +22,8 @@ public:
 	};
 
 public:
+	UAudioContext();
+	
 	void Init();
 	void Cleanup();
 
@@ -42,6 +47,7 @@ private:
 
 	std::vector<UAudioSource> oneTimeSources_;
 
-	std::vector<UAudioSource> sources_;
+	UMap<EHandle, UAudioSource> sources_;
+	EHandle currentHandle_;
 	std::vector<EHandle> freeSourceSlots_;
 };
