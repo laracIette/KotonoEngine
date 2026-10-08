@@ -18,7 +18,7 @@ static void framebuffersize_callback_(GLFWwindow* window, i32 width, i32 height)
         it->second(glm::uvec2{ width, height });
     }
 
-    KT_LOG(ELogImportanceLevel::High, "Platform", "window resized: {0} x {0}", width, height);
+    KT_LOG(ELogImportance::High, "Platform", "window resized: {0} x {0}", width, height);
 }
 
 void UWindow::Init(glm::uvec2 const& extent, std::string_view name)

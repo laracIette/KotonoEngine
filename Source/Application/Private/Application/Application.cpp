@@ -141,5 +141,5 @@ void UApplication::DrawFrame()
 
 void UApplication::LogUPS() const
 {
-    KT_LOG(ELogImportanceLevel::High, "Application", "{0:.2f} ups", 1.0f / averageUpdateTime_.Get());
+    KT_LOG(ELogImportance::High, "Application", "{0:.2f} ups", 1.0f / averageUpdateTime_.Get());
 }

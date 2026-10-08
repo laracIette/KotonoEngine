@@ -6,7 +6,7 @@
 #include <Serializer/Serializer.h>
 #include <nlohmann/json.hpp>
 
-#define KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY ELogImportanceLevel::Medium
+#define KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY ELogImportance::Medium
 
 UMap<std::string_view, SObjectFactory::ObjectFactoryFunc> SObjectFactory::objectFactories_{};
 UMap<UGuid, ObjectPtr> SObjectFactory::registry_{};
@@ -40,7 +40,7 @@ auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 	auto const it{ json.find("type_") };
 	if (it == json.end())
 	{
-		KT_LOG_SEVERITY(ELogImportanceLevel::High, ELogSeverity::Warning, "Object", "missing element type_ in json");
+		KT_LOG_SEVERITY(ELogImportance::High, ELogSeverity::Warning, "Object", "missing element type_ in json");
 		return nullptr;
 	}
 
@@ -54,7 +54,7 @@ auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 		return object;
 	}
 
-	KT_LOG_SEVERITY(ELogImportanceLevel::High, ELogSeverity::Warning, "Object", "missing value for type {0} in object factories", type);
+	KT_LOG_SEVERITY(ELogImportance::High, ELogSeverity::Warning, "Object", "missing value for type {0} in object factories", type);
 	return nullptr;
 }
 

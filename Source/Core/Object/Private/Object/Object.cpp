@@ -88,7 +88,7 @@ void KObject::CheckDebugRegistry()
         {
             if (object)
             {
-                KT_LOG(ELogImportanceLevel::High, "Object"
+                KT_LOG(ELogImportance::High, "Object"
                     , "{0:48s} | L{1:03d}: {2}"
                     , object->ToString()
                     , object->sourceLine
@@ -97,7 +97,7 @@ void KObject::CheckDebugRegistry()
             }
             else
             {
-                KT_LOG(ELogImportanceLevel::High, "Object", "NULL");
+                KT_LOG(ELogImportance::High, "Object", "NULL");
             }
         }
         

@@ -7,7 +7,7 @@
 #include <Path/Path.h>
 #include <Serializer/Serializer.h>
 
-#define KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER ELogImportanceLevel::High
+#define KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER ELogImportance::High
 
 static const UPath ShadersPath{ "${ENGINE_DIRECTORY}/Shaders" };
 #ifdef NDEBUG

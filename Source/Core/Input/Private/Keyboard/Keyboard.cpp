@@ -7,7 +7,7 @@
 #include <Window/Window.h>
 #include <Containers/Map.h>
 
-#define KT_LOG_IMPORTANCE_LEVEL_KEYBOARD ELogImportanceLevel::Low
+#define KT_LOG_IMPORTANCE_LEVEL_KEYBOARD ELogImportance::Low
 
 static UMap<GLFWwindow*, std::function<void(EKey, i32)>> KeyCallbacks{};
 

@@ -104,7 +104,7 @@ void URenderer::Init()
 
 void URenderer::Cleanup()
 {
-	KT_LOG(ELogImportanceLevel::High, "Graphics", "cleaning up renderer");
+	KT_LOG(ELogImportance::High, "Graphics", "cleaning up renderer");
 
 	for (auto const* texture : textures_ | std::views::values)
 	{
@@ -147,7 +147,7 @@ void URenderer::Cleanup()
 		vkDestroyCommandPool(device_.GetDevice(), frameData.commandPool, nullptr);
 	}
 
-	KT_LOG(ELogImportanceLevel::High, "Graphics", "cleaned up renderer");
+	KT_LOG(ELogImportance::High, "Graphics", "cleaned up renderer");
 }
 
 void URenderer::DrawFrame(UInterfaceRenderGraph const& interfaceRenderGraph)
@@ -181,7 +181,7 @@ void URenderer::DrawFrame(UInterfaceRenderGraph const& interfaceRenderGraph)
 
 	if (!TryAcquireNextImage(frameIndex))
 	{
-		KT_LOG(ELogImportanceLevel::High, "Graphics", "frame {0} skipped", frameCount_);
+		KT_LOG(ELogImportance::High, "Graphics", "frame {0} skipped", frameCount_);
 		return;
 	}
 

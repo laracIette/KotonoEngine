@@ -14,7 +14,7 @@ static const UPath GeneratedPath{ "${ENGINE_DIRECTORY}/Cache/Generator/Generated
 
 void SGenerator::GenerateAll()
 {
-	KT_LOG(ELogImportanceLevel::High, "Generator", "Clearing registry...");
+	KT_LOG(ELogImportance::High, "Generator", "Clearing registry...");
 
 	SSerializer::Serialize(nlohmann::json::object(), RegistryPath);
 	GenerateUpdated();
@@ -22,7 +22,7 @@ void SGenerator::GenerateAll()
 
 void SGenerator::GenerateUpdated()
 {
-	KT_LOG(ELogImportanceLevel::High, "Generator", "Generating...");
+	KT_LOG(ELogImportance::High, "Generator", "Generating...");
 
 	nlohmann::json json{};
 	SSerializer::Deserialize(json, RegistryPath);
@@ -95,7 +95,7 @@ void RegisterObjectClasses()
 	UPath const filePath{ GeneratedPath / "ClassRegistrator.generated.inl" };
 	UFile{ filePath }.WriteString(generatedCode);
 
-	KT_LOG(ELogImportanceLevel::High, "Generator", "Generated class registrator");
+	KT_LOG(ELogImportance::High, "Generator", "Generated class registrator");
 }
 
 void SGenerator::Generate(UReflectionResult const& reflectionResult)
@@ -103,7 +103,7 @@ void SGenerator::Generate(UReflectionResult const& reflectionResult)
 	GenerateHeader(reflectionResult);
 	GenerateSource(reflectionResult);
 
-	KT_LOG(ELogImportanceLevel::High, "Generator", "Generated {0}", reflectionResult.path.ToPath().string());
+	KT_LOG(ELogImportance::High, "Generator", "Generated {0}", reflectionResult.path.ToPath().string());
 }
 
 void SGenerator::GenerateHeader(UReflectionResult const& reflectionResult)

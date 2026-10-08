@@ -6,7 +6,7 @@
 
 #else
 
-#include "LogImportanceLevel.h"
+#include "LogImportance.h"
 #include "LogSeverity.h"
 #include <format>
 #include <iostream>

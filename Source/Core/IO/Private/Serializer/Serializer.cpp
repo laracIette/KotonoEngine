@@ -5,7 +5,7 @@
 #include <Path/Path.h>
 #include <nlohmann/json.hpp> 
 
-#define KT_LOG_IMPORTANCE_LEVEL_SERIALIZER ELogImportanceLevel::High
+#define KT_LOG_IMPORTANCE_LEVEL_SERIALIZER ELogImportance::High
 
 auto SSerializer::Serialize(nlohmann::json const& fromJson, UPath const& toPath) -> b8
 {

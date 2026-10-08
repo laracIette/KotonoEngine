@@ -3,7 +3,7 @@
 #include <Logging/log.h>
 #include <sstream>
 
-#define KT_LOG_IMPORTANCE_LEVEL_FILE ELogImportanceLevel::High
+#define KT_LOG_IMPORTANCE_LEVEL_FILE ELogImportance::High
 
 UFile::UFile(const UPath& path) 
     : path_{ path }

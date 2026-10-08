@@ -134,7 +134,7 @@ void UContext::Cleanup() const
 
 	vkDestroyInstance(instance_, nullptr);
 
-	KT_LOG(ELogImportanceLevel::High, "Platform", "cleaned up context");
+	KT_LOG(ELogImportance::High, "Platform", "cleaned up context");
 }
 
 void UContext::CreateInstance()

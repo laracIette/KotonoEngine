@@ -106,7 +106,7 @@ void USwapchain::CreateSwapchain()
 		imageCount = swapchainSupport.capabilities.maxImageCount;
 	}
 
-	KT_LOG(ELogImportanceLevel::High, "Graphics", "swap chain image count: {0}", imageCount);
+	KT_LOG(ELogImportance::High, "Graphics", "swap chain image count: {0}", imageCount);
 
 	UQueueFamilyIndices const& indices{ device_.GetQueueFamilyIndices() };
 	std::array const queueFamilyIndices{ indices.graphicsFamily.value(), indices.presentFamily.value() };

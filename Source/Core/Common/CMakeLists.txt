@@ -30,7 +30,7 @@ set(KCOMMON_PUBLIC_HEADERS
     "Public/Event/Delegate.h"
     "Public/Event/Event.h"
     "Public/Logging/log.h"
-    "Public/Logging/LogImportanceLevel.h"
+    "Public/Logging/LogImportance.h"
     "Public/Logging/LogSeverity.h"
     "Public/Path/Path.h"
 )

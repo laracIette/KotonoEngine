@@ -6,7 +6,7 @@
 #include <Window/Window.h>
 #include <Containers/Map.h>
 
-#define KT_LOG_IMPORTANCE_LEVEL_MOUSE ELogImportanceLevel::Low
+#define KT_LOG_IMPORTANCE_LEVEL_MOUSE ELogImportance::Low
 
 static UMap<GLFWwindow*, std::function<void(EButton, i32)>> ButtonCallbacks{};
 static UMap<GLFWwindow*, std::function<void(glm::vec2)>> CursorPositionCallbacks{};

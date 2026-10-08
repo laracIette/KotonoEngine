@@ -75,13 +75,13 @@ void KMeshComponent::Spin(f32 deltaTime)
 void KMeshComponent::SetMobilityStatic()
 {
     SetMobility(EMobility::Static);
-    KT_LOG(ELogImportanceLevel::High, "Core", "{0}", GetName());
+    KT_LOG(ELogImportance::High, "Core", "{0}", GetName());
 }
 
 void KMeshComponent::SetMobilityDynamic()
 {
     SetMobility(EMobility::Dynamic);
-    KT_LOG(ELogImportanceLevel::High, "Core", "{0}", GetName());
+    KT_LOG(ELogImportance::High, "Core", "{0}", GetName());
 }
 
 #include "MeshComponent.generated.inl"

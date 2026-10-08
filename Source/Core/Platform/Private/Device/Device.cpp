@@ -11,7 +11,7 @@
 #include <ranges>
 #include <Windows.h>
 
-#define KT_LOG_IMPORTANCE_LEVEL_VMA ELogImportanceLevel::Low
+#define KT_LOG_IMPORTANCE_LEVEL_VMA ELogImportance::Low
 
 static constexpr std::array DEVICE_EXTENSIONS
 {
@@ -449,7 +449,7 @@ void UDevice::CreatePhysicalDevice(VkSurfaceKHR mainSurface)
 				maxVRAM = totalVRAM;
 				bestDevice = device;
 
-				KT_LOG(ELogImportanceLevel::High, "Platform", "Selected GPU: {}, VRAM: {} MB", deviceProperties.deviceName, totalVRAM / (1024llu * 1024));
+				KT_LOG(ELogImportance::High, "Platform", "Selected GPU: {}, VRAM: {} MB", deviceProperties.deviceName, totalVRAM / (1024llu * 1024));
 			}
 
 			// Stop on cpu if on battery

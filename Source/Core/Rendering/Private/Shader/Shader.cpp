@@ -32,13 +32,13 @@ void AShader::Init(UDevice& device, VkPipelineLayout pipelineLayout, VkFormat sw
 	{
 		CreateGraphicsPipeline(device, pipelineLayout, swapchainFormat);
 	}
-	KT_LOG(ELogImportanceLevel::Medium, "Graphics", "initialized shader {0}", GetPath().ToString());
+	KT_LOG(ELogImportance::Medium, "Graphics", "initialized shader {0}", GetPath().ToString());
 }
 
 void AShader::Cleanup(UDevice& device) const
 {
 	vkDestroyPipeline(device.GetDevice(), pipeline_, nullptr);
-	KT_LOG(ELogImportanceLevel::Medium, "Graphics", "cleaned up shader {0}", GetPath().ToString());
+	KT_LOG(ELogImportance::Medium, "Graphics", "cleaned up shader {0}", GetPath().ToString());
 }
 
 VkPipeline AShader::GetPipeline() const

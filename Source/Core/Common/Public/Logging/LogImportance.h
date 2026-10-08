@@ -1,6 +1,7 @@
 #pragma once
 #include "types.h"
-enum class ELogImportanceLevel : u8
+
+enum class ELogImportance : u8
 {
 	None,
 	Low,
@@ -9,7 +10,7 @@ enum class ELogImportanceLevel : u8
 };
 
 #ifndef KT_LOG_COMPILE_TIME_LEVEL
-#define KT_LOG_COMPILE_TIME_LEVEL ELogImportanceLevel::High
+#define KT_LOG_COMPILE_TIME_LEVEL ELogImportance::High
 #endif
 
 #define KT_SHOULD_LOG(level) ((level) >= KT_LOG_COMPILE_TIME_LEVEL)
