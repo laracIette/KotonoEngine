@@ -28,21 +28,34 @@ public:
 
 public:
 	constexpr UPool() noexcept = default;
+	
+	constexpr UPool(UPool&& pool) noexcept
+		: data_(std::move(pool.data_))
+	{
+	}
+	
+	constexpr UPool(UPool const& pool)
+		: data_(pool.data_)
+	{
+	}
 
 	template <std::input_iterator It, std::sentinel_for<It> Sentinel>
 	constexpr UPool(It begin, Sentinel end)
 		: data_(std::ranges::subrange(begin, end) | std::ranges::to<VectorType>())
-	{}
+	{
+	}
 
 	constexpr UPool(std::initializer_list<ValueType> data) 
 		: UPool(data.begin(), data.end())
-	{}
+	{
+	}
 
 	template <std::ranges::input_range R>
 		requires (!std::derived_from<std::remove_cvref_t<R>, UPool>)
 	constexpr UPool(R&& range)
 		: UPool(std::ranges::begin(range), std::ranges::end(range))
-	{}
+	{
+	}
 	
 	template <typename T>
 		requires std::constructible_from<ValueType, T>
@@ -52,6 +65,22 @@ public:
 		{
 			data_.push_back(item);
 		}
+	}
+	
+	UPool& operator=(UPool&& pool) noexcept
+	{
+		data_ = std::move(pool.data_);
+		return *this;
+	}
+
+	UPool& operator=(UPool const& pool)
+	{
+		if (this == &pool)
+		{
+			return *this;
+		}
+		data_ = pool.data_;
+		return *this;
 	}
 
 	template <typename T>

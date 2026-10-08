@@ -1,11 +1,12 @@
 #pragma once
+#include "Map.h"
 #include "Pool.h"
 #include <concepts>
 #include <ranges>
-#include <unordered_map>
+
 /// <summary>
-/// An contiguous container for unique items with O(1) item lookup,
-/// using a std::unordered_map for looking up item indices.
+/// A contiguous container for unique items with O(1) item lookup,
+/// using a UMap for looking up item indices.
 /// Respects insertion order but performs swap and pop when removing items.
 /// </summary>
 template <typename ValueType>
@@ -14,7 +15,7 @@ class USet final
 private:
 	using PoolType = UPool<ValueType>;
 	using IndexType = PoolType::index_type;
-	using IndicesMapType = std::unordered_map<ValueType, IndexType>;
+	using IndicesMapType = UMap<ValueType, IndexType>;
 	using IndicesMapIterator = IndicesMapType::iterator;
 	using IndicesMapConstIterator = IndicesMapType::const_iterator;
 
@@ -24,15 +25,15 @@ public:
 public:
 	USet() = default;
 
-	USet(USet const& set) 
-		: values_(set.values_)
-		, indices_(set.indices_)
+	USet(USet&& set) noexcept
+		: values_(std::move(set.values_))
+		, indices_(std::move(set.indices_))
 	{
 	}
 
-	USet(USet&& set) 
-		: values_(std::move(set.values_))
-		, indices_(std::move(set.indices_))
+	USet(USet const& set) 
+		: values_(set.values_)
+		, indices_(set.indices_)
 	{
 	}
 
@@ -66,17 +67,21 @@ public:
 		PopulateIndices();
 	}
 
-	USet& operator=(USet const& set)
-	{
-		values_ = set.values_;
-		indices_ = set.indices_;
-		return *this;
-	}
-
-	USet& operator=(USet&& set)
+	USet& operator=(USet&& set) noexcept
 	{
 		values_ = std::move(set.values_);
 		indices_ = std::move(set.indices_);
+		return *this;
+	}
+
+	USet& operator=(USet const& set)
+	{
+		if (this == &set)
+		{
+			return *this;
+		}
+		values_ = set.values_;
+		indices_ = set.indices_;
 		return *this;
 	}
 
@@ -92,12 +97,12 @@ public:
 		values_.Add(std::forward<T>(value));
 
 		ValueType const& insertedValue{ values_.back() };
-		indices_.try_emplace(insertedValue, values_.LastIndex());
+		indices_.TryEmplace(insertedValue, values_.LastIndex());
 	}
 
 	auto Find(this auto&& self, ValueType const& value)
 	{
-		return self.indices_.find(value);
+		return self.indices_.Find(value);
 	}
 
 	void Remove(IndicesMapConstIterator it)
@@ -112,10 +117,10 @@ public:
 		if (values_.RemoveAt(index) == EPoolRemoveResult::ItemSwappedAndRemoved)
 		{
 			ValueType const& movedValue{ values_[index] };
-			indices_.insert_or_assign(movedValue, index);
+			indices_.InsertOrAssign(movedValue, index);
 		}
 
-		indices_.erase(it);
+		indices_.Erase(it);
 	}
 
 	void Replace(IndicesMapConstIterator it, ValueType const& value)
@@ -128,10 +133,10 @@ public:
 
 		IndexType const index{ it->second };
 
-		indices_.erase(it);
+		indices_.Erase(it);
 
 		values_[index] = value;
-		indices_.insert_or_assign(value, index);
+		indices_.InsertOrAssign(value, index);
 	}
 
 	void Remove(ValueType const& value)
@@ -146,33 +151,33 @@ public:
 
 	bool Contains(ValueType const& value) const
 	{
-		return indices_.contains(value);
+		return indices_.Contains(value);
 	}
 
 	void Clear() noexcept
 	{
 		values_.Clear();
-		indices_.clear();
+		indices_.Clear();
 	}
 
-	constexpr i64 LastIndex() const noexcept
+	constexpr auto LastIndex() const noexcept -> i64
 	{
 		return values_.LastIndex();
 	}
 
-	constexpr b8 IsValidIndex(IndexType index) const noexcept
+	constexpr auto IsValidIndex(IndexType index) const noexcept -> b8
 	{
 		return values_.IsValidIndex(index);
 	}
 
-	constexpr b8 IsValidIndex(i64 index) const noexcept
+	constexpr auto IsValidIndex(i64 index) const noexcept -> b8
 	{
 		return values_.IsValidIndex(index);
 	}
 
-	constexpr b8 IsValidIterator(IndicesMapConstIterator it) const noexcept
+	constexpr auto IsValidIterator(IndicesMapConstIterator it) const noexcept -> b8
 	{
-		return it != indices_.end();
+		return indices_.IsValidIterator(it);
 	}
 
 	constexpr auto begin(this auto&& self) noexcept(noexcept(std::ranges::begin(self.values_)))
@@ -205,12 +210,12 @@ public:
 		values_.reserve(size);
 	}
 
-	constexpr IndexType size() const noexcept
+	constexpr auto size() const noexcept -> IndexType
 	{
 		return values_.size();
 	}
 
-	constexpr b8 empty() const noexcept
+	constexpr auto empty() const noexcept -> b8
 	{
 		return values_.empty();
 	}
@@ -220,7 +225,7 @@ private:
 	{
 		for (auto const& [index, value] : values_ | std::views::enumerate)
 		{
-			indices_.try_emplace(value, static_cast<IndexType>(index));
+			indices_.TryEmplace(value, static_cast<IndexType>(index));
 		}
 	}
 

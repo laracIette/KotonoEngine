@@ -1,5 +1,6 @@
 #pragma once
 #include "Guid/Guid.h"
+#include <Containers/Map.h>
 #include <functional>
 #include <string_view>
 
@@ -9,9 +10,6 @@ class KObject;
 
 class SObjectFactory final
 {
-private:
-	friend struct UAutoRegister;
-
 public:
 	using ObjectFactoryFunc = std::function<UPtr<KObject>()>;
 
@@ -23,6 +21,6 @@ private:
 	static auto GetFactory(std::string_view typeName) -> UPtr<KObject>;
 
 private:
-	static std::unordered_map<std::string_view, ObjectFactoryFunc> objectFactories_;
-	static std::unordered_map<UGuid, UPtr<KObject>> registry_;
+	static UMap<std::string_view, ObjectFactoryFunc> objectFactories_;
+	static UMap<UGuid, UPtr<KObject>> registry_;
 };

@@ -32,9 +32,17 @@ inline void _log_internal(ELogSeverity severity, char const* category, char cons
     
 }
 
-#define KT_LOG_SEVERITY(Level, Severity, Category, Format, ...) if constexpr (KT_SHOULD_LOG(Level)) _log_internal(Severity, Category, __FUNCTION__, Format, __VA_ARGS__)
+/// Log a message into the console
+#define KT_LOG_SEVERITY(Level, Severity, Category, Format, ...) do					\
+    {                                                                               \
+        if constexpr (KT_SHOULD_LOG(Level))											\
+		{																			\
+			_log_internal(Severity, Category, __FUNCTION__, Format, __VA_ARGS__);	\
+		}																			\
+    } while (false)
 
 
+/// Log a message into the console with a severity of ELogSeverity::None
 #define KT_LOG(Level, Category, Format, ...) KT_LOG_SEVERITY(Level, ELogSeverity::None, Category, Format, __VA_ARGS__)
   
 #endif

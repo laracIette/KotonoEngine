@@ -8,19 +8,19 @@
 
 #define KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY ELogImportanceLevel::Medium
 
-std::unordered_map<std::string_view, SObjectFactory::ObjectFactoryFunc> SObjectFactory::objectFactories_{};
-std::unordered_map<UGuid, UPtr<KObject>> SObjectFactory::registry_{};
+UMap<std::string_view, SObjectFactory::ObjectFactoryFunc> SObjectFactory::objectFactories_{};
+UMap<UGuid, ObjectPtr> SObjectFactory::registry_{};
 
 void SObjectFactory::Register(std::string_view className, ObjectFactoryFunc&& function)
 {
-	objectFactories_.try_emplace(className, std::move(function));
+	objectFactories_.TryEmplace(className, std::move(function));
 }
 
 auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 {
 	// Check if already in registry
-	auto const registryIt{ registry_.find(guid) };
-	if (registryIt != registry_.end())
+	auto const registryIt{ registry_.Find(guid) };
+	if (registry_.IsValidIterator(registryIt))
 	{
 		if (UPtr const object{ registryIt->second })
 		{
@@ -30,6 +30,7 @@ auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 	}
 
 	auto const assetPath{ UPath{ "${PROJECT_DIRECTORY}/Assets/objects" } / guid.ToString() + ".kobject" };
+	auto const tempPath{ UPath{ "${PROJECT_DIRECTORY}/Temp/objects" } / guid.ToString() + ".kobject" };
 
 	// Add to registry
 	nlohmann::json json{};
@@ -48,7 +49,7 @@ auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Object", "created object {0}", object->GetName());
 		object->guid_ = guid;
 		object->Deserialize();
-		registry_[guid] = object;
+		registry_.TryEmplace(guid, object);
 		return object;
 	}
 
@@ -58,8 +59,8 @@ auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 
 auto SObjectFactory::GetFactory(std::string_view typeName) -> ObjectPtr
 {
-    auto const it{ objectFactories_.find(typeName) };
-    if (it != objectFactories_.end())
+    auto const it{ objectFactories_.Find(typeName) };
+    if (objectFactories_.IsValidIterator(it))
     {
         return it->second();
     }
