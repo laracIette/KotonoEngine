@@ -184,7 +184,7 @@ void SGenerator::GenerateSource(UReflectionResult const& reflectionResult)
 		? std::format(
 R"(void Register_{0}() 
 {{
-	UAutoRegister{{ "{0}", []() static {{ return UCreate<{0}>{{}}(); }} }};
+	SObjectFactory::Register("{0}", []() static {{ return UCreate<{0}>{{}}(); }});
 }}
 
 void {0}::SerializeTo(nlohmann::json& json) const
@@ -217,7 +217,7 @@ UPtr<{0}> {0}::Ptr() const
 		: std::format(
 R"(void Register_{0}() 
 {{
-	UAutoRegister{{ "{0}", []() static {{ return UCreate<{0}>{{}}(); }} }};
+	SObjectFactory::Register("{0}", []() static {{ return UCreate<{0}>{{}}(); }});
 }}
 
 void {0}::SerializeTo(nlohmann::json& json) const

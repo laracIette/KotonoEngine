@@ -11,34 +11,39 @@
 std::unordered_map<std::string_view, SObjectFactory::ObjectFactoryFunc> SObjectFactory::objectFactories_{};
 std::unordered_map<UGuid, UPtr<KObject>> SObjectFactory::registry_{};
 
-auto SObjectFactory::Get(UGuid const& guid) -> UPtr<KObject>
+void SObjectFactory::Register(std::string_view className, ObjectFactoryFunc&& function)
+{
+	objectFactories_.try_emplace(className, std::move(function));
+}
+
+auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 {
 	// Check if already in registry
-	const auto registryIt{ registry_.find(guid) };
+	auto const registryIt{ registry_.find(guid) };
 	if (registryIt != registry_.end())
 	{
-		if (UPtr object{ registryIt->second })
+		if (UPtr const object{ registryIt->second })
 		{
 			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Object", "found object {0}", object->GetName());
 			return object;
 		}
 	}
 
-	const UPath path{ UPath{ "${PROJECT_DIRECTORY}/Assets/objects" } / std::format("{0}.kobject", guid.ToString())};
+	auto const assetPath{ UPath{ "${PROJECT_DIRECTORY}/Assets/objects" } / guid.ToString() + ".kobject" };
 
 	// Add to registry
 	nlohmann::json json{};
-	SSerializer::Deserialize(json, path);
+	SSerializer::Deserialize(json, assetPath);
 
-	const auto it{ json.find("type_") };
+	auto const it{ json.find("type_") };
 	if (it == json.end())
 	{
 		KT_LOG(ELogImportanceLevel::High, "Object", "missing element type_ in json");
 		return nullptr;
 	}
 
-	const auto type{ it->get<std::string>() };
-	if (UPtr object{ GetFactory(type) })
+	auto const type{ it->get<std::string>() };
+	if (UPtr const object{ GetFactory(type) })
 	{
 		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Object", "created object {0}", object->GetName());
 		object->guid_ = guid;
@@ -47,26 +52,16 @@ auto SObjectFactory::Get(UGuid const& guid) -> UPtr<KObject>
 		return object;
 	}
 
-	KT_LOG(ELogImportanceLevel::High, "Object", "missing value for type {0} in object factories", type);
+	KT_LOG_SEVERITY(ELogImportanceLevel::High, ELogSeverity::Warning, "Object", "missing value for type {0} in object factories", type);
 	return nullptr;
 }
 
-void SObjectFactory::Register(std::string_view className, ObjectFactoryFunc const& function)
+auto SObjectFactory::GetFactory(std::string_view typeName) -> ObjectPtr
 {
-	objectFactories_[className] = function;
-}
-
-auto SObjectFactory::GetFactory(std::string_view typeName) -> UPtr<KObject>
-{
-    const auto it{ objectFactories_.find(typeName) };
+    auto const it{ objectFactories_.find(typeName) };
     if (it != objectFactories_.end())
     {
         return it->second();
     }
     return nullptr;
-}
-
-UAutoRegister::UAutoRegister(std::string_view className, SObjectFactory::ObjectFactoryFunc const& creator)
-{
-	SObjectFactory::Register(className, creator);
 }

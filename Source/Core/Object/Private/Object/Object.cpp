@@ -27,20 +27,15 @@ KObject::~KObject()
     ptr_.Invalidate();
 }
 
-std::string KObject::TypeName() const
-{
-    std::string_view const name{ typeid(*this).name() };
-    return std::string{ name.substr(6) };
-}
-
-UPath KObject::InstancePath() const
-{
-    return "${PROJECT_DIRECTORY}/Assets/objects/" + GetGuid().ToString() + ".kobject";
-}
-
 void KObject::Delete()
 {
     delete this;
+}
+
+auto KObject::GetTypeName() const -> std::string
+{
+    std::string_view const name{ typeid(*this).name() };
+    return std::string{ name.substr(6) };
 }
 
 auto KObject::GetMemberVariablePointer(size offset) const -> void*
@@ -52,31 +47,36 @@ void KObject::Serialize() const
 {
     nlohmann::json json{};
     SerializeTo(json);
-    SSerializer::Serialize(json, InstancePath());
+    SSerializer::Serialize(json, GetAssetPath());
 }
 
 void KObject::Deserialize()
 {
     nlohmann::json json{};
-    SSerializer::Deserialize(json, InstancePath());
+    SSerializer::Deserialize(json, GetAssetPath());
     DeserializeFrom(json);
 }
 
-std::string KObject::ToString() const
+auto KObject::ToString() const -> std::string
 {
     return name_;
 }
 
-KObject::operator std::string() const
-{
-    return ToString();
-}
-
-UPtr<KObject> KObject::Deserialize(const nlohmann::json& json)
+auto KObject::Deserialize(nlohmann::json const& json) -> ObjectPtr
 {
     UGuid guid{};
     UDeserialize<UGuid>{}(json, guid);
     return SObjectFactory::Get(guid);
+}
+
+auto KObject::GetAssetPath() const -> UPath
+{
+    return UPath{ "${PROJECT_DIRECTORY}/Assets/objects" } / GetGuid().ToString() + ".kobject";
+}
+
+auto KObject::GetTempPath() const -> UPath
+{
+    return UPath{ "${PROJECT_DIRECTORY}/Temp/objects" } / GetGuid().ToString() + ".kobject";
 }
 
 #ifndef NDEBUG

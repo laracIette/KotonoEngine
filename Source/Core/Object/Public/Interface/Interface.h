@@ -4,6 +4,7 @@
 #include <glm/fwd.hpp>
 #include <Containers/Set.h>
 #include <span>
+#include <string>
 #include <vector>
 
 enum class EButton : u8;

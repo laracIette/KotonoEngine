@@ -144,9 +144,9 @@ auto WWidget::GetClassPath() const -> std::string
 {
 	if (parent_)
 	{
-		return std::format("{0} {1}", parent_->GetClassPath(), TypeName());
+		return std::format("{0} {1}", parent_->GetClassPath(), GetTypeName());
 	}
-	return TypeName();
+	return GetTypeName();
 }
 
 UInterface* WWidget::GetInterface() const

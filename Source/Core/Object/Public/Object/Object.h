@@ -7,6 +7,7 @@
 #include "ObjectFactory/ObjectFactory.h"
 #include <concepts>
 #include <functional>
+#include <format>
 #include <Event/Event.h>
 #include <Path/Path.h>
 #include <serialize_base/serialize_base.h>
@@ -34,13 +35,11 @@ class KObject
 public:
 	KObject();
 	virtual ~KObject();
-	
-	std::string TypeName() const;
-	UPath InstancePath() const;
 
 	/// Cleanup and delete the object immediately
 	void Delete();
-
+	
+	auto GetTypeName() const -> std::string;
 	auto GetMemberVariablePointer(size offset) const -> void*;
 
 	/// Serialize and write to the object's path
@@ -48,12 +47,13 @@ public:
 	/// Read from the object's path and deserialize
 	virtual void Deserialize();	
 
-	virtual std::string ToString() const;
+	virtual auto ToString() const -> std::string;
 
-	operator std::string() const;
-
-public:
-	static ObjectPtr Deserialize(const nlohmann::json& json);
+	static auto Deserialize(nlohmann::json const& json) -> ObjectPtr;
+	
+private:
+	auto GetAssetPath() const -> UPath;
+	auto GetTempPath() const -> UPath;
 
 protected:
 	ObjectPtr ptr_;
@@ -132,7 +132,7 @@ public:
 	UPtr<T> operator()(Args&&... args) const
 	{
 		T* object{ new T{ std::forward<Args>(args)... } };
-		object->type_ = object->TypeName();
+		object->type_ = object->GetTypeName();
 			
 		if (!name_.empty())
 		{
@@ -179,6 +179,15 @@ struct UDeserialize<UPtr<T>> final
 	void operator()(const nlohmann::json& json, UPtr<T>& v) const
 	{
 		v = TryCast<T>(KObject::Deserialize(json));
+	}
+};
+
+template <std::derived_from<KObject> T, typename CharT>
+struct std::formatter<UPtr<T>, CharT> : std::formatter<std::string, CharT>
+{
+	auto format(UPtr<T> const& ptr, auto& ctx) const 
+	{
+		return std::format_to(ctx.out(), "{0}", ptr ? ptr->ToString() : "nullptr");
 	}
 };
 

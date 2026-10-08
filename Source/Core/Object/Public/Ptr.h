@@ -1,7 +1,5 @@
 #pragma once
-#include <format>
 #include <types.h>
-#include <string>
 #include <type_traits>
 #include <utility>
 
@@ -199,11 +197,6 @@ public:
 	{
 		return *Get();
 	}
-
-	operator std::string() const
-	{
-		return Get() ? Get()->operator std::string() : std::string{ "nullptr" };
-	}
 	
 private:
 	constexpr void TryIncrementCount() const noexcept
@@ -273,13 +266,4 @@ struct std::hash<UPtr<T>>
 	{
 		return std::hash<void*>{}(ptr.data_);
 	}
-};
-
-template <typename T, typename CharT>
-struct std::formatter<UPtr<T>, CharT> : std::formatter<std::string, CharT>
-{
-    auto format(UPtr<T> const& ptr, auto& ctx) const 
-	{
-        return std::format_to(ctx.out(), "{0}", ptr.operator std::string());
-    }
 };
