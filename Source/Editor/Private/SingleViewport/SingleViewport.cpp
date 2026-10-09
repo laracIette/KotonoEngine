@@ -4,6 +4,8 @@
 #include "ViewController/ViewController.h"
 #include <core_widgets.h>
 
+#include "Scene/Scene.h"
+
 static constexpr auto DEFAULT_VISIBILITY{ ESceneVisibility::All };
 
 WidgetPtr WSingleViewport::Build()
@@ -26,7 +28,7 @@ WidgetPtr WSingleViewport::Build()
 			})
 		)
 		| (
-			UCreate<WSwitcher>{}()
+			switcher_ = UCreate<WSwitcher>{}()
 			| Apply(&WSwitcher::SetActiveWidget, 1)
 			| (
 				UCreate<WSceneVisibilityWindow>{ "Visualizer Window" }(DEFAULT_VISIBILITY)
@@ -39,6 +41,25 @@ WidgetPtr WSingleViewport::Build()
 			)
 		)
 	);
+}
+
+void WSingleViewport::Display(UWidgetDisplaySettings const& displaySettings)
+{
+	Base::Display(displaySettings);
+	
+	GetScene()->GetEventGameStateChanged().AddListener(this, &Self::OnGameStateChanged);
+}
+
+void WSingleViewport::Remove()
+{
+	Base::Remove();
+	
+	GetScene()->GetEventGameStateChanged().RemoveListener(this, &Self::OnGameStateChanged);
+}
+
+void WSingleViewport::OnGameStateChanged(EGameState gameState) const
+{
+	switcher_->SetActiveWidget(gameState == EGameState::Stopped ? 0 : 1);
 }
 
 #include "SingleViewport.generated.inl"

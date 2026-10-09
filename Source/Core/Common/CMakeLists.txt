@@ -20,6 +20,7 @@ set(KCOMMON_PUBLIC_HEADERS
     "Public/macro_utils.h"
     "Public/Notify.h"
     "Public/properties.h"
+    "Public/type_traits.h"
     "Public/types.h"
     "Public/Asset/Asset.h"
     "Public/Containers/FixedHeapContainer.h"

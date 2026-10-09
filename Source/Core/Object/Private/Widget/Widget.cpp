@@ -162,7 +162,7 @@ UInterface* WWidget::GetInterface() const
 
 void WWidget::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
 {
-	if (HasBuild() && build_->GetIsDisplayed() && GetCanPopulateRenderGraph())
+	if (HasBuild() && build_->GetIsDisplayed() && GetIsContentVisible())
 	{
 		build_->PopulateRenderGraph(interfaceRenderGraph);
 	}
@@ -175,7 +175,7 @@ void WWidget::PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosit
 		widgets.Add(Ptr());
 	}
 
-	if (HasBuild())
+	if (HasBuild() && GetIsContentVisible())
 	{
 		build_->PopulateFocusTree(widgets, cursorPosition);
 	}
@@ -324,7 +324,7 @@ auto WWidget::GetShouldRefresh() const -> b8
 	return isDirty_ || !GetCanCache();
 }
 
-auto WWidget::GetCanPopulateRenderGraph() const -> b8
+auto WWidget::GetIsContentVisible() const -> b8
 {
 	return GetIsVisible() || !GetPropagateVisibility();
 }

@@ -66,7 +66,7 @@ void WChildrenOwner::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderG
 			continue;
 		}
 		
-		if (child->GetIsDisplayed() && GetCanPopulateRenderGraph())
+		if (child->GetIsDisplayed() && GetIsContentVisible())
 		{
 			child->PopulateRenderGraph(interfaceRenderGraph);
 		}

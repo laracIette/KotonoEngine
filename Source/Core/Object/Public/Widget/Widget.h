@@ -114,7 +114,7 @@ protected:
 	virtual auto GetCanCache() const -> b8;
 	
 	auto GetShouldRefresh() const -> b8;
-	auto GetCanPopulateRenderGraph() const -> b8;
+	auto GetIsContentVisible() const -> b8;
 
 private:
 	auto HasBuild() const -> b8;
@@ -132,7 +132,7 @@ private:
 	UBindable<b8> isVisible_;
 
 	WritableProperty(WidgetPtr, parent_, Parent, Value);
-	/// Whether visibility changes should propagate to the underlying build
+	/// Whether visibility changes should propagate to the widget's content
 	WritableProperty(b8, propagateVisibility_, PropagateVisibility);
 	/// Whether the widget is currently displayed on screen
 	ReadonlyProperty(b8, isDisplayed_, IsDisplayed);

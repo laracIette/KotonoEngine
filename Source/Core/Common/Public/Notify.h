@@ -1,17 +1,14 @@
 #pragma once
 #include "Event/Event.h"
-#include <type_traits>
+#include "type_traits.h"
+
 template <typename T>
 class UNotify final
 {
 private:
     using ValueType = T;
-
-    using ReturnType = std::conditional_t<
-        (sizeof(ValueType) <= 16) && std::is_trivially_copyable_v<ValueType>,
-        ValueType,
-        const ValueType&
-    >;
+	using EventType = UEvent<ValueType>;
+    using ReturnType = optimal_t<ValueType>;
 
 public:
     UNotify() 
@@ -19,36 +16,36 @@ public:
         , eventValueChanged_{} 
     {}
     
+	UNotify(ValueType&& value)
+		: value_{ std::move(value) }
+		, eventValueChanged_{} 
+    {}
+    
     UNotify(ValueType const& value)
         : value_{ value }
         , eventValueChanged_{} 
     {}
-    
-    UNotify(ValueType&& value)
-        : value_{ std::move(value) }
-        , eventValueChanged_{} 
-    {}
 
-    UNotify& operator=(ValueType const& value)
+	auto operator=(ValueType&& value) -> UNotify&
+    {
+    	value_ = std::move(value);
+    	BroadcastValueChanged();
+    	return *this;
+    }
+
+    auto operator=(ValueType const& value) -> UNotify&
     {
         value_ = value; 
         BroadcastValueChanged();
         return *this;
     }
 
-    UNotify& operator=(ValueType&& value)
-    {
-        value_ = std::move(value);
-        BroadcastValueChanged();
-        return *this;
-    }
-
-    UEvent<ValueType>& GetEventValueChanged()
+    auto GetEventValueChanged() -> EventType&
     {
         return eventValueChanged_;
     }
 
-    ValueType* operator->() const noexcept
+    auto operator->() const noexcept -> ValueType*
     {
         return &value_;
     }
@@ -58,12 +55,12 @@ public:
         return value_;
     }
 
-    bool operator==(UNotify const& other) const noexcept
+    auto operator==(UNotify const& other) const noexcept -> b8
     {
         return value_ == other.value_;
     }
 
-    bool operator==(ValueType const& value) const noexcept
+    auto operator==(ValueType const& value) const noexcept -> b8
     {
         return value_ == value;
     }
@@ -76,5 +73,5 @@ private:
 
 private:
     ValueType value_;
-    UEvent<ValueType> eventValueChanged_;
+    EventType eventValueChanged_;
 };

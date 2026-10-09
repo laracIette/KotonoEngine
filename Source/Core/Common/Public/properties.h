@@ -2,29 +2,13 @@
 
 #include "macro_utils.h"
 #include "Logging/log.h"
-#include <type_traits>
+#include "type_traits.h"
 
 template <typename T>
-struct is_cheap_copyable final : std::bool_constant<std::is_trivially_copyable_v<std::remove_cvref_t<T>> && sizeof(std::remove_cvref_t<T>) <= 16>
-{
-};
+using getter_return_t = optimal_t<T>;
 
 template <typename T>
-inline constexpr b8 is_cheap_copyable_v = is_cheap_copyable<T>::value;
-
-template <typename T>
-using getter_return_t = std::conditional_t<
-	is_cheap_copyable_v<T>,
-	std::remove_cvref_t<T>,
-	std::remove_cvref_t<T> const&
->;
-
-template <typename T>
-using setter_param_t = std::conditional_t<
-	is_cheap_copyable_v<T>,
-	std::remove_cvref_t<T>,
-	std::remove_cvref_t<T> const&
->;
+using setter_param_t = optimal_t<T>;
 
 #define PROP_ACCESS_(Type)					getter_return_t<Type>
 #define PROP_ACCESS_Value(Type)				Type
