@@ -1,20 +1,18 @@
 #pragma once
+#include "Ptr.h"
 #include "Guid/Guid.h"
 #include <Containers/Map.h>
-#include <functional>
 #include <string_view>
 
-template <class T>
-class UPtr;
 class KObject;
 
 class SObjectFactory final
 {
 public:
-	using ObjectFactoryFunc = std::function<UPtr<KObject>()>;
+	using ObjectFactoryFunc = UPtr<KObject>(*)();
 
 public:
-	static void Register(std::string_view className, ObjectFactoryFunc&& function);
+	static void Register(std::string_view className, ObjectFactoryFunc function);
 	static auto Get(UGuid const& guid) -> UPtr<KObject>;
 
 private:

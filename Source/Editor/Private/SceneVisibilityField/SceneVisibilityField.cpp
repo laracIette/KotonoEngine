@@ -24,7 +24,7 @@ WidgetPtr WSceneVisibilityField::Build()
                     | (
                         UCreate<WButton>{}()
                         | Apply(&WButton::SetIsActivatable, true)
-                        | Apply(&WButton::SetIsActivated, isFieldVisible_)
+                        | Apply(&WButton::SetStartActivated, isFieldVisible_)
                         | Apply(&WButton::SetNormalColor, Colors::Red)
                         | Apply(&WButton::SetActivatedColor, Colors::Green)
                         | Apply(&WButton::SetOnActivated, [this]() {

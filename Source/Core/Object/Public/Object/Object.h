@@ -12,9 +12,13 @@
 #include <Path/Path.h>
 #include <serialize_base/serialize_base.h>
 #include <nlohmann/json_fwd.hpp>
+#include <optional>
 #include <source_location>
 #include <string>
+
+#ifndef NDEBUG
 #include <unordered_set>
+#endif
 
 #include "Object.generated.h"
 
@@ -117,12 +121,12 @@ struct UCreate final
 {
 public:
 #ifndef NDEBUG
-	constexpr UCreate(std::string_view name = "", std::source_location const& loc = std::source_location::current())
+	constexpr UCreate(std::optional<std::string> const& name = std::nullopt, std::source_location const& loc = std::source_location::current())
 		: name_{ name }
 		, loc_{ loc }
 	{}
 #else
-	constexpr UCreate(std::string_view name = "")
+	constexpr UCreate(std::optional<std::string> const& name = std::nullopt)
 		: name_{ name }
 	{}
 #endif
@@ -134,9 +138,9 @@ public:
 		T* object{ new T{ std::forward<Args>(args)... } };
 		object->type_ = object->GetTypeName();
 			
-		if (!name_.empty())
+		if (name_.has_value())
 		{
-			object->SetName(name_);
+			object->SetName(name_.value());
 		}
 		else
 		{
@@ -153,10 +157,10 @@ public:
 	}
 
 private:
-	const std::string name_;
+	std::optional<std::string> name_;
 
 #ifndef NDEBUG
-	const std::source_location loc_;
+	std::source_location loc_;
 #endif
 };
 

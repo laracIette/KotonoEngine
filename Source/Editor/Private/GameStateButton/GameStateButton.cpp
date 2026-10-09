@@ -37,7 +37,7 @@ WidgetPtr WGameStateButton::Build()
                 | Apply(&WButton::SetDisabledColor, STOPPED_COLOR)
                 | Apply(&WButton::SetOnClicked, [this, playPauseButton]() {
                     GetScene()->StopGame();
-                    playPauseButton->SetIsActivated(false);
+                    playPauseButton->Deactivate();
                 })
             )
         )

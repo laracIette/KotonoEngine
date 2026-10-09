@@ -28,13 +28,13 @@ using WidgetSet = USet<WidgetPtr>;
 using WidgetVector = std::vector<WidgetPtr>;
 
 #define StateSetter(Type, Variable, SetterName) \
-	void Set##SetterName(const Type& value) { SetState([this, value]() { Variable = value; }); }
+	void Set##SetterName(setter_param_t<Type> value) { SetState([this, value]() { Variable = value; }); }
 
 #define StateProperty(Type, Name, PropertyName, ...) private:	\
 	Type Name;													\
 public:															\
-	Getter(Type, Name, PropertyName, __VA_ARGS__)			\
-	StateSetter(Type, Name, PropertyName)					\
+	Getter(Type, Name, PropertyName, __VA_ARGS__)				\
+	StateSetter(Type, Name, PropertyName)						\
 private:
 
 struct UInterfaceRenderGraph;
@@ -58,6 +58,9 @@ public:
 protected:
 	/// Create the widget tree to display
 	virtual WidgetPtr Build();
+	
+	/// Called right after Build()
+	virtual void Init();
 
 public:
 	/// Start displaying the widget
@@ -90,20 +93,18 @@ public:
 	virtual void OnFocused();
 	virtual void OnUnfocused();
 
-	auto GetShouldRefresh() const -> b8;
 	virtual void Refresh();
 	
 	virtual void CacheBuild();
 
 	auto GetIsPointHovering(glm::vec2 const& position) const -> b8;
 
-	Getter(b8, isVisible_, IsVisible, Value);
-	Setter(UBindable<b8>, isVisible_, IsVisible);
+	GetterAndSetter(b8, UBindable<b8>, isVisible_, IsVisible);
 	
-	Getter(glm::vec2, slotDisplaySettings_.position, Position, Value);
-	Getter(glm::vec2, slotDisplaySettings_.bounds, Size, Value);
-	Getter(f32, slotDisplaySettings_.bounds.x / slotDisplaySettings_.bounds.y, AspectRatio, Value);
-	Getter(UScissor, slotDisplaySettings_.scissor, Scissor, Value);
+	Getter(glm::vec2, slotDisplaySettings_.position, Position);
+	Getter(glm::vec2, slotDisplaySettings_.bounds, Size);
+	Getter(f32, slotDisplaySettings_.bounds.x / slotDisplaySettings_.bounds.y, AspectRatio);
+	Getter(UScissor, slotDisplaySettings_.scissor, Scissor);
 
 protected:
 	void SetState(StateFunction const& function);
@@ -111,6 +112,9 @@ protected:
 	virtual void DisplayInternal(UWidgetDisplaySettings displaySettings);
 
 	virtual auto GetCanCache() const -> b8;
+	
+	auto GetShouldRefresh() const -> b8;
+	auto GetCanPopulateRenderGraph() const -> b8;
 
 private:
 	auto HasBuild() const -> b8;
@@ -128,9 +132,13 @@ private:
 	UBindable<b8> isVisible_;
 
 	WritableProperty(WidgetPtr, parent_, Parent, Value);
-	ReadonlyProperty(b8, isDisplayed_, IsDisplayed, Value);
-	ReadonlyProperty(b8, isFocused_, IsFocused, Value);
-	ReadonlyProperty(glm::vec2, contentSize_, ContentSize, Value);
+	/// Whether visibility changes should propagate to the underlying build
+	WritableProperty(b8, propagateVisibility_, PropagateVisibility);
+	/// Whether the widget is currently displayed on screen
+	ReadonlyProperty(b8, isDisplayed_, IsDisplayed);
+	/// Whether the widget is currently focused by the controller
+	ReadonlyProperty(b8, isFocused_, IsFocused);
+	ReadonlyProperty(glm::vec2, contentSize_, ContentSize);
 	ReadonlyProperty(glm::mat4, modelMatrix_, ModelMatrix);
-	StateProperty(glm::vec2, expandWeight_, ExpandWeight, Value);
+	StateProperty(glm::vec2, expandWeight_, ExpandWeight);
 };

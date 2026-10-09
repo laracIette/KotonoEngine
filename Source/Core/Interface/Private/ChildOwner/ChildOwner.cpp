@@ -63,7 +63,7 @@ auto WChildOwner::GetDesiredSize(const glm::vec2& bounds) const -> glm::vec2
 
 void WChildOwner::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
 {
-	if (child_ && child_->GetIsDisplayed())
+	if (child_ && child_->GetIsDisplayed() && GetCanPopulateRenderGraph())
 	{
 		child_->PopulateRenderGraph(interfaceRenderGraph);
 	}

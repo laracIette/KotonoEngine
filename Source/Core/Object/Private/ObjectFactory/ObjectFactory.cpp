@@ -11,9 +11,9 @@
 UMap<std::string_view, SObjectFactory::ObjectFactoryFunc> SObjectFactory::objectFactories_{};
 UMap<UGuid, ObjectPtr> SObjectFactory::registry_{};
 
-void SObjectFactory::Register(std::string_view className, ObjectFactoryFunc&& function)
+void SObjectFactory::Register(std::string_view className, ObjectFactoryFunc function)
 {
-	objectFactories_.TryEmplace(className, std::move(function));
+	objectFactories_.TryEmplace(className, function);
 }
 
 auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
@@ -61,7 +61,7 @@ auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 auto SObjectFactory::GetFactory(std::string_view typeName) -> ObjectPtr
 {
     auto const it{ objectFactories_.Find(typeName) };
-    if (objectFactories_.IsValidIterator(it) && it->second)
+    if (objectFactories_.IsValidIterator(it))
     {
         return it->second();
     }

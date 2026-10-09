@@ -1,6 +1,5 @@
 #include "SingleViewport.h"
 
-#include "SecondaryWindow/SecondaryWindow.h"
 #include "SceneVisibilityWindow/SceneVisibilityWindow.h"
 #include "ViewController/ViewController.h"
 #include <core_widgets.h>
@@ -27,10 +26,17 @@ WidgetPtr WSingleViewport::Build()
 			})
 		)
 		| (
-			UCreate<WSceneVisibilityWindow>{ "Visualizer Window" }(DEFAULT_VISIBILITY)
-			| Apply(&WSceneVisibilityWindow::SetOnSceneVisibilityChanged, [sceneTexture](ESceneVisibility visibility) {
-				sceneTexture->SetSceneVisibility(visibility);
-			})
+			UCreate<WSwitcher>{}()
+			| Apply(&WSwitcher::SetActiveWidget, 1)
+			| (
+				UCreate<WSceneVisibilityWindow>{ "Visualizer Window" }(DEFAULT_VISIBILITY)
+				| Apply(&WSceneVisibilityWindow::SetOnSceneVisibilityChanged, [sceneTexture](ESceneVisibility visibility) {
+					sceneTexture->SetSceneVisibility(visibility);
+				})
+			)
+			| (
+				UCreate<WText>{}() | Apply(&WText::SetText, "gosfhuiuiofsd")
+			)
 		)
 	);
 }

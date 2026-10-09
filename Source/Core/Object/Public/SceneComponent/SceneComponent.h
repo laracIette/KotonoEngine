@@ -87,13 +87,13 @@ private:
 
 private:
 	b8 isInit_;
-	ReadonlyProperty(b8, canUpdate_, CanUpdate, Value);
-	ReadonlyProperty(UPtr<TSceneObject>, owner_, Owner);
-	ReadonlyProperty(UPtr<KSceneComponent>, parent_, Parent);
+	ReadonlyProperty(b8, canUpdate_, CanUpdate);
+	ReadonlyProperty(UPtr<TSceneObject>, owner_, Owner, Value);
+	ReadonlyProperty(UPtr<KSceneComponent>, parent_, Parent, Value);
 	ReadonlyProperty(UEvent<>, eventTransformUpdated_, EventTransformUpdated, Reference);
 	SERIALIZE USet<UPtr<KSceneComponent>> children_;
 	SERIALIZE ReadonlyProperty(UTransform, transform_, Transform);
-	SERIALIZE ReadonlyProperty(EVisibility, visibility_, Visibility, Value);
-	SERIALIZE ReadonlyProperty(EMobility, mobility_, Mobility, Value);
+	SERIALIZE ReadonlyProperty(EVisibility, visibility_, Visibility);
+	SERIALIZE ReadonlyProperty(EMobility, mobility_, Mobility);
 };
 

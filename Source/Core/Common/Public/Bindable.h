@@ -12,23 +12,25 @@ private:
 	using VariantType = std::variant<ValueType, FuncType>;
 
 public:
-	UBindable() 
-		: value_{ ValueType{} } 
-	{}
+	UBindable() = default;
 
 	template <typename TArg>
 		requires std::constructible_from<ValueType, TArg>
-	UBindable(TArg const& value) 
-		: value_{ ValueType{ value } }
-	{}
+			&& !std::same_as<std::remove_cvref_t<TArg>, UBindable>
+	UBindable(TArg&& value) 
+		: value_{ std::in_place_type<ValueType>, std::forward<TArg>(value) }
+	{
+	}
 
 	template <typename TArg>
 		requires std::constructible_from<FuncType, TArg>
-	UBindable(TArg const& func)
-		: value_{ FuncType{ func } }
-	{}
+			&& !std::same_as<std::remove_cvref_t<TArg>, UBindable>
+	UBindable(TArg&& func)
+		: value_{ std::in_place_type<FuncType>, std::forward<TArg>(func) }
+	{
+	}
 
-	constexpr ValueType Get() const
+	constexpr auto Get() const -> ValueType
 	{
 		return GetIsValue()
 			? std::get<ValueType>(value_)
@@ -40,12 +42,12 @@ public:
 		return Get();
 	}
 
-	constexpr b8 GetIsValue() const noexcept
+	constexpr auto GetIsValue() const noexcept -> b8
 	{
 		return std::holds_alternative<ValueType>(value_);
 	}
 
-	constexpr b8 GetIsFunction() const noexcept
+	constexpr auto GetIsFunction() const noexcept -> b8
 	{
 		return std::holds_alternative<FuncType>(value_);
 	}

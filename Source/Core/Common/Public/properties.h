@@ -2,39 +2,62 @@
 
 #include "macro_utils.h"
 #include "Logging/log.h"
-#include <stdexcept>
+#include <type_traits>
 
-#define _PROP_ACCESS_				const&
-#define _PROP_ACCESS_Value 
-#define _PROP_ACCESS_Reference		&
-#define _PROP_ACCESS_ConstReference const&
+template <typename T>
+struct is_cheap_copyable final : std::bool_constant<std::is_trivially_copyable_v<std::remove_cvref_t<T>> && sizeof(std::remove_cvref_t<T>) <= 16>
+{
+};
 
-#define _FUNC_ACCESS_				const
-#define _FUNC_ACCESS_Value			const
-#define _FUNC_ACCESS_Reference 
-#define _FUNC_ACCESS_ConstReference const
+template <typename T>
+inline constexpr b8 is_cheap_copyable_v = is_cheap_copyable<T>::value;
 
-#define _GET_PROP_ACCESS(...) MACRO_CONCAT(_PROP_ACCESS_, __VA_ARGS__)
-#define _GET_FUNC_ACCESS(...) MACRO_CONCAT(_FUNC_ACCESS_, __VA_ARGS__)
+template <typename T>
+using getter_return_t = std::conditional_t<
+	is_cheap_copyable_v<T>,
+	std::remove_cvref_t<T>,
+	std::remove_cvref_t<T> const&
+>;
+
+template <typename T>
+using setter_param_t = std::conditional_t<
+	is_cheap_copyable_v<T>,
+	std::remove_cvref_t<T>,
+	std::remove_cvref_t<T> const&
+>;
+
+#define PROP_ACCESS_(Type)					getter_return_t<Type>
+#define PROP_ACCESS_Value(Type)				Type
+#define PROP_ACCESS_Reference(Type)			Type&
+#define PROP_ACCESS_ConstReference(Type)	Type const&
+
+#define FUNC_ACCESS_				const
+#define FUNC_ACCESS_Value			const
+#define FUNC_ACCESS_Reference
+#define FUNC_ACCESS_ConstReference	const
+
+#define GET_PROP_ACCESS(...) MACRO_CONCAT(PROP_ACCESS_, __VA_ARGS__)
+#define GET_FUNC_ACCESS(...) MACRO_CONCAT(FUNC_ACCESS_, __VA_ARGS__)
 
 #define Getter(Type, Variable, GetterName, ...) \
-	auto Get##GetterName() _GET_FUNC_ACCESS(__VA_ARGS__) -> Type _GET_PROP_ACCESS(__VA_ARGS__) { return Variable; }
+	auto Get##GetterName() GET_FUNC_ACCESS(__VA_ARGS__) -> GET_PROP_ACCESS(__VA_ARGS__)(Type) { return Variable; }
 
 #define Setter(Type, Variable, SetterName) \
-	void Set##SetterName(Type const& value) { Variable = value; }
+	void Set##SetterName(setter_param_t<Type> value) { Variable = value; }
 
-#define GetterAndSetter(Type, Variable, PropertyName, ...)	\
-	Getter(Type, Variable, PropertyName, __VA_ARGS__)		\
-	Setter(Type, Variable, PropertyName)
+#define GetterAndSetter(GetterType, SetterType, Variable, PropertyName, ...)	\
+	Getter(GetterType, Variable, PropertyName, __VA_ARGS__)						\
+	Setter(SetterType, Variable, PropertyName)
 	
-#define ReadonlyProperty(Type, Name, PropertyName, ...) private:	\
-	Type Name;														\
-public:																\
-	Getter(Type, Name, PropertyName, __VA_ARGS__)					\
+#define ReadonlyProperty(Type, Variable, PropertyName, ...) private:	\
+	Type Variable;														\
+public:																	\
+	Getter(Type, Variable, PropertyName, __VA_ARGS__)					\
 private:
 
-#define WritableProperty(Type, Name, PropertyName, ...) private:	\
-	Type Name;														\
-public:																\
-	GetterAndSetter(Type, Name, PropertyName, __VA_ARGS__)			\
+#define WritableProperty(Type, Variable, PropertyName, ...) private:	\
+	Type Variable;														\
+public:																	\
+	Getter(Type, Variable, PropertyName, __VA_ARGS__)					\
+	Setter(Type, Variable, PropertyName)								\
 private:

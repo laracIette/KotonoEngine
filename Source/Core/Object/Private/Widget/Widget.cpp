@@ -27,6 +27,7 @@ WWidget::WWidget()
 	, isDirty_{ false }
 	, isVisible_{ true }
 	, parent_{ nullptr }
+	, propagateVisibility_{ true }
 	, isDisplayed_{ false }
 	, isFocused_{ false }
 	, expandWeight_{ 1.0f, 1.0f }
@@ -49,6 +50,10 @@ WWidget::~WWidget()
 WidgetPtr WWidget::Build()
 {
 	return Ptr();
+}
+
+void WWidget::Init()
+{
 }
 
 void WWidget::Display(UWidgetDisplaySettings const& displaySettings)
@@ -157,7 +162,7 @@ UInterface* WWidget::GetInterface() const
 
 void WWidget::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
 {
-	if (HasBuild())
+	if (HasBuild() && build_->GetIsDisplayed() && GetCanPopulateRenderGraph())
 	{
 		build_->PopulateRenderGraph(interfaceRenderGraph);
 	}
@@ -248,11 +253,6 @@ void WWidget::OnUnfocused()
 	isFocused_ = false;
 }
 
-auto WWidget::GetShouldRefresh() const -> b8
-{
-	return isDirty_ || !GetCanCache();
-}
-
 void WWidget::Refresh()
 {
 	if (GetShouldRefresh())
@@ -280,6 +280,7 @@ void WWidget::CacheBuild()
 			build_->SetParent(Ptr());
 		}
 		MarkDirty();
+		Init();
 	}
 
 	if (HasBuild())
@@ -316,6 +317,16 @@ void WWidget::DisplayInternal(UWidgetDisplaySettings displaySettings)
 auto WWidget::GetCanCache() const -> b8
 {
 	return isVisible_.GetIsValue();
+}
+
+auto WWidget::GetShouldRefresh() const -> b8
+{
+	return isDirty_ || !GetCanCache();
+}
+
+auto WWidget::GetCanPopulateRenderGraph() const -> b8
+{
+	return GetIsVisible() || !GetPropagateVisibility();
 }
 
 bool WWidget::HasBuild() const

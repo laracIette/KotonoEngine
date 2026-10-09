@@ -31,6 +31,7 @@
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Socket/Socket.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Spacer/Spacer.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Stack/Stack.h",
+        "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Switcher/Switcher.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Text/Text.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Wrap/Wrap.h",
 

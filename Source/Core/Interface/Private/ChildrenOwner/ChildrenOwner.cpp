@@ -12,7 +12,9 @@ WChildrenOwner::WChildrenOwner()
 WChildrenOwner::~WChildrenOwner()
 {
 	for (auto const& child : WidgetSet{ children_ })
-	{
+	{		
+		Check(Warning, child, "child is null!");
+		
 		if (child)
 		{
 			child->Delete();
@@ -26,6 +28,8 @@ void WChildrenOwner::Remove()
 
 	for (auto const& child : children_)
 	{
+		Check(Warning, child, "child is null!");
+		
 		if (child)
 		{
 			child->Remove();
@@ -55,7 +59,14 @@ void WChildrenOwner::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderG
 {
 	for (auto const& child : children_)
 	{
-		if (child && child->GetIsDisplayed())
+		Check(Warning, child, "child is null!");
+		
+		if (!child)
+		{
+			continue;
+		}
+		
+		if (child->GetIsDisplayed() && GetCanPopulateRenderGraph())
 		{
 			child->PopulateRenderGraph(interfaceRenderGraph);
 		}
@@ -68,7 +79,14 @@ void WChildrenOwner::PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& curs
 
 	for (auto const& child : children_)
 	{
-		if (child && child->GetIsDisplayed())
+		Check(Warning, child, "child is null!");
+		
+		if (!child)
+		{
+			continue;
+		}
+		
+		if (child->GetIsDisplayed())
 		{
 			child->PopulateFocusTree(widgets, cursorPosition);
 		}
@@ -79,7 +97,14 @@ b8 WChildrenOwner::OnMouseButton(EButton button, EInputState inputState, EModifi
 {
 	for (auto const& child : children_ | std::views::reverse)
 	{
-		if (!child || !child->GetIsDisplayed())
+		Check(Warning, child, "child is null!");
+		
+		if (!child)
+		{
+			continue;
+		}
+		
+		if (!child->GetIsDisplayed())
 		{
 			continue;
 		}
@@ -102,7 +127,14 @@ b8 WChildrenOwner::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position
 {
 	for (auto const& child : children_ | std::views::reverse)
 	{
-		if (!child || !child->GetIsDisplayed())
+		Check(Warning, child, "child is null!");
+		
+		if (!child)
+		{
+			continue;
+		}
+		
+		if (!child->GetIsDisplayed())
 		{
 			continue;
 		}
@@ -125,7 +157,14 @@ b8 WChildrenOwner::OnMouseScroll(glm::vec2 const& delta)
 {
 	for (auto const& child : children_ | std::views::reverse)
 	{
-		if (!child || !child->GetIsDisplayed())
+		Check(Warning, child, "child is null!");
+		
+		if (!child)
+		{
+			continue;
+		}
+		
+		if (!child->GetIsDisplayed())
 		{
 			continue;
 		}
@@ -148,7 +187,14 @@ b8 WChildrenOwner::OnKeyboardKey(EKey key, EInputState inputState, EModifier mod
 {
 	for (auto const& child : children_ | std::views::reverse)
 	{
-		if (!child || !child->GetIsDisplayed())
+		Check(Warning, child, "child is null!");
+		
+		if (!child)
+		{
+			continue;
+		}
+		
+		if (!child->GetIsDisplayed())
 		{
 			continue;
 		}
@@ -176,6 +222,8 @@ void WChildrenOwner::Refresh()
 
 	for (auto const& child : children_)
 	{
+		Check(Warning, child, "child is null!");
+		
 		if (child)
 		{
 			child->Refresh();
@@ -187,6 +235,8 @@ void WChildrenOwner::CacheBuild()
 {
 	for (auto const& child : children_)
 	{
+		Check(Warning, child, "child is null!");
+		
 		if (child)
 		{
 			child->CacheBuild();
@@ -199,22 +249,25 @@ void WChildrenOwner::SetChildren(WidgetSet const& widgets)
 	SetState([this, widgets]() {
 		for (auto const& child : children_)
 		{
+			Check(Warning, child, "child is null!");
+		
 			if (child)
 			{
 				child->SetParent(nullptr);
 			}
 		}
 
-		children_.Clear();
-
 		for (auto const& child : widgets)
 		{
+			Check(Warning, child, "child is null!");
+		
 			if (child)
 			{
 				child->SetParent(Ptr());
-				children_.push_back(child);
 			}
 		}
+		
+		children_ = widgets;
 	});
 }
 

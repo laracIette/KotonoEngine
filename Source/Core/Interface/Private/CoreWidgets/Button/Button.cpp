@@ -23,6 +23,13 @@ WButton::WButton()
 {
 }
 
+void WButton::Init()
+{
+	Base::Init();
+	
+	isActivated_ = startActivated_;
+}
+
 auto WButton::OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8
 {
 	if (!isEnabled_)
@@ -127,11 +134,11 @@ void WButton::OnUnfocused()
 
 void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
 {
-	auto const state{ [this]() {
-		if (!GetIsEnabled())	return disabledState_;
-		if (isPressed_)			return pressedState_;
-		if (GetIsFocused())		return focusedState_;
-		if (isActivated_)		return activatedState_;
+	auto const [texture, color] { [this]() {
+		if (!GetIsEnabled())				return disabledState_;
+		if (isPressed_)						return pressedState_;
+		if (GetIsFocused())					return focusedState_;
+		if (isActivatable_ && isActivated_)	return activatedState_;
 		return normalState_;
 	}() };
 
@@ -141,10 +148,48 @@ void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) c
 		.shader{ "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset" },
 		.model{ "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj" },
 		.scalars{},
-		.vectors{ state.color },
-		.textures{ state.texture },
+		.vectors{ color },
+		.textures{ texture },
 		.isVisible{ GetIsVisible() },
 	});
+}
+
+void WButton::Activate()
+{
+	Check(Warning, isActivatable_, "button is not activatable!");
+	Check(Warning, isActivated_, "button is already activated!");
+	Check(Warning, onActivated_, "onActivated_ is null!");
+	
+	if (!isActivatable_ || isActivated_)
+	{
+		return;
+	}
+	
+	isActivated_ = true;
+	
+	if (onActivated_)
+	{
+		onActivated_();
+	}
+}
+
+void WButton::Deactivate()
+{
+	Check(Warning, isActivatable_, "button is not activatable!");
+	Check(Warning, !isActivated_, "button is already deactivated!");
+	Check(Warning, onDeactivated_, "onDeactivated_ is null!");
+	
+	if (!isActivatable_ || !isActivated_)
+	{
+		return;
+	}
+	
+	isActivated_ = false;
+	
+	if (onDeactivated_)
+	{
+		onDeactivated_();
+	}
 }
 
 auto WButton::GetCanCache() const -> b8

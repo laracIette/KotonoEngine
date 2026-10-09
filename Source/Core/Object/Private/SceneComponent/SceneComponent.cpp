@@ -138,8 +138,8 @@ auto KSceneComponent::GetScreenPosition() const -> glm::vec3
 void KSceneComponent::SetParent(UPtr<KSceneComponent> const& parent, ECoordinateSpace keepTransform)
 {
 	Check(WarningReturn, parent || parent_, "can't set the parent of {0}, it's already null!", GetName());
-	Check(WarningReturn, parent != Ptr(), "can't set the parent of {0} to itself!", GetName());
 	Check(WarningReturn, parent != parent_, "can't set the parent of {0} to its current parent!", GetName());
+	Check(WarningReturn, parent != Ptr(), "can't set the parent of {0} to itself!", GetName());
 	Check(WarningReturn, CanSetTransform(), "can't set the parent of {0}, its mobility is static!", GetName());
 
     if (parent_)

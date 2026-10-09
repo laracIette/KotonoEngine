@@ -30,6 +30,7 @@ set(KINTERFACE_PUBLIC_HEADERS
     "Public/CoreWidgets/Socket/Socket.h"
     "Public/CoreWidgets/Spacer/Spacer.h"
     "Public/CoreWidgets/Stack/Stack.h"
+    "Public/CoreWidgets/Switcher/Switcher.h"
     "Public/CoreWidgets/Text/Text.h"
     "Public/CoreWidgets/Wrap/Wrap.h"
 )
@@ -61,6 +62,7 @@ set(KINTERFACE_SOURCES
     "Private/CoreWidgets/Socket/Socket.cpp"
     "Private/CoreWidgets/Spacer/Spacer.cpp"
     "Private/CoreWidgets/Stack/Stack.cpp"
+    "Private/CoreWidgets/Switcher/Switcher.cpp"
     "Private/CoreWidgets/Text/Text.cpp"
     "Private/CoreWidgets/Wrap/Wrap.cpp"
 )

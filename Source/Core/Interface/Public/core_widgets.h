@@ -18,5 +18,6 @@
 #include "CoreWidgets/Socket/Socket.h"
 #include "CoreWidgets/Spacer/Spacer.h"
 #include "CoreWidgets/Stack/Stack.h"
+#include "CoreWidgets/Switcher/Switcher.h"
 #include "CoreWidgets/Text/Text.h"
 #include "CoreWidgets/Wrap/Wrap.h"
