@@ -16,6 +16,9 @@
 #include <source_location>
 #include <string>
 
+#define SERIALIZE
+#define ABSTRACT
+
 #ifndef NDEBUG
 #include <unordered_set>
 #endif
@@ -27,7 +30,7 @@ using VoidCallback = std::function<void()>;
 class KObject;
 using ObjectPtr = UPtr<KObject>;
 
-class KObject
+ABSTRACT class KObject
 {
 	GENERATED()
 

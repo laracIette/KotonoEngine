@@ -27,8 +27,7 @@ void SGenerator::GenerateUpdated()
 	nlohmann::json json{};
 	SSerializer::Deserialize(json, RegistryPath);
 
-	auto const& reflectionResults{ Reflector.GetReflectionResults() };
-	for (auto const& reflectionResult : reflectionResults)
+	for (auto const& reflectionResult : Reflector.GetReflectionResults())
 	{
 		const UFile file{ reflectionResult.path };
 
@@ -72,11 +71,13 @@ void SGenerator::GenerateRegistrator()
 	std::ostringstream functionsCode;
 	std::ostringstream callCode;
 
-	auto const& reflectionResults{ Reflector.GetReflectionResults() };
-	for (auto const& reflectionResult : reflectionResults)
+	for (auto const& reflectionResult : Reflector.GetReflectionResults())
 	{
-		functionsCode << std::format("extern void Register_{0}();", reflectionResult.type.name) << std::endl;
-		callCode << std::format("	Register_{0}();", reflectionResult.type.name) << std::endl;
+		if (!reflectionResult.type.isAbstract)
+		{
+			functionsCode << std::format("extern void Register_{0}();", reflectionResult.type.name) << std::endl;
+			callCode << std::format("	Register_{0}();", reflectionResult.type.name) << std::endl;
+		}
 	}
 
 	const std::string generatedCode{ 
@@ -179,14 +180,18 @@ void SGenerator::GenerateSource(UReflectionResult const& reflectionResult)
 	{
 		memberVariablesCode << std::format(R"(		{{ "{0}", "{1}", offsetof(Self, {1}) }},)", variable.type, variable.name) << std::endl;
 	}
-
-	const std::string generatedCode{ !classInfo.base.has_value()
-		? std::format(
-R"(void Register_{0}() 
+	
+	auto const registerFunction{ std::format(R"(
+void Register_{0}() 
 {{
 	SObjectFactory::Register("{0}", +[]() static -> UPtr<KObject> {{ return UCreate<{0}>{{}}(); }});
 }}
+)",
+		classInfo.name
+	) };
 
+	const std::string generatedCode{ !classInfo.base.has_value()
+		? std::format(R"(
 void {0}::SerializeTo(nlohmann::json& json) const
 {{
 {1}
@@ -208,18 +213,16 @@ UPtr<{0}> {0}::Ptr() const
 {{
 	return Cast<{0}>(ptr_);
 }}
+
+{4}
 )",
 			classInfo.name,
 			serializeCode.str(),
 			deserializeCode.str(),
-			memberVariablesCode.str()
+			memberVariablesCode.str(),
+			classInfo.isAbstract ? "" : registerFunction
 		)
-		: std::format(
-R"(void Register_{0}() 
-{{
-	SObjectFactory::Register("{0}", +[]() static -> UPtr<KObject> {{ return UCreate<{0}>{{}}(); }});
-}}
-
+		: std::format(R"(
 void {0}::SerializeTo(nlohmann::json& json) const
 {{
 	Base::SerializeTo(json);
@@ -245,11 +248,14 @@ UPtr<{0}> {0}::Ptr() const
 {{
 	return Cast<{0}>(ptr_);
 }}
+
+{4}
 )",
 			classInfo.name,
 			serializeCode.str(),
 			deserializeCode.str(),
-			memberVariablesCode.str()
+			memberVariablesCode.str(),
+			classInfo.isAbstract ? "" : registerFunction
 		)
 	};
 
@@ -269,6 +275,7 @@ SGenerator::ClassInfo SGenerator::GetClassInfo(UReflectionResult const& reflecti
 	return {
 		.name = reflectionResult.type.name,
 		.base = reflectionResult.type.base,
+		.isAbstract = reflectionResult.type.isAbstract,
 		.variables = variables,
 	};
 }

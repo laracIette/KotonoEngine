@@ -5,7 +5,7 @@
 
 class UScene;
 
-class WSceneWidget : public WWidget
+ABSTRACT class WSceneWidget : public WWidget
 {
 	GENERATED()
 
@@ -15,5 +15,5 @@ public:
 	WSceneWidget(UScene* scene);
 
 private:
-	ReadonlyProperty(UScene*, scene_, Scene, Value);
+	ReadonlyProperty(UScene*, scene_, Scene);
 };

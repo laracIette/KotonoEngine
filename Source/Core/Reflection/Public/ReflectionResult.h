@@ -3,12 +3,14 @@
 #include <optional>
 #include <string>
 #include <vector>
+
 struct UReflectionResult final
 {
 	struct TypeInfo
 	{
 		std::string name;
 		std::optional<std::string> base;
+		b8 isAbstract;
 	};
 
 	struct MemberInfo

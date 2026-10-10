@@ -10,7 +10,7 @@ WAssetExplorerItem::WAssetExplorerItem(UPtr<WAssetExplorer> const& assetExplorer
     , onOpened_{ onOpened }
     , isSelected_{ false }
     , lastClickedTime_{ 0.0f }
-    , openTreshold_{ 0.2f }
+    , openThreshold_{ 0.2f }
 {
 }
 
@@ -25,7 +25,7 @@ WidgetPtr WAssetExplorerItem::Build()
                 UCreate<WButton>{ "Item Button" }() 
                 | Apply(&WButton::SetOnClicked, [this]() {
                     if (isSelected_ 
-                     && GetInterface()->GetNow() - lastClickedTime_ < openTreshold_)
+                     && GetInterface()->GetNow() - lastClickedTime_ < openThreshold_)
                     {
                         if (onOpened_)
                         {

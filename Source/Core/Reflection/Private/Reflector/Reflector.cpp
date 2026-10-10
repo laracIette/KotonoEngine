@@ -13,10 +13,10 @@ void GReflector::Reflect()
 	UPath const reflectPath{ "${ENGINE_DIRECTORY}/reflect.ktregistry" };
 	SSerializer::Deserialize(json, reflectPath);
 
-	for (const auto& file : json.at("files"))
+	for (auto const& file : json.at("files"))
 	{
-		const UPath filePath{ file };
-		const auto content{ UFile{ filePath }.ReadString() };
+		UPath const filePath{ file.get<std::string>() };
+		auto const content{ UFile{ filePath }.ReadString() };
 
 		const UReflectionResult reflectionResult{
 			.path = filePath,
@@ -34,38 +34,38 @@ void GReflector::Reflect()
 		| std::ranges::to<std::vector>();
 }
 
-const std::vector<UReflectionResult>& GReflector::GetReflectionResults() const
+auto GReflector::GetReflectionResults() const -> std::span<UReflectionResult const>
 {
 	return reflectionResults_;
 }
 
-UReflectionResult::TypeInfo GReflector::GetTypeInfo(std::string const& content) const
+auto GReflector::GetTypeInfo(std::string const& content) const -> UReflectionResult::TypeInfo
 {
-	std::regex const pattern{ R"((?:class)\s+([a-zA-Z_]\w*)\s*(?:final)?\s*(?::\s*public\s+([a-zA-Z_]\w*)\s*(?:<[^>]*>)?(?:\s*,\s*[^{]+)?)?\{)" };
+	std::regex const pattern{ R"((ABSTRACT\s+)?class\s+([a-zA-Z_]\w*)\s*(?:final)?\s*(?::\s*public\s+([a-zA-Z_]\w*)\s*(?:<[^>]*>)?(?:\s*,\s*[^{]+)?)?\{)" };
 	
-	std::string name{ "" };
-	std::optional<std::string> base{ std::nullopt };
+	UReflectionResult::TypeInfo typeInfo{};
 
 	std::smatch match;
 	if (std::regex_search(content, match, pattern))
 	{
 		if (match[1].matched)
 		{
-			name = match[1].str();
+			typeInfo.isAbstract = true;
 		}
 		if (match[2].matched)
 		{
-			base = match[2].str();
+			typeInfo.name = match[2].str();
+		}
+		if (match[3].matched)
+		{
+			typeInfo.base = match[3].str();
 		}
 	}
 
-	return {
-		.name = name,
-		.base = base,
-	};
+	return typeInfo;
 }
 
-std::vector<UReflectionResult::MemberInfo> GReflector::GetMemberInfos(const std::string& content) const
+auto GReflector::GetMemberInfos(std::string const& content) const -> std::vector<UReflectionResult::MemberInfo>
 {
 	std::vector<UReflectionResult::MemberInfo> result{};
 
@@ -73,8 +73,8 @@ std::vector<UReflectionResult::MemberInfo> GReflector::GetMemberInfos(const std:
 
 	for (std::sregex_iterator it{ content.begin(), content.end(), varRegex }, end; it != end; ++it)
 	{
-		const auto type{ (*it)[1].str() };
-		const auto name{ (*it)[2].str() };
+		auto const type{ (*it)[1].str() };
+		auto const name{ (*it)[2].str() };
 
 		result.push_back({ 
 			.type = type,
@@ -85,7 +85,7 @@ std::vector<UReflectionResult::MemberInfo> GReflector::GetMemberInfos(const std:
 	return result;
 }
 
-bool GReflector::IsObjectType(const UReflectionResult::TypeInfo& type) const
+auto GReflector::IsObjectType(const UReflectionResult::TypeInfo& type) const -> b8
 {
 	if (type.name == "KObject")
 	{
@@ -97,8 +97,8 @@ bool GReflector::IsObjectType(const UReflectionResult::TypeInfo& type) const
 		return false;
 	}
 
-	const auto it{ std::find_if(allResults_.begin(), allResults_.end(),
-		[type](const UReflectionResult& reflectionResult)
+	auto const it{ std::ranges::find_if(allResults_,
+		[type](UReflectionResult const& reflectionResult)
 		{
 			return reflectionResult.type.name == type.base;
 		}

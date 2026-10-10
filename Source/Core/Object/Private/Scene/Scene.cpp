@@ -3,7 +3,6 @@
 #include "SceneObject/SceneObject.h"
 #include <Serializer/Serializer.h>
 #include <nlohmann/json.hpp>
-#include <vector>
 
 UScene::UScene(UPath const& path)
 	: path_{ path }

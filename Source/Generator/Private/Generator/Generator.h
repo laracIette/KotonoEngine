@@ -1,4 +1,5 @@
 #pragma once
+#include <types.h>
 #include <optional>
 #include <string>
 #include <vector>
@@ -17,6 +18,7 @@ class SGenerator final
 
 		std::string name;
 		std::optional<std::string> base;
+		b8 isAbstract;
 		std::vector<VariableInfo> variables;
 	};
 

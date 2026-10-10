@@ -1,18 +1,21 @@
 #pragma once
 #include "ReflectionResult.h"
+#include <span>
+#include <types.h>
 #include <vector>
+
 class GReflector final
 {
 public:
 	void Reflect();
 
-	const std::vector<UReflectionResult>& GetReflectionResults() const;
+	auto GetReflectionResults() const -> std::span<UReflectionResult const>;
 
-	bool IsObjectType(const UReflectionResult::TypeInfo& type) const;
+	auto IsObjectType(UReflectionResult::TypeInfo const& type) const -> b8;
 
 private:
-	UReflectionResult::TypeInfo GetTypeInfo(const std::string& content) const;
-	std::vector<UReflectionResult::MemberInfo> GetMemberInfos(const std::string& content) const;
+	auto GetTypeInfo(std::string const& content) const -> UReflectionResult::TypeInfo;
+	auto GetMemberInfos(std::string const& content) const -> std::vector<UReflectionResult::MemberInfo>;
 
 private:
 	std::vector<UReflectionResult> allResults_;

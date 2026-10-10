@@ -41,7 +41,7 @@ struct UInterfaceRenderGraph;
 class UInterface;
 
 /// Base class of all widgets
-class WWidget : public KObject
+ABSTRACT class WWidget : public KObject
 {
 	GENERATED()
 

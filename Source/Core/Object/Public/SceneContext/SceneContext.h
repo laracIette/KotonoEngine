@@ -9,7 +9,7 @@ class UScene;
 /// <summary>
 /// Base class for a widget managing a scene
 /// </summary>
-class WSceneContext : public WWidget
+ABSTRACT class WSceneContext : public WWidget
 {
 	GENERATED()
 

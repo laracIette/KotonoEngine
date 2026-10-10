@@ -4,8 +4,6 @@
 #include <ranges>
 #include <type_traits>
 
-#define SERIALIZE
-
 class UPath;
 
 b8 contains(nlohmann::json const& json, std::string_view name);

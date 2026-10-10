@@ -5,7 +5,7 @@
 
 #include "ChildrenOwner.generated.h"
 
-class WChildrenOwner : public WWidget
+ABSTRACT class WChildrenOwner : public WWidget
 {
 	GENERATED()
 
