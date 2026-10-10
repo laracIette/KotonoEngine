@@ -21,8 +21,6 @@ public:
 	void Remove() override;
 
 private:
-	void OnGameStateChanged(EGameState gameState) const;
-
 	auto MakeItems(std::span<UPtr<TSceneObject> const> sceneObjects) const -> WidgetSet;
 	void UpdateItemList(std::span<UPtr<TSceneObject> const> sceneObjects) const;
 

@@ -34,10 +34,10 @@ public:
 
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
 	
-	/// Activate if the button is activatable and deactivated
+	/// Activate if the button is deactivated and triggers the OnActivated event
 	void Activate();
 	
-	/// Deactivate if the button is activatable and activated
+	/// Deactivate if the button is activated and triggers the OnDeactivated event
 	void Deactivate();
 	
 	GetterAndSetter(b8, UBindable<b8>, isEnabled_, IsEnabled);
@@ -61,7 +61,7 @@ private:
 	UBindable<b8> isEnabled_;
 
 	ReadonlyProperty(b8, isPressed_, IsPressed);
-	ReadonlyProperty(b8, isActivated_, IsActivated);
+	WritableProperty(b8, isActivated_, IsActivated);
 
 	WritableProperty(b8, isActivatable_, IsActivatable);
 	WritableProperty(b8, startActivated_, StartActivated);

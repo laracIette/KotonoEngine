@@ -50,15 +50,8 @@ UPtr<KSceneComponent> TSceneObject::GetRootComponent() const
 
 void TSceneObject::SetParent(UPtr<TSceneObject> const& parent, ECoordinateSpace keepTransform)
 {
-	if (!parent && !parent_)
-	{
-		Log(Warning, "Object", "couldn't set the parent of {0} it's already null", GetName());
-		return;
-	}
-
 	if (parent == parent_)
 	{
-		Log(Warning, "Object", "couldn't set the parent of {0} to its current parent", GetName());
 		return;
 	}
 

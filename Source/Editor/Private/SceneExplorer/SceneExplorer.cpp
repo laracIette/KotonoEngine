@@ -68,7 +68,6 @@ void WSceneExplorer::Display(UWidgetDisplaySettings const& displaySettings)
 {
 	Base::Display(displaySettings);
 
-	GetScene()->GetEventGameStateChanged().AddListener(this, &Self::OnGameStateChanged);
 	GetScene()->GetEventSceneObjectsUpdated().AddListener(this, &Self::UpdateItemList);
 }
 
@@ -76,16 +75,7 @@ void WSceneExplorer::Remove()
 {
 	Base::Remove();
 
-	GetScene()->GetEventGameStateChanged().RemoveListener(this, &Self::OnGameStateChanged);
 	GetScene()->GetEventSceneObjectsUpdated().RemoveListener(this, &Self::UpdateItemList);
-}
-
-void WSceneExplorer::OnGameStateChanged(EGameState gameState) const
-{
-	if (gameState != EGameState::Paused)
-	{
-		UpdateItemList(GetScene()->GetSceneObjects());
-	}
 }
 
 auto WSceneExplorer::MakeItems(std::span<UPtr<TSceneObject> const> sceneObjects) const -> WidgetSet

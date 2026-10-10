@@ -144,6 +144,8 @@ void UScene::Deserialize()
 			sceneObject->scene_ = this;
 		}
 	}
+	
+	eventSceneObjectsUpdated_.Broadcast(sceneObjects_);
 }
 
 void UScene::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const
