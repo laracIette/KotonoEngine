@@ -2,7 +2,6 @@
 
 #include "Interface/Interface.h"
 #include <glm/ext/matrix_transform.hpp>
-#include <glm/gtx/string_cast.hpp>
 #include <Logging/log.h>
 #include <RenderGraph/InterfaceRenderGraph.h>
 #include <math_utils/math_utils.h>
@@ -198,8 +197,6 @@ auto WWidget::OnMouseButton(EButton button, EInputState inputState, EModifier mo
 
 auto WWidget::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> b8
 {
-	KT_LOG(ELogImportance::Medium, "Object", "overlapping {0:30} | {1:100} | | position: {2:30} | size: {3:30} | | slot | position: {4:30} | bounds: {5:30}", GetName(), GetClassPath(), glm::to_string(GetPosition()), glm::to_string(GetSize()), glm::to_string(slotDisplaySettings_.position), glm::to_string(slotDisplaySettings_.bounds));
-
 	if (!HasBuild() || !build_->GetIsDisplayed())
 	{
 		return INPUT_UNHANDLED;

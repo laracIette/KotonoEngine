@@ -15,22 +15,22 @@ WidgetPtr WSwitcher::Build()
 
 auto WSwitcher::GetChildren() const -> WidgetSet const&
 {
-	Check(Abort, stack_, "stack_ is null!");
+	Check(Throw, stack_, "stack_ is null!");
 	return stack_->GetChildren();
 }
 
 void WSwitcher::SetChildren(WidgetSet const& children) const
 {
-	Check(ErrorReturn, stack_, "stack_ is null!");
+	Check(Throw, stack_, "stack_ is null!");
 	stack_->SetChildren(children);
 	UpdateChildrenVisibility();
 }
 
 void WSwitcher::AddChild(WidgetPtr const& child) const
 {
-	Check(ErrorReturn, stack_, "stack_ is null!");
+	Check(Throw, stack_, "stack_ is null!");
+	Check(Throw, child, "child is null!");
 	stack_->AddChild(child);
-	Check(ErrorReturn, child, "child is null!");
 	child->SetIsVisible(GetChildren().LastIndex() == activeWidget_);
 }
 

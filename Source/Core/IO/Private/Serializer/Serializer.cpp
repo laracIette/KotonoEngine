@@ -5,19 +5,17 @@
 #include <Path/Path.h>
 #include <nlohmann/json.hpp> 
 
-#define KT_LOG_IMPORTANCE_LEVEL_SERIALIZER ELogImportance::High
-
 auto SSerializer::Serialize(nlohmann::json const& fromJson, UPath const& toPath) -> b8
 {
 	if (toPath.IsEmpty())
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO", "can't write data to empty path");
+		Log(Normal, "IO", "can't write data to empty path");
 		return false;
 	}
 
 	if (fromJson.is_null())
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO", "can't write null json to {0}", toPath.ToString());
+		Log(Normal, "IO", "can't write null json to {0}", toPath.ToString());
 		return false;
 	}
 
@@ -31,14 +29,14 @@ auto SSerializer::Deserialize(nlohmann::json& toJson, UPath const& fromPath) -> 
 {
 	if (fromPath.IsEmpty())
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO", "can't read data from empty path");
+		Log(Normal, "IO", "can't read data from empty path");
 		return false;
 	}
 
 	UFile const file{ fromPath };
 	if (!file.Exists())
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SERIALIZER, "IO", "file at path {0} doesn't exist", fromPath.ToString());
+		Log(Normal, "IO", "file at path {0} doesn't exist", fromPath.ToString());
 		return false;
 	}
 

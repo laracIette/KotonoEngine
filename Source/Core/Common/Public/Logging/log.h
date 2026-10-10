@@ -6,43 +6,30 @@
 
 #else
 
-#include "LogImportance.h"
-#include "LogSeverity.h"
+#include "macro_utils.h"
 #include <format>
 #include <iostream>
 #include <print>
 
+inline constexpr auto LOG_COLOR_DEFAULT{	"\033[0m" };
+inline constexpr auto LOG_COLOR_ACCENT{		"\033[38;2;72;187;204m" };
+inline constexpr auto LOG_COLOR_WARNING{	"\033[38;2;229;192;123m" };
+inline constexpr auto LOG_COLOR_ERROR{		"\033[38;2;224;108;117m" };
+
 template<typename... Args>
-inline void log_internal(ELogSeverity severity, char const* category, char const* funcName, std::format_string<Args...> format, Args&&... args)
+inline void log_internal(char const* logColor, char const* category, char const* funcName, std::format_string<Args...> format, Args&&... args)
 {
-    switch (severity)
-    {
-    case ELogSeverity::None:
-        std::println("[{0}.{1}()] {2}", category, funcName, std::format(format, std::forward<Args>(args)...));
-        break;
-    case ELogSeverity::Warning:
-        std::println("\033[38;2;229;192;123m[{0}.{1}()] {2}\033[0m", category, funcName, std::format(format, std::forward<Args>(args)...));
-        break;
-    case ELogSeverity::Error:
-        std::println("\033[38;2;224;108;117m[{0}.{1}()] {2}\033[0m", category, funcName, std::format(format, std::forward<Args>(args)...));
-        break;
-    default:
-        break;
-    }
-    
+	std::println("{0}[{1}.{2}()] {3}{4}", logColor, category, funcName, std::format(format, std::forward<Args>(args)...), LOG_COLOR_DEFAULT);    
 }
 
-/// Log a message into the console
-#define KT_LOG_SEVERITY(Level, Severity, Category, Format, ...) do					\
-    {                                                                               \
-        if constexpr (KT_SHOULD_LOG(Level))											\
-		{																			\
-			log_internal(Severity, Category, __FUNCTION__, Format, __VA_ARGS__);	\
-		}																			\
-    } while (false)
+#define LOG_SEVERITY_COLOR_Normal		LOG_COLOR_DEFAULT
+#define LOG_SEVERITY_COLOR_Important	LOG_COLOR_ACCENT
+#define LOG_SEVERITY_COLOR_Warning		LOG_COLOR_WARNING
+#define LOG_SEVERITY_COLOR_Error		LOG_COLOR_ERROR
 
+#define GET_LOG_SEVERITY_COLOR(...) MACRO_CONCAT(LOG_SEVERITY_COLOR_, __VA_ARGS__)
 
-/// Log a message into the console with a severity of ELogSeverity::None
-#define KT_LOG(Level, Category, Format, ...) KT_LOG_SEVERITY(Level, ELogSeverity::None, Category, Format, __VA_ARGS__)
-  
+/// Log a message to the console
+#define Log(Severity, Category, Format, ...) log_internal(GET_LOG_SEVERITY_COLOR(Severity), Category, __FUNCTION__, Format, __VA_ARGS__)
+
 #endif

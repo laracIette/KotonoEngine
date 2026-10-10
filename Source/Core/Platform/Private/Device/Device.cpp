@@ -11,7 +11,7 @@
 #include <ranges>
 #include <Windows.h>
 
-#define KT_LOG_IMPORTANCE_LEVEL_VMA ELogImportance::Low
+static constexpr auto SHOULD_LOG_VMA{ false };
 
 static constexpr std::array DEVICE_EXTENSIONS
 {
@@ -211,18 +211,18 @@ void UDevice::Cleanup() const
 
 	vkDestroyCommandPool(device_, commandPool_, nullptr);
 
-	if constexpr (KT_SHOULD_LOG(KT_LOG_IMPORTANCE_LEVEL_VMA))
+	if constexpr (SHOULD_LOG_VMA)
 	{
 		VmaTotalStatistics stats{};
 		vmaCalculateStatistics(allocator_, &stats);
 
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_VMA, "Platform", "VMA Allocator Stats:");
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_VMA, "Platform", "Total memory allocated: {0} bytes", stats.total.statistics.allocationBytes);
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_VMA, "Platform", "Number of allocations: {0}", stats.total.statistics.allocationCount);
+		Log(Important, "Platform", "VMA Allocator Stats:");
+		Log(Important, "Platform", "Total memory allocated: {0} bytes", stats.total.statistics.allocationBytes);
+		Log(Important, "Platform", "Number of allocations: {0}", stats.total.statistics.allocationCount);
 
 		char* statsString;
 		vmaBuildStatsString(allocator_, &statsString, true);
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_VMA, "Platform", "VMA Stats:\n{0}", statsString);
+		Log(Important, "Platform", "VMA Stats:\n{0}", statsString);
 		vmaFreeStatsString(allocator_, statsString);
 	}
 
@@ -449,7 +449,7 @@ void UDevice::CreatePhysicalDevice(VkSurfaceKHR mainSurface)
 				maxVRAM = totalVRAM;
 				bestDevice = device;
 
-				KT_LOG(ELogImportance::High, "Platform", "Selected GPU: {}, VRAM: {} MB", deviceProperties.deviceName, totalVRAM / (1024llu * 1024));
+				Log(Normal, "Platform", "Selected GPU: {0}, VRAM: {1} MB", deviceProperties.deviceName, totalVRAM / (1024llu * 1024));
 			}
 
 			// Stop on cpu if on battery

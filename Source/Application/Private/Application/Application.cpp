@@ -129,7 +129,7 @@ void UApplication::Update()
     }
 }
 
-void UApplication::DrawFrame()
+void UApplication::DrawFrame() const
 {
     mainWindowContext_->DrawFrame();
 
@@ -141,5 +141,5 @@ void UApplication::DrawFrame()
 
 void UApplication::LogUPS() const
 {
-    KT_LOG(ELogImportance::High, "Application", "{0:.2f} ups", 1.0f / averageUpdateTime_.Get());
+    Log(Normal, "Application", "{0:.2f} ups", 1.0f / averageUpdateTime_.Get());
 }

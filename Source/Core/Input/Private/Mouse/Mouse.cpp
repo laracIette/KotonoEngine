@@ -2,11 +2,8 @@
 
 #include <functional>
 #include <GLFW/glfw3.h>
-#include <Logging/log.h> 
 #include <Window/Window.h>
 #include <Containers/Map.h>
-
-#define KT_LOG_IMPORTANCE_LEVEL_MOUSE ELogImportance::Low
 
 static UMap<GLFWwindow*, std::function<void(EButton, i32)>> ButtonCallbacks{};
 static UMap<GLFWwindow*, std::function<void(glm::vec2)>> CursorPositionCallbacks{};
@@ -120,8 +117,6 @@ void UMouse::UpdateButton(EButton button, i32 action)
     {
     case GLFW_PRESS:
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_MOUSE, "Input", "GLFW_PRESS button {0}", std::to_underlying(button));
-
         SetIsButtonState(button, EInputState::Released, false);
 
         SetIsButtonState(button, EInputState::Pressed, true);
@@ -130,8 +125,6 @@ void UMouse::UpdateButton(EButton button, i32 action)
     }
     case GLFW_RELEASE:
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_MOUSE, "Input", "GLFW_RELEASE button {0}", std::to_underlying(button));
-
         SetIsButtonState(button, EInputState::Pressed, false);
         SetIsButtonState(button, EInputState::Down, false);
 

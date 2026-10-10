@@ -1,16 +1,14 @@
-#include <Logging/LogImportance.h>
-
 #ifndef NDEBUG
 
-#ifndef VMA_LOG_IMPORTANCE
-#define VMA_LOG_IMPORTANCE ELogImportance::Low
-#endif
+static constexpr auto LOG_VMA{ false };
 
-#define VMA_DEBUG_LOG(format, ...)                            \
-	if constexpr (KT_SHOULD_LOG(VMA_LOG_IMPORTANCE))    \
-    {                                                         \
-		printf("[VMA] " format "\n", __VA_ARGS__);            \
-	}
+#define VMA_DEBUG_LOG(format, ...) do					\
+	{													\
+		if constexpr (LOG_VMA)							\
+		{												\
+			printf("[VMA] " format "\n", __VA_ARGS__);	\
+		}												\
+	} while (false)
 
 #define VMA_DEBUG_INITIALIZE_ALLOCATIONS 1 
 

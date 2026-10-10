@@ -19,6 +19,10 @@ private:
 
 	friend std::hash<UPtr>;
 	
+	template <class TLeftPtr, class TRightPtr, typename Data>
+		requires std::is_convertible_v<TRightPtr*, TLeftPtr*>
+	friend constexpr auto operator==(UPtr<TLeftPtr, Data> const& left, UPtr<TRightPtr, Data> const& right) noexcept -> b8;
+	
 	template <class Derived, class Base, typename Data>
 		requires std::is_base_of_v<Base, Derived>
 	friend auto Cast(UPtr<Base, Data>&& ptr) noexcept -> UPtr<Derived, Data>;
@@ -203,7 +207,7 @@ template <class TLeftPtr, class TRightPtr, typename TData>
 	requires std::is_convertible_v<TRightPtr*, TLeftPtr*>
 constexpr auto operator==(UPtr<TLeftPtr, TData> const& left, UPtr<TRightPtr, TData> const& right) noexcept -> b8
 {
-	return left.Get() == right.Get();
+	return left.data_ == right.data_;
 }
 
 template <class TLeftPtr, class TRightPtr, typename TLeftData, typename TRightData>

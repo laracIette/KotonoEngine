@@ -3,11 +3,8 @@
 #include <functional>
 #include <GLFW/glfw3.h>
 #include <enum_utils.h>
-#include <Logging/log.h>
 #include <Window/Window.h>
 #include <Containers/Map.h>
-
-#define KT_LOG_IMPORTANCE_LEVEL_KEYBOARD ELogImportance::Low
 
 static UMap<GLFWwindow*, std::function<void(EKey, i32)>> KeyCallbacks{};
 
@@ -103,8 +100,6 @@ void UKeyboard::UpdateKey(EKey key, i32 action)
     {
     case GLFW_PRESS:
     {
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input", "GLFW_PRESS key {0}", std::to_underlying(key));
-
         SetIsKeyState(key, EInputState::Released, false);
 
         SetIsKeyState(key, EInputState::Pressed, true);
@@ -112,9 +107,7 @@ void UKeyboard::UpdateKey(EKey key, i32 action)
         break;
     }
     case GLFW_RELEASE:
-    {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_KEYBOARD, "Input", "GLFW_RELEASE key {0}", std::to_underlying(key));
-
+	{
         SetIsKeyState(key, EInputState::Pressed, false);
         SetIsKeyState(key, EInputState::Down, false);
 

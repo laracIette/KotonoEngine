@@ -3,8 +3,6 @@
 #include <Logging/log.h>
 #include <sstream>
 
-#define KT_LOG_IMPORTANCE_LEVEL_FILE ELogImportance::High
-
 UFile::UFile(const UPath& path) 
     : path_{ path }
 {
@@ -55,7 +53,7 @@ std::string UFile::ReadString() const
     // Check if path exists.
     if (!Exists())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to find a file at {}", path_.ToString());
+        Log(Normal, "IO", "Failed to find a file at {0}", path_.ToString());
         return "";
     }
 
@@ -64,7 +62,7 @@ std::string UFile::ReadString() const
 
     if (!file.is_open())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to open the file at {}", path_.ToString());
+        Log(Normal, "IO", "Failed to open the file at {0}", path_.ToString());
         return "";
     }
 
@@ -81,7 +79,7 @@ std::vector<u8> UFile::ReadBinary() const
 {
     if (!Exists())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to find a file at {}", path_.ToString());
+        Log(Normal, "IO", "Failed to find a file at {0}", path_.ToString());
         return {};
     }
 
@@ -89,7 +87,7 @@ std::vector<u8> UFile::ReadBinary() const
 
     if (!file.is_open())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to open the file at {}", path_.ToString());
+        Log(Normal, "IO", "Failed to open the file at {0}", path_.ToString());
         return {};
     }
 
@@ -111,7 +109,7 @@ void UFile::WriteString(std::string_view data) const
 
     if (!file.is_open())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to open the file at {0}", path_.ToString());
+        Log(Normal, "IO", "Failed to open the file at {0}", path_.ToString());
         return;
     }
 
@@ -129,7 +127,7 @@ void UFile::WriteBinary(std::span<u32 const> data) const
 
     if (!file.is_open())
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_FILE, "IO", "Failed to open the file at {}", path_.ToString());
+        Log(Normal, "IO", "Failed to open the file at {0}", path_.ToString());
         return;
     }
 

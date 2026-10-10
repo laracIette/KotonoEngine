@@ -118,7 +118,7 @@ auto UAudioContext::GetSource(EHandle handle) -> UAudioSource&
 
 void UAudioContext::DeleteSource(EHandle handle)
 {
-	Check(ErrorReturn, handle != EHandle::Invalid, "handle is invalid");
+	Check(Throw, handle != EHandle::Invalid, "handle is invalid");
 	
 	sources_.Remove(handle);
 	freeSourceSlots_.push_back(handle);

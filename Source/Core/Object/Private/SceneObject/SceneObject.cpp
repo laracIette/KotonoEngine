@@ -52,18 +52,19 @@ void TSceneObject::SetParent(UPtr<TSceneObject> const& parent, ECoordinateSpace 
 {
 	if (!parent && !parent_)
 	{
-		return;
-	}
-
-	if (parent == Ptr())
-	{
-		KT_LOG(ELogImportance::High, "Object", "couldn't set the parent of {0} to itself", GetName());
+		Log(Warning, "Object", "couldn't set the parent of {0} it's already null", GetName());
 		return;
 	}
 
 	if (parent == parent_)
 	{
-		KT_LOG(ELogImportance::High, "Object", "couldn't set the parent of {0} to its current parent", GetName());
+		Log(Warning, "Object", "couldn't set the parent of {0} to its current parent", GetName());
+		return;
+	}
+
+	if (parent == Ptr())
+	{
+		Log(Warning, "Object", "couldn't set the parent of {0} to itself", GetName());
 		return;
 	}
 
@@ -89,7 +90,7 @@ void TSceneObject::AddComponent(UPtr<KSceneComponent> const& component)
 {
 	if (!component)
 	{
-		KT_LOG(ELogImportance::High, "Object", "can't add a null scene component");
+		Log(Normal, "Object", "can't add a null scene component");
 		return;
 	}
 
@@ -116,7 +117,7 @@ void TSceneObject::RemoveComponent(UPtr<KSceneComponent> const& component)
 {
 	if (!component)
 	{
-		KT_LOG(ELogImportance::High, "Object", "can't remove a null scene component");
+		Log(Normal, "Object", "can't remove a null scene component");
 		return;
 	}
 

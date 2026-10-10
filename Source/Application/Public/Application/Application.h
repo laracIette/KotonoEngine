@@ -21,7 +21,7 @@ private:
 	void Cleanup();
 
 	void Update();
-	void DrawFrame();
+	void DrawFrame() const;
 
 	void LogUPS() const;
 

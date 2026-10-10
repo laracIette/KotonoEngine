@@ -137,10 +137,26 @@ auto KSceneComponent::GetScreenPosition() const -> glm::vec3
 
 void KSceneComponent::SetParent(UPtr<KSceneComponent> const& parent, ECoordinateSpace keepTransform)
 {
-	Check(WarningReturn, parent || parent_, "can't set the parent of {0}, it's already null!", GetName());
-	Check(WarningReturn, parent != parent_, "can't set the parent of {0} to its current parent!", GetName());
-	Check(WarningReturn, parent != Ptr(), "can't set the parent of {0} to itself!", GetName());
-	Check(WarningReturn, CanSetTransform(), "can't set the parent of {0}, its mobility is static!", GetName());
+	if (!parent && !parent_)
+	{
+		Log(Warning, "Object", "can't set the parent of {0}, it's already null!", GetName());
+		return;
+	}
+	if (parent == parent_)
+	{
+		Log(Warning, "Object", "can't set the parent of {0} to its current parent!", GetName());
+		return;
+	}
+	if (parent == Ptr())
+	{
+		Log(Warning, "Object", "can't set the parent of {0} to itself!", GetName());
+		return;
+	}
+	if (!CanSetTransform())
+	{
+		Log(Warning, "Object", "can't set the parent of {0}, it's not transformable!", GetName());
+		return;
+	}
 
     if (parent_)
     {
@@ -177,7 +193,11 @@ void KSceneComponent::SetParent(UPtr<KSceneComponent> const& parent, ECoordinate
 
 void KSceneComponent::SetRelativePosition(glm::vec3 const& relativePosition)
 {
-	Check(WarningReturn, CanSetTransform(), "can't set the position of {0}, its mobility is static!", GetName());
+	if (!CanSetTransform())
+	{
+		Log(Warning, "Object", "can't set the position of {0}, it's not transformable!", GetName());
+		return;
+	}
 
     if (transform_.position == relativePosition)
     {
@@ -190,7 +210,11 @@ void KSceneComponent::SetRelativePosition(glm::vec3 const& relativePosition)
 
 void KSceneComponent::SetRelativeRotation(glm::quat const& relativeRotation)
 {
-	Check(WarningReturn, CanSetTransform(), "can't set the rotation of {0}, its mobility is static!", GetName());
+	if (!CanSetTransform())
+	{
+		Log(Warning, "Object", "can't set the rotation of {0}, it's not transformable!", GetName());
+		return;
+	}
 
     if (transform_.rotation == relativeRotation)
     {
@@ -203,7 +227,11 @@ void KSceneComponent::SetRelativeRotation(glm::quat const& relativeRotation)
 
 void KSceneComponent::SetRelativeScale(glm::vec3 const& relativeScale)
 {
-	Check(WarningReturn, CanSetTransform(), "can't set the scale of {0}, its mobility is static!", GetName());
+	if (!CanSetTransform())
+	{
+		Log(Warning, "Object", "can't set the scale of {0}, it's not transformable!", GetName());
+		return;
+	}
 
     if (transform_.scale == relativeScale)
     {
@@ -297,7 +325,11 @@ void KSceneComponent::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, E
 
 void KSceneComponent::AddChild(UPtr<KSceneComponent> const& component)
 {
-	Check(WarningReturn, component, "can't add a null scene component!");
+	if (!component)
+	{
+		Log(Warning, "Object", "can't add a null scene component!");
+		return;
+	}
 
     children_.Add(component);
     eventTransformUpdated_.AddListener(&component->GetEventTransformUpdated(), &UEvent<>::Broadcast<>);
@@ -305,7 +337,11 @@ void KSceneComponent::AddChild(UPtr<KSceneComponent> const& component)
 
 void KSceneComponent::RemoveChild(UPtr<KSceneComponent> const& component)
 {
-	Check(WarningReturn, component, "can't remove a null scene component!");
+	if (!component)
+	{
+		Log(Warning, "Object", "can't remove a null scene component!");
+		return;
+	}
 
     children_.Remove(component);
     eventTransformUpdated_.RemoveListener(&component->GetEventTransformUpdated(), &UEvent<>::Broadcast<>);

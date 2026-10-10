@@ -7,8 +7,6 @@
 #include <Path/Path.h>
 #include <Serializer/Serializer.h>
 
-#define KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER ELogImportance::High
-
 static const UPath ShadersPath{ "${ENGINE_DIRECTORY}/Shaders" };
 #ifdef NDEBUG
 static const UPath CompiledShadersPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/Release/Compiled" };
@@ -29,7 +27,7 @@ static const std::array DependencyPaths{
 
 void SSpvCompiler::CompileAll()
 {
-    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "Clearing registry...");
+    Log(Normal, "Graphics", "Clearing registry...");
 
     SSerializer::Serialize(nlohmann::json::object(), CompiledRegistryPath);
     CompileUpdated();
@@ -45,7 +43,7 @@ void SSpvCompiler::CompileUpdated()
         return CompileAll();
     }
 
-    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "compiling updated spirv shaders");
+    Log(Normal, "Graphics", "compiling updated spirv shaders");
 
     nlohmann::json json{};
     SSerializer::Deserialize(json, CompiledRegistryPath);
@@ -100,7 +98,7 @@ void SSpvCompiler::CompileUpdated()
 
     SSerializer::Serialize(json, CompiledRegistryPath);
 
-    KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "compiled updated spirv shaders");
+    Log(Normal, "Graphics", "compiled updated spirv shaders");
 }
 
 auto SSpvCompiler::HasDependenciesUpdated() -> b8
@@ -162,11 +160,11 @@ auto SSpvCompiler::Compile(UPath const& path) -> b8
 
     if (result)
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "Successfully compiled shader {0}", filePath.ToPath().string());
+        Log(Normal, "Graphics", "Successfully compiled shader {0}", filePath.ToPath().string());
     }
     else
     {
-        KT_LOG(KT_LOG_IMPORTANCE_LEVEL_SPV_COMPILER, "Graphics", "Found errors while compiling shader {0}", filePath.ToPath().string());
+        Log(Normal, "Graphics", "Found errors while compiling shader {0}", filePath.ToPath().string());
     }
 
     return result;

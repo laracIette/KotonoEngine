@@ -6,8 +6,6 @@
 #include <Serializer/Serializer.h>
 #include <nlohmann/json.hpp>
 
-#define KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY ELogImportance::Medium
-
 UMap<std::string_view, SObjectFactory::ObjectFactoryFunc> SObjectFactory::objectFactories_{};
 UMap<UGuid, ObjectPtr> SObjectFactory::registry_{};
 
@@ -24,7 +22,6 @@ auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 	{
 		if (UPtr const object{ registryIt->second })
 		{
-			KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Object", "found object {0}", object->GetName());
 			return object;
 		}
 	}
@@ -40,21 +37,20 @@ auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 	auto const it{ json.find("type_") };
 	if (it == json.end())
 	{
-		KT_LOG_SEVERITY(ELogImportance::High, ELogSeverity::Warning, "Object", "missing element type_ in json");
+		Log(Error, "Object", "missing element type_ in json");
 		return nullptr;
 	}
 
 	auto const type{ it->get<std::string>() };
 	if (UPtr const object{ GetFactory(type) })
 	{
-		KT_LOG(KT_LOG_IMPORTANCE_LEVEL_OBJECT_FACTORY, "Object", "created object {0}", object->GetName());
 		object->guid_ = guid;
 		object->Deserialize();
 		registry_.InsertOrAssign(guid, object);
 		return object;
 	}
 
-	KT_LOG_SEVERITY(ELogImportance::High, ELogSeverity::Warning, "Object", "missing value for type {0} in object factories", type);
+	Log(Error, "Object", "missing value for type {0} in object factories", type);
 	return nullptr;
 }
 

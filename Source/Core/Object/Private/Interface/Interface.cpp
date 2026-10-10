@@ -48,7 +48,7 @@ void UInterface::BeginDraw(glm::uvec2 const& bounds)
 			},
 		});
 
-		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Object", "{0} displayed with a size of: {1}", widget_->GetName(), glm::to_string(bounds));
+		Log(Normal, "Object", "{0} displayed with a size of: {1}", widget_->GetName(), glm::to_string(bounds));
 	}
 }
 
@@ -58,7 +58,7 @@ void UInterface::EndDraw() const
 	{
 		widget_->Remove();
 
-		KT_LOG(KT_LOG_COMPILE_TIME_LEVEL, "Object", "{0} removed", widget_->GetName());
+		Log(Normal, "Object", "{0} removed", widget_->GetName());
 	}
 }
 
