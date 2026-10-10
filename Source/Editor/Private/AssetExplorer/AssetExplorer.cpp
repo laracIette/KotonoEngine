@@ -14,7 +14,7 @@ WAssetExplorer::WAssetExplorer()
 }
 
 WidgetPtr WAssetExplorer::Build()
-{	
+{			
 	return (
 		UCreate<WColumn>{ "Asset Explorer Main Column" }() 
 		| Apply(&WColumn::SetSpacing, 4.0f)

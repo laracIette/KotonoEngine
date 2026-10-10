@@ -3,45 +3,46 @@
 #include <type_traits>
 #include <utility>
 
+template <class TPtr>
 struct UPtrData
 {
-	void* pointer;
+	TPtr* pointer;
 	size count;
 };
 
-template <class T>
+template <class TPtr, class TData = UPtrData<void>>
 class UPtr final
-{
+{	
 private:
-	template <typename U> 
+	template <class, class> 
 	friend class UPtr;
 
 	friend std::hash<UPtr>;
 	
-	template <typename Derived, typename Base>
+	template <class Derived, class Base, typename Data>
 		requires std::is_base_of_v<Base, Derived>
-	friend auto Cast(UPtr<Base> const& ptr) noexcept -> UPtr<Derived>;
+	friend auto Cast(UPtr<Base, Data>&& ptr) noexcept -> UPtr<Derived, Data>;
 	
-	template <typename Derived, typename Base>
+	template <class Derived, class Base, typename Data>
 		requires std::is_base_of_v<Base, Derived>
-	friend auto Cast(UPtr<Base>&& ptr) noexcept -> UPtr<Derived>;
+	friend auto Cast(UPtr<Base, Data> const& ptr) noexcept -> UPtr<Derived, Data>;
 	
-	template <typename Derived, typename Base>
+	template <class Derived, class Base, typename Data>
 		requires std::is_base_of_v<Base, Derived>
-	friend auto TryCast(UPtr<Base> const& ptr) noexcept -> UPtr<Derived>;
+	friend auto TryCast(UPtr<Base, Data>&& ptr) noexcept -> UPtr<Derived, Data>;
 	
-	template <typename Derived, typename Base>
+	template <class Derived, class Base, typename Data>
 		requires std::is_base_of_v<Base, Derived>
-	friend auto TryCast(UPtr<Base>&& ptr) noexcept -> UPtr<Derived>;
+	friend auto TryCast(UPtr<Base, Data> const& ptr) noexcept -> UPtr<Derived, Data>;
 
 public:
-	using PointerType = T;
-	using Data = UPtrData;
+	using PointerType = TPtr;
+	using DataType = TData;
 
 private:
 	template <typename Base>
 		requires std::is_base_of_v<Base, PointerType>
-	constexpr UPtr(UPtr<Base>&& other) noexcept
+	explicit constexpr UPtr(UPtr<Base>&& other) noexcept
 		: data_{ std::exchange(other.data_, nullptr) }
 	{
 		TryIncrementCount();
@@ -49,7 +50,7 @@ private:
 	
 	template <typename Base>
 		requires std::is_base_of_v<Base, PointerType>
-	constexpr UPtr(UPtr<Base> const& other) noexcept
+	explicit constexpr UPtr(UPtr<Base> const& other) noexcept
 		: data_{ other.data_ }
 	{
 		TryIncrementCount();
@@ -66,8 +67,9 @@ public:
 	{
 	}
 
+	/// Creates a new pointer, allocating data
 	explicit constexpr UPtr(PointerType* pointer) noexcept
-		: data_{ new Data{ pointer, 1 } }
+		: data_{ new DataType{ pointer, 1 } }
 	{
 	}
 	
@@ -156,23 +158,6 @@ public:
 		return *this;
 	}
 
-	constexpr auto operator==(UPtr const& other) const noexcept -> b8
-	{
-		return data_ == other.data_;
-	}
-
-	template <typename From>
-		requires std::is_convertible_v<From*, PointerType*>
-	constexpr auto operator==(UPtr<From> const& other) const noexcept -> b8
-	{
-		return data_ == other.data_;
-	}
-
-	constexpr auto operator==(std::nullptr_t) const noexcept -> b8
-	{
-		return !operator b8();
-	}
-
 	constexpr operator b8() const noexcept
 	{
 		return data_ && data_->pointer;
@@ -211,53 +196,69 @@ private:
 	}
 
 private:
-	Data* data_;
+	DataType* data_;
 };
 
-/// Unsafe, equivalent of reinterpret_cast
-template <typename Derived, typename Base>
-	requires std::is_base_of_v<Base, Derived>
-inline auto Cast(UPtr<Base> const& ptr) noexcept -> UPtr<Derived>
+template <class TLeftPtr, class TRightPtr, typename TData>
+	requires std::is_convertible_v<TRightPtr*, TLeftPtr*>
+constexpr auto operator==(UPtr<TLeftPtr, TData> const& left, UPtr<TRightPtr, TData> const& right) noexcept -> b8
 {
-	return UPtr<Derived>{ ptr };
+	return left.Get() == right.Get();
+}
+
+template <class TLeftPtr, class TRightPtr, typename TLeftData, typename TRightData>
+constexpr auto operator==(UPtr<TLeftPtr, TLeftData>, UPtr<TRightPtr, TRightData>) noexcept -> b8 = delete;
+
+template <class TPtr, typename TData>
+constexpr auto operator==(UPtr<TPtr, TData> ptr, std::nullptr_t) noexcept -> b8
+{
+	return !ptr;
 }
 
 /// Unsafe, equivalent of reinterpret_cast
-template <typename Derived, typename Base>
+template <class Derived, class Base, typename TData>
 	requires std::is_base_of_v<Base, Derived>
-inline auto Cast(UPtr<Base>&& ptr) noexcept -> UPtr<Derived>
+inline auto Cast(UPtr<Base, TData>&& ptr) noexcept -> UPtr<Derived, TData>
 {
 	return UPtr<Derived>{ std::move(ptr) };
 }
 
-/// Safe, equivalent of dynamic_cast
-template <typename Derived, typename Base>
+/// Unsafe, equivalent of reinterpret_cast
+template <class Derived, class Base, typename TData>
 	requires std::is_base_of_v<Base, Derived>
-inline auto TryCast(UPtr<Base> const& ptr) noexcept -> UPtr<Derived>
+inline auto Cast(UPtr<Base, TData> const& ptr) noexcept -> UPtr<Derived, TData>
+{
+	return UPtr<Derived, TData>{ ptr };
+}
+
+/// Safe, equivalent of dynamic_cast
+template <class Derived, class Base, typename TData>
+	requires std::is_base_of_v<Base, Derived>
+inline auto TryCast(UPtr<Base, TData>&& ptr) noexcept -> UPtr<Derived, TData>
 {
 	if (ptr && dynamic_cast<Derived*>(ptr.Get()))
 	{
-		return UPtr<Derived>{ ptr };
+		return UPtr<Derived, TData>{ std::move(ptr) };
 	}
 	return nullptr;
 }
 
 /// Safe, equivalent of dynamic_cast
-template <typename Derived, typename Base>
+template <class Derived, class Base, typename TData>
 	requires std::is_base_of_v<Base, Derived>
-inline auto TryCast(UPtr<Base>&& ptr) noexcept -> UPtr<Derived>
+inline auto TryCast(UPtr<Base, TData> const& ptr) noexcept -> UPtr<Derived, TData>
 {
 	if (ptr && dynamic_cast<Derived*>(ptr.Get()))
 	{
-		return UPtr<Derived>{ std::move(ptr) };
+		return UPtr<Derived, TData>{ ptr };
 	}
 	return nullptr;
 }
 
-template <typename T>
-struct std::hash<UPtr<T>>
+template <class TPtr, class TData>
+struct std::hash<UPtr<TPtr, TData>>
 {
-	auto operator()(UPtr<T> const& ptr) const noexcept -> ::size
+	auto operator()(UPtr<TPtr, TData> const& ptr) const noexcept -> ::size
 	{
 		return std::hash<void*>{}(ptr.data_);
 	}
