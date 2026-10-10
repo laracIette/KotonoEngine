@@ -174,6 +174,7 @@ void UScene::StopGame()
 	{
 		now_ = 0.0f;
 		
+		SelectObject(nullptr);
 		DespawnSceneObjects();
 		DeleteSceneObjects();
 		
