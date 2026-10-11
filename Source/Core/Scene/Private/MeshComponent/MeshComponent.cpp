@@ -3,13 +3,13 @@
 #include <enum_utils.h>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <Logging/log.h>
+#include <math_utils/math_utils.h>
 #include <MeshLoader/MeshLoader.h>
 #include <RenderGraph/SceneRenderGraph.h>
 #include <SceneVisibility.h>
 
-#include <MeshLoader/MeshLoader.h>
-
 KMeshComponent::KMeshComponent()
+	: meshData_{}
 {
     spinTask_.duration = 500.0f;
 }
@@ -70,10 +70,9 @@ void KMeshComponent::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ES
     }
 }
 
-auto KMeshComponent::GetRayIntersects(glm::vec3 const& start, glm::vec3 const& end) const -> b8
+auto KMeshComponent::GetRayIntersects(glm::vec3 const& start, glm::vec3 const& direction) const -> b8
 {
-	// Check bounding box first, save in mesh data, then precise
-	throw "unimplemented!";
+	return rayIntersectSphere(start, direction, GetWorldPosition(), meshData_.boundingSphereRadius);
 }
 
 void KMeshComponent::Spin(f32 deltaTime)

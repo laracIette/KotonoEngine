@@ -6,19 +6,20 @@
 #include <glm/ext/quaternion_float.hpp>
 #include <glm/ext/vector_float2.hpp>
 #include <glm/ext/vector_float3.hpp>
+#include <glm/gtx/intersect.hpp>
 #include <glm/vector_relational.hpp>
 
 inline constexpr glm::vec3 WorldRightVector{ 1.0f, 0.0f, 0.0f };
 inline constexpr glm::vec3 WorldUpVector{ 0.0f, 1.0f, 0.0f };
 inline constexpr glm::vec3 WorldForwardVector{ 0.0f, 0.0f, -1.0f };
 
-constexpr bool is_point_in_rect(glm::vec2 const& point, glm::vec2 const& position, glm::vec2 const& size) noexcept
+constexpr auto is_point_in_rect(glm::vec2 const& point, glm::vec2 const& position, glm::vec2 const& size) noexcept -> bool
 {
     return glm::all(glm::greaterThanEqual(point, position))
         && glm::all(glm::lessThanEqual(point, position + size));
 }
 
-constexpr bool is_overlapping(glm::vec2 const& leftPos, glm::vec2 const& leftSize, glm::vec2 const& rightPos, glm::vec2 const& rightSize) noexcept
+constexpr auto is_overlapping(glm::vec2 const& leftPos, glm::vec2 const& leftSize, glm::vec2 const& rightPos, glm::vec2 const& rightSize) noexcept -> bool
 {
     return leftPos.x < rightPos.x + rightSize.x 
         && leftPos.x + leftSize.x > rightPos.x 
@@ -36,32 +37,32 @@ constexpr void compute_intersect(glm::vec2 const& leftPos, glm::vec2 const& left
     intersectSize = glm::max(glm::vec2{ 0.0f }, intersectEnd - intersectPos);
 }
 
-constexpr glm::vec2 px_to_ndc_size(glm::vec2 const& px, glm::vec2 const& bounds) noexcept
+constexpr auto px_to_ndc_size(glm::vec2 const& px, glm::vec2 const& bounds) noexcept -> glm::vec2
 {
     return px / glm::vec2{ bounds } * glm::vec2{ 1.0f, -1.0f } * 2.0f;
 }
 
-constexpr glm::vec2 px_to_ndc_pos(glm::vec2 const& px, glm::vec2 const& bounds) noexcept
+constexpr auto px_to_ndc_pos(glm::vec2 const& px, glm::vec2 const& bounds) noexcept -> glm::vec2
 {
     return px / glm::vec2{ bounds } * 2.0f - 1.0f;
 }
 
 template<std::floating_point T>
-inline T round(T v, int digits) noexcept
+inline auto round(T v, int digits) noexcept -> T
 {
     T const factor{ static_cast<T>(std::pow(T{ 10 }, digits)) };
     return std::round(v * factor) / factor;
 }
 
 template<std::floating_point T>
-constexpr T clamp01(T v) noexcept
+constexpr auto clamp01(T v) noexcept -> T
 {
     constexpr T min{ 0 };
     constexpr T max{ 1 };
     return std::min(std::max(min, v), max);
 }
 
-inline glm::mat4 calculate_reverse_z_infinite_perspective(float fovY, float aspect, float zNear) noexcept
+inline auto calculate_reverse_z_infinite_perspective(float fovY, float aspect, float zNear) noexcept -> glm::mat4
 {
     float const f{ 1.0f / std::tan(fovY / 2.0f) };
 
@@ -75,17 +76,25 @@ inline glm::mat4 calculate_reverse_z_infinite_perspective(float fovY, float aspe
     return result;
 }
 
-constexpr glm::vec3 right_vector(glm::quat const& quat)
+constexpr auto right_vector(glm::quat const& quat) -> glm::vec3
 {
     return quat * WorldRightVector;
 }
 
-constexpr glm::vec3 up_vector(glm::quat const& quat)
+constexpr auto up_vector(glm::quat const& quat) -> glm::vec3
 {
     return quat * WorldUpVector;
 }
 
-constexpr glm::vec3 forward_vector(glm::quat const& quat)
+constexpr auto forward_vector(glm::quat const& quat) -> glm::vec3
 {
     return quat * WorldForwardVector;
+}
+
+constexpr auto rayIntersectSphere(glm::vec3 const& rayStart, glm::vec3 const& rayDirection, glm::vec3 const& spherePosition, float sphereRadius) noexcept -> bool
+{
+	glm::vec3 intersectPosition;
+	glm::vec3 intersectNormal;
+	
+	return glm::intersectRaySphere(rayStart, rayDirection, spherePosition, sphereRadius, intersectPosition, intersectNormal);
 }

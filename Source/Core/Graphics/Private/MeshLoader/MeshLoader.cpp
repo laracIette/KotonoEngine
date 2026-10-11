@@ -79,6 +79,8 @@ auto SMeshLoader::Load(UPath const& path) -> UMeshData
 				{
 					uniqueVertices[vertex] = static_cast<u32>(meshData.vertices.size());
 					meshData.vertices.push_back(vertex);
+					
+					meshData.boundingSphereRadius = std::max(meshData.boundingSphereRadius, glm::length(vertex.position));
 				}
 
 				meshData.indices.push_back(uniqueVertices.At(vertex));
