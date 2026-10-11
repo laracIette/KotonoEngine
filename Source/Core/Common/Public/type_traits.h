@@ -8,7 +8,7 @@ struct is_cheap_copyable final : std::bool_constant<std::is_trivially_copyable_v
 };
 
 template <typename T>
-inline constexpr b8 is_cheap_copyable_v = is_cheap_copyable<T>::value;
+inline constexpr b8 is_cheap_copyable_v{ is_cheap_copyable<T>::value };
 
 template <typename T>
 using optimal_t = std::conditional_t<
@@ -16,3 +16,11 @@ using optimal_t = std::conditional_t<
 	std::remove_cvref_t<T>,
 	std::remove_cvref_t<T> const&
 >;
+
+template <typename Base, typename Derived>
+struct is_strict_base_of final : std::bool_constant<!std::is_same_v<Base, Derived> && std::is_base_of_v<Base, Derived>>
+{
+};
+
+template <typename Base, typename Derived>
+inline constexpr auto is_strict_base_of_v{ is_strict_base_of<Base, Derived>::value };

@@ -38,7 +38,7 @@ void WSwitcher::SetActiveWidget(u32 activeWidget)
 {
 	Check(Warning, activeWidget < GetChildren().size(), "activeWidget should be lower than the children count!");
 	activeWidget_ = activeWidget;
-	UpdateChildrenVisibility();
+	UpdateChildrenVisibility();	
 }
 
 void WSwitcher::UpdateChildrenVisibility() const

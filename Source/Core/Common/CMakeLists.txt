@@ -34,6 +34,7 @@ set(KCOMMON_PUBLIC_HEADERS
     "Public/Path/Path.h"
 )
 set(KCOMMON_SOURCES
+    "Private/tests.cpp"
     "Private/Asset/Asset.cpp"
     "Private/Path/Path.cpp"
 )

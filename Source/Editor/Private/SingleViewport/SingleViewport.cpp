@@ -29,7 +29,7 @@ WidgetPtr WSingleViewport::Build()
 		)
 		| (
 			switcher_ = UCreate<WSwitcher>{}()
-			| Apply(&WSwitcher::SetActiveWidget, 1)
+			| Apply(&WSwitcher::SetActiveWidget, 0)
 			| (
 				UCreate<WSceneVisibilityWindow>{ "Visualizer Window" }(DEFAULT_VISIBILITY)
 				| Apply(&WSceneVisibilityWindow::SetOnSceneVisibilityChanged, [sceneTexture](ESceneVisibility visibility) {
@@ -37,7 +37,7 @@ WidgetPtr WSingleViewport::Build()
 				})
 			)
 			| (
-				UCreate<WText>{}() | Apply(&WText::SetText, "gosfhuiuiofsd")
+				UCreate<WText>{}() | Apply(&WText::SetText, "Game")
 			)
 		)
 	);

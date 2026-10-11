@@ -1,6 +1,6 @@
 #pragma once
 #include <types.h>
-#include <type_traits>
+#include <type_traits.h>
 #include <utility>
 
 template <class TPtr>
@@ -24,19 +24,19 @@ private:
 	friend constexpr auto operator==(UPtr<TLeftPtr, Data> const& left, UPtr<TRightPtr, Data> const& right) noexcept -> b8;
 	
 	template <class Derived, class Base, typename Data>
-		requires std::is_base_of_v<Base, Derived>
+		requires is_strict_base_of_v<Base, Derived>
 	friend auto Cast(UPtr<Base, Data>&& ptr) noexcept -> UPtr<Derived, Data>;
 	
 	template <class Derived, class Base, typename Data>
-		requires std::is_base_of_v<Base, Derived>
+		requires is_strict_base_of_v<Base, Derived>
 	friend auto Cast(UPtr<Base, Data> const& ptr) noexcept -> UPtr<Derived, Data>;
 	
 	template <class Derived, class Base, typename Data>
-		requires std::is_base_of_v<Base, Derived>
+		requires is_strict_base_of_v<Base, Derived>
 	friend auto TryCast(UPtr<Base, Data>&& ptr) noexcept -> UPtr<Derived, Data>;
 	
 	template <class Derived, class Base, typename Data>
-		requires std::is_base_of_v<Base, Derived>
+		requires is_strict_base_of_v<Base, Derived>
 	friend auto TryCast(UPtr<Base, Data> const& ptr) noexcept -> UPtr<Derived, Data>;
 
 public:
@@ -221,7 +221,7 @@ constexpr auto operator==(UPtr<TPtr, TData> ptr, std::nullptr_t) noexcept -> b8
 
 /// Unsafe, equivalent of reinterpret_cast
 template <class Derived, class Base, typename TData>
-	requires std::is_base_of_v<Base, Derived>
+	requires is_strict_base_of_v<Base, Derived>
 inline auto Cast(UPtr<Base, TData>&& ptr) noexcept -> UPtr<Derived, TData>
 {
 	return UPtr<Derived>{ std::move(ptr) };
@@ -229,7 +229,7 @@ inline auto Cast(UPtr<Base, TData>&& ptr) noexcept -> UPtr<Derived, TData>
 
 /// Unsafe, equivalent of reinterpret_cast
 template <class Derived, class Base, typename TData>
-	requires std::is_base_of_v<Base, Derived>
+	requires is_strict_base_of_v<Base, Derived>
 inline auto Cast(UPtr<Base, TData> const& ptr) noexcept -> UPtr<Derived, TData>
 {
 	return UPtr<Derived, TData>{ ptr };
@@ -237,7 +237,7 @@ inline auto Cast(UPtr<Base, TData> const& ptr) noexcept -> UPtr<Derived, TData>
 
 /// Safe, equivalent of dynamic_cast
 template <class Derived, class Base, typename TData>
-	requires std::is_base_of_v<Base, Derived>
+	requires is_strict_base_of_v<Base, Derived>
 inline auto TryCast(UPtr<Base, TData>&& ptr) noexcept -> UPtr<Derived, TData>
 {
 	if (ptr && dynamic_cast<Derived*>(ptr.Get()))
@@ -249,7 +249,7 @@ inline auto TryCast(UPtr<Base, TData>&& ptr) noexcept -> UPtr<Derived, TData>
 
 /// Safe, equivalent of dynamic_cast
 template <class Derived, class Base, typename TData>
-	requires std::is_base_of_v<Base, Derived>
+	requires is_strict_base_of_v<Base, Derived>
 inline auto TryCast(UPtr<Base, TData> const& ptr) noexcept -> UPtr<Derived, TData>
 {
 	if (ptr && dynamic_cast<Derived*>(ptr.Get()))
