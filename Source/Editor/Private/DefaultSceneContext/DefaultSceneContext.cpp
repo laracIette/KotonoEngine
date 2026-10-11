@@ -92,4 +92,20 @@ WidgetPtr WDefaultSceneContext::Build()
 	);
 }
 
+b8 WDefaultSceneContext::OnMouseButton(EButton button, EInputState inputState, EModifier modifier)
+{
+	if (Base::OnMouseButton(button, inputState, modifier))
+	{
+		return INPUT_HANDLED;
+	}
+	
+	if (GetScene())
+	{
+		// Check mesh intersections
+		//return INPUT_HANDLED;
+	}
+	
+	return INPUT_UNHANDLED;
+}
+
 #include "DefaultSceneContext.generated.inl"

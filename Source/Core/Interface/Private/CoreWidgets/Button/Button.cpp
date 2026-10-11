@@ -15,6 +15,7 @@ WButton::WButton()
 	, isPressed_{ false }
 	, isActivated_{ false }
 	, isActivatable_{ false }
+	, startActivated_{ false }
 	, normalState_{ DEFAULT_TEXTURE, DEFAULT_NORMAL }
 	, focusedState_{ DEFAULT_TEXTURE, DEFAULT_FOCUSED }
 	, pressedState_{ DEFAULT_TEXTURE, DEFAULT_PRESSED }

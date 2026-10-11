@@ -1,29 +1,18 @@
 #pragma once
 #include <Asset/Asset.h>
 
-#include <glm/ext/vector_float2.hpp>
-#include <glm/ext/vector_float3.hpp>
-#include <glm/ext/vector_float4.hpp>
-#include <types.h>
 #include <AllocatedBuffer.h>
+#include <MeshLoader/MeshData.h>
+#include <types.h>
 #include <span>
 
 class UDevice;
 class UIndexBuffer;
 
-struct UVertex
-{
-	glm::vec3 position;
-	glm::vec3 normal;
-	glm::vec2 uv;
-	glm::vec4 tangent;
-
-	bool operator==(UVertex const& other) const noexcept;
-};
 class AModel final : public AAsset
 {
 public:
-	AModel(UPath const& path);
+	explicit AModel(UPath const& path);
 
 	void Init(UDevice& device);
 	void Cleanup(UDevice& device) const;
@@ -41,16 +30,8 @@ private:
 	void CreateVertexBuffer(UDevice& device);
 
 private:
-	std::vector<UVertex> vertices_;
-
-	std::vector<u32> indices_;
+	UMeshData meshData_;
 	u32 firstIndex_;
 
 	UAllocatedBuffer vertexBuffer_;
-};
-
-template<>
-struct std::hash<UVertex>
-{
-	::size operator()(UVertex const& v) const noexcept;
 };

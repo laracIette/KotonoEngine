@@ -1,17 +1,7 @@
 #include "Model.h"
 
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
-#include <glm/ext/vector_float2.hpp>
-#include <glm/ext/vector_float3.hpp>
-#include <glm/geometric.hpp>
-#include <glm/gtx/hash.hpp>
-#include <hash_utils.h>
 #include <Device/Device.h>
-#include <Containers/Map.h>
-#include <check.h>
-
+#include <MeshLoader/MeshLoader.h>
 
 AModel::AModel(UPath const& path) 
 	: AAsset(path)
@@ -36,7 +26,7 @@ VkDeviceAddress AModel::GetVertexBufferAddress() const
 
 u32 AModel::GetIndexCount() const
 {
-	return indices_.size();
+	return meshData_.indices.size();
 }
 
 u32 AModel::GetFirstIndex() const
@@ -51,84 +41,17 @@ void AModel::SetFirstIndex(u32 index)
 
 std::span<u32 const> AModel::GetIndices() const
 {
-	return indices_;
+	return meshData_.indices;
 }
 
 void AModel::Load()
 {
-	Assimp::Importer importer{};
-	aiScene const* scene{ importer.ReadFile(GetPath().ToPath().string().c_str()
-		, aiProcess_Triangulate
-		| aiProcess_FlipUVs
-		| aiProcess_MakeLeftHanded
-		| aiProcess_JoinIdenticalVertices
-		| aiProcess_CalcTangentSpace
-		| aiProcess_GenSmoothNormals
-	) };
-
-	Check(Throw, scene && scene->HasMeshes(), "failed to load model: {0}", GetPath().ToString());
-
-	UMap<UVertex, u32> uniqueVertices{};
-
-	for (u32 m{ 0 }; m < scene->mNumMeshes; ++m)
-	{
-		aiMesh const* mesh{ scene->mMeshes[m] };
-
-		for (u32 i{ 0 }; i < mesh->mNumFaces; ++i)
-		{
-			aiFace const& face{ mesh->mFaces[i] };
-
-			for (u32 j{ 0 }; j < face.mNumIndices; ++j)
-			{
-				const uint32_t idx{ face.mIndices[j] };
-
-				const aiVector3D pos{ mesh->mVertices[idx] };
-
-				const aiVector3D norm{ mesh->mNormals
-					? mesh->mNormals[idx]
-					: aiVector3D{ 0.0f, 1.0f, 0.0f } };
-
-				const aiVector3D uv{ mesh->mTextureCoords[0]
-					? mesh->mTextureCoords[0][idx]
-					: aiVector3D{ 0.0f, 0.0f, 0.0f } };
-
-				const aiVector3D tan{ mesh->mTangents
-					? mesh->mTangents[idx]
-					: aiVector3D{ 1.0f, 0.0f, 0.0f } };
-
-				const aiVector3D bitan{ mesh->mBitangents
-					? mesh->mBitangents[idx]
-					: aiVector3D{ 0.0f, 0.0f, 1.0f } };
-
-				const glm::vec3 N{ norm.x,  norm.y,  norm.z };
-				const glm::vec3 T{ tan.x,   tan.y,   tan.z };
-				const glm::vec3 B{ bitan.x, bitan.y, bitan.z };
-
-				const f32 handedness{ glm::dot(glm::cross(N, T), B) < 0.0f ? -1.0f : 1.0f };
-
-				const UVertex vertex{ 
-					.position = { pos.x, pos.y, pos.z },
-					.normal = N,
-					.uv = { uv.x, uv.y },
-					.tangent = { T, handedness },
-				};
-				
-				auto const [it, emplaced] { uniqueVertices.TryEmplace(vertex, static_cast<u32>(vertices_.size())) };
-				if (emplaced)
-				{
-					uniqueVertices[vertex] = static_cast<u32>(vertices_.size());
-					vertices_.push_back(vertex);
-				}
-
-				indices_.push_back(uniqueVertices.At(vertex));
-			}
-		}
-	}
+	meshData_ = SMeshLoader::Load(GetPath());
 }
 
 void AModel::CreateVertexBuffer(UDevice& device)
 {
-	VkDeviceSize const bufferSize{ sizeof(UVertex) * vertices_.size() };
+	VkDeviceSize const bufferSize{ sizeof(UVertex) * meshData_.vertices.size() };
 
 	vertexBuffer_ = device.CreateAllocatedBuffer(
 		  bufferSize
@@ -138,23 +61,5 @@ void AModel::CreateVertexBuffer(UDevice& device)
 		, 0
 	);
 
-	device.StagingUpload(vertices_.data(), bufferSize, vertexBuffer_, 0, 0);
-}
-
-bool UVertex::operator==(UVertex const& other) const noexcept
-{
-	return position == other.position
-		&& normal == other.normal
-		&& uv == other.uv
-		&& tangent == other.tangent;
-}
-
-size std::hash<UVertex>::operator()(UVertex const& v) const noexcept
-{
-	::size h{};
-	h = combine(h, std::hash<glm::vec3>{}(v.position));
-	h = combine(h, std::hash<glm::vec3>{}(v.normal));
-	h = combine(h, std::hash<glm::vec2>{}(v.uv));
-	h = combine(h, std::hash<glm::vec2>{}(v.tangent));
-	return h;
+	device.StagingUpload(meshData_.vertices.data(), bufferSize, vertexBuffer_, 0, 0);
 }

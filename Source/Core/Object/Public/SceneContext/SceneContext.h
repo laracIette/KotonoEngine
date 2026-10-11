@@ -11,17 +11,17 @@ class UScene;
 /// </summary>
 ABSTRACT class WSceneContext : public WWidget
 {
+private:
 	GENERATED()
 
 public:
-	//WSceneContext() = delete; // register_ breaks if default constructor deleted
-	WSceneContext(UPath const& scenePath);
+	explicit WSceneContext(UPath const& scenePath);
 	~WSceneContext() override;
 
 	void Deserialize() override;
 
 	void Update(f32 deltaTime) const;
-
+	
 private:
 	SERIALIZE UPath scenePath_;
 	ReadonlyProperty(UScene*, scene_, Scene, Value);

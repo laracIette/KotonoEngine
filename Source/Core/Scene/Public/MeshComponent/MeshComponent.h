@@ -1,6 +1,7 @@
 #pragma once
 #include <SceneComponent/SceneComponent.h>
 
+#include <MeshLoader/MeshData.h>
 #include <Task/Task.h>
 
 #include "MeshComponent.generated.h"
@@ -22,6 +23,8 @@ public:
 	void Despawn() override;
 
 	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const override;
+	
+	auto GetRayIntersects(glm::vec3 const& start, glm::vec3 const& end) const -> b8;
 
 private:
 	// temp
@@ -33,6 +36,7 @@ private:
 	SERIALIZE WritableProperty(UPath, shader_, Shader);
 	SERIALIZE WritableProperty(UPath, model_, Model);
 	SERIALIZE WritableProperty(UPath, material_, Material);
+	UMeshData meshData_;
 	UTask spinTask_;
 };
 

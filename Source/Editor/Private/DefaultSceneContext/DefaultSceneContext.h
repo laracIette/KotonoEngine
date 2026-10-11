@@ -9,4 +9,7 @@ class WDefaultSceneContext final : public WSceneContext
 
 protected:
 	WidgetPtr Build() override;
+	
+public:
+	auto OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8 override;
 };

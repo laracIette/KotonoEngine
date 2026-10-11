@@ -1,54 +1,6 @@
 cmake_minimum_required(VERSION 4.2)
 project(KotonoRendering LANGUAGES C CXX)
 
-################
-include(FetchContent)
-
-# --- Assimp ---
-FetchContent_Declare(
-    assimp
-    GIT_REPOSITORY https://github.com/assimp/assimp.git
-    GIT_TAG        v6.0.2
-    GIT_SHALLOW    TRUE
-)
-
-# Disable the install targets
-set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
-
-# Force Assimp to build as a static library
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-
-# Build zlib
-set(ASSIMP_BUILD_ZLIB ON CACHE BOOL "" FORCE)
-
-# Disable unnecessary Assimp extras to speed up build times
-set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
-set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
-set(ASSIMP_INSTALL_PDB OFF CACHE BOOL "" FORCE)
-
-# Disable all importers by default
-set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT OFF CACHE BOOL "" FORCE)
-
-# Enable importers
-set(ASSIMP_BUILD_OBJ_IMPORTER ON CACHE BOOL "" FORCE)
-
-# Disable exporters
-set(ASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT OFF CACHE BOOL "" FORCE)
-
-FetchContent_MakeAvailable(assimp)
-
-foreach(assimp_target
-    assimp
-    UpdateAssimpLibsDebugSymbolsAndDLLs
-    zlibstatic
-)
-    if(TARGET ${assimp_target})
-        set_target_properties(${assimp_target} PROPERTIES FOLDER "KotonoEngine/ThirdParty/assimp")
-    endif()
-endforeach()
-################
-
 add_library(KotonoRendering STATIC)
 
 target_compile_features(KotonoRendering PUBLIC cxx_std_23)
@@ -117,15 +69,6 @@ target_sources(KotonoRendering
 target_include_directories(KotonoRendering
     PRIVATE "${ENGINE_PATH}/Source/ThirdParty/stbimage/include"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Private"
-)
-
-# Preprocessor defines for all builds
-target_compile_definitions(KotonoRendering PUBLIC
-    ASSIMP_BUILD_NO_EXPORT
-)
-
-target_link_libraries(KotonoRendering PRIVATE
-    assimp::assimp
 )
 
 target_link_libraries(KotonoRendering PUBLIC

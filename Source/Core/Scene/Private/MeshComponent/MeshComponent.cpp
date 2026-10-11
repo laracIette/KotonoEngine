@@ -1,10 +1,13 @@
 #include "MeshComponent/MeshComponent.h"
 
-#include <glm/gtc/matrix_inverse.hpp>
 #include <enum_utils.h>
+#include <glm/gtc/matrix_inverse.hpp>
 #include <Logging/log.h>
+#include <MeshLoader/MeshLoader.h>
 #include <RenderGraph/SceneRenderGraph.h>
 #include <SceneVisibility.h>
+
+#include <MeshLoader/MeshLoader.h>
 
 KMeshComponent::KMeshComponent()
 {
@@ -34,6 +37,8 @@ void KMeshComponent::Update(f32 deltaTime)
 void KMeshComponent::Spawn()
 {
     Base::Spawn();
+	
+	meshData_ = SMeshLoader::Load(model_);
 
     spinTask_.eventUpdate.AddListener(this, &KMeshComponent::Spin);
 }
@@ -63,6 +68,12 @@ void KMeshComponent::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ES
             .isVisible = true,
         });
     }
+}
+
+auto KMeshComponent::GetRayIntersects(glm::vec3 const& start, glm::vec3 const& end) const -> b8
+{
+	// Check bounding box first, save in mesh data, then precise
+	throw "unimplemented!";
 }
 
 void KMeshComponent::Spin(f32 deltaTime)
