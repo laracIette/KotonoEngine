@@ -30,37 +30,46 @@ void WHorizontalSplitter::AddChild(WidgetPtr const& child)
 	
 	if (!row_->GetChildren().empty())
 	{
+		UPtr const separator{ UCreate<WConstraint>{}() };
 		row_->AddChild(
-			UCreate<WConstraint>{}()
+			separator
 			| Apply(&WConstraint::SetAxis, EAxis::Horizontal)
 			| Apply(&WConstraint::SetSize, 10.0f)
 			| (
 				UCreate<WButton>{}()
-				| Apply(&WButton::SetOnDrag, [previous = row_->GetChildren().back(), next = child](glm::vec2 const& delta) {
-					Check(Throw, previous, "previous child is null");
-					Check(Throw, next, "next child is null");
+				| Apply(&WButton::SetOnDrag, [this, separator](glm::vec2 const& delta) {
+					auto const index{ row_->GetChildren().GetIndex(separator) };
 					
-					auto const flexCount{ std::ranges::count_if(std::array{ previous, next }
-					  , [](WidgetPtr const& widget) {
-						  return widget->GetHasFlex(EFlex::Horizontal);
-					  }
+					auto const precedingView{ row_->GetChildren() | std::views::take(index) | std::views::reverse };
+					auto const findPrevious{ std::ranges::find_if(precedingView
+						, [](WidgetPtr const& widget) {
+							return widget->GetHasExpand(EExpand::Horizontal);
+						}
 					) };
 					
-					if (flexCount == 0)
+					auto const succeedingView{ row_->GetChildren() | std::views::drop(index + 1) };
+					auto const findNext{ std::ranges::find_if(succeedingView
+						, [](WidgetPtr const& widget) {
+							return widget->GetHasExpand(EExpand::Horizontal);
+						}
+					) };
+					
+					if (findPrevious == precedingView.end() || findNext == succeedingView.end())
 					{
 						return;
 					}
 					
-					auto const perWidgetAmount{ delta.x / flexCount / 500.0f };
+					UPtr const previous{ *findPrevious };
+					UPtr const next{ *findNext };
 					
-					if (previous->GetHasFlex(EFlex::Horizontal))
-					{
-						previous->SetExpandWeight(previous->GetExpandWeight() + glm::vec2{ perWidgetAmount, 0.0f });
-					}
-					if (next->GetHasFlex(EFlex::Horizontal))
-					{
-						next->SetExpandWeight(next->GetExpandWeight() - glm::vec2{ perWidgetAmount, 0.0f });
-					}
+					auto const expandWeight{ previous->GetExpandWeight().x + next->GetExpandWeight().x };
+					
+					const auto width{ previous->GetSize().x };
+					const auto weight{ previous->GetExpandWeight().x };
+					const auto result{ std::clamp(width / (width - delta.x) * weight, 0.01f, expandWeight - 0.01f) };
+					
+					previous->SetExpandWeight(glm::vec2{ result, 1.0f });
+					next->SetExpandWeight(glm::vec2{ expandWeight - result, 1.0f });
 				})
 			)
 		);

@@ -262,6 +262,11 @@ auto WWidget::GetHasFlex(EFlex flex) const -> b8
 	return has_flag(GetFlex(), flex);
 }
 
+auto WWidget::GetHasExpand(EExpand expand) const -> b8
+{	
+	return has_flag(GetExpand(), expand);
+}
+
 auto WWidget::GetIsPointHovering(glm::vec2 const& position) const -> b8
 {
 	return is_point_in_rect(position, GetScissor().offset, GetScissor().extent)

@@ -25,9 +25,10 @@ void ULightBuffers::Init()
 
 void ULightBuffers::Cleanup() const
 {
-    for (const auto& shadowMapTarget : directionalLightShadowMapTargets_)
+    for (auto const& [allocatedImage, textureIndex] : directionalLightShadowMapTargets_)
     {
-        device_.CleanupAllocatedImage(shadowMapTarget.allocatedImage);
+		pipelineResourceManager_.UnregisterTextureArray(textureIndex);
+        device_.CleanupAllocatedImage(allocatedImage);
     }
 
     device_.CleanupAllocatedBuffer(directionalLightBuffer_);
@@ -170,9 +171,9 @@ void ULightBuffers::CreateBuffers()
 void ULightBuffers::CreateShadowMapResources()
 {
     directionalLightShadowMapTargets_.resize(MAX_DIRECTIONAL_LIGHTS);
-    for (auto& shadowMapTarget : directionalLightShadowMapTargets_)
+    for (auto& [allocatedImage, textureIndex] : directionalLightShadowMapTargets_)
     {
-        shadowMapTarget.allocatedImage = device_.CreateAllocatedImage(UAllocatedImageCreateInfo::CreateSampled2D(
+        allocatedImage = device_.CreateAllocatedImage(UAllocatedImageCreateInfo::CreateSampled2D(
               SHADOW_MAP_RESOLUTION
             , SHADOW_MAP_RESOLUTION
             , 1
@@ -182,6 +183,6 @@ void ULightBuffers::CreateShadowMapResources()
             , VK_IMAGE_VIEW_TYPE_2D_ARRAY
             , NUM_DIRECTIONAL_CASCADES
         ));
-        shadowMapTarget.textureIndex = pipelineResourceManager_.RegisterTextureArray(shadowMapTarget.allocatedImage.imageView);
+        textureIndex = pipelineResourceManager_.RegisterTextureArray(allocatedImage.imageView);
     }
 }

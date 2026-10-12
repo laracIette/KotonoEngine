@@ -77,16 +77,16 @@ WidgetPtr WDefaultSceneContext::Build()
 			)
 		)
 		| (
-			UCreate<WDetachable>{ "Game" }()
-			| (
-				UCreate<WSingleViewport>{}(GetScene())
-			)
-		)
-		| (
 			UCreate<WDetachable>{ "Object Properties" }()
 			| Apply(&WDetachable::SetExpandWeight, glm::vec2{ 0.33f, 1.0f })
 			| (
 				UCreate<WPropertiesWindow>{}(GetScene())
+			)
+		)
+		| (
+			UCreate<WDetachable>{ "Game" }()
+			| (
+				UCreate<WSingleViewport>{}(GetScene())
 			)
 		)
 	);

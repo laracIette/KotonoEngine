@@ -101,6 +101,7 @@ public:
 	auto GetClassPath() const -> std::string;
 
 	auto GetHasFlex(EFlex flex) const -> b8;
+	auto GetHasExpand(EExpand expand) const -> b8;
 	auto GetIsPointHovering(glm::vec2 const& position) const -> b8;
 
 	GetterAndSetter(b8, UBindable<b8>, isVisible_, IsVisible);

@@ -175,9 +175,14 @@ public:
 		return values_.IsValidIndex(index);
 	}
 
-	constexpr auto IsValidIterator(IndicesMapConstIterator it) const noexcept -> b8
+	auto IsValidIterator(IndicesMapConstIterator it) const noexcept -> b8
 	{
 		return indices_.IsValidIterator(it);
+	}
+	
+	auto GetIndex(ValueType const& value) const -> IndexType
+	{
+		return indices_.At(value);
 	}
 
 	constexpr auto begin(this auto&& self) noexcept(noexcept(std::ranges::begin(self.values_)))
