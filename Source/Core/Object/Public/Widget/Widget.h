@@ -77,13 +77,11 @@ public:
 	virtual auto GetExpand() const -> EExpand;
 	virtual auto GetFlex() const -> EFlex;
 
-	auto GetClassPath() const -> std::string;
-
 	virtual auto GetInterface() const -> UInterface*;
 
 	virtual void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const;
 	virtual void PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosition) const;
-
+	
 	virtual auto OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8;
 	virtual auto OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> b8;
 	virtual auto OnMouseScroll(glm::vec2 const& delta) -> b8;
@@ -92,11 +90,17 @@ public:
 
 	virtual void OnFocused();
 	virtual void OnUnfocused();
+	
+	virtual void OnActive();
+	virtual void OnInactive();
 
 	virtual void Refresh();
 	
 	virtual void CacheBuild();
 
+	auto GetClassPath() const -> std::string;
+
+	auto GetHasFlex(EFlex flex) const -> b8;
 	auto GetIsPointHovering(glm::vec2 const& position) const -> b8;
 
 	GetterAndSetter(b8, UBindable<b8>, isVisible_, IsVisible);
@@ -138,6 +142,7 @@ private:
 	ReadonlyProperty(b8, isDisplayed_, IsDisplayed);
 	/// Whether the widget is currently focused by the controller
 	ReadonlyProperty(b8, isFocused_, IsFocused);
+	ReadonlyProperty(b8, isActive_, IsActive);
 	ReadonlyProperty(glm::vec2, contentSize_, ContentSize);
 	ReadonlyProperty(glm::mat4, modelMatrix_, ModelMatrix);
 	StateProperty(glm::vec2, expandWeight_, ExpandWeight);

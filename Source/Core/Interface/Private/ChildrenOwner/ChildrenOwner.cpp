@@ -59,10 +59,9 @@ void WChildrenOwner::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderG
 {
 	for (auto const& child : children_)
 	{
-		Check(Warning, child, "child is null!");
-		
 		if (!child)
 		{
+			Log(Warning, "Interface", "child is null!");
 			continue;
 		}
 		
@@ -78,11 +77,10 @@ void WChildrenOwner::PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& curs
 	Base::PopulateFocusTree(widgets, cursorPosition);
 
 	for (auto const& child : children_)
-	{
-		Check(Warning, child, "child is null!");
-		
+	{		
 		if (!child)
 		{
+			Log(Warning, "Interface", "child is null!");
 			continue;
 		}
 		
@@ -91,126 +89,6 @@ void WChildrenOwner::PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& curs
 			child->PopulateFocusTree(widgets, cursorPosition);
 		}
 	}
-}
-
-b8 WChildrenOwner::OnMouseButton(EButton button, EInputState inputState, EModifier modifier)
-{
-	for (auto const& child : children_ | std::views::reverse)
-	{
-		Check(Warning, child, "child is null!");
-		
-		if (!child)
-		{
-			continue;
-		}
-		
-		if (!child->GetIsDisplayed())
-		{
-			continue;
-		}
-
-		if (!child->GetIsFocused())
-		{
-			continue;
-		}
-
-		if (child->OnMouseButton(button, inputState, modifier) == INPUT_HANDLED)
-		{
-			return INPUT_HANDLED;
-		}
-	}
-
-	return INPUT_UNHANDLED;
-}
-
-b8 WChildrenOwner::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
-{
-	for (auto const& child : children_ | std::views::reverse)
-	{
-		Check(Warning, child, "child is null!");
-		
-		if (!child)
-		{
-			continue;
-		}
-		
-		if (!child->GetIsDisplayed())
-		{
-			continue;
-		}
-
-		if (!child->GetIsPointHovering(position))
-		{
-			continue;
-		}
-
-		if (child->OnMouseMove(delta, position) == INPUT_HANDLED)
-		{
-			return INPUT_HANDLED;
-		}
-	}
-
-	return INPUT_UNHANDLED;
-}
-
-b8 WChildrenOwner::OnMouseScroll(glm::vec2 const& delta)
-{
-	for (auto const& child : children_ | std::views::reverse)
-	{
-		Check(Warning, child, "child is null!");
-		
-		if (!child)
-		{
-			continue;
-		}
-		
-		if (!child->GetIsDisplayed())
-		{
-			continue;
-		}
-
-		if (!child->GetIsFocused())
-		{
-			continue;
-		}
-
-		if (child->OnMouseScroll(delta) == INPUT_HANDLED)
-		{
-			return INPUT_HANDLED;
-		}
-	}
-
-	return INPUT_UNHANDLED;
-}
-
-b8 WChildrenOwner::OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier)
-{
-	for (auto const& child : children_ | std::views::reverse)
-	{
-		Check(Warning, child, "child is null!");
-		
-		if (!child)
-		{
-			continue;
-		}
-		
-		if (!child->GetIsDisplayed())
-		{
-			continue;
-		}
-
-		if (!child->GetIsFocused())
-		{
-			continue;
-		}
-
-		if (child->OnKeyboardKey(key, inputState, modifier) == INPUT_HANDLED)
-		{
-			return INPUT_HANDLED;
-		}
-	}
-
-	return INPUT_UNHANDLED;
 }
 
 void WChildrenOwner::Refresh()

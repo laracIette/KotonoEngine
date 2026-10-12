@@ -7,6 +7,7 @@
 #include "CoreWidgets/Constraint/Constraint.h"
 #include "CoreWidgets/Crop/Crop.h"
 #include "CoreWidgets/Expanded/Expanded.h"
+#include "CoreWidgets/HorizontalSplitter/HorizontalSplitter.h"
 #include "CoreWidgets/HorizontalWrapList/HorizontalWrapList.h"
 #include "CoreWidgets/Image/Image.h"
 #include "CoreWidgets/List/List.h"

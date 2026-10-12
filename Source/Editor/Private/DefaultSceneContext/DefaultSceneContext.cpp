@@ -12,7 +12,7 @@
 WidgetPtr WDefaultSceneContext::Build()
 {
 	return (
-		UCreate<WRow>{}()
+		UCreate<WHorizontalSplitter>{}()
 		| (
 			UCreate<WColumn>{}()
 			| Apply(&WColumn::SetExpandWeight, glm::vec2{ 0.33f, 1.0f })
@@ -93,12 +93,7 @@ WidgetPtr WDefaultSceneContext::Build()
 }
 
 b8 WDefaultSceneContext::OnMouseButton(EButton button, EInputState inputState, EModifier modifier)
-{
-	if (Base::OnMouseButton(button, inputState, modifier))
-	{
-		return INPUT_HANDLED;
-	}
-	
+{	
 	if (GetScene())
 	{
 		// Check mesh intersections

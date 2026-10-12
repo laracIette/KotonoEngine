@@ -89,11 +89,6 @@ WidgetPtr WAssetExplorer::Build()
 
 auto WAssetExplorer::OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8
 {
-	if (Base::OnMouseButton(button, inputState, modifier))
-	{
-		return INPUT_HANDLED;
-	}
-
 	if (inputState != EInputState::Pressed)
 	{
 		return INPUT_UNHANDLED;

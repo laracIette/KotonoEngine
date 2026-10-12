@@ -1,10 +1,11 @@
 #include "Widget/Widget.h"
 
 #include "Interface/Interface.h"
+#include <enum_utils.h>
 #include <glm/ext/matrix_transform.hpp>
 #include <Logging/log.h>
-#include <RenderGraph/InterfaceRenderGraph.h>
 #include <math_utils/math_utils.h>
+#include <RenderGraph/InterfaceRenderGraph.h>
 
 static constexpr auto getUpdatedFlex(glm::vec2 const& left, glm::vec2 const& right) noexcept -> EFlex
 {
@@ -144,15 +145,6 @@ auto WWidget::GetFlex() const -> EFlex
 	return EFlex::All;
 }
 
-auto WWidget::GetClassPath() const -> std::string
-{
-	if (parent_)
-	{
-		return std::format("{0} {1}", parent_->GetClassPath(), GetTypeName());
-	}
-	return GetTypeName();
-}
-
 UInterface* WWidget::GetInterface() const
 {
 	Check(Abort, parent_, "parent_ is null!");
@@ -182,61 +174,21 @@ void WWidget::PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosit
 
 auto WWidget::OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8
 {
-	if (!HasBuild() || !build_->GetIsDisplayed())
-	{
-		return INPUT_UNHANDLED;
-	}
-
-	if (build_->GetIsFocused())
-	{
-		return build_->OnMouseButton(button, inputState, modifier);
-	}
-
 	return INPUT_UNHANDLED;
 }
 
 auto WWidget::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> b8
 {
-	if (!HasBuild() || !build_->GetIsDisplayed())
-	{
-		return INPUT_UNHANDLED;
-	}
-
-	if (build_->GetIsPointHovering(position))
-	{
-		return build_->OnMouseMove(delta, position);
-	}
-
 	return INPUT_UNHANDLED;
 }
 
 auto WWidget::OnMouseScroll(glm::vec2 const& delta) -> b8
 {
-	if (!HasBuild() || !build_->GetIsDisplayed())
-	{
-		return INPUT_UNHANDLED;
-	}
-
-	if (build_->GetIsFocused())
-	{
-		return build_->OnMouseScroll(delta);
-	}
-
 	return INPUT_UNHANDLED;
 }
 
 auto WWidget::OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) -> b8
 {
-	if (!HasBuild() || !build_->GetIsDisplayed())
-	{
-		return INPUT_UNHANDLED;
-	}
-
-	if (build_->GetIsFocused())
-	{
-		return build_->OnKeyboardKey(key, inputState, modifier);
-	}
-
 	return INPUT_UNHANDLED;
 }
 
@@ -248,6 +200,16 @@ void WWidget::OnFocused()
 void WWidget::OnUnfocused()
 {
 	isFocused_ = false;
+}
+
+void WWidget::OnActive()
+{
+	isActive_ = true;
+}
+
+void WWidget::OnInactive()
+{
+	isActive_ = false;
 }
 
 void WWidget::Refresh()
@@ -284,6 +246,20 @@ void WWidget::CacheBuild()
 	{
 		build_->CacheBuild();
 	}
+}
+
+auto WWidget::GetClassPath() const -> std::string
+{
+	if (parent_)
+	{
+		return std::format("{0} {1}", parent_->GetClassPath(), GetTypeName());
+	}
+	return GetTypeName();
+}
+
+auto WWidget::GetHasFlex(EFlex flex) const -> b8
+{
+	return has_flag(GetFlex(), flex);
 }
 
 auto WWidget::GetIsPointHovering(glm::vec2 const& position) const -> b8

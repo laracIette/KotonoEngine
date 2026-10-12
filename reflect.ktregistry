@@ -20,6 +20,7 @@
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Constraint/Constraint.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Crop/Crop.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Expanded/Expanded.h",
+        "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/HorizontalSplitter/HorizontalSplitter.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/HorizontalWrapList/HorizontalWrapList.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Image/Image.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/List/List.h",

@@ -118,21 +118,6 @@ auto WButton::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> 
 	return INPUT_HANDLED;
 }
 
-void WButton::OnUnfocused()
-{
-	Base::OnUnfocused();
-
-	if (isPressed_)
-	{
-		isPressed_ = false;
-
-		if (onReleased_)
-		{
-			onReleased_();
-		}
-	}
-}
-
 void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
 {
 	auto const [texture, color] { [this]() {

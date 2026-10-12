@@ -27,6 +27,8 @@ public:
 	};
 
 public:
+	UInterface();
+	
 	void Cleanup() const;
 
 	void PopulateInterfaceRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const;
@@ -36,7 +38,7 @@ public:
 	void BeginDraw(glm::uvec2 const& bounds);
 	void EndDraw() const;
 
-	void OnMouseButton(EButton button, EInputState inputState, EModifier modifier) const;
+	void OnMouseButton(EButton button, EInputState inputState, EModifier modifier);
 	void OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) const;
 	void OnMouseScroll(glm::vec2 const& delta) const;
 
@@ -56,6 +58,7 @@ public:
 
 private:
 	void UpdateFocusedWidgets(glm::vec2 const& cursorPosition);
+	void UpdateActiveWidgets();
 
 private:
 	UPtr<WInterfaceRoot> widget_;
@@ -66,6 +69,7 @@ private:
 
 	/// Widgets currently hovered by the mouse cursor
 	USet<UPtr<WWidget>> focusedWidgets_;
+	USet<UPtr<WWidget>> activeWidgets_;
 
 	std::vector<PendingWindow> pendingWindows_;
 };

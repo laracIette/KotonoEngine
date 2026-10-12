@@ -30,8 +30,6 @@ public:
 	auto OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8 override;
 	auto OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> b8 override;
 
-	void OnUnfocused() override;
-
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
 	
 	/// Activate if the button is deactivated and triggers the OnActivated event

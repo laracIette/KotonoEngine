@@ -20,12 +20,6 @@ public:
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const final;
 	void PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosition) const final;
 
-	auto OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8 override;
-	auto OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> b8 override;
-	auto OnMouseScroll(glm::vec2 const& delta) -> b8 override;
-
-	auto OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) -> b8 override;
-	
 	void Refresh() final;
 	void CacheBuild() final;
 
@@ -44,7 +38,6 @@ private:
 template <typename T>
 concept ChildrenOwner = requires(T& widget, WidgetSet const& children, WidgetPtr const& child)
 {
-	{ widget.GetChildren() } -> std::convertible_to<WidgetSet>;
 	widget.SetChildren(children);
 	widget.AddChild(child);
 };

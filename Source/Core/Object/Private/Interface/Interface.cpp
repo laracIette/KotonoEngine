@@ -4,6 +4,12 @@
 #include <glm/gtx/string_cast.hpp>
 #include <Logging/log.h>
 
+UInterface::UInterface() 
+	: deltaTime_{ 0.0f }
+	, now_{ 0.0f }
+{
+}
+
 void UInterface::Cleanup() const
 {
 	if (widget_)
@@ -62,35 +68,52 @@ void UInterface::EndDraw() const
 	}
 }
 
-void UInterface::OnMouseButton(EButton button, EInputState inputState, EModifier modifier) const
+void UInterface::OnMouseButton(EButton button, EInputState inputState, EModifier modifier)
 {
-	if (widget_)
+	if (inputState == EInputState::Pressed)
 	{
-		widget_->OnMouseButton(button, inputState, modifier);
+		UpdateActiveWidgets();
+	}
+
+	for (auto const& widget : activeWidgets_ | std::views::reverse)
+	{
+		if (widget && widget->OnMouseButton(button, inputState, modifier) == INPUT_HANDLED)
+		{
+			break;
+		}
 	}
 }
 
 void UInterface::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) const
 {
-	if (widget_)
+	for (auto const& widget : activeWidgets_ | std::views::reverse)
 	{
-		widget_->OnMouseMove(delta, position);
+		if (widget && widget->OnMouseMove(delta, position) == INPUT_HANDLED)
+		{
+			break;
+		}
 	}
 }
 
 void UInterface::OnMouseScroll(glm::vec2 const& delta) const
 {
-	if (widget_)
-	{
-		widget_->OnMouseScroll(delta);
-	}
+	for (auto const& widget : activeWidgets_ | std::views::reverse)
+ 	{
+ 		if (widget && widget->OnMouseScroll(delta) == INPUT_HANDLED)
+ 		{
+ 			break;
+ 		}
+ 	}
 }
 
 void UInterface::OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) const
 {
-	if (widget_)
+	for (auto const& widget : activeWidgets_ | std::views::reverse)
 	{
-		widget_->OnKeyboardKey(key, inputState, modifier);
+		if (widget && widget->OnKeyboardKey(key, inputState, modifier) == INPUT_HANDLED)
+		{
+			break;
+		}
 	}
 }
 
@@ -118,21 +141,66 @@ void UInterface::UpdateFocusedWidgets(glm::vec2 const& cursorPosition)
 		widget_->PopulateFocusTree(newFocusedWidgets, cursorPosition);
 	}
 
-	for (auto const& widget : newFocusedWidgets)
-	{
-		if (widget && !focusedWidgets_.Contains(widget))
-		{
-			widget->OnFocused();
-		}
-	}
-
 	for (auto const& widget : focusedWidgets_)
 	{
-		if (widget && !newFocusedWidgets.Contains(widget))
+		if (!widget)
+		{
+			Log(Warning, "Object", "widget is null");
+			continue;
+		}
+		
+		if (!newFocusedWidgets.Contains(widget))
 		{
 			widget->OnUnfocused();
 		}
 	}
 
+	for (auto const& widget : newFocusedWidgets)
+	{
+		if (!widget)
+		{
+			Log(Warning, "Object", "widget is null");
+			continue;
+		}
+		
+		if (!focusedWidgets_.Contains(widget))
+		{
+			widget->OnFocused();
+		}
+	}
+
 	focusedWidgets_ = newFocusedWidgets;
+}
+
+void UInterface::UpdateActiveWidgets()
+{
+	for (auto const& widget : activeWidgets_)
+	{
+		if (!widget)
+		{
+			Log(Warning, "Object", "widget is null");
+			continue;
+		}
+			
+		if (!focusedWidgets_.Contains(widget))
+		{
+			widget->OnInactive();
+		}
+	}
+
+	for (auto const& widget : focusedWidgets_)
+	{
+		if (!widget)
+		{
+			Log(Warning, "Object", "widget is null");
+			continue;
+		}
+		
+		if (!activeWidgets_.Contains(widget))
+		{
+			widget->OnActive();
+		}
+	}
+	
+	activeWidgets_ = focusedWidgets_;
 }

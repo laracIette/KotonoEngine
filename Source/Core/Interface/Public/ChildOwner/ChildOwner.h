@@ -13,7 +13,6 @@ public:
 	WChildOwner();
 	~WChildOwner() override;
 
-public:
 	void Remove() override;
 
 	void Disown(WidgetPtr const& widget) override;
@@ -23,12 +22,6 @@ public:
 
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const final;
 	void PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosition) const final;
-
-	auto OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8 override;
-	auto OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> b8 override;
-	auto OnMouseScroll(glm::vec2 const& delta) -> b8 override;
-
-	auto OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) -> b8 override;
 
 	void Refresh() final;
 	
@@ -46,7 +39,6 @@ private:
 template <typename T>
 concept ChildOwner = requires(T& widget, WidgetPtr const& child)
 {
-	{ widget.GetChild() } -> std::convertible_to<WidgetPtr>;
 	widget.SetChild(child);
 };
 
