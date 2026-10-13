@@ -6,10 +6,10 @@
 #include "PropertiesWindow/PropertiesWindow.h"
 #include "SceneExplorer/SceneExplorer.h"
 #include "SingleViewport/SingleViewport.h"
+#include "Splitter/HorizontalSplitter.h"
+#include "Splitter/VerticalSplitter.h"
 #include <core_widgets.h>
 #include <Scene/Scene.h>
-
-#include "CoreWidgets/VerticalSplitter/VerticalSplitter.h"
 
 WidgetPtr WDefaultSceneContext::Build()
 {

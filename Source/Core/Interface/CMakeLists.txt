@@ -19,7 +19,6 @@ set(KINTERFACE_PUBLIC_HEADERS
     "Public/CoreWidgets/Constraint/Constraint.h"
     "Public/CoreWidgets/Crop/Crop.h"
     "Public/CoreWidgets/Expanded/Expanded.h"
-    "Public/CoreWidgets/HorizontalSplitter/HorizontalSplitter.h"
     "Public/CoreWidgets/HorizontalWrapList/HorizontalWrapList.h"
     "Public/CoreWidgets/Image/Image.h"
     "Public/CoreWidgets/List/List.h"
@@ -33,9 +32,7 @@ set(KINTERFACE_PUBLIC_HEADERS
     "Public/CoreWidgets/Stack/Stack.h"
     "Public/CoreWidgets/Switcher/Switcher.h"
     "Public/CoreWidgets/Text/Text.h"
-    "Public/CoreWidgets/VerticalSplitter/VerticalSplitter.h"
     "Public/CoreWidgets/Wrap/Wrap.h"
-    "Public/Splitter/Splitter.h"
 )
 set(KINTERFACE_PRIVATE_HEADERS
     "Private/HorizontalWrapListBody/HorizontalWrapListBody.h"
@@ -52,7 +49,6 @@ set(KINTERFACE_SOURCES
     "Private/CoreWidgets/Constraint/Constraint.cpp"
     "Private/CoreWidgets/Crop/Crop.cpp"
     "Private/CoreWidgets/Expanded/Expanded.cpp"
-    "Private/CoreWidgets/HorizontalSplitter/HorizontalSplitter.cpp"
     "Private/CoreWidgets/HorizontalWrapList/HorizontalWrapList.cpp"
     "Private/CoreWidgets/Image/Image.cpp"
     "Private/CoreWidgets/List/List.cpp"
@@ -66,11 +62,9 @@ set(KINTERFACE_SOURCES
     "Private/CoreWidgets/Stack/Stack.cpp"
     "Private/CoreWidgets/Switcher/Switcher.cpp"
     "Private/CoreWidgets/Text/Text.cpp"
-    "Private/CoreWidgets/VerticalSplitter/VerticalSplitter.cpp"
     "Private/CoreWidgets/Wrap/Wrap.cpp"
     "Private/HorizontalWrapListBody/HorizontalWrapListBody.cpp"
     "Private/ListBody/ListBody.cpp"
-    "Private/Splitter/Splitter.cpp"
 )
 
 target_sources(KotonoInterface

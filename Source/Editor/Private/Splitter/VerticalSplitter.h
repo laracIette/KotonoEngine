@@ -1,5 +1,5 @@
 #pragma once
-#include "Splitter/Splitter.h"
+#include "Splitter.h"
 
 #include "VerticalSplitter.generated.h"
 

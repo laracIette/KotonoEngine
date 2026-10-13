@@ -1,6 +1,6 @@
-#include "CoreWidgets/VerticalSplitter/VerticalSplitter.h"
+#include "VerticalSplitter.h"
 
-#include "core_widgets.h"
+#include <core_widgets.h>
 
 WVerticalSplitter::WVerticalSplitter()
 	: startPreviousHeight_{ 0.0f }

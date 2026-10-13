@@ -1,6 +1,6 @@
-#include "CoreWidgets/HorizontalSplitter/HorizontalSplitter.h"
+#include "HorizontalSplitter.h"
 
-#include "core_widgets.h"
+#include <core_widgets.h>
 
 WHorizontalSplitter::WHorizontalSplitter() 
 	: startPreviousWidth_{ 0.0f }

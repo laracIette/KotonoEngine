@@ -1,6 +1,6 @@
-#include "Splitter/Splitter.h"
+#include "Splitter.h"
 
-#include "ChildrenOwner/ChildrenOwner.h"
+#include <ChildrenOwner/ChildrenOwner.h>
 
 WidgetPtr WSplitter::Build()
 {

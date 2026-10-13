@@ -3,10 +3,10 @@
 #include "AssetExplorer/AssetExplorer.h"
 #include "DefaultSceneContext/DefaultSceneContext.h"
 #include "Detachable/Detachable.h"
+#include "Splitter/VerticalSplitter.h"
 #include "UpdateTimeText/UpdateTimeText.h"
 #include <ProjectSettings/ProjectSettings.h>
 #include <core_widgets.h>
-#include <CoreWidgets/VerticalSplitter/VerticalSplitter.h>
 
 WidgetPtr WMainWindow::Build()
 {
