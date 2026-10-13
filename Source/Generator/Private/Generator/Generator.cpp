@@ -14,7 +14,7 @@ static const UPath GeneratedPath{ "${ENGINE_DIRECTORY}/Cache/Generator/Generated
 
 void SGenerator::GenerateAll()
 {
-	Log(Normal, "Generator", "Clearing registry...");
+	Log(Normal, "Clearing registry...");
 
 	SSerializer::Serialize(nlohmann::json::object(), RegistryPath);
 	GenerateUpdated();
@@ -22,7 +22,7 @@ void SGenerator::GenerateAll()
 
 void SGenerator::GenerateUpdated()
 {
-	Log(Normal, "Generator", "Generating...");
+	Log(Normal, "Generating...");
 
 	nlohmann::json json{};
 	SSerializer::Deserialize(json, RegistryPath);
@@ -96,7 +96,7 @@ void RegisterObjectClasses()
 	UPath const filePath{ GeneratedPath / "ClassRegistrator.generated.inl" };
 	UFile{ filePath }.WriteString(generatedCode);
 
-	Log(Normal, "Generator", "Generated class registrator");
+	Log(Normal, "Generated class registrator");
 }
 
 void SGenerator::Generate(UReflectionResult const& reflectionResult)
@@ -104,7 +104,7 @@ void SGenerator::Generate(UReflectionResult const& reflectionResult)
 	GenerateHeader(reflectionResult);
 	GenerateSource(reflectionResult);
 
-	Log(Normal, "Generator", "Generated {0}", reflectionResult.path.ToPath().string());
+	Log(Normal, "Generated {0}", reflectionResult.path.ToPath().string());
 }
 
 void SGenerator::GenerateHeader(UReflectionResult const& reflectionResult)

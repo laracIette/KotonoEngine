@@ -37,7 +37,7 @@ auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 	auto const it{ json.find("type_") };
 	if (it == json.end())
 	{
-		Log(Error, "Object", "missing element type_ in json");
+		Log(Error, "missing element type_ in json");
 		return nullptr;
 	}
 
@@ -50,7 +50,7 @@ auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 		return object;
 	}
 
-	Log(Error, "Object", "missing value for type {0} in object factories", type);
+	Log(Error, "missing value for type {0} in object factories", type);
 	return nullptr;
 }
 

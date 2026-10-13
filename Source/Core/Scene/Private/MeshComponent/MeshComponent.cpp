@@ -85,13 +85,13 @@ void KMeshComponent::Spin(f32 deltaTime)
 void KMeshComponent::SetMobilityStatic()
 {
     SetMobility(EMobility::Static);
-    Log(Normal, "Core", "{0}", GetName());
+    Log(Normal, "{0}", GetName());
 }
 
 void KMeshComponent::SetMobilityDynamic()
 {
     SetMobility(EMobility::Dynamic);
-    Log(Normal, "Core", "{0}", GetName());
+    Log(Normal, "{0}", GetName());
 }
 
 #include "MeshComponent.generated.inl"

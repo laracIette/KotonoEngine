@@ -88,7 +88,7 @@ void KObject::CheckDebugRegistry()
         {
             if (object)
             {
-                Log(Normal, "Object"
+                Log(Normal
                     , "{0:48s} | L{1:03d}: {2}"
                     , object->ToString()
                     , object->sourceLine
@@ -97,7 +97,7 @@ void KObject::CheckDebugRegistry()
             }
             else
             {
-                Log(Normal, "Object", "NULL");
+                Log(Normal, "NULL");
             }
         }
         

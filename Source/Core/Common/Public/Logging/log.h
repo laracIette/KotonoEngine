@@ -30,6 +30,6 @@ inline void logInternal(char const* logColor, char const* file, int line, std::f
 #define GET_LOG_SEVERITY_COLOR(...) MACRO_CONCAT(LOG_SEVERITY_COLOR_, __VA_ARGS__)
 
 /// Log a message to the console
-#define Log(Severity, Category, Format, ...) logInternal(GET_LOG_SEVERITY_COLOR(Severity), __FILE__, __LINE__, Format, __VA_ARGS__)
+#define Log(Severity, Format, ...) logInternal(GET_LOG_SEVERITY_COLOR(Severity), __FILE__, __LINE__, Format, __VA_ARGS__)
 
 #endif

@@ -9,13 +9,13 @@ auto SSerializer::Serialize(nlohmann::json const& fromJson, UPath const& toPath)
 {
 	if (toPath.IsEmpty())
 	{
-		Log(Normal, "IO", "can't write data to empty path");
+		Log(Normal, "can't write data to empty path");
 		return false;
 	}
 
 	if (fromJson.is_null())
 	{
-		Log(Normal, "IO", "can't write null json to {0}", toPath.ToString());
+		Log(Normal, "can't write null json to {0}", toPath.ToString());
 		return false;
 	}
 
@@ -29,14 +29,14 @@ auto SSerializer::Deserialize(nlohmann::json& toJson, UPath const& fromPath) -> 
 {
 	if (fromPath.IsEmpty())
 	{
-		Log(Normal, "IO", "can't read data from empty path");
+		Log(Normal, "can't read data from empty path");
 		return false;
 	}
 
 	UFile const file{ fromPath };
 	if (!file.Exists())
 	{
-		Log(Normal, "IO", "file at path {0} doesn't exist", fromPath.ToString());
+		Log(Normal, "file at path {0} doesn't exist", fromPath.ToString());
 		return false;
 	}
 

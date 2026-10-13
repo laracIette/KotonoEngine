@@ -144,13 +144,13 @@ void KSceneComponent::SetParent(UPtr<KSceneComponent> const& parent, ECoordinate
 	
 	if (parent == Ptr())
 	{
-		Log(Warning, "Object", "can't set the parent of {0} to itself", GetName());
+		Log(Warning, "can't set the parent of {0} to itself", GetName());
 		return;
 	}
 	
 	if (!CanSetTransform())
 	{
-		Log(Warning, "Object", "can't set the parent of {0}, it's not transformable", GetName());
+		Log(Warning, "can't set the parent of {0}, it's not transformable", GetName());
 		return;
 	}
 
@@ -191,7 +191,7 @@ void KSceneComponent::SetRelativePosition(glm::vec3 const& relativePosition)
 {
 	if (!CanSetTransform())
 	{
-		Log(Warning, "Object", "can't set the position of {0}, it's not transformable", GetName());
+		Log(Warning, "can't set the position of {0}, it's not transformable", GetName());
 		return;
 	}
 
@@ -208,7 +208,7 @@ void KSceneComponent::SetRelativeRotation(glm::quat const& relativeRotation)
 {
 	if (!CanSetTransform())
 	{
-		Log(Warning, "Object", "can't set the rotation of {0}, it's not transformable", GetName());
+		Log(Warning, "can't set the rotation of {0}, it's not transformable", GetName());
 		return;
 	}
 
@@ -225,7 +225,7 @@ void KSceneComponent::SetRelativeScale(glm::vec3 const& relativeScale)
 {
 	if (!CanSetTransform())
 	{
-		Log(Warning, "Object", "can't set the scale of {0}, it's not transformable", GetName());
+		Log(Warning, "can't set the scale of {0}, it's not transformable", GetName());
 		return;
 	}
 
@@ -328,7 +328,7 @@ void KSceneComponent::AddChild(UPtr<KSceneComponent> const& component)
 {
 	if (!component)
 	{
-		Log(Warning, "Object", "can't add a null scene component");
+		Log(Warning, "can't add a null scene component");
 		return;
 	}
 
@@ -340,7 +340,7 @@ void KSceneComponent::RemoveChild(UPtr<KSceneComponent> const& component)
 {
 	if (!component)
 	{
-		Log(Warning, "Object", "can't remove a null scene component");
+		Log(Warning, "can't remove a null scene component");
 		return;
 	}
 

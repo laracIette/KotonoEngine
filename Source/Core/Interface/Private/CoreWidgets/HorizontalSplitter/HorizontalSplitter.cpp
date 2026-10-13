@@ -24,7 +24,7 @@ void WHorizontalSplitter::AddChild(WidgetPtr const& child)
 {
 	if (!child)
 	{
-		Log(Warning, "Interface", "child is null");
+		Log(Warning, "child is null");
 		return;
 	}
 	

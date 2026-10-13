@@ -216,13 +216,13 @@ void UDevice::Cleanup() const
 		VmaTotalStatistics stats{};
 		vmaCalculateStatistics(allocator_, &stats);
 
-		Log(Important, "Platform", "VMA Allocator Stats:");
-		Log(Important, "Platform", "Total memory allocated: {0} bytes", stats.total.statistics.allocationBytes);
-		Log(Important, "Platform", "Number of allocations: {0}", stats.total.statistics.allocationCount);
+		Log(Important, "VMA Allocator Stats:");
+		Log(Important, "Total memory allocated: {0} bytes", stats.total.statistics.allocationBytes);
+		Log(Important, "Number of allocations: {0}", stats.total.statistics.allocationCount);
 
 		char* statsString;
 		vmaBuildStatsString(allocator_, &statsString, true);
-		Log(Important, "Platform", "VMA Stats:\n{0}", statsString);
+		Log(Important, "VMA Stats:\n{0}", statsString);
 		vmaFreeStatsString(allocator_, statsString);
 	}
 
@@ -449,7 +449,7 @@ void UDevice::CreatePhysicalDevice(VkSurfaceKHR mainSurface)
 				maxVRAM = totalVRAM;
 				bestDevice = device;
 
-				Log(Normal, "Platform", "Selected GPU: {0}, VRAM: {1} MB", deviceProperties.deviceName, totalVRAM / (1024llu * 1024));
+				Log(Normal, "Selected GPU: {0}, VRAM: {1} MB", deviceProperties.deviceName, totalVRAM / (1024llu * 1024));
 			}
 
 			// Stop on cpu if on battery

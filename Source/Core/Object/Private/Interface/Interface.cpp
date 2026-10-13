@@ -54,7 +54,7 @@ void UInterface::BeginDraw(glm::uvec2 const& bounds)
 			},
 		});
 
-		Log(Normal, "Object", "{0} displayed with a size of: {1}", widget_->GetName(), glm::to_string(bounds));
+		Log(Normal, "{0} displayed with a size of: {1}", widget_->GetName(), glm::to_string(bounds));
 	}
 }
 
@@ -64,7 +64,7 @@ void UInterface::EndDraw() const
 	{
 		widget_->Remove();
 
-		Log(Normal, "Object", "{0} removed", widget_->GetName());
+		Log(Normal, "{0} removed", widget_->GetName());
 	}
 }
 
@@ -145,7 +145,7 @@ void UInterface::UpdateFocusedWidgets(glm::vec2 const& cursorPosition)
 	{
 		if (!widget)
 		{
-			Log(Warning, "Object", "widget is null");
+			Log(Warning, "widget is null");
 			continue;
 		}
 		
@@ -159,7 +159,7 @@ void UInterface::UpdateFocusedWidgets(glm::vec2 const& cursorPosition)
 	{
 		if (!widget)
 		{
-			Log(Warning, "Object", "widget is null");
+			Log(Warning, "widget is null");
 			continue;
 		}
 		
@@ -178,7 +178,7 @@ void UInterface::UpdateActiveWidgets()
 	{
 		if (!widget)
 		{
-			Log(Warning, "Object", "widget is null");
+			Log(Warning, "widget is null");
 			continue;
 		}
 			
@@ -192,7 +192,7 @@ void UInterface::UpdateActiveWidgets()
 	{
 		if (!widget)
 		{
-			Log(Warning, "Object", "widget is null");
+			Log(Warning, "widget is null");
 			continue;
 		}
 		

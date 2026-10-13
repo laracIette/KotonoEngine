@@ -57,7 +57,7 @@ void TSceneObject::SetParent(UPtr<TSceneObject> const& parent, ECoordinateSpace 
 
 	if (parent == Ptr())
 	{
-		Log(Warning, "Object", "couldn't set the parent of {0} to itself", GetName());
+		Log(Warning, "couldn't set the parent of {0} to itself", GetName());
 		return;
 	}
 
@@ -83,7 +83,7 @@ void TSceneObject::AddComponent(UPtr<KSceneComponent> const& component)
 {
 	if (!component)
 	{
-		Log(Normal, "Object", "can't add a null scene component");
+		Log(Normal, "can't add a null scene component");
 		return;
 	}
 
@@ -110,7 +110,7 @@ void TSceneObject::RemoveComponent(UPtr<KSceneComponent> const& component)
 {
 	if (!component)
 	{
-		Log(Normal, "Object", "can't remove a null scene component");
+		Log(Normal, "can't remove a null scene component");
 		return;
 	}
 
@@ -185,7 +185,7 @@ auto TSceneObject::GetRayIntersectSceneComponent(glm::vec3 const& start, glm::ve
 	{
 		if (!sceneComponent)
 		{
-			Log(Warning, "Object", "sceneComponent is null");
+			Log(Warning, "sceneComponent is null");
 			continue;
 		}
 		

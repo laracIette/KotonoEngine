@@ -201,7 +201,7 @@ auto UScene::GetRayIntersectSceneComponent(glm::vec3 const& start, glm::vec3 con
 	{
 		if (!sceneObject)
 		{
-			Log(Warning, "Object", "sceneObject is null");
+			Log(Warning, "sceneObject is null");
 			continue;
 		}
 	

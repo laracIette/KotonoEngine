@@ -21,10 +21,10 @@
 #define CHECK_HANDLE_THROW(Message) throw std::runtime_error{ Message }
 #define CHECK_HANDLE_ABORT() CHECK_DEBUG_BREAK(); std::abort()
 
-#define CHECK_LOG_Warning(Message, ...)	Log(Warning,	"Warning",	Message,	__VA_ARGS__)
-#define CHECK_LOG_Error(Message, ...)	Log(Error,		"Error",	Message,	__VA_ARGS__)
-#define CHECK_LOG_Throw(Message, ...)	Log(Error,		"Throw",	Message,	__VA_ARGS__); CHECK_HANDLE_THROW(Message)
-#define CHECK_LOG_Abort(Message, ...)	Log(Error,		"Abort",	Message,	__VA_ARGS__); CHECK_HANDLE_ABORT()
+#define CHECK_LOG_Warning(Message, ...)	Log(Warning,	Message,	__VA_ARGS__)
+#define CHECK_LOG_Error(Message, ...)	Log(Error,		Message,	__VA_ARGS__)
+#define CHECK_LOG_Throw(Message, ...)	Log(Error,		Message,	__VA_ARGS__); CHECK_HANDLE_THROW(Message)
+#define CHECK_LOG_Abort(Message, ...)	Log(Error,		Message,	__VA_ARGS__); CHECK_HANDLE_ABORT()
 
 #define GET_CHECK_LOG(...) MACRO_CONCAT(CHECK_LOG_, __VA_ARGS__)
 

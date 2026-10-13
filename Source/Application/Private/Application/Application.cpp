@@ -141,5 +141,5 @@ void UApplication::DrawFrame() const
 
 void UApplication::LogUPS() const
 {
-    Log(Normal, "Application", "{0:.2f} ups", 1.0f / averageUpdateTime_.Get());
+    Log(Normal, "{0:.2f} ups", 1.0f / averageUpdateTime_.Get());
 }

@@ -61,7 +61,7 @@ void WChildrenOwner::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderG
 	{
 		if (!child)
 		{
-			Log(Warning, "Interface", "child is null!");
+			Log(Warning, "child is null!");
 			continue;
 		}
 		
@@ -80,7 +80,7 @@ void WChildrenOwner::PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& curs
 	{		
 		if (!child)
 		{
-			Log(Warning, "Interface", "child is null!");
+			Log(Warning, "child is null!");
 			continue;
 		}
 		
