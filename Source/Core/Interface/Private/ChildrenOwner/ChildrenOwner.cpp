@@ -11,12 +11,13 @@ WChildrenOwner::WChildrenOwner()
 
 WChildrenOwner::~WChildrenOwner()
 {
-	for (auto const& child : WidgetSet{ children_ })
+	for (auto const& child : children_)
 	{		
 		Check(Warning, child, "child is null!");
 		
 		if (child)
 		{
+			child->SetParent(nullptr);
 			child->Delete();
 		}
 	}

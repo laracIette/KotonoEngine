@@ -11,6 +11,7 @@ WChildOwner::~WChildOwner()
 {
 	if (child_)
 	{
+		child_->SetParent(nullptr);
 		child_->Delete();
 	}
 }

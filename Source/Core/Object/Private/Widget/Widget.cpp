@@ -40,6 +40,7 @@ WWidget::~WWidget()
 {
 	if (HasBuild())
 	{
+		build_->SetParent(nullptr);
 		build_->Delete();
 	}
 

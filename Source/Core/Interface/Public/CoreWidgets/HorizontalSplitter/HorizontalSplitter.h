@@ -17,9 +17,6 @@ public:
 protected:
 	WidgetPtr Build() override;
 	
-	void OnDisplayed() override;
-	void OnRemoved() override;
-	
 public:
 	void SetChildren(WidgetSet const& children);
 	void AddChild(WidgetPtr const& child);

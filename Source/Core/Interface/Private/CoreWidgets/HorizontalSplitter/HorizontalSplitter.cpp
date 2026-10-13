@@ -11,21 +11,8 @@ WidgetPtr WHorizontalSplitter::Build()
 {
 	return (
 		row_
+		| Apply(&WRow::SetOnDisowned, [this](WidgetPtr const& widget) { RemoveChild(widget); })
 	);
-}
-
-void WHorizontalSplitter::OnDisplayed()
-{
-	Base::OnDisplayed();
-	
-	row_->SetOnDisowned([this](WidgetPtr const& widget) { RemoveChild(widget); });
-}
-
-void WHorizontalSplitter::OnRemoved()
-{
-	Base::OnRemoved();
-	
-	row_->SetOnDisowned({});
 }
 
 void WHorizontalSplitter::SetChildren(WidgetSet const& children)
