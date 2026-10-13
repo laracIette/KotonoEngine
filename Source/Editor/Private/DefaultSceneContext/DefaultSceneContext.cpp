@@ -9,12 +9,14 @@
 #include <core_widgets.h>
 #include <Scene/Scene.h>
 
+#include "CoreWidgets/VerticalSplitter/VerticalSplitter.h"
+
 WidgetPtr WDefaultSceneContext::Build()
 {
 	return (
 		UCreate<WHorizontalSplitter>{}()
 		| (
-			UCreate<WColumn>{}()
+			UCreate<WVerticalSplitter>{}()
 			| Apply(&WColumn::SetExpandWeight, glm::vec2{ 0.33f, 1.0f })
 			| (
 				UCreate<WWrap>{}()
@@ -37,33 +39,30 @@ WidgetPtr WDefaultSceneContext::Build()
 				)
 			)
 			| (
-				UCreate<WWrap>{}()
-				| Apply(&WWrap::SetAxis, EAxis::Vertical)
+				UCreate<WDetachable>{ "Game Buttons" }()
+				| Apply(&WDetachable::SetExpandWeight, glm::vec2{ 1.0f, 0.4f })
 				| (
-					UCreate<WDetachable>{ "Game Buttons" }()
+					UCreate<WColumn>{}()
+					| Apply(&WColumn::SetSpacing, 5.0f)
 					| (
-						UCreate<WColumn>{}()
-						| Apply(&WColumn::SetSpacing, 5.0f)
+						UCreate<WWrap>{}()
+						| Apply(&WWrap::SetAxis, EAxis::Vertical)
 						| (
-							UCreate<WWrap>{}()
-							| Apply(&WWrap::SetAxis, EAxis::Vertical)
+							UCreate<WAlign>{}()
+							| Apply(&WAlign::SetAlignment, UAlignment::Center())
 							| (
-								UCreate<WAlign>{}()
-								| Apply(&WAlign::SetAlignment, UAlignment::Center())
-								| (
-									UCreate<WGameStateButton>{ "Game State Button" }(GetScene())
-								)
+								UCreate<WGameStateButton>{ "Game State Button" }(GetScene())
 							)
 						)
+					)
+					| (
+						UCreate<WWrap>{}()
+						| Apply(&WWrap::SetAxis, EAxis::Vertical)
 						| (
-							UCreate<WWrap>{}()
-							| Apply(&WWrap::SetAxis, EAxis::Vertical)
+							UCreate<WAlign>{}()
+							| Apply(&WAlign::SetAlignment, UAlignment::Center())
 							| (
-								UCreate<WAlign>{}()
-								| Apply(&WAlign::SetAlignment, UAlignment::Center())
-								| (
-									UCreate<WGameSpeedButton>{ "Game Speed Button" }(GetScene())
-								)
+								UCreate<WGameSpeedButton>{ "Game Speed Button" }(GetScene())
 							)
 						)
 					)

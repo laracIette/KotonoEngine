@@ -10,11 +10,11 @@
 
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Private/HorizontalWrapListBody/HorizontalWrapListBody.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Private/ListBody/ListBody.h",
+        "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/ChildOwner/ChildOwner.h",
+        "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/ChildrenOwner/ChildrenOwner.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Align/Align.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Box/Box.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Button/Button.h",
-        "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/ChildOwner/ChildOwner.h",
-        "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/ChildrenOwner/ChildrenOwner.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Color/Color.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Column/Column.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Constraint/Constraint.h",
@@ -34,7 +34,9 @@
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Stack/Stack.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Switcher/Switcher.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Text/Text.h",
+        "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/VerticalSplitter/VerticalSplitter.h",
         "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/CoreWidgets/Wrap/Wrap.h",
+        "${ENGINE_DIRECTORY}/Source/Core/Interface/Public/Splitter/Splitter.h",
 
         "${ENGINE_DIRECTORY}/Source/Core/Scene/Public/AudioComponent/AudioComponent.h",
         "${ENGINE_DIRECTORY}/Source/Core/Scene/Public/CameraComponent/CameraComponent.h",

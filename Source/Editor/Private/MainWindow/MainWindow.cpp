@@ -6,6 +6,7 @@
 #include "UpdateTimeText/UpdateTimeText.h"
 #include <ProjectSettings/ProjectSettings.h>
 #include <core_widgets.h>
+#include <CoreWidgets/VerticalSplitter/VerticalSplitter.h>
 
 WidgetPtr WMainWindow::Build()
 {
@@ -13,7 +14,7 @@ WidgetPtr WMainWindow::Build()
 	AddSceneContext(sceneContext);
 	
 	return (
-		UCreate<WColumn>{ "Main Window Column" }()
+		UCreate<WVerticalSplitter>{ "Main Window Column" }()
 		| (
 			UCreate<WWrap>{}()
 			| Apply(&WWrap::SetAxis, EAxis::Vertical)
@@ -29,14 +30,10 @@ WidgetPtr WMainWindow::Build()
 			sceneContext
 		)
 		| (
-			UCreate<WConstraint>{ "Asset Explorer Constraint" }()
-			| Apply(&WConstraint::SetAxis, EAxis::Vertical)
-			| Apply(&WConstraint::SetSize, 250.0f)
+			UCreate<WDetachable>{ "Asset Explorer" }()
+			| Apply(&WDetachable::SetExpandWeight, glm::vec2{ 1.0f, 0.4f })
 			| (
-				UCreate<WDetachable>{ "Asset Explorer" }()
-				| (
-					UCreate<WAssetExplorer>{ "Asset Explorer" }()
-				)
+				UCreate<WAssetExplorer>{ "Asset Explorer" }()
 			)
 		)
 	);

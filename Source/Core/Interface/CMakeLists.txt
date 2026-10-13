@@ -8,12 +8,12 @@ target_compile_features(KotonoInterface PUBLIC cxx_std_23)
 set_target_properties(KotonoInterface PROPERTIES FOLDER "KotonoEngine/Core")
 
 set(KINTERFACE_PUBLIC_HEADERS
+    "Public/ChildOwner/ChildOwner.h"
+    "Public/ChildrenOwner/ChildrenOwner.h"
     "Public/core_widgets.h"
     "Public/CoreWidgets/Align/Align.h"
     "Public/CoreWidgets/Box/Box.h"
     "Public/CoreWidgets/Button/Button.h"
-    "Public/ChildOwner/ChildOwner.h"
-    "Public/ChildrenOwner/ChildrenOwner.h"
     "Public/CoreWidgets/Color/Color.h"
     "Public/CoreWidgets/Column/Column.h"
     "Public/CoreWidgets/Constraint/Constraint.h"
@@ -33,18 +33,20 @@ set(KINTERFACE_PUBLIC_HEADERS
     "Public/CoreWidgets/Stack/Stack.h"
     "Public/CoreWidgets/Switcher/Switcher.h"
     "Public/CoreWidgets/Text/Text.h"
+    "Public/CoreWidgets/VerticalSplitter/VerticalSplitter.h"
     "Public/CoreWidgets/Wrap/Wrap.h"
+    "Public/Splitter/Splitter.h"
 )
 set(KINTERFACE_PRIVATE_HEADERS
     "Private/HorizontalWrapListBody/HorizontalWrapListBody.h"
     "Private/ListBody/ListBody.h"
 )
 set(KINTERFACE_SOURCES
+    "Private/ChildOwner/ChildOwner.cpp"
+    "Private/ChildrenOwner/ChildrenOwner.cpp"
     "Private/CoreWidgets/Align/Align.cpp"
     "Private/CoreWidgets/Box/Box.cpp"
     "Private/CoreWidgets/Button/Button.cpp"
-    "Private/ChildOwner/ChildOwner.cpp"
-    "Private/ChildrenOwner/ChildrenOwner.cpp"
     "Private/CoreWidgets/Color/Color.cpp"
     "Private/CoreWidgets/Column/Column.cpp"
     "Private/CoreWidgets/Constraint/Constraint.cpp"
@@ -52,10 +54,8 @@ set(KINTERFACE_SOURCES
     "Private/CoreWidgets/Expanded/Expanded.cpp"
     "Private/CoreWidgets/HorizontalSplitter/HorizontalSplitter.cpp"
     "Private/CoreWidgets/HorizontalWrapList/HorizontalWrapList.cpp"
-    "Private/HorizontalWrapListBody/HorizontalWrapListBody.cpp"
     "Private/CoreWidgets/Image/Image.cpp"
     "Private/CoreWidgets/List/List.cpp"
-    "Private/ListBody/ListBody.cpp"
     "Private/CoreWidgets/Offset/Offset.cpp"
     "Private/CoreWidgets/Padding/Padding.cpp"
     "Private/CoreWidgets/Row/Row.cpp"
@@ -66,7 +66,11 @@ set(KINTERFACE_SOURCES
     "Private/CoreWidgets/Stack/Stack.cpp"
     "Private/CoreWidgets/Switcher/Switcher.cpp"
     "Private/CoreWidgets/Text/Text.cpp"
+    "Private/CoreWidgets/VerticalSplitter/VerticalSplitter.cpp"
     "Private/CoreWidgets/Wrap/Wrap.cpp"
+    "Private/HorizontalWrapListBody/HorizontalWrapListBody.cpp"
+    "Private/ListBody/ListBody.cpp"
+    "Private/Splitter/Splitter.cpp"
 )
 
 target_sources(KotonoInterface

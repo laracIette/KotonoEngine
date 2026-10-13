@@ -1,13 +1,9 @@
 #pragma once
-#include <Widget/Widget.h>
-
-#include <Containers/Map.h>
+#include "Splitter/Splitter.h"
 
 #include <HorizontalSplitter.generated.h>
 
-class WRow;
-
-class WHorizontalSplitter final : public WWidget
+class WHorizontalSplitter final : public WSplitter
 {
 	GENERATED()
 	
@@ -15,16 +11,9 @@ public:
 	WHorizontalSplitter();
 	
 protected:
-	WidgetPtr Build() override;
-	
-public:	
-	void SetChildren(WidgetSet const& children);
-	void AddChild(WidgetPtr const& child);
-	void RemoveChild(WidgetPtr const& child);
+	auto MakeSeparator() -> WidgetPtr override;
 	
 private:
-	UPtr<WRow> row_;
-	UMap<WidgetPtr, WidgetPtr> childSeparators_;
 	WidgetPtr previous_;
 	WidgetPtr next_;
 	f32 startPreviousWidth_;
