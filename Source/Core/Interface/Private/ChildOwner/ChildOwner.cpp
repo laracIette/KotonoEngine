@@ -39,11 +39,13 @@ void WChildOwner::Disown(WidgetPtr const& widget)
 {
 	if (!widget)
 	{
+		Log(Warning, "widget is null");
 		return;
 	}
 
 	if (widget != child_)
 	{
+		Log(Warning, "widget is not child_");
 		return;
 	}
 
@@ -51,6 +53,8 @@ void WChildOwner::Disown(WidgetPtr const& widget)
 		child_ = nullptr;
 		widget->SetParent(nullptr);
 	});
+	
+	OnWidgetDisowned(widget);
 }
 
 auto WChildOwner::GetContentSize(glm::vec2 const& bounds) const -> glm::vec2

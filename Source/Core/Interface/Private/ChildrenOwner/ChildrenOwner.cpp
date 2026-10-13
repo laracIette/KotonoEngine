@@ -41,18 +41,23 @@ void WChildrenOwner::Disown(WidgetPtr const& widget)
 {
 	if (!widget)
 	{
+		Log(Warning, "widget is null");
 		return;
 	}
 
 	auto const it{ children_.Find(widget) };
-
-	if (children_.IsValidIterator(it))
+	if (!children_.IsValidIterator(it))
 	{
-		SetState([this, widget, it]() {
-			children_.Remove(it);
-			widget->SetParent(nullptr);
-		});
+		Log(Warning, "widget not found in children_");
+		return;
 	}
+	
+	SetState([this, widget, it]() {
+		children_.Remove(it);
+		widget->SetParent(nullptr);
+	});
+
+	OnWidgetDisowned(widget);
 }
 
 void WChildrenOwner::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const

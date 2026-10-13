@@ -1,6 +1,8 @@
 #pragma once
 #include <Widget/Widget.h>
 
+#include <Containers/Map.h>
+
 #include <HorizontalSplitter.generated.h>
 
 class WRow;
@@ -15,10 +17,15 @@ public:
 protected:
 	WidgetPtr Build() override;
 	
+	void OnDisplayed() override;
+	void OnRemoved() override;
+	
 public:
 	void SetChildren(WidgetSet const& children);
 	void AddChild(WidgetPtr const& child);
+	void RemoveChild(WidgetPtr const& child);
 	
 private:
 	UPtr<WRow> row_;
+	UMap<WidgetPtr, WidgetPtr> childSeparators_;
 };

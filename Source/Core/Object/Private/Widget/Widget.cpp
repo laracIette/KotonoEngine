@@ -58,6 +58,30 @@ void WWidget::Init()
 {
 }
 
+void WWidget::OnDisplayed()
+{
+}
+
+void WWidget::OnRemoved()
+{
+}
+
+void WWidget::OnFocused()
+{
+}
+
+void WWidget::OnUnfocused()
+{
+}
+
+void WWidget::OnActive()
+{
+}
+
+void WWidget::OnInactive()
+{
+}
+
 void WWidget::Display(UWidgetDisplaySettings displaySettings)
 {
 	CacheBuild();
@@ -92,11 +116,19 @@ void WWidget::Disown(WidgetPtr const& widget)
 {
 	if (!widget)
 	{
+		Log(Warning, "widget is null");
+		return;
+	}
+
+	if (widget == Ptr())
+	{
+		Log(Warning, "widget is Ptr()");
 		return;
 	}
 
 	if (widget != build_)
 	{
+		Log(Warning, "widget is not build_");
 		return;
 	}
 
@@ -104,6 +136,8 @@ void WWidget::Disown(WidgetPtr const& widget)
 		build_ = nullptr;
 		widget->SetParent(nullptr);
 	});
+	
+	OnWidgetDisowned(widget);
 }
 
 auto WWidget::GetContentSize(glm::vec2 const& bounds) const -> glm::vec2
@@ -275,30 +309,6 @@ auto WWidget::GetIsPointHovering(glm::vec2 const& position) const -> b8
 		&& is_point_in_rect(position, GetPosition(), GetContentSize());
 }
 
-void WWidget::OnDisplayed()
-{
-}
-
-void WWidget::OnRemoved()
-{
-}
-
-void WWidget::OnFocused()
-{
-}
-
-void WWidget::OnUnfocused()
-{
-}
-
-void WWidget::OnActive()
-{
-}
-
-void WWidget::OnInactive()
-{
-}
-
 void WWidget::SetState(StateFunction const& function)
 {
 	if (isDisplayed_)
@@ -327,6 +337,14 @@ auto WWidget::GetShouldRefresh() const -> b8
 auto WWidget::GetIsContentVisible() const -> b8
 {
 	return isVisible(slotDisplaySettings_) && (GetIsVisible() || !GetPropagateVisibility());
+}
+
+void WWidget::OnWidgetDisowned(WidgetPtr const& widget) const
+{
+	if (onDisowned_)
+	{
+		onDisowned_(widget);
+	}
 }
 
 bool WWidget::HasBuild() const
