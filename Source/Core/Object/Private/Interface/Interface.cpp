@@ -90,7 +90,15 @@ void UInterface::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) 
 	{
 		if (widget && widget->OnMouseMove(delta, position) == INPUT_HANDLED)
 		{
-			break;
+			return;
+		}
+	}
+	
+	for (auto const& widget : focusedWidgets_ | std::views::reverse)
+	{
+		if (widget && widget->OnMouseMove(delta, position) == INPUT_HANDLED)
+		{
+			return;
 		}
 	}
 }

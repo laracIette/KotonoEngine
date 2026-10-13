@@ -48,6 +48,7 @@ auto WButton::OnMouseButton(EButton button, EInputState inputState, EModifier mo
 	case EInputState::Pressed:
 	{
 		isPressed_ = true;
+		pressedCursorPosition_ = cursorPosition_;
 
 		if (onPressed_)
 		{
@@ -109,6 +110,8 @@ auto WButton::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> 
 	{
 		return INPUT_UNHANDLED;
 	}
+	
+	cursorPosition_ = position;
 
 	if (!isPressed_)
 	{
@@ -117,7 +120,7 @@ auto WButton::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> 
 	
 	if (onDrag_)
 	{
-		onDrag_(delta);
+		onDrag_(delta, position - pressedCursorPosition_);
 	}
 
 	return INPUT_HANDLED;

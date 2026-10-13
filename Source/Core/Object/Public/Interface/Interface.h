@@ -1,8 +1,9 @@
 #pragma once
 #include "Ptr.h"
+#include <Containers/Set.h>
 #include <glm/ext/vector_uint2.hpp>
 #include <glm/fwd.hpp>
-#include <Containers/Set.h>
+#include <properties.h>
 #include <span>
 #include <string>
 #include <vector>
@@ -47,25 +48,18 @@ public:
 	void OpenWidgetInWindow(glm::uvec2 const& windowExtent, UPtr<WWidget> const& widget, std::string_view name);
 	void ClearPendingWindows();
 
-	auto GetBounds() const -> glm::uvec2 { return bounds_; }
-
-	auto GetDeltaTime() const -> f32 { return deltaTime_; }
-	auto GetNow() const -> f32 { return now_; }
-
-	auto GetPendingWindows() const -> std::span<PendingWindow const> { return pendingWindows_; }
-
-	void SetWidget(UPtr<WInterfaceRoot> const& widget) { widget_ = widget; }
+	Getter(std::span<PendingWindow const>, pendingWindows_, PendingWindows);
 
 private:
 	void UpdateFocusedWidgets(glm::vec2 const& cursorPosition);
 	void UpdateActiveWidgets();
 
 private:
-	UPtr<WInterfaceRoot> widget_;
-	glm::uvec2 bounds_;
+	WritableProperty(UPtr<WInterfaceRoot>, widget_, Widget, Value);
+	ReadonlyProperty(glm::uvec2, bounds_, Bounds);
 
-	f32 deltaTime_;
-	f32 now_;
+	ReadonlyProperty(f32, deltaTime_, DeltaTime);
+	ReadonlyProperty(f32, now_, Now);
 
 	/// Widgets currently hovered by the mouse cursor
 	USet<UPtr<WWidget>> focusedWidgets_;

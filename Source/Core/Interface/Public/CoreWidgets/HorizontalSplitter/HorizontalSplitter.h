@@ -17,7 +17,7 @@ public:
 protected:
 	WidgetPtr Build() override;
 	
-public:
+public:	
 	void SetChildren(WidgetSet const& children);
 	void AddChild(WidgetPtr const& child);
 	void RemoveChild(WidgetPtr const& child);
@@ -25,4 +25,8 @@ public:
 private:
 	UPtr<WRow> row_;
 	UMap<WidgetPtr, WidgetPtr> childSeparators_;
+	WidgetPtr previous_;
+	WidgetPtr next_;
+	f32 startPreviousWidth_;
+	f32 startPreviousWeight_;
 };

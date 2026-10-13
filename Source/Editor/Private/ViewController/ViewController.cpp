@@ -37,7 +37,7 @@ WidgetPtr WViewController::Build()
 				GetScene()->SelectObject(sceneComponent->GetOwner());
 			}
 		})
-		| Apply(&WButton::SetOnDrag, [this](glm::vec2 const& delta) {
+		| Apply(&WButton::SetOnDrag, [this](glm::vec2 const& delta, glm::vec2 const&) {
 			pitch_ -= delta.y * sensitivity_;
             yaw_ += delta.x * sensitivity_;
         

@@ -1,8 +1,11 @@
 #include "CoreWidgets/HorizontalSplitter/HorizontalSplitter.h"
 
 #include "core_widgets.h"
+#include "Interface/Interface.h"
 
-WHorizontalSplitter::WHorizontalSplitter()
+WHorizontalSplitter::WHorizontalSplitter() 
+	: startPreviousWidth_{ 0.0f }
+	, startPreviousWeight_{ 0.0f }
 {
 	row_ = UCreate<WRow>{}();
 }
@@ -40,7 +43,7 @@ void WHorizontalSplitter::AddChild(WidgetPtr const& child)
 			| Apply(&WConstraint::SetSize, 10.0f)
 			| (
 				UCreate<WButton>{}()
-				| Apply(&WButton::SetOnDrag, [this, separator](glm::vec2 const& delta) {
+				| Apply(&WButton::SetOnPressed, [this, separator]() {
 					auto const index{ row_->GetChildren().GetIndex(separator) };
 					
 					auto const precedingView{ row_->GetChildren() | std::views::take(index) | std::views::reverse };
@@ -57,22 +60,37 @@ void WHorizontalSplitter::AddChild(WidgetPtr const& child)
 						}
 					) };
 					
-					if (findPrevious == precedingView.end() || findNext == succeedingView.end())
+					previous_ = nullptr;
+					next_ = nullptr;
+					
+					if (findPrevious != precedingView.end())
 					{
+						previous_ = *findPrevious;
+						Check(Throw, previous_, "previous_ is null");
+						startPreviousWidth_ = previous_->GetSize().x;
+						startPreviousWeight_ = previous_->GetExpandWeight().x;
+					}
+					if (findNext != succeedingView.end())
+					{
+						next_ = *findNext;
+						Check(Throw, next_, "next_ is null");
+					}
+				})
+				| Apply(&WButton::SetOnDrag, [this](glm::vec2 const&, glm::vec2 const& total) {
+					if (!previous_ || !next_)
+					{
+						Log(Warning, "previous_ or next_ is null");
 						return;
 					}
 					
-					UPtr const previous{ *findPrevious };
-					UPtr const next{ *findNext };
+					auto const expandWeight{ previous_->GetExpandWeight().x + next_->GetExpandWeight().x };
+					auto const combinedWidth{ previous_->GetSize().x + next_->GetSize().x };
 					
-					auto const expandWeight{ previous->GetExpandWeight().x + next->GetExpandWeight().x };
+					auto const newWidth{ std::clamp(startPreviousWidth_ + total.x, 1.0f, combinedWidth - 1.0f) };
+					auto const newWeight{ newWidth / startPreviousWidth_ * startPreviousWeight_ };
 					
-					auto const width{ previous->GetSize().x };
-					auto const weight{ previous->GetExpandWeight().x };
-					auto const result{ std::clamp(width / (width - delta.x) * weight, 0.01f, expandWeight - 0.01f) };
-					
-					previous->SetExpandWeight(glm::vec2{ result, 1.0f });
-					next->SetExpandWeight(glm::vec2{ expandWeight - result, 1.0f });
+					previous_->SetExpandWeight({ newWeight, 1.0f });
+					next_->SetExpandWeight({ expandWeight - newWeight, 1.0f });
 				})
 			)
 		);

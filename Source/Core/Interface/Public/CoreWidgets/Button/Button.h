@@ -9,7 +9,7 @@ class WButton final : public WWidget
 	GENERATED()
 
 public:
-	using DragCallback = std::function<void(glm::vec2)>;
+	using DragCallback = std::function<void(glm::vec2, glm::vec2)>;
 
 public:
 	struct State
@@ -75,5 +75,8 @@ private:
 	ReadonlyProperty(State, pressedState_, PressedState);
 	ReadonlyProperty(State, activatedState_, ActivatedState);
 	ReadonlyProperty(State, disabledState_, DisabledState);
+	
+	glm::vec2 cursorPosition_;
+	glm::vec2 pressedCursorPosition_;
 };
 

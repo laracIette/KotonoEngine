@@ -9,7 +9,7 @@ WidgetPtr WValueSlider::Build()
 		UCreate<WStack>{}()
 		| (
 			UCreate<WButton>{}()
-			| Apply(&WButton::SetOnDrag, [this](glm::vec2 const& delta) { if (onSlide_) onSlide_(delta.x); })
+			| Apply(&WButton::SetOnDrag, [this](glm::vec2 const& delta, glm::vec2 const&) { if (onSlide_) onSlide_(delta.x); })
 		)
 		| (
 			UCreate<WInputTextBox>{}()
