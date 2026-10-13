@@ -55,7 +55,7 @@ void WChildrenOwner::Disown(WidgetPtr const& widget)
 	}
 }
 
-void WChildrenOwner::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
+void WChildrenOwner::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const
 {
 	for (auto const& child : children_)
 	{
@@ -65,9 +65,9 @@ void WChildrenOwner::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderG
 			continue;
 		}
 		
-		if (child->GetIsDisplayed() && GetIsContentVisible())
+		if (child->GetIsDisplayed() && GetIsContentVisible() && (Tint != Colors::Transparent))
 		{
-			child->PopulateRenderGraph(interfaceRenderGraph);
+			child->PopulateRenderGraph(interfaceRenderGraph, tint * Tint);
 		}
 	}
 }

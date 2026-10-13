@@ -28,7 +28,7 @@ public:
 	auto GetFlex() const -> EFlex override;
 	auto GetExpand() const -> EExpand override;
 
-	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
+	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const override;
 
 	auto GetText() const -> std::string;
 	void SetText(UBindable<std::string> const& text);

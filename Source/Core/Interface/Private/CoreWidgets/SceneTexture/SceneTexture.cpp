@@ -3,7 +3,6 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/quaternion_trigonometric.hpp>
 #include <Scene/Scene.h>
-#include <Color.h>
 #include <RenderGraph/InterfaceRenderGraph.h>
 #include <math_utils/math_utils.h>
 
@@ -17,7 +16,7 @@ WSceneTexture::WSceneTexture(UScene* scene)
 {
 }
 
-void WSceneTexture::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
+void WSceneTexture::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const
 {
 	USceneView const sceneView{
 		.view = GetViewMatrix(),
@@ -43,7 +42,7 @@ void WSceneTexture::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGr
 		.shader{ "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset" },
 		.model{ "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj" },
 		.scalars {},
-		.vectors{ Colors::White },
+		.vectors{ tint * Tint },
 		.textures{ UInterfaceDrawData::SceneRenderData{ sceneView, std::move(sceneRenderGraph) } },
 		.isVisible{ GetIsVisible() },
 	});

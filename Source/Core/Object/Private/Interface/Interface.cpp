@@ -22,7 +22,7 @@ void UInterface::PopulateInterfaceRenderGraph(UInterfaceRenderGraph& interfaceRe
 {
 	if (widget_)
 	{
-		widget_->PopulateRenderGraph(interfaceRenderGraph);
+		widget_->PopulateRenderGraph(interfaceRenderGraph, Colors::White);
 	}
 }
 

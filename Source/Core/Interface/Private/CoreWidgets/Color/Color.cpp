@@ -7,7 +7,7 @@ WColor::WColor()
 {
 }
 
-void WColor::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
+void WColor::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const
 {
 	interfaceRenderGraph.drawDatas.push_back({
 		.scissor{ GetScissor() },
@@ -15,7 +15,7 @@ void WColor::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) co
 		.shader{ "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset" },
 		.model{ "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj" },
 		.scalars{},
-		.vectors{ GetColor() },
+		.vectors{ GetColor() * tint * Tint },
 		.textures{ UPath{ "${ENGINE_DIRECTORY}/Assets/textures/white_texture.jpg" } },
 		.isVisible{ GetIsVisible() },
 	});

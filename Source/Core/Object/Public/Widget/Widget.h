@@ -11,6 +11,7 @@
 #include <Containers/Set.h>
 #include <types.h>
 #include <Button.h>
+#include <Color.h>
 #include <InputState.h>
 #include <Key.h>
 #include <Modifier.h>
@@ -75,7 +76,7 @@ public:
 
 	virtual auto GetInterface() const -> UInterface*;
 
-	virtual void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const;
+	virtual void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const;
 	virtual void PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosition) const;
 	
 	virtual auto OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8;
@@ -100,6 +101,7 @@ public:
 	auto GetHasExpand(EExpand expand) const -> b8;
 	auto GetIsPointHovering(glm::vec2 const& position) const -> b8;
 
+	GetterAndSetter(UColor, UColor, Tint, Tint);
 	GetterAndSetter(b8, UBindable<b8>, isVisible_, IsVisible);
 	
 	Getter(glm::vec2, slotDisplaySettings_.position, Position);
@@ -132,6 +134,10 @@ private:
 	static auto RotationMatrix() -> glm::mat4;
 	auto ScaleMatrix() const -> glm::mat4;
 	auto ModelMatrix() const -> glm::mat4;
+	
+protected:
+	/// The tint of the widget, this propagates to the widget's content
+	UColor Tint;
 
 private:
 	WidgetPtr build_;

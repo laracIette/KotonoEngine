@@ -21,7 +21,7 @@ public:
 	auto GetContentSize(glm::vec2 const& bounds) const -> glm::vec2 override;
 	auto GetDesiredSize(glm::vec2 const& bounds) const -> glm::vec2 override;
 
-	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const final;
+	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const final;
 	void PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosition) const final;
 
 	void Refresh() final;

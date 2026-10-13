@@ -23,13 +23,15 @@ static constexpr auto isVisible(UWidgetDisplaySettings const& displaySettings) n
 }
 
 WWidget::WWidget()
-	: build_{ nullptr }
+	: Tint{ Colors::White }
+	, build_{ nullptr }
 	, isDirty_{ false }
 	, isVisible_{ true }
 	, parent_{ nullptr }
 	, propagateVisibility_{ true }
 	, isDisplayed_{ false }
 	, isFocused_{ false }
+	, isActive_{ false }
 	, expandWeight_{ 1.0f, 1.0f }
 {
 }
@@ -147,11 +149,11 @@ UInterface* WWidget::GetInterface() const
 	return parent_->GetInterface();
 }
 
-void WWidget::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
+void WWidget::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const
 {
-	if (HasBuild() && build_->GetIsDisplayed() && GetIsContentVisible())
+	if (HasBuild() && build_->GetIsDisplayed() && GetIsContentVisible() && (Tint != Colors::Transparent))
 	{
-		build_->PopulateRenderGraph(interfaceRenderGraph);
+		build_->PopulateRenderGraph(interfaceRenderGraph, tint * Tint);
 	}
 }
 

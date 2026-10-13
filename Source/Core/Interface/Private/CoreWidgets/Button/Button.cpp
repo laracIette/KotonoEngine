@@ -123,7 +123,7 @@ auto WButton::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> 
 	return INPUT_HANDLED;
 }
 
-void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
+void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const
 {
 	auto const [texture, color] { [this]() {
 		if (!GetIsEnabled())				return disabledState_;
@@ -139,7 +139,7 @@ void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) c
 		.shader{ "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset" },
 		.model{ "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj" },
 		.scalars{},
-		.vectors{ color },
+		.vectors{ color * tint * Tint },
 		.textures{ texture },
 		.isVisible{ GetIsVisible() },
 	});

@@ -1,8 +1,6 @@
 #pragma once
 #include <Widget/Widget.h>
 
-#include <Color.h>
-
 #include "Color.generated.h"
 
 /// Fill the widget's bounds with a color
@@ -13,7 +11,7 @@ class WColor final : public WWidget
 public:
 	WColor();
 
-	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
+	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const override;
 
 	auto GetColor() const -> UColor;
 	void SetColor(UBindable<UColor> const& color);

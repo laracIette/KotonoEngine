@@ -11,7 +11,7 @@ class WImage final : public WWidget
 public:
 	WImage();
 
-	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
+	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const override;
 
 private:
 	WritableProperty(UPath, path_, Path);

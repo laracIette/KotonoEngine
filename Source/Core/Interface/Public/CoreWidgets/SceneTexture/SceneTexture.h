@@ -15,7 +15,7 @@ class WSceneTexture final : public WSceneWidget
 public:
 	WSceneTexture(UScene* scene);
 
-	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
+	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const override;
 
 	auto GetViewMatrix() const -> glm::mat4;
 	auto GetProjectionMatrix() const -> glm::mat4;

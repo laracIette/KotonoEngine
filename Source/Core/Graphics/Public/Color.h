@@ -221,7 +221,7 @@ struct UColor final
 
 	constexpr UColor operator*(UColor const& other) const noexcept
 	{
-		return { r * other.r, g * other.g, b * other.b, a };
+		return { r * other.r, g * other.g, b * other.b, a * other.a };
 	}
 
 	constexpr UColor operator*(f32 f) const noexcept

@@ -1,13 +1,12 @@
 #include "CoreWidgets/Image/Image.h"
 
-#include <Color.h>
 #include <RenderGraph/InterfaceRenderGraph.h>
 
 WImage::WImage()
 	: path_{}
 {}
 
-void WImage::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
+void WImage::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const
 {
 	interfaceRenderGraph.drawDatas.push_back({
 		.scissor{ GetScissor() },
@@ -15,7 +14,7 @@ void WImage::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) co
 		.shader{ "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset" },
 		.model{ "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj" },
 		.scalars{},
-		.vectors{ Colors::White },
+		.vectors{ tint * Tint },
 		.textures{ path_ },
 		.isVisible{ GetIsVisible() },
 	});

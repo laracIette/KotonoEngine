@@ -28,9 +28,7 @@ WidgetPtr WViewController::Build()
 {
 	return (
 		UCreate<WButton>{}()
-		| Apply(&WButton::SetNormalColor, Colors::Transparent)
-		| Apply(&WButton::SetFocusedColor, Colors::Transparent)
-		| Apply(&WButton::SetPressedColor, Colors::Transparent)
+		| Apply(&WButton::SetTint, Colors::Transparent)
 		| Apply(&WButton::SetOnPressed, [this]() { isActive_ = true; })
 		| Apply(&WButton::SetOnReleased, [this]() { isActive_ = false; })
 		| Apply(&WButton::SetOnClicked, [this]() {

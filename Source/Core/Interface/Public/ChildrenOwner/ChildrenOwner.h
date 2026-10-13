@@ -17,7 +17,7 @@ public:
 
 	void Disown(WidgetPtr const& widget) override;
 
-	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const final;
+	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const final;
 	void PopulateFocusTree(WidgetSet& widgets, glm::vec2 const& cursorPosition) const final;
 
 	void Refresh() final;

@@ -2,7 +2,6 @@
 
 #include <glm/ext/matrix_transform.hpp>
 #include <Interface/Interface.h>
-#include <Color.h>
 #include <RenderGraph/InterfaceRenderGraph.h>
 #include <math_utils/math_utils.h>
 
@@ -95,7 +94,7 @@ auto WText::GetExpand() const -> EExpand
 	return EExpand::None;
 }
 
-void WText::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
+void WText::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const
 {
 	for (auto const& [characterPath, modelMatrix] : characters_)
 	{
@@ -105,7 +104,7 @@ void WText::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) con
 			.shader{ "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset" },
 			.model{ "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj" },
 			.scalars{},
-			.vectors{ Colors::White },
+			.vectors{ tint * Tint },
 			.textures{ characterPath },
 			.isVisible{ GetIsVisible() },
 		});

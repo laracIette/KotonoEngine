@@ -1,8 +1,6 @@
 #pragma once
 #include <Widget/Widget.h>
 
-#include <Color.h>
-
 #include "Button.generated.h"
 
 /// Set the widget's bounds as interactable
@@ -30,7 +28,7 @@ public:
 	auto OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8 override;
 	auto OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> b8 override;
 
-	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const override;
+	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const override;
 	
 	/// Activate if the button is deactivated and triggers the OnActivated event
 	void Activate();

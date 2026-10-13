@@ -71,11 +71,11 @@ auto WChildOwner::GetDesiredSize(const glm::vec2& bounds) const -> glm::vec2
 	return { 0.0f, 0.0f };
 }
 
-void WChildOwner::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
+void WChildOwner::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const
 {
-	if (child_ && child_->GetIsDisplayed() && GetIsContentVisible())
+	if (child_ && child_->GetIsDisplayed() && GetIsContentVisible() && (Tint != Colors::Transparent))
 	{
-		child_->PopulateRenderGraph(interfaceRenderGraph);
+		child_->PopulateRenderGraph(interfaceRenderGraph, tint * Tint);
 	}
 }
 
