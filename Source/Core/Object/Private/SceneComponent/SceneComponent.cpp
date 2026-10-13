@@ -319,6 +319,11 @@ void KSceneComponent::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, E
 {
 }
 
+auto KSceneComponent::GetRayIntersects(glm::vec3 const& start, glm::vec3 const& direction) const -> b8
+{
+	return false;
+}
+
 void KSceneComponent::AddChild(UPtr<KSceneComponent> const& component)
 {
 	if (!component)

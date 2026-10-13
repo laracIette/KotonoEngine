@@ -96,5 +96,5 @@ constexpr auto rayIntersectSphere(glm::vec3 const& rayStart, glm::vec3 const& ra
 	glm::vec3 intersectPosition;
 	glm::vec3 intersectNormal;
 	
-	return glm::intersectRaySphere(rayStart, rayDirection, spherePosition, sphereRadius, intersectPosition, intersectNormal);
+	return glm::intersectRaySphere(rayStart, glm::normalize(rayDirection), spherePosition, sphereRadius, intersectPosition, intersectNormal);
 }

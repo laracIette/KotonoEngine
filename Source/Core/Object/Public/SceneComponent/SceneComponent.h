@@ -76,6 +76,8 @@ public:
 	virtual void Despawn();
 
 	virtual void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const;
+	
+	virtual auto GetRayIntersects(glm::vec3 const& start, glm::vec3 const& direction) const -> b8;
 
 	auto GetRelativePosition() const -> glm::vec3 { return transform_.position; }
 	auto GetRelativeRotation() const -> glm::quat { return transform_.rotation; }

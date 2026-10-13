@@ -84,6 +84,11 @@ auto WButton::OnMouseButton(EButton button, EInputState inputState, EModifier mo
 			onReleased_();
 		}
 
+		if (!GetIsFocused())
+		{
+			break;
+		}
+		
 		if (onClicked_)
 		{
 			onClicked_();

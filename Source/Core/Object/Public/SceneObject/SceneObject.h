@@ -3,6 +3,7 @@
 
 #include "CoordinateSpace.h"
 #include <Containers/Set.h>
+#include <glm/fwd.hpp>
 
 #include "SceneObject.generated.h"
 
@@ -41,6 +42,8 @@ public:
 	virtual void Despawn();
 
 	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const;
+	
+	auto GetRayIntersectSceneComponent(glm::vec3 const& start, glm::vec3 const& direction) const -> UPtr<KSceneComponent>;
 
 private:
 	void InitSceneComponents();

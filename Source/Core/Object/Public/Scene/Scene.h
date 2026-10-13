@@ -42,6 +42,8 @@ public:
 	void StopGame();
 
 	void SelectObject(SceneObjectPtr const& sceneObject);
+	
+	auto GetRayIntersectSceneComponent(glm::vec3 const& start, glm::vec3 const& direction) const -> UPtr<KSceneComponent>;
 
 	auto GetAudioContext() -> UAudioContext& { return audioContext_; }
 

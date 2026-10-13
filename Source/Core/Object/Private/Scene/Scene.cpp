@@ -195,6 +195,25 @@ void UScene::SelectObject(SceneObjectPtr const& sceneObject)
 	eventSelectedObjectChanged_.Broadcast(sceneObject);
 }
 
+auto UScene::GetRayIntersectSceneComponent(glm::vec3 const& start, glm::vec3 const& direction) const -> UPtr<KSceneComponent>
+{
+	for (auto const& sceneObject : sceneObjects_)
+	{
+		if (!sceneObject)
+		{
+			Log(Warning, "Object", "sceneObject is null");
+			continue;
+		}
+	
+		if (UPtr const sceneComponent{ sceneObject->GetRayIntersectSceneComponent(start, direction) })
+		{
+			return sceneComponent;
+		}
+	}
+	
+	return nullptr;
+}
+
 void UScene::InitSceneObjects() const
 {
 	for (auto const& sceneObject : sceneObjects_)

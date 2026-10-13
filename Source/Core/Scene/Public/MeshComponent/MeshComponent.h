@@ -24,7 +24,7 @@ public:
 
 	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const override;
 	
-	auto GetRayIntersects(glm::vec3 const& start, glm::vec3 const& direction) const -> b8;
+	auto GetRayIntersects(glm::vec3 const& start, glm::vec3 const& direction) const -> b8 override;
 
 private:
 	// temp

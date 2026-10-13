@@ -1,9 +1,12 @@
 #include "ViewController.h"
 
+#include <core_widgets.h>
 #include <glm/ext/quaternion_trigonometric.hpp>
 #include <Interface/Interface.h>
-#include <Scene/Scene.h>
 #include <math_utils/math_utils.h>
+#include <Scene/Scene.h>
+
+#include "SceneComponent/SceneComponent.h"
 
 WViewController::WViewController()
 	: WViewController(nullptr)
@@ -21,55 +24,38 @@ WViewController::WViewController(UScene* scene)
 {
 }
 
-b8 WViewController::OnMouseButton(EButton button, EInputState inputState, EModifier modifier)
+WidgetPtr WViewController::Build()
 {
-	if (button != EButton::Left)
-	{
-		return INPUT_UNHANDLED;
-	}
-
-	switch (inputState)
-	{
-	case EInputState::Pressed:
-	{
-		isActive_ = true;
-		return INPUT_HANDLED;
-	}
-	case EInputState::Released:
-	{
-		isActive_ = false;
-		return INPUT_HANDLED;
-	}
-	default: 
-		break;
-	}
-
-	return INPUT_UNHANDLED;
-}
-
-b8 WViewController::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position)
-{
-	if (!isActive_)
-	{
-		return INPUT_UNHANDLED;
-	}
-
-	pitch_ -= delta.y * sensitivity_;
-	yaw_ += delta.x * sensitivity_;
-
-	// Clamp pitch to avoid flipping
-	pitch_ = glm::clamp(pitch_, -glm::half_pi<f32>(), glm::half_pi<f32>());
-
-	glm::quat const qPitch{ glm::angleAxis(pitch_, WorldRightVector) };
-	glm::quat const qYaw{ glm::angleAxis(yaw_, WorldUpVector) };
-
-	if (onLook_)
-	{
-		rotation_ = qYaw * qPitch;
-		onLook_(rotation_);
-	}
-
-	return INPUT_HANDLED;
+	return (
+		UCreate<WButton>{}()
+		| Apply(&WButton::SetNormalColor, Colors::Transparent)
+		| Apply(&WButton::SetFocusedColor, Colors::Transparent)
+		| Apply(&WButton::SetPressedColor, Colors::Transparent)
+		| Apply(&WButton::SetOnPressed, [this]() { isActive_ = true; })
+		| Apply(&WButton::SetOnReleased, [this]() { isActive_ = false; })
+		| Apply(&WButton::SetOnClicked, [this]() {
+			if (UPtr const sceneComponent{ GetScene()->GetRayIntersectSceneComponent(position_, rotation_ * WorldUpVector) })
+			{
+				GetScene()->SelectObject(sceneComponent->GetOwner());
+			}
+		})
+		| Apply(&WButton::SetOnDrag, [this](glm::vec2 const& delta) {
+			pitch_ -= delta.y * sensitivity_;
+            yaw_ += delta.x * sensitivity_;
+        
+            // Clamp pitch to avoid flipping
+            pitch_ = glm::clamp(pitch_, -glm::half_pi<f32>(), glm::half_pi<f32>());
+        
+            glm::quat const qPitch{ glm::angleAxis(pitch_, WorldRightVector) };
+            glm::quat const qYaw{ glm::angleAxis(yaw_, WorldUpVector) };
+        
+            if (onLook_)
+            {
+            	rotation_ = qYaw * qPitch;
+            	onLook_(rotation_);
+            }
+		})
+	);
 }
 
 b8 WViewController::OnMouseScroll(glm::vec2 const& delta)
@@ -134,11 +120,6 @@ b8 WViewController::OnKeyboardKey(EKey key, EInputState inputState, EModifier mo
 	}
 
 	return INPUT_UNHANDLED;
-}
-
-void WViewController::OnUnfocused()
-{
-	isActive_ = false;
 }
 
 void WViewController::Translate(glm::vec3 const& delta)

@@ -179,6 +179,25 @@ void TSceneObject::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESce
 	}
 }
 
+auto TSceneObject::GetRayIntersectSceneComponent(glm::vec3 const& start, glm::vec3 const& direction) const -> UPtr<KSceneComponent>
+{
+	for (auto const& sceneComponent : sceneComponents_)
+	{
+		if (!sceneComponent)
+		{
+			Log(Warning, "Object", "sceneComponent is null");
+			continue;
+		}
+		
+		if (sceneComponent->GetRayIntersects(start, direction))
+		{
+			return sceneComponent;
+		}
+	}
+	
+	return nullptr;
+}
+
 void TSceneObject::InitSceneComponents()
 {
 	for (auto const& sceneComponent : sceneComponents_)
