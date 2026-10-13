@@ -92,6 +92,8 @@ void UApplication::Cleanup()
 
     device_.Cleanup();
     context_.Cleanup();
+	
+    UnregisterObjectClasses();
 
     glfwTerminate();
 
