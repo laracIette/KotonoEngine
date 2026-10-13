@@ -13,7 +13,8 @@ public:
 	WChildOwner();
 	~WChildOwner() override;
 
-	void Remove() override;
+	void Display(UWidgetDisplaySettings displaySettings) final;
+	void Remove() final;
 
 	void Disown(WidgetPtr const& widget) override;
 
@@ -28,9 +29,9 @@ public:
 	void CacheBuild() final;
 
 	void SetChild(WidgetPtr const& widget);
-
+	
 protected:
-	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
+	virtual auto GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings;
 
 private:
 	ReadonlyProperty(WidgetPtr, child_, Child, Value);

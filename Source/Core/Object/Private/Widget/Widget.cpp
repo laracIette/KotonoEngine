@@ -56,11 +56,9 @@ void WWidget::Init()
 {
 }
 
-void WWidget::Display(UWidgetDisplaySettings const& displaySettings)
+void WWidget::Display(UWidgetDisplaySettings displaySettings)
 {
 	CacheBuild();
-
-	isDisplayed_ = true;
 
 	slotDisplaySettings_ = displaySettings;
 
@@ -68,26 +66,24 @@ void WWidget::Display(UWidgetDisplaySettings const& displaySettings)
 
 	modelMatrix_ = ModelMatrix();
 
-	// If build_ is not this, call Display
 	if (HasBuild())
 	{
 		build_->Display(displaySettings);
 	}
-	// If build_ is this, call DisplayInternal
-	else if (isVisible(displaySettings))
-	{
-		DisplayInternal(displaySettings);
-	}
+
+	isDisplayed_ = true;
+	OnDisplayed();
 }
 
 void WWidget::Remove()
 {
-	isDisplayed_ = false;
-
 	if (HasBuild())
 	{
 		build_->Remove();
 	}
+	
+	isDisplayed_ = false;
+	OnRemoved();
 }
 
 void WWidget::Disown(WidgetPtr const& widget)
@@ -192,26 +188,6 @@ auto WWidget::OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier
 	return INPUT_UNHANDLED;
 }
 
-void WWidget::OnFocused()
-{
-	isFocused_ = true;
-}
-
-void WWidget::OnUnfocused()
-{
-	isFocused_ = false;
-}
-
-void WWidget::OnActive()
-{
-	isActive_ = true;
-}
-
-void WWidget::OnInactive()
-{
-	isActive_ = false;
-}
-
 void WWidget::Refresh()
 {
 	if (GetShouldRefresh())
@@ -248,6 +224,30 @@ void WWidget::CacheBuild()
 	}
 }
 
+void WWidget::SetFocused()
+{
+	isFocused_ = true;
+	OnFocused();
+}
+
+void WWidget::SetUnfocused()
+{
+	isFocused_ = false;
+	OnUnfocused();
+}
+
+void WWidget::SetActive()
+{
+	isActive_ = true;
+	OnActive();
+}
+
+void WWidget::SetInactive()
+{
+	isActive_ = false;
+	OnInactive();
+}
+
 auto WWidget::GetClassPath() const -> std::string
 {
 	if (parent_)
@@ -273,6 +273,30 @@ auto WWidget::GetIsPointHovering(glm::vec2 const& position) const -> b8
 		&& is_point_in_rect(position, GetPosition(), GetContentSize());
 }
 
+void WWidget::OnDisplayed()
+{
+}
+
+void WWidget::OnRemoved()
+{
+}
+
+void WWidget::OnFocused()
+{
+}
+
+void WWidget::OnUnfocused()
+{
+}
+
+void WWidget::OnActive()
+{
+}
+
+void WWidget::OnInactive()
+{
+}
+
 void WWidget::SetState(StateFunction const& function)
 {
 	if (isDisplayed_)
@@ -288,10 +312,6 @@ void WWidget::SetState(StateFunction const& function)
 	MarkDirty();
 }
 
-void WWidget::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
-}
-
 auto WWidget::GetCanCache() const -> b8
 {
 	return isVisible_.GetIsValue();
@@ -304,7 +324,7 @@ auto WWidget::GetShouldRefresh() const -> b8
 
 auto WWidget::GetIsContentVisible() const -> b8
 {
-	return GetIsVisible() || !GetPropagateVisibility();
+	return isVisible(slotDisplaySettings_) && (GetIsVisible() || !GetPropagateVisibility());
 }
 
 bool WWidget::HasBuild() const

@@ -35,7 +35,7 @@ b8 WScrollable::OnMouseScroll(glm::vec2 const& delta)
 	return INPUT_HANDLED;
 }
 
-void WScrollable::DisplayInternal(UWidgetDisplaySettings displaySettings)
+auto WScrollable::GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings
 {
 	displaySettings.position += offset_;
 
@@ -51,8 +51,8 @@ void WScrollable::DisplayInternal(UWidgetDisplaySettings displaySettings)
 		displaySettings.bounds = { INFINITY, INFINITY };
 		break;
 	}
-
-	Base::DisplayInternal(displaySettings);
+	
+	return displaySettings;
 }
 
 #include "Scrollable.generated.inl"

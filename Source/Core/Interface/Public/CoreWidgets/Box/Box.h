@@ -9,9 +9,8 @@ class WBox final : public WChildOwner
 	GENERATED()
 
 public:
-	WBox(glm::vec2 const& size = { 64.0f, 64.0f });
+	WBox();
 
-public:
 	glm::vec2 GetContentSize(glm::vec2 const& bounds) const override;
 	glm::vec2 GetDesiredSize(glm::vec2 const& bounds) const override;
 
@@ -19,7 +18,7 @@ public:
 	EFlex GetFlex() const override;
 
 protected:
-	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
+	auto GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings override;
 
 private:
 	StateProperty(glm::vec2, size_, Size);

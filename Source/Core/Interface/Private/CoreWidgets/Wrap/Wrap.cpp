@@ -1,10 +1,9 @@
 #include "CoreWidgets/Wrap/Wrap.h"
 
-#include <glm/common.hpp>
 #include <enum_utils.h>
 
-WWrap::WWrap(EAxis axis)
-	: axis_{ axis }
+WWrap::WWrap()
+	: axis_{ EAxis::All }
 {
 }
 
@@ -43,8 +42,8 @@ EFlex WWrap::GetFlex() const
 	return EFlex::All;
 }
 
-void WWrap::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
+auto WWrap::GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings
+{	
 	if (GetChild())
 	{
 		auto const childDesiredSize{ GetChild()->GetDesiredSize(displaySettings.bounds) };
@@ -57,8 +56,8 @@ void WWrap::DisplayInternal(UWidgetDisplaySettings displaySettings)
 			displaySettings.bounds.y = std::min(displaySettings.bounds.y, childDesiredSize.y);
 		}
 	}
-
-	Base::DisplayInternal(displaySettings);
+	
+	return displaySettings;
 }
 
 #include "Wrap.generated.inl"

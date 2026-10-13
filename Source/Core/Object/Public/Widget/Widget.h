@@ -45,9 +45,6 @@ ABSTRACT class WWidget : public KObject
 {
 	GENERATED()
 
-private:
-	friend class UInterface;
-
 protected:
 	using StateFunction = VoidCallback;
 
@@ -64,8 +61,7 @@ protected:
 
 public:
 	/// Start displaying the widget
-	virtual void Display(UWidgetDisplaySettings const& displaySettings);
-
+	virtual void Display(UWidgetDisplaySettings displaySettings);
 	/// Stop displaying the widget
 	virtual void Remove();
 
@@ -88,15 +84,15 @@ public:
 
 	virtual auto OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) -> b8;
 
-	virtual void OnFocused();
-	virtual void OnUnfocused();
-	
-	virtual void OnActive();
-	virtual void OnInactive();
-
 	virtual void Refresh();
 	
 	virtual void CacheBuild();
+	
+	void SetFocused();
+	void SetUnfocused();
+	
+	void SetActive();
+	void SetInactive();
 
 	auto GetClassPath() const -> std::string;
 
@@ -112,9 +108,16 @@ public:
 	Getter(UScissor, slotDisplaySettings_.scissor, Scissor);
 
 protected:
+	virtual void OnDisplayed();
+	virtual void OnRemoved();
+	
+	virtual void OnFocused();
+	virtual void OnUnfocused();
+	
+	virtual void OnActive();
+	virtual void OnInactive();
+	
 	void SetState(StateFunction const& function);
-
-	virtual void DisplayInternal(UWidgetDisplaySettings displaySettings);
 
 	virtual auto GetCanCache() const -> b8;
 	

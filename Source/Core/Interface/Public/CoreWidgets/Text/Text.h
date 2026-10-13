@@ -19,6 +19,8 @@ private:
 
 public:
 	WText();
+	
+	void Display(UWidgetDisplaySettings displaySettings) override;
 
 	auto GetContentSize(glm::vec2 const& bounds) const -> glm::vec2 override;
 	auto GetDesiredSize(glm::vec2 const& bounds) const -> glm::vec2 override;
@@ -32,8 +34,6 @@ public:
 	void SetText(UBindable<std::string> const& text);
 
 protected:
-	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
-
 	auto GetCanCache() const -> b8 override;
 
 private:

@@ -11,14 +11,13 @@ class WPadding final : public WChildOwner
 	GENERATED()
 
 public:
-	WPadding(UPadding const& padding = UPadding::Zero());
-
-public:
+	WPadding();
+	
 	glm::vec2 GetContentSize(glm::vec2 const& bounds) const override;
 	glm::vec2 GetDesiredSize(glm::vec2 const& bounds) const override;
 
 protected:
-	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
+	auto GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings override;
 
 private:
 	StateProperty(UPadding, padding_, Padding, Value);

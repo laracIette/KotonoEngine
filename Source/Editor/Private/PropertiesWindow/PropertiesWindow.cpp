@@ -41,16 +41,16 @@ WidgetPtr WPropertiesWindow::Build()
     );
 }
 
-void WPropertiesWindow::Display(UWidgetDisplaySettings const& displaySettings)
+void WPropertiesWindow::OnDisplayed()
 {
-    Base::Display(displaySettings);
+    Base::OnDisplayed();
 
     GetScene()->GetEventSelectedObjectChanged().AddListener(this, &Self::OnSelectedObjectChanged);
 }
 
-void WPropertiesWindow::Remove()
+void WPropertiesWindow::OnRemoved()
 {
-    Base::Remove();
+    Base::OnRemoved();
 
     GetScene()->GetEventSelectedObjectChanged().RemoveListener(this, &Self::OnSelectedObjectChanged);
 }

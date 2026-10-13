@@ -14,9 +14,8 @@ private:
 protected:
 	WidgetPtr Build() override;
 	
-public:
-	void Display(UWidgetDisplaySettings const& displaySettings) override;
-	void Remove() override;
+	void OnDisplayed() override;
+	void OnRemoved() override;
 	
 private:
 	void OnGameStateChanged(EGameState gameState) const;

@@ -20,8 +20,8 @@ auto WAlign::GetExpand() const -> EExpand
 	return EExpand::All;
 }
 
-void WAlign::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
+auto WAlign::GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings
+{	
 	if (GetChild())
 	{
 		const auto childSize{ GetChild()->GetContentSize(displaySettings.bounds) };
@@ -31,8 +31,8 @@ void WAlign::DisplayInternal(UWidgetDisplaySettings displaySettings)
 
 		displaySettings.position = glm::mix(min, max, glm::vec2{ alignment_.x, alignment_.y });
 	}
-
-	Base::DisplayInternal(displaySettings);
+	
+	return displaySettings;
 }
 
 #include "Align.generated.inl"

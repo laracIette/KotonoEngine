@@ -2,7 +2,29 @@
 
 #include <glm/common.hpp>
 
-glm::vec2 WListBody::GetContentSize(glm::vec2 const& bounds) const
+WListBody::WListBody() 
+	: spacing_{ 0.0f }
+{
+}
+
+void WListBody::Display(UWidgetDisplaySettings displaySettings)
+{
+	Base::Display(displaySettings);
+	
+	for (auto const& child : GetChildren())
+	{
+		if (child)
+		{
+			child->Display(displaySettings);
+			auto const childSize{ child->GetContentSize(displaySettings.bounds) };
+
+			displaySettings.position.y += childSize.y;
+			displaySettings.position.y += spacing_;
+		}
+	}
+}
+
+auto WListBody::GetContentSize(glm::vec2 const& bounds) const -> glm::vec2
 {
 	glm::vec2 newBounds{ bounds.x, INFINITY };
 
@@ -27,7 +49,7 @@ glm::vec2 WListBody::GetContentSize(glm::vec2 const& bounds) const
 	return size;
 }
 
-glm::vec2 WListBody::GetDesiredSize(const glm::vec2& bounds) const
+auto WListBody::GetDesiredSize(const glm::vec2& bounds) const -> glm::vec2
 {
 	glm::vec2 size{};
 
@@ -49,24 +71,9 @@ glm::vec2 WListBody::GetDesiredSize(const glm::vec2& bounds) const
 	return size;
 }
 
-EFlex WListBody::GetFlex() const
+auto WListBody::GetFlex() const -> EFlex
 {
 	return EFlex::Vertical;
-}
-
-void WListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
-	for (auto const& child : GetChildren())
-	{
-		if (child)
-		{
-			child->Display(displaySettings);
-			auto const childSize{ child->GetContentSize(displaySettings.bounds) };
-
-			displaySettings.position.y += childSize.y;
-			displaySettings.position.y += spacing_;
-		}
-	}
 }
 
 #include "ListBody.generated.inl"

@@ -1,7 +1,7 @@
 #include "CoreWidgets/Padding/Padding.h"
 
-WPadding::WPadding(UPadding const& padding)
-	: padding_{ padding }
+WPadding::WPadding()
+	: padding_{ UPadding::Zero() }
 {
 }
 
@@ -28,7 +28,7 @@ glm::vec2 WPadding::GetDesiredSize(const glm::vec2& bounds) const
 	return { 0.0f, 0.0f };
 }
 
-void WPadding::DisplayInternal(UWidgetDisplaySettings displaySettings)
+auto WPadding::GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings
 {
 	displaySettings.position.x += padding_.l;
 	displaySettings.position.y += padding_.t;
@@ -37,8 +37,8 @@ void WPadding::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	displaySettings.bounds.x -= padding_.r;
 	displaySettings.bounds.y -= padding_.t;
 	displaySettings.bounds.y -= padding_.b;
-
-	Base::DisplayInternal(displaySettings);
+	
+	return displaySettings;
 }
 
 #include "Padding.generated.inl"

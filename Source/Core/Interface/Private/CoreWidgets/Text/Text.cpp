@@ -14,6 +14,56 @@ WText::WText()
 {
 }
 
+void WText::Display(UWidgetDisplaySettings displaySettings)
+{	
+	Base::Display(displaySettings);
+	
+	characters_.clear();
+
+	auto const characterPaths{ font_.GetTextPaths(GetText()) };
+
+	for (auto const& [index, characterPath] : characterPaths | std::views::enumerate)
+	{		
+		if (fontSize_.x * spacing_ * characterPaths.size() > displaySettings.bounds.x
+		 && (fontSize_.x * spacing_ * (index + 1)) + (fontSize_.x * spacing_ / 2.0f * 3) > displaySettings.bounds.x)
+		{
+			for (size i{ 0 }; i < 3; ++i)
+			{
+				glm::vec2 const offset{
+					fontSize_.x * 0.5f + (fontSize_.x * spacing_ * (index - 0.5f)) + (fontSize_.x * spacing_ / 2.0f * i),
+					fontSize_.y * 0.5f
+				};
+
+				auto const position{ GetPosition() + offset };
+
+				glm::vec2 const bounds{ GetInterface()->GetBounds() };
+				auto const modelMatrix{
+					glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(position, bounds), 0.0f })
+				  * glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(fontSize_, bounds), 1.0f })
+				};
+
+				characters_.emplace_back(font_.GetCharacterPath('.'), modelMatrix);
+			}
+			break;
+		}
+		
+		glm::vec2 const offset{
+			fontSize_.x * 0.5f + fontSize_.x * spacing_ * index,
+			fontSize_.y * 0.5f
+		};
+
+		auto const position{ GetPosition() + offset };
+
+		glm::vec2 const bounds{ GetInterface()->GetBounds() };
+		auto const modelMatrix{
+			glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(position, bounds), 0.0f })
+		  * glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(fontSize_, bounds), 1.0f })
+		};
+
+		characters_.emplace_back(characterPath, modelMatrix);
+	}
+}
+
 auto WText::GetContentSize(glm::vec2 const& bounds) const -> glm::vec2
 {
 	return glm::min(GetDesiredSize(bounds), bounds);
@@ -70,56 +120,6 @@ auto WText::GetText() const -> std::string
 void WText::SetText(UBindable<std::string> const& text)
 {
 	SetState([this, text]() { text_ = text; });
-}
-
-void WText::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
-	characters_.clear();
-
-	auto const characterPaths{ font_.GetTextPaths(GetText()) };
-
-	for (auto const& [index, characterPath] : characterPaths | std::views::enumerate)
-	{		
-		if (fontSize_.x * spacing_ * characterPaths.size() > displaySettings.bounds.x
-		 && (fontSize_.x * spacing_ * (index + 1)) + (fontSize_.x * spacing_ / 2.0f * 3) > displaySettings.bounds.x)
-		{
-			for (size i{ 0 }; i < 3; ++i)
-			{
-				glm::vec2 const offset{
-					fontSize_.x * 0.5f + (fontSize_.x * spacing_ * (index - 0.5f)) + (fontSize_.x * spacing_ / 2.0f * i),
-					fontSize_.y * 0.5f
-				};
-
-				auto const position{ GetPosition() + offset };
-
-				glm::vec2 const bounds{ GetInterface()->GetBounds() };
-				auto const modelMatrix{
-					glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(position, bounds), 0.0f })
-				  * glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(fontSize_, bounds), 1.0f })
-				};
-
-				characters_.emplace_back(font_.GetCharacterPath('.'), modelMatrix);
-			}
-			break;
-		}
-		else
-		{
-			glm::vec2 const offset{
-				fontSize_.x * 0.5f + fontSize_.x * spacing_ * index,
-				fontSize_.y * 0.5f
-			};
-
-			auto const position{ GetPosition() + offset };
-
-			glm::vec2 const bounds{ GetInterface()->GetBounds() };
-			auto const modelMatrix{
-				glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(position, bounds), 0.0f })
-			  * glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(fontSize_, bounds), 1.0f })
-			};
-
-			characters_.emplace_back(characterPath, modelMatrix);
-		}
-	}
 }
 
 auto WText::GetCanCache() const -> b8

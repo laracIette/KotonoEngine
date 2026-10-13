@@ -2,8 +2,8 @@
 
 #include <glm/common.hpp>
 
-WBox::WBox(glm::vec2 const& size)
-	: size_{ size }
+WBox::WBox()
+	: size_{ 64.0f, 64.0f }
 {
 }
 
@@ -27,11 +27,11 @@ EFlex WBox::GetFlex() const
 	return EFlex::None;
 }
 
-void WBox::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
+auto WBox::GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings
+{		
 	displaySettings.bounds = glm::min(size_, displaySettings.bounds);
-
-	Base::DisplayInternal(displaySettings);
+	
+	return displaySettings;
 }
 
 #include "Box.generated.inl"

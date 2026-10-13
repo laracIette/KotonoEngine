@@ -9,13 +9,12 @@ class WStack final : public WChildrenOwner
 	GENERATED()
 
 public:
-	glm::vec2 GetContentSize(glm::vec2 const& bounds) const override;
-	glm::vec2 GetDesiredSize(glm::vec2 const& bounds) const override;
+	void Display(UWidgetDisplaySettings displaySettings) override;
+	
+	auto GetContentSize(glm::vec2 const& bounds) const -> glm::vec2 override;
+	auto GetDesiredSize(glm::vec2 const& bounds) const -> glm::vec2 override;
 
-	EExpand GetExpand() const override;
-	EFlex GetFlex() const override;
-
-protected:
-	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
+	auto GetExpand() const -> EExpand override;
+	auto GetFlex() const -> EFlex override;
 };
 

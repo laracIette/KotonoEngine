@@ -14,7 +14,7 @@ public:
 	b8 OnMouseScroll(glm::vec2 const& delta) override;
 
 protected:
-	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
+	auto GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings override;
 
 private:
 	WritableProperty(EAxis, axis_, Axis);

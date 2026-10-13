@@ -9,16 +9,15 @@ class WWrap final : public WChildOwner
 	GENERATED()
 
 public:
-	WWrap(EAxis axis = EAxis::All);
+	WWrap();
 
-public:
-	glm::vec2 GetContentSize(glm::vec2 const& bounds) const override;
+	auto GetContentSize(glm::vec2 const& bounds) const -> glm::vec2 override;
 
-	EExpand GetExpand() const override;
-	EFlex GetFlex() const override;
-
+	auto GetExpand() const -> EExpand override;
+	auto GetFlex() const -> EFlex override;
+	
 protected:
-	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
+	auto GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings override;
 
 private:
 	WritableProperty(EAxis, axis_, Axis);

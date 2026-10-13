@@ -43,16 +43,16 @@ WidgetPtr WSingleViewport::Build()
 	);
 }
 
-void WSingleViewport::Display(UWidgetDisplaySettings const& displaySettings)
+void WSingleViewport::OnDisplayed()
 {
-	Base::Display(displaySettings);
+	Base::OnDisplayed();
 	
 	GetScene()->GetEventGameStateChanged().AddListener(this, &Self::OnGameStateChanged);
 }
 
-void WSingleViewport::Remove()
+void WSingleViewport::OnRemoved()
 {
-	Base::Remove();
+	Base::OnRemoved();
 	
 	GetScene()->GetEventGameStateChanged().RemoveListener(this, &Self::OnGameStateChanged);
 }

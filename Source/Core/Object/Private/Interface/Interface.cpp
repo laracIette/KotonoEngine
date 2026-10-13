@@ -151,7 +151,7 @@ void UInterface::UpdateFocusedWidgets(glm::vec2 const& cursorPosition)
 		
 		if (!newFocusedWidgets.Contains(widget))
 		{
-			widget->OnUnfocused();
+			widget->SetUnfocused();
 		}
 	}
 
@@ -165,7 +165,7 @@ void UInterface::UpdateFocusedWidgets(glm::vec2 const& cursorPosition)
 		
 		if (!focusedWidgets_.Contains(widget))
 		{
-			widget->OnFocused();
+			widget->SetFocused();
 		}
 	}
 
@@ -184,7 +184,7 @@ void UInterface::UpdateActiveWidgets()
 			
 		if (!focusedWidgets_.Contains(widget))
 		{
-			widget->OnInactive();
+			widget->SetInactive();
 		}
 	}
 
@@ -198,7 +198,7 @@ void UInterface::UpdateActiveWidgets()
 		
 		if (!activeWidgets_.Contains(widget))
 		{
-			widget->OnActive();
+			widget->SetActive();
 		}
 	}
 	

@@ -1,7 +1,12 @@
 #include "CoreWidgets/Crop/Crop.h"
 
-void WCrop::DisplayInternal(UWidgetDisplaySettings displaySettings)
+WCrop::WCrop() 
+	: padding_{ UPadding::Zero() }
 {
+}
+
+auto WCrop::GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings
+{	
 	displaySettings.scissor.offset = displaySettings.position;
 	displaySettings.scissor.extent = displaySettings.bounds;
 	
@@ -12,8 +17,8 @@ void WCrop::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	displaySettings.scissor.extent.x -= padding_.r;
 	displaySettings.scissor.extent.y -= padding_.t;
 	displaySettings.scissor.extent.y -= padding_.b;
-
-	Base::DisplayInternal(displaySettings);
+	
+	return displaySettings;
 }
 
 #include "Crop.generated.inl"

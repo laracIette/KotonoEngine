@@ -9,17 +9,18 @@ class WRow final : public WChildrenOwner
 	GENERATED()
 
 public:
+	WRow();
+	
+	void Display(UWidgetDisplaySettings displaySettings) override;
+	
 	auto GetContentSize(glm::vec2 const& bounds) const -> glm::vec2 override;
 	auto GetDesiredSize(glm::vec2 const& bounds) const -> glm::vec2 override;
 
 	auto GetExpand() const -> EExpand override;
 	auto GetFlex() const -> EFlex override;
 
-protected:	
-	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
-
 private:
-	auto GetExpandWeight() const -> f32;
+	auto GetChildrenExpandWeight() const -> f32;
 
 private:
 	StateProperty(f32, spacing_, Spacing, Value);

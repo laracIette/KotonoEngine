@@ -31,15 +31,15 @@ class WAlign final : public WChildOwner
 
 public:
 	WAlign();
-
+	
 	auto GetContentSize(glm::vec2 const& bounds) const -> glm::vec2 override;
 
 	auto GetFlex() const -> EFlex override;
 	auto GetExpand() const -> EExpand override;
 
 protected:
-	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
-
+	auto GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings override;
+	
 private:
 	WritableProperty(UAlignment, alignment_, Alignment, Value);
 

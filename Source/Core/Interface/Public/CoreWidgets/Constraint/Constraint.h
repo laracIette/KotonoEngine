@@ -16,9 +16,9 @@ public:
 
 	auto GetExpand() const -> EExpand override;
 	auto GetFlex() const -> EFlex override;
-
+	
 protected:
-	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
+	auto GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings override;
 
 private:
 	StateProperty(EAxis, axis_, Axis);

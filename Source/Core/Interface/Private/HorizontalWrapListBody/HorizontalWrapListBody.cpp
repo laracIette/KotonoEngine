@@ -2,54 +2,16 @@
 
 #include <glm/common.hpp>
 
-glm::vec2 WHorizontalWrapListBody::GetContentSize(glm::vec2 const& bounds) const
+WHorizontalWrapListBody::WHorizontalWrapListBody() 
+	: itemSpacing_{ 0.0f }
+	, rowSpacing_{ 0.0f }
 {
-	glm::vec2 newBounds{ bounds.x, INFINITY };
+}
 
-	auto const rowSizes{ GetRowDisplaySizes(newBounds) };
-	glm::vec2 size{ 0.0f, 0.0f };
-
-	for (auto const& rowSize : rowSizes)
-	{
-		size.x = std::max(size.x, rowSize.x);
-		size.y += rowSize.y;
-	}
-
-	if (rowSizes.size())
-	{
-		size.y += rowSpacing_ * static_cast<f32>(rowSizes.size() - 1);
-	}
+void WHorizontalWrapListBody::Display(UWidgetDisplaySettings displaySettings)
+{	
+	Base::Display(displaySettings);
 	
-	size = glm::min(size, newBounds);
-	return size;
-}
-
-glm::vec2 WHorizontalWrapListBody::GetDesiredSize(const glm::vec2& bounds) const
-{
-	auto const rowSizes{ GetRowDesiredSizes(bounds) };
-	glm::vec2 size{ 0.0f, 0.0f };
-
-	for (auto const& rowSize : rowSizes)
-	{
-		size.x = std::max(size.x, rowSize.x);
-		size.y += rowSize.y;
-	}
-	
-	if (rowSizes.size())
-	{
-		size.y += rowSpacing_ * static_cast<float>(rowSizes.size() - 1);
-	}
-
-	return size;
-}
-
-EFlex WHorizontalWrapListBody::GetFlex() const
-{
-	return EFlex::All;
-}
-
-void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
 	auto const baseDisplaySettings{ displaySettings };
 
 	glm::vec2 rowSize{ 0.0f, 0.0f };
@@ -84,7 +46,53 @@ void WHorizontalWrapListBody::DisplayInternal(UWidgetDisplaySettings displaySett
 	}
 }
 
-std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDisplaySizes(glm::vec2 const& bounds) const
+auto WHorizontalWrapListBody::GetContentSize(glm::vec2 const& bounds) const -> glm::vec2
+{
+	glm::vec2 newBounds{ bounds.x, INFINITY };
+
+	auto const rowSizes{ GetRowDisplaySizes(newBounds) };
+	glm::vec2 size{ 0.0f, 0.0f };
+
+	for (auto const& rowSize : rowSizes)
+	{
+		size.x = std::max(size.x, rowSize.x);
+		size.y += rowSize.y;
+	}
+
+	if (rowSizes.size())
+	{
+		size.y += rowSpacing_ * static_cast<f32>(rowSizes.size() - 1);
+	}
+	
+	size = glm::min(size, newBounds);
+	return size;
+}
+
+auto WHorizontalWrapListBody::GetDesiredSize(const glm::vec2& bounds) const -> glm::vec2
+{
+	auto const rowSizes{ GetRowDesiredSizes(bounds) };
+	glm::vec2 size{ 0.0f, 0.0f };
+
+	for (auto const& rowSize : rowSizes)
+	{
+		size.x = std::max(size.x, rowSize.x);
+		size.y += rowSize.y;
+	}
+	
+	if (rowSizes.size())
+	{
+		size.y += rowSpacing_ * static_cast<float>(rowSizes.size() - 1);
+	}
+
+	return size;
+}
+
+auto WHorizontalWrapListBody::GetFlex() const -> EFlex
+{
+	return EFlex::All;
+}
+
+auto WHorizontalWrapListBody::GetRowDisplaySizes(glm::vec2 const& bounds) const -> std::vector<glm::vec2>
 {
 	std::vector<glm::vec2> rowSizes{};
 	glm::vec2 rowSize{ 0.0f, 0.0f };
@@ -137,7 +145,7 @@ std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDisplaySizes(glm::vec2 con
 	return rowSizes;
 }
 
-std::vector<glm::vec2> WHorizontalWrapListBody::GetRowDesiredSizes(const glm::vec2& bounds) const
+auto WHorizontalWrapListBody::GetRowDesiredSizes(const glm::vec2& bounds) const -> std::vector<glm::vec2>
 {
 	std::vector<glm::vec2> rowSizes{};
 	glm::vec2 rowSize{ 0.0f, 0.0f };

@@ -8,11 +8,8 @@ class WOffset final : public WChildOwner
 {
 	GENERATED()
 
-public:
-	glm::vec2 GetContentSize(glm::vec2 const& bounds) const override;
-
 protected:
-	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
+	auto GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings override;
 
 private:
 	StateProperty(glm::vec2, offset_, Offset);

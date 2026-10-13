@@ -3,6 +3,19 @@
 #include <glm/common.hpp>
 #include <enum_utils.h>
 
+void WStack::Display(UWidgetDisplaySettings displaySettings)
+{
+	Base::Display(displaySettings);
+	
+	for (auto const& child : GetChildren())
+	{
+		if (child)
+		{
+			child->Display(displaySettings);
+		}
+	}
+}
+
 auto WStack::GetContentSize(glm::vec2 const& bounds) const -> glm::vec2
 {
 	glm::vec2 size{ 0.0f, 0.0f };
@@ -60,17 +73,6 @@ auto WStack::GetExpand() const -> EExpand
 auto WStack::GetFlex() const -> EFlex
 {
 	return EFlex::All;
-}
-
-void WStack::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
-	for (auto const& child : GetChildren())
-	{
-		if (child)
-		{
-			child->Display(displaySettings);
-		}
-	}
 }
 
 #include "Stack.generated.inl"

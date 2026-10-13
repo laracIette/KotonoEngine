@@ -9,6 +9,10 @@ class WColumn final : public WChildrenOwner
 	GENERATED()
 
 public:
+	WColumn();
+	
+	void Display(UWidgetDisplaySettings displaySettings) override;
+	
 	auto GetContentSize(glm::vec2 const& bounds) const -> glm::vec2 override;
 	auto GetDesiredSize(glm::vec2 const& bounds) const -> glm::vec2 override;
 
@@ -16,10 +20,9 @@ public:
 	auto GetFlex() const -> EFlex override;
 
 protected:	
-	void DisplayInternal(UWidgetDisplaySettings displaySettings) override;
 
 private:
-	auto GetExpandWeight() const -> f32;
+	auto GetChildrenExpandWeight() const -> f32;
 
 private:
 	StateProperty(f32, spacing_, Spacing, Value);

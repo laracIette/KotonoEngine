@@ -18,6 +18,8 @@ glm::vec2 WConstraint::GetContentSize(glm::vec2 const& bounds) const
 	case EAxis::Vertical:
 		newBounds.y = std::min(size_, bounds.y);
 		break;
+	default:
+		break;
 	}
 
 	return Base::GetContentSize(newBounds);
@@ -48,8 +50,8 @@ EFlex WConstraint::GetFlex() const
 	return EFlex::All;
 }
 
-void WConstraint::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
+auto WConstraint::GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings
+{		
 	switch (axis_)
 	{
 	case EAxis::Horizontal:
@@ -58,9 +60,11 @@ void WConstraint::DisplayInternal(UWidgetDisplaySettings displaySettings)
 	case EAxis::Vertical:
 		displaySettings.bounds.y = std::min(size_, displaySettings.bounds.y);
 		break;
+	default:
+		break;
 	}
-
-	Base::DisplayInternal(displaySettings);
+	
+	return displaySettings;
 }
 
 #include "Constraint.generated.inl"

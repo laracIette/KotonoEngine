@@ -4,6 +4,58 @@
 #include <glm/common.hpp>
 #include <enum_utils.h>
 
+WRow::WRow()
+	: spacing_{ 0.0f }
+{
+}
+
+void WRow::Display(UWidgetDisplaySettings displaySettings)
+{	
+	Base::Display(displaySettings);
+	
+	// Get non-expand width
+	f32 nonExpandWidth{ 0.0f };
+	for (auto const& child : GetChildren())
+	{
+		// Check if not horizontal expand
+		if (child && !child->GetHasExpand(EExpand::Horizontal))
+		{
+			auto const childSize{ child->GetContentSize(displaySettings.bounds) };
+			nonExpandWidth += childSize.x;
+		}
+	}
+
+	// Get expand width
+	f32 expandWidth{ displaySettings.bounds.x - nonExpandWidth };
+	if (!GetChildren().empty())
+	{
+		expandWidth -= spacing_ * static_cast<f32>(GetChildren().size() - 1);
+	}
+	expandWidth /= GetChildrenExpandWeight();
+
+	for (auto const& child : GetChildren())
+	{
+		if (child)
+		{
+			auto settings{ displaySettings };
+
+			if (child->GetHasExpand(EExpand::Horizontal))
+			{
+				settings.bounds.x = expandWidth * child->GetExpandWeight().x;
+			}
+
+			child->Display(settings);
+			auto const childSize{ child->GetContentSize(settings.bounds) };
+
+			displaySettings.position.x += childSize.x;
+			displaySettings.position.x += spacing_;
+
+			displaySettings.bounds.x -= childSize.x;
+			displaySettings.bounds.x -= spacing_;
+		}
+	}
+}
+
 auto WRow::GetContentSize(glm::vec2 const& bounds) const -> glm::vec2
 {
 	glm::vec2 size{ 0.0f, 0.0f };
@@ -52,7 +104,7 @@ auto WRow::GetDesiredSize(glm::vec2 const& bounds) const -> glm::vec2
 auto WRow::GetExpand() const -> EExpand
 {
 	return std::ranges::any_of(GetChildren(),
-		[](WidgetPtr const& child) { return child && has_flag(child->GetExpand(), EExpand::Vertical); }
+		[](WidgetPtr const& child) { return child && child->GetHasExpand(EExpand::Vertical); }
 	) ? EExpand::All : EExpand::Horizontal;
 }
 
@@ -60,57 +112,12 @@ auto WRow::GetFlex() const -> EFlex
 {
 	return EFlex::All;
 }
-
-void WRow::DisplayInternal(UWidgetDisplaySettings displaySettings)
-{
-	// Get non-expand width
-	f32 nonExpandWidth{ 0.0f };
-	for (auto const& child : GetChildren())
-	{
-		// Check if not horizontal expand
-		if (child && !has_flag(child->GetExpand(), EExpand::Horizontal))
-		{
-			auto const childSize{ child->GetContentSize(displaySettings.bounds) };
-			nonExpandWidth += childSize.x;
-		}
-	}
-
-	// Get expand width
-	f32 expandWidth{ displaySettings.bounds.x - nonExpandWidth };
-	if (!GetChildren().empty())
-	{
-		expandWidth -= spacing_ * static_cast<f32>(GetChildren().size() - 1);
-	}
-	expandWidth /= GetExpandWeight();
-
-	for (auto const& child : GetChildren())
-	{
-		if (child)
-		{
-			auto settings{ displaySettings };
-
-			if (has_flag(child->GetExpand(), EExpand::Horizontal))
-			{
-				settings.bounds.x = expandWidth * child->GetExpandWeight().x;
-			}
-
-			child->Display(settings);
-			auto const childSize{ child->GetContentSize(settings.bounds) };
-
-			displaySettings.position.x += childSize.x;
-			displaySettings.position.x += spacing_;
-
-			displaySettings.bounds.x -= childSize.x;
-			displaySettings.bounds.x -= spacing_;
-		}
-	}
-}
  
-auto WRow::GetExpandWeight() const -> f32
+auto WRow::GetChildrenExpandWeight() const -> f32
 {
 	return std::ranges::fold_left(GetChildren() 
         | std::views::filter([](WidgetPtr const& child) { 
-            return child && has_flag(child->GetExpand(), EExpand::Horizontal); 
+            return child && child->GetHasExpand(EExpand::Horizontal); 
         })
         | std::views::transform([](WidgetPtr const& child) { 
             return child->GetExpandWeight().x; 

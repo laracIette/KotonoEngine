@@ -15,6 +15,16 @@ WChildOwner::~WChildOwner()
 	}
 }
 
+void WChildOwner::Display(UWidgetDisplaySettings displaySettings)
+{
+	Base::Display(displaySettings);
+	
+	if (child_)
+	{
+		child_->Display(GetChildDisplaySettings(displaySettings));
+	}
+}
+
 void WChildOwner::Remove()
 {
 	Base::Remove();
@@ -122,12 +132,9 @@ void WChildOwner::SetChild(WidgetPtr const& widget)
 	});
 }
 
-void WChildOwner::DisplayInternal(UWidgetDisplaySettings displaySettings)
+auto WChildOwner::GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings
 {
-	if (child_)
-	{
-		child_->Display(displaySettings);
-	}
+	return displaySettings;
 }
 
 #include "ChildOwner.generated.inl"

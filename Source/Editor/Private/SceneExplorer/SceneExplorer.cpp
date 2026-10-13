@@ -64,16 +64,16 @@ WidgetPtr WSceneExplorer::Build()
 	);
 }
 
-void WSceneExplorer::Display(UWidgetDisplaySettings const& displaySettings)
+void WSceneExplorer::OnDisplayed()
 {
-	Base::Display(displaySettings);
+	Base::OnDisplayed();
 
 	GetScene()->GetEventSceneObjectsUpdated().AddListener(this, &Self::UpdateItemList);
 }
 
-void WSceneExplorer::Remove()
+void WSceneExplorer::OnRemoved()
 {
-	Base::Remove();
+	Base::OnRemoved();
 
 	GetScene()->GetEventSceneObjectsUpdated().RemoveListener(this, &Self::UpdateItemList);
 }
