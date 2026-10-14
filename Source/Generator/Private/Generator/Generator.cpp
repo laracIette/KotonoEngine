@@ -31,37 +31,31 @@ static constexpr auto REGISTRY_FUNCTIONS{ R"(
 void Register_{0}() 
 {{
 	SObjectFactory::Register("{0}", +[]() static -> UPtr<KObject> {{ return UCreate<{0}>{{}}(); }});
-	{0}::Class::instance_ = UPtr{{ new {0}::Class{{}} }};
+	{0}::class_ = UPtr{{ new {0}::Class{{}} }};
 }}
 
 void Unregister_{0}() 
 {{
-	delete {0}::Class::instance_.Get();
+	delete {0}::class_.Get();
 }}
-)" };
-
-static constexpr auto CLASS_HEADER_DERIVED{ R"(\
-		private: \
-			friend void Register_{0}(); \
-			friend void Unregister_{0}(); \
-		public: \
-			static auto Get() -> UPtr<Class const> const&; \
-			auto Instantiate() const -> ObjectPtr override; \
-		private: \
-			static UPtr<Class const> instance_; \
 )" };
 
 static constexpr auto CLASS_SOURCE_DERIVED{ R"(
-UPtr<{0}::Class const> {0}::Class::instance_{{ nullptr }};
+UPtr<{0}::Class const> {0}::class_{{ nullptr }};
 
 auto {0}::Class::Get() -> UPtr<Class const> const&
 {{
-	return instance_;
+	return {0}::class_;
 }}
 
-auto {0}::Class::Instantiate() const -> ObjectPtr
+auto {0}::Class::Instantiate() const -> UPtr<KObject>
 {{
 	return UCreate<{0}>{{}}();
+}}
+
+auto {0}::GetClass() const -> UPtr<KObject::Class const>
+{{
+	return class_;
 }}
 )" };
 
@@ -84,12 +78,45 @@ static constexpr auto GENERATED_HEADER_OBJECT{ R"(
 		{{ \
 		public: \
 			virtual ~Class() = default; \
-			virtual auto Instantiate() const -> ObjectPtr = 0; \
+			virtual auto Instantiate() const -> UPtr<KObject> = 0; \
 		}}; \
+		virtual auto GetClass() const -> UPtr<KObject::Class const> = 0; \
 	private:
 )" };
 
-static constexpr auto GENERATED_HEADER_DERIVED{ R"(
+static constexpr auto GENERATED_HEADER_DERIVED_NORMAL{ R"(
+#pragma once
+
+#ifdef GENERATED
+#undef GENERATED
+#endif
+
+#define GENERATED() \
+	private: \
+		friend void Register_{0}(); \
+		friend void Unregister_{0}(); \
+	private: \
+		using Self = {0}; \
+		using Base = {1}; \
+		using Base::Base; \
+	public: \
+		void SerializeTo(nlohmann::json& json) const override; \
+		void DeserializeFrom(nlohmann::json const& json) override; \
+		auto GetMemberVariables() const -> std::vector<UVariableInfo> override; \
+		auto Ptr() const -> UPtr<{0}>; \
+		class Class : public Base::Class \
+		{{ \
+		public: \
+			static auto Get() -> UPtr<Class const> const&; \
+			auto Instantiate() const -> UPtr<KObject> override; \
+		}}; \
+		auto GetClass() const -> UPtr<KObject::Class const> override; \
+	private: \
+		static UPtr<Class const> class_; \
+	private:
+)" };
+
+static constexpr auto GENERATED_HEADER_DERIVED_ABSTRACT{ R"(
 #pragma once
 
 #ifdef GENERATED
@@ -108,8 +135,10 @@ static constexpr auto GENERATED_HEADER_DERIVED{ R"(
 		auto Ptr() const -> UPtr<{0}>; \
 		class Class : public Base::Class \
 		{{ \
-{2} \
+		public: \
+			auto Instantiate() const -> UPtr<KObject> override = 0; \
 		}}; \
+		auto GetClass() const -> UPtr<KObject::Class const> override = 0; \
 	private:
 )" };
 
@@ -270,19 +299,19 @@ void SGenerator::GenerateHeader(UReflectionResult const& reflectionResult)
 {
 	auto const classInfo{ GetClassInfo(reflectionResult) };
 	
-	std::string const instantiateFunction{ std::format(CLASS_HEADER_DERIVED
-		, classInfo.name
-	) };
-
 	std::string const generatedCode{ !classInfo.base.has_value()
 		? std::format(GENERATED_HEADER_OBJECT
 			, classInfo.name
 		)
-		: std::format(GENERATED_HEADER_DERIVED
-			, classInfo.name
-			, classInfo.base.value()
-			, classInfo.isAbstract ? "" : instantiateFunction
-		)
+		: classInfo.isAbstract
+			? std::format(GENERATED_HEADER_DERIVED_ABSTRACT
+				, classInfo.name
+				, classInfo.base.value()
+			)
+			: std::format(GENERATED_HEADER_DERIVED_NORMAL
+				, classInfo.name
+				, classInfo.base.value()
+			)
 	};
 
 	UPath const fileName{ reflectionResult.path.ToPath().filename().replace_extension(".generated.h") };
