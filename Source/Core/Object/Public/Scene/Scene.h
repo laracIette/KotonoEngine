@@ -75,7 +75,7 @@ public:
 private:
 	void InitSceneObjects() const;
 	void UpdateSceneObjects(f32 deltaTime) const;
-	void DeleteSceneObjects() const;
+	void DeleteSceneObjects();
 
 	auto TrySetState(EGameState gameState) -> b8;
 

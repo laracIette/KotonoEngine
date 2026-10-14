@@ -18,11 +18,12 @@ TSceneObject::~TSceneObject()
 	{
 		GetScene()->Remove(Ptr());
 	}
-
-	for (i64 i{ sceneComponents_.LastIndex() }; sceneComponents_.IsValidIndex(i); --i)
+	
+	for (auto const& sceneComponent : sceneComponents_)
 	{
-		if (UPtr const sceneComponent{ sceneComponents_[i] })
+		if (sceneComponent)
 		{
+			sceneComponent->owner_ = nullptr;
 			sceneComponent->Delete();
 		}
 	}

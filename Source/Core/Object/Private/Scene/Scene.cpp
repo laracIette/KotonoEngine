@@ -251,15 +251,17 @@ void UScene::UpdateSceneObjects(f32 deltaTime) const
 	}
 }
 
-void UScene::DeleteSceneObjects() const
+void UScene::DeleteSceneObjects()
 {
-	for (auto const& sceneObject : USet<SceneObjectPtr>{ sceneObjects_ })
+	for (auto const& sceneObject : sceneObjects_)
 	{
 		if (sceneObject)
 		{
+			sceneObject->scene_ = nullptr;
 			sceneObject->Delete();
 		}
 	}
+	sceneObjects_.Clear();
 }
 
 auto UScene::TrySetState(EGameState gameState) -> b8

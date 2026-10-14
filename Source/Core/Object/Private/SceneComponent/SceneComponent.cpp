@@ -7,10 +7,11 @@
 #include <stdexcept>
 
 KSceneComponent::KSceneComponent()
-    : owner_{}
+	: isInit_{ false }
+	, canUpdate_{ true }
+    , owner_{ nullptr }
+    , parent_{ nullptr }
     , visibility_{ EVisibility::Visible }
-    , canUpdate_{ true }
-    , isInit_{ false }
     , mobility_{ EMobility::Dynamic }
 {
 }
@@ -56,7 +57,7 @@ void KSceneComponent::SetVisibility(EVisibility visibility, b8 propagateToChildr
     visibility_ = visibility;
     if (propagateToChildren)
     {
-        for (auto& sceneComponent : children_)
+        for (auto const& sceneComponent : children_)
         {
             sceneComponent->SetVisibility(visibility, propagateToChildren);
         }
@@ -297,7 +298,7 @@ void KSceneComponent::Deserialize()
 {
 	Base::Deserialize();
 
-    for (auto& sceneComponent : children_)
+    for (auto const& sceneComponent : children_)
     {
         if (sceneComponent)
         {

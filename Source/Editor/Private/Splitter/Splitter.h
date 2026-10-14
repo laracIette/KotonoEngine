@@ -17,10 +17,12 @@ protected:
 public:
 	void SetChildren(WidgetSet const& children);
 	void AddChild(WidgetPtr const& child);
-	void RemoveChild(WidgetPtr const& child);
 	
 protected:
 	virtual auto MakeSeparator() -> WidgetPtr = 0;
+	
+private:
+	void RemoveChild(WidgetPtr const& child);
 	
 protected:
 	UPtr<WChildrenOwner> ChildrenOwner;
