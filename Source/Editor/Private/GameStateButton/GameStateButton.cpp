@@ -1,12 +1,9 @@
 #include "GameStateButton.h"
 
+#include "GameStatePlayPauseButtonStyle.h"
+#include "GameStateStopButtonStyle.h"
 #include <Scene/Scene.h>
 #include <core_widgets.h>
-
-static constexpr UColor PLAY_COLOR{ Colors::Green };
-static constexpr UColor PAUSE_COLOR{ Colors::White.WithValue(0.5f) };
-static constexpr UColor STOP_COLOR{ Colors::Red };
-static constexpr UColor STOPPED_COLOR{ Colors::Red.WithValue(0.2f) };
 
 WidgetPtr WGameStateButton::Build()
 {
@@ -20,9 +17,8 @@ WidgetPtr WGameStateButton::Build()
             | Apply(&WBox::SetSize, glm::vec2{ 64.0f, 64.0f })
             | (
                 playPauseButton
+                | Apply(&WButton::SetStyleClass, KGameStatePlayPauseButtonStyle::Class::Get())
                 | Apply(&WButton::SetIsActivatable, true)
-                | Apply(&WButton::SetNormalColor, PLAY_COLOR)
-                | Apply(&WButton::SetActivatedColor, PAUSE_COLOR)
                 | Apply(&WButton::SetOnActivated, [this]() { GetScene()->PlayGame(); })
                 | Apply(&WButton::SetOnDeactivated, [this]() { GetScene()->PauseGame(); })
             )
@@ -32,9 +28,8 @@ WidgetPtr WGameStateButton::Build()
             | Apply(&WBox::SetSize, glm::vec2{ 64.0f, 64.0f })
             | (
                 UCreate<WButton>{ "Play Pause Button" }()
+                | Apply(&WButton::SetStyleClass, KGameStateStopButtonStyle::Class::Get())
                 | Apply(&WButton::SetIsEnabled, [this]() { return !GetScene()->GetIsGameStopped(); })
-                | Apply(&WButton::SetNormalColor, STOP_COLOR)
-                | Apply(&WButton::SetDisabledColor, STOPPED_COLOR)
                 | Apply(&WButton::SetOnClicked, [this, playPauseButton]() {
                     GetScene()->StopGame();
                     playPauseButton->SetIsActivated(false);

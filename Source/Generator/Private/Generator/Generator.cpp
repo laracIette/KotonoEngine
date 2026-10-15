@@ -48,7 +48,7 @@ auto {0}::Class::Get() -> UPtr<Class const> const&
 	return {0}::class_;
 }}
 
-auto {0}::Class::Instantiate() const -> UObjectPtr<KObjectReflectionBase>
+auto {0}::Class::Instantiate() const -> UObjectPtr<KObjectBase>
 {{
 	return UCreate<{0}>{{}}();
 }}
@@ -82,8 +82,9 @@ static constexpr auto GENERATED_HEADER_NORMAL{ R"(
 		class Class : public Base::Class \
 		{{ \
 		public: \
+			using Base::Class::Instantiate; \
 			static auto Get() -> UPtr<Class const> const&; \
-			auto Instantiate() const -> UObjectPtr<KObjectReflectionBase> override; \
+			auto Instantiate() const -> UObjectPtr<KObjectBase> override; \
 		}}; \
 		auto GetClass() const -> UPtr<KObjectReflectionBase::Class const> override; \
 	private: \
@@ -111,7 +112,8 @@ static constexpr auto GENERATED_HEADER_ABSTRACT{ R"(
 		class Class : public Base::Class \
 		{{ \
 		public: \
-			auto Instantiate() const -> UObjectPtr<KObjectReflectionBase> override = 0; \
+			using Base::Class::Instantiate; \
+			auto Instantiate() const -> UObjectPtr<KObjectBase> override = 0; \
 		}}; \
 		auto GetClass() const -> UPtr<KObjectReflectionBase::Class const> override = 0; \
 	private:

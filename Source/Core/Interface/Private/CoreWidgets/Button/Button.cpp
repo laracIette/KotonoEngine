@@ -2,26 +2,14 @@
 
 #include <RenderGraph/InterfaceRenderGraph.h>
 
-static const UPath DEFAULT_TEXTURE{ "${ENGINE_DIRECTORY}/Assets/textures/white_texture.jpg" };
-
-static constexpr UColor DEFAULT_NORMAL{ Colors::White.WithValue(0.1f) };
-static constexpr UColor DEFAULT_FOCUSED{ Colors::White.WithValue(0.15f) };
-static constexpr UColor DEFAULT_PRESSED{ Colors::White.WithValue(0.25f) };
-static constexpr UColor DEFAULT_ACTIVATED{ Colors::White.WithValue(0.2f) };
-static constexpr UColor DEFAULT_DISABLED{ DEFAULT_NORMAL.WithAlpha(0.5f) };
-
 WButton::WButton()
 	: isEnabled_{ true }
 	, isPressed_{ false }
 	, isActivated_{ false }
 	, isActivatable_{ false }
 	, startActivated_{ false }
-	, normalState_{ DEFAULT_TEXTURE, DEFAULT_NORMAL }
-	, focusedState_{ DEFAULT_TEXTURE, DEFAULT_FOCUSED }
-	, pressedState_{ DEFAULT_TEXTURE, DEFAULT_PRESSED }
-	, activatedState_{ DEFAULT_TEXTURE, DEFAULT_ACTIVATED }
-	, disabledState_{ DEFAULT_TEXTURE, DEFAULT_DISABLED }
 {
+	StyleClass = KButtonStyle::Class::Get();
 }
 
 void WButton::Init()
@@ -29,6 +17,15 @@ void WButton::Init()
 	Base::Init();
 	
 	isActivated_ = startActivated_;
+	
+	if (UObjectPtr const buttonStyle{ TryCast<KButtonStyle>(Style) })
+	{
+		normalState_ = buttonStyle->GetNormalState();
+		focusedState_ = buttonStyle->GetFocusedState();
+		pressedState_ = buttonStyle->GetPressedState();
+		activatedState_ = buttonStyle->GetActivatedState();
+		disabledState_ = buttonStyle->GetDisabledState();
+	}
 }
 
 auto WButton::OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8

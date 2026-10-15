@@ -24,6 +24,8 @@ static constexpr auto isVisible(UWidgetDisplaySettings const& displaySettings) n
 
 WWidget::WWidget()
 	: Tint{ Colors::White }
+	, StyleClass{ KWidgetStyle::Class::Get() }
+	, Style{ nullptr }
 	, build_{ nullptr }
 	, isDirty_{ false }
 	, isVisible_{ true }
@@ -48,6 +50,8 @@ WWidget::~WWidget()
 	{
 		GetParent()->Disown(Ptr());
 	}
+	
+	Delete(Style);
 }
 
 WidgetPtr WWidget::Build()
@@ -57,6 +61,10 @@ WidgetPtr WWidget::Build()
 
 void WWidget::Init()
 {
+	if (StyleClass)
+	{
+		Style = StyleClass->Instantiate<KWidgetStyle>();
+	}
 }
 
 void WWidget::OnDisplayed()

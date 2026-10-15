@@ -1,5 +1,6 @@
 #include "SceneVisibilityField.h"
 
+#include "SceneVisibilityFieldButtonStyle.h"
 #include <core_widgets.h>
 
 WSceneVisibilityField::WSceneVisibilityField(ESceneVisibility field, std::string_view name, b8 isFieldVisible) 
@@ -23,10 +24,9 @@ WidgetPtr WSceneVisibilityField::Build()
                     | Apply(&WBox::SetSize, glm::vec2{ 16.0f, 16.0f })
                     | (
                         UCreate<WButton>{}()
+                        | Apply(&WButton::SetStyleClass, KSceneVisibilityFieldButtonStyle::Class::Get())
                         | Apply(&WButton::SetIsActivatable, true)
                         | Apply(&WButton::SetStartActivated, isFieldVisible_)
-                        | Apply(&WButton::SetNormalColor, Colors::Red)
-                        | Apply(&WButton::SetActivatedColor, Colors::Green)
                         | Apply(&WButton::SetOnActivated, [this]() {
                             if (onVisibilityChanged_)
                             {   

@@ -33,6 +33,7 @@ set(KOBJECT_PUBLIC_HEADERS
     "Public/serialize_glm/serialize_glm.h"
     "Public/Transform/Transform.h"
     "Public/Widget/Widget.h"
+    "Public/Widget/WidgetStyle.h"
 )
 set(KOBJECT_SOURCES
     "Private/Guid/Guid.cpp"
@@ -50,6 +51,7 @@ set(KOBJECT_SOURCES
     "Private/serialize_glm/serialize_glm.cpp"
     "Private/Transform/Transform.cpp"
     "Private/Widget/Widget.cpp"
+    "Private/Widget/WidgetStyle.cpp"
 )
 
 target_sources(KotonoObject

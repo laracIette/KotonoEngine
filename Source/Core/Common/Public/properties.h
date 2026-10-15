@@ -45,3 +45,10 @@ public:																	\
 	Getter(Type, Variable, PropertyName, __VA_ARGS__)					\
 	Setter(Type, Variable, PropertyName)								\
 private:
+
+/// A protected member variable with a public getter
+#define ProtectedProperty(Type, Property, ...) protected:	\
+	Type Property;											\
+public:														\
+	Getter(Type, Property, Property, __VA_ARGS__)			\
+private:

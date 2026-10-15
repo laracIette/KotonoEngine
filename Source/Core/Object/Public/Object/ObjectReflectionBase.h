@@ -26,11 +26,18 @@ public:
 	{
 	public:
 		virtual ~Class() = default;
-		virtual auto Instantiate() const -> UObjectPtr<KObjectReflectionBase> = 0;
+		
+		virtual auto Instantiate() const -> UObjectPtr<KObjectBase> = 0;
+		
+		template <std::derived_from<KObjectBase> T>
+		auto Instantiate() const -> UObjectPtr<T>
+		{
+			return TryCast<T>(Instantiate());
+		}
 	};
 	
 	virtual auto GetClass() const -> UPtr<Class const> = 0;
 	
 protected:
-	UObjectPtr<KObjectReflectionBase> Pointer;
+	UObjectPtr<KObjectBase> Pointer;
 };

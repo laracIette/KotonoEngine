@@ -1,5 +1,6 @@
 #include "Detachable.h"
 
+#include "DetachableCloseButtonStyle.h"
 #include <Interface/Interface.h>
 #include <core_widgets.h>
 
@@ -47,7 +48,7 @@ WidgetPtr WDetachable::Build()
 						| (
 							UCreate<WButton>{}()
 							| Apply(&WButton::SetOnClicked, [this]() { Delete(Ptr()); })
-							| Apply(&WButton::SetNormalColor, Colors::Red)
+							| Apply(&WButton::SetStyleClass, KDetachableCloseButtonStyle::Class::Get())
 						)
 					)
 				)

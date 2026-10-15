@@ -5,6 +5,7 @@
 #include "Expand.h"
 #include "Flex.h"
 #include "WidgetDisplaySettings.h"
+#include "WidgetStyle.h"
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float2.hpp>
 #include <Bindable.h>
@@ -110,14 +111,16 @@ public:
 	auto GetHasFlex(EFlex flex) const -> b8;
 	auto GetHasExpand(EExpand expand) const -> b8;
 	auto GetIsPointHovering(glm::vec2 const& position) const -> b8;
-
-	GetterAndSetter(UColor, UColor, Tint, Tint);
-	GetterAndSetter(b8, UBindable<b8>, isVisible_, IsVisible);
 	
 	Getter(glm::vec2, slotDisplaySettings_.position, Position);
 	Getter(glm::vec2, slotDisplaySettings_.bounds, Size);
 	Getter(f32, slotDisplaySettings_.bounds.x / slotDisplaySettings_.bounds.y, AspectRatio);
 	Getter(UScissor, slotDisplaySettings_.scissor, Scissor);
+
+	GetterAndSetter(UColor, UColor, Tint, Tint);
+	GetterAndSetter(b8, UBindable<b8>, isVisible_, IsVisible);
+	
+	Setter(UPtr<KWidgetStyle::Class const>, StyleClass, StyleClass);
 
 protected:	
 	void SetState(StateFunction const& function);
@@ -141,6 +144,9 @@ private:
 protected:
 	/// The tint of the widget, this propagates to the widget's content
 	UColor Tint;
+	
+	UPtr<KWidgetStyle::Class const> StyleClass;
+	UObjectPtr<KWidgetStyle> Style;
 
 private:
 	WidgetPtr build_;

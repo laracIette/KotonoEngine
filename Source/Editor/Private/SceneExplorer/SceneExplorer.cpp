@@ -1,8 +1,6 @@
 #include "SceneExplorer.h"
 
-#include "SceneExplorerAddButton/SceneExplorerAddButton.h"
 #include "SceneExplorerItem/SceneExplorerItem.h"
-#include "SceneExplorerRemoveButton/SceneExplorerRemoveButton.h"
 #include <Scene/Scene.h>
 #include <core_widgets.h>
 
@@ -16,47 +14,19 @@ WidgetPtr WSceneExplorer::Build()
 		)
 		| (
 			UCreate<WPadding>{}()
-			| Apply(&WPadding::SetPadding, UPadding::All(10.0f))
+			| Apply(&WPadding::SetPadding, UPadding::All(5.0f))
 			| (
-				UCreate<WColumn>{}()
-				| Apply(&WColumn::SetSpacing, 10.0f)
+				UCreate<WStack>{}()
 				| (
-					UCreate<WRow>{}()
-					| (
-						UCreate<WBox>{ "Scene Explorer Add Button Box" }()
-						| Apply(&WBox::SetSize, glm::vec2{ 80.0f, 40.0f })
-						| (
-							UCreate<WSceneExplorerAddButton>{}(GetScene())
-						)
-					)
-					| (
-						UCreate<WSpacer>{}(EAxis::Horizontal)
-					)
-					| (
-						UCreate<WBox>{ "Scene Explorer Remove Button Box" }()
-						| Apply(&WBox::SetSize, glm::vec2{ 80.0f, 40.0f })
-						| (
-							UCreate<WSceneExplorerRemoveButton>{}(GetScene())
-						)
-					)
+					UCreate<WColor>{}()
+					| Apply(&WColor::SetColor, Colors::Black.WithAlpha(0.5f))
 				)
 				| (
 					UCreate<WPadding>{}()
 					| Apply(&WPadding::SetPadding, UPadding::All(5.0f))
 					| (
-						UCreate<WStack>{}()
-						| (
-							UCreate<WColor>{}()
-							| Apply(&WColor::SetColor, Colors::Black.WithAlpha(0.5f))
-						)
-						| (
-							UCreate<WPadding>{}()
-							| Apply(&WPadding::SetPadding, UPadding::All(5.0f))
-							| (
-								itemList_ = UCreate<WList>{ "Scene Explorer Item List" }()
-								| MakeItems(GetScene()->GetSceneObjects())
-							)
-						)
+						itemList_ = UCreate<WList>{ "Scene Explorer Item List" }()
+						| MakeItems(GetScene()->GetSceneObjects())
 					)
 				)
 			)
