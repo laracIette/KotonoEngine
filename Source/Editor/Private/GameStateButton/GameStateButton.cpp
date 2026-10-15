@@ -10,7 +10,7 @@ static constexpr UColor STOPPED_COLOR{ Colors::Red.WithValue(0.2f) };
 
 WidgetPtr WGameStateButton::Build()
 {
-    UPtr const playPauseButton{ UCreate<WButton>{ "Play Pause Button" }() };
+    UObjectPtr const playPauseButton{ UCreate<WButton>{ "Play Pause Button" }() };
 
     return (
         UCreate<WRow>{ "Main Row" }()

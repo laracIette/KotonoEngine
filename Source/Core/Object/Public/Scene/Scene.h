@@ -18,7 +18,7 @@ public:
 	using TimeScaleRange = UClamped<f32, 0.1f, 10.0f>;
 
 private:
-	using SceneObjectPtr = UPtr<TSceneObject>;
+	using SceneObjectPtr = UObjectPtr<TSceneObject>;
 
 public:
 	explicit UScene(UPath const& path);
@@ -43,7 +43,7 @@ public:
 
 	void SelectObject(SceneObjectPtr const& sceneObject);
 	
-	auto GetRayIntersectSceneComponent(glm::vec3 const& start, glm::vec3 const& direction) const -> UPtr<KSceneComponent>;
+	auto GetRayIntersectSceneComponent(glm::vec3 const& start, glm::vec3 const& direction) const -> UObjectPtr<KSceneComponent>;
 
 	auto GetAudioContext() -> UAudioContext& { return audioContext_; }
 
@@ -67,7 +67,7 @@ public:
 	void SetTimeScale(TimeScaleRange timeScale) { timeScale_ = timeScale; }
 	
 	template <std::derived_from<TSceneObject> T>
-	auto GetSelectedObject() -> UPtr<T>
+	auto GetSelectedObject() -> UObjectPtr<T>
 	{
 		return TryCast<T>(selectedObject_);
 	}

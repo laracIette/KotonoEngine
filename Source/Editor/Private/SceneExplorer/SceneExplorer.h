@@ -20,9 +20,9 @@ protected:
 	void OnRemoved() override;
 
 private:
-	auto MakeItems(std::span<UPtr<TSceneObject> const> sceneObjects) const -> WidgetSet;
-	void UpdateItemList(std::span<UPtr<TSceneObject> const> sceneObjects) const;
+	auto MakeItems(std::span<UObjectPtr<TSceneObject> const> sceneObjects) const -> WidgetSet;
+	void UpdateItemList(std::span<UObjectPtr<TSceneObject> const> sceneObjects) const;
 
 private:
-	UPtr<WList> itemList_;
+	UObjectPtr<WList> itemList_;
 };

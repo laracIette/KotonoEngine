@@ -9,8 +9,7 @@ std::unordered_set<ObjectPtr> KObject::debugRegistry_{};
 #endif 
 
 KObject::KObject()
-    : ptr_{ this }
-    , guid_{}
+	: guid_{}
     , name_{}
 {
 #ifndef NDEBUG
@@ -23,13 +22,6 @@ KObject::~KObject()
 #ifndef NDEBUG
     debugRegistry_.erase(Ptr());
 #endif
-
-    ptr_.Invalidate();
-}
-
-void KObject::Delete()
-{
-    delete this;
 }
 
 auto KObject::GetTypeName() const -> std::string

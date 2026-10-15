@@ -44,7 +44,7 @@ concept ChildOwner = requires(T& widget, WidgetPtr const& child)
 };
 
 template <ChildOwner TOwner, std::derived_from<WWidget> TChild>
-UPtr<TOwner> const& operator|(UPtr<TOwner> const& owner, UPtr<TChild> const& child)
+UObjectPtr<TOwner> const& operator|(UObjectPtr<TOwner> const& owner, UObjectPtr<TChild> const& child)
 {
 	owner->SetChild(child);
 	return owner;

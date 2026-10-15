@@ -21,5 +21,5 @@ private:
 	void OnGameStateChanged(EGameState gameState) const;
 	
 private:
-	UPtr<WSwitcher> switcher_;
+	UObjectPtr<WSwitcher> switcher_;
 };

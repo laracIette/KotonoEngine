@@ -1,6 +1,5 @@
 #pragma once
 #include <Path/Path.h>
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -9,7 +8,7 @@ struct UReflectionResult final
 	struct TypeInfo
 	{
 		std::string name;
-		std::optional<std::string> base;
+		std::string base;
 		b8 isAbstract;
 	};
 

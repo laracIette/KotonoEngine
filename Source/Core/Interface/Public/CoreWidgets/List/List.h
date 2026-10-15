@@ -27,7 +27,7 @@ public:
 	void ReplaceChild(WidgetPtr const& oldWidget, WidgetPtr const& newWidget) const;
 
 private:
-	UPtr<WScrollable> scrollable_;
-	UPtr<WListBody> body_;
+	UObjectPtr<WScrollable> scrollable_;
+	UObjectPtr<WListBody> body_;
 };
 

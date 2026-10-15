@@ -6,7 +6,7 @@
 #include <stdexcept>
 #endif
 
-WAssetExplorerFile::WAssetExplorerFile(UPtr<WAssetExplorer> const& assetExplorer, UPath const& path)
+WAssetExplorerFile::WAssetExplorerFile(UObjectPtr<WAssetExplorer> const& assetExplorer, UPath const& path)
 	: Base(assetExplorer, path
         , [](UPath const& path) static
         {

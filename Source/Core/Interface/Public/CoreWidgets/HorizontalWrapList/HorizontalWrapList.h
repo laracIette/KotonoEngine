@@ -28,6 +28,6 @@ public:
 	void AddChild(WidgetPtr const& child);
 
 private:
-	UPtr<WScrollable> scrollable_;
-	UPtr<WHorizontalWrapListBody> body_;
+	UObjectPtr<WScrollable> scrollable_;
+	UObjectPtr<WHorizontalWrapListBody> body_;
 };

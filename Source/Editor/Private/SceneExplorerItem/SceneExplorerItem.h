@@ -10,11 +10,11 @@ class WSceneExplorerItem : public WSceneWidget
 	GENERATED()
 
 public:
-	WSceneExplorerItem(UScene* scene, UPtr<TSceneObject> const& sceneObject);
+	WSceneExplorerItem(UScene* scene, UObjectPtr<TSceneObject> const& sceneObject);
 
 protected:
 	WidgetPtr Build() override;
 
 private:
-	UPtr<TSceneObject> sceneObject_;
+	UObjectPtr<TSceneObject> sceneObject_;
 };

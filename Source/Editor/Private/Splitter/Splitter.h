@@ -25,7 +25,7 @@ private:
 	void RemoveChild(WidgetPtr const& child);
 	
 protected:
-	UPtr<WChildrenOwner> ChildrenOwner;
+	UObjectPtr<WChildrenOwner> ChildrenOwner;
 
 private:
 	UMap<WidgetPtr, WidgetPtr> childSeparators_;

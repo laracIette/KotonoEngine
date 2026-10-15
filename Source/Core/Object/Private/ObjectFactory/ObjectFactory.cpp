@@ -20,7 +20,7 @@ auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 	auto const registryIt{ registry_.Find(guid) };
 	if (registry_.IsValidIterator(registryIt))
 	{
-		if (UPtr const object{ registryIt->second })
+		if (UObjectPtr const object{ registryIt->second })
 		{
 			return object;
 		}
@@ -42,7 +42,7 @@ auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 	}
 
 	auto const type{ it->get<std::string>() };
-	if (UPtr const object{ GetFactory(type) })
+	if (UObjectPtr const object{ GetFactory(type) })
 	{
 		object->guid_ = guid;
 		object->Deserialize();

@@ -14,8 +14,8 @@ public:
 	auto IsObjectType(UReflectionResult::TypeInfo const& type) const -> b8;
 
 private:
-	auto GetTypeInfo(std::string const& content) const -> UReflectionResult::TypeInfo;
-	auto GetMemberInfos(std::string const& content) const -> std::vector<UReflectionResult::MemberInfo>;
+	static auto GetTypeInfo(std::string const& content) -> UReflectionResult::TypeInfo;
+	static auto GetMemberInfos(std::string const& content) -> std::vector<UReflectionResult::MemberInfo>;
 
 private:
 	std::vector<UReflectionResult> allResults_;

@@ -4,7 +4,7 @@
 #include <Interface/Interface.h>
 #include <core_widgets.h>
 
-WAssetExplorerItem::WAssetExplorerItem(UPtr<WAssetExplorer> const& assetExplorer, UPath const& path, OpenedCallback const& onOpened)
+WAssetExplorerItem::WAssetExplorerItem(UObjectPtr<WAssetExplorer> const& assetExplorer, UPath const& path, OpenedCallback const& onOpened)
     : assetExplorer_{ assetExplorer }
     , path_{ path }
     , onOpened_{ onOpened }

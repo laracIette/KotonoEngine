@@ -32,7 +32,7 @@ WidgetPtr WViewController::Build()
 		| Apply(&WButton::SetOnPressed, [this]() { isActive_ = true; })
 		| Apply(&WButton::SetOnReleased, [this]() { isActive_ = false; })
 		| Apply(&WButton::SetOnClicked, [this]() {
-			if (UPtr const sceneComponent{ GetScene()->GetRayIntersectSceneComponent(position_, rotation_ * WorldUpVector) })
+			if (UObjectPtr const sceneComponent{ GetScene()->GetRayIntersectSceneComponent(position_, rotation_ * WorldUpVector) })
 			{
 				GetScene()->SelectObject(sceneComponent->GetOwner());
 			}

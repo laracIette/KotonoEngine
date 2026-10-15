@@ -11,7 +11,7 @@ WVerticalSplitter::WVerticalSplitter()
 
 auto WVerticalSplitter::MakeSeparator() -> WidgetPtr
 {
-	UPtr const separator{ UCreate<WConstraint>{}() };
+	UObjectPtr const separator{ UCreate<WConstraint>{}() };
 	return (
 		separator
 		| Apply(&WConstraint::SetAxis, EAxis::Vertical)

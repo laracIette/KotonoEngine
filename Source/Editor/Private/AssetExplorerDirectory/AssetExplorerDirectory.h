@@ -8,5 +8,5 @@ class WAssetExplorerDirectory : public WAssetExplorerItem
 	GENERATED()
 
 public:
-	WAssetExplorerDirectory(UPtr<WAssetExplorer> const& assetExplorer, UPath const& path, OpenedCallback const& onOpened);
+	WAssetExplorerDirectory(UObjectPtr<WAssetExplorer> const& assetExplorer, UPath const& path, OpenedCallback const& onOpened);
 };

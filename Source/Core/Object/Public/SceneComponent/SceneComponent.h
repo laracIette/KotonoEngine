@@ -53,7 +53,7 @@ public:
 	void SetVisibility(EVisibility visibility, b8 propagateToChildren = false);
 	void SetMobility(EMobility mobility);
 
-	void SetParent(UPtr<KSceneComponent> const& parent, ECoordinateSpace keepTransform);
+	void SetParent(UObjectPtr<KSceneComponent> const& parent, ECoordinateSpace keepTransform);
 
 	void SetRelativePosition(glm::vec3 const& relativePosition);
 	void SetRelativeRotation(glm::quat const& relativeRotation);
@@ -67,8 +67,8 @@ public:
 	void Rotate(glm::quat const& rotation);
 	void Scale(glm::vec3 const& scale);
 
-	auto GetDirection(UPtr<KSceneComponent const> const& target) const -> glm::vec3;
-	auto GetDistance(UPtr<KSceneComponent const> const& other) const -> f32;
+	auto GetDirection(UObjectPtr<KSceneComponent const> const& target) const -> glm::vec3;
+	auto GetDistance(UObjectPtr<KSceneComponent const> const& other) const -> f32;
 
 	void Deserialize() override;
 
@@ -84,16 +84,16 @@ public:
 	auto GetRelativeScale() const -> glm::vec3 { return transform_.scale; }
 
 private:
-	void AddChild(UPtr<KSceneComponent> const& component);
-	void RemoveChild(UPtr<KSceneComponent> const& component);
+	void AddChild(UObjectPtr<KSceneComponent> const& component);
+	void RemoveChild(UObjectPtr<KSceneComponent> const& component);
 
 private:
 	b8 isInit_;
 	ReadonlyProperty(b8, canUpdate_, CanUpdate);
-	ReadonlyProperty(UPtr<TSceneObject>, owner_, Owner, Value);
-	ReadonlyProperty(UPtr<KSceneComponent>, parent_, Parent, Value);
+	ReadonlyProperty(UObjectPtr<TSceneObject>, owner_, Owner, Value);
+	ReadonlyProperty(UObjectPtr<KSceneComponent>, parent_, Parent, Value);
 	ReadonlyProperty(UEvent<>, eventTransformUpdated_, EventTransformUpdated, Reference);
-	SERIALIZE USet<UPtr<KSceneComponent>> children_;
+	SERIALIZE USet<UObjectPtr<KSceneComponent>> children_;
 	SERIALIZE ReadonlyProperty(UTransform, transform_, Transform);
 	SERIALIZE ReadonlyProperty(EVisibility, visibility_, Visibility);
 	SERIALIZE ReadonlyProperty(EMobility, mobility_, Mobility);

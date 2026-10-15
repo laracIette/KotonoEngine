@@ -136,7 +136,7 @@ auto KSceneComponent::GetScreenPosition() const -> glm::vec3
     throw std::runtime_error{ "not implemented" };
 }
 
-void KSceneComponent::SetParent(UPtr<KSceneComponent> const& parent, ECoordinateSpace keepTransform)
+void KSceneComponent::SetParent(UObjectPtr<KSceneComponent> const& parent, ECoordinateSpace keepTransform)
 {
 	if (parent == parent_)
 	{
@@ -284,12 +284,12 @@ void KSceneComponent::Scale(glm::vec3 const& scale)
     SetRelativeScale(GetRelativeScale() * scale);
 }
 
-auto KSceneComponent::GetDirection(UPtr<KSceneComponent const> const& target) const -> glm::vec3
+auto KSceneComponent::GetDirection(UObjectPtr<KSceneComponent const> const& target) const -> glm::vec3
 {
     return target->GetWorldPosition() - GetWorldPosition();
 }
 
-auto KSceneComponent::GetDistance(UPtr<KSceneComponent const> const& other) const -> f32
+auto KSceneComponent::GetDistance(UObjectPtr<KSceneComponent const> const& other) const -> f32
 {
     return glm::distance(GetWorldPosition(), other->GetWorldPosition());
 }
@@ -325,7 +325,7 @@ auto KSceneComponent::GetRayIntersects(glm::vec3 const& start, glm::vec3 const& 
 	return false;
 }
 
-void KSceneComponent::AddChild(UPtr<KSceneComponent> const& component)
+void KSceneComponent::AddChild(UObjectPtr<KSceneComponent> const& component)
 {
 	if (!component)
 	{
@@ -337,7 +337,7 @@ void KSceneComponent::AddChild(UPtr<KSceneComponent> const& component)
     eventTransformUpdated_.AddListener(&component->GetEventTransformUpdated(), &UEvent<>::Broadcast<>);
 }
 
-void KSceneComponent::RemoveChild(UPtr<KSceneComponent> const& component)
+void KSceneComponent::RemoveChild(UObjectPtr<KSceneComponent> const& component)
 {
 	if (!component)
 	{

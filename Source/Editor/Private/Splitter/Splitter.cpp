@@ -28,7 +28,7 @@ void WSplitter::AddChild(WidgetPtr const& child)
 	
 	if (!ChildrenOwner->GetChildren().empty())
 	{
-		UPtr const separator{ MakeSeparator() };
+		UObjectPtr const separator{ MakeSeparator() };
 		ChildrenOwner->AddChild(separator);
 		childSeparators_.TryEmplace(child, separator);
 	}
@@ -46,9 +46,9 @@ void WSplitter::RemoveChild(WidgetPtr const& child)
 	auto const it{ childSeparators_.Find(child) };
 	if (childSeparators_.IsValidIterator(it))
 	{
-		UPtr const separator{ it->second };
+		UObjectPtr const separator{ it->second };
 		Check(Throw, separator, "separator is null");
-		separator->Delete();
+		Delete(separator);
 		
 		childSeparators_.Remove(it);
 	}

@@ -12,10 +12,7 @@ UInterface::UInterface()
 
 void UInterface::Cleanup() const
 {
-	if (widget_)
-	{
-		widget_->Delete();
-	}
+	Delete(widget_);
 }
 
 void UInterface::PopulateInterfaceRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph) const
@@ -125,7 +122,7 @@ void UInterface::OnKeyboardKey(EKey key, EInputState inputState, EModifier modif
 	}
 }
 
-void UInterface::OpenWidgetInWindow(glm::uvec2 const& windowExtent, UPtr<WWidget> const& widget, std::string_view name)
+void UInterface::OpenWidgetInWindow(glm::uvec2 const& windowExtent, UObjectPtr<WWidget> const& widget, std::string_view name)
 {
 	if (!widget)
 	{

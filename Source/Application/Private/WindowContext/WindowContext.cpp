@@ -22,7 +22,7 @@ UWindowContext::~UWindowContext()
 	delete interface_;
 }
 
-void UWindowContext::InitInterface(UPtr<WInterfaceRoot> const& widget)
+void UWindowContext::InitInterface(UObjectPtr<WInterfaceRoot> const& widget)
 {
 	window_.GetEventWindowResized().AddListener(this, &UWindowContext::OnWindowResized);
 
@@ -139,7 +139,7 @@ auto UMainWindowContext::GetSurface() const -> VkSurfaceKHR
 	return surface_.GetSurface();
 }
 
-void USecondaryWindowContext::Init(glm::uvec2 const& extent, UPtr<WWidget> const& widget, std::string_view name)
+void USecondaryWindowContext::Init(glm::uvec2 const& extent, UObjectPtr<WWidget> const& widget, std::string_view name)
 {
 	window_.Init(extent, std::format("Kotono Engine - {0}", name));
 	surface_.Init();

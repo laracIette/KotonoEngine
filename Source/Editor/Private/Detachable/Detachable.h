@@ -20,8 +20,8 @@ public:
 	void SetChild(WidgetPtr const& widget) const;
 
 private:
-	void Detach();
+	void Detach() const;
 
 private:
-	UPtr<WSocket> socket_;
+	UObjectPtr<WSocket> socket_;
 };

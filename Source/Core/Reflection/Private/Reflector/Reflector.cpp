@@ -7,24 +7,23 @@
 #include <regex>
 #include <Serializer/Serializer.h>
 
+static UPath const REFLECT_REGISTRY{ "${ENGINE_DIRECTORY}/reflect.ktregistry" };
+
 void GReflector::Reflect()
 {
 	nlohmann::json json{};
-	UPath const reflectPath{ "${ENGINE_DIRECTORY}/reflect.ktregistry" };
-	SSerializer::Deserialize(json, reflectPath);
+	SSerializer::Deserialize(json, REFLECT_REGISTRY);
 
 	for (auto const& file : json.at("files"))
 	{
 		UPath const filePath{ file.get<std::string>() };
 		auto const content{ UFile{ filePath }.ReadString() };
 
-		const UReflectionResult reflectionResult{
-			.path = filePath,
-			.type = GetTypeInfo(content),
-			.members = GetMemberInfos(content),
-		};
-
-		allResults_.push_back(reflectionResult);
+		allResults_.push_back({
+            .path = filePath,
+            .type = GetTypeInfo(content),
+            .members = GetMemberInfos(content),
+        });
 	}
 
 	reflectionResults_ = allResults_
@@ -39,7 +38,7 @@ auto GReflector::GetReflectionResults() const -> std::span<UReflectionResult con
 	return reflectionResults_;
 }
 
-auto GReflector::GetTypeInfo(std::string const& content) const -> UReflectionResult::TypeInfo
+auto GReflector::GetTypeInfo(std::string const& content) -> UReflectionResult::TypeInfo
 {
 	std::regex const pattern{ R"((ABSTRACT\s+)?class\s+([a-zA-Z_]\w*)\s*(?:final)?\s*(?::\s*public\s+([a-zA-Z_]\w*)\s*(?:<[^>]*>)?(?:\s*,\s*[^{]+)?)?\{)" };
 	
@@ -65,7 +64,7 @@ auto GReflector::GetTypeInfo(std::string const& content) const -> UReflectionRes
 	return typeInfo;
 }
 
-auto GReflector::GetMemberInfos(std::string const& content) const -> std::vector<UReflectionResult::MemberInfo>
+auto GReflector::GetMemberInfos(std::string const& content) -> std::vector<UReflectionResult::MemberInfo>
 {
 	std::vector<UReflectionResult::MemberInfo> result{};
 
@@ -92,7 +91,7 @@ auto GReflector::IsObjectType(const UReflectionResult::TypeInfo& type) const -> 
 		return true;
 	}
 
-	if (type.base == std::nullopt)
+	if (type.base.empty())
 	{
 		return false;
 	}

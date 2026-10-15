@@ -29,12 +29,12 @@ protected:
 
 public:
 	auto GetScene() const -> UScene*;
-	auto GetRootComponent() const -> UPtr<KSceneComponent>;
+	auto GetRootComponent() const -> UObjectPtr<KSceneComponent>;
 
-	void SetParent(UPtr<TSceneObject> const& parent, ECoordinateSpace keepTransform);
+	void SetParent(UObjectPtr<TSceneObject> const& parent, ECoordinateSpace keepTransform);
 
-	void AddComponent(UPtr<KSceneComponent> const& component);
-	void RemoveComponent(UPtr<KSceneComponent> const& component);
+	void AddComponent(UObjectPtr<KSceneComponent> const& component);
+	void RemoveComponent(UObjectPtr<KSceneComponent> const& component);
 
 	void Deserialize() override;
 
@@ -43,7 +43,7 @@ public:
 
 	void PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const;
 	
-	auto GetRayIntersectSceneComponent(glm::vec3 const& start, glm::vec3 const& direction) const -> UPtr<KSceneComponent>;
+	auto GetRayIntersectSceneComponent(glm::vec3 const& start, glm::vec3 const& direction) const -> UObjectPtr<KSceneComponent>;
 
 private:
 	void InitSceneComponents();
@@ -53,9 +53,9 @@ private:
 	b8 isInit_;
 	UScene* scene_;
 	WritableProperty(b8, canUpdate_, CanUpdate);
-	ReadonlyProperty(UPtr<TSceneObject>, parent_, Parent);
-	SERIALIZE USet<UPtr<KSceneComponent>> sceneComponents_;
-	SERIALIZE USet<UPtr<TSceneObject>> children_;
+	ReadonlyProperty(UObjectPtr<TSceneObject>, parent_, Parent);
+	SERIALIZE USet<UObjectPtr<KSceneComponent>> sceneComponents_;
+	SERIALIZE USet<UObjectPtr<TSceneObject>> children_;
 
 	SERIALIZE f32 dummy_;
 };

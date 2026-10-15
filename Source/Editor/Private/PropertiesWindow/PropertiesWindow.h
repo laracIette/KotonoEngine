@@ -18,10 +18,10 @@ protected:
 	void OnRemoved() override;
 
 private:
-	void OnSelectedObjectChanged(UPtr<TSceneObject> const& sceneObject);
+	void OnSelectedObjectChanged(UObjectPtr<TSceneObject> const& sceneObject);
 
 private:
-	UPtr<WList> mainList_;
-	UPtr<WObjectProperties> objectProperties_;
+	UObjectPtr<WList> mainList_;
+	UObjectPtr<WObjectProperties> objectProperties_;
 };
 

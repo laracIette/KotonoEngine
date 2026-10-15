@@ -1,5 +1,5 @@
 #pragma once
-#include "Ptr.h"
+#include "Ptr/ObjectPtr.h"
 #include <Containers/Set.h>
 #include <glm/ext/vector_uint2.hpp>
 #include <glm/fwd.hpp>
@@ -23,7 +23,7 @@ public:
 	struct PendingWindow
 	{
 		glm::uvec2 windowExtent;
-		UPtr<WWidget> widget;
+		UObjectPtr<WWidget> widget;
 		std::string name;
 	};
 
@@ -45,7 +45,7 @@ public:
 
 	void OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) const;
 	
-	void OpenWidgetInWindow(glm::uvec2 const& windowExtent, UPtr<WWidget> const& widget, std::string_view name);
+	void OpenWidgetInWindow(glm::uvec2 const& windowExtent, UObjectPtr<WWidget> const& widget, std::string_view name);
 	void ClearPendingWindows();
 
 	Getter(std::span<PendingWindow const>, pendingWindows_, PendingWindows);
@@ -55,15 +55,15 @@ private:
 	void UpdateActiveWidgets();
 
 private:
-	WritableProperty(UPtr<WInterfaceRoot>, widget_, Widget, Value);
+	WritableProperty(UObjectPtr<WInterfaceRoot>, widget_, Widget, Value);
 	ReadonlyProperty(glm::uvec2, bounds_, Bounds);
 
 	ReadonlyProperty(f32, deltaTime_, DeltaTime);
 	ReadonlyProperty(f32, now_, Now);
 
 	/// Widgets currently hovered by the mouse cursor
-	USet<UPtr<WWidget>> focusedWidgets_;
-	USet<UPtr<WWidget>> activeWidgets_;
+	USet<UObjectPtr<WWidget>> focusedWidgets_;
+	USet<UObjectPtr<WWidget>> activeWidgets_;
 
 	std::vector<PendingWindow> pendingWindows_;
 };

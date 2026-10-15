@@ -55,20 +55,17 @@ void WPropertiesWindow::OnRemoved()
     GetScene()->GetEventSelectedObjectChanged().RemoveListener(this, &Self::OnSelectedObjectChanged);
 }
 
-void WPropertiesWindow::OnSelectedObjectChanged(UPtr<TSceneObject> const& sceneObject)
+void WPropertiesWindow::OnSelectedObjectChanged(UObjectPtr<TSceneObject> const& sceneObject)
 {
     if (mainList_)
     {
-        UPtr const newObjectProperties{ UCreate<WObjectProperties>{}(sceneObject) };
+        UObjectPtr const newObjectProperties{ UCreate<WObjectProperties>{}(sceneObject) };
 
         mainList_->ReplaceChild(objectProperties_, newObjectProperties);
+    	
+    	Delete(objectProperties_);
 
-        if (objectProperties_)
-        {
-            objectProperties_->Delete();
-        }
-
-        objectProperties_ = newObjectProperties;
+    	objectProperties_ = newObjectProperties;
     }
 }
 

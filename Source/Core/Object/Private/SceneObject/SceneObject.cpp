@@ -24,7 +24,7 @@ TSceneObject::~TSceneObject()
 		if (sceneComponent)
 		{
 			sceneComponent->owner_ = nullptr;
-			sceneComponent->Delete();
+			Delete(sceneComponent);
 		}
 	}
 
@@ -44,12 +44,12 @@ UScene* TSceneObject::GetScene() const
 	return scene_;
 }
 
-UPtr<KSceneComponent> TSceneObject::GetRootComponent() const
+UObjectPtr<KSceneComponent> TSceneObject::GetRootComponent() const
 {
 	return sceneComponents_.empty() ? nullptr : sceneComponents_[0];
 }
 
-void TSceneObject::SetParent(UPtr<TSceneObject> const& parent, ECoordinateSpace keepTransform)
+void TSceneObject::SetParent(UObjectPtr<TSceneObject> const& parent, ECoordinateSpace keepTransform)
 {
 	if (parent == parent_)
 	{
@@ -74,13 +74,13 @@ void TSceneObject::SetParent(UPtr<TSceneObject> const& parent, ECoordinateSpace 
 		parent_->children_.Add(Ptr());
 	}
 
-	if (UPtr const rootComponent{ GetRootComponent() })
+	if (UObjectPtr const rootComponent{ GetRootComponent() })
 	{
 		rootComponent->SetParent(parent_ ? parent_->GetRootComponent() : nullptr, keepTransform);
 	}
 }
 
-void TSceneObject::AddComponent(UPtr<KSceneComponent> const& component)
+void TSceneObject::AddComponent(UObjectPtr<KSceneComponent> const& component)
 {
 	if (!component)
 	{
@@ -88,7 +88,7 @@ void TSceneObject::AddComponent(UPtr<KSceneComponent> const& component)
 		return;
 	}
 
-	if (UPtr const rootComponent{ GetRootComponent() })
+	if (UObjectPtr const rootComponent{ GetRootComponent() })
 	{
 		component->SetParent(rootComponent, ECoordinateSpace::Relative);
 	}
@@ -107,7 +107,7 @@ void TSceneObject::AddComponent(UPtr<KSceneComponent> const& component)
 	}
 }
 
-void TSceneObject::RemoveComponent(UPtr<KSceneComponent> const& component)
+void TSceneObject::RemoveComponent(UObjectPtr<KSceneComponent> const& component)
 {
 	if (!component)
 	{
@@ -180,7 +180,7 @@ void TSceneObject::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESce
 	}
 }
 
-auto TSceneObject::GetRayIntersectSceneComponent(glm::vec3 const& start, glm::vec3 const& direction) const -> UPtr<KSceneComponent>
+auto TSceneObject::GetRayIntersectSceneComponent(glm::vec3 const& start, glm::vec3 const& direction) const -> UObjectPtr<KSceneComponent>
 {
 	for (auto const& sceneComponent : sceneComponents_)
 	{

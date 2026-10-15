@@ -13,7 +13,7 @@ public:
 	using OpenedCallback = std::function<void(UPath const&)>;
 
 public:
-	WAssetExplorerItem(UPtr<WAssetExplorer> const& assetExplorer, UPath const& path, OpenedCallback const& onOpened);
+	WAssetExplorerItem(UObjectPtr<WAssetExplorer> const& assetExplorer, UPath const& path, OpenedCallback const& onOpened);
 
 protected:
 	WidgetPtr Build() override;
@@ -23,7 +23,7 @@ public:
 	void Deselect();
 
 protected:
-	UPtr<WAssetExplorer> assetExplorer_;
+	UObjectPtr<WAssetExplorer> assetExplorer_;
 	UPath path_;
 
 private:

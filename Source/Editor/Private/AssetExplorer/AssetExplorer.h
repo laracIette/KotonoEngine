@@ -11,7 +11,7 @@ class WAssetExplorer : public WWidget
 	GENERATED()
 
 private:
-	using AssetExplorerItem = UPtr<WAssetExplorerItem>;
+	using AssetExplorerItem = UObjectPtr<WAssetExplorerItem>;
 
 public:
 	WAssetExplorer();
@@ -38,6 +38,6 @@ private:
 	UPath currentDirectory_;
 	std::vector<UPath> navigatedPaths_;
 	size currentPathIndex_;
-	UPtr<WHorizontalWrapList> itemList_;
+	UObjectPtr<WHorizontalWrapList> itemList_;
 	USet<AssetExplorerItem> assetExplorerItems_;
 };

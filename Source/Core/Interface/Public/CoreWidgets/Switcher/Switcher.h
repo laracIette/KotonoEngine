@@ -26,6 +26,6 @@ private:
 	void UpdateChildrenVisibility() const;
 	
 private:
-	UPtr<WStack> stack_;
+	UObjectPtr<WStack> stack_;
 	ReadonlyProperty(u32, activeWidget_, ActiveWidget, Value);
 };

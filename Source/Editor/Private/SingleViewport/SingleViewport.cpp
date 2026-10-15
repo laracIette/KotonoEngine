@@ -10,7 +10,7 @@ static constexpr auto DEFAULT_VISIBILITY{ ESceneVisibility::All };
 
 WidgetPtr WSingleViewport::Build()
 {
-	UPtr const sceneTexture{ UCreate<WSceneTexture>{ "Scene Texture" }(GetScene()) };
+	UObjectPtr const sceneTexture{ UCreate<WSceneTexture>{ "Scene Texture" }(GetScene()) };
 
 	return (
 		UCreate<WStack>{}()

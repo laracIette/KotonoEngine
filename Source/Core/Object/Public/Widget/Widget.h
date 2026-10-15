@@ -24,7 +24,7 @@ inline constexpr b8 INPUT_HANDLED{ true };
 inline constexpr b8 INPUT_UNHANDLED{ false };
 
 class WWidget;
-using WidgetPtr = UPtr<WWidget>;
+using WidgetPtr = UObjectPtr<WWidget>;
 using WidgetSet = USet<WidgetPtr>;
 using WidgetVector = std::vector<WidgetPtr>;
 

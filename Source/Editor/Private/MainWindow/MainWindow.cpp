@@ -10,7 +10,7 @@
 
 WidgetPtr WMainWindow::Build()
 {
-	UPtr const sceneContext{ UCreate<WDefaultSceneContext>{ "Scene Context" }(UPath{ SProjectSettings::Get<std::string>("/startupScene") }) };
+	UObjectPtr const sceneContext{ UCreate<WDefaultSceneContext>{ "Scene Context" }(UPath{ SProjectSettings::Get<std::string>("/startupScene") }) };
 	AddSceneContext(sceneContext);
 	
 	return (

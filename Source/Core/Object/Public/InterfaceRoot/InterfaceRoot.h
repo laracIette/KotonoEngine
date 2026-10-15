@@ -17,10 +17,10 @@ public:
 	void SetInterface(UInterface* inInterface) { interface_ = inInterface; }
 
 protected:
-	void AddSceneContext(UPtr<WSceneContext> const& sceneContext);
-	void RemoveSceneContext(UPtr<WSceneContext> const& sceneContext);
+	void AddSceneContext(UObjectPtr<WSceneContext> const& sceneContext);
+	void RemoveSceneContext(UObjectPtr<WSceneContext> const& sceneContext);
 
 private:
 	UInterface* interface_;
-	USet<UPtr<WSceneContext>> sceneContexts_;
+	USet<UObjectPtr<WSceneContext>> sceneContexts_;
 };

@@ -78,16 +78,16 @@ void WSceneExplorer::OnRemoved()
 	GetScene()->GetEventSceneObjectsUpdated().RemoveListener(this, &Self::UpdateItemList);
 }
 
-auto WSceneExplorer::MakeItems(std::span<UPtr<TSceneObject> const> sceneObjects) const -> WidgetSet
+auto WSceneExplorer::MakeItems(std::span<UObjectPtr<TSceneObject> const> sceneObjects) const -> WidgetSet
 {
 	return sceneObjects
-		| std::views::transform([this](UPtr<TSceneObject> const& sceneObject) {
+		| std::views::transform([this](UObjectPtr<TSceneObject> const& sceneObject) {
 			return UCreate<WSceneExplorerItem>{}(GetScene(), sceneObject);
 		})
 		| std::ranges::to<USet>();
 }
 
-void WSceneExplorer::UpdateItemList(std::span<UPtr<TSceneObject> const> sceneObjects) const
+void WSceneExplorer::UpdateItemList(std::span<UObjectPtr<TSceneObject> const> sceneObjects) const
 {
 	if (itemList_)
 	{

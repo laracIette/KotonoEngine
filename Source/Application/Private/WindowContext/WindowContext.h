@@ -1,7 +1,7 @@
 #pragma once
 #include <Keyboard/Keyboard.h>
 #include <Mouse/Mouse.h>
-#include <Ptr.h>
+#include <Ptr/ObjectPtr.h>
 #include <Renderer/Renderer.h>
 #include <RenderGraph/InterfaceRenderGraph.h>
 #include <string_view>
@@ -21,7 +21,7 @@ public:
 	UWindowContext(UContext& context, UDevice& device);
 	virtual ~UWindowContext();
 
-	void InitInterface(UPtr<WInterfaceRoot> const& widget);
+	void InitInterface(UObjectPtr<WInterfaceRoot> const& widget);
 	void Cleanup();
 
 	void Update(f32 deltaTime);
@@ -67,5 +67,5 @@ public:
 	using UWindowContext::UWindowContext;
 
 public:
-	void Init(glm::uvec2 const& extent, UPtr<WWidget> const& widget, std::string_view name);
+	void Init(glm::uvec2 const& extent, UObjectPtr<WWidget> const& widget, std::string_view name);
 };

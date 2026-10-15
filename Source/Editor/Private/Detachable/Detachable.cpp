@@ -46,7 +46,7 @@ WidgetPtr WDetachable::Build()
 						| Apply(&WBox::SetSize, glm::vec2{ 20.0f, 20.0f })
 						| (
 							UCreate<WButton>{}()
-							| Apply(&WButton::SetOnClicked, [this]() { Delete(); })
+							| Apply(&WButton::SetOnClicked, [this]() { Delete(Ptr()); })
 							| Apply(&WButton::SetNormalColor, Colors::Red)
 						)
 					)
@@ -66,19 +66,16 @@ auto WDetachable::GetChild() const -> WidgetPtr
 
 void WDetachable::SetChild(WidgetPtr const& widget) const
 {
-	UPtr const child{ socket_->GetChild() };
+	UObjectPtr const child{ socket_->GetChild() };
 
 	socket_->SetChild(widget);
 
-	if (child)
-	{
-		child->Delete();
-	}
+	Delete(child);
 }
 
-void WDetachable::Detach()
+void WDetachable::Detach() const
 {
-	UPtr const child{ GetChild() };
+	UObjectPtr const child{ GetChild() };
 
 	if (!child)
 	{
@@ -89,7 +86,7 @@ void WDetachable::Detach()
 
 	GetInterface()->OpenWidgetInWindow(child->GetSize(), child, GetName());
 
-	Delete();
+	Delete(Ptr());
 }
 
 #include "Detachable.generated.inl"

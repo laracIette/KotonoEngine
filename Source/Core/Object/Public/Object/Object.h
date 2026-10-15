@@ -1,23 +1,20 @@
 #pragma once
+#include "ObjectReflectionBase.h"
+
+#include "Ptr/ObjectPtr.h"
+
 #include "check.h"
 #include "properties.h"
-#include "Ptr.h"
-#include "VariableInfo.h"
 #include "Guid/Guid.h"
-#include "ObjectFactory/ObjectFactory.h"
 #include <concepts>
 #include <functional>
 #include <format>
 #include <Event/Event.h>
 #include <Path/Path.h>
 #include <serialize_base/serialize_base.h>
-#include <nlohmann/json_fwd.hpp>
 #include <optional>
 #include <source_location>
 #include <string>
-
-#define SERIALIZE
-#define ABSTRACT
 
 #ifndef NDEBUG
 #include <unordered_set>
@@ -28,9 +25,9 @@
 using VoidCallback = std::function<void()>;
 
 class KObject;
-using ObjectPtr = UPtr<KObject>;
+using ObjectPtr = UObjectPtr<KObject>;
 
-ABSTRACT class KObject
+ABSTRACT class KObject : public KObjectReflectionBase
 {
 	GENERATED()
 
@@ -41,10 +38,7 @@ ABSTRACT class KObject
 
 public:
 	KObject();
-	virtual ~KObject();
-
-	/// Cleanup and delete the object immediately
-	void Delete();
+	~KObject() override;
 	
 	auto GetTypeName() const -> std::string;
 	auto GetMemberVariablePointer(size offset) const -> void*;
@@ -61,9 +55,6 @@ public:
 private:
 	auto GetAssetPath() const -> UPath;
 	auto GetTempPath() const -> UPath;
-
-protected:
-	ObjectPtr ptr_;
 
 private:
 	SERIALIZE std::string type_;
@@ -102,7 +93,7 @@ struct _MemberAction
 template <std::derived_from<KObject> T, typename MemFn, typename... Args>
 	requires std::is_member_function_pointer_v<MemFn>
 		&& (std::is_invocable_v<MemFn, T*, Args...> || std::is_invocable_v<MemFn, T*>)
-UPtr<T> const& operator|(UPtr<T> const& object, _MemberAction<MemFn, Args...> const& action)
+UObjectPtr<T> const& operator|(UObjectPtr<T> const& object, _MemberAction<MemFn, Args...> const& action)
 {
 	Check(Abort, object, "object is null!");
 	action.Apply(object.Get());
@@ -136,7 +127,7 @@ public:
 
 	template <typename ...Args>
 		requires std::constructible_from<T, Args...>
-	UPtr<T> operator()(Args&&... args) const
+	UObjectPtr<T> operator()(Args&&... args) const
 	{
 		T* object{ new T{ std::forward<Args>(args)... } };
 		object->type_ = object->GetTypeName();
@@ -168,9 +159,9 @@ private:
 };
 
 template <std::derived_from<KObject> T>
-struct USerialize<UPtr<T>> final
+struct USerialize<UObjectPtr<T>> final
 {
-	void operator()(nlohmann::json& json, const UPtr<T>& v) const
+	void operator()(nlohmann::json& json, const UObjectPtr<T>& v) const
 	{
 		if (v)
 		{
@@ -181,18 +172,18 @@ struct USerialize<UPtr<T>> final
 };
 
 template <std::derived_from<KObject> T>
-struct UDeserialize<UPtr<T>> final
+struct UDeserialize<UObjectPtr<T>> final
 {
-	void operator()(const nlohmann::json& json, UPtr<T>& v) const
+	void operator()(const nlohmann::json& json, UObjectPtr<T>& v) const
 	{
 		v = TryCast<T>(KObject::Deserialize(json));
 	}
 };
 
 template <std::derived_from<KObject> T, typename CharT>
-struct std::formatter<UPtr<T>, CharT> : std::formatter<std::string, CharT>
+struct std::formatter<UObjectPtr<T>, CharT> : std::formatter<std::string, CharT>
 {
-	auto format(UPtr<T> const& ptr, auto& ctx) const 
+	auto format(UObjectPtr<T> const& ptr, auto& ctx) const 
 	{
 		return std::format_to(ctx.out(), "{0}", ptr ? ptr->ToString() : "nullptr");
 	}
@@ -202,7 +193,7 @@ template <std::derived_from<KObject> T>
 struct UAutoDelete final
 {
 public:
-	explicit UAutoDelete(std::span<UPtr<T> const> values) 
+	explicit UAutoDelete(std::span<UObjectPtr<T> const> values) 
 		: values_(values.begin(), values.end())
 	{}
 
@@ -210,13 +201,10 @@ public:
 	{
 		for (auto const& object : values_)
 		{
-			if (object)
-			{
-				object->Delete();
-			}
+			Delete(object);
 		}
 	}
 
 private:
-	std::vector<UPtr<T>> values_;
+	std::vector<UObjectPtr<T>> values_;
 };

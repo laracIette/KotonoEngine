@@ -4,7 +4,7 @@
 #include <SceneObject/SceneObject.h>
 #include <core_widgets.h>
 
-WSceneExplorerItem::WSceneExplorerItem(UScene* scene, UPtr<TSceneObject> const& sceneObject)
+WSceneExplorerItem::WSceneExplorerItem(UScene* scene, UObjectPtr<TSceneObject> const& sceneObject)
 	: Base(scene)
 	, sceneObject_{ sceneObject }
 {

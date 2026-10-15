@@ -13,12 +13,12 @@ void WInterfaceRoot::UpdateSceneContexts(f32 deltaTime) const
 	}
 }
 
-void WInterfaceRoot::AddSceneContext(UPtr<WSceneContext> const& sceneContext)
+void WInterfaceRoot::AddSceneContext(UObjectPtr<WSceneContext> const& sceneContext)
 {
 	sceneContexts_.Add(sceneContext);
 }
 
-void WInterfaceRoot::RemoveSceneContext(UPtr<WSceneContext> const& sceneContext)
+void WInterfaceRoot::RemoveSceneContext(UObjectPtr<WSceneContext> const& sceneContext)
 {
 	sceneContexts_.Remove(sceneContext);
 }
