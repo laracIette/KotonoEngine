@@ -2,8 +2,9 @@
 
 KGameStatePlayPauseButtonStyle::KGameStatePlayPauseButtonStyle()
 {
-	NormalState.color = Colors::Green;
-	ActivatedState.color = Colors::White.WithValue(0.5f);
+	NormalState.color *= Colors::Green;
+	FocusedState.color *= Colors::Green;
+	PressedState.color *= Colors::Green;
 }
 
 #include "GameStatePlayPauseButtonStyle.generated.inl"

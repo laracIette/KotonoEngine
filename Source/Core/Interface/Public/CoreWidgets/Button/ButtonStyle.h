@@ -20,9 +20,11 @@ public:
 	KButtonStyle();
 	
 private:
+	ProtectedProperty(State, DisabledState);
 	ProtectedProperty(State, NormalState);
 	ProtectedProperty(State, FocusedState);
 	ProtectedProperty(State, PressedState);
-	ProtectedProperty(State, ActivatedState);
-	ProtectedProperty(State, DisabledState);
+	ProtectedProperty(State, ActivatedNormalState);
+	ProtectedProperty(State, ActivatedFocusedState);
+	ProtectedProperty(State, ActivatedPressedState);
 };

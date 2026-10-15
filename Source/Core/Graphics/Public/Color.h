@@ -201,22 +201,12 @@ struct UColor final
 
 	constexpr UColor operator+(UColor const& other) const noexcept
 	{
-		return { r + other.r, g + other.g, b + other.b, a };
-	}
-
-	constexpr UColor operator+(f32 f) const noexcept
-	{
-		return { r + f, g + f, b + f, a };
+		return { r + other.r, g + other.g, b + other.b, a + other.a };
 	}
 
 	constexpr UColor operator-(UColor const& other) const noexcept
 	{
-		return { r - other.r, g - other.g, b - other.b, a };
-	}
-
-	constexpr UColor operator-(f32 f) const noexcept
-	{
-		return { r - f, g - f, b - f, a };
+		return { r - other.r, g - other.g, b - other.b, a - other.a };
 	}
 
 	constexpr UColor operator*(UColor const& other) const noexcept
@@ -224,19 +214,18 @@ struct UColor final
 		return { r * other.r, g * other.g, b * other.b, a * other.a };
 	}
 
-	constexpr UColor operator*(f32 f) const noexcept
+	constexpr UColor& operator*=(UColor const& other) noexcept
 	{
-		return { r * f, g * f, b * f, a };
+		r *= other.r;
+		g *= other.g;
+		b *= other.b;
+		a *= other.a;
+		return *this;
 	}
 
 	constexpr UColor operator/(UColor const& other) const noexcept
 	{
-		return { r / other.r, g / other.g, b / other.b, a };
-	}
-
-	constexpr UColor operator/(f32 f) const noexcept
-	{
-		return { r / f, g / f, b / f, a };
+		return { r / other.r, g / other.g, b / other.b, a / other.a };
 	}
 
 	constexpr b8 operator==(UColor const& other) const noexcept

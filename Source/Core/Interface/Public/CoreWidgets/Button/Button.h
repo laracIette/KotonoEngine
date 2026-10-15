@@ -58,10 +58,12 @@ private:
 	glm::vec2 cursorPosition_;
 	glm::vec2 pressedCursorPosition_;
 	
+	KButtonStyle::State disabledState_;
 	KButtonStyle::State normalState_;
 	KButtonStyle::State focusedState_;
 	KButtonStyle::State pressedState_;
-	KButtonStyle::State activatedState_;
-	KButtonStyle::State disabledState_;
+	KButtonStyle::State activatedNormalState_;
+	KButtonStyle::State activatedFocusedState_;
+	KButtonStyle::State activatedPressedState_;
 };
 

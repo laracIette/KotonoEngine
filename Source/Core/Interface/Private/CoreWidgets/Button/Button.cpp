@@ -20,11 +20,13 @@ void WButton::Init()
 	
 	if (UObjectPtr const buttonStyle{ TryCast<KButtonStyle>(Style) })
 	{
+		disabledState_ = buttonStyle->GetDisabledState();
 		normalState_ = buttonStyle->GetNormalState();
 		focusedState_ = buttonStyle->GetFocusedState();
 		pressedState_ = buttonStyle->GetPressedState();
-		activatedState_ = buttonStyle->GetActivatedState();
-		disabledState_ = buttonStyle->GetDisabledState();
+		activatedNormalState_ = buttonStyle->GetActivatedNormalState();
+		activatedFocusedState_ = buttonStyle->GetActivatedFocusedState();
+		activatedPressedState_ = buttonStyle->GetActivatedPressedState();
 	}
 }
 
@@ -126,11 +128,11 @@ auto WButton::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> 
 void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const
 {
 	auto const [texture, color] { [this]() {
-		if (!GetIsEnabled())				return disabledState_;
-		if (isPressed_)						return pressedState_;
-		if (GetIsFocused())					return focusedState_;
-		if (isActivatable_ && isActivated_)	return activatedState_;
-		return normalState_;
+		b8 const isActivated{ isActivatable_ && isActivated_ };
+		if (!GetIsEnabled())	return disabledState_;
+		if (isPressed_)			return isActivated ? activatedPressedState_ : pressedState_;
+		if (GetIsFocused())		return isActivated ? activatedFocusedState_ : focusedState_;
+		return isActivated ? activatedNormalState_ : normalState_;
 	}() };
 
 	interfaceRenderGraph.drawDatas.push_back({
