@@ -1,6 +1,8 @@
 #include "SceneRenderer/SceneRenderer.h"
 
 #include "DrawCommand.h"
+#include "DirectionalLight.h"
+#include "PointLight.h"
 #include <array>
 #include <ranges>
 

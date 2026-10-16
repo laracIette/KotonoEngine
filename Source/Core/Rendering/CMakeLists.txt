@@ -8,6 +8,7 @@ target_compile_features(KotonoRendering PUBLIC cxx_std_23)
 set_target_properties(KotonoRendering PROPERTIES FOLDER "KotonoEngine/Core")
 
 set(KRENDERING_PUBLIC_HEADERS
+    "Public/DrawCommand.h"
     "Public/DrawDataBufferData.h"
     "Public/FrameContextBufferData.h"
     "Public/frames_in_flight.h"
@@ -28,7 +29,6 @@ set(KRENDERING_PUBLIC_HEADERS
 )
 set(KRENDERING_PRIVATE_HEADERS
     "Private/DirectionalLight.h"
-    "Private/DrawCommand.h"
     "Private/PointLight.h"
     "Private/Barriers/Barriers.h"
     "Private/Material/Material.h"

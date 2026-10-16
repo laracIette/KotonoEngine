@@ -91,7 +91,7 @@ constexpr auto forward_vector(glm::quat const& quat) -> glm::vec3
     return quat * WorldForwardVector;
 }
 
-constexpr auto rayIntersectSphere(glm::vec3 const& rayStart, glm::vec3 const& rayDirection, glm::vec3 const& spherePosition, float sphereRadius) noexcept -> bool
+inline auto rayIntersectSphere(glm::vec3 const& rayStart, glm::vec3 const& rayDirection, glm::vec3 const& spherePosition, float sphereRadius) noexcept -> bool
 {
 	glm::vec3 intersectPosition;
 	glm::vec3 intersectNormal;

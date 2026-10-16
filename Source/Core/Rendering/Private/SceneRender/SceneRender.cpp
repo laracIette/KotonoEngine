@@ -1,12 +1,13 @@
 #include "SceneRender/SceneRender.h"
 
 #include "Barriers/Barriers.h"
-#include "DrawCommand.h"
+#include "DirectionalLight.h"
 #include "DrawDataBufferData.h"
 #include "IndexBuffer/IndexBuffer.h"
 #include "MaterialBufferData.h"
 #include "ParametersBufferData.h"
 #include "PipelineResourceManager/PipelineResourceManager.h"
+#include "PointLight.h"
 #include "PushConstants.h"
 #include "TransformBufferData.h"
 #include <array>

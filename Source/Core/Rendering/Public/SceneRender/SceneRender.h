@@ -1,4 +1,5 @@
 #pragma once
+#include "DrawCommand.h"
 #include "FrameContextBuffer/FrameContextBuffer.h"
 #include "GPUBuffers/GPUBuffers.h"
 #include "LightBuffers/LightBuffers.h"
@@ -10,7 +11,6 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
-struct UDrawCommand;
 struct UFrameContextSceneView;
 struct UDrawDataBufferData;
 struct UTransformBufferData;
