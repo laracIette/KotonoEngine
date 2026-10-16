@@ -13,6 +13,7 @@ The Kotono Engine is a 3D game engine built using C++ and the Vulkan API.
     - [Editor](#editor)
 - [3. What's next ?](#3-whats-next-)
     - [Reflection](#reflection)
+- [4. Third-party libraries](#4-third-party-libraries)
 
 ## 1. Building
 
@@ -71,3 +72,19 @@ A bunch of issues are planned on the *[Kotono project board](https://github.com/
 ### Reflection
 
 The Kotono Engine is currently using its own reflection project that generates header and source files for each [Object](https://github.com/laracIette/KotonoEngine/blob/42603a3fbc84a5e61ef86cc8e58d1fd273c4351c/Source/Core/Object/Public/Object/Object.h) class. In the future, *[C++26's compile-time reflection](https://isocpp.org/files/papers/P2996R13.html)* will help build a more performant and safer reflection system.
+
+## 4. Third-party libraries
+
+Here are the third-party libraries Kotono includes and what they're used for.
+
+| Library | Description |
+| :------ | :---------- |
+| *[assimp](https://github.com/assimp/assimp)* | Importing 3D meshes. |
+| *[dr_libs](https://github.com/mackron/dr_libs)* | Importing audio sources. |
+| *[GLFW](https://github.com/glfw/glfw)* | Creating windows and managing input. |
+| *[GLM](https://github.com/g-truc/glm)* | Mathematics. |
+| *[nlohmann's json](https://github.com/nlohmann/json)* | Converting data from and to the JSON format. |
+| *[OpenAL Soft](https://github.com/kcat/openal-soft)* | Playing and managing audio sources. |
+| *[stb_image](https://github.com/nothings/stb)* | Importing images. |
+| *[Vulkan API](https://vulkan.org/)* | Rendering and managing GPU resources. |
+| *[Vulkan Memory Allocator](https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator)* | Managing Vulkan memory allocations. |
