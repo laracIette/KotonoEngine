@@ -6,7 +6,6 @@
 
 #else
 
-#include "macro_utils.h"
 #include "Logging/log.h"
 #include <cstdlib>
 #include <stdexcept>
@@ -21,19 +20,40 @@
 #define CHECK_HANDLE_THROW(Message) throw std::runtime_error{ Message }
 #define CHECK_HANDLE_ABORT() CHECK_DEBUG_BREAK(); std::abort()
 
-#define CHECK_LOG_Warning(Message, ...)	Log(Warning,	Message,	__VA_ARGS__)
-#define CHECK_LOG_Error(Message, ...)	Log(Error,		Message,	__VA_ARGS__)
-#define CHECK_LOG_Throw(Message, ...)	Log(Error,		Message,	__VA_ARGS__); CHECK_HANDLE_THROW(Message)
-#define CHECK_LOG_Abort(Message, ...)	Log(Error,		Message,	__VA_ARGS__); CHECK_HANDLE_ABORT()
+enum class ECheckSeverity
+{
+	Warning,
+	Error,
+	Throw,
+	Abort,
+};
 
-#define GET_CHECK_LOG(...) MACRO_CONCAT(CHECK_LOG_, __VA_ARGS__)
+consteval auto GetCheckSeverityLogSeverity(ECheckSeverity severity) noexcept
+{
+	switch (severity)
+	{
+	case ECheckSeverity::Warning:	return ELogSeverity::Warning;
+	case ECheckSeverity::Error:		return ELogSeverity::Error;
+	case ECheckSeverity::Throw:		return ELogSeverity::Error;
+	case ECheckSeverity::Abort:		return ELogSeverity::Error;
+	}
+	return ELogSeverity::Warning;
+}
 
-#define Check(Severity, Condition, Message, ...) do				\
-    {															\
-        if (!(Condition))										\
-        {														\
-            GET_CHECK_LOG(Severity)(Message, __VA_ARGS__);		\
-        }														\
+#define Check(Severity, Condition, Message, ...) do																			\
+    {																														\
+        if (!(Condition))																									\
+        {																													\
+            LOG_INTERNAL(GetLogSeverityColor(GetCheckSeverityLogSeverity(ECheckSeverity::Severity)), Message, __VA_ARGS__);	\
+			if constexpr (ECheckSeverity::Severity == ECheckSeverity::Throw)												\
+			{																												\
+				CHECK_HANDLE_THROW(Message);																				\
+			}																												\
+			else if constexpr (ECheckSeverity::Severity == ECheckSeverity::Abort)											\
+			{																												\
+				CHECK_HANDLE_ABORT();																						\
+			}																												\
+        }																													\
     } while (false)
 
 
