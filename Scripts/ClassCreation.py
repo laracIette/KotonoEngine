@@ -98,4 +98,6 @@ f"""#include "{headerName}"
 
         print(f"Wrote source file at {str(filePath)}")
 
-ClassCreator().CreateClass()
+
+if __name__ == "__main__":
+    ClassCreator().CreateClass()

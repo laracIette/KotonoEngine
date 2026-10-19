@@ -28,13 +28,13 @@ void UnregisterObjectClasses()
 )" };
 
 static constexpr auto REGISTRY_FUNCTIONS{ R"(
-void Register_{0}() 
+void Register_{0}()
 {{
 	SObjectFactory::Register("{0}", +[]() static -> UObjectPtr<KObject> {{ return UCreate<{0}>{{}}(); }});
 	{0}::class_ = UPtr{{ new {0}::Class{{}} }};
 }}
 
-void Unregister_{0}() 
+void Unregister_{0}()
 {{
 	delete {0}::class_.Get();
 }}
@@ -222,7 +222,7 @@ void SGenerator::GenerateRegistrator()
 		}
 	}
 
-	const std::string generatedCode{ 
+	const std::string generatedCode{
 		std::format(REGISTRATOR_SOURCE
 			, registerFunctionsCode.str()
 			, unregisterFunctionsCode.str()
@@ -248,7 +248,7 @@ void SGenerator::Generate(UReflectionResult const& reflectionResult)
 void SGenerator::GenerateHeader(UReflectionResult const& reflectionResult)
 {
 	auto const classInfo{ GetClassInfo(reflectionResult) };
-	
+
 	std::string const generatedCode{ classInfo.isAbstract
 		? std::format(GENERATED_HEADER_ABSTRACT
 			, classInfo.name
@@ -269,27 +269,19 @@ void SGenerator::GenerateSource(UReflectionResult const& reflectionResult)
 	auto const classInfo{ GetClassInfo(reflectionResult) };
 
 	std::ostringstream serializeCode;
+	std::ostringstream deserializeCode;
+	std::ostringstream memberVariablesCode;
 	for (auto const& [type, name] : classInfo.variables)
 	{
 		serializeCode << std::format(R"(	USerialize<decltype({0})>{{}}(get(json, "{0}"), {0});)", name) << std::endl;
-	}
-
-	std::ostringstream deserializeCode;
-	for (auto const& [type, name] : classInfo.variables)
-	{
 		deserializeCode << std::format(R"(	if (contains(json, "{0}")) UDeserialize<decltype({0})>{{}}(get(json, "{0}"), {0});)", name) << std::endl;
+		memberVariablesCode << std::format(R"(		{{ "{0}", "{1}", offsetof(Self, {1}) }},)", type, name) << std::endl;
 	}
 
-	std::ostringstream memberVariablesCode;
-	for (auto const& variable : classInfo.variables)
-	{
-		memberVariablesCode << std::format(R"(		{{ "{0}", "{1}", offsetof(Self, {1}) }},)", variable.type, variable.name) << std::endl;
-	}
-	
 	std::string const instantiateFunction{ std::format(CLASS_SOURCE
 		, classInfo.name
 	) };
-	
+
 	auto const registerFunction{ std::format(REGISTRY_FUNCTIONS
 		, classInfo.name
 	) };

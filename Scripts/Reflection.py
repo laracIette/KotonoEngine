@@ -4,30 +4,29 @@ from pathlib import Path
 
 EngineDirectory: Path = Path(__file__).resolve().parent.parent
 
-
 class VariableInfo():
     def __init__(self) -> None:
-        self.type: str
-        self.name: str
+        self.type: str = ""
+        self.name: str = ""
 
 class ClassInfo():
     def __init__(self) -> None:
-        self.isAbstract: bool
-        self.base: str
-        self.name: str
+        self.isAbstract: bool = False
+        self.base: str = ""
+        self.name: str = ""
 
 
 class Reflector():
-    ReflectRegistryPath: Path = EngineDirectory / "reflect.ktregistry"
-
-    def __init__(self) -> None:
-        self.results: list[Reflector.ReflectionResult] = []
+    ReflectRegistryPath: Path = EngineDirectory / "reflect.json"
 
     class ReflectionResult():
         def __init__(self, filePath: Path, classInfo: ClassInfo, variables: list[VariableInfo]) -> None:
             self.filePath = filePath
             self.classInfo = classInfo
             self.variables = variables
+
+    def __init__(self) -> None:
+        self.results: list[Reflector.ReflectionResult] = []
 
     def Reflect(self) -> None:
         registryContent: str = self.ReflectRegistryPath.read_text()
