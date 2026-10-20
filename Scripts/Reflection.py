@@ -58,10 +58,10 @@ class Reflector():
                 classInfo.isAbstract = True
 
             if match.group(2) is not None:
-                classInfo.base = match.group(2)
+                classInfo.name = match.group(2)
 
             if match.group(3) is not None:
-                classInfo.name = match.group(3)
+                classInfo.base = match.group(3)
 
         return classInfo
 

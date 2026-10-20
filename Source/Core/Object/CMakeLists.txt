@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 4.2)
 project(KotonoObject LANGUAGES C CXX)
 
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+
 add_library(KotonoObject STATIC)
 
 target_compile_features(KotonoObject PUBLIC cxx_std_23)
@@ -74,13 +76,12 @@ target_link_libraries(KotonoObject PUBLIC
     KotonoTiming
 )
 
-add_custom_target(RunKotonoGenerator
-    COMMAND $<TARGET_FILE:KotonoGenerator>
-    WORKING_DIRECTORY $<TARGET_FILE_DIR:KotonoGenerator>
-    DEPENDS KotonoGenerator
-    COMMENT "Running KotonoGenerator..."
+add_custom_target(RunGenerationScript
+    COMMAND ${Python3_EXECUTABLE} "${ENGINE_PATH}/Scripts/Generation.py"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    COMMENT "Running generation script..."
 )
 
-set_target_properties(RunKotonoGenerator PROPERTIES FOLDER "KotonoEngine/UtilityTargets")
+set_target_properties(RunGenerationScript PROPERTIES FOLDER "KotonoEngine/UtilityTargets")
 
-add_dependencies(KotonoObject RunKotonoGenerator)
+add_dependencies(KotonoObject RunGenerationScript)
