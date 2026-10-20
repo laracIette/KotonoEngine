@@ -1,6 +1,7 @@
+import json
 import tkinter
 from pathlib import Path
-from Reflection import Reflector
+from Reflection import Reflector, EngineDirectory
 from tkinter import filedialog
 
 root = tkinter.Tk()
@@ -28,7 +29,7 @@ class ClassCreator():
 
     def GetBaseClassInfos(self) -> ClassInfos:
         while True:
-            baseClassName: str = self.GetClassName("The name of the base class: ")
+            baseClassName: str = self.GetClassName("The name of the base class (with prefix): ")
 
             for result in self.reflector.results:
                 if (result.classInfo.name == baseClassName):
@@ -37,7 +38,7 @@ class ClassCreator():
             print("Please provide an existing class name.")
 
     def GetNewClassName(self) -> str:
-        return self.GetClassName("The name of the new class: ")
+        return self.GetClassName("The name of the new class (without prefix): ")
 
     def GetClassName(self, inputText: str) -> str:
         while True:
@@ -83,6 +84,8 @@ private:
 
         print(f"Wrote header file at {str(filePath)}")
 
+        self.WriteReflectRegistry(filePath)
+
     def WriteSourceFile(self, newClassName: str, directory: Path) -> None:
         fileName: str = f"{newClassName}.cpp"
         filePath: Path = directory / fileName
@@ -98,6 +101,19 @@ f"""#include "{headerName}"
 
         print(f"Wrote source file at {str(filePath)}")
 
+    def WriteReflectRegistry(self, headerPath: Path) -> None:
+        registryPath: Path = EngineDirectory / "reflect.json"
+        registry = json.loads(registryPath.read_text())
+
+        if "files" not in registry:
+            registry["files"] = []
+
+        textPath: str = headerPath.as_posix().replace(EngineDirectory.as_posix(), "${ENGINE_DIRECTORY}")
+        registry["files"].append(textPath)
+
+        registryPath.write_text(json.dumps(registry, indent=4))
+
+        print(f"Wrote {textPath} into reflect registry")
 
 if __name__ == "__main__":
     ClassCreator().CreateClass()
