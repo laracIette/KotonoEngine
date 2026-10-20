@@ -9,7 +9,7 @@ target_compile_features(KotonoObject PUBLIC cxx_std_23)
 
 set_target_properties(KotonoObject PROPERTIES FOLDER "KotonoEngine/Core")
 
-set(KOBJECT_PUBLIC_HEADERS
+set(KOBJECT_PUBLIC
     "Public/Axis.h"
     "Public/CoordinateSpace.h"
     "Public/Expand.h"
@@ -19,8 +19,6 @@ set(KOBJECT_PUBLIC_HEADERS
     "Public/WidgetDisplaySettings.h"
     "Public/Guid/Guid.h"
     "Public/Interface/Interface.h"
-    "Public/InterfaceRoot/InterfaceRoot.h"
-    "Public/Object/Object.h"
     "Public/Object/ObjectBase.h"
     "Public/Object/ObjectReflectionBase.h"
     "Public/ObjectFactory/ObjectFactory.h"
@@ -28,40 +26,30 @@ set(KOBJECT_PUBLIC_HEADERS
     "Public/Ptr/Ptr.h"
     "Public/Ptr/ObjectPtr.h"
     "Public/Scene/Scene.h"
-    "Public/SceneComponent/SceneComponent.h"
-    "Public/SceneContext/SceneContext.h"
-    "Public/SceneObject/SceneObject.h"
-    "Public/SceneWidget/SceneWidget.h"
     "Public/serialize_glm/serialize_glm.h"
     "Public/Transform/Transform.h"
-    "Public/Widget/Widget.h"
-    "Public/Widget/WidgetStyle.h"
 )
-set(KOBJECT_SOURCES
+set(KOBJECT_PRIVATE
     "Private/Guid/Guid.cpp"
     "Private/Interface/Interface.cpp"
-    "Private/InterfaceRoot/InterfaceRoot.cpp"
-    "Private/Object/Object.cpp"
     "Private/Object/ObjectReflectionBase.cpp"
     "Private/ObjectFactory/ObjectFactory.cpp"
     "Private/ProjectSettings/ProjectSettings.cpp"
     "Private/Scene/Scene.cpp"
-    "Private/SceneComponent/SceneComponent.cpp"
-    "Private/SceneContext/SceneContext.cpp"
-    "Private/SceneObject/SceneObject.cpp"
-    "Private/SceneWidget/SceneWidget.cpp"
     "Private/serialize_glm/serialize_glm.cpp"
     "Private/Transform/Transform.cpp"
-    "Private/Widget/Widget.cpp"
-    "Private/Widget/WidgetStyle.cpp"
 )
+
+include("${CMAKE_CURRENT_SOURCE_DIR}/ObjectClasses.cmake")
+list(APPEND KOBJECT_PUBLIC ${CLASS_PUBLIC_HEADERS})
+list(APPEND KOBJECT_PRIVATE ${CLASS_PRIVATE_HEADERS} ${CLASS_SOURCES})
 
 target_sources(KotonoObject
     PRIVATE
-        ${KOBJECT_SOURCES}
+        ${KOBJECT_PRIVATE}
     PUBLIC FILE_SET HEADERS
         BASE_DIRS Public
-        FILES ${KOBJECT_PUBLIC_HEADERS}
+        FILES ${KOBJECT_PUBLIC}
 )
 
 target_include_directories(KotonoObject

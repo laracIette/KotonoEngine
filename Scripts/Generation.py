@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 from pathlib import Path
-from Reflection import Reflector, EngineDirectory
+from Reflection import ReflectionResult, Reflector, EngineDirectory
 
 class Generator():
     GeneratedRegistry: Path = EngineDirectory / "Cache/Generator/generated.json"
@@ -51,13 +51,13 @@ class Generator():
 
         self.GenerateRegistrator()
 
-    def GenerateFiles(self, result: Reflector.ReflectionResult) -> None:
+    def GenerateFiles(self, result: ReflectionResult) -> None:
         self.GenerateHeader(result)
         self.GenerateSource(result)
 
         print(f"Generated {str(result.filePath)}")
 
-    def GenerateHeader(self, result: Reflector.ReflectionResult) -> None:
+    def GenerateHeader(self, result: ReflectionResult) -> None:
         className: str = result.classInfo.name
         baseClass: str = result.classInfo.base
 
@@ -128,7 +128,7 @@ class Generator():
         filePath.parent.mkdir(parents=True, exist_ok=True)
         filePath.write_text(headerText)
 
-    def GenerateSource(self, result: Reflector.ReflectionResult) -> None:
+    def GenerateSource(self, result: ReflectionResult) -> None:
         className: str = result.classInfo.name
 
         serializeCode: str = ""

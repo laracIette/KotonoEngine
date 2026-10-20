@@ -7,78 +7,21 @@ target_compile_features(KotonoEditor PUBLIC cxx_std_23)
 
 set_target_properties(KotonoEditor PROPERTIES FOLDER "KotonoEngine")
 
-set(KEDITOR_PUBLIC_HEADERS
-    "Public/MainWindow/MainWindow.h"
-    "Public/SecondaryWindow/SecondaryWindow.h"
+set(KEDITOR_PUBLIC
 )
-set(KEDITOR_PRIVATE_HEADERS
-    "Private/AssetExplorer/AssetExplorer.h"
-    "Private/AssetExplorerDirectory/AssetExplorerDirectory.h"
-    "Private/AssetExplorerFile/AssetExplorerFile.h"
-    "Private/AssetExplorerItem/AssetExplorerItem.h"
-    "Private/DefaultSceneContext/DefaultSceneContext.h"
-    "Private/Detachable/Detachable.h"
-    "Private/Detachable/DetachableCloseButtonStyle.h"
-    "Private/GameSpeedButton/GameSpeedButton.h"
-    "Private/GameStateButton/GameStateButton.h"
-    "Private/GameStateButton/GameStatePlayPauseButtonStyle.h"
-    "Private/GameStateButton/GameStateStopButtonStyle.h"
-    "Private/InputTextBox/InputTextBox.h"
-    "Private/ObjectProperties/ObjectProperties.h"
-    "Private/PropertiesWindow/PropertiesWindow.h"
-    "Private/SceneExplorer/SceneExplorer.h"
-    "Private/SceneExplorerItem/SceneExplorerItem.h"
-    "Private/SceneVisibilityField/SceneVisibilityField.h"
-    "Private/SceneVisibilityField/SceneVisibilityFieldButtonStyle.h"
-    "Private/SceneVisibilityWindow/SceneVisibilityWindow.h"
-    "Private/SingleViewport/SingleViewport.h"
-    "Private/Splitter/HorizontalSplitter.h"
-    "Private/Splitter/Splitter.h"
-    "Private/Splitter/VerticalSplitter.h"
-    "Private/UpdateTimeText/UpdateTimeText.h"
-    "Private/ValueBox/ValueBox.h"
-    "Private/ValueSlider/ValueSlider.h"
-    "Private/ViewController/ViewController.h"
+set(KEDITOR_PRIVATE
 )
-set(KEDITOR_SOURCES
-    "Private/AssetExplorer/AssetExplorer.cpp"
-    "Private/AssetExplorerDirectory/AssetExplorerDirectory.cpp"
-    "Private/AssetExplorerFile/AssetExplorerFile.cpp"
-    "Private/AssetExplorerItem/AssetExplorerItem.cpp"
-    "Private/DefaultSceneContext/DefaultSceneContext.cpp"
-    "Private/Detachable/Detachable.cpp"
-    "Private/Detachable/DetachableCloseButtonStyle.cpp"
-    "Private/GameSpeedButton/GameSpeedButton.cpp"
-    "Private/GameStateButton/GameStateButton.cpp"
-    "Private/GameStateButton/GameStatePlayPauseButtonStyle.cpp"
-    "Private/GameStateButton/GameStateStopButtonStyle.cpp"
-    "Private/InputTextBox/InputTextBox.cpp"
-    "Private/MainWindow/MainWindow.cpp"
-    "Private/ObjectProperties/ObjectProperties.cpp"
-    "Private/PropertiesWindow/PropertiesWindow.cpp"
-    "Private/SceneExplorer/SceneExplorer.cpp"
-    "Private/SceneExplorerItem/SceneExplorerItem.cpp"
-    "Private/SceneVisibilityField/SceneVisibilityField.cpp"
-    "Private/SceneVisibilityField/SceneVisibilityFieldButtonStyle.cpp"
-    "Private/SceneVisibilityWindow/SceneVisibilityWindow.cpp"
-    "Private/SecondaryWindow/SecondaryWindow.cpp"
-    "Private/SingleViewport/SingleViewport.cpp"
-    "Private/Splitter/HorizontalSplitter.cpp"
-    "Private/Splitter/Splitter.cpp"
-    "Private/Splitter/VerticalSplitter.cpp"
-    "Private/UpdateTimeText/UpdateTimeText.cpp"
-    "Private/ValueBox/ValueBox.cpp"
-    "Private/ValueSlider/ValueSlider.cpp"
-    "Private/ViewController/ViewController.cpp"
-)
+
+include("${CMAKE_CURRENT_SOURCE_DIR}/ObjectClasses.cmake")
+list(APPEND KEDITOR_PUBLIC ${CLASS_PUBLIC_HEADERS})
+list(APPEND KEDITOR_PRIVATE ${CLASS_PRIVATE_HEADERS} ${CLASS_SOURCES})
 
 target_sources(KotonoEditor
     PRIVATE
-        ${KEDITOR_SOURCES}
-        ${KEDITOR_PRIVATE_HEADERS}
+        ${KEDITOR_PRIVATE}
     PUBLIC FILE_SET HEADERS
         BASE_DIRS Public
-        FILES ${KEDITOR_PUBLIC_HEADERS}
+        FILES ${KEDITOR_PUBLIC}
 )
 
 target_include_directories(KotonoEditor

@@ -1,7 +1,7 @@
 import json
 import tkinter
 from pathlib import Path
-from Reflection import Reflector, EngineDirectory
+from Reflection import Reflector, ReflectRegistry, EngineDirectory
 from tkinter import filedialog
 
 root = tkinter.Tk()
@@ -21,18 +21,25 @@ class ClassCreator():
         baseClassInfos: ClassInfos = self.GetBaseClassInfos()
         newClassName: str = self.GetNewClassName()
 
-        headerDirectory: Path = self.GetHeaderDirectory()
-        sourceDirectory: Path = self.GetSourceDirectory()
+        projectDirectory: Path = self.GetProjectDirectory()
 
-        self.WriteHeaderFile(baseClassInfos, newClassName, headerDirectory)
-        self.WriteSourceFile(newClassName, sourceDirectory)
+        headerDirectory: Path = self.GetHeaderDirectory(projectDirectory)
+        sourceDirectory: Path = self.GetSourceDirectory(projectDirectory)
+
+
+        headerPath: Path = self.WriteHeaderFile(baseClassInfos, newClassName, headerDirectory)
+        sourcePath: Path = self.WriteSourceFile(newClassName, sourceDirectory)
+
+        self.WriteReflectRegistry(headerPath)
+
+        self.UpdateProjectCMakeClasses(headerPath, sourcePath, projectDirectory)
 
     def GetBaseClassInfos(self) -> ClassInfos:
         while True:
             baseClassName: str = self.GetClassName("The name of the base class (with prefix): ")
 
             for result in self.reflector.results:
-                if (result.classInfo.name == baseClassName):
+                if result.classInfo.name == baseClassName:
                     return ClassInfos(result.filePath, baseClassName)
 
             print("Please provide an existing class name.")
@@ -48,15 +55,19 @@ class ClassCreator():
             else:
                 print("Class names only accept letters and numbers and can't start with a number.")
 
-    def GetHeaderDirectory(self) -> Path:
+    def GetProjectDirectory(self) -> Path:
+        print("Select the directory of the project to add a class to")
+        return Path(filedialog.askdirectory(title="Project directory", initialdir=EngineDirectory)).resolve()
+
+    def GetHeaderDirectory(self, projectDirectory: Path) -> Path:
         print("Select a directory for the class's header file")
-        return Path(filedialog.askdirectory(title="Select a directory for the class's header file")).resolve()
+        return Path(filedialog.askdirectory(title="Header file directory", initialdir=projectDirectory)).resolve()
 
-    def GetSourceDirectory(self) -> Path:
+    def GetSourceDirectory(self, projectDirectory: Path) -> Path:
         print("Select a directory for the class's source file")
-        return Path(filedialog.askdirectory(title="Select a directory for the class's source file")).resolve()
+        return Path(filedialog.askdirectory(title="Source file directory", initialdir=projectDirectory)).resolve()
 
-    def WriteHeaderFile(self, baseClassInfos: ClassInfos, newClassName: str, directory: Path) -> None:
+    def WriteHeaderFile(self, baseClassInfos: ClassInfos, newClassName: str, directory: Path) -> Path:
         prefix: str = baseClassInfos.name[0]
         fileName: str = f"{newClassName}.h"
         filePath: Path = directory / fileName
@@ -84,9 +95,9 @@ private:
 
         print(f"Wrote header file at {str(filePath)}")
 
-        self.WriteReflectRegistry(filePath)
+        return filePath
 
-    def WriteSourceFile(self, newClassName: str, directory: Path) -> None:
+    def WriteSourceFile(self, newClassName: str, directory: Path) -> Path:
         fileName: str = f"{newClassName}.cpp"
         filePath: Path = directory / fileName
 
@@ -101,19 +112,54 @@ f"""#include "{headerName}"
 
         print(f"Wrote source file at {str(filePath)}")
 
+        return filePath
+
     def WriteReflectRegistry(self, headerPath: Path) -> None:
-        registryPath: Path = EngineDirectory / "reflect.json"
-        registry = json.loads(registryPath.read_text())
+        registry: ReflectRegistry = self.reflector.ReadReflectRegistry()
 
-        if "files" not in registry:
-            registry["files"] = []
+        for project in registry.projects:
+            if str(headerPath).startswith(str(project.directory)):
+                project.files.append(headerPath)
 
-        textPath: str = headerPath.as_posix().replace(EngineDirectory.as_posix(), "${ENGINE_DIRECTORY}")
-        registry["files"].append(textPath)
+        self.reflector.WriteReflectRegistry(registry)
 
-        registryPath.write_text(json.dumps(registry, indent=4))
+        print(f"Wrote {headerPath} into reflect registry")
 
-        print(f"Wrote {textPath} into reflect registry")
+    def UpdateProjectCMakeClasses(self, headerPath: Path, sourcePath: Path, projectDirectory: Path) -> None:
+
+        cmakeClassesPath: Path = projectDirectory / "ObjectClasses.cmake"
+        result: str = cmakeClassesPath.read_text()
+
+        headerRelative: str = str(headerPath).removeprefix(str(projectDirectory))
+        headerRelative = Path(headerRelative).as_posix().removeprefix("/")
+
+        sourceRelative: str = str(sourcePath).removeprefix(str(projectDirectory))
+        sourceRelative = Path(sourceRelative).as_posix().removeprefix("/")
+
+        if headerRelative.startswith("Public"):
+            result = self.InsertLine(result, "set(CLASS_PUBLIC_HEADERS\n", f"""    "{headerRelative}"\n""")
+        elif headerRelative.startswith("Private"):
+            result = self.InsertLine(result, "set(CLASS_PRIVATE_HEADERS\n", f"""    "{headerRelative}"\n""")
+
+        result = self.InsertLine(result, "set(CLASS_SOURCES\n", f"""    "{sourceRelative}"\n""")
+
+        cmakeClassesPath.write_text(result)
+
+    def InsertLine(self, text: str, previousLine: str, insertLine: str) -> str:
+        result: str = ""
+
+        foundLine: bool = False
+        for line in text.splitlines(keepends=True):
+            result += line
+
+            if foundLine:
+                continue
+
+            if line == previousLine:
+                result += insertLine
+                foundLine = True
+
+        return result
 
 if __name__ == "__main__":
     ClassCreator().CreateClass()

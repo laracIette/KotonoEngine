@@ -7,27 +7,21 @@ target_compile_features(KotonoScene PUBLIC cxx_std_23)
 
 set_target_properties(KotonoScene PROPERTIES FOLDER "KotonoEngine/Core")
 
-set(KSCENE_PUBLIC_HEADERS
-    "Public/AudioComponent/AudioComponent.h"
-    "Public/CameraComponent/CameraComponent.h"
-    "Public/DirectionalLightComponent/DirectionalLightComponent.h"
-    "Public/PointLightComponent/PointLightComponent.h"
-    "Public/MeshComponent/MeshComponent.h"
+set(KSCENE_PUBLIC
 )
-set(KSCENE_SOURCES
-    "Private/AudioComponent/AudioComponent.cpp"
-    "Private/CameraComponent/CameraComponent.cpp"
-    "Private/DirectionalLightComponent/DirectionalLightComponent.cpp"
-    "Private/PointLightComponent/PointLightComponent.cpp"
-    "Private/MeshComponent/MeshComponent.cpp"
+set(KSCENE_PRIVATE
 )
+
+include("${CMAKE_CURRENT_SOURCE_DIR}/ObjectClasses.cmake")
+list(APPEND KSCENE_PUBLIC ${CLASS_PUBLIC_HEADERS})
+list(APPEND KSCENE_PRIVATE ${CLASS_PRIVATE_HEADERS} ${CLASS_SOURCES})
 
 target_sources(KotonoScene
     PRIVATE
-        ${KSCENE_SOURCES}
+        ${KSCENE_PRIVATE}
     PUBLIC FILE_SET HEADERS
         BASE_DIRS Public
-        FILES ${KSCENE_PUBLIC_HEADERS}
+        FILES ${KSCENE_PUBLIC}
 )
 
 target_include_directories(KotonoScene

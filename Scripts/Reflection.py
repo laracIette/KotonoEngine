@@ -3,6 +3,7 @@ import re
 from pathlib import Path
 
 EngineDirectory: Path = Path(__file__).resolve().parent.parent
+ReflectRegistryPath: Path = EngineDirectory / "reflect.json"
 
 class VariableInfo():
     def __init__(self) -> None:
@@ -15,27 +16,78 @@ class ClassInfo():
         self.base: str = ""
         self.name: str = ""
 
+class ReflectRegistry():
+    class Project():
+        def __init__(self, directory: Path, files: list[Path]) -> None:
+            self.directory = directory
+            self.files = files
+
+    def __init__(self, projects: list[Project]) -> None:
+        self.projects = projects
+
+class ReflectionResult():
+    def __init__(self, filePath: Path, classInfo: ClassInfo, variables: list[VariableInfo]) -> None:
+        self.filePath = filePath
+        self.classInfo = classInfo
+        self.variables = variables
 
 class Reflector():
-    ReflectRegistryPath: Path = EngineDirectory / "reflect.json"
-
-    class ReflectionResult():
-        def __init__(self, filePath: Path, classInfo: ClassInfo, variables: list[VariableInfo]) -> None:
-            self.filePath = filePath
-            self.classInfo = classInfo
-            self.variables = variables
-
     def __init__(self) -> None:
-        self.results: list[Reflector.ReflectionResult] = []
+        self.results: list[ReflectionResult] = []
 
     def Reflect(self) -> None:
-        registryContent: str = self.ReflectRegistryPath.read_text()
+        registry: ReflectRegistry = self.ReadReflectRegistry()
 
-        files: list[str] = json.loads(registryContent)["files"]
+        for project in registry.projects:
+            for file in project.files:
+                self.results.append(self.ReflectFile(file))
 
-        for file in files:
-            file = file.replace("${ENGINE_DIRECTORY}", str(EngineDirectory))
-            self.results.append(self.ReflectFile(Path(file)))
+    def ReadReflectRegistry(self) -> ReflectRegistry:
+        registryContent: str = ReflectRegistryPath.read_text()
+        registryJson = json.loads(registryContent)
+
+        projects: list[ReflectRegistry.Project] = []
+
+        if "projects" not in registryJson:
+            registryJson["projects"] = []
+
+        for project in registryJson["projects"]:
+            directoryJson: str = project["directory"]
+            filesJson: list[str] = project["files"]
+
+            directory: Path = Path(directoryJson.replace("${ENGINE_DIRECTORY}", str(EngineDirectory))).resolve()
+            files: list[Path] = []
+
+            for file in filesJson:
+                filePath = directory / file
+                files.append(filePath.resolve())
+
+            projects.append(ReflectRegistry.Project(directory, files))
+
+        return ReflectRegistry(projects)
+
+    def WriteReflectRegistry(self, registry: ReflectRegistry) -> None:
+        registryJson = {}
+        registryJson["projects"] = []
+
+        for project in registry.projects:
+            projectJson = {}
+
+            directory: str = str(project.directory)
+            directory = directory.replace(str(EngineDirectory), "${ENGINE_DIRECTORY}")
+
+            projectJson["directory"] = Path(directory).as_posix()
+            projectJson["files"] = []
+
+            for file in project.files:
+                filePath: str = str(file).removeprefix(str(project.directory))
+                filePath = Path(filePath).as_posix().removeprefix("/")
+
+                projectJson["files"].append(filePath)
+
+            registryJson["projects"].append(projectJson)
+
+        ReflectRegistryPath.write_text(json.dumps(registryJson, indent=4))
 
     def ReflectFile(self, filePath: Path) -> ReflectionResult:
         fileContent: str = filePath.read_text()
@@ -43,7 +95,7 @@ class Reflector():
         classInfo = self.ReflectClass(fileContent)
         variables = self.ReflectClassVariables(fileContent)
 
-        return self.ReflectionResult(filePath, classInfo, variables)
+        return ReflectionResult(filePath, classInfo, variables)
 
     def ReflectClass(self, fileContent: str) -> ClassInfo:
         match = re.search(
