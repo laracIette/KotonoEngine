@@ -98,16 +98,15 @@ void WText::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UCo
 {
 	for (auto const& [characterPath, modelMatrix] : characters_)
 	{
-		interfaceRenderGraph.drawDatas.push_back({
-			.scissor{ GetScissor() },
-			.modelMatrix{ modelMatrix },
-			.shader{ "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset" },
-			.model{ "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj" },
-			.scalars{},
-			.vectors{ tint * Tint },
-			.textures{ characterPath },
-			.isVisible{ GetIsVisible() },
-		});
+		interfaceRenderGraph.drawDatas.push_back(
+			UInterfaceDrawData::MakeImage(
+				GetScissor(),
+				modelMatrix,
+				tint * Tint,
+				characterPath,
+				GetIsVisible()
+			)
+		);
 	}
 }
 

@@ -8,17 +8,19 @@ WColor::WColor()
 }
 
 void WColor::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const
-{
-	interfaceRenderGraph.drawDatas.push_back({
-		.scissor{ GetScissor() },
-		.modelMatrix{ GetModelMatrix() },
-		.shader{ "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset" },
-		.model{ "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj" },
-		.scalars{},
-		.vectors{ GetColor() * tint * Tint },
-		.textures{ UPath{ "${ENGINE_DIRECTORY}/Assets/textures/white_texture.jpg" } },
-		.isVisible{ GetIsVisible() },
-	});
+{	
+	interfaceRenderGraph.drawDatas.push_back(
+		UInterfaceDrawData::MakeRoundedImage(
+			GetScissor(),
+			GetModelMatrix(),
+			GetColor() * tint * Tint,
+			UPath{ "${ENGINE_DIRECTORY}/Assets/textures/white_texture.jpg" },
+			{ 10.0f, 10.0f, 10.0f, 10.0f },
+			GetPosition(),
+			GetSize(),
+			GetIsVisible()
+		)
+	);
 }
 
 auto WColor::GetColor() const -> UColor

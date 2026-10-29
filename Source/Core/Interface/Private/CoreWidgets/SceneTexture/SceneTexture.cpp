@@ -35,17 +35,16 @@ void WSceneTexture::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGr
 	{
 		GetScene()->PopulateRenderGraph(sceneRenderGraph, sceneVisibility_);
 	}
-
-	interfaceRenderGraph.drawDatas.push_back({
-		.scissor{ GetScissor() },
-		.modelMatrix{ GetModelMatrix() },
-		.shader{ "${ENGINE_DIRECTORY}/Assets/shaders/shader2D.kasset" },
-		.model{ "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj" },
-		.scalars {},
-		.vectors{ tint * Tint },
-		.textures{ UInterfaceDrawData::SceneRenderData{ sceneView, std::move(sceneRenderGraph) } },
-		.isVisible{ GetIsVisible() },
-	});
+	
+	interfaceRenderGraph.drawDatas.push_back(
+		UInterfaceDrawData::MakeSceneTexture(
+			GetScissor(),
+			GetModelMatrix(),
+			tint * Tint,
+			UInterfaceDrawData::SceneRenderData{ sceneView, std::move(sceneRenderGraph) },
+			GetIsVisible()
+		)
+	);
 }
 
 auto WSceneTexture::GetViewMatrix() const -> glm::mat4

@@ -1,0 +1,55 @@
+{
+  "shaders": [
+    {
+      "path": "${ENGINE_DIRECTORY}/Shaders/vert/shader2D.vert",
+      "shaderStage": 1
+    },
+    {
+      "path": "${ENGINE_DIRECTORY}/Shaders/frag/rounded2D.frag",
+      "shaderStage": 16
+    }
+  ],
+  "rasterizer": {
+    "depthClampEnable": false,
+    "rasterizerDiscardEnable": false,
+    "polygonMode": 0,
+    "lineWidth": 1.0,
+    "cullMode": 0,
+    "frontFace": 0,
+    "depthBiasEnable": false,
+    "depthBiasConstantFactor": 0.0,
+    "depthBiasClamp": 0.0,
+    "depthBiasSlopeFactor": 0.0
+  },
+  "multisampling": {
+    "useMSAASamples": false,
+    "rasterizationSamples": 1,
+    "sampleShadingEnable": true,
+    "minSampleShading": 0.2,
+    "alphaToCoverageEnable": false,
+    "alphaToOneEnable": false
+  },
+  "depthStencil": {
+    "depthTestEnable": false,
+    "depthWriteEnable": false,
+    "depthCompareOp": 1,
+    "depthBoundsTestEnable": false,
+    "minDepthBounds": 0.0,
+    "maxDepthBounds": 1.0,
+    "stencilTestEnable": false
+  },
+  "colorBlendAttachments": [
+    {
+      "colorWriteMask": 15,
+      "blendEnable": true,
+      "srcColorBlendFactor": 6,
+      "dstColorBlendFactor": 7,
+      "colorBlendOp": 0,
+      "srcAlphaBlendFactor": 1,
+      "dstAlphaBlendFactor": 0,
+      "alphaBlendOp": 0
+    }
+  ],
+  "viewMask": 0,
+  "pipelinePass": 6
+}
