@@ -58,6 +58,7 @@ set_target_properties(KotonoGraphics PROPERTIES FOLDER "KotonoEngine/Core")
 
 set(KGRAPHICS_PUBLIC_HEADERS
     "Public/Color.h"
+    "Public/Corners.h"
     "Public/Mobility.h"
     "Public/Padding.h"
     "Public/SceneView.h"

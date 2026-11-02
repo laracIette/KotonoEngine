@@ -3,13 +3,13 @@
 static const UPath DEFAULT_TEXTURE{ "${ENGINE_DIRECTORY}/Assets/textures/white_texture.jpg" };
 
 KButtonStyle::KButtonStyle()
-	: DisabledState{ DEFAULT_TEXTURE,			Colors::White.WithValue(0.05f) }
-	, NormalState{	DEFAULT_TEXTURE,			Colors::White.WithValue(0.1f) }
-	, FocusedState{	DEFAULT_TEXTURE,			Colors::White.WithValue(0.15f) }
-	, PressedState{	DEFAULT_TEXTURE,			Colors::White.WithValue(0.25f) }
-	, ActivatedNormalState{	DEFAULT_TEXTURE,	Colors::White.WithValue(0.2f) }
-	, ActivatedFocusedState{ DEFAULT_TEXTURE,	Colors::White.WithValue(0.15f) }
-	, ActivatedPressedState{ DEFAULT_TEXTURE,	Colors::White.WithValue(0.25f) }
+	: DisabledState{ EImageType::Normal,			DEFAULT_TEXTURE, Colors::White.WithValue(0.05f),	UCorners::All(8.0f) }
+	, NormalState{ EImageType::Normal,				DEFAULT_TEXTURE, Colors::White.WithValue(0.1f),	UCorners::All(8.0f) }
+	, FocusedState{	EImageType::Normal,				DEFAULT_TEXTURE, Colors::White.WithValue(0.15f),	UCorners::All(8.0f) }
+	, PressedState{	EImageType::Normal,				DEFAULT_TEXTURE, Colors::White.WithValue(0.25f),	UCorners::All(8.0f) }
+	, ActivatedNormalState{	EImageType::Normal,		DEFAULT_TEXTURE, Colors::White.WithValue(0.2f),	UCorners::All(8.0f) }
+	, ActivatedFocusedState{ EImageType::Normal,	DEFAULT_TEXTURE, Colors::White.WithValue(0.15f),	UCorners::All(8.0f) }
+	, ActivatedPressedState{ EImageType::Normal,	DEFAULT_TEXTURE, Colors::White.WithValue(0.25f),	UCorners::All(8.0f) }
 {
 }
 

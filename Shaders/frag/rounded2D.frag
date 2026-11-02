@@ -9,8 +9,8 @@ layout(location = 0) out vec4 outColor;
 float sdRoundedBox(vec2 p, vec2 b, vec4 r) {
     // Select the appropriate corner radius based on the quadrant
     float radius = (p.x < 0.0) ?
-    ((p.y > 0.0) ? r.x : r.w) : // Top-Left (x) or Bottom-Left (w)
-    ((p.y > 0.0) ? r.y : r.z);  // Top-Right (y) or Bottom-Right (z)
+    ((p.y > 0.0) ? r.x : r.z) : // Top-Left (x) or Bottom-Left (z)
+    ((p.y > 0.0) ? r.y : r.w);  // Top-Right (y) or Bottom-Right (w)
 
     vec2 q = abs(p) - b + vec2(radius);
     return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - radius;

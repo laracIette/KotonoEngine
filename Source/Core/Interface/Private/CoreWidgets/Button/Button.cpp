@@ -127,7 +127,7 @@ auto WButton::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> 
 
 void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const
 {
-	auto const [texture, color] { [this]() {
+	auto const& [imageType, texture, color, corners] { [this]() -> KButtonStyle::State const& {
 		b8 const isActivated{ isActivatable_ && isActivated_ };
 		if (!GetIsEnabled())	return disabledState_;
 		if (isPressed_)			return isActivated ? activatedPressedState_ : pressedState_;
@@ -135,15 +135,42 @@ void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, U
 		return isActivated ? activatedNormalState_ : normalState_;
 	}() };
 	
-	interfaceRenderGraph.drawDatas.push_back(
-		UInterfaceDrawData::MakeImage(
-			GetScissor(),
-			GetModelMatrix(),
-			color * tint * Tint,
-			texture,
-			GetIsVisible()
-		)
-	);
+	switch (imageType)
+	{
+	case KButtonStyle::EImageType::None:
+	{
+		break;
+	}
+	case KButtonStyle::EImageType::Normal:
+	{
+		interfaceRenderGraph.drawDatas.push_back(
+			UInterfaceDrawData::MakeImage(
+				GetScissor(),
+				GetModelMatrix(),
+				color * tint * Tint,
+				texture,
+				GetIsVisible()
+			)
+		);
+		break;
+	}
+	case KButtonStyle::EImageType::Rounded:
+	{
+		interfaceRenderGraph.drawDatas.push_back(
+			UInterfaceDrawData::MakeRoundedImage(
+				GetScissor(),
+				GetModelMatrix(),
+				color * tint * Tint,
+				texture,
+				corners,
+				GetPosition(),
+				GetSize(),
+				GetIsVisible()
+			)
+		);
+		break;
+	}
+	}
 }
 
 void WButton::Activate()

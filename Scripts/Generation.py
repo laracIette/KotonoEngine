@@ -55,7 +55,7 @@ class Generator():
         self.GenerateHeader(result)
         self.GenerateSource(result)
 
-        print(f"Generated {str(result.filePath)}")
+        print(f"Generated {result.filePath!s}")
 
     def GenerateHeader(self, result: ReflectionResult) -> None:
         className: str = result.classInfo.name

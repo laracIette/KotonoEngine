@@ -2,6 +2,7 @@
 #include "Widget/WidgetStyle.h"
 
 #include <Color.h>
+#include <Corners.h>
 
 #include "ButtonStyle.generated.h"
 
@@ -10,10 +11,19 @@ class KButtonStyle : public KWidgetStyle
 	GENERATED()
 	
 public:
+	enum class EImageType : u8
+	{
+		None,
+		Normal,
+		Rounded,
+	};
+
 	struct State
 	{
+		EImageType imageType;
 		UPath texture;
 		UColor color;
+		UCorners corners;
 	};
 	
 public:

@@ -1,5 +1,6 @@
 #pragma once
 #include "Color.h"
+#include "Corners.h"
 #include "SceneRenderGraph.h"
 #include "SceneView.h"
 #include "Scissor.h"
@@ -47,7 +48,7 @@ struct UInterfaceDrawData final
 		};
 	}
 	
-	static auto MakeRoundedImage(UScissor const& scissor, glm::mat4 const& modelMatrix, UColor const& color, UPath const& texture, glm::vec4 const& corners, glm::vec2 const& position, glm::vec2 const& size, b8 isVisible) noexcept -> UInterfaceDrawData
+	static auto MakeRoundedImage(UScissor const& scissor, glm::mat4 const& modelMatrix, UColor const& color, UPath const& texture, UCorners const& corners, glm::vec2 const& position, glm::vec2 const& size, b8 isVisible) noexcept -> UInterfaceDrawData
 	{
 		return {
 			.scissor{ scissor },
@@ -55,7 +56,7 @@ struct UInterfaceDrawData final
 			.shader{ "${ENGINE_DIRECTORY}/Assets/shaders/rounded2D.kasset" },
 			.model{ "${ENGINE_DIRECTORY}/Assets/models/rectangle.obj" },
 			.scalars{},
-			.vectors{ color, corners, glm::vec4{ position, size } },
+			.vectors{ color, UCorners::ClampToSize(corners, size), glm::vec4{ position, size } },
 			.textures{ texture },
 			.isVisible{ isVisible }
 		};
