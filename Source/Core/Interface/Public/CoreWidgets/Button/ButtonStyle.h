@@ -37,4 +37,7 @@ private:
 	ProtectedProperty(State, ActivatedNormalState);
 	ProtectedProperty(State, ActivatedFocusedState);
 	ProtectedProperty(State, ActivatedPressedState);
+	ProtectedProperty(b8, HasShadow);
+	ProtectedProperty(glm::vec2, ShadowOffset);
+	ProtectedProperty(UColor, ShadowColor);
 };

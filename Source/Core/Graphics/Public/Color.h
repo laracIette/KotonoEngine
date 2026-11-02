@@ -31,7 +31,7 @@ struct UColor final
 		: UColor(red, green, blue, 1.0f)
 	{}
 
-	constexpr UColor(f32 value) noexcept
+	explicit constexpr UColor(f32 value) noexcept
 		: UColor(value, value, value, 1.0f)
 	{}
 

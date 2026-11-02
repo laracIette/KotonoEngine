@@ -131,15 +131,16 @@ protected:
 	auto GetIsContentVisible() const -> b8;
 	
 	void OnWidgetDisowned(WidgetPtr const& widget) const;
+	
+	auto GetModelMatrix(glm::vec2 const& position, f32 angle, glm::vec2 const& size) const -> glm::mat4;
 
 private:
 	auto HasBuild() const -> b8;
 	void MarkDirty();
 
-	auto TranslationMatrix() const -> glm::mat4;
-	static auto RotationMatrix() -> glm::mat4;
-	auto ScaleMatrix() const -> glm::mat4;
-	auto ModelMatrix() const -> glm::mat4;
+	auto TranslateMatrix(glm::mat4 const& matrix, glm::vec2 const& position) const -> glm::mat4;
+	auto RotateMatrix(glm::mat4 const& matrix, f32 angle) const -> glm::mat4;
+	auto ScaleMatrix(glm::mat4 const& matrix, glm::vec2 const& size) const -> glm::mat4;
 	
 protected:
 	/// The tint of the widget, this propagates to the widget's content

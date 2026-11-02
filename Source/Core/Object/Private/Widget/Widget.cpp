@@ -99,7 +99,7 @@ void WWidget::Display(UWidgetDisplaySettings displaySettings)
 
 	contentSize_ = GetContentSize(displaySettings.bounds);
 
-	modelMatrix_ = ModelMatrix();
+	modelMatrix_ = GetModelMatrix(GetPosition(), 0.0f, GetSize());
 
 	if (HasBuild())
 	{
@@ -356,6 +356,11 @@ void WWidget::OnWidgetDisowned(WidgetPtr const& widget) const
 	}
 }
 
+auto WWidget::GetModelMatrix(glm::vec2 const& position, f32 angle, glm::vec2 const& size) const -> glm::mat4
+{
+	return ScaleMatrix(RotateMatrix(TranslateMatrix(glm::identity<glm::mat4>(), position), angle), size);
+}
+
 bool WWidget::HasBuild() const
 {
 	return build_ && build_ != Ptr();
@@ -376,26 +381,21 @@ void WWidget::MarkDirty()
 	}
 }
 
-auto WWidget::TranslationMatrix() const -> glm::mat4
+auto WWidget::TranslateMatrix(glm::mat4 const& matrix, glm::vec2 const& position) const -> glm::mat4
 {
 	glm::vec2 const bounds{ GetInterface()->GetBounds() };
-	return glm::translate(glm::identity<glm::mat4>(), { px_to_ndc_pos(GetPosition() + GetSize() / 2.0f, bounds), 0.0f });
+	return glm::translate(matrix, { px_to_ndc_pos(position + GetSize() / 2.0f, bounds), 0.0f });
 }
 
-auto WWidget::RotationMatrix() -> glm::mat4
+auto WWidget::RotateMatrix(glm::mat4 const& matrix, f32 angle) const -> glm::mat4
 {
-	return glm::rotate(glm::identity<glm::mat4>(), 0.0f, -WorldForwardVector);
+	return glm::rotate(matrix, angle, -WorldForwardVector);
 }
 
-auto WWidget::ScaleMatrix() const -> glm::mat4
+auto WWidget::ScaleMatrix(glm::mat4 const& matrix, glm::vec2 const& size) const -> glm::mat4
 {
 	glm::vec2 const bounds{ GetInterface()->GetBounds() };
-	return glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(GetSize(), bounds), 1.0f });
-}
-
-auto WWidget::ModelMatrix() const -> glm::mat4
-{
-	return TranslationMatrix() * RotationMatrix() * ScaleMatrix();
+	return glm::scale(matrix, { px_to_ndc_size(size, bounds), 1.0f });
 }
 
 #include "Widget.generated.inl"

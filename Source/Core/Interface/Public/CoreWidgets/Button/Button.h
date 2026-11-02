@@ -37,6 +37,10 @@ public:
 
 protected:
 	auto GetCanCache() const -> b8 override;
+	
+private:
+	void PopulateRenderGraphShadow(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint, KButtonStyle::State const& state) const;
+	void PopulateRenderGraphImage(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint, KButtonStyle::State const& state) const;
 
 private:
 	UBindable<b8> isEnabled_;
@@ -65,5 +69,8 @@ private:
 	KButtonStyle::State activatedNormalState_;
 	KButtonStyle::State activatedFocusedState_;
 	KButtonStyle::State activatedPressedState_;
+	b8 hasShadow_;
+	glm::vec2 shadowOffset_;
+	UColor shadowColor_;
 };
 
