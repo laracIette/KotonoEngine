@@ -20,7 +20,7 @@ inline std::string to_string(R&& range)
 }
 
 template <typename T>
-	requires !std::is_floating_point_v<T>
+	requires (!std::is_floating_point_v<T>)
 inline std::string to_string(T&& v)
 {
 	return std::format("{0}", std::forward<T>(v));

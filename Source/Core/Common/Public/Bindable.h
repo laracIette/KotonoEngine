@@ -16,7 +16,7 @@ public:
 
 	template <typename TArg>
 		requires std::constructible_from<ValueType, TArg>
-			&& !std::same_as<std::remove_cvref_t<TArg>, UBindable>
+			&& (!std::same_as<std::remove_cvref_t<TArg>, UBindable>)
 	UBindable(TArg&& value) 
 		: value_{ std::in_place_type<ValueType>, std::forward<TArg>(value) }
 	{
@@ -24,7 +24,7 @@ public:
 
 	template <typename TArg>
 		requires std::constructible_from<FuncType, TArg>
-			&& !std::same_as<std::remove_cvref_t<TArg>, UBindable>
+			&& (!std::same_as<std::remove_cvref_t<TArg>, UBindable>)
 	UBindable(TArg&& func)
 		: value_{ std::in_place_type<FuncType>, std::forward<TArg>(func) }
 	{

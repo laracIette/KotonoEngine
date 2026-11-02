@@ -36,7 +36,7 @@ public:
 	/// One time play and delete interface
 	void PlaySource(UPath const& path, b8 isLooping = false);
 	/// One time play and delete scene
-	void PlaySource(UPath const& path, glm::vec3 const& position, AudioSourceCreateInfo const& createInfo = {});
+	void PlaySource(UPath const& path, glm::vec3 const& position, AudioSourceCreateInfo const& createInfo);
 
 	void SetListenerPosition(glm::vec3 const& position) const;
 	void SetListenerOrientation(glm::quat const& orientation) const;

@@ -27,7 +27,7 @@ public:
 	using PointerType = TPtr;
 	using DataType = UPtrData<TData>;
 
-private:
+protected:
 	template <typename Base>
 		requires std::is_base_of_v<Base, PointerType>
 	explicit constexpr UPtr(UPtr<Base, TData>&& other) noexcept

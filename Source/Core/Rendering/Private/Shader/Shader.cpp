@@ -73,7 +73,7 @@ void AShader::CreateGraphicsPipeline(UDevice& device, VkPipelineLayout pipelineL
 
 	for (auto const& shader : json["shaders"])
 	{
-		UPath const path{ shader["path"] };
+		UPath const path{ shader["path"].get<std::string>() };
 		UFile const file{ CompiledShadersPath / path.Name() + ".spv" };
 		std::vector const shaderCode{ file.ReadBinary() };
 
@@ -231,7 +231,7 @@ void AShader::CreateComputePipeline(UDevice& device, VkPipelineLayout pipelineLa
 	nlohmann::json json{};
 	SSerializer::Deserialize(json, GetPath());
 
-	UPath const path{ json["path"] };
+	UPath const path{ json["path"].get<std::string>() };
 	UFile const file{ CompiledShadersPath / path.Name() + ".spv" };
 	std::vector const shaderCode{ file.ReadBinary() };
 

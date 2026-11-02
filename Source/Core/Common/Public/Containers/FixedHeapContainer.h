@@ -123,7 +123,7 @@ public:
 
 	decltype(auto) operator[](this auto&& ctn, IndexType index) noexcept
 	{
-		Check(Abort, index < size_, "Index out of bounds!");
+		Check(Abort, index < ctn.size_, "Index out of bounds!");
 		return ctn.data_[index];
 	}
 
