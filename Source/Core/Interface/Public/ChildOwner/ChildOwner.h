@@ -37,13 +37,14 @@ private:
 	ReadonlyProperty(WidgetPtr, child_, Child, Value);
 };
 
-template <typename T>
-concept ChildOwner = requires(T& widget, WidgetPtr const& child)
+template <class TOwner, class TChild>
+concept ChildOwner = requires(TOwner& widget, UObjectPtr<TChild> const& child)
 {
 	widget.SetChild(child);
 };
 
-template <ChildOwner TOwner, std::derived_from<WWidget> TChild>
+template <std::derived_from<WWidget> TOwner, class TChild>
+	requires ChildOwner<TOwner, TChild>
 UObjectPtr<TOwner> const& operator|(UObjectPtr<TOwner> const& owner, UObjectPtr<TChild> const& child)
 {
 	owner->SetChild(child);

@@ -3,7 +3,7 @@
 #include "Detachable/Detachable.h"
 #include "GameSpeedButton/GameSpeedButton.h"
 #include "GameStateButton/GameStateButton.h"
-#include "PropertiesWindow/PropertiesWindow.h"
+#include "ObjectPropertiesWindow/ObjectPropertiesWindow.h"
 #include "SceneExplorer/SceneExplorer.h"
 #include "SingleViewport/SingleViewport.h"
 #include "Splitter/HorizontalSplitter.h"
@@ -79,7 +79,7 @@ WidgetPtr WDefaultSceneContext::Build()
 			UCreate<WDetachable>{ "Object Properties" }()
 			| Apply(&WDetachable::SetExpandWeight, glm::vec2{ 0.33f, 1.0f })
 			| (
-				UCreate<WPropertiesWindow>{}(GetScene())
+				UCreate<WObjectPropertiesWindow>{}(GetScene())
 			)
 		)
 		| (

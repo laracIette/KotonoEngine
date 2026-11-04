@@ -35,23 +35,27 @@ private:
 	ReadonlyProperty(WidgetSet, children_, Children);
 };
 
-template <typename T>
-concept ChildrenOwner = requires(T& widget, WidgetSet const& children, WidgetPtr const& child)
+template <class TOwner, class TChild>
+concept ChildrenOwner = requires(TOwner& widget, UObjectPtr<TChild> const& child)
 {
-	widget.SetChildren(children);
 	widget.AddChild(child);
 };
 
-template <ChildrenOwner TOwner, std::derived_from<WWidget> TChild>
-UObjectPtr<TOwner> const& operator|(UObjectPtr<TOwner> const& owner, UObjectPtr<TChild> const& child)
+template <std::derived_from<WWidget> TOwner, class TChild>
+	requires ChildrenOwner<TOwner, TChild>
+auto operator|(UObjectPtr<TOwner> const& owner, UObjectPtr<TChild> const& child) -> UObjectPtr<TOwner> const&
 {
 	owner->AddChild(child);
 	return owner;
 }
 
-template <ChildrenOwner TOwner>
-UObjectPtr<TOwner> const& operator|(UObjectPtr<TOwner> const& owner, WidgetSet const& children)
+template <std::derived_from<WWidget> TOwner, std::ranges::input_range R>
+	requires ChildrenOwner<TOwner, pointer_type_t<std::ranges::range_value_t<R>>>
+auto operator|(UObjectPtr<TOwner> const& owner, R&& children) -> UObjectPtr<TOwner> const&
 {
-	owner->SetChildren(children);
+	for (auto const& child : children)
+	{
+		owner->AddChild(child);
+	}
 	return owner;
 }

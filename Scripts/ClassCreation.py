@@ -1,5 +1,6 @@
 import json
 import tkinter
+from Generation import Generator
 from pathlib import Path
 from Reflection import Reflector, ReflectRegistry, EngineDirectory
 from tkinter import filedialog
@@ -163,3 +164,4 @@ f"""#include "{headerName}"
 
 if __name__ == "__main__":
     ClassCreator().CreateClass()
+    Generator().Generate()

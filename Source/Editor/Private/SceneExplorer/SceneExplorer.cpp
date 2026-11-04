@@ -1,6 +1,8 @@
 #include "SceneExplorer.h"
 
 #include "SceneExplorerItem/SceneExplorerItem.h"
+#include "SelectableList/SelectableList.h"
+#include "SelectableList/SelectableListItem.h"
 #include <Scene/Scene.h>
 #include <core_widgets.h>
 
@@ -25,7 +27,7 @@ WidgetPtr WSceneExplorer::Build()
 					UCreate<WPadding>{}()
 					| Apply(&WPadding::SetPadding, UPadding::All(5.0f))
 					| (
-						itemList_ = UCreate<WList>{ "Scene Explorer Item List" }()
+						itemList_ = UCreate<WSelectableList>{ "Scene Explorer Item List" }()
 						| MakeItems(GetScene()->GetSceneObjects())
 					)
 				)
@@ -48,11 +50,20 @@ void WSceneExplorer::OnRemoved()
 	GetScene()->GetEventSceneObjectsUpdated().RemoveListener(this, &Self::UpdateItemList);
 }
 
-auto WSceneExplorer::MakeItems(std::span<UObjectPtr<TSceneObject> const> sceneObjects) const -> WidgetSet
+auto WSceneExplorer::MakeItems(std::span<UObjectPtr<TSceneObject> const> sceneObjects) const -> USet<UObjectPtr<WSelectableListItem>>
 {
 	return sceneObjects
 		| std::views::transform([this](UObjectPtr<TSceneObject> const& sceneObject) {
-			return UCreate<WSceneExplorerItem>{}(GetScene(), sceneObject);
+			return (
+				UCreate<WSelectableListItem>{}()
+				| Apply(&WSelectableListItem::SetOnSelected, [this, sceneObject]() {
+					GetScene()->SelectObject(sceneObject);
+				})
+				| (
+					UCreate<WText>{}()
+					| Apply(&WText::SetText, sceneObject ? sceneObject->GetName() : "")
+				)
+			);
 		})
 		| std::ranges::to<USet>();
 }

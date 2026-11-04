@@ -138,7 +138,7 @@ class Generator():
         for variable in result.variables:
             serializeCode += f"""	USerialize<decltype({variable.name})>{{}}(get(json, "{variable.name}"), {variable.name});\n"""
             deserializeCode += f"""	if (contains(json, "{variable.name}")) UDeserialize<decltype({variable.name})>{{}}(get(json, "{variable.name}"), {variable.name});\n"""
-            variablesCode += f"""		{{ "{variable.name}", "{variable.type}", offsetof(Self, {variable.name}) }},"""
+            variablesCode += f"""		{{ "{variable.type}", "{variable.name}", offsetof(Self, {variable.name}) }},\n"""
 
         sourceText: str = f"""
 void {className}::SerializeTo(nlohmann::json& json) const

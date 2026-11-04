@@ -100,8 +100,10 @@ void UInterface::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) 
 	}
 }
 
-void UInterface::OnMouseScroll(glm::vec2 const& delta) const
+void UInterface::OnMouseScroll(glm::vec2 const& delta)
 {
+	UpdateActiveWidgets();
+	
 	for (auto const& widget : activeWidgets_ | std::views::reverse)
  	{
  		if (widget && widget->OnMouseScroll(delta) == INPUT_HANDLED)

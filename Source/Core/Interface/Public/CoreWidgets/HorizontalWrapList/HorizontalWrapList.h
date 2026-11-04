@@ -10,6 +10,9 @@ class WScrollable;
 class WHorizontalWrapList final : public WWidget
 {
 	GENERATED()
+	
+public:
+	using ItemSelectedCallback = UEvent<WidgetPtr>;
 
 public:
 	WHorizontalWrapList();

@@ -54,7 +54,7 @@ void WHorizontalWrapList::SetChildren(WidgetSet const& children)
 	scrollable_->SetOffset({ 0.0f, 0.0f });
 }
 
-void WHorizontalWrapList::AddChild(WidgetPtr const & child)
+void WHorizontalWrapList::AddChild(WidgetPtr const& child)
 {
 	body_->AddChild(child);
 }

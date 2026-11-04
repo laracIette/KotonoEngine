@@ -4,6 +4,8 @@ set(CLASS_PUBLIC_HEADERS
 )
 
 set(CLASS_PRIVATE_HEADERS
+    "Private/SelectableList/SelectableListItem.h"
+    "Private/SelectableList/SelectableList.h"
     "Private/AssetExplorer/AssetExplorer.h"
     "Private/AssetExplorerDirectory/AssetExplorerDirectory.h"
     "Private/AssetExplorerFile/AssetExplorerFile.h"
@@ -17,7 +19,7 @@ set(CLASS_PRIVATE_HEADERS
     "Private/GameStateButton/GameStateStopButtonStyle.h"
     "Private/InputTextBox/InputTextBox.h"
     "Private/ObjectProperties/ObjectProperties.h"
-    "Private/PropertiesWindow/PropertiesWindow.h"
+    "Private/ObjectPropertiesWindow/ObjectPropertiesWindow.h"
     "Private/SceneExplorer/SceneExplorer.h"
     "Private/SceneExplorerItem/SceneExplorerItem.h"
     "Private/SceneVisibilityField/SceneVisibilityField.h"
@@ -34,6 +36,8 @@ set(CLASS_PRIVATE_HEADERS
 )
 
 set(CLASS_SOURCES
+    "Private/SelectableList/SelectableListItem.cpp"
+    "Private/SelectableList/SelectableList.cpp"
     "Private/AssetExplorer/AssetExplorer.cpp"
     "Private/AssetExplorerDirectory/AssetExplorerDirectory.cpp"
     "Private/AssetExplorerFile/AssetExplorerFile.cpp"
@@ -48,7 +52,7 @@ set(CLASS_SOURCES
     "Private/InputTextBox/InputTextBox.cpp"
     "Private/MainWindow/MainWindow.cpp"
     "Private/ObjectProperties/ObjectProperties.cpp"
-    "Private/PropertiesWindow/PropertiesWindow.cpp"
+    "Private/ObjectPropertiesWindow/ObjectPropertiesWindow.cpp"
     "Private/SceneExplorer/SceneExplorer.cpp"
     "Private/SceneExplorerItem/SceneExplorerItem.cpp"
     "Private/SceneVisibilityField/SceneVisibilityField.cpp"

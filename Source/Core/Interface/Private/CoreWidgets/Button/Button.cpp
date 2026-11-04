@@ -139,11 +139,10 @@ auto WButton::OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) -> 
 void WButton::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const
 {
 	auto const& state { [this]() -> KButtonStyle::State const& {
-		b8 const isActivated{ isActivatable_ && isActivated_ };
 		if (!GetIsEnabled())	return disabledState_;
-		if (isPressed_)			return isActivated ? activatedPressedState_ : pressedState_;
-		if (GetIsFocused())		return isActivated ? activatedFocusedState_ : focusedState_;
-		return isActivated ? activatedNormalState_ : normalState_;
+		if (isPressed_)			return isActivated_ ? activatedPressedState_ : pressedState_;
+		if (GetIsFocused())		return isActivated_ ? activatedFocusedState_ : focusedState_;
+		return isActivated_ ? activatedNormalState_ : normalState_;
 	}() };
 	
 	if (hasShadow_)

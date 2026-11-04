@@ -6,7 +6,8 @@
 #include "SceneExplorer.generated.h"
 
 class TSceneObject;
-class WList;
+class WSelectableList;
+class WSelectableListItem;
 enum class EGameState : u8;
 
 class WSceneExplorer : public WSceneWidget
@@ -20,9 +21,9 @@ protected:
 	void OnRemoved() override;
 
 private:
-	auto MakeItems(std::span<UObjectPtr<TSceneObject> const> sceneObjects) const -> WidgetSet;
+	auto MakeItems(std::span<UObjectPtr<TSceneObject> const> sceneObjects) const -> USet<UObjectPtr<WSelectableListItem>>;
 	void UpdateItemList(std::span<UObjectPtr<TSceneObject> const> sceneObjects) const;
 
 private:
-	UObjectPtr<WList> itemList_;
+	UObjectPtr<WSelectableList> itemList_;
 };

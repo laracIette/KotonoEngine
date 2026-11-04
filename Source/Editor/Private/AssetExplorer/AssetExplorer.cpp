@@ -42,6 +42,7 @@ WidgetPtr WAssetExplorer::Build()
 					UCreate<WStack>{}()
 					| (
 						UCreate<WButton>{ "Directory Prev Button" }()
+						| Apply(&WButton::SetIsEnabled, [this]() { return CanNavigatePrevious(); })
 						| Apply(&WButton::SetOnClicked, [this]() { NavigatePrevious(); })
 					)
 					| (
@@ -57,6 +58,7 @@ WidgetPtr WAssetExplorer::Build()
 					UCreate<WStack>{}()
 					| (
 						UCreate<WButton>{ "Directory Next Button" }()
+						| Apply(&WButton::SetIsEnabled, [this]() { return CanNavigateNext(); })
 						| Apply(&WButton::SetOnClicked, [this]() { NavigateNext(); })
 					)
 					| (
@@ -80,7 +82,9 @@ WidgetPtr WAssetExplorer::Build()
 					itemList_ = UCreate<WHorizontalWrapList>{ "Item List" }()
 					| Apply(&WHorizontalWrapList::SetItemSpacing, 10.0f)
 					| Apply(&WHorizontalWrapList::SetRowSpacing, 10.0f)
-					| (assetExplorerItems_ = MakeItems())
+					| (
+						assetExplorerItems_ = MakeItems()
+					)
 				)
 			)
 		)
@@ -165,9 +169,19 @@ void WAssetExplorer::Push(UPath const& path)
 	UpdateItemList();
 }
 
+auto WAssetExplorer::CanNavigatePrevious() const -> b8
+{
+	return !navigatedPaths_.empty() && currentPathIndex_ > 0;
+}
+
+auto WAssetExplorer::CanNavigateNext() const -> b8
+{
+	return !navigatedPaths_.empty() && currentPathIndex_ < navigatedPaths_.size() - 1;
+}
+
 void WAssetExplorer::NavigatePrevious()
 {
-	if (!navigatedPaths_.empty() && currentPathIndex_ > 0)
+	if (CanNavigatePrevious())
 	{
 		currentDirectory_ = navigatedPaths_[--currentPathIndex_];
 		UpdateItemList();
@@ -176,7 +190,7 @@ void WAssetExplorer::NavigatePrevious()
 
 void WAssetExplorer::NavigateNext()
 {
-	if (!navigatedPaths_.empty() && currentPathIndex_ < navigatedPaths_.size() - 1)
+	if (CanNavigateNext())
 	{
 		currentDirectory_ = navigatedPaths_[++currentPathIndex_];
 		UpdateItemList();

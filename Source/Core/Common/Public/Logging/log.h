@@ -41,7 +41,7 @@ consteval auto GetLogSeverityColor(ELogSeverity severity) noexcept
 	return LOG_COLOR_DEFAULT;
 }
 
-#define LOG_INTERNAL(Severity, Format, ...) LogInternal(Severity, __FILE__, __LINE__, Format, __VA_ARGS__)
+#define LOG_INTERNAL(Severity, Format, ...) LogInternal(Severity, __FILE__, __LINE__, Format __VA_OPT__(, __VA_ARGS__))
 
 /// Log a message to the console
 #define Log(Severity, Format, ...) LOG_INTERNAL(GetLogSeverityColor(ELogSeverity::Severity), Format, __VA_ARGS__)

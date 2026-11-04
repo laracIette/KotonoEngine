@@ -12,20 +12,7 @@ WSceneExplorerItem::WSceneExplorerItem(UScene* scene, UObjectPtr<TSceneObject> c
 
 WidgetPtr WSceneExplorerItem::Build()
 {
-	return (
-		UCreate<WWrap>{}()
-		| (
-			UCreate<WStack>{}()
-			| (
-				UCreate<WButton>{}()
-				| Apply(&WButton::SetOnClicked, [this]() { GetScene()->SelectObject(sceneObject_); })
-			)
-			| (
-				UCreate<WText>{}()
-				| Apply(&WText::SetText, sceneObject_ ? sceneObject_->GetName() : "")
-			)
-		)
-	);
+	return nullptr;
 }
 
 #include "SceneExplorerItem.generated.inl"

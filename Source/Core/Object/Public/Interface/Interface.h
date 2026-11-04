@@ -41,7 +41,7 @@ public:
 
 	void OnMouseButton(EButton button, EInputState inputState, EModifier modifier);
 	void OnMouseMove(glm::vec2 const& delta, glm::vec2 const& position) const;
-	void OnMouseScroll(glm::vec2 const& delta) const;
+	void OnMouseScroll(glm::vec2 const& delta);
 
 	void OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) const;
 	

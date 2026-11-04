@@ -1,11 +1,11 @@
-#include "PropertiesWindow.h"
+#include "ObjectPropertiesWindow.h"
 
 #include "ObjectProperties/ObjectProperties.h"
 #include <Scene/Scene.h>
 #include <SceneObject/SceneObject.h>
 #include <core_widgets.h>
 
-WidgetPtr WPropertiesWindow::Build()
+WidgetPtr WObjectPropertiesWindow::Build()
 {
     return (
         UCreate<WStack>{}()
@@ -41,21 +41,21 @@ WidgetPtr WPropertiesWindow::Build()
     );
 }
 
-void WPropertiesWindow::OnDisplayed()
+void WObjectPropertiesWindow::OnDisplayed()
 {
     Base::OnDisplayed();
 
     GetScene()->GetEventSelectedObjectChanged().AddListener(this, &Self::OnSelectedObjectChanged);
 }
 
-void WPropertiesWindow::OnRemoved()
+void WObjectPropertiesWindow::OnRemoved()
 {
     Base::OnRemoved();
 
     GetScene()->GetEventSelectedObjectChanged().RemoveListener(this, &Self::OnSelectedObjectChanged);
 }
 
-void WPropertiesWindow::OnSelectedObjectChanged(UObjectPtr<TSceneObject> const& sceneObject)
+void WObjectPropertiesWindow::OnSelectedObjectChanged(UObjectPtr<TSceneObject> const& sceneObject)
 {
     if (mainList_)
     {
@@ -69,4 +69,4 @@ void WPropertiesWindow::OnSelectedObjectChanged(UObjectPtr<TSceneObject> const& 
     }
 }
 
-#include "PropertiesWindow.generated.inl"
+#include "ObjectPropertiesWindow.generated.inl"

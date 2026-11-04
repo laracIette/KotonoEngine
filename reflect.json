@@ -71,7 +71,7 @@
                 "Private/GameStateButton/GameStateStopButtonStyle.h",
                 "Private/InputTextBox/InputTextBox.h",
                 "Private/ObjectProperties/ObjectProperties.h",
-                "Private/PropertiesWindow/PropertiesWindow.h",
+                "Private/ObjectPropertiesWindow/ObjectPropertiesWindow.h",
                 "Private/SceneExplorer/SceneExplorer.h",
                 "Private/SceneExplorerItem/SceneExplorerItem.h",
                 "Private/SceneVisibilityField/SceneVisibilityField.h",
@@ -86,7 +86,9 @@
                 "Private/ValueSlider/ValueSlider.h",
                 "Private/ViewController/ViewController.h",
                 "Public/MainWindow/MainWindow.h",
-                "Public/SecondaryWindow/SecondaryWindow.h"
+                "Public/SecondaryWindow/SecondaryWindow.h",
+                "Private/SelectableList/SelectableList.h",
+                "Private/SelectableList/SelectableListItem.h"
             ]
         }
     ]

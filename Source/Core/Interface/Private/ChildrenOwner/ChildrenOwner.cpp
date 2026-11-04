@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <math_utils/math_utils.h>		 
-#include <ranges>
 
 WChildrenOwner::WChildrenOwner()
 	: children_{}

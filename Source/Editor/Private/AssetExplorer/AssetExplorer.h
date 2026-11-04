@@ -27,6 +27,9 @@ public:
 
 private:
 	void Push(UPath const& path);
+	
+	auto CanNavigatePrevious() const -> b8;
+	auto CanNavigateNext() const -> b8;
 
 	void NavigatePrevious();
 	void NavigateNext();

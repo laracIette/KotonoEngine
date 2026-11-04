@@ -5,7 +5,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <core_widgets.h>
 
-static auto buildMemberWidget(std::string_view type, void* variablePtr) -> WidgetPtr
+static auto BuildMemberWidget(std::string_view type, void* variablePtr) -> WidgetPtr
 {
     //if (Reflector.IsObjectType(type))
     {
@@ -54,7 +54,7 @@ static auto buildMemberWidget(std::string_view type, void* variablePtr) -> Widge
     );
 }
 
-static void resetValue(std::string_view type, void* variablePtr)
+static void ResetValue(std::string_view type, void* variablePtr)
 {
     if (type == "f32")
     {
@@ -109,7 +109,7 @@ WidgetPtr WObjectProperties::Build()
                             UCreate<WExpanded>{}()
                             | Apply(&WWidget::SetExpandWeight, glm::vec2{ 0.67f, 1.0f })
                             | (
-                                buildMemberWidget(variable.type, variablePtr)
+                                BuildMemberWidget(variable.type, variablePtr)
                             )
                         )
                         | (
@@ -118,7 +118,7 @@ WidgetPtr WObjectProperties::Build()
                             | Apply(&WAlign::SetExpandWeight, glm::vec2{ 0.1f, 1.0f })
                             | (
                                 UCreate<WButton>{}()
-                                | Apply(&WButton::SetOnClicked, [variable, variablePtr]() { resetValue(variable.type, variablePtr); })
+                                | Apply(&WButton::SetOnClicked, [variable, variablePtr]() { ResetValue(variable.type, variablePtr); })
                             )
                         )
                     )

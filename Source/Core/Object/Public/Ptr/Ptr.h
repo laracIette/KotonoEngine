@@ -224,3 +224,14 @@ struct std::hash<UPtr<TPtr, TData>>
 		return std::hash<void*>{}(ptr.Data);
 	}
 };
+
+
+
+template <typename TPtr>
+struct pointer_type
+{
+	using type = TPtr::PointerType;
+};
+
+template <typename TPtr>
+using pointer_type_t = pointer_type<TPtr>::type;

@@ -1,13 +1,13 @@
 #pragma once
 #include <SceneWidget/SceneWidget.h>
 
-#include "PropertiesWindow.generated.h"
+#include "ObjectPropertiesWindow.generated.h"
 
 class TSceneObject;
 class WList;
 class WObjectProperties;
 
-class WPropertiesWindow : public WSceneWidget
+class WObjectPropertiesWindow : public WSceneWidget
 {
 	GENERATED()
 

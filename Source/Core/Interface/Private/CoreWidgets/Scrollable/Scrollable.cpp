@@ -5,6 +5,7 @@
 
 WScrollable::WScrollable()
 	: axis_{ EAxis::All }
+	, offset_{ 0.0f, 0.0f }
 {
 }
 

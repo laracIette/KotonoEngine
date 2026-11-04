@@ -22,7 +22,10 @@
 
 #include "Object.generated.h"
 
-using VoidCallback = std::function<void()>;
+template <typename... Args>
+using Callback = std::function<void(Args...)>;
+
+using VoidCallback = Callback<>;
 
 class KObject;
 using ObjectPtr = UObjectPtr<KObject>;
