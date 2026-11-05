@@ -1,6 +1,7 @@
 #pragma once
 #include "Ptr.h"
 
+#include "type_traits.h"
 #include "Object/ObjectBase.h"
 
 template <class Base, class Derived>

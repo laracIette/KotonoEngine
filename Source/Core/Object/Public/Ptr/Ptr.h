@@ -1,6 +1,6 @@
 #pragma once
 #include <types.h>
-#include <type_traits.h>
+#include <functional>
 #include <utility>
 
 template <class TPtr>
@@ -224,8 +224,6 @@ struct std::hash<UPtr<TPtr, TData>>
 		return std::hash<void*>{}(ptr.Data);
 	}
 };
-
-
 
 template <typename TPtr>
 struct pointer_type

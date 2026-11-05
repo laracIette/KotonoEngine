@@ -15,7 +15,7 @@ public:
 	};
 
 public:
-	AMaterial(UPath const& path);
+	explicit AMaterial(UPath const& path);
 
 	Data const& GetData() const { return data_; }
 

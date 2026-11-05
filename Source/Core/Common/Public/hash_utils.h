@@ -1,5 +1,6 @@
 #pragma once
 #include "types.h"
+#include <cstdint>
 #include <string_view>
 
 constexpr size GLD_RATIO{ 0x9e3779b97f4a7c15ULL };

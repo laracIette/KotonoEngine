@@ -3,7 +3,7 @@
 class AAsset
 {
 public:
-	AAsset(UPath const& path);
+	explicit AAsset(UPath const& path);
 	virtual ~AAsset() = default;
 
 	UPath const& GetPath() const;

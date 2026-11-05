@@ -16,7 +16,7 @@ public:
 	};
 
 public:
-	ASampler(UPath const& path);
+	explicit ASampler(UPath const& path);
 
 	void Init(UDevice& device);
 	void Cleanup(UDevice& device) const;

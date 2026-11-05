@@ -9,7 +9,7 @@ class UDevice;
 class ATexture final : public AAsset
 {
 public:
-    ATexture(UPath const& path);
+    explicit ATexture(UPath const& path);
 
     void Init(UDevice& device);
     void Cleanup(UDevice& device) const;

@@ -106,6 +106,6 @@ void UDeserialize<UGuid>::operator()(nlohmann::json const& json, UGuid& v) const
     auto const string{ json.get<std::string>() };
     if (!string.empty())
     {
-        v = json;
+        v = string;
     }
 }

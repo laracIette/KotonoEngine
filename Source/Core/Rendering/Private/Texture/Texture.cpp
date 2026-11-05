@@ -1,5 +1,6 @@
 #include "Texture.h"
 
+#include <cmath>
 #include <AllocatedBuffer.h>
 #include <Device/Device.h>
 #include <stbimage/stb_image.h>

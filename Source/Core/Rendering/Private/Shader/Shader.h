@@ -2,6 +2,7 @@
 #include <Asset/Asset.h>
 
 #include <span>
+#include <vector>
 #include <vulkan/vulkan_core.h>
 
 class UDevice;
@@ -19,7 +20,7 @@ enum class EPipelinePass : u8
 class AShader final : public AAsset
 {
 public:	
-	AShader(UPath const& path);
+	explicit AShader(UPath const& path);
 
 	void Init(UDevice& device, VkPipelineLayout pipelineLayout, VkFormat swapchainFormat);
 	void Cleanup(UDevice& device) const;

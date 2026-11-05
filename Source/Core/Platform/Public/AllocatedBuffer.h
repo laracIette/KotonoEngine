@@ -1,10 +1,12 @@
 #pragma once
 #include "vk_utils/vk_utils.h"
+#include <cstring>
 #include <span>
 #include <stdexcept>
 #include <type_traits>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
+
 struct UAllocatedBuffer final
 {
 	VkBuffer buffer;

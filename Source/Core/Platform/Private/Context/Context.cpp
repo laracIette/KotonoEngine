@@ -1,6 +1,7 @@
 #include "Context/Context.h"
 
 #include "vk_utils/vk_utils.h"
+#include <cstring>
 #include <array>
 #include <GLFW/glfw3.h>
 #include <Logging/log.h>
