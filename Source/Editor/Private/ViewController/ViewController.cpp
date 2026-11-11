@@ -21,6 +21,7 @@ WViewController::WViewController(UScene* scene)
 	, pitch_{ 0.0f }
 	, yaw_{ glm::radians(180.0f) }
 	, position_{ WorldUpVector + WorldForwardVector * 2.0f }
+    , rotation_{ glm::identity<glm::quat>() }
 {
 }
 
@@ -29,9 +30,9 @@ WidgetPtr WViewController::Build()
 	return (
 		UCreate<WButton>{}()
 		| Apply(&WButton::SetTint, Colors::Transparent)
-		| Apply(&WButton::SetOnPressed, [this]() { isActive_ = true; })
-		| Apply(&WButton::SetOnReleased, [this]() { isActive_ = false; })
-		| Apply(&WButton::SetOnClicked, [this]() {
+		| Apply(&WButton::SetOnPressed, [this](EModifier) { isActive_ = true; })
+		| Apply(&WButton::SetOnReleased, [this](EModifier) { isActive_ = false; })
+		| Apply(&WButton::SetOnClicked, [this](EModifier) {
 			if (UObjectPtr const sceneComponent{ GetScene()->GetRayIntersectSceneComponent(position_, rotation_ * WorldUpVector) })
 			{
 				GetScene()->SelectObject(sceneComponent->GetOwner());

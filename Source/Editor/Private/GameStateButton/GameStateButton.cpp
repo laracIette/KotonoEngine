@@ -30,9 +30,9 @@ WidgetPtr WGameStateButton::Build()
                 UCreate<WButton>{ "Play Pause Button" }()
                 | Apply(&WButton::SetStyleClass, KGameStateStopButtonStyle::Class::Get())
                 | Apply(&WButton::SetIsEnabled, [this]() { return !GetScene()->GetIsGameStopped(); })
-                | Apply(&WButton::SetOnClicked, [this, playPauseButton]() {
+                | Apply(&WButton::SetOnClicked, [this, playPauseButton](EModifier) {
+                    playPauseButton->Deactivate();
                     GetScene()->StopGame();
-                    playPauseButton->SetIsActivated(false);
                 })
             )
         )

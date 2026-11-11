@@ -158,6 +158,7 @@ void WChildrenOwner::AddChild(WidgetPtr const& widget)
 {
 	if (!widget)
 	{
+	    Log(Warning, "widget is null");
 		return;
 	}
 
@@ -171,6 +172,7 @@ void WChildrenOwner::RemoveChild(WidgetPtr const& widget)
 {
 	if (!widget)
 	{
+	    Log(Warning, "widget is null");
 		return;
 	}
 

@@ -25,7 +25,7 @@ WidgetPtr WGameSpeedButton::Build()
 			| (
 				UCreate<WButton>{ "Reset Button" }()
 				| Apply(&WButton::SetIsEnabled, [this]() { return GetScene()->GetTimeScale() != 1.0f; })
-				| Apply(&WButton::SetOnClicked, [this]() { GetScene()->SetTimeScale(1.0f); })
+				| Apply(&WButton::SetOnClicked, [this](EModifier) { GetScene()->SetTimeScale(1.0f); })
 			)
 		)
 	);

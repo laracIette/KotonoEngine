@@ -42,6 +42,28 @@ inline void Delete(UObjectPtr<TPtr> const& ptr)
 	}
 }
 
+template <class T>
+struct is_object_ptr : std::false_type {};
+
+template <class T>
+struct is_object_ptr<UObjectPtr<T>> : std::true_type {};
+
+template <class T>
+inline constexpr bool is_object_ptr_v{ is_object_ptr<T>::value };
+
+template <class T>
+concept ObjectPtr = is_object_ptr_v<T>;
+
+template <std::ranges::input_range R>
+    requires is_object_ptr_v<std::ranges::range_value_t<R>>
+inline void Delete(R&& range)
+{
+    for (auto const& ptr : range)
+    {
+        Delete(ptr);
+    }
+}
+
 /// Unsafe, equivalent of reinterpret_cast
 template <class Derived, StrictBaseOf<Derived> Base>
 inline auto Cast(UObjectPtr<Base>&& ptr) noexcept -> UObjectPtr<Derived>

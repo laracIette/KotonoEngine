@@ -7,14 +7,14 @@
 #include <nlohmann/json.hpp>
 
 UMap<std::string_view, SObjectFactory::ObjectFactoryFunc> SObjectFactory::objectFactories_{};
-UMap<UGuid, ObjectPtr> SObjectFactory::registry_{};
+UMap<UGuid, UObjectPtr<KObject>> SObjectFactory::registry_{};
 
 void SObjectFactory::Register(std::string_view className, ObjectFactoryFunc function)
 {
 	objectFactories_.TryEmplace(className, function);
 }
 
-auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
+auto SObjectFactory::Get(UGuid const& guid) -> UObjectPtr<KObject>
 {
 	// Check if already in registry and valid
 	auto const registryIt{ registry_.Find(guid) };
@@ -54,7 +54,7 @@ auto SObjectFactory::Get(UGuid const& guid) -> ObjectPtr
 	return nullptr;
 }
 
-auto SObjectFactory::GetFactory(std::string_view typeName) -> ObjectPtr
+auto SObjectFactory::GetFactory(std::string_view typeName) -> UObjectPtr<KObject>
 {
     auto const it{ objectFactories_.Find(typeName) };
     if (objectFactories_.IsValidIterator(it))

@@ -13,6 +13,7 @@
 #include <Path/Path.h>
 #include <serialize_base/serialize_base.h>
 #include <optional>
+#include <ranges>
 #include <source_location>
 #include <string>
 
@@ -27,17 +28,18 @@ using Callback = std::function<void(Args...)>;
 
 using VoidCallback = Callback<>;
 
-class KObject;
-using ObjectPtr = UObjectPtr<KObject>;
-
 ABSTRACT class KObject : public KObjectReflectionBase
 {
 	GENERATED()
 
+private:
 	friend class SObjectFactory;
 	
 	template <std::derived_from<KObject> T>
 	friend struct UCreate;
+
+private:
+    using ObjectPtr = UObjectPtr<KObject>;
 
 public:
 	KObject();
@@ -196,18 +198,36 @@ template <std::derived_from<KObject> T>
 struct UAutoDelete final
 {
 public:
-	explicit UAutoDelete(std::span<UObjectPtr<T> const> values) 
-		: values_(values.begin(), values.end())
+    template <std::ranges::input_range R>
+        requires is_object_ptr_v<std::ranges::range_value_t<R>>
+	explicit UAutoDelete(R&& data)
+		: data_(std::ranges::begin(data), std::ranges::end(data))
 	{}
 
 	~UAutoDelete()
 	{
-		for (auto const& object : values_)
+		for (auto const& object : data_)
 		{
 			Delete(object);
 		}
 	}
 
+    auto begin(this auto&& self) noexcept(noexcept(std::ranges::begin(self.data_)))
+	{
+	    return std::ranges::begin(self.data_);
+	}
+
+    auto end(this auto&& self) noexcept(noexcept(std::ranges::end(self.data_)))
+	{
+	    return std::ranges::end(self.data_);
+	}
+
 private:
-	std::vector<UObjectPtr<T>> values_;
+	std::vector<UObjectPtr<T>> data_;
 };
+
+template <std::ranges::input_range R>
+    requires is_object_ptr_v<std::ranges::range_value_t<R>>
+UAutoDelete(R&&) -> UAutoDelete<ptr_type_t<std::ranges::range_value_t<R>>>;
+
+inline constexpr auto filter_valid{ std::views::filter([](ObjectPtr auto const& objectPtr) { return objectPtr != nullptr; }) };

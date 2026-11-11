@@ -39,7 +39,7 @@ WidgetPtr WDetachable::Build()
 						| Apply(&WBox::SetSize, glm::vec2{ 20.0f, 20.0f })
 						| (
 							UCreate<WButton>{}()
-							| Apply(&WButton::SetOnClicked, [this]() { Detach(); })
+							| Apply(&WButton::SetOnClicked, [this](EModifier) { Detach(); })
 						)
 					)
 					| (
@@ -47,7 +47,7 @@ WidgetPtr WDetachable::Build()
 						| Apply(&WBox::SetSize, glm::vec2{ 20.0f, 20.0f })
 						| (
 							UCreate<WButton>{}()
-							| Apply(&WButton::SetOnClicked, [this]() { Delete(Ptr()); })
+							| Apply(&WButton::SetOnClicked, [this](EModifier) { Delete(Ptr()); })
 							| Apply(&WButton::SetStyleClass, KDetachableCloseButtonStyle::Class::Get())
 						)
 					)
@@ -67,11 +67,8 @@ auto WDetachable::GetChild() const -> WidgetPtr
 
 void WDetachable::SetChild(WidgetPtr const& widget) const
 {
-	UObjectPtr const child{ socket_->GetChild() };
-
+	Delete(socket_->GetChild());
 	socket_->SetChild(widget);
-
-	Delete(child);
 }
 
 void WDetachable::Detach() const

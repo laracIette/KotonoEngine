@@ -2,30 +2,35 @@
 
 #include <core_widgets.h>
 
-#include "enum_utils.h"
-
 WSelectableListItem::WSelectableListItem()
 {
-	button_ = UCreate<WButton>{}();
 	socket_ = UCreate<WSocket>{}();
+}
+
+WSelectableListItem::~WSelectableListItem()
+{
+    Delete(socket_);
 }
 
 auto WSelectableListItem::Build() -> WidgetPtr
 {
 	return ( 
 		UCreate<WWrap>{}()
+		| Apply(&WWrap::SetAxis, EAxis::Vertical)
 		| (
 			UCreate<WStack>{}()
 			| (
-				button_
-				| Apply(&WButton::SetOnClicked, [this]() {
-					button_->SetIsActivated(!button_->GetIsActivated());
-					
-					if (button_->GetIsActivated() && onSelected_)
-					{
-						onSelected_();
-					}
-				})
+			    UCreate<WButton>{}()
+			    | Apply(&WButton::SetOnClicked, [this](EModifier modifier) {
+                    if (onClicked_)
+                    {
+                        onClicked_(modifier);
+			        }
+			    })
+			)
+			| (
+			    UCreate<WColor>{}()
+			    | Apply(&WColor::SetColor, [this]() { return (isSelected_ && isSelected_()) ? Colors::Blue.WithAlpha(0.2f) : Colors::Transparent; })
 			)
 			| (
 				socket_
@@ -34,18 +39,10 @@ auto WSelectableListItem::Build() -> WidgetPtr
 	);
 }
 
-void WSelectableListItem::Activate() const
-{
-	button_->SetIsActivated(true);
-}
-
-void WSelectableListItem::Deactivate() const
-{
-	button_->SetIsActivated(false);
-}
-
 void WSelectableListItem::SetChild(WidgetPtr const& widget) const
 {
+    Check(Throw, socket_, "socket_ is null");
+    Delete(socket_->GetChild());
 	socket_->SetChild(widget);
 }
 

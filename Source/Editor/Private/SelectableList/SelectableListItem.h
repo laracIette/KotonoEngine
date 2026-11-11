@@ -3,30 +3,37 @@
 
 #include "SelectableListItem.generated.h"
 
-class WButton;
+class WSelectableList;
 class WSocket;
 
 class WSelectableListItem final : public WWidget
 {
     GENERATED()
 
+private:
+    friend WSelectableList;
+
 public:
-	using SelectedCallback = VoidCallback;
-	
+    using IsSelectedFunc = std::function<b8()>;
+    using ClickedCallback = Callback<EModifier>;
+
 public:
 	WSelectableListItem();
+    ~WSelectableListItem() override;
 	
 protected:
 	auto Build() -> WidgetPtr override;
-	
+
 public:
-	void Activate() const;
-	void Deactivate() const;
-	
 	void SetChild(WidgetPtr const& widget) const;
-	
+
 private:
-	UObjectPtr<WButton> button_;
+	UObjectPtr<WSelectableList> selectableList_;
 	UObjectPtr<WSocket> socket_;
-	WritableProperty(SelectedCallback, onSelected_, OnSelected);
+
+    ClickedCallback onClicked_;
+
+    WritableProperty(IsSelectedFunc, isSelected_, IsSelected);
+    WritableProperty(VoidCallback, onSelected_, OnSelected);
+    WritableProperty(VoidCallback, onDeselected_, OnDeselected);
 };

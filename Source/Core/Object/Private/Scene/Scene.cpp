@@ -166,7 +166,10 @@ void UScene::PlayGame()
 
 void UScene::PauseGame()
 {
-	TrySetState(EGameState::Paused);
+    if (gameState_ == EGameState::Playing)
+    {
+	    TrySetState(EGameState::Paused);
+    }
 }
 
 void UScene::StopGame()
@@ -175,7 +178,7 @@ void UScene::StopGame()
 	{
 		now_ = 0.0f;
 		
-		SelectObject(nullptr);
+		DeselectAllObjects();
 		DespawnSceneObjects();
 		DeleteSceneObjects();
 		
@@ -186,13 +189,53 @@ void UScene::StopGame()
 
 void UScene::SelectObject(SceneObjectPtr const& sceneObject)
 {
-	if (sceneObject == selectedObject_)
+    if (!sceneObject)
+    {
+        Log(Warning, "sceneObject is null");
+        return;
+    }
+
+	if (selectedObjects_.Contains(sceneObject))
 	{
 		return;
 	}
 
-	selectedObject_ = sceneObject;
-	eventSelectedObjectChanged_.Broadcast(sceneObject);
+    selectedObjects_.Add(sceneObject);
+	eventSelectedObjectsUpdated_.Broadcast(selectedObjects_);
+}
+
+void UScene::DeselectObject(SceneObjectPtr const& sceneObject)
+{
+    if (!sceneObject)
+    {
+        Log(Warning, "sceneObject is null");
+        return;
+    }
+
+    auto const it{ selectedObjects_.Find(sceneObject) };
+    if (!selectedObjects_.IsValidIterator(it))
+    {
+        return;
+    }
+
+    selectedObjects_.Remove(it);
+    eventSelectedObjectsUpdated_.Broadcast(selectedObjects_);
+}
+
+void UScene::DeselectAllObjects()
+{
+    if (selectedObjects_.empty())
+    {
+        return;
+    }
+
+    selectedObjects_.Clear();
+    eventSelectedObjectsUpdated_.Broadcast(selectedObjects_);
+}
+
+auto UScene::IsObjectSelected(SceneObjectPtr const& sceneObject) const -> b8
+{
+    return selectedObjects_.Contains(sceneObject);
 }
 
 auto UScene::GetRayIntersectSceneComponent(glm::vec3 const& start, glm::vec3 const& direction) const -> UObjectPtr<KSceneComponent>

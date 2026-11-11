@@ -38,6 +38,10 @@ set(ASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT OFF CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(assimp)
 
+if (TARGET assimp)
+    target_compile_options(assimp PRIVATE -Wno-uninitialized -Wno-error=uninitialized)
+endif()
+
 foreach(assimp_target
     assimp
     UpdateAssimpLibsDebugSymbolsAndDLLs

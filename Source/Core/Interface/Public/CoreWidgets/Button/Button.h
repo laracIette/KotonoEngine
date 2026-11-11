@@ -11,7 +11,8 @@ class WButton final : public WWidget
 	GENERATED()
 
 public:
-	using DragCallback = std::function<void(glm::vec2, glm::vec2)>;
+    using InputCallback = Callback<EModifier>;
+	using DragCallback = Callback<glm::vec2, glm::vec2>;
 	
 public:
 	WButton();
@@ -46,14 +47,14 @@ private:
 	UBindable<b8> isEnabled_;
 
 	ReadonlyProperty(b8, isPressed_, IsPressed);
-	WritableProperty(b8, isActivated_, IsActivated);
+	ReadonlyProperty(b8, isActivated_, IsActivated);
 
 	WritableProperty(b8, isActivatable_, IsActivatable);
 	WritableProperty(b8, startActivated_, StartActivated);
 
-	WritableProperty(VoidCallback, onClicked_, OnClicked);
-	WritableProperty(VoidCallback, onPressed_, OnPressed);
-	WritableProperty(VoidCallback, onReleased_, OnReleased);
+	WritableProperty(InputCallback, onClicked_, OnClicked);
+	WritableProperty(InputCallback, onPressed_, OnPressed);
+	WritableProperty(InputCallback, onReleased_, OnReleased);
 	WritableProperty(VoidCallback, onActivated_, OnActivated);
 	WritableProperty(VoidCallback, onDeactivated_, OnDeactivated);
 

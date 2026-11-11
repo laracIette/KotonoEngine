@@ -62,20 +62,26 @@ auto WButton::OnMouseButton(EButton button, EInputState inputState, EModifier mo
 
 		if (onPressed_)
 		{
-			onPressed_();
+			onPressed_(modifier);
 		}
 
 		if (isActivatable_)
 		{
 			isActivated_ = !isActivated_;
 
-			if (isActivated_ && onActivated_)
+			if (isActivated_)
 			{
-				onActivated_();
+			    if (onActivated_)
+			    {
+				    onActivated_();
+			    }
 			}
-			else if (onDeactivated_)
+			else
 			{
-				onDeactivated_();
+			    if (onDeactivated_)
+			    {
+			        onDeactivated_();
+			    }
 			}
 		}
 
@@ -92,7 +98,7 @@ auto WButton::OnMouseButton(EButton button, EInputState inputState, EModifier mo
 
 		if (onReleased_)
 		{
-			onReleased_();
+			onReleased_(modifier);
 		}
 
 		if (!GetIsFocused())
@@ -102,7 +108,7 @@ auto WButton::OnMouseButton(EButton button, EInputState inputState, EModifier mo
 		
 		if (onClicked_)
 		{
-			onClicked_();
+			onClicked_(modifier);
 		}
 
 		return INPUT_HANDLED;

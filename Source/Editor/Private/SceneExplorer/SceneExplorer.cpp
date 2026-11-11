@@ -1,6 +1,5 @@
 #include "SceneExplorer.h"
 
-#include "SceneExplorerItem/SceneExplorerItem.h"
 #include "SelectableList/SelectableList.h"
 #include "SelectableList/SelectableListItem.h"
 #include <Scene/Scene.h>
@@ -9,28 +8,13 @@
 WidgetPtr WSceneExplorer::Build()
 {
 	return (
-		UCreate<WStack>{}()
+		UCreate<WPadding>{}()
+		| Apply(&WPadding::SetPadding, UPadding::All(5.0f))
 		| (
-			UCreate<WColor>{}()
-			| Apply(&WColor::SetColor, Colors::White.WithValue(0.5f).WithAlpha(0.4f))
-		)
-		| (
-			UCreate<WPadding>{}()
-			| Apply(&WPadding::SetPadding, UPadding::All(5.0f))
+			itemList_ = UCreate<WSelectableList>{ "Scene Explorer Item List" }()
+			| Apply(&WSelectableList::SetSpacing, 2.0f)
 			| (
-				UCreate<WStack>{}()
-				| (
-					UCreate<WColor>{}()
-					| Apply(&WColor::SetColor, Colors::Black.WithAlpha(0.5f))
-				)
-				| (
-					UCreate<WPadding>{}()
-					| Apply(&WPadding::SetPadding, UPadding::All(5.0f))
-					| (
-						itemList_ = UCreate<WSelectableList>{ "Scene Explorer Item List" }()
-						| MakeItems(GetScene()->GetSceneObjects())
-					)
-				)
+				MakeItems(GetScene()->GetSceneObjects())
 			)
 		)
 	);
@@ -50,18 +34,42 @@ void WSceneExplorer::OnRemoved()
 	GetScene()->GetEventSceneObjectsUpdated().RemoveListener(this, &Self::UpdateItemList);
 }
 
+auto WSceneExplorer::OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) -> b8
+{
+    if (inputState != EInputState::Pressed)
+    {
+        return INPUT_UNHANDLED;
+    }
+
+    if (key == EKey::Delete || key == EKey::Backspace)
+    {
+        Delete(GetScene()->GetSelectedObjects());
+        GetScene()->DeselectAllObjects();
+        return INPUT_HANDLED;
+    }
+
+    return INPUT_UNHANDLED;
+}
+
 auto WSceneExplorer::MakeItems(std::span<UObjectPtr<TSceneObject> const> sceneObjects) const -> USet<UObjectPtr<WSelectableListItem>>
 {
 	return sceneObjects
+        | filter_valid
 		| std::views::transform([this](UObjectPtr<TSceneObject> const& sceneObject) {
 			return (
 				UCreate<WSelectableListItem>{}()
+				| Apply(&WSelectableListItem::SetIsSelected, [this, sceneObject]() {
+					return GetScene()->IsObjectSelected(sceneObject);
+				})
 				| Apply(&WSelectableListItem::SetOnSelected, [this, sceneObject]() {
-					GetScene()->SelectObject(sceneObject);
+				    GetScene()->SelectObject(sceneObject);
+				})
+				| Apply(&WSelectableListItem::SetOnDeselected, [this, sceneObject]() {
+				    GetScene()->DeselectObject(sceneObject);
 				})
 				| (
 					UCreate<WText>{}()
-					| Apply(&WText::SetText, sceneObject ? sceneObject->GetName() : "")
+					| Apply(&WText::SetText, sceneObject->GetName())
 				)
 			);
 		})
@@ -72,7 +80,7 @@ void WSceneExplorer::UpdateItemList(std::span<UObjectPtr<TSceneObject> const> sc
 {
 	if (itemList_)
 	{
-		UAutoDelete<WWidget> const itemListChildren{ itemList_->GetChildren() };
+		UAutoDelete const itemListChildren{ itemList_->GetChildren() };
 
 		auto const items{ MakeItems(sceneObjects) };
 		itemList_->SetChildren(items);

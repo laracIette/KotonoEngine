@@ -26,7 +26,7 @@ WidgetPtr WDefaultSceneContext::Build()
 					| (
 						UCreate<WButton>{}()
 						| Apply(&WButton::SetIsEnabled, [this]() { return GetScene()->GetIsGameStopped(); })
-						| Apply(&WButton::SetOnClicked, [this]() { GetScene()->Serialize(); })
+						| Apply(&WButton::SetOnClicked, [this](EModifier) { GetScene()->Serialize(); })
 					)
 					| (
 						UCreate<WAlign>{}()

@@ -19,7 +19,7 @@ auto WVerticalSplitter::MakeSeparator() -> WidgetPtr
 		| (
 			UCreate<WButton>{}()
 			| Apply(&WButton::SetTint, Colors::White.WithValue(0.2f))
-			| Apply(&WButton::SetOnPressed, [this, separator]() {
+			| Apply(&WButton::SetOnPressed, [this, separator](EModifier) {
 				auto const index{ ChildrenOwner->GetChildren().GetIndex(separator) };
 				
 				auto const precedingView{ ChildrenOwner->GetChildren() | std::views::take(index) | std::views::reverse };

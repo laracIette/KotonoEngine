@@ -73,7 +73,6 @@
                 "Private/ObjectProperties/ObjectProperties.h",
                 "Private/ObjectPropertiesWindow/ObjectPropertiesWindow.h",
                 "Private/SceneExplorer/SceneExplorer.h",
-                "Private/SceneExplorerItem/SceneExplorerItem.h",
                 "Private/SceneVisibilityField/SceneVisibilityField.h",
                 "Private/SceneVisibilityField/SceneVisibilityFieldButtonStyle.h",
                 "Private/SceneVisibilityWindow/SceneVisibilityWindow.h",

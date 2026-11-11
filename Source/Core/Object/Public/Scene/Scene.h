@@ -19,6 +19,7 @@ public:
 
 private:
 	using SceneObjectPtr = UObjectPtr<TSceneObject>;
+	using SceneObjectSet = USet<SceneObjectPtr>;
 
 public:
 	explicit UScene(UPath const& path);
@@ -42,16 +43,20 @@ public:
 	void StopGame();
 
 	void SelectObject(SceneObjectPtr const& sceneObject);
-	
+	void DeselectObject(SceneObjectPtr const& sceneObject);
+    void DeselectAllObjects();
+
+    auto IsObjectSelected(SceneObjectPtr const& sceneObject) const -> b8;
+
 	auto GetRayIntersectSceneComponent(glm::vec3 const& start, glm::vec3 const& direction) const -> UObjectPtr<KSceneComponent>;
 
 	auto GetAudioContext() -> UAudioContext& { return audioContext_; }
 
 	auto GetSceneObjects() const -> std::span<SceneObjectPtr const> { return sceneObjects_; }
+	auto GetSelectedObjects() const -> std::span<SceneObjectPtr const> { return selectedObjects_; }
 
-	auto GetEventSceneObjectsUpdated() -> UEvent<USet<SceneObjectPtr>>& { return eventSceneObjectsUpdated_; }
-	auto GetEventSelectedObjectChanged() -> UEvent<SceneObjectPtr>& { return eventSelectedObjectChanged_; }
-	auto GetSelectedObject() const -> SceneObjectPtr { return selectedObject_; }
+	auto GetEventSceneObjectsUpdated() -> UEvent<SceneObjectSet>& { return eventSceneObjectsUpdated_; }
+	auto GetEventSelectedObjectsUpdated() -> UEvent<SceneObjectSet>& { return eventSelectedObjectsUpdated_; }
 
 	auto GetEventGameStateChanged() -> UEvent<EGameState>& { return gameState_.GetEventValueChanged(); }
 	auto GetEventTimeScaleChanged() -> UEvent<f32>& { return timeScale_.GetEventValueChanged(); }
@@ -65,12 +70,6 @@ public:
 	auto GetTimeScale() const -> f32 { return timeScale_; }
 
 	void SetTimeScale(TimeScaleRange timeScale) { timeScale_ = timeScale; }
-	
-	template <std::derived_from<TSceneObject> T>
-	auto GetSelectedObject() -> UObjectPtr<T>
-	{
-		return TryCast<T>(selectedObject_);
-	}
 
 private:
 	void InitSceneObjects() const;
@@ -84,12 +83,13 @@ private:
 	
 	UAudioContext audioContext_;
 
-	USet<SceneObjectPtr> sceneObjects_;
+	SceneObjectSet sceneObjects_;
+	SceneObjectSet selectedObjects_;
+
 	b8 areSceneObjectsSpawned_;
 
-	UEvent<USet<SceneObjectPtr>> eventSceneObjectsUpdated_;
-	UEvent<SceneObjectPtr> eventSelectedObjectChanged_;
-	SceneObjectPtr selectedObject_;
+	UEvent<SceneObjectSet> eventSceneObjectsUpdated_;
+	UEvent<SceneObjectSet> eventSelectedObjectsUpdated_;
 
 	UNotify<EGameState> gameState_;
 	UNotify<f32> timeScale_;

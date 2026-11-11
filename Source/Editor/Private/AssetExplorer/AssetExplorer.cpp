@@ -27,7 +27,7 @@ WidgetPtr WAssetExplorer::Build()
 					UCreate<WStack>{}()
 					| (
 						UCreate<WButton>{ "Directory Up Button" }()
-						| Apply(&WButton::SetOnClicked, [this]() { Push(currentDirectory_.Directory()); })
+						| Apply(&WButton::SetOnClicked, [this](EModifier) { Push(currentDirectory_.Directory()); })
 					)
 					| (
 						UCreate<WText>{ "Directory Up Text" }()
@@ -43,7 +43,7 @@ WidgetPtr WAssetExplorer::Build()
 					| (
 						UCreate<WButton>{ "Directory Prev Button" }()
 						| Apply(&WButton::SetIsEnabled, [this]() { return CanNavigatePrevious(); })
-						| Apply(&WButton::SetOnClicked, [this]() { NavigatePrevious(); })
+						| Apply(&WButton::SetOnClicked, [this](EModifier) { NavigatePrevious(); })
 					)
 					| (
 						UCreate<WText>{ "Directory Prev Text" }()
@@ -59,7 +59,7 @@ WidgetPtr WAssetExplorer::Build()
 					| (
 						UCreate<WButton>{ "Directory Next Button" }()
 						| Apply(&WButton::SetIsEnabled, [this]() { return CanNavigateNext(); })
-						| Apply(&WButton::SetOnClicked, [this]() { NavigateNext(); })
+						| Apply(&WButton::SetOnClicked, [this](EModifier) { NavigateNext(); })
 					)
 					| (
 						UCreate<WText>{ "Directory Next Text" }()

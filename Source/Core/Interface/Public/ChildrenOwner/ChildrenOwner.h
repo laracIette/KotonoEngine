@@ -50,7 +50,7 @@ auto operator|(UObjectPtr<TOwner> const& owner, UObjectPtr<TChild> const& child)
 }
 
 template <std::derived_from<WWidget> TOwner, std::ranges::input_range R>
-	requires ChildrenOwner<TOwner, pointer_type_t<std::ranges::range_value_t<R>>>
+	requires ChildrenOwner<TOwner, ptr_type_t<std::ranges::range_value_t<R>>>
 auto operator|(UObjectPtr<TOwner> const& owner, R&& children) -> UObjectPtr<TOwner> const&
 {
 	for (auto const& child : children)

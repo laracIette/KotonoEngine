@@ -20,6 +20,9 @@ protected:
 	void OnDisplayed() override;
 	void OnRemoved() override;
 
+public:
+    auto OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) -> b8 override;
+
 private:
 	auto MakeItems(std::span<UObjectPtr<TSceneObject> const> sceneObjects) const -> USet<UObjectPtr<WSelectableListItem>>;
 	void UpdateItemList(std::span<UObjectPtr<TSceneObject> const> sceneObjects) const;

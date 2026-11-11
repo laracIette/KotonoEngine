@@ -17,7 +17,7 @@ WidgetPtr WObjectPropertiesWindow::Build()
             UCreate<WPadding>{}()
             | Apply(&WPadding::SetPadding, UPadding::All(8.0f))
             | (
-                mainList_ = UCreate<WList>{}()
+                UCreate<WList>{}()
                 | Apply(&WList::SetSpacing, 10.0f)
                 | (
                     UCreate<WWrap>{}()
@@ -34,7 +34,10 @@ WidgetPtr WObjectPropertiesWindow::Build()
                     )
                 )
                 | (
-                    objectProperties_ = UCreate<WObjectProperties>{}(GetScene()->GetSelectedObject())
+                    objectPropertiesSocket_ = UCreate<WSocket>{}()
+                    | (
+                        objectProperties_ = UCreate<WObjectProperties>{}(GetScene()->GetSelectedObjects())
+                    )
                 )
             )
         )
@@ -45,28 +48,25 @@ void WObjectPropertiesWindow::OnDisplayed()
 {
     Base::OnDisplayed();
 
-    GetScene()->GetEventSelectedObjectChanged().AddListener(this, &Self::OnSelectedObjectChanged);
+    GetScene()->GetEventSelectedObjectsUpdated().AddListener(this, &Self::OnSelectedObjectsUpdated);
 }
 
 void WObjectPropertiesWindow::OnRemoved()
 {
     Base::OnRemoved();
 
-    GetScene()->GetEventSelectedObjectChanged().RemoveListener(this, &Self::OnSelectedObjectChanged);
+    GetScene()->GetEventSelectedObjectsUpdated().RemoveListener(this, &Self::OnSelectedObjectsUpdated);
 }
 
-void WObjectPropertiesWindow::OnSelectedObjectChanged(UObjectPtr<TSceneObject> const& sceneObject)
+void WObjectPropertiesWindow::OnSelectedObjectsUpdated(std::span<UObjectPtr<TSceneObject> const> sceneObjects)
 {
-    if (mainList_)
-    {
-        UObjectPtr const newObjectProperties{ UCreate<WObjectProperties>{}(sceneObject) };
+    Check(Throw, objectPropertiesSocket_, "objectPropertiesSocket_ is null");
 
-        mainList_->ReplaceChild(objectProperties_, newObjectProperties);
-    	
-    	Delete(objectProperties_);
+    UObjectPtr const newObjectProperties{ UCreate<WObjectProperties>{}(sceneObjects) };
+    objectPropertiesSocket_->SetChild(newObjectProperties);
 
-    	objectProperties_ = newObjectProperties;
-    }
+    Delete(objectProperties_);
+    objectProperties_ = newObjectProperties;
 }
 
 #include "ObjectPropertiesWindow.generated.inl"

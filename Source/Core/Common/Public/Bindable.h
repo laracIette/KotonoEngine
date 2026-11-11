@@ -52,6 +52,11 @@ public:
 		return std::holds_alternative<FuncType>(value_);
 	}
 
+    constexpr auto operator==(ValueType const& value) const -> b8
+    {
+        return Get() == value;
+    }
+
 private:
 	VariantType value_;
 };

@@ -5,7 +5,7 @@
 #include <nlohmann/json.hpp>
 
 #ifndef NDEBUG
-std::unordered_set<ObjectPtr> KObject::debugRegistry_{};
+std::unordered_set<KObject::ObjectPtr> KObject::debugRegistry_{};
 #endif 
 
 KObject::KObject()
@@ -76,20 +76,22 @@ void KObject::CheckDebugRegistry()
 {
     if (!debugRegistry_.empty())
     {
+        Log(Warning, "{0} objects not deleted", debugRegistry_.size());
+
         for (auto const& object : debugRegistry_)
         {
             if (object)
             {
-                Log(Normal
-                    , "{0:48s} | L{1:03d}: {2}"
+                Log(Warning
+                    , "{0:48s} | {1}:{2}"
                     , object->ToString()
+                    , object->sourceFile
                     , object->sourceLine
-                    , object->sourceFunc
                 );
             }
             else
             {
-                Log(Normal, "NULL");
+                Log(Warning, "NULL");
             }
         }
         

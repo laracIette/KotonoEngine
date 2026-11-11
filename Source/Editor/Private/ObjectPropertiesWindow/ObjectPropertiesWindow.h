@@ -4,8 +4,8 @@
 #include "ObjectPropertiesWindow.generated.h"
 
 class TSceneObject;
-class WList;
 class WObjectProperties;
+class WSocket;
 
 class WObjectPropertiesWindow : public WSceneWidget
 {
@@ -18,10 +18,10 @@ protected:
 	void OnRemoved() override;
 
 private:
-	void OnSelectedObjectChanged(UObjectPtr<TSceneObject> const& sceneObject);
+	void OnSelectedObjectsUpdated(std::span<UObjectPtr<TSceneObject> const> sceneObjects);
 
 private:
-	UObjectPtr<WList> mainList_;
+	UObjectPtr<WSocket> objectPropertiesSocket_;
 	UObjectPtr<WObjectProperties> objectProperties_;
 };
 

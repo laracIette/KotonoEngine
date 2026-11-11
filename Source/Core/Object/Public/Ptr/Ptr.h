@@ -226,10 +226,10 @@ struct std::hash<UPtr<TPtr, TData>>
 };
 
 template <typename TPtr>
-struct pointer_type
+struct ptr_type
 {
 	using type = TPtr::PointerType;
 };
 
 template <typename TPtr>
-using pointer_type_t = pointer_type<TPtr>::type;
+using ptr_type_t = ptr_type<TPtr>::type;

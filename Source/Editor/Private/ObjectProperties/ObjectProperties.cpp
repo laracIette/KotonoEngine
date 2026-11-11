@@ -1,5 +1,6 @@
 #include "ObjectProperties.h"
 
+#include "SceneObject/SceneObject.h"
 #include "ValueBox/ValueBox.h"
 #include "ValueSlider/ValueSlider.h"
 #include <glm/gtx/string_cast.hpp>
@@ -7,10 +8,6 @@
 
 static auto BuildMemberWidget(std::string_view type, void* variablePtr) -> WidgetPtr
 {
-    //if (Reflector.IsObjectType(type))
-    {
-        //return nullptr;
-    }
     if (type == "f32")
     {
         return WValueSlider::FromPointer(static_cast<f32*>(variablePtr));
@@ -26,27 +23,6 @@ static auto BuildMemberWidget(std::string_view type, void* variablePtr) -> Widge
     if (type == "UGuid")
     {
         return WValueBox::FromPointer(static_cast<UGuid*>(variablePtr));
-    }
-    if (type == "glm::vec2")
-    {
-        return (
-            UCreate<WText>{}()
-            | Apply(&WText::SetText, "Vec2 Editor Placeholder")
-        );
-    }
-    if (type == "glm::vec3")
-    {
-        return (
-            UCreate<WText>{}()
-            | Apply(&WText::SetText, "Vec3 Editor Placeholder")
-        );
-    }
-    if (type == "glm::vec4")
-    {
-        return (
-            UCreate<WText>{}()
-            | Apply(&WText::SetText, "Vec4 Editor Placeholder")
-        );
     }
     return (
         UCreate<WText>{}()
@@ -70,14 +46,14 @@ static void ResetValue(std::string_view type, void* variablePtr)
     }
 }
 
-WObjectProperties::WObjectProperties(ObjectPtr const& object)
-    : object_{ object }
+WObjectProperties::WObjectProperties(std::span<UObjectPtr<TSceneObject> const> sceneObjects)
+    : sceneObjects_(sceneObjects.begin(), sceneObjects.end())
 {
 }
 
-WidgetPtr WObjectProperties::Build()
+auto WObjectProperties::Build() -> WidgetPtr
 {
-    if (!object_)
+    if (sceneObjects_.empty())
     {
         return (
             UCreate<WText>{}()
@@ -85,13 +61,30 @@ WidgetPtr WObjectProperties::Build()
         );
     }
 
+    //std::vector<UVariableInfo> variables{};
+    //for (auto const& sceneObject : sceneObjects_)
+    //{
+    //    for (auto const& variable : sceneObject->GetMemberVariables())
+    //    {
+    //        if (std::ranges::all_of(sceneObjects_, [variable](UObjectPtr<TSceneObject> const& otherSceneObject) {
+    //            return std::ranges::contains(otherSceneObject->GetMemberVariables(), variable);
+    //        }))
+    //        {
+    //            variables.push_back(variable);
+    //        }
+    //    }
+    //}
+
+    UObjectPtr const sceneObject{ sceneObjects_.back() };
+    Check(Throw, sceneObject, "sceneObject is null");
+
     return (
         UCreate<WColumn>{}()
         | Apply(&WColumn::SetSpacing, 5.0f)
         | (
-            object_->GetMemberVariables()
-            | std::views::transform([this](UVariableInfo const& variable) {
-                void* const variablePtr{ object_->GetMemberVariablePointer(variable.offset) };
+            sceneObject->GetMemberVariables()
+            | std::views::transform([sceneObject](UVariableInfo const& variable) {
+                void* const variablePtr{ sceneObject->GetMemberVariablePointer(variable.offset) };
                 return (
                     UCreate<WWrap>{}()
                     | Apply(&WWrap::SetAxis, EAxis::Vertical)
@@ -118,7 +111,7 @@ WidgetPtr WObjectProperties::Build()
                             | Apply(&WAlign::SetExpandWeight, glm::vec2{ 0.1f, 1.0f })
                             | (
                                 UCreate<WButton>{}()
-                                | Apply(&WButton::SetOnClicked, [variable, variablePtr]() { ResetValue(variable.type, variablePtr); })
+                                | Apply(&WButton::SetOnClicked, [variable, variablePtr](EModifier) { ResetValue(variable.type, variablePtr); })
                             )
                         )
                     )

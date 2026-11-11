@@ -23,7 +23,7 @@ WidgetPtr WAssetExplorerItem::Build()
             UCreate<WStack>{ "Item Stack" }()
             | (
                 UCreate<WButton>{ "Item Button" }() 
-                | Apply(&WButton::SetOnClicked, [this]() {
+                | Apply(&WButton::SetOnClicked, [this](EModifier) {
                     if (isSelected_ 
                      && GetInterface()->GetNow() - lastClickedTime_ < openThreshold_)
                     {
