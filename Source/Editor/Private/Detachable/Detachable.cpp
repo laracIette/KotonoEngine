@@ -48,7 +48,7 @@ WidgetPtr WDetachable::Build()
 						| (
 							UCreate<WButton>{}()
 							| Apply(&WButton::SetOnClicked, [this](EModifier) { Delete(Ptr()); })
-							| Apply(&WButton::SetStyleClass, KDetachableCloseButtonStyle::Class::Get())
+							| Apply(&WButton::SetStyleClass, KDetachableCloseButtonStyle_Class::Get())
 						)
 					)
 				)

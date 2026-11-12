@@ -25,7 +25,7 @@ public:
 		UColor color;
 		UCorners corners;
 	};
-	
+
 public:
 	KButtonStyle();
 	

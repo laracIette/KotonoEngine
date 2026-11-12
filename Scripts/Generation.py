@@ -66,6 +66,13 @@ class Generator():
             headerText = rf"""
 #pragma once
 
+class {className}_Class : public {baseClass}_Class
+{{
+public:
+	using {baseClass}_Class::Instantiate;
+	auto Instantiate() const -> UObjectPtr<KObjectBase> override = 0;
+}};
+
 #ifdef GENERATED
 #undef GENERATED
 #endif
@@ -80,18 +87,20 @@ class Generator():
 		void DeserializeFrom(nlohmann::json const& json) override; \
 		void PopulateMemberVariables(std::vector<UVariableInfo>& variables) const override; \
 		auto Ptr() const -> UObjectPtr<{className}>; \
-		class Class : public Base::Class \
-		{{ \
-		public: \
-			using Base::Class::Instantiate; \
-			auto Instantiate() const -> UObjectPtr<KObjectBase> override = 0; \
-		}}; \
-		auto GetClass() const -> UPtr<KObjectReflectionBase::Class const> override = 0; \
+		auto GetClass() const -> UPtr<KObjectReflectionBase_Class const> override = 0; \
 	private:
 """
         else:
             headerText = rf"""
 #pragma once
+
+class {className}_Class : public {baseClass}_Class
+{{
+public:
+	using {baseClass}_Class::Instantiate;
+	static auto Get() -> UPtr<{className}_Class const> const&;
+	auto Instantiate() const -> UObjectPtr<KObjectBase> override;
+}};
 
 #ifdef GENERATED
 #undef GENERATED
@@ -101,6 +110,7 @@ class Generator():
 	private: \
 		friend void Register_{className}(); \
 		friend void Unregister_{className}(); \
+		friend {className}_Class; \
 	private: \
 		using Self = {className}; \
 		using Base = {baseClass}; \
@@ -110,16 +120,9 @@ class Generator():
 		void DeserializeFrom(nlohmann::json const& json) override; \
 		void PopulateMemberVariables(std::vector<UVariableInfo>& variables) const override; \
 		auto Ptr() const -> UObjectPtr<{className}>; \
-		class Class : public Base::Class \
-		{{ \
-		public: \
-			using Base::Class::Instantiate; \
-			static auto Get() -> UPtr<Class const> const&; \
-			auto Instantiate() const -> UObjectPtr<KObjectBase> override; \
-		}}; \
-		auto GetClass() const -> UPtr<KObjectReflectionBase::Class const> override; \
+		auto GetClass() const -> UPtr<KObjectReflectionBase_Class const> override; \
 	private: \
-		static UPtr<Class const> class_; \
+		static UPtr<{className}_Class const> class_; \
 	private:
 """
 
@@ -169,19 +172,19 @@ auto {className}::Ptr() const -> UObjectPtr<{className}>
 
         if not result.classInfo.isAbstract:
             sourceText += f"""
-UPtr<{className}::Class const> {className}::class_{{ nullptr }};
+UPtr<{className}_Class const> {className}::class_{{ nullptr }};
 
-auto {className}::Class::Get() -> UPtr<Class const> const&
+auto {className}_Class::Get() -> UPtr<{className}_Class const> const&
 {{
 	return {className}::class_;
 }}
 
-auto {className}::Class::Instantiate() const -> UObjectPtr<KObjectBase>
+auto {className}_Class::Instantiate() const -> UObjectPtr<KObjectBase>
 {{
 	return UCreate<{className}>{{}}();
 }}
 
-auto {className}::GetClass() const -> UPtr<KObjectReflectionBase::Class const>
+auto {className}::GetClass() const -> UPtr<KObjectReflectionBase_Class const>
 {{
 	return class_;
 }}
@@ -189,7 +192,7 @@ auto {className}::GetClass() const -> UPtr<KObjectReflectionBase::Class const>
 void Register_{className}()
 {{
 	SObjectFactory::Register("{className}", +[]() static -> UObjectPtr<KObject> {{ return UCreate<{className}>{{}}(); }});
-	{className}::class_ = UPtr{{ new {className}::Class{{}} }};
+	{className}::class_ = UPtr{{ new {className}_Class{{}} }};
 }}
 
 void Unregister_{className}()

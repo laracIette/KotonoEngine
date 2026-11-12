@@ -4,8 +4,6 @@
 
 #include <core_widgets.h>
 
-#include "enum_utils.h"
-
 WSelectableList::WSelectableList()
     : spacing_{ 0.0f }
 {

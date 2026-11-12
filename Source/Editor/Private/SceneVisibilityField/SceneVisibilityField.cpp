@@ -24,7 +24,7 @@ WidgetPtr WSceneVisibilityField::Build()
                     | Apply(&WBox::SetSize, glm::vec2{ 16.0f, 16.0f })
                     | (
                         UCreate<WButton>{}()
-                        | Apply(&WButton::SetStyleClass, KSceneVisibilityFieldButtonStyle::Class::Get())
+                        | Apply(&WButton::SetStyleClass, KSceneVisibilityFieldButtonStyle_Class::Get())
                         | Apply(&WButton::SetIsActivatable, true)
                         | Apply(&WButton::SetStartActivated, isFieldVisible_)
                         | Apply(&WButton::SetOnActivated, [this]() {

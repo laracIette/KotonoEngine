@@ -1,6 +1,7 @@
 #include "Widget/Widget.h"
 
 #include "Interface/Interface.h"
+#include "Widget/WidgetStyle.h"
 #include <enum_utils.h>
 #include <glm/ext/matrix_transform.hpp>
 #include <Logging/log.h>
@@ -24,7 +25,7 @@ static constexpr auto isVisible(UWidgetDisplaySettings const& displaySettings) n
 
 WWidget::WWidget()
 	: Tint{ Colors::White }
-	, StyleClass{ KWidgetStyle::Class::Get() }
+	, StyleClass{ KWidgetStyle_Class::Get() }
 	, Style{ nullptr }
 	, build_{ nullptr }
 	, isDirty_{ false }

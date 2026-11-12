@@ -5,7 +5,6 @@
 #include "Expand.h"
 #include "Flex.h"
 #include "WidgetDisplaySettings.h"
-#include "WidgetStyle.h"
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float2.hpp>
 #include <Bindable.h>
@@ -40,6 +39,8 @@ public:															\
 private:
 
 struct UInterfaceRenderGraph;
+class KWidgetStyle;
+class KWidgetStyle_Class;
 class UInterface;
 
 /// Base class of all widgets
@@ -120,7 +121,7 @@ public:
 	GetterAndSetter(UColor, UColor, Tint, Tint);
 	GetterAndSetter(b8, UBindable<b8>, isVisible_, IsVisible);
 	
-	Setter(UPtr<KWidgetStyle::Class const>, StyleClass, StyleClass);
+	Setter(UPtr<KWidgetStyle_Class const>, StyleClass, StyleClass);
 
 protected:	
 	void SetState(StateFunction const& function);
@@ -146,7 +147,7 @@ protected:
 	/// The tint of the widget, this propagates to the widget's content
 	UColor Tint;
 	
-	UPtr<KWidgetStyle::Class const> StyleClass;
+	UPtr<KWidgetStyle_Class const> StyleClass;
 	UObjectPtr<KWidgetStyle> Style;
 
 private:

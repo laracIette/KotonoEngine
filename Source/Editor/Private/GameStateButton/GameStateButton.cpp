@@ -17,7 +17,7 @@ WidgetPtr WGameStateButton::Build()
             | Apply(&WBox::SetSize, glm::vec2{ 64.0f, 64.0f })
             | (
                 playPauseButton
-                | Apply(&WButton::SetStyleClass, KGameStatePlayPauseButtonStyle::Class::Get())
+                | Apply(&WButton::SetStyleClass, KGameStatePlayPauseButtonStyle_Class::Get())
                 | Apply(&WButton::SetIsActivatable, true)
                 | Apply(&WButton::SetOnActivated, [this]() { GetScene()->PlayGame(); })
                 | Apply(&WButton::SetOnDeactivated, [this]() { GetScene()->PauseGame(); })
@@ -28,7 +28,7 @@ WidgetPtr WGameStateButton::Build()
             | Apply(&WBox::SetSize, glm::vec2{ 64.0f, 64.0f })
             | (
                 UCreate<WButton>{ "Play Pause Button" }()
-                | Apply(&WButton::SetStyleClass, KGameStateStopButtonStyle::Class::Get())
+                | Apply(&WButton::SetStyleClass, KGameStateStopButtonStyle_Class::Get())
                 | Apply(&WButton::SetIsEnabled, [this]() { return !GetScene()->GetIsGameStopped(); })
                 | Apply(&WButton::SetOnClicked, [this, playPauseButton](EModifier) {
                     playPauseButton->Deactivate();

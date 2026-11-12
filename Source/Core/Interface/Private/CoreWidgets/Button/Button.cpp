@@ -1,5 +1,7 @@
 #include "CoreWidgets/Button/Button.h"
 
+#include "CoreWidgets/Button/ButtonStyle.h"
+
 #include <RenderGraph/InterfaceRenderGraph.h>
 
 WButton::WButton()
@@ -17,7 +19,7 @@ WButton::WButton()
 	, activatedPressedState_{}
 	, hasShadow_{ false }
 {
-	StyleClass = KButtonStyle::Class::Get();
+	StyleClass = KButtonStyle_Class::Get();
 }
 
 void WButton::Init()

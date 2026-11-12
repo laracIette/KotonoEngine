@@ -34,7 +34,7 @@ public:
 	
 	GetterAndSetter(b8, UBindable<b8>, isEnabled_, IsEnabled);
 	
-	Setter(UPtr<KButtonStyle::Class const>, StyleClass, StyleClass);
+	Setter(UPtr<KButtonStyle_Class const>, StyleClass, StyleClass);
 
 protected:
 	auto GetCanCache() const -> b8 override;

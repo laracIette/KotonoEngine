@@ -10,6 +10,20 @@
 #define SERIALIZE
 #define ABSTRACT
 
+class KObjectReflectionBase_Class
+{
+public:
+	virtual ~KObjectReflectionBase_Class() = default;
+
+	virtual auto Instantiate() const -> UObjectPtr<KObjectBase> = 0;
+
+	template <std::derived_from<KObjectBase> T>
+	auto Instantiate() const -> UObjectPtr<T>
+	{
+		return TryCast<T>(Instantiate());
+	}
+};
+
 class KObjectReflectionBase : public KObjectBase
 {
 public:
@@ -22,21 +36,7 @@ public:
 	
 	auto GetMemberVariables() const -> std::vector<UVariableInfo>;
 	
-	class Class
-	{
-	public:
-		virtual ~Class() = default;
-		
-		virtual auto Instantiate() const -> UObjectPtr<KObjectBase> = 0;
-		
-		template <std::derived_from<KObjectBase> T>
-		auto Instantiate() const -> UObjectPtr<T>
-		{
-			return TryCast<T>(Instantiate());
-		}
-	};
-	
-	virtual auto GetClass() const -> UPtr<Class const> = 0;
+	virtual auto GetClass() const -> UPtr<KObjectReflectionBase_Class const> = 0;
 	
 protected:
 	UObjectPtr<KObjectBase> Pointer;
