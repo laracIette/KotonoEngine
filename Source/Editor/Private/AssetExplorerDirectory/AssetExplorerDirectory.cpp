@@ -1,7 +1,7 @@
 #include "AssetExplorerDirectory.h"
 
-WAssetExplorerDirectory::WAssetExplorerDirectory(UObjectPtr<WAssetExplorer> const& assetExplorer, UPath const& path, OpenedCallback const& onOpened)
-	: Base(assetExplorer, path, onOpened)
+WAssetExplorerDirectory::WAssetExplorerDirectory(UPath path, OpenedCallback onOpened)
+	: Base(std::move(path), std::move(onOpened))
 {
 }
 

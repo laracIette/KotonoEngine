@@ -99,7 +99,7 @@ class Reflector():
 
     def ReflectClass(self, fileContent: str) -> ClassInfo:
         match = re.search(
-            r"(ABSTRACT\s+)?class\s+([a-zA-Z_]\w*)\s*(?:final)?\s*(?::\s*public\s+([a-zA-Z_]\w*)\s*(?:<[^>]*>)?(?:\s*,\s*[^{]+)?)?\{",
+            r"(ABSTRACT\s+)?class\s+([a-zA-Z_]\w*)\s*(?:final)?\s*:\s*public\s+([a-zA-Z_]\w*)(?:\s*,\s*public\s+([a-zA-Z_]\w*))*\s*\{",
             fileContent
         )
 

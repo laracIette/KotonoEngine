@@ -13,23 +13,20 @@ public:
 	using OpenedCallback = std::function<void(UPath const&)>;
 
 public:
-	WAssetExplorerItem(UObjectPtr<WAssetExplorer> const& assetExplorer, UPath const& path, OpenedCallback const& onOpened);
+	WAssetExplorerItem(UPath path, OpenedCallback onOpened);
 
 protected:
-	WidgetPtr Build() override;
+	auto Build() -> WidgetPtr override;
 
 public:
-	void Select();
-	void Deselect();
+    void Open() const;
 
-protected:
+private:
 	UObjectPtr<WAssetExplorer> assetExplorer_;
 	UPath path_;
 
-private:
 	OpenedCallback onOpened_;
 
-	b8 isSelected_;
 	f32 lastClickedTime_;
 	f32 openThreshold_;
 };

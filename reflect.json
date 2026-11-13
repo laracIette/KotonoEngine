@@ -42,7 +42,8 @@
                 "Public/CoreWidgets/Stack/Stack.h",
                 "Public/CoreWidgets/Switcher/Switcher.h",
                 "Public/CoreWidgets/Text/Text.h",
-                "Public/CoreWidgets/Wrap/Wrap.h"
+                "Public/CoreWidgets/Wrap/Wrap.h",
+                "Public/WidgetContainer/WidgetContainer.h"
             ]
         },
         {

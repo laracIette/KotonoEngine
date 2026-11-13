@@ -23,30 +23,30 @@ WidgetPtr WList::Build()
 	);
 }
 
-auto WList::GetSpacing() const -> f32
-{
-	return body_->GetSpacing();
-}
-
 auto WList::GetChildren() const -> WidgetSet const&
 {
 	return body_->GetChildren();
 }
 
+void WList::SetChildren(WidgetSet const& children)
+{
+    body_->SetChildren(children);
+    scrollable_->SetOffset({ 0.0f, 0.0f });
+}
+
+void WList::AddChild(WidgetPtr const& child)
+{
+    body_->AddChild(child);
+}
+
+auto WList::GetSpacing() const -> f32
+{
+    return body_->GetSpacing();
+}
+
 void WList::SetSpacing(f32 spacing) const
 {
 	body_->SetSpacing(spacing);
-}
-
-void WList::SetChildren(WidgetSet const& children) const
-{
-	body_->SetChildren(children);
-	scrollable_->SetOffset({ 0.0f, 0.0f });
-}
-
-void WList::AddChild(WidgetPtr const& child) const
-{
-	body_->AddChild(child);
 }
 
 void WList::ReplaceChild(WidgetPtr const& oldWidget, WidgetPtr const& newWidget) const

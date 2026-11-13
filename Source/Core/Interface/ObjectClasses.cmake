@@ -1,4 +1,5 @@
 set(CLASS_PUBLIC_HEADERS
+    "Public/WidgetContainer/WidgetContainer.h"
     "Public/ChildOwner/ChildOwner.h"
     "Public/ChildrenOwner/ChildrenOwner.h"
     "Public/CoreWidgets/Align/Align.h"
@@ -32,6 +33,7 @@ set(CLASS_PRIVATE_HEADERS
 )
 
 set(CLASS_SOURCES
+    "Private/WidgetContainer/WidgetContainer.cpp"
     "Private/ChildOwner/ChildOwner.cpp"
     "Private/ChildrenOwner/ChildrenOwner.cpp"
     "Private/CoreWidgets/Align/Align.cpp"

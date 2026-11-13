@@ -3,18 +3,18 @@
 
 #include "SelectableList.generated.h"
 
-class WList;
 class WSelectableListItem;
+class WWidgetContainer;
 
 class WSelectableList final : public WWidget
 {
     GENERATED()
 
 public:
-    using ItemPtr = UObjectPtr<WSelectableListItem>;
+    using Item = WSelectableListItem;
 
 public:
-	WSelectableList();
+    ~WSelectableList() override;
 	
 protected:
 	auto Build() -> WidgetPtr override;
@@ -23,16 +23,15 @@ public:
     auto OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8 override;
 	
     auto GetChildren() const -> WidgetSet const&;
-	void SetChildren(USet<ItemPtr> const& children);
-	void AddChild(ItemPtr const& child);
+	void SetChildren(USet<UObjectPtr<Item>> const& children);
+	void AddChild(UObjectPtr<Item> const& child);
 
 private:
-    void SetItemProperties(ItemPtr const& item);
+    void SetItemProperties(UObjectPtr<Item> const& item);
     void DeselectItems();
 
 private:
-	UObjectPtr<WList> itemList_;
-	USet<ItemPtr> items_;
-    USet<ItemPtr> selectedItems_;
-    WritableProperty(f32, spacing_, Spacing);
+	USet<UObjectPtr<Item>> items_;
+    USet<UObjectPtr<Item>> selectedItems_;
+    WritableProperty(UObjectPtr<WWidgetContainer>, container_, Container);
 };

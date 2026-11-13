@@ -3,27 +3,22 @@
 
 #include "AssetExplorer.generated.h"
 
-class WAssetExplorerItem;
-class WHorizontalWrapList;
+class WSelectableList;
+class WSelectableListItem;
 
 class WAssetExplorer : public WWidget
 {
 	GENERATED()
 
-private:
-	using AssetExplorerItem = UObjectPtr<WAssetExplorerItem>;
-
 public:
 	WAssetExplorer();
 
 protected:
-	WidgetPtr Build() override;
+	auto Build() -> WidgetPtr override;
 
 public:
 	auto OnMouseButton(EButton button, EInputState inputState, EModifier modifier) -> b8 override;
 	auto OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) -> b8 override;
-
-	void DeselectOthers(AssetExplorerItem const& item) const;
 
 private:
 	void Push(UPath const& path);
@@ -34,13 +29,12 @@ private:
 	void NavigatePrevious();
 	void NavigateNext();
 
-	auto MakeItems() -> USet<AssetExplorerItem>;
+	auto MakeItems() -> USet<UObjectPtr<WSelectableListItem>>;
 	void UpdateItemList();
 
 private:
 	UPath currentDirectory_;
 	std::vector<UPath> navigatedPaths_;
 	size currentPathIndex_;
-	UObjectPtr<WHorizontalWrapList> itemList_;
-	USet<AssetExplorerItem> assetExplorerItems_;
+	UObjectPtr<WSelectableList> itemList_;
 };

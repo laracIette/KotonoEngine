@@ -9,7 +9,13 @@ WHorizontalWrapList::WHorizontalWrapList()
 	body_ = UCreate<WHorizontalWrapListBody>{ "Horizontal Wrap List Body" }();
 }
 
-WidgetPtr WHorizontalWrapList::Build()
+WHorizontalWrapList::~WHorizontalWrapList()
+{
+	Delete(scrollable_);
+	Delete(body_);
+}
+
+auto WHorizontalWrapList::Build() -> WidgetPtr
 {
 	return (
 		UCreate<WCrop>{}()
@@ -38,25 +44,25 @@ auto WHorizontalWrapList::GetChildren() const -> WidgetSet const&
 	return body_->GetChildren();
 }
 
-void WHorizontalWrapList::SetItemSpacing(f32 itemSpacing)
-{
-	body_->SetItemSpacing(itemSpacing);
-}
-
-void WHorizontalWrapList::SetRowSpacing(f32 rowSpacing)
-{
-	body_->SetRowSpacing(rowSpacing);
-}
-
 void WHorizontalWrapList::SetChildren(WidgetSet const& children)
 {
-	body_->SetChildren(children);
-	scrollable_->SetOffset({ 0.0f, 0.0f });
+    body_->SetChildren(children);
+    scrollable_->SetOffset({ 0.0f, 0.0f });
 }
 
 void WHorizontalWrapList::AddChild(WidgetPtr const& child)
 {
-	body_->AddChild(child);
+    body_->AddChild(child);
+}
+
+void WHorizontalWrapList::SetItemSpacing(f32 itemSpacing) const
+{
+	body_->SetItemSpacing(itemSpacing);
+}
+
+void WHorizontalWrapList::SetRowSpacing(f32 rowSpacing) const
+{
+	body_->SetRowSpacing(rowSpacing);
 }
 
 #include "HorizontalWrapList.generated.inl"

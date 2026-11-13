@@ -1,5 +1,5 @@
 #pragma once
-#include <Widget/Widget.h>
+#include "WidgetContainer/WidgetContainer.h"
 
 #include "List.generated.h"
 
@@ -7,7 +7,7 @@ class WListBody;
 class WScrollable;
 
 /// Defines a vertical container for widgets
-class WList final : public WWidget
+class WList final : public WWidgetContainer
 {
 	GENERATED()
 
@@ -18,12 +18,12 @@ protected:
 	WidgetPtr Build() override;
 
 public:
-	auto GetSpacing() const -> f32;
-	auto GetChildren() const -> WidgetSet const&;
+	auto GetChildren() const -> WidgetSet const& override;
+	void SetChildren(WidgetSet const& children) override;
+	void AddChild(WidgetPtr const& child) override;
 
+	auto GetSpacing() const -> f32;
 	void SetSpacing(f32 spacing) const;
-	void SetChildren(WidgetSet const& children) const;
-	void AddChild(WidgetPtr const& child) const;
 	void ReplaceChild(WidgetPtr const& oldWidget, WidgetPtr const& newWidget) const;
 
 private:

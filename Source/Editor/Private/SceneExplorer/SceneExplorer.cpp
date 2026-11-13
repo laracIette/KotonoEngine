@@ -5,14 +5,17 @@
 #include <Scene/Scene.h>
 #include <core_widgets.h>
 
-WidgetPtr WSceneExplorer::Build()
+auto WSceneExplorer::Build() -> WidgetPtr
 {
 	return (
 		UCreate<WPadding>{}()
 		| Apply(&WPadding::SetPadding, UPadding::All(5.0f))
 		| (
 			itemList_ = UCreate<WSelectableList>{ "Scene Explorer Item List" }()
-			| Apply(&WSelectableList::SetSpacing, 2.0f)
+			| Apply(&WSelectableList::SetContainer, (
+			    UCreate<WList>{}()
+			    | Apply(&WList::SetSpacing, 2.0f)
+			))
 			| (
 				MakeItems(GetScene()->GetSceneObjects())
 			)
@@ -58,6 +61,7 @@ auto WSceneExplorer::MakeItems(std::span<UObjectPtr<TSceneObject> const> sceneOb
 		| std::views::transform([this](UObjectPtr<TSceneObject> const& sceneObject) {
 			return (
 				UCreate<WSelectableListItem>{}()
+				| Apply(&WSelectableListItem::SetWrapAxis, EAxis::Vertical)
 				| Apply(&WSelectableListItem::SetIsSelected, [this, sceneObject]() {
 					return GetScene()->IsObjectSelected(sceneObject);
 				})
@@ -82,8 +86,7 @@ void WSceneExplorer::UpdateItemList(std::span<UObjectPtr<TSceneObject> const> sc
 	{
 		UAutoDelete const itemListChildren{ itemList_->GetChildren() };
 
-		auto const items{ MakeItems(sceneObjects) };
-		itemList_->SetChildren(items);
+		itemList_->SetChildren(MakeItems(sceneObjects));
 	}
 }
 

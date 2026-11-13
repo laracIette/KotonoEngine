@@ -15,7 +15,7 @@ class WSceneExplorer : public WSceneWidget
 	GENERATED()
 
 protected:
-	WidgetPtr Build() override;
+	auto Build() -> WidgetPtr override;
 
 	void OnDisplayed() override;
 	void OnRemoved() override;

@@ -1,12 +1,7 @@
 #include "ChildrenOwner/ChildrenOwner.h"
 
 #include <algorithm>
-#include <math_utils/math_utils.h>		 
-
-WChildrenOwner::WChildrenOwner()
-	: children_{}
-{
-}
+#include <math_utils/math_utils.h>
 
 WChildrenOwner::~WChildrenOwner()
 {

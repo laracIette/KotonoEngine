@@ -10,6 +10,8 @@ WButton::WButton()
 	, isActivated_{ false }
 	, isActivatable_{ false }
 	, startActivated_{ false }
+    , cursorPosition_{ 0.0f, 0.0f }
+    , pressedCursorPosition_{ 0.0f, 0.0f }
 	, disabledState_{}
 	, normalState_{}
 	, focusedState_{}
@@ -18,6 +20,7 @@ WButton::WButton()
 	, activatedFocusedState_{}
 	, activatedPressedState_{}
 	, hasShadow_{ false }
+	, shadowOffset_{ 0.0f, 0.0f }
 {
 	StyleClass = KButtonStyle_Class::Get();
 }

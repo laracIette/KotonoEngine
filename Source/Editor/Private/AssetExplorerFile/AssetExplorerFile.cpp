@@ -6,8 +6,8 @@
 #include <stdexcept>
 #endif
 
-WAssetExplorerFile::WAssetExplorerFile(UObjectPtr<WAssetExplorer> const& assetExplorer, UPath const& path)
-	: Base(assetExplorer, path
+WAssetExplorerFile::WAssetExplorerFile(UPath path)
+	: Base(std::move(path)
         , [](UPath const& path) static
         {
             const auto string{ std::format("\"{0}\"", path.ToString()) };

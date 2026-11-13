@@ -2,9 +2,11 @@
 
 #include "AssetExplorerDirectory/AssetExplorerDirectory.h"
 #include "AssetExplorerFile/AssetExplorerFile.h"
-#include <core_widgets.h>
-#include <File/File.h>
-#include <FileExplorer/FileExplorer.h>
+#include "core_widgets.h"
+#include "File/File.h"
+#include "FileExplorer/FileExplorer.h"
+#include "SelectableList/SelectableList.h"
+#include "SelectableList/SelectableListItem.h"
 
 WAssetExplorer::WAssetExplorer()
 	: currentDirectory_{ "${ENGINE_DIRECTORY}" }
@@ -13,7 +15,7 @@ WAssetExplorer::WAssetExplorer()
 {
 }
 
-WidgetPtr WAssetExplorer::Build()
+auto WAssetExplorer::Build() -> WidgetPtr
 {			
 	return (
 		UCreate<WColumn>{ "Asset Explorer Main Column" }() 
@@ -79,11 +81,14 @@ WidgetPtr WAssetExplorer::Build()
 				UCreate<WPadding>{ "Item List Padding" }()
 				| Apply(&WPadding::SetPadding, UPadding::All(8.0f))
 				| (
-					itemList_ = UCreate<WHorizontalWrapList>{ "Item List" }()
-					| Apply(&WHorizontalWrapList::SetItemSpacing, 10.0f)
-					| Apply(&WHorizontalWrapList::SetRowSpacing, 10.0f)
+				    itemList_ = UCreate<WSelectableList>{}()
+				    | Apply(&WSelectableList::SetContainer, (
+				        UCreate<WHorizontalWrapList>{ "Item List" }()
+                        | Apply(&WHorizontalWrapList::SetItemSpacing, 10.0f)
+                        | Apply(&WHorizontalWrapList::SetRowSpacing, 10.0f)
+				    ))
 					| (
-						assetExplorerItems_ = MakeItems()
+						MakeItems()
 					)
 				)
 			)
@@ -119,38 +124,12 @@ auto WAssetExplorer::OnMouseButton(EButton button, EInputState inputState, EModi
 
 auto WAssetExplorer::OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) -> b8
 {
-	if (!GetIsFocused())
-	{
-		return INPUT_UNHANDLED;
-	}
-	
 	if (inputState != EInputState::Pressed)
 	{
 		return INPUT_UNHANDLED;
 	}
 
-	switch (key)
-	{
-	case EKey::Enter:
-		break;
-	default:
-		break;
-	}
-
 	return INPUT_HANDLED;
-}
-
-void WAssetExplorer::DeselectOthers(AssetExplorerItem const& item) const
-{
-	auto assets{ assetExplorerItems_ 
-		| std::views::filter([item](AssetExplorerItem const& asset) { return asset != item; })
-		| std::views::filter(&AssetExplorerItem::operator b8)
-	};
-
-	for (auto const& asset : assets)
-	{
-		asset->Deselect();
-	}
 }
 
 void WAssetExplorer::Push(UPath const& path)
@@ -197,32 +176,43 @@ void WAssetExplorer::NavigateNext()
 	}
 }
 
-auto WAssetExplorer::MakeItems() -> USet<AssetExplorerItem>
+auto WAssetExplorer::MakeItems() -> USet<UObjectPtr<WSelectableListItem>>
 {
 	UFileExplorer const fileExplorer{ currentDirectory_ };
 	auto const directories{ fileExplorer.GetDirectories() };
 	auto const files{ fileExplorer.GetFiles() };
 
-	USet<AssetExplorerItem> items{};
-	for (auto const& directory : directories)
+	std::vector<UObjectPtr<WAssetExplorerItem>> items{};
+
+    for (auto const& directory : directories)
 	{
-		items.Add(UCreate<WAssetExplorerDirectory>{}(Ptr(), directory, [this](UPath const& path) { Push(path); }));
+		items.push_back(UCreate<WAssetExplorerDirectory>{}(directory, [this](UPath const& path) { Push(path); }));
 	}
 	for (auto const& file : files)
 	{
-		items.Add(UCreate<WAssetExplorerFile>{}(Ptr(), file.Path()));
+		items.push_back(UCreate<WAssetExplorerFile>{}(file.Path()));
 	}
-	return items;
+
+	return items
+        | std::views::transform([](UObjectPtr<WAssetExplorerItem> const& item) {
+            return (
+                UCreate<WSelectableListItem>{}()
+                | Apply(&WSelectableListItem::SetOnDoubleClicked, [item]() { item->Open(); })
+                | (
+                    item
+                )
+            );
+        })
+        | std::ranges::to<USet>();
 }
 
 void WAssetExplorer::UpdateItemList()
 {
 	if (itemList_)
 	{
-		UAutoDelete<WWidget> const itemListChildren{ itemList_->GetChildren() };
+		UAutoDelete const itemListChildren{ itemList_->GetChildren() };
 
-		assetExplorerItems_ = MakeItems();
-		itemList_->SetChildren(assetExplorerItems_);
+		itemList_->SetChildren(MakeItems());
 	}
 }
 

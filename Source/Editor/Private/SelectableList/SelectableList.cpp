@@ -1,22 +1,22 @@
 #include "SelectableList.h"
 
+#include "core_widgets.h"
 #include "SelectableListItem.h"
+#include "WidgetContainer/WidgetContainer.h"
 
-#include <core_widgets.h>
-
-WSelectableList::WSelectableList()
-    : spacing_{ 0.0f }
+WSelectableList::~WSelectableList()
 {
-	itemList_ = UCreate<WList>{}();
+    Delete(container_);
 }
 
 auto WSelectableList::Build() -> WidgetPtr
 {
+    Check(Throw, container_, "container_ is null");
 	return (
 		UCreate<WExpanded>{}()
 		| (
-			itemList_
-			| Apply(&WList::SetSpacing, spacing_)
+		    container_
+		    | Apply(&WWidgetContainer::SetChildren, items_)
 		)
 	);
 }
@@ -35,42 +35,54 @@ auto WSelectableList::OnMouseButton(EButton button, EInputState inputState, EMod
 
 auto WSelectableList::GetChildren() const -> WidgetSet const&
 {
-	return itemList_->GetChildren();
+    Check(Throw, container_, "container_ is null");
+	return container_->GetChildren();
 }
 
-void WSelectableList::SetChildren(USet<ItemPtr> const& children)
+void WSelectableList::SetChildren(USet<UObjectPtr<Item>> const& children)
 {	
     for (auto const& child : children)
     {
         SetItemProperties(child);
     }
 
-	itemList_->SetChildren(children);
+    if (container_)
+    {
+	    container_->SetChildren(children);
+    }
+
 	items_ = children;
 
     selectedItems_.Clear();
 }
 
-void WSelectableList::AddChild(ItemPtr const& child)
+void WSelectableList::AddChild(UObjectPtr<Item> const& child)
 {
     SetItemProperties(child);
 
-	itemList_->AddChild(child);
-	items_.Add(child);
+    if (container_)
+    {
+        container_->AddChild(child);
+    }
+
+    items_.Add(child);
 }
 
-void WSelectableList::SetItemProperties(ItemPtr const& item)
+void WSelectableList::SetItemProperties(UObjectPtr<Item> const& item)
 {
     if (item)
     {
-        item->selectableList_ = Ptr();
         item->onClicked_ = [this, item](EModifier modifier)
         {
-            if (modifier == EModifier::Control && item->GetIsSelected()())
+            if (modifier == EModifier::Control && item->GetIsSelected().Get())
             {
+                if (item->GetIsSelected().GetIsValue())
+                {
+                    item->SetIsSelected(false);
+                }
+                selectedItems_.Remove(item);
                 if (item->onDeselected_)
                 {
-                    selectedItems_.Remove(item);
                     item->onDeselected_();
                 }
             }
@@ -81,9 +93,13 @@ void WSelectableList::SetItemProperties(ItemPtr const& item)
                     DeselectItems();
                 }
 
+                if (item->GetIsSelected().GetIsValue())
+                {
+                    item->SetIsSelected(true);
+                }
+                selectedItems_.Add(item);
                 if (item->onSelected_)
                 {
-                    selectedItems_.Add(item);
                     item->onSelected_();
                 }
             }
@@ -96,6 +112,10 @@ void WSelectableList::DeselectItems()
     for (auto const& item : selectedItems_)
     {
         Check(Throw, item, "item is null");
+        if (item->GetIsSelected().GetIsValue())
+        {
+            item->SetIsSelected(false);
+        }
         if (item->onDeselected_)
         {
             item->onDeselected_();
