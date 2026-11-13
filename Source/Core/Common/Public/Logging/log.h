@@ -2,7 +2,7 @@
 
 #ifdef NDEBUG
 
-#define KT_LOG(...)
+#define Log(...)
 
 #else
 

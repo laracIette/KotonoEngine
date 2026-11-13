@@ -8,7 +8,7 @@ include(FetchContent)
 FetchContent_Declare(
     assimp
     GIT_REPOSITORY https://github.com/assimp/assimp.git
-    GIT_TAG        v6.0.2
+    GIT_TAG        v6.0.6
     GIT_SHALLOW    TRUE
 )
 
@@ -21,26 +21,24 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 # Build zlib
 set(ASSIMP_BUILD_ZLIB ON CACHE BOOL "" FORCE)
 
+# Disable warnings as errors for Clang compilation
+set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "" FORCE)
+
 # Disable unnecessary Assimp extras to speed up build times
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_ASSIMP_VIEW OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INSTALL_PDB OFF CACHE BOOL "" FORCE)
 
-# Disable all importers by default
+# Disable all importers and exporters by default
 set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT OFF CACHE BOOL "" FORCE)
 
 # Enable importers
 set(ASSIMP_BUILD_OBJ_IMPORTER ON CACHE BOOL "" FORCE)
 
-# Disable exporters
-set(ASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT OFF CACHE BOOL "" FORCE)
-
 FetchContent_MakeAvailable(assimp)
-
-if (TARGET assimp)
-    target_compile_options(assimp PRIVATE -Wno-uninitialized -Wno-error=uninitialized)
-endif()
 
 foreach(assimp_target
     assimp
