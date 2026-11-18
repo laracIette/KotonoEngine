@@ -41,6 +41,6 @@ protected:
 	auto GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings override;
 	
 private:
-	WritableProperty(UAlignment, alignment_, Alignment, Value);
+	WritableProperty(UAlignment, alignment_, Alignment);
 
 };

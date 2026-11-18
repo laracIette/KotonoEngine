@@ -8,7 +8,7 @@ class UNotify final
 private:
     using ValueType = T;
 	using EventType = UEvent<ValueType>;
-    using ReturnType = optimal_t<ValueType>;
+    using ReturnType = TOptimal<ValueType>;
 
 public:
     UNotify() 

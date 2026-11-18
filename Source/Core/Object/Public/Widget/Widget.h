@@ -29,7 +29,7 @@ using WidgetSet = USet<WidgetPtr>;
 using WidgetVector = std::vector<WidgetPtr>;
 
 #define StateSetter(Type, Variable, SetterName) \
-	void Set##SetterName(setter_param_t<Type> value) { SetState([this, value]() { Variable = value; }); }
+	void Set##SetterName(TOptimal<Type> value) { SetState([this, value]() { Variable = value; }); }
 
 #define StateProperty(Type, Name, PropertyName, ...) private:	\
 	Type Name;													\
@@ -156,7 +156,7 @@ private:
 	b8 isDirty_;
 	UBindable<b8> isVisible_;
 
-	WritableProperty(WidgetPtr, parent_, Parent, Value);
+	WritableProperty(WidgetPtr, parent_, Parent);
 	WritableProperty(DisownCallback, onDisowned_, OnDisowned);
 	/// Whether visibility changes should propagate to the widget's content
 	WritableProperty(b8, propagateVisibility_, PropagateVisibility);

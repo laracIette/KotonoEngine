@@ -12,7 +12,7 @@
 
 enum class ESceneVisibility : u32;
 struct USceneRenderGraph;
-class TSceneObject;
+class KSceneObject;
 class UScene;
 
 class KSceneComponent : public KObject
@@ -20,7 +20,7 @@ class KSceneComponent : public KObject
 	GENERATED()
 
 private:
-	friend class TSceneObject;
+	friend KSceneObject;
 
 public:
 	KSceneComponent();
@@ -90,8 +90,8 @@ private:
 private:
 	b8 isInit_;
 	ReadonlyProperty(b8, canUpdate_, CanUpdate);
-	ReadonlyProperty(UObjectPtr<TSceneObject>, owner_, Owner, Value);
-	ReadonlyProperty(UObjectPtr<KSceneComponent>, parent_, Parent, Value);
+	ReadonlyProperty(UObjectPtr<KSceneObject>, owner_, Owner);
+	ReadonlyProperty(UObjectPtr<KSceneComponent>, parent_, Parent);
 	ReadonlyProperty(UEvent<>, eventTransformUpdated_, EventTransformUpdated, Reference);
 	SERIALIZE USet<UObjectPtr<KSceneComponent>> children_;
 	SERIALIZE ReadonlyProperty(UTransform, transform_, Transform);

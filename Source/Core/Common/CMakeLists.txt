@@ -28,6 +28,7 @@ set(KCOMMON_PUBLIC_HEADERS
     "Public/Containers/Matrix.h"
     "Public/Containers/Pool.h"
     "Public/Containers/Set.h"
+    "Public/Containers/Span.h"
     "Public/Event/Delegate.h"
     "Public/Event/Event.h"
     "Public/Logging/log.h"

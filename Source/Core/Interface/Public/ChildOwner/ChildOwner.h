@@ -34,7 +34,7 @@ protected:
 	virtual auto GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings;
 
 private:
-	ReadonlyProperty(WidgetPtr, child_, Child, Value);
+	ReadonlyProperty(WidgetPtr, child_, Child);
 };
 
 template <class TOwner, class TChild>

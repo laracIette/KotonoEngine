@@ -18,7 +18,7 @@ public:
 	using TimeScaleRange = UClamped<f32, 0.1f, 10.0f>;
 
 private:
-	using SceneObjectPtr = UObjectPtr<TSceneObject>;
+	using SceneObjectPtr = UObjectPtr<KSceneObject>;
 	using SceneObjectSet = USet<SceneObjectPtr>;
 
 public:

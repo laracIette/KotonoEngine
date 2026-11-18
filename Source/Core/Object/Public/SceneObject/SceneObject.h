@@ -12,7 +12,7 @@ struct USceneRenderGraph;
 class UScene;
 class KSceneComponent; 
 
-class TSceneObject : public KObject
+class KSceneObject : public KObject
 {
 	GENERATED()
 
@@ -20,8 +20,8 @@ private:
 	friend UScene;
 
 public:
-	TSceneObject();
-	~TSceneObject() override;
+	KSceneObject();
+	~KSceneObject() override;
 
 protected:
 	virtual void Init();
@@ -31,7 +31,7 @@ public:
 	auto GetScene() const -> UScene*;
 	auto GetRootComponent() const -> UObjectPtr<KSceneComponent>;
 
-	void SetParent(UObjectPtr<TSceneObject> const& parent, ECoordinateSpace keepTransform);
+	void SetParent(UObjectPtr<KSceneObject> const& parent, ECoordinateSpace keepTransform);
 
 	void AddComponent(UObjectPtr<KSceneComponent> const& component);
 	void RemoveComponent(UObjectPtr<KSceneComponent> const& component);
@@ -53,9 +53,9 @@ private:
 	b8 isInit_;
 	UScene* scene_;
 	WritableProperty(b8, canUpdate_, CanUpdate);
-	ReadonlyProperty(UObjectPtr<TSceneObject>, parent_, Parent);
+	ReadonlyProperty(UObjectPtr<KSceneObject>, parent_, Parent);
 	SERIALIZE USet<UObjectPtr<KSceneComponent>> sceneComponents_;
-	SERIALIZE USet<UObjectPtr<TSceneObject>> children_;
+	SERIALIZE USet<UObjectPtr<KSceneObject>> children_;
 
 	SERIALIZE f32 dummy_;
 };

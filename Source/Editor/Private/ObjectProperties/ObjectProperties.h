@@ -3,18 +3,18 @@
 
 #include "ObjectProperties.generated.h"
 
-class TSceneObject;
+class KSceneObject;
 
 class WObjectProperties : public WWidget
 {
 	GENERATED()
 
 public:
-	explicit WObjectProperties(std::span<UObjectPtr<TSceneObject> const> sceneObjects);
+	explicit WObjectProperties(std::span<UObjectPtr<KSceneObject> const> sceneObjects);
 
 protected:
 	auto Build() -> WidgetPtr override;
 
 private:
-	std::vector<UObjectPtr<TSceneObject>> sceneObjects_;
+	std::vector<UObjectPtr<KSceneObject>> sceneObjects_;
 };

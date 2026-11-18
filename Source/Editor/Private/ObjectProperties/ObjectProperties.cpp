@@ -46,7 +46,7 @@ static void ResetValue(std::string_view type, void* variablePtr)
     }
 }
 
-WObjectProperties::WObjectProperties(std::span<UObjectPtr<TSceneObject> const> sceneObjects)
+WObjectProperties::WObjectProperties(std::span<UObjectPtr<KSceneObject> const> sceneObjects)
     : sceneObjects_(sceneObjects.begin(), sceneObjects.end())
 {
 }
@@ -66,7 +66,7 @@ auto WObjectProperties::Build() -> WidgetPtr
     //{
     //    for (auto const& variable : sceneObject->GetMemberVariables())
     //    {
-    //        if (std::ranges::all_of(sceneObjects_, [variable](UObjectPtr<TSceneObject> const& otherSceneObject) {
+    //        if (std::ranges::all_of(sceneObjects_, [variable](UObjectPtr<KSceneObject> const& otherSceneObject) {
     //            return std::ranges::contains(otherSceneObject->GetMemberVariables(), variable);
     //        }))
     //        {

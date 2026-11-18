@@ -4,7 +4,7 @@
 #include "SceneComponent/SceneComponent.h"
 #include <Logging/log.h>
 
-TSceneObject::TSceneObject()
+KSceneObject::KSceneObject()
 	: isInit_{ false }
 	, scene_{ nullptr }
 	, canUpdate_{ false }
@@ -12,7 +12,7 @@ TSceneObject::TSceneObject()
 {
 }
 
-TSceneObject::~TSceneObject()
+KSceneObject::~KSceneObject()
 {
 	if (GetScene())
 	{
@@ -31,25 +31,25 @@ TSceneObject::~TSceneObject()
 	SetParent(nullptr, ECoordinateSpace::Relative);
 }
 
-void TSceneObject::Init()
+void KSceneObject::Init()
 {
 }
 
-void TSceneObject::Update(f32 deltaTime)
+void KSceneObject::Update(f32 deltaTime)
 {
 }
 
-UScene* TSceneObject::GetScene() const
+UScene* KSceneObject::GetScene() const
 {
 	return scene_;
 }
 
-UObjectPtr<KSceneComponent> TSceneObject::GetRootComponent() const
+UObjectPtr<KSceneComponent> KSceneObject::GetRootComponent() const
 {
 	return sceneComponents_.empty() ? nullptr : sceneComponents_[0];
 }
 
-void TSceneObject::SetParent(UObjectPtr<TSceneObject> const& parent, ECoordinateSpace keepTransform)
+void KSceneObject::SetParent(UObjectPtr<KSceneObject> const& parent, ECoordinateSpace keepTransform)
 {
 	if (parent == parent_)
 	{
@@ -80,7 +80,7 @@ void TSceneObject::SetParent(UObjectPtr<TSceneObject> const& parent, ECoordinate
 	}
 }
 
-void TSceneObject::AddComponent(UObjectPtr<KSceneComponent> const& component)
+void KSceneObject::AddComponent(UObjectPtr<KSceneComponent> const& component)
 {
 	if (!component)
 	{
@@ -107,7 +107,7 @@ void TSceneObject::AddComponent(UObjectPtr<KSceneComponent> const& component)
 	}
 }
 
-void TSceneObject::RemoveComponent(UObjectPtr<KSceneComponent> const& component)
+void KSceneObject::RemoveComponent(UObjectPtr<KSceneComponent> const& component)
 {
 	if (!component)
 	{
@@ -126,7 +126,7 @@ void TSceneObject::RemoveComponent(UObjectPtr<KSceneComponent> const& component)
 	}
 }
 
-void TSceneObject::Deserialize()
+void KSceneObject::Deserialize()
 {
 	Base::Deserialize();
 
@@ -147,7 +147,7 @@ void TSceneObject::Deserialize()
 	}
 }
 
-void TSceneObject::Spawn()
+void KSceneObject::Spawn()
 {
 	for (auto const& sceneComponent : sceneComponents_)
 	{
@@ -158,7 +158,7 @@ void TSceneObject::Spawn()
 	}
 }
 
-void TSceneObject::Despawn()
+void KSceneObject::Despawn()
 {
 	for (auto const& sceneComponent : sceneComponents_)
 	{
@@ -169,7 +169,7 @@ void TSceneObject::Despawn()
 	}
 }
 
-void TSceneObject::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const
+void KSceneObject::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESceneVisibility visibility) const
 {
 	for (auto const& sceneComponent : sceneComponents_)
 	{
@@ -180,7 +180,7 @@ void TSceneObject::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ESce
 	}
 }
 
-auto TSceneObject::GetRayIntersectSceneComponent(glm::vec3 const& start, glm::vec3 const& direction) const -> UObjectPtr<KSceneComponent>
+auto KSceneObject::GetRayIntersectSceneComponent(glm::vec3 const& start, glm::vec3 const& direction) const -> UObjectPtr<KSceneComponent>
 {
 	for (auto const& sceneComponent : sceneComponents_)
 	{
@@ -199,7 +199,7 @@ auto TSceneObject::GetRayIntersectSceneComponent(glm::vec3 const& start, glm::ve
 	return nullptr;
 }
 
-void TSceneObject::InitSceneComponents()
+void KSceneObject::InitSceneComponents()
 {
 	for (auto const& sceneComponent : sceneComponents_)
 	{
@@ -211,7 +211,7 @@ void TSceneObject::InitSceneComponents()
 	}
 }
 
-void TSceneObject::UpdateSceneComponents(f32 deltaTime)
+void KSceneObject::UpdateSceneComponents(f32 deltaTime)
 {
 	for (auto const& sceneComponent : sceneComponents_)
 	{

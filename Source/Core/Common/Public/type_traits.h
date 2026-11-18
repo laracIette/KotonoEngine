@@ -1,26 +1,36 @@
 #pragma once
-#include "types.h"
 #include <type_traits>
 
-template <typename T>
-struct is_cheap_copyable final : std::bool_constant<std::is_trivially_copyable_v<std::remove_cvref_t<T>> && sizeof(std::remove_cvref_t<T>) <= 16>
-{
-};
+template <typename>
+struct IsCopyable final : std::false_type {};
 
 template <typename T>
-inline constexpr b8 is_cheap_copyable_v{ is_cheap_copyable<T>::value };
+inline constexpr auto VIsCopyable{ IsCopyable<T>::value };
 
 template <typename T>
-using optimal_t = std::conditional_t<
-	is_cheap_copyable_v<T>,
-	std::remove_cvref_t<T>,
-	std::remove_cvref_t<T> const&
->;
+struct IsCopyableOrCheap final : std::bool_constant<
+    VIsCopyable<T> ||
+    (std::is_trivially_copyable_v<std::remove_cvref_t<T>> && sizeof(std::remove_cvref_t<T>) <= 8)
+> {};
+
+template <typename T>
+inline constexpr auto VIsCopyableOrCheap{ IsCopyableOrCheap<T>::value };
+
+template <typename T>
+struct Optimal final : std::conditional<
+    VIsCopyableOrCheap<T>,
+    std::remove_cvref_t<T>,
+    std::remove_cvref_t<T> const&
+> {};
+
+template <typename T>
+using TOptimal = Optimal<T>::type;
 
 template <typename Base, typename Derived>
-struct is_strict_base_of final : std::bool_constant<!std::is_same_v<Base, Derived> && std::is_base_of_v<Base, Derived>>
-{
-};
+struct IsStrictBaseOf final : std::bool_constant<
+    !std::is_same_v<Base, Derived> &&
+    std::is_base_of_v<Base, Derived>
+> {};
 
 template <typename Base, typename Derived>
-inline constexpr auto is_strict_base_of_v{ is_strict_base_of<Base, Derived>::value };
+inline constexpr auto VIsStrictBaseOf{ IsStrictBaseOf<Base, Derived>::value };

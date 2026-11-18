@@ -29,5 +29,5 @@ private:
 
 	WritableProperty(f32, verticalFOV_, VerticalFOV);
 	WritableProperty(f32, depthNear_, DepthNear);
-	WritableProperty(ESceneVisibility, sceneVisibility_, SceneVisibility, Value);
+	WritableProperty(ESceneVisibility, sceneVisibility_, SceneVisibility);
 };

@@ -23,6 +23,6 @@ private:
 	auto GetChildrenExpandWeight() const -> f32;
 
 private:
-	StateProperty(f32, spacing_, Spacing, Value);
+	StateProperty(f32, spacing_, Spacing);
 };
 

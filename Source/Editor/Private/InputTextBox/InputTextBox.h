@@ -24,7 +24,6 @@ protected:
 public:
 	b8 OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) override;
 
-public:
 	void SetActuationTime(f32 actuationTime);
 	void SetRepeatTime(f32 repeatTime);
 
@@ -34,8 +33,8 @@ private:
 	WritableProperty(TextChangedCallback, onTextChanged_, OnTextChanged);
 	WritableProperty(ValueToStringFunc, valueToString_, ValueToString);
 
-	ReadonlyProperty(f32, actuationTime_, ActuationTime, Value);
-	ReadonlyProperty(f32, repeatTime_, RepeatTime, Value);
+	ReadonlyProperty(f32, actuationTime_, ActuationTime);
+	ReadonlyProperty(f32, repeatTime_, RepeatTime);
 
 	UInputHoldAction holdAction_;
 	char currentWriteCharacter_;

@@ -3,7 +3,7 @@
 
 #include "ObjectPropertiesWindow.generated.h"
 
-class TSceneObject;
+class KSceneObject;
 class WObjectProperties;
 class WSocket;
 
@@ -18,7 +18,7 @@ protected:
 	void OnRemoved() override;
 
 private:
-	void OnSelectedObjectsUpdated(std::span<UObjectPtr<TSceneObject> const> sceneObjects);
+	void OnSelectedObjectsUpdated(std::span<UObjectPtr<KSceneObject> const> sceneObjects);
 
 private:
 	UObjectPtr<WSocket> objectPropertiesSocket_;

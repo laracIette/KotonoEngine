@@ -54,11 +54,11 @@ auto WSceneExplorer::OnKeyboardKey(EKey key, EInputState inputState, EModifier m
     return INPUT_UNHANDLED;
 }
 
-auto WSceneExplorer::MakeItems(std::span<UObjectPtr<TSceneObject> const> sceneObjects) const -> USet<UObjectPtr<WSelectableListItem>>
+auto WSceneExplorer::MakeItems(std::span<UObjectPtr<KSceneObject> const> sceneObjects) const -> USet<UObjectPtr<WSelectableListItem>>
 {
 	return sceneObjects
         | filter_valid
-		| std::views::transform([this](UObjectPtr<TSceneObject> const& sceneObject) {
+		| std::views::transform([this](UObjectPtr<KSceneObject> const& sceneObject) {
 			return (
 				UCreate<WSelectableListItem>{}()
 				| Apply(&WSelectableListItem::SetWrapAxis, EAxis::Vertical)
@@ -80,7 +80,7 @@ auto WSceneExplorer::MakeItems(std::span<UObjectPtr<TSceneObject> const> sceneOb
 		| std::ranges::to<USet>();
 }
 
-void WSceneExplorer::UpdateItemList(std::span<UObjectPtr<TSceneObject> const> sceneObjects) const
+void WSceneExplorer::UpdateItemList(std::span<UObjectPtr<KSceneObject> const> sceneObjects) const
 {
 	if (itemList_)
 	{

@@ -20,6 +20,6 @@ protected:
 	auto GetChildDisplaySettings(UWidgetDisplaySettings displaySettings) const -> UWidgetDisplaySettings override;
 
 private:
-	StateProperty(UPadding, padding_, Padding, Value);
+	StateProperty(UPadding, padding_, Padding);
 };
 

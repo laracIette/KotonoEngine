@@ -5,7 +5,7 @@
 #include "Object/ObjectBase.h"
 
 template <class Base, class Derived>
-concept StrictBaseOf = is_strict_base_of_v<Base, Derived>;
+concept StrictBaseOf = VIsStrictBaseOf<Base, Derived>;
 
 template <class TPtr>
 class UObjectPtr final : public UPtr<TPtr, KObjectBase>
@@ -108,3 +108,6 @@ struct std::hash<UObjectPtr<TPtr>>
 		return std::hash<void*>{}(ptr.Data);
 	}
 };
+
+template <class T>
+struct IsCopyable<UObjectPtr<T>> final : std::true_type {};

@@ -228,6 +228,6 @@ private:
 
 template <std::ranges::input_range R>
     requires is_object_ptr_v<std::ranges::range_value_t<R>>
-UAutoDelete(R&&) -> UAutoDelete<ptr_type_t<std::ranges::range_value_t<R>>>;
+UAutoDelete(R&&) -> UAutoDelete<TPtrType<std::ranges::range_value_t<R>>>;
 
 inline constexpr auto filter_valid{ std::views::filter([](ObjectPtr auto const& objectPtr) { return objectPtr != nullptr; }) };

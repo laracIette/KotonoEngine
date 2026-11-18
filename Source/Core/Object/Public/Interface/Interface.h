@@ -1,10 +1,10 @@
 #pragma once
 #include "Ptr/ObjectPtr.h"
-#include <Containers/Set.h>
+#include "Containers/Set.h"
+#include "Containers/Span.h"
+#include "properties.h"
 #include <glm/ext/vector_uint2.hpp>
 #include <glm/fwd.hpp>
-#include <properties.h>
-#include <span>
 #include <string>
 #include <vector>
 
@@ -48,14 +48,14 @@ public:
 	void OpenWidgetInWindow(glm::uvec2 const& windowExtent, UObjectPtr<WWidget> const& widget, std::string_view name);
 	void ClearPendingWindows();
 
-	Getter(std::span<PendingWindow const>, pendingWindows_, PendingWindows);
+	Getter(USpan<PendingWindow const>, pendingWindows_, PendingWindows);
 
 private:
 	void UpdateFocusedWidgets(glm::vec2 const& cursorPosition);
 	void UpdateActiveWidgets();
 
 private:
-	WritableProperty(UObjectPtr<WInterfaceRoot>, widget_, Widget, Value);
+	WritableProperty(UObjectPtr<WInterfaceRoot>, widget_, Widget);
 	ReadonlyProperty(glm::uvec2, bounds_, Bounds);
 
 	ReadonlyProperty(f32, deltaTime_, DeltaTime);

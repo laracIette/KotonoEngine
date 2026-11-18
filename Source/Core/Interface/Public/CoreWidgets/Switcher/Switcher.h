@@ -27,5 +27,5 @@ private:
 	
 private:
 	UObjectPtr<WStack> stack_;
-	ReadonlyProperty(u32, activeWidget_, ActiveWidget, Value);
+	ReadonlyProperty(u32, activeWidget_, ActiveWidget);
 };

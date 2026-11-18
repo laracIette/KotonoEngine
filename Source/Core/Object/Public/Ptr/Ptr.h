@@ -1,5 +1,6 @@
 #pragma once
-#include <types.h>
+#include "types.h"
+#include "type_traits.h"
 #include <functional>
 #include <utility>
 
@@ -226,10 +227,13 @@ struct std::hash<UPtr<TPtr, TData>>
 };
 
 template <typename TPtr>
-struct ptr_type
+struct PtrType final
 {
 	using type = TPtr::PointerType;
 };
 
 template <typename TPtr>
-using ptr_type_t = ptr_type<TPtr>::type;
+using TPtrType = PtrType<TPtr>::type;
+
+template <class TPtr, class TData>
+struct IsCopyable<UPtr<TPtr, TData>> final : std::true_type {};

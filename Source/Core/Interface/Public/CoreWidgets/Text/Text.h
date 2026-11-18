@@ -38,8 +38,8 @@ protected:
 
 private:
 	UBindable<std::string> text_;
-	StateProperty(glm::vec2, fontSize_, FontSize, Value);
-	StateProperty(f32, spacing_, Spacing, Value);
+	StateProperty(glm::vec2, fontSize_, FontSize);
+	StateProperty(f32, spacing_, Spacing);
 	StateProperty(UFont, font_, Font);
 
 	std::vector<CharacterData> characters_;

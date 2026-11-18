@@ -22,22 +22,22 @@ static_assert(sizeof(b8)  == BYTES(8));
 
 namespace
 {
-	struct CheapCopyable{ i64 a, b; };
-	struct ExpensiveCopyable{ i64 a, b, c; };
+	struct CheapCopyable{ i64 a; };
+	struct ExpensiveCopyable{ i64 a, b; };
 	struct NotCopyable{ ~NotCopyable() {} };
 	
 	struct Base{};
 	struct Derived : Base{};
 }
 
-static_assert(is_cheap_copyable_v<CheapCopyable>);
-static_assert(!is_cheap_copyable_v<ExpensiveCopyable>);
-static_assert(!is_cheap_copyable_v<NotCopyable>);
+static_assert(VIsCopyableOrCheap<CheapCopyable>);
+static_assert(!VIsCopyableOrCheap<ExpensiveCopyable>);
+static_assert(!VIsCopyableOrCheap<NotCopyable>);
 
-static_assert(std::is_same_v<optimal_t<CheapCopyable>, CheapCopyable>);
-static_assert(std::is_same_v<optimal_t<ExpensiveCopyable>, ExpensiveCopyable const&>);
-static_assert(std::is_same_v<optimal_t<NotCopyable>, NotCopyable const&>);
+static_assert(std::is_same_v<TOptimal<CheapCopyable>, CheapCopyable>);
+static_assert(std::is_same_v<TOptimal<ExpensiveCopyable>, ExpensiveCopyable const&>);
+static_assert(std::is_same_v<TOptimal<NotCopyable>, NotCopyable const&>);
 	
-static_assert(is_strict_base_of_v<Base, Derived>);
-static_assert(!is_strict_base_of_v<Base, Base>);
-static_assert(!is_strict_base_of_v<Derived, Base>);
+static_assert(VIsStrictBaseOf<Base, Derived>);
+static_assert(!VIsStrictBaseOf<Base, Base>);
+static_assert(!VIsStrictBaseOf<Derived, Base>);
