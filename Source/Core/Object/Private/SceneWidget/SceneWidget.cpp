@@ -1,13 +1,15 @@
 #include "SceneWidget/SceneWidget.h"
 
-WSceneWidget::WSceneWidget(UScene* scene)
-	: scene_{ scene }
+WSceneWidget::WSceneWidget()
+	: scene_{ nullptr }
 {
 }
 
-WSceneWidget::WSceneWidget()
-	: Self(nullptr)
+void WSceneWidget::Init()
 {
+    Base::Init();
+
+    Check(Throw, scene_, "scene_ is null");
 }
 
 #include "SceneWidget.generated.inl"

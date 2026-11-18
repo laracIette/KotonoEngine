@@ -16,8 +16,7 @@ private:
 
 public:
 	WViewController();
-	explicit WViewController(UScene* scene);
-	
+
 protected:
 	WidgetPtr Build() override;
 

@@ -6,9 +6,8 @@
 #include <RenderGraph/InterfaceRenderGraph.h>
 #include <math_utils/math_utils.h>
 
-WSceneTexture::WSceneTexture(UScene* scene)
-	: Base(scene)
-	, depthNear_{ 0.1f }
+WSceneTexture::WSceneTexture()
+    : depthNear_{ 0.1f }
 	, verticalFOV_{ 90.0f }
 	, viewPosition_{ WorldUpVector + WorldForwardVector * 2.0f }
 	, viewRotation_{ glm::angleAxis(glm::radians(180.0f), WorldUpVector) }

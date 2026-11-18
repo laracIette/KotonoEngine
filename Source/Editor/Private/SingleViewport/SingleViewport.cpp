@@ -10,17 +10,19 @@ static constexpr auto DEFAULT_VISIBILITY{ ESceneVisibility::All };
 
 WidgetPtr WSingleViewport::Build()
 {
-	UObjectPtr const sceneTexture{ UCreate<WSceneTexture>{ "Scene Texture" }(GetScene()) };
+	UObjectPtr const sceneTexture{ UCreate<WSceneTexture>{ "Scene Texture" }() };
 
 	return (
 		UCreate<WStack>{}()
 		| (
 			sceneTexture
+			| Apply(&WSceneTexture::SetScene, GetScene())
 			| Apply(&WSceneTexture::SetSceneVisibility, DEFAULT_VISIBILITY)
 		)
 		| (
-			UCreate<WViewController>{ "Scene View Controller" }(GetScene())
-			| Apply(&WViewController::SetOnMove, [sceneTexture](glm::vec3 const& position) { 
+			UCreate<WViewController>{ "Scene View Controller" }()
+			| Apply(&WViewController::SetScene, GetScene())
+			| Apply(&WViewController::SetOnMove, [sceneTexture](glm::vec3 const& position) {
 				sceneTexture->SetViewPosition(position);
 			})
 			| Apply(&WViewController::SetOnLook, [sceneTexture](glm::quat const& rotation) { 

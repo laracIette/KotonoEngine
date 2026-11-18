@@ -10,10 +10,11 @@ ABSTRACT class WSceneWidget : public WWidget
 	GENERATED()
 
 public:
-	//WSceneWidget() = delete; // register_ breaks if default constructor deleted
 	WSceneWidget();
-	WSceneWidget(UScene* scene);
+
+protected:
+    void Init() override;
 
 private:
-	ReadonlyProperty(UScene*, scene_, Scene);
+	WritableProperty(UScene*, scene_, Scene);
 };

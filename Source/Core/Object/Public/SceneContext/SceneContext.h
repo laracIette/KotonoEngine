@@ -24,5 +24,5 @@ public:
 	
 private:
 	SERIALIZE UPath scenePath_;
-	ReadonlyProperty(UScene*, scene_, Scene, Value);
+	ReadonlyProperty(UScene*, scene_, Scene);
 };

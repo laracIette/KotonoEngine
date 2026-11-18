@@ -13,7 +13,7 @@ class WSceneTexture final : public WSceneWidget
 	GENERATED()
 
 public:
-	WSceneTexture(UScene* scene);
+	WSceneTexture();
 
 	void PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const override;
 

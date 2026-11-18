@@ -9,13 +9,7 @@
 #include "SceneComponent/SceneComponent.h"
 
 WViewController::WViewController()
-	: WViewController(nullptr)
-{
-}
-
-WViewController::WViewController(UScene* scene)
-	: Base(scene)
-	, isActive_{ false }
+    : isActive_{ false }
 	, speed_{ 1.0f }
 	, sensitivity_{ 0.005f }
 	, pitch_{ 0.0f }
