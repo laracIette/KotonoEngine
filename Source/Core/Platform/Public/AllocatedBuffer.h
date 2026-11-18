@@ -1,7 +1,8 @@
 #pragma once
+
+#include "Containers/Span.h"
 #include "vk_utils/vk_utils.h"
-#include <cstring>
-#include <span>
+
 #include <stdexcept>
 #include <type_traits>
 #include <vma/vk_mem_alloc.h>
@@ -68,11 +69,11 @@ struct UAllocatedBuffer final
 
 	template <typename T>
 		requires std::is_trivially_copyable_v<T>
-	void UpdateMappedData(std::span<T const> data) const
+	void UpdateMappedData(USpan<T const> data) const
 	{
 		std::memcpy(allocationInfo.pMappedData
-		   , data.data()
-		   , data.size_bytes()
+		   , data.Data()
+		   , data.SizeBytes()
 		);
 	}
 

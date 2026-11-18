@@ -1,9 +1,11 @@
 #include "File/File.h"
+
+#include "Logging/log.h"
+
 #include <iostream>
-#include <Logging/log.h>
 #include <sstream>
 
-UFile::UFile(const UPath& path) 
+UFile::UFile(UPath const& path)
     : path_{ path }
 {
 }
@@ -13,42 +15,42 @@ UFile::UFile(UPath&& path)
 {
 }
 
-bool UFile::Exists() const
+auto UFile::Exists() const -> b8
 {
-    return std::filesystem::exists(path_.ToPath());
+    return path_.Exists();
 }
 
-UPath const& UFile::Path() const
+auto UFile::Path() const -> UPath const&
 {
     return path_;
 }
 
-std::filesystem::path UFile::Directory() const
+auto UFile::Directory() const -> UPath
 {
     return path_.Directory();
 }
 
-std::string UFile::Name() const
+auto UFile::Name() const -> std::string
 {
     return path_.Name();
 }
 
-std::string UFile::Extension() const
+auto UFile::Extension() const -> std::string
 {
     return path_.Extension();
 }
 
-std::string UFile::Stem() const
+auto UFile::Stem() const -> std::string
 {
     return path_.Stem();
 }
 
-std::chrono::file_clock::time_point UFile::LastWriteTime() const
+auto UFile::LastWriteTime() const -> std::chrono::file_clock::time_point
 {
 	return std::filesystem::last_write_time(path_.ToPath());
 }
 
-std::string UFile::ReadString() const
+auto UFile::ReadString() const -> std::string
 {
     // Check if path exists.
     if (!Exists())
@@ -75,7 +77,7 @@ std::string UFile::ReadString() const
     return fileContents.str();
 }
 
-std::vector<u8> UFile::ReadBinary() const
+auto UFile::ReadBinary() const -> std::vector<u8>
 {
     if (!Exists())
     {
@@ -91,7 +93,7 @@ std::vector<u8> UFile::ReadBinary() const
         return {};
     }
 
-    const size fileSize{ static_cast<size>(file.tellg()) };
+    size const fileSize{ static_cast<size>(file.tellg()) };
     std::vector<u8> buffer(fileSize);
 
     file.seekg(0);
@@ -120,7 +122,7 @@ void UFile::WriteString(std::string_view data) const
     file.close();
 }
 
-void UFile::WriteBinary(std::span<u32 const> data) const
+void UFile::WriteBinary(USpan<u32 const> data) const
 {
     // Open file for writing in binary mode
     auto file{ OpenFile() };
@@ -132,15 +134,15 @@ void UFile::WriteBinary(std::span<u32 const> data) const
     }
 
     // Write data to file as binary
-    file.write(reinterpret_cast<const char*>(data.data()), data.size_bytes());
+    file.write(reinterpret_cast<const char*>(data.Data()), data.SizeBytes());
 
     // Close file
     file.close();
 }
 
-std::ofstream UFile::OpenFile() const
+auto UFile::OpenFile() const -> std::ofstream
 {
-    const auto parentDir{ path_.ToPath().parent_path() };
+    auto const parentDir{ path_.ToPath().parent_path() };
 
     // Create the directories if they don't exist
     if (!parentDir.empty())

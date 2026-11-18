@@ -1,9 +1,11 @@
 #pragma once
+
 #include "ObjectBase.h"
 
 #include "ObjectFactory/ObjectFactory.h"
 #include "Ptr/ObjectPtr.h"
 #include "VariableInfo.h"
+
 #include <nlohmann/json_fwd.hpp>
 #include <vector>
 

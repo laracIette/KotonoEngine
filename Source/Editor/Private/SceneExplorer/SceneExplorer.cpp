@@ -54,7 +54,7 @@ auto WSceneExplorer::OnKeyboardKey(EKey key, EInputState inputState, EModifier m
     return INPUT_UNHANDLED;
 }
 
-auto WSceneExplorer::MakeItems(std::span<UObjectPtr<KSceneObject> const> sceneObjects) const -> USet<UObjectPtr<WSelectableListItem>>
+auto WSceneExplorer::MakeItems(USpan<UObjectPtr<KSceneObject> const> sceneObjects) const -> USet<UObjectPtr<WSelectableListItem>>
 {
 	return sceneObjects
         | filter_valid
@@ -80,7 +80,7 @@ auto WSceneExplorer::MakeItems(std::span<UObjectPtr<KSceneObject> const> sceneOb
 		| std::ranges::to<USet>();
 }
 
-void WSceneExplorer::UpdateItemList(std::span<UObjectPtr<KSceneObject> const> sceneObjects) const
+void WSceneExplorer::UpdateItemList(USpan<UObjectPtr<KSceneObject> const> sceneObjects) const
 {
 	if (itemList_)
 	{

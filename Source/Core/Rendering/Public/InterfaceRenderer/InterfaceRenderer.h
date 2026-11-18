@@ -1,8 +1,9 @@
 #pragma once
+
+#include "Containers/Span.h"
 #include "frames_in_flight.h"
 #include "InterfaceRender/InterfaceRender.h"
-#include <types.h>
-#include <span>
+#include "types.h"
 
 struct UDrawCommand;
 class UDevice;
@@ -22,8 +23,8 @@ public:
 	void Init();
 	void Cleanup() const;
 
-	void UpdateInterfaceBuffers(std::span<UDrawCommand const> drawCommands, u32 frameIndex);
-	void CmdDrawInterface(VkCommandBuffer commandBuffer, u32 frameIndex, std::span<UDrawCommand const> drawCommands, UIndexBuffer const& indexBuffer) const;
+	void UpdateInterfaceBuffers(USpan<UDrawCommand const> drawCommands, u32 frameIndex) const;
+	void CmdDrawInterface(VkCommandBuffer commandBuffer, u32 frameIndex, USpan<UDrawCommand const> drawCommands, UIndexBuffer const& indexBuffer) const;
 
 private:
 	UDevice& device_; 

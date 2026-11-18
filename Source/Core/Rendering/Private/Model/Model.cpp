@@ -19,17 +19,17 @@ void AModel::Cleanup(UDevice& device) const
 	device.CleanupAllocatedBuffer(vertexBuffer_);
 }
 
-VkDeviceAddress AModel::GetVertexBufferAddress() const
+auto AModel::GetVertexBufferAddress() const -> VkDeviceAddress
 {
 	return vertexBuffer_.bda;
 }
 
-u32 AModel::GetIndexCount() const
+auto AModel::GetIndexCount() const -> u32
 {
 	return meshData_.indices.size();
 }
 
-u32 AModel::GetFirstIndex() const
+auto AModel::GetFirstIndex() const -> u32
 {
 	return firstIndex_;
 }
@@ -39,7 +39,7 @@ void AModel::SetFirstIndex(u32 index)
 	firstIndex_ = index;
 }
 
-std::span<u32 const> AModel::GetIndices() const
+auto AModel::GetIndices() const -> USpan<u32 const>
 {
 	return meshData_.indices;
 }

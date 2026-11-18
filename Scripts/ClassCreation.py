@@ -78,6 +78,7 @@ class ClassCreator():
 
         filePath.write_text(
 f"""#pragma once
+
 #include "{baseClassDirectory}/{baseClassFileName}"
 
 #include "{newClassName}.generated.h"

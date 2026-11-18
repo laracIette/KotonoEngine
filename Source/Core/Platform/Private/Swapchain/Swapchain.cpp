@@ -1,12 +1,14 @@
 #include "Swapchain/Swapchain.h"
 
+#include "Containers/Span.h"
 #include "Device/Device.h"
+#include "Logging/log.h"
 #include "Surface/Surface.h"
 #include "vk_utils/vk_utils.h"
-#include <array>
-#include <Logging/log.h>
 
-static VkSurfaceFormatKHR chooseSurfaceFormat(std::span<VkSurfaceFormatKHR const> availableFormats)
+#include <array>
+
+static auto chooseSurfaceFormat(USpan<VkSurfaceFormatKHR const> availableFormats) -> VkSurfaceFormatKHR
 {
 	for (const auto& availableFormat : availableFormats)
 	{
@@ -19,7 +21,7 @@ static VkSurfaceFormatKHR chooseSurfaceFormat(std::span<VkSurfaceFormatKHR const
 	return availableFormats[0];
 }
 
-static VkPresentModeKHR choosePresentMode(std::span<VkPresentModeKHR const> availablePresentModes)
+static auto choosePresentMode(USpan<VkPresentModeKHR const> availablePresentModes) -> VkPresentModeKHR
 {
 	for (const auto& availablePresentMode : availablePresentModes)
 	{

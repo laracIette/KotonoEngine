@@ -16,21 +16,21 @@ UInterfaceRenderer::UInterfaceRenderer(UDevice& device, UPipelineResourceManager
 
 void UInterfaceRenderer::Init()
 {
-	for (auto& frameData : frameDatas_)
+	for (auto& [interfaceRender] : frameDatas_)
 	{
-		frameData.interfaceRender.Init();
+		interfaceRender.Init();
 	}
 }
 
 void UInterfaceRenderer::Cleanup() const
 {
-	for (auto const& frameData : frameDatas_)
+	for (auto const& [interfaceRender] : frameDatas_)
 	{
-		frameData.interfaceRender.Cleanup();
+		interfaceRender.Cleanup();
 	}
 }
 
-void UInterfaceRenderer::UpdateInterfaceBuffers(std::span<UDrawCommand const> drawCommands, u32 frameIndex)
+void UInterfaceRenderer::UpdateInterfaceBuffers(USpan<UDrawCommand const> drawCommands, u32 frameIndex) const
 {
 	frameDatas_[frameIndex].interfaceRender
 		.UpdateBuffers(drawCommands);
@@ -39,7 +39,7 @@ void UInterfaceRenderer::UpdateInterfaceBuffers(std::span<UDrawCommand const> dr
 void UInterfaceRenderer::CmdDrawInterface(
 	  VkCommandBuffer commandBuffer
 	, u32 frameIndex
-	, std::span<UDrawCommand const> drawCommands
+	, USpan<UDrawCommand const> drawCommands
 	, UIndexBuffer const& indexBuffer
 ) const
 {

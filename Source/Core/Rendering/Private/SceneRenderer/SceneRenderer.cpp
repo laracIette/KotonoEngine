@@ -24,7 +24,7 @@ void USceneRenderer::Cleanup() const
 	}
 }
 
-USceneRenderer::RenderTarget USceneRenderer::GetSceneRenderTarget(glm::uvec2 const& extent, u32 frameIndex)
+auto USceneRenderer::GetSceneRenderTarget(glm::uvec2 const& extent, u32 frameIndex) -> RenderTarget
 {
 	auto& frameData{ frameDatas_[frameIndex] };
 
@@ -46,7 +46,7 @@ USceneRenderer::RenderTarget USceneRenderer::GetSceneRenderTarget(glm::uvec2 con
 	return sceneRender.GetRenderTarget();
 }
 
-USceneRenderer::SceneRenderHandle USceneRenderer::GetSceneRender(glm::uvec2 const& extent, u32 frameIndex)
+auto USceneRenderer::GetSceneRender(glm::uvec2 const& extent, u32 frameIndex) -> SceneRenderHandle
 {
 	auto& frameData{ frameDatas_[frameIndex] };
 
@@ -83,7 +83,7 @@ void USceneRenderer::ClearUnusedSceneRenders(u32 frameIndex)
 	}
 }
 
-u32 USceneRenderer::GetSceneDirectionalLightShadowMapTargetIndex(u32 frameIndex, SceneRenderHandle handle, u32 index) const
+auto USceneRenderer::GetSceneDirectionalLightShadowMapTargetIndex(u32 frameIndex, SceneRenderHandle handle, u32 index) const -> u32
 {
 	return frameDatas_[frameIndex].sceneRenders.at(handle)
 		.GetDirectionalLightShadowMapTargetIndex(index);
@@ -93,11 +93,11 @@ void USceneRenderer::UpdateSceneBuffers(
 	  u32 frameIndex
 	, SceneRenderHandle handle
 	, UFrameContextSceneView const& sceneView
-	, std::span<UDrawCommand const> drawCommands
-	, std::span<UDirectionalLight const> directionalLights
-	, std::span<UPointLight const> pointLights
+	, USpan<UDrawCommand const> drawCommands
+	, USpan<UDirectionalLight const> directionalLights
+	, USpan<UPointLight const> pointLights
 	, u32 samplerIndex
-)
+) const
 {
 	frameDatas_[frameIndex].sceneRenders.at(handle)
 		.UpdateBuffers(sceneView, drawCommands, directionalLights, pointLights, samplerIndex);
@@ -114,7 +114,7 @@ void USceneRenderer::CmdDrawScene(
 		.CmdDraw(renderContext, renderData);
 }
 
-USceneRenderer::SceneRenderHandle USceneRenderer::CreateScene(glm::uvec2 const& extent)
+auto USceneRenderer::CreateScene(glm::uvec2 const& extent) -> SceneRenderHandle
 {
 	for (auto& frameData : frameDatas_)
 	{

@@ -1,7 +1,9 @@
 #pragma once
-#include <types.h>
-#include <AllocatedBuffer.h>
-#include <span>
+
+#include "AllocatedBuffer.h"
+#include "Containers/Span.h"
+#include "types.h"
+
 #include <vulkan/vulkan_core.h>
 
 class UDevice;
@@ -16,7 +18,7 @@ public:
 
 	void CmdBind(VkCommandBuffer commandBuffer) const;
 
-	u32 RegisterIndices(std::span<u32 const> indices);
+	u32 RegisterIndices(USpan<u32 const> indices);
 
 private:
 	UDevice& device_;

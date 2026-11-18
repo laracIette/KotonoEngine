@@ -1,44 +1,57 @@
 #pragma once
-#include <Path/Path.h>
-#include <types.h>
+
+#include "Containers/Span.h"
+#include "Path/Path.h"
+#include "types.h"
+
 #include <chrono>
 #include <filesystem>
 #include <fstream>
-#include <span>
+
 class UFile final
 {
 public:
-	UFile(const UPath& path);
-	UFile(UPath&& path);
+    explicit UFile(UPath const& path);
+	explicit UFile(UPath&& path);
 
 	/// Get whether the file exists
-	bool Exists() const;
+	auto Exists() const -> b8;
+
 	/// Get the path to the file
-	UPath const& Path() const;
+	auto Path() const -> UPath const&;
+
 	/// Get the path to the directory of the file
-	std::filesystem::path Directory() const;
+	auto Directory() const -> UPath;
+
 	/// Get the name of the file with extension
-	std::string Name() const;
+	auto Name() const -> std::string;
+
 	/// Get the extension of the file
-	std::string Extension() const;
+	auto Extension() const -> std::string;
+
 	/// Get the name of the file without extension
-	std::string Stem() const;
+	auto Stem() const -> std::string;
+
 	/// Get the last write time of the file
-	std::chrono::file_clock::time_point LastWriteTime() const;
+	auto LastWriteTime() const -> std::chrono::file_clock::time_point;
+
 	/// Get the content of the file, for text files
-	std::string ReadString() const;
+	auto ReadString() const -> std::string;
+
 	/// Get the content of the file, for binary files
-	std::vector<u8> ReadBinary() const;
+	auto ReadBinary() const -> std::vector<u8>;
+
 	/// Set the content of the file, for text files
 	void WriteString(std::string_view data) const;
+
 	/// Set the content of the file, for binary files
-	void WriteBinary(std::span<u32 const> data) const;
+	void WriteBinary(USpan<u32 const> data) const;
 
 private:
 	/// Create the file's directory if it doesn't exist, then return the opened file
-	std::ofstream OpenFile() const;
+	auto OpenFile() const -> std::ofstream;
 
 private:
-	const UPath path_;
+	UPath path_;
 };
 

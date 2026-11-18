@@ -87,21 +87,21 @@ void USceneRender::Cleanup() const
 	gpuBuffers_.Cleanup();
 }
 
-u32 USceneRender::GetRenderTarget() const
+auto USceneRender::GetRenderTarget() const -> u32
 {
 	return postProcessIndex_;
 }
 
-u32 USceneRender::GetDirectionalLightShadowMapTargetIndex(u32 index) const
+auto USceneRender::GetDirectionalLightShadowMapTargetIndex(u32 index) const -> u32
 {
 	return lightBuffers_.GetDirectionalLightShadowMapTargetIndex(index);
 }
 
 void USceneRender::UpdateBuffers(
 	  UFrameContextSceneView const& sceneView
-	, std::span<UDrawCommand const> drawCommands
-	, std::span<UDirectionalLight const> directionalLights
-	, std::span<UPointLight const> pointLights
+	, USpan<UDrawCommand const> drawCommands
+	, USpan<UDirectionalLight const> directionalLights
+	, USpan<UPointLight const> pointLights
 	, u32 samplerIndex
 ) const
 {
@@ -109,8 +109,8 @@ void USceneRender::UpdateBuffers(
 		  sceneView
 		, MakeFrameContextAddresses()
 		, MakeFrameContextTargets()
-		, directionalLights.size()
-		, pointLights.size()
+		, directionalLights.Size()
+		, pointLights.Size()
 		, samplerIndex
 	);
 
@@ -239,7 +239,7 @@ void USceneRender::UnregisterFrameContextBufferTextures() const
 	pipelineResourceManager_.UnregisterTexture(postProcessIndex_);
 }
 
-UFrameContextAddresses USceneRender::MakeFrameContextAddresses() const
+auto USceneRender::MakeFrameContextAddresses() const -> UFrameContextAddresses
 {
 	return {
 		.drawDataBufferAddress = drawDataBuffer_.bda,
@@ -257,7 +257,7 @@ UFrameContextAddresses USceneRender::MakeFrameContextAddresses() const
 	};
 }
 
-UFrameContextTargets USceneRender::MakeFrameContextTargets() const
+auto USceneRender::MakeFrameContextTargets() const -> UFrameContextTargets
 {
 	return UFrameContextTargets{
 		.gBufferDepth = depthIndex_,
@@ -268,7 +268,7 @@ UFrameContextTargets USceneRender::MakeFrameContextTargets() const
 	};
 }
 
-std::vector<UDrawDataBufferData> USceneRender::MakeDrawDataBuffer(std::span<UDrawCommand const> drawCommands) const
+auto USceneRender::MakeDrawDataBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UDrawDataBufferData>
 {
 	return drawCommands
 		| std::views::transform([](UDrawCommand const& drawCommand) {
@@ -282,7 +282,7 @@ std::vector<UDrawDataBufferData> USceneRender::MakeDrawDataBuffer(std::span<UDra
 		| std::ranges::to<std::vector>();
 }
 
-std::vector<UTransformBufferData> USceneRender::MakeTransformBuffer(std::span<UDrawCommand const> drawCommands) const
+auto USceneRender::MakeTransformBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UTransformBufferData>
 {
 	return drawCommands
 		| std::views::transform([](UDrawCommand const& drawCommand) {
@@ -294,7 +294,7 @@ std::vector<UTransformBufferData> USceneRender::MakeTransformBuffer(std::span<UD
 		| std::ranges::to<std::vector>();
 }
 
-std::vector<UParametersBufferData> USceneRender::MakeParametersBuffer(std::span<UDrawCommand const> drawCommands) const
+auto USceneRender::MakeParametersBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UParametersBufferData>
 {
 	return drawCommands
 		| std::views::transform([](UDrawCommand const& drawCommand) {
@@ -307,7 +307,7 @@ std::vector<UParametersBufferData> USceneRender::MakeParametersBuffer(std::span<
 		| std::ranges::to<std::vector>();
 }
 
-std::vector<UMaterialBufferData> USceneRender::MakeMaterialBuffer(std::span<UDrawCommand const> drawCommands) const
+auto USceneRender::MakeMaterialBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UMaterialBufferData>
 {
 	return drawCommands
 		| std::views::transform(&UDrawCommand::material)
@@ -727,7 +727,7 @@ void USceneRender::CmdUseViewport(VkCommandBuffer commandBuffer) const
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 }
 
-void USceneRender::CmdDrawFrame(VkCommandBuffer commandBuffer, std::span<UDrawCommand const> drawCommands, u32 directionalIndex) const
+void USceneRender::CmdDrawFrame(VkCommandBuffer commandBuffer, USpan<UDrawCommand const> drawCommands, u32 directionalIndex) const
 {
 	for (auto const& drawCommand : drawCommands)
 	{

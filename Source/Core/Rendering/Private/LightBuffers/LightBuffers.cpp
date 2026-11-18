@@ -36,8 +36,8 @@ void ULightBuffers::Cleanup() const
 }
 
 void ULightBuffers::UpdateBuffers(
-      std::span<UDirectionalLight const> directionalLights
-    , std::span<UPointLight const> pointLights
+      USpan<UDirectionalLight const> directionalLights
+    , USpan<UPointLight const> pointLights
 ) const
 {
     directionalLightBuffer_.UpdateMappedData(directionalLights);

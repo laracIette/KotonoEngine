@@ -41,17 +41,17 @@ void AShader::Cleanup(UDevice& device) const
 	Log(Normal, "cleaned up shader {0}", GetPath().ToString());
 }
 
-VkPipeline AShader::GetPipeline() const
+auto AShader::GetPipeline() const -> VkPipeline
 {
 	return pipeline_;
 }
 
-VkShaderModule AShader::CreateShaderModule(UDevice& device, std::span<u8 const> code)
+auto AShader::CreateShaderModule(UDevice& device, USpan<u8 const> code) -> VkShaderModule
 {
 	VkShaderModuleCreateInfo const createInfo{
 		.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-		.codeSize = code.size(),
-		.pCode = reinterpret_cast<const u32*>(code.data()),
+		.codeSize = code.Size(),
+		.pCode = reinterpret_cast<const u32*>(code.Data()),
 	};
 
 	VkShaderModule shaderModule;
@@ -265,7 +265,7 @@ void AShader::CreateComputePipeline(UDevice& device, VkPipelineLayout pipelineLa
 	vkDestroyShaderModule(device.GetDevice(), shaderModule, nullptr);
 }
 
-std::vector<VkFormat> AShader::GetOutputColorAttachmentFormats(EPipelinePass pipelinePass, VkFormat swapchainFormat) const
+auto AShader::GetOutputColorAttachmentFormats(EPipelinePass pipelinePass, VkFormat swapchainFormat) const -> std::vector<VkFormat>
 {
 	switch (pipelinePass)
 	{

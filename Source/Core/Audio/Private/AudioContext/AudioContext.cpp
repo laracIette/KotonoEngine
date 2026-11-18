@@ -1,41 +1,42 @@
 #include "AudioContext/AudioContext.h"
 
 #include "al_utils/al_utils.h"
-#include <enum_utils.h>
+#include "check.h"
+#include "Containers/Span.h"
+#include "enum_utils.h"
+
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <array>
-#include <check.h>
 #include <glm/ext/quaternion_float.hpp>
 #include <glm/ext/vector_float3.hpp>
-#include <span>
 #include <stdexcept>
 
-static void _getListener(ALenum param, f32& value) { alGetListenerf(param, &value); }
-static void _getListener(ALenum param, i32& value) { alGetListeneri(param, &value); }
-static void _getListener(ALenum param, glm::vec3& value) { alGetListener3f(param, &value.x, &value.y, &value.z); }
+static void getListener(ALenum param, f32& value) { alGetListenerf(param, &value); }
+static void getListener(ALenum param, i32& value) { alGetListeneri(param, &value); }
+static void getListener(ALenum param, glm::vec3& value) { alGetListener3f(param, &value.x, &value.y, &value.z); }
 
-static void _setListener(ALenum param, std::floating_point auto value) { alListenerf(param, static_cast<f32>(value)); }
-static void _setListener(ALenum param, std::integral auto value) { alListeneri(param, static_cast<i32>(value)); }
-static void _setListener(ALenum param, glm::vec3 const& value) { alListener3f(param, value.x, value.y, value.z); }
-static void _setListener(ALenum param, std::span<f32 const> values) { alListenerfv(param, values.data()); }
+static void setListener(ALenum param, std::floating_point auto value) { alListenerf(param, static_cast<f32>(value)); }
+static void setListener(ALenum param, std::integral auto value) { alListeneri(param, static_cast<i32>(value)); }
+static void setListener(ALenum param, glm::vec3 const& value) { alListener3f(param, value.x, value.y, value.z); }
+static void setListener(ALenum param, USpan<f32 const> values) { alListenerfv(param, values.Data()); }
 
 template <typename T>
-static auto getListener(ALenum param) -> T
+static auto GetListener(ALenum param) -> T
 {
     T value;
     AL_CHECK_THROW(
-        _getListener(param, value),
+        getListener(param, value),
         "couldn't get the listener's param!"
     );
     return value;
 }
 
 template <typename T>
-static void setListener(ALenum param, T value)
+static void SetListener(ALenum param, T value)
 {
     AL_CHECK_THROW(
-        _setListener(param, value),
+        setListener(param, value),
         "couldn't set the listener's param!"
     );
 }
@@ -146,7 +147,7 @@ void UAudioContext::PlaySource(UPath const& path, glm::vec3 const& position, Aud
 
 void UAudioContext::SetListenerPosition(glm::vec3 const& position) const
 {
-	setListener(AL_POSITION, position * glm::vec3{ 1.0f, 1.0f, -1.0f });
+	SetListener(AL_POSITION, position * glm::vec3{ 1.0f, 1.0f, -1.0f });
 }
 
 void UAudioContext::SetListenerOrientation(glm::quat const& orientation) const
@@ -158,5 +159,5 @@ void UAudioContext::SetListenerOrientation(glm::quat const& orientation) const
 		forward.x, forward.y, forward.z,
 		up.x, up.y, up.z
 	};
-	setListener(AL_ORIENTATION, values);
+	SetListener(AL_ORIENTATION, values);
 }

@@ -1,12 +1,14 @@
 #pragma once
-#include <span>
+
+#include "Containers/Span.h"
+
 #include <vulkan/vulkan_core.h>
 
 namespace Barriers 
 {
 	void CmdTransitionImages(
 		  VkCommandBuffer const commandBuffer
-		, std::span<VkImage const> const images
+		, USpan<VkImage const> const images
 		, VkPipelineStageFlags2 const srcStage
 		, VkPipelineStageFlags2 const dstStage
 		, VkAccessFlags2 const srcAccess

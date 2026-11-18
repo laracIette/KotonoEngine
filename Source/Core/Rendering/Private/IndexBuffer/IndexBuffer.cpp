@@ -37,15 +37,15 @@ void UIndexBuffer::CmdBind(VkCommandBuffer commandBuffer) const
     );
 }
 
-u32 UIndexBuffer::RegisterIndices(std::span<u32 const> indices)
+u32 UIndexBuffer::RegisterIndices(USpan<u32 const> indices)
 {
     u32 const oldIndex{ indexCount_ };
-    u32 const newIndex{ indexCount_ + static_cast<u32>(indices.size()) };
+    u32 const newIndex{ indexCount_ + static_cast<u32>(indices.Size()) };
     Check(Abort, newIndex <= MAX_INDICES, "index count exceeds MAX_INDICES!");
 
     device_.StagingUpload(
-          indices.data()
-        , indices.size_bytes()
+          indices.Data()
+        , indices.SizeBytes()
         , dataBuffer_
         , 0
         , indexCount_ * sizeof(u32)

@@ -1,13 +1,15 @@
 #pragma once
+
+#include "AllocatedBuffer.h"
+#include "AllocatedImage.h"
+#include "Containers/Span.h"
 #include "DrawCommand.h"
 #include "FrameContextBuffer/FrameContextBuffer.h"
 #include "GPUBuffers/GPUBuffers.h"
 #include "LightBuffers/LightBuffers.h"
+#include "types.h"
+
 #include <glm/ext/vector_uint2.hpp>
-#include <types.h>
-#include <AllocatedBuffer.h>
-#include <AllocatedImage.h>
-#include <span>
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
@@ -37,7 +39,7 @@ struct USceneRenderContext final
 
 struct USceneRenderData final
 {
-	std::span<UDrawCommand const> drawCommands;
+	USpan<UDrawCommand const> drawCommands;
 	u32 directionalLightCount;
 };
 
@@ -49,10 +51,10 @@ public:
 	void Init(glm::uvec2 const& extent);
 	void Cleanup() const;
 
-	u32 GetRenderTarget() const;
-	u32 GetDirectionalLightShadowMapTargetIndex(u32 index) const;
+	auto GetRenderTarget() const -> u32;
+	auto GetDirectionalLightShadowMapTargetIndex(u32 index) const -> u32;
 
-	void UpdateBuffers(UFrameContextSceneView const& sceneView, std::span<UDrawCommand const> drawCommands, std::span<UDirectionalLight const> directionalLights, std::span<UPointLight const> pointLights, u32 samplerIndex) const;
+	void UpdateBuffers(UFrameContextSceneView const& sceneView, USpan<UDrawCommand const> drawCommands, USpan<UDirectionalLight const> directionalLights, USpan<UPointLight const> pointLights, u32 samplerIndex) const;
 
 	/**
 	 * Step 1: Depth
@@ -78,13 +80,13 @@ private:
 	void RegisterFrameContextBufferTextures();
 	void UnregisterFrameContextBufferTextures() const;
 
-	UFrameContextAddresses MakeFrameContextAddresses() const;
-	UFrameContextTargets MakeFrameContextTargets() const;
+	auto MakeFrameContextAddresses() const -> UFrameContextAddresses;
+	auto MakeFrameContextTargets() const -> UFrameContextTargets;
 
-	std::vector<UDrawDataBufferData> MakeDrawDataBuffer(std::span<UDrawCommand const> drawCommands) const;
-	std::vector<UTransformBufferData> MakeTransformBuffer(std::span<UDrawCommand const> drawCommands) const;
-	std::vector<UParametersBufferData> MakeParametersBuffer(std::span<UDrawCommand const> drawCommands) const;
-	std::vector<UMaterialBufferData> MakeMaterialBuffer(std::span<UDrawCommand const> drawCommands) const;
+	auto MakeDrawDataBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UDrawDataBufferData>;
+	auto MakeTransformBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UTransformBufferData>;
+	auto MakeParametersBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UParametersBufferData>;
+	auto MakeMaterialBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UMaterialBufferData>;
 
 	void CmdUpdateClusterAABB(USceneRenderContext const& renderContext) const;
 
@@ -120,7 +122,7 @@ private:
 	void CmdEndRendering(VkCommandBuffer commandBuffer) const;
 
 	void CmdUseViewport(VkCommandBuffer commandBuffer) const;
-	void CmdDrawFrame(VkCommandBuffer commandBuffer, std::span<UDrawCommand const> drawCommands, u32 directionalIndex) const;
+	void CmdDrawFrame(VkCommandBuffer commandBuffer, USpan<UDrawCommand const> drawCommands, u32 directionalIndex) const;
 	void CmdPushConstants(VkCommandBuffer commandBuffer, u32 drawIndex, u32 directionalIndex) const;
 
 private:

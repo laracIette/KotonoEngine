@@ -1,17 +1,19 @@
 #pragma once
+
 #include "ObjectReflectionBase.h"
 
 #include "Ptr/ObjectPtr.h"
 
 #include "check.h"
-#include "properties.h"
 #include "Guid/Guid.h"
+#include "Event/Event.h"
+#include "Path/Path.h"
+#include "properties.h"
+#include "serialize_base/serialize_base.h"
+
 #include <concepts>
 #include <functional>
 #include <format>
-#include <Event/Event.h>
-#include <Path/Path.h>
-#include <serialize_base/serialize_base.h>
 #include <optional>
 #include <ranges>
 #include <source_location>

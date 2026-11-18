@@ -46,7 +46,7 @@ static void ResetValue(std::string_view type, void* variablePtr)
     }
 }
 
-WObjectProperties::WObjectProperties(std::span<UObjectPtr<KSceneObject> const> sceneObjects)
+WObjectProperties::WObjectProperties(USpan<UObjectPtr<KSceneObject> const> sceneObjects)
     : sceneObjects_(sceneObjects.begin(), sceneObjects.end())
 {
 }

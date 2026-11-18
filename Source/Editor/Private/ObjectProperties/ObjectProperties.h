@@ -1,5 +1,6 @@
 #pragma once
-#include <Widget/Widget.h>
+
+#include "Widget/Widget.h"
 
 #include "ObjectProperties.generated.h"
 
@@ -10,7 +11,7 @@ class WObjectProperties : public WWidget
 	GENERATED()
 
 public:
-	explicit WObjectProperties(std::span<UObjectPtr<KSceneObject> const> sceneObjects);
+	explicit WObjectProperties(USpan<UObjectPtr<KSceneObject> const> sceneObjects);
 
 protected:
 	auto Build() -> WidgetPtr override;

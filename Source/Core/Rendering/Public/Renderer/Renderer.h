@@ -1,15 +1,17 @@
 #pragma once
+
+#include "Containers/Map.h"
+#include "Containers/Span.h"
 #include "frames_in_flight.h"
 #include "IndexBuffer/IndexBuffer.h"
 #include "InterfaceRenderer/InterfaceRenderer.h"
 #include "PipelineResourceManager/PipelineResourceManager.h"
+#include "RenderGraph/InterfaceDrawData.h"
 #include "SceneRenderer/SceneRenderer.h"
-#include <Path/Path.h>
-#include <types.h>
-#include <RenderGraph/InterfaceDrawData.h>
-#include <Swapchain/Swapchain.h>
-#include <span>
-#include <Containers/Map.h>
+#include "Swapchain/Swapchain.h"
+#include "Path/Path.h"
+#include "types.h"
+
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
@@ -63,7 +65,7 @@ private:
 	void CreateCommandPool(u32 frameIndex);
 	void CreateCommandBuffers();
 	void CreateCommandBuffer(u32 frameIndex);
-	void RecordCommandBuffer(u32 frameIndex, std::span<USceneRenderView const> sceneRenderViews, std::span<UDrawCommand const> interfaceDrawCommands) const;
+	void RecordCommandBuffer(u32 frameIndex, USpan<USceneRenderView const> sceneRenderViews, USpan<UDrawCommand const> interfaceDrawCommands) const;
 	void BeginCommandBuffer(VkCommandBuffer commandBuffer) const;
 
 	void CmdBarrierSwapchainNoneToWrite(VkCommandBuffer commandBuffer, u32 frameIndex) const;
@@ -77,11 +79,11 @@ private:
 	void CreateSyncObjects();
 
 	auto MakeFrameContextSceneView(USceneView const& sceneView) const -> UFrameContextSceneView;
-	auto MakeInterfaceDrawCommands(std::span<UInterfaceDrawData const> drawDatas, u32 frameIndex) -> std::vector<UDrawCommand>;
-	auto MakeSceneDrawCommands(std::span<USceneDrawData const> drawDatas, u32 frameIndex) -> std::vector<UDrawCommand>;
-	auto MakeDirectionalLights(std::span<UDirectionalLightData const> directionalLightDatas, UFrameContextSceneView const& sceneView, USceneRenderer::SceneRenderHandle sceneRender, u32 frameIndex) -> std::vector<UDirectionalLight>;
-	auto MakePointLights(std::span<UPointLightData const> pointLightDatas) const -> std::vector<UPointLight>;
-	auto MakeSceneRenderViews(std::span<UInterfaceDrawData const> drawDatas, u32 frameIndex) -> std::vector<USceneRenderView>;
+	auto MakeInterfaceDrawCommands(USpan<UInterfaceDrawData const> drawDatas, u32 frameIndex) -> std::vector<UDrawCommand>;
+	auto MakeSceneDrawCommands(USpan<USceneDrawData const> drawDatas, u32 frameIndex) -> std::vector<UDrawCommand>;
+	auto MakeDirectionalLights(USpan<UDirectionalLightData const> directionalLightDatas, UFrameContextSceneView const& sceneView, USceneRenderer::SceneRenderHandle sceneRender, u32 frameIndex) -> std::vector<UDirectionalLight>;
+	auto MakePointLights(USpan<UPointLightData const> pointLightDatas) const -> std::vector<UPointLight>;
+	auto MakeSceneRenderViews(USpan<UInterfaceDrawData const> drawDatas, u32 frameIndex) -> std::vector<USceneRenderView>;
 
 	auto GetOrCreateTexture(UPath const& path) -> ATexture*;
 	auto GetOrCreateMaterial(UPath const& path) -> AMaterial*;

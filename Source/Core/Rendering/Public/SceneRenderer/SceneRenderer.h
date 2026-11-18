@@ -1,10 +1,12 @@
 #pragma once
+
+#include "Containers/Span.h"
 #include "frames_in_flight.h"
 #include "SceneRender/SceneRender.h"
+#include "types.h"
+
 #include <glm/ext/vector_uint2.hpp>
 #include <glm/gtx/hash.hpp>
-#include <types.h>
-#include <span>
 #include <unordered_map>
 
 struct UDrawCommand;
@@ -36,18 +38,18 @@ public:
 
 	void Cleanup() const;
 
-	RenderTarget GetSceneRenderTarget(glm::uvec2 const& extent, u32 frameIndex);
-	SceneRenderHandle GetSceneRender(glm::uvec2 const& extent, u32 frameIndex);
+	auto GetSceneRenderTarget(glm::uvec2 const& extent, u32 frameIndex) -> RenderTarget;
+	auto GetSceneRender(glm::uvec2 const& extent, u32 frameIndex) -> SceneRenderHandle;
 	void RefreshAvailableSceneRenders(u32 frameIndex);
 	void ClearUnusedSceneRenders(u32 frameIndex);
 
-	u32 GetSceneDirectionalLightShadowMapTargetIndex(u32 frameIndex, SceneRenderHandle handle, u32 index) const;
+	auto GetSceneDirectionalLightShadowMapTargetIndex(u32 frameIndex, SceneRenderHandle handle, u32 index) const -> u32;
 
-	void UpdateSceneBuffers(u32 frameIndex, SceneRenderHandle handle, UFrameContextSceneView const& sceneView, std::span<UDrawCommand const> drawCommands, std::span<UDirectionalLight const> directionalLights, std::span<UPointLight const> pointLights, u32 samplerIndex);
+	void UpdateSceneBuffers(u32 frameIndex, SceneRenderHandle handle, UFrameContextSceneView const& sceneView, USpan<UDrawCommand const> drawCommands, USpan<UDirectionalLight const> directionalLights, USpan<UPointLight const> pointLights, u32 samplerIndex) const;
 	void CmdDrawScene(u32 frameIndex, SceneRenderHandle handle, USceneRenderContext const& renderContext, USceneRenderData const& renderData) const;
 
 private:
-	SceneRenderHandle CreateScene(glm::uvec2 const& extent);
+	auto CreateScene(glm::uvec2 const& extent) -> SceneRenderHandle;
 	void DeleteScene(SceneRenderHandle handle);
 
 private:

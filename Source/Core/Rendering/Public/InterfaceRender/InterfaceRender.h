@@ -1,8 +1,10 @@
 #pragma once
+
+#include "AllocatedBuffer.h"
+#include "Containers/Span.h"
 #include "FrameContextBuffer/FrameContextBuffer.h"
-#include <types.h>
-#include <AllocatedBuffer.h>
-#include <span>
+#include "types.h"
+
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
@@ -22,17 +24,17 @@ public:
 	void Init();
 	void Cleanup() const;
 
-	void UpdateBuffers(std::span<UDrawCommand const> drawCommands) const;
-	void CmdDraw(VkCommandBuffer commandBuffer, std::span<UDrawCommand const> drawCommands, UIndexBuffer const& indexBuffer) const;
+	void UpdateBuffers(USpan<UDrawCommand const> drawCommands) const;
+	void CmdDraw(VkCommandBuffer commandBuffer, USpan<UDrawCommand const> drawCommands, UIndexBuffer const& indexBuffer) const;
 
 private:
-	UFrameContextAddresses MakeFrameContextAddresses() const;
+	auto MakeFrameContextAddresses() const -> UFrameContextAddresses;
 
-	std::vector<UDrawDataBufferData> MakeDrawDataBuffer(std::span<UDrawCommand const> drawCommands) const;
-	std::vector<UTransformBufferData> MakeTransformBuffer(std::span<UDrawCommand const> drawCommands) const;
-	std::vector<UParametersBufferData> MakeParametersBuffer(std::span<UDrawCommand const> drawCommands) const;
+	auto MakeDrawDataBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UDrawDataBufferData>;
+	auto MakeTransformBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UTransformBufferData>;
+	auto MakeParametersBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UParametersBufferData>;
 
-	void CmdDrawFrameInterface(VkCommandBuffer commandBuffer, std::span<UDrawCommand const> drawCommands, UIndexBuffer const& indexBuffer) const;
+	void CmdDrawFrameInterface(VkCommandBuffer commandBuffer, USpan<UDrawCommand const> drawCommands, UIndexBuffer const& indexBuffer) const;
 
 	void CmdPushConstants(VkCommandBuffer commandBuffer, u32 drawIndex, u32 directionalIndex) const;
 

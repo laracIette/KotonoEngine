@@ -1,20 +1,23 @@
 #pragma once
+
 #include "Object/Object.h"
 
 #include "Axis.h"
-#include "Expand.h"
-#include "Flex.h"
-#include "WidgetDisplaySettings.h"
-#include <glm/ext/matrix_float4x4.hpp>
-#include <glm/ext/vector_float2.hpp>
-#include <Bindable.h>
-#include <Containers/Set.h>
-#include <types.h>
+#include "Bindable.h"
 #include <Button.h>
 #include <Color.h>
-#include <InputState.h>
-#include <Key.h>
-#include <Modifier.h>
+#include "Containers/Set.h"
+#include "Containers/Span.h"
+#include "Expand.h"
+#include "Flex.h"
+#include "InputState.h"
+#include "Key.h"
+#include "Modifier.h"
+#include "types.h"
+#include "WidgetDisplaySettings.h"
+
+#include <glm/ext/matrix_float4x4.hpp>
+#include <glm/ext/vector_float2.hpp>
 #include <string>
 #include <vector>
 

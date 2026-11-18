@@ -172,7 +172,17 @@ public:
 		return std::ranges::end(self.data_);
 	}
 
-	constexpr decltype(auto) back(this auto&& self) noexcept(noexcept(self.data_.back()))
+    constexpr auto data(this auto&& self) noexcept
+	{
+	    return self.data_.data();
+	}
+
+	constexpr decltype(auto) front(this auto&& self) noexcept
+	{
+		return self.data_.front();
+	}
+
+	constexpr decltype(auto) back(this auto&& self) noexcept
 	{
 		return self.data_.back();
 	}

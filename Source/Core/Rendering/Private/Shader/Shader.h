@@ -1,7 +1,9 @@
 #pragma once
-#include <Asset/Asset.h>
 
-#include <span>
+#include "Asset/Asset.h"
+
+#include "Containers/Span.h"
+
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
@@ -17,6 +19,7 @@ enum class EPipelinePass : u8
 	PostProcess,
 	Interface,
 };
+
 class AShader final : public AAsset
 {
 public:	
@@ -25,13 +28,13 @@ public:
 	void Init(UDevice& device, VkPipelineLayout pipelineLayout, VkFormat swapchainFormat);
 	void Cleanup(UDevice& device) const;
 
-	VkPipeline GetPipeline() const;
+	auto GetPipeline() const -> VkPipeline;
 
 private:
 	void CreateGraphicsPipeline(UDevice& device, VkPipelineLayout pipelineLayout, VkFormat swapchainFormat);
 	void CreateComputePipeline(UDevice& device, VkPipelineLayout pipelineLayout);
-	std::vector<VkFormat> GetOutputColorAttachmentFormats(EPipelinePass pipelinePass, VkFormat swapchainFormat) const;
-	VkShaderModule CreateShaderModule(UDevice& device, std::span<u8 const> code);
+	auto GetOutputColorAttachmentFormats(EPipelinePass pipelinePass, VkFormat swapchainFormat) const -> std::vector<VkFormat>;
+	auto CreateShaderModule(UDevice& device, USpan<u8 const> code) -> VkShaderModule;
 
 private:
 	VkPipeline pipeline_;

@@ -63,7 +63,7 @@ void UInterfaceRender::Cleanup() const
 	device_.CleanupAllocatedBuffer(parametersBuffer_);
 }
 
-void UInterfaceRender::UpdateBuffers(std::span<UDrawCommand const> drawCommands) const
+void UInterfaceRender::UpdateBuffers(USpan<UDrawCommand const> drawCommands) const
 {
 	frameContextBuffer_.UpdateBuffer(
 		  {}
@@ -81,14 +81,14 @@ void UInterfaceRender::UpdateBuffers(std::span<UDrawCommand const> drawCommands)
 
 void UInterfaceRender::CmdDraw(
 	  VkCommandBuffer commandBuffer
-	, std::span<UDrawCommand const> drawCommands
+	, USpan<UDrawCommand const> drawCommands
 	, UIndexBuffer const& indexBuffer
 ) const
 {
 	CmdDrawFrameInterface(commandBuffer, drawCommands, indexBuffer);
 }
 
-UFrameContextAddresses UInterfaceRender::MakeFrameContextAddresses() const
+auto UInterfaceRender::MakeFrameContextAddresses() const -> UFrameContextAddresses
 {
 	return {
 		.drawDataBufferAddress = drawDataBuffer_.bda,
@@ -106,7 +106,7 @@ UFrameContextAddresses UInterfaceRender::MakeFrameContextAddresses() const
 	};
 }
 
-std::vector<UDrawDataBufferData> UInterfaceRender::MakeDrawDataBuffer(std::span<UDrawCommand const> drawCommands) const
+auto UInterfaceRender::MakeDrawDataBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UDrawDataBufferData>
 {
 	return drawCommands
 		| std::views::transform([](UDrawCommand const& drawCommand) {
@@ -120,7 +120,7 @@ std::vector<UDrawDataBufferData> UInterfaceRender::MakeDrawDataBuffer(std::span<
 		| std::ranges::to<std::vector>();
 }
 
-std::vector<UTransformBufferData> UInterfaceRender::MakeTransformBuffer(std::span<UDrawCommand const> drawCommands) const
+auto UInterfaceRender::MakeTransformBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UTransformBufferData>
 {
 	return drawCommands
 		| std::views::transform([](UDrawCommand const& drawCommand) {
@@ -132,7 +132,7 @@ std::vector<UTransformBufferData> UInterfaceRender::MakeTransformBuffer(std::spa
 		| std::ranges::to<std::vector>();
 }
 
-std::vector<UParametersBufferData> UInterfaceRender::MakeParametersBuffer(std::span<UDrawCommand const> drawCommands) const
+auto UInterfaceRender::MakeParametersBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UParametersBufferData>
 {
 	return drawCommands
 		| std::views::transform([](UDrawCommand const& drawCommand) {
@@ -147,18 +147,18 @@ std::vector<UParametersBufferData> UInterfaceRender::MakeParametersBuffer(std::s
 
 void UInterfaceRender::CmdDrawFrameInterface(
 	  VkCommandBuffer commandBuffer
-	, std::span<UDrawCommand const> drawCommands
+	, USpan<UDrawCommand const> drawCommands
 	, UIndexBuffer const& indexBuffer
 ) const
 {
 	indexBuffer.CmdBind(commandBuffer);
 		
-	for (size i{ 0 }; i < drawCommands.size();)
+	for (size i{ 0 }; i < drawCommands.Size();)
 	{
 		auto const& drawCommand{ drawCommands[i] };
 
 		u32 instances{ 1 };
-		while (i + instances < drawCommands.size())
+		while (i + instances < drawCommands.Size())
 		{
 			if (drawCommands[i + instances].pipeline != drawCommand.pipeline
 			 || !equal(drawCommands[i + instances].scissor, drawCommand.scissor))

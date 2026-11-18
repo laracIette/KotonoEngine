@@ -1,8 +1,9 @@
 #pragma once
-#include <types.h>
-#include <AllocatedBuffer.h>
-#include <AllocatedImage.h>
-#include <span>
+
+#include "types.h"
+#include "AllocatedBuffer.h"
+#include "AllocatedImage.h"
+
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
@@ -27,7 +28,7 @@ public:
 	void Init();
 	void Cleanup() const;
 
-	void UpdateBuffers(std::span<UDirectionalLight const> directionalLights, std::span<UPointLight const> pointLights) const;
+	void UpdateBuffers(USpan<UDirectionalLight const> directionalLights, USpan<UPointLight const> pointLights) const;
 
 	VkDeviceAddress GetDirectionalLightAddress() const;
 	VkDeviceAddress GetPointLightAddress() const;

@@ -1,13 +1,14 @@
 #pragma once
+
+#include "AudioContext/AudioContext.h"
+#include "Clamped.h"
+#include "Containers/Set.h"
+#include "Containers/Span.h"
+#include "Event/Event.h"
 #include "GameState.h"
+#include "Notify.h"
+#include "Path/Path.h"
 #include "SceneObject/SceneObject.h"
-#include <AudioContext/AudioContext.h>
-#include <Clamped.h>
-#include <Event/Event.h>
-#include <Path/Path.h>
-#include <Notify.h>
-#include <Containers/Set.h>
-#include <span>
 
 enum class ESceneVisibility : u32;
 struct USceneRenderGraph;
@@ -52,8 +53,8 @@ public:
 
 	auto GetAudioContext() -> UAudioContext& { return audioContext_; }
 
-	auto GetSceneObjects() const -> std::span<SceneObjectPtr const> { return sceneObjects_; }
-	auto GetSelectedObjects() const -> std::span<SceneObjectPtr const> { return selectedObjects_; }
+	auto GetSceneObjects() const -> USpan<SceneObjectPtr const> { return sceneObjects_; }
+	auto GetSelectedObjects() const -> USpan<SceneObjectPtr const> { return selectedObjects_; }
 
 	auto GetEventSceneObjectsUpdated() -> UEvent<SceneObjectSet>& { return eventSceneObjectsUpdated_; }
 	auto GetEventSelectedObjectsUpdated() -> UEvent<SceneObjectSet>& { return eventSelectedObjectsUpdated_; }

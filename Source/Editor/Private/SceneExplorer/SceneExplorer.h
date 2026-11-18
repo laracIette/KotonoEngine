@@ -1,7 +1,6 @@
 #pragma once
-#include <SceneWidget/SceneWidget.h>
 
-#include <span>
+#include "SceneWidget/SceneWidget.h"
 
 #include "SceneExplorer.generated.h"
 
@@ -24,8 +23,8 @@ public:
     auto OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) -> b8 override;
 
 private:
-	auto MakeItems(std::span<UObjectPtr<KSceneObject> const> sceneObjects) const -> USet<UObjectPtr<WSelectableListItem>>;
-	void UpdateItemList(std::span<UObjectPtr<KSceneObject> const> sceneObjects) const;
+	auto MakeItems(USpan<UObjectPtr<KSceneObject> const> sceneObjects) const -> USet<UObjectPtr<WSelectableListItem>>;
+	void UpdateItemList(USpan<UObjectPtr<KSceneObject> const> sceneObjects) const;
 
 private:
 	UObjectPtr<WSelectableList> itemList_;

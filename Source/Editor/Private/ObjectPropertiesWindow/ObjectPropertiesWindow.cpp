@@ -58,7 +58,7 @@ void WObjectPropertiesWindow::OnRemoved()
     GetScene()->GetEventSelectedObjectsUpdated().RemoveListener(this, &Self::OnSelectedObjectsUpdated);
 }
 
-void WObjectPropertiesWindow::OnSelectedObjectsUpdated(std::span<UObjectPtr<KSceneObject> const> sceneObjects)
+void WObjectPropertiesWindow::OnSelectedObjectsUpdated(USpan<UObjectPtr<KSceneObject> const> sceneObjects)
 {
     Check(Throw, objectPropertiesSocket_, "objectPropertiesSocket_ is null");
 

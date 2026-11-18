@@ -1,5 +1,6 @@
 #pragma once
-#include <SceneWidget/SceneWidget.h>
+
+#include "SceneWidget/SceneWidget.h"
 
 #include "ObjectPropertiesWindow.generated.h"
 
@@ -18,7 +19,7 @@ protected:
 	void OnRemoved() override;
 
 private:
-	void OnSelectedObjectsUpdated(std::span<UObjectPtr<KSceneObject> const> sceneObjects);
+	void OnSelectedObjectsUpdated(USpan<UObjectPtr<KSceneObject> const> sceneObjects);
 
 private:
 	UObjectPtr<WSocket> objectPropertiesSocket_;

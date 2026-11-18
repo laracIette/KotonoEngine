@@ -1,9 +1,11 @@
 #pragma once
+
 #include "AllocatedImage.h"
-#include <types.h>
-#include <span>
+#include "types.h"
+
 #include <vector>
 #include <vulkan/vulkan_core.h>
+
 class UDevice;
 class USurface;
 class USwapchain final

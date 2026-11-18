@@ -1,12 +1,14 @@
 #include "Barriers.h"
-#include <types.h>
+
+#include "types.h"
+
 #include <vector>
 
 namespace Barriers
 {
 	void CmdTransitionImages(
 		  VkCommandBuffer const commandBuffer
-		, std::span<VkImage const> const images
+		, USpan<VkImage const> const images
 		, VkPipelineStageFlags2 const srcStage
 		, VkPipelineStageFlags2 const dstStage
 		, VkAccessFlags2 const srcAccess
@@ -17,9 +19,9 @@ namespace Barriers
 	)
 	{
 		std::vector<VkImageMemoryBarrier2> barriers{};
-		barriers.reserve(images.size());
+		barriers.reserve(images.Size());
 
-		for (u32 i{ 0 }; i < images.size(); ++i)
+		for (u32 i{ 0 }; i < images.Size(); ++i)
 		{
 			barriers.push_back({
 				.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,

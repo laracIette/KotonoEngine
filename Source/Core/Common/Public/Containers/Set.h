@@ -195,7 +195,17 @@ public:
 		return std::ranges::end(self.values_);
 	}
 
-	constexpr decltype(auto) back(this auto&& self) noexcept(noexcept(self.values_.back()))
+	constexpr auto data(this auto&& self) noexcept
+	{
+		return self.values_.data();
+	}
+
+	constexpr decltype(auto) front(this auto&& self) noexcept
+	{
+		return self.values_.front();
+	}
+
+	constexpr decltype(auto) back(this auto&& self) noexcept
 	{
 		return self.values_.back();
 	}
@@ -203,6 +213,11 @@ public:
 	constexpr decltype(auto) operator[](this auto&& self, IndexType index) noexcept(noexcept(self.values_[index]))
 	{
 		return self.values_[index];
+	}
+
+    constexpr auto data() -> ValueType*
+	{
+	    return values_.data();
 	}
 
 	void push_back(auto&& value)
