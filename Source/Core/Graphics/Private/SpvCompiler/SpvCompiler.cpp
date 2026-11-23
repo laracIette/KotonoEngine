@@ -36,7 +36,7 @@ void SSpvCompiler::CompileAll()
 void SSpvCompiler::CompileUpdated()
 {
     // Create the compiled shaders directory if it doesn't exist
-    std::filesystem::create_directories(CompiledShadersPath);
+    std::filesystem::create_directories(CompiledShadersPath.ToPath());
 
     if (HasDependenciesUpdated())
     {
@@ -50,7 +50,7 @@ void SSpvCompiler::CompileUpdated()
 
     for (const auto* directory : { "vert", "frag", "comp" })
     {
-        for (const auto& entry : std::filesystem::directory_iterator{ ShadersPath / directory })
+        for (const auto& entry : std::filesystem::directory_iterator{ (ShadersPath / directory).ToPath() })
         {
             // not a glsl file
             if (entry.path().extension() != std::format(".{0}", directory))
@@ -116,7 +116,7 @@ auto SSpvCompiler::HasDependenciesUpdated() -> b8
         b8 isInList{ false };
         for (auto& dependency : json["dependencies"])
         {
-            if (dependency["path"] != dependencyPath)
+            if (dependency["path"] != dependencyPath.ToString())
             {
                 continue;
             }
@@ -134,7 +134,7 @@ auto SSpvCompiler::HasDependenciesUpdated() -> b8
         if (!isInList)
         {
             nlohmann::json dependency{};
-            dependency["path"] = dependencyPath;
+            dependency["path"] = dependencyPath.ToString();
             dependency["modified"] = formattedTime;
             json["dependencies"].push_back(dependency);
             updated = true;
@@ -149,12 +149,12 @@ auto SSpvCompiler::Compile(UPath const& path) -> b8
 {
     UPath const filePath{ CompiledShadersPath / path.Name() + ".spv" };
 
-    // User must have vulkan bin in environment variables path
+    // User must have Vulkan bin in environment variables path
     std::string command;
 #ifdef NDEBUG
-    command = std::format("glslc \"{0}\" -o \"{1}\"", path.ToPath().string(), filePath.ToPath().string());
+    command = std::format(R"(glslc "{0}" -o "{1}")", path.ToPath().string(), filePath.ToPath().string());
 #else
-    command = std::format("glslc \"{0}\" -o \"{1}\" -g", path.ToPath().string(), filePath.ToPath().string());
+    command = std::format(R"(glslc "{0}" -o "{1}" -g)", path.ToPath().string(), filePath.ToPath().string());
 #endif
     b8 const result{ std::system(command.c_str()) == 0 };
 

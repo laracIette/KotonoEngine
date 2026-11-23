@@ -15,7 +15,7 @@ public:
 	using TextChangedCallback = std::function<void(std::string_view)>;
 
 protected:
-	WidgetPtr Build() override;
+    auto Build() -> WidgetPtr override;
 
 public:
 	static auto FromPointer(StringCompatible auto* value) -> WidgetPtr
@@ -23,12 +23,23 @@ public:
 		Check(Abort, value, "value is null");
 		return (
 			UCreate<WValueBox>{}()
+			| Apply(&WValueBox::SetIsEditable, true)
 			| Apply(&WValueBox::SetValueToString, [value]() { return *value; })
 			| Apply(&WValueBox::SetOnTextChanged, [value](std::string_view text) { *value = text; })
 		);
 	}
 
+	static auto FromValue(StringCompatible auto const& value) -> WidgetPtr
+	{
+		return (
+			UCreate<WValueBox>{}()
+			| Apply(&WValueBox::SetIsEditable, false)
+			| Apply(&WValueBox::SetValueToString, [value]() { return value; })
+		);
+	}
+
 private:
+	WritableProperty(b8, isEditable_, IsEditable);
 	WritableProperty(ValueToStringFunc, valueToString_, ValueToString);
 	WritableProperty(TextChangedCallback, onTextChanged_, OnTextChanged);
 };

@@ -5,13 +5,13 @@
 #include <iostream>
 #include <sstream>
 
-UFile::UFile(UPath const& path)
-    : path_{ path }
+UFile::UFile(UPath&& path)
+    : path_{ Move(path) }
 {
 }
 
-UFile::UFile(UPath&& path) 
-    : path_{ std::move(path) }
+UFile::UFile(UPath const& path)
+    : path_{ path }
 {
 }
 

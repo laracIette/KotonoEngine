@@ -4,7 +4,8 @@
 #include <core_widgets.h>
 
 WInputTextBox::WInputTextBox()
-	: text_{ "" }
+	: text_{}
+    , isEditable_{ false }
 	, onTextChanged_{}
 	, actuationTime_{ 0.5f }
 	, repeatTime_{ 0.05f }
@@ -12,7 +13,7 @@ WInputTextBox::WInputTextBox()
 {
 }
 
-WidgetPtr WInputTextBox::Build()
+auto WInputTextBox::Build() -> WidgetPtr
 {
 	return (
 		UCreate<WStack>{}()
@@ -31,8 +32,13 @@ WidgetPtr WInputTextBox::Build()
 	);
 }
 
-b8 WInputTextBox::OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier)
+auto WInputTextBox::OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) -> b8
 {
+    if (!isEditable_)
+    {
+        return INPUT_UNHANDLED;
+    }
+
 	if (key == EKey::Backspace)
 	{
 		switch (inputState)

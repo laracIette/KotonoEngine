@@ -37,7 +37,7 @@ UGuid::UGuid(std::string_view string)
     ParseHex(string, 24, 6, 10); // Last 12 chars -> bytes 10-15
 }
 
-std::string UGuid::ToString() const
+auto UGuid::ToString() const -> std::string
 {
     return std::format(
         "{:02x}{:02x}{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
@@ -49,12 +49,7 @@ std::string UGuid::ToString() const
     );
 }
 
-UGuid::operator std::string() const
-{
-    return ToString();
-}
-
-UGuid& UGuid::operator=(std::string_view string)
+auto UGuid::operator=(std::string_view string) -> UGuid&
 {
     if (string.length() < 36)
     {
@@ -70,7 +65,7 @@ UGuid& UGuid::operator=(std::string_view string)
     return *this;
 }
 
-bool UGuid::operator==(UGuid const& other) const noexcept
+auto UGuid::operator==(UGuid const& other) const noexcept -> b8
 {
     auto const [a_low, a_high] { std::bit_cast<std::array<u64, 2>>(bytes_) };
     auto const [b_low, b_high] { std::bit_cast<std::array<u64, 2>>(other.bytes_) };
@@ -90,7 +85,7 @@ void UGuid::ParseHex(std::string_view string, size str_pos, size num_bytes, size
     }
 };
 
-size std::hash<UGuid>::operator()(UGuid const& g) const noexcept
+auto std::hash<UGuid>::operator()(UGuid const& g) const noexcept -> ::size
 {
     auto const [low, high] { std::bit_cast<std::array<u64, 2>>(g.bytes_) };
     return static_cast<::size>(low ^ high);

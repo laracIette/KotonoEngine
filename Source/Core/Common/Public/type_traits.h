@@ -34,3 +34,9 @@ struct IsStrictBaseOf final : std::bool_constant<
 
 template <typename Base, typename Derived>
 inline constexpr auto VIsStrictBaseOf{ IsStrictBaseOf<Base, Derived>::value };
+
+template <typename T>
+[[nodiscard]] constexpr std::remove_reference_t<T>&& Move(T&& Value) noexcept
+{
+    return static_cast<std::remove_reference_t<T>&&>(Value);
+}

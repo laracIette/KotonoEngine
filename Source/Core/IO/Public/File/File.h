@@ -11,8 +11,8 @@
 class UFile final
 {
 public:
+    explicit UFile(UPath&& path);
     explicit UFile(UPath const& path);
-	explicit UFile(UPath&& path);
 
 	/// Get whether the file exists
 	auto Exists() const -> b8;

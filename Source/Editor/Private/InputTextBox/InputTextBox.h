@@ -19,10 +19,10 @@ public:
 	WInputTextBox();
 
 protected:
-	WidgetPtr Build() override;
+	auto Build() -> WidgetPtr override;
 
 public:
-	b8 OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) override;
+	auto OnKeyboardKey(EKey key, EInputState inputState, EModifier modifier) -> b8 override;
 
 	void SetActuationTime(f32 actuationTime);
 	void SetRepeatTime(f32 repeatTime);
@@ -30,6 +30,7 @@ public:
 private:
 	std::string text_;
 
+    WritableProperty(b8, isEditable_, IsEditable);
 	WritableProperty(TextChangedCallback, onTextChanged_, OnTextChanged);
 	WritableProperty(ValueToStringFunc, valueToString_, ValueToString);
 

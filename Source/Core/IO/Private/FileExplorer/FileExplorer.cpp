@@ -2,65 +2,70 @@
 
 #include "File/File.h"
 
-UFileExplorer::UFileExplorer() :
-    directoryPath_{ ENGINE_DIRECTORY }
+UFileExplorer::UFileExplorer()
+    : directoryPath_{ ENGINE_DIRECTORY }
 {
 }
 
-UFileExplorer::UFileExplorer(const UPath& path) :
-    directoryPath_{ path }
+UFileExplorer::UFileExplorer(UPath&& path)
+    : directoryPath_{ Move(path) }
 {
 }
 
-const UPath& UFileExplorer::GetDirectoryPath() const
+UFileExplorer::UFileExplorer(UPath const& path)
+    : directoryPath_{ path }
+{
+}
+
+auto UFileExplorer::GetDirectoryPath() const -> UPath const&
 {
     return directoryPath_;
 }
 
-void UFileExplorer::SetDirectoryPath(const UPath& directoryPath)
+void UFileExplorer::SetDirectoryPath(UPath const& directoryPath)
 {
     directoryPath_ = directoryPath;
 }
 
-std::vector<UPath> UFileExplorer::GetDirectories() const
+auto UFileExplorer::GetDirectories() const -> std::vector<UPath>
 {
     std::vector<UPath> directories;
-    for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(directoryPath_))
+    for (auto const& entry : std::filesystem::directory_iterator(directoryPath_.ToPath()))
     {
         if (entry.is_directory())
         {
-            directories.push_back(entry.path());
+            directories.emplace_back(entry.path());
         }
     }
     return directories;
 }
 
-std::vector<UFile> UFileExplorer::Find(const std::string& name) const
+auto UFileExplorer::Find(const std::string& name) const -> std::vector<UFile>
 {
     std::vector<UFile> files;
-    for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(directoryPath_))
+    for (auto const& entry : std::filesystem::recursive_directory_iterator(directoryPath_.ToPath()))
     {
         if (entry.is_regular_file() && entry.path().filename().string().find(name) != std::string::npos)
         {
-            files.push_back(UFile{ entry.path() });
+            files.emplace_back(entry.path());
         }
     }
     return files;
 }
 
-std::vector<UFile> UFileExplorer::GetFiles(const bool isRecursive) const
+auto UFileExplorer::GetFiles(b8 isRecursive) const -> std::vector<UFile>
 {
     std::vector<std::filesystem::directory_entry> entries{};
     if (isRecursive)
     {
-        for (const auto& entry : std::filesystem::recursive_directory_iterator(directoryPath_))
+        for (const auto& entry : std::filesystem::recursive_directory_iterator(directoryPath_.ToPath()))
         {
             entries.push_back(entry);
         }
     }
     else
     {
-        for (const auto& entry : std::filesystem::directory_iterator(directoryPath_))
+        for (const auto& entry : std::filesystem::directory_iterator(directoryPath_.ToPath()))
         {
             entries.push_back(entry);
         }
@@ -71,7 +76,7 @@ std::vector<UFile> UFileExplorer::GetFiles(const bool isRecursive) const
     {
         if (entry.is_regular_file())
         {
-            files.push_back(UFile(entry.path()));
+            files.emplace_back(entry.path());
         }
     }
     return files;

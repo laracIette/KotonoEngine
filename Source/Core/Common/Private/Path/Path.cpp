@@ -6,7 +6,7 @@
 
 static constexpr void replace(std::string& str, std::string_view from, std::string_view to)
 {
-    const size start_pos{ str.find(from) };
+    size const start_pos{ str.find(from) };
     if (start_pos != std::string::npos)
     {
         str.replace(start_pos, from.length(), to);
@@ -14,7 +14,7 @@ static constexpr void replace(std::string& str, std::string_view from, std::stri
 }
 
 UPath::UPath(UPath&& path) noexcept
-	: source_{ std::move(path.source_) }
+	: source_{ Move(path.source_) }
 {
 }
 
@@ -24,7 +24,7 @@ UPath::UPath(UPath const& path)
 }
 
 UPath::UPath(std::string&& source) noexcept
-	: source_{ std::move(source) }
+	: source_{ Move(source) }
 {
 }
 
@@ -125,21 +125,6 @@ void UPath::Remove() const
 	Check(Error, !error, "an error occured while removing a path: {0}", error.message());
 }
 
-UPath::operator std::string() const
-{
-    return ToString();
-}
-
-UPath::operator std::filesystem::path() const
-{
-    return ToPath();
-}
-
-UPath::operator b8() const
-{
-    return !IsEmpty();
-}
-
 auto UPath::operator/(std::string_view string) const -> UPath
 {
 	return UPath{ std::format("{0}/{1}", source_, string) };
@@ -165,7 +150,7 @@ auto UPath::operator==(UPath const& other) const noexcept -> b8
     return source_ == other.source_;
 }
 
-size std::hash<UPath>::operator()(UPath const& p) const noexcept
+auto std::hash<UPath>::operator()(UPath const& p) const noexcept -> ::size
 {
     return std::hash<std::string>{}(p.source_);
 }

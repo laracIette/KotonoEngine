@@ -11,14 +11,13 @@ private:
 
 public:
 	UGuid();
-	UGuid(std::string_view string);
+	explicit UGuid(std::string_view string);
 
-	std::string ToString() const;
+	auto ToString() const -> std::string;
 
-	operator std::string() const;
-	UGuid& operator=(std::string_view string);
+	auto operator=(std::string_view string) -> UGuid&;
 
-	bool operator==(UGuid const& other) const noexcept;
+	auto operator==(UGuid const& other) const noexcept -> b8;
 
 private:
 	void ParseHex(std::string_view string, size str_pos, size num_bytes, size array_offset);
@@ -30,7 +29,7 @@ private:
 template<>
 struct std::hash<UGuid>
 {
-	::size operator()(UGuid const& g) const noexcept;
+	auto operator()(UGuid const& g) const noexcept -> ::size;
 };
 
 template <>

@@ -1,22 +1,28 @@
 #pragma once
+
 #include <Path/Path.h>
 #include <vector>
+
 class UFile;
+
 class UFileExplorer final
 {
 public:
 	UFileExplorer();
-	UFileExplorer(const UPath& path);
+	explicit UFileExplorer(UPath&& path);
+	explicit UFileExplorer(UPath const& path);
 
-	const UPath& GetDirectoryPath() const;
-	void SetDirectoryPath(const UPath& directoryPath);
+	auto GetDirectoryPath() const -> UPath const&;
+	void SetDirectoryPath(UPath const& directoryPath);
 
 	// Get the directories paths in the current directory.
-	std::vector<UPath> GetDirectories() const;
+	auto GetDirectories() const -> std::vector<UPath>;
+
 	// Get the files whose name contains name.
-	std::vector<UFile> Find(const std::string& name) const;
+	auto Find(const std::string& name) const -> std::vector<UFile>;
+
 	// Get all the files in the directory.
-	std::vector<UFile> GetFiles(const bool isRecursive = false) const;
+	auto GetFiles(b8 isRecursive = false) const -> std::vector<UFile>;
 
 private:
 	UPath directoryPath_;

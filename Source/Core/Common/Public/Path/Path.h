@@ -1,5 +1,8 @@
 #pragma once
+
 #include "types.h"
+#include "type_traits.h"
+
 #include <filesystem>
 #include <string>
 #include <string_view>
@@ -36,10 +39,6 @@ public:
 	/// Remove file or directory
 	void Remove() const;
 
-	operator std::string() const;
-	operator std::filesystem::path() const;
-	operator b8() const;
-
 	auto operator/(std::string_view string) const -> UPath;
 	auto operator/(UPath const& path) const -> UPath;
 	
@@ -58,5 +57,5 @@ private:
 template<>
 struct std::hash<UPath>
 {
-	::size operator()(UPath const& p) const noexcept;
+	auto operator()(UPath const& p) const noexcept -> ::size;
 };

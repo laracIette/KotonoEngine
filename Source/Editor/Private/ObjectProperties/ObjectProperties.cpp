@@ -22,7 +22,7 @@ static auto BuildMemberWidget(std::string_view type, void* variablePtr) -> Widge
     }
     if (type == "UGuid")
     {
-        return WValueBox::FromPointer(static_cast<UGuid*>(variablePtr));
+        return WValueBox::FromValue(static_cast<UGuid*>(variablePtr)->ToString());
     }
     return (
         UCreate<WText>{}()
