@@ -10,99 +10,95 @@
 /// <summary>
 /// A contiguous container with a fixed capacity allocated on the heap
 /// </summary>
-template <typename T, ::size Capacity>
-class UFixedHeapContainer final
+template <typename T, ::size N>
+class UHeapArray final
 {
 private:
 	using ValueType = T;
 	using IndexType = ::size;
 
 public:
-	using value_type		= ValueType;
-	using index_type		= IndexType;
-	using iterator			= ValueType*;
-	using const_iterator	= ValueType const*;
-
-public:
-	UFixedHeapContainer()
-		: data_{ static_cast<ValueType*>(::operator new[](capacity_bytes(), std::align_val_t{ alignof(ValueType) })) }
+	UHeapArray()
+		: data_{ static_cast<ValueType*>(::operator new[](CapacityBytes(), std::align_val_t{ alignof(ValueType) })) }
 		, size_{ 0 }
 	{
 	}
 
 	template <typename... Args>
 		requires (std::constructible_from<ValueType, Args> && ...)
-	UFixedHeapContainer(Args&&... args)
-		: UFixedHeapContainer()
+	explicit UHeapArray(Args&&... args)
+		: UHeapArray()
 	{
 		// Fold expression
-		(emplace_back(std::forward<Args>(args)), ...);
+		(EmplaceBack(std::forward<Args>(args)), ...);
 	}
 
-	UFixedHeapContainer(UFixedHeapContainer&& other) noexcept
+	UHeapArray(UHeapArray&& other) noexcept
 		: data_{ std::exchange(other.data_, nullptr) }
 		, size_{ std::exchange(other.size_, 0) }
 	{
 	}
 
-	UFixedHeapContainer(UFixedHeapContainer const&) = delete;
-	UFixedHeapContainer& operator=(UFixedHeapContainer const&) = delete;
+	UHeapArray(UHeapArray const&) = delete;
 
-	~UFixedHeapContainer()
+	~UHeapArray()
 	{
-		clear();
+		Clear();
 		::operator delete[](data_, std::align_val_t{ alignof(ValueType) });
 	}
 
-	UFixedHeapContainer& operator=(UFixedHeapContainer&& other) noexcept
+	auto operator=(UHeapArray&& other) noexcept -> UHeapArray&
 	{
 		if (data_)
 		{
-			clear();
+			Clear();
 			::operator delete[](data_, std::align_val_t{ alignof(ValueType) });
 		}
+
 		data_ = std::exchange(other.data_, nullptr);
 		size_ = std::exchange(other.size_, 0);
 		
 		return *this;
 	}
 
+	auto operator=(UHeapArray const&) -> UHeapArray& = delete;
+
 	template <typename... Args>
 		requires std::constructible_from<ValueType, Args...>
-	ValueType& emplace_back(Args&&... args) noexcept(std::is_nothrow_constructible_v<ValueType, Args...>)
+	auto EmplaceBack(Args&&... args) noexcept(std::is_nothrow_constructible_v<ValueType, Args...>) -> ValueType&
 	{
-		Check(Abort, size_ < Capacity, "UFixedHeapContainer capacity exceeded!");
+		Check(Abort, size_ < Capacity(), "Capacity exceeded!");
 		T* const ptr{ std::construct_at(&data_[size_], std::forward<Args>(args)...) };
 		++size_;
 		return *ptr;
 	}
 
-	ValueType* data() const noexcept
+	auto Data() const noexcept -> ValueType*
 	{
 		return data_;
 	}
 
-	IndexType size() const noexcept
+	auto Size() const noexcept -> IndexType
 	{
 		return size_;
 	}
 
-	IndexType size_bytes() const noexcept
+	auto SizeBytes() const noexcept -> IndexType
 	{
 		return size_ * sizeof(ValueType);
 	}
 
-	static constexpr IndexType capacity() noexcept
+	static constexpr auto Capacity() noexcept -> IndexType
 	{
-		return Capacity;
+		return N;
 	}
 
-	static constexpr IndexType capacity_bytes() noexcept
+	static constexpr auto CapacityBytes() noexcept -> IndexType
 	{
-		return Capacity * sizeof(ValueType);
+		return N * sizeof(ValueType);
 	}
 
-	void clear() noexcept
+	void Clear() noexcept
 	{
 		for (IndexType i{ 0 }; i < size_; ++i)
 		{

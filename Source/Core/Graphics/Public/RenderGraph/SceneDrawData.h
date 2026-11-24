@@ -1,9 +1,12 @@
 #pragma once
+
+#include "Containers/HeapArray.h"
+#include "Path/Path.h"
+#include "types.h"
+
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float4.hpp>
-#include <Containers/FixedHeapContainer.h>
-#include <Path/Path.h>
-#include <types.h>
+
 struct USceneDrawData final
 {
 	f32 sortKey;
@@ -15,9 +18,9 @@ struct USceneDrawData final
 	UPath material;
 	UPath model;
 
-	UFixedHeapContainer<f32, 16> scalars;
-	UFixedHeapContainer<glm::vec4, 16> vectors;
-	UFixedHeapContainer<UPath, 16> textures;
+	UHeapArray<f32, 16> scalars;
+	UHeapArray<glm::vec4, 16> vectors;
+	UHeapArray<UPath, 16> textures;
 
 	b8 isVisible;
 };

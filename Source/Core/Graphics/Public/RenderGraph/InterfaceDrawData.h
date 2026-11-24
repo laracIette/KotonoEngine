@@ -1,14 +1,16 @@
 #pragma once
+
 #include "Color.h"
+#include "Containers/HeapArray.h"
 #include "Corners.h"
+#include "Path/Path.h"
 #include "SceneRenderGraph.h"
 #include "SceneView.h"
 #include "Scissor.h"
+#include "types.h"
+
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float4.hpp>
-#include <Containers/FixedHeapContainer.h>
-#include <Path/Path.h>
-#include <types.h>
 #include <variant>
 
 struct UInterfaceDrawData final
@@ -28,9 +30,9 @@ struct UInterfaceDrawData final
 	UPath shader;
 	UPath model;
 
-	UFixedHeapContainer<f32, 16> scalars;
-	UFixedHeapContainer<glm::vec4, 16> vectors;
-	UFixedHeapContainer<Texture, 16> textures;
+	UHeapArray<f32, 16> scalars;
+	UHeapArray<glm::vec4, 16> vectors;
+	UHeapArray<Texture, 16> textures;
 
 	b8 isVisible;
 	

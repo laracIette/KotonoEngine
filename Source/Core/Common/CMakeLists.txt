@@ -23,7 +23,7 @@ set(KCOMMON_PUBLIC_HEADERS
     "Public/type_traits.h"
     "Public/types.h"
     "Public/Asset/Asset.h"
-    "Public/Containers/FixedHeapContainer.h"
+    "Public/Containers/HeapArray.h"
     "Public/Containers/Map.h"
     "Public/Containers/Matrix.h"
     "Public/Containers/Pool.h"
