@@ -1,9 +1,9 @@
 #pragma once
 #include "AudioSource/AudioSource.h"
-#include <Handle.h>
-#include <Containers/Map.h>
-#include <Path/Path.h>
-#include <vector>
+#include "Handle.h"
+#include "Containers/List.h"
+#include "Containers/Map.h"
+#include "Path/Path.h"
 
 struct ALCdevice;
 struct ALCcontext;
@@ -45,9 +45,9 @@ private:
 	ALCdevice* device_;
 	ALCcontext* context_;
 
-	std::vector<UAudioSource> oneTimeSources_;
+	UList<UAudioSource> oneTimeSources_;
 
 	UMap<EHandle, UAudioSource> sources_;
 	EHandle currentHandle_;
-	std::vector<EHandle> freeSourceSlots_;
+	UList<EHandle> freeSourceSlots_;
 };

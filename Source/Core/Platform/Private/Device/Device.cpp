@@ -2,36 +2,39 @@
 
 #include "AllocatedBuffer.h"
 #include "AllocatedImage.h"
+#include "Containers/Array.h"
 #include "Context/Context.h"
+#include "Logging/log.h"
 #include "vk_utils/vk_utils.h"
+
 #include <algorithm>
-#include <array>
 #include <bit>
-#include <Logging/log.h>
 #include <ranges>
 #include <Windows.h>
 
 static constexpr auto SHOULD_LOG_VMA{ false };
 
-static constexpr std::array DEVICE_EXTENSIONS
+static constexpr UArray DEVICE_EXTENSIONS
 {
 	VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 };
 
-static b8 isComputerPluggedIn()
+static auto isComputerPluggedIn() -> b8
 {
 	SYSTEM_POWER_STATUS powerStatus;
 	return GetSystemPowerStatus(&powerStatus)
 		&& powerStatus.ACLineStatus == AC_LINE_ONLINE;
 }
 
-static UQueueFamilyIndices findQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface)
+static auto findQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface) -> UQueueFamilyIndices
 {
 	u32 queueFamilyCount{ 0 };
 	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
 
-	std::vector<VkQueueFamilyProperties> queueFamilies{ queueFamilyCount };
-	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+	UList<VkQueueFamilyProperties> queueFamilies{};
+    queueFamilies.Resize(queueFamilyCount);
+
+	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.Data());
 
 	UQueueFamilyIndices indices{};
 
@@ -62,13 +65,15 @@ static UQueueFamilyIndices findQueueFamilies(VkPhysicalDevice device, VkSurfaceK
 	return indices;
 }
 
-static b8 checkDeviceExtensionSupport(VkPhysicalDevice device)
+static auto checkDeviceExtensionSupport(VkPhysicalDevice device) -> b8
 {
 	u32 extensionCount;
 	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
-	std::vector<VkExtensionProperties> availableExtensions{ extensionCount };
-	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+	UList<VkExtensionProperties> availableExtensions{};
+    availableExtensions.Resize(extensionCount);
+
+	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.Data());
 
 	return std::ranges::all_of(DEVICE_EXTENSIONS, [availableExtensions](std::string_view required) {
 		return std::ranges::contains(availableExtensions
@@ -79,7 +84,7 @@ static b8 checkDeviceExtensionSupport(VkPhysicalDevice device)
 	});
 }
 
-static b8 checkDeviceFeatureSupport(VkPhysicalDevice device)
+static auto checkDeviceFeatureSupport(VkPhysicalDevice device) -> b8
 {
 	VkPhysicalDeviceVulkan14Features features14{
 		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_FEATURES,
@@ -137,7 +142,7 @@ static b8 checkDeviceFeatureSupport(VkPhysicalDevice device)
 		&& features14Supported;
 }
 
-static USwapchainSupportDetails querySwapchainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)
+static auto querySwapchainSupport(VkPhysicalDevice device, VkSurfaceKHR surface) -> USwapchainSupportDetails
 {
 	USwapchainSupportDetails details{};
 	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
@@ -147,8 +152,8 @@ static USwapchainSupportDetails querySwapchainSupport(VkPhysicalDevice device, V
 
 	if (formatCount != 0)
 	{
-		details.formats.resize(formatCount);
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
+		details.formats.Resize(formatCount);
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.Data());
 	}
 
 	u32 presentModeCount;
@@ -156,14 +161,14 @@ static USwapchainSupportDetails querySwapchainSupport(VkPhysicalDevice device, V
 
 	if (presentModeCount != 0)
 	{
-		details.presentModes.resize(presentModeCount);
-		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data());
+		details.presentModes.Resize(presentModeCount);
+		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.Data());
 	}
 
 	return details;
 }
 
-static b8 isDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
+static auto isDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface) -> b8
 {
 	UQueueFamilyIndices const indices{ findQueueFamilies(device, surface) };
 
@@ -174,7 +179,7 @@ static b8 isDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
 	if (extensionsSupported)
 	{
 		USwapchainSupportDetails const swapchainSupport{ querySwapchainSupport(device, surface) };
-		swapchainAdequate = !swapchainSupport.formats.empty() && !swapchainSupport.presentModes.empty();
+		swapchainAdequate = !swapchainSupport.formats.IsEmpty() && !swapchainSupport.presentModes.IsEmpty();
 	}
 
 	return indices.IsComplete()
@@ -310,7 +315,7 @@ void UDevice::TransitionImageLayout(UAllocatedImage const& image, VkFormat forma
 
 void UDevice::StageBufferForDeletion(UAllocatedBuffer const& allocatedBuffer)
 {
-	deletionQueue_.push_back(allocatedBuffer);
+	deletionQueue_.Add(allocatedBuffer);
 }
 
 void UDevice::StagingUpload(void const* data, VkDeviceSize size, UAllocatedBuffer const& dstBuffer, VkDeviceSize srcOffset, VkDeviceSize dstOffset)
@@ -414,8 +419,10 @@ void UDevice::CreatePhysicalDevice(VkSurfaceKHR mainSurface)
 		throw std::runtime_error{ "failed to find GPUs with Vulkan support!" };
 	}
 
-	std::vector<VkPhysicalDevice> devices{ deviceCount };
-	vkEnumeratePhysicalDevices(context_.GetInstance(), &deviceCount, devices.data());
+	UList<VkPhysicalDevice> devices{};
+    devices.Resize(deviceCount);
+
+	vkEnumeratePhysicalDevices(context_.GetInstance(), &deviceCount, devices.Data());
 
 	VkPhysicalDevice bestDevice{ VK_NULL_HANDLE };
 	VkDeviceSize maxVRAM{ 0 };
@@ -484,7 +491,7 @@ void UDevice::CreateDevice()
 				.pQueuePriorities = &QUEUE_PRIORITY,
 			};
 		})
-		| std::ranges::to<std::vector>()
+		| std::ranges::to<UList>()
 	};
 
 	VkPhysicalDeviceVulkan14Features features14{
@@ -538,11 +545,11 @@ void UDevice::CreateDevice()
 		.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
 		.pNext = &features2,
 
-		.queueCreateInfoCount = static_cast<u32>(queueCreateInfos.size()),
-		.pQueueCreateInfos = queueCreateInfos.data(),
+		.queueCreateInfoCount = static_cast<u32>(queueCreateInfos.Size()),
+		.pQueueCreateInfos = queueCreateInfos.Data(),
 
-		.enabledExtensionCount = static_cast<u32>(DEVICE_EXTENSIONS.size()),
-		.ppEnabledExtensionNames = DEVICE_EXTENSIONS.data(),
+		.enabledExtensionCount = static_cast<u32>(DEVICE_EXTENSIONS.Size()),
+		.ppEnabledExtensionNames = DEVICE_EXTENSIONS.Data(),
 	};
 
 	VK_CHECK_THROW(
@@ -624,10 +631,10 @@ void UDevice::ClearDeletionQueue()
 	{
 		stagingBuffer.Cleanup(allocator_);
 	}
-	deletionQueue_.clear();
+	deletionQueue_.Clear();
 }
 
-b8 UDevice::FormatSupported(VkFormat format, VkFormatFeatureFlags features) const
+auto UDevice::FormatSupported(VkFormat format, VkFormatFeatureFlags features) const -> b8
 {
 	VkFormatProperties formatProperties;
 	vkGetPhysicalDeviceFormatProperties(physicalDevice_, format, &formatProperties);
@@ -637,7 +644,7 @@ b8 UDevice::FormatSupported(VkFormat format, VkFormatFeatureFlags features) cons
 
 void UDevice::PopulateSupportedMipmapFormats()
 {
-	constexpr std::array CANDIDATES{ VK_FORMAT_R8G8B8A8_SRGB };
+	constexpr UArray CANDIDATES{ VK_FORMAT_R8G8B8A8_SRGB };
 
 	supportedMipmapFormats_.insert_range(CANDIDATES
 		| std::views::filter([this](VkFormat format) {
@@ -646,9 +653,9 @@ void UDevice::PopulateSupportedMipmapFormats()
 	);
 }
 
-VkFormat UDevice::FindSupportedDepthFormat() const
+auto UDevice::FindSupportedDepthFormat() const -> VkFormat
 {
-	constexpr std::array CANDIDATES{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT };
+	constexpr UArray CANDIDATES{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT };
 
 	auto const it{ std::ranges::find_if(CANDIDATES
 		, [this](VkFormat format) {
@@ -664,14 +671,14 @@ VkFormat UDevice::FindSupportedDepthFormat() const
 	return *it;
 }
 
-f32 UDevice::FindMaxSamplerAnisotropy() const
+auto UDevice::FindMaxSamplerAnisotropy() const -> f32
 {
 	VkPhysicalDeviceProperties properties;
 	vkGetPhysicalDeviceProperties(physicalDevice_, &properties);
 	return properties.limits.maxSamplerAnisotropy;
 }
 
-VkSampleCountFlagBits UDevice::GetMaxUsableSampleCount() const
+auto UDevice::GetMaxUsableSampleCount() const -> VkSampleCountFlagBits
 {
 	VkPhysicalDeviceProperties physicalDeviceProperties;
 	vkGetPhysicalDeviceProperties(physicalDevice_, &physicalDeviceProperties);

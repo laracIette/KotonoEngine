@@ -1,10 +1,12 @@
 ﻿#include "Shader.h"
 
-#include <Logging/log.h>
-#include <File/File.h>
-#include <Serializer/Serializer.h>
-#include <Device/Device.h>
-#include <vk_utils/vk_utils.h>
+#include "Containers/Array.h"
+#include "Logging/log.h"
+#include "File/File.h"
+#include "Serializer/Serializer.h"
+#include "Device/Device.h"
+#include "vk_utils/vk_utils.h"
+
 #include <nlohmann/json.hpp>
 
 #ifdef NDEBUG
@@ -65,8 +67,8 @@ auto AShader::CreateShaderModule(UDevice& device, USpan<u8 const> code) -> VkSha
 
 void AShader::CreateGraphicsPipeline(UDevice& device, VkPipelineLayout pipelineLayout, VkFormat swapchainFormat)
 {
-	std::vector<VkShaderModule> shaderModules;
-	std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
+	UList<VkShaderModule> shaderModules;
+	UList<VkPipelineShaderStageCreateInfo> shaderStages;
 
 	nlohmann::json json{};
 	SSerializer::Deserialize(json, GetPath());
@@ -75,10 +77,10 @@ void AShader::CreateGraphicsPipeline(UDevice& device, VkPipelineLayout pipelineL
 	{
 		UPath const path{ shader["path"].get<std::string>() };
 		UFile const file{ CompiledShadersPath / path.Name() + ".spv" };
-		std::vector const shaderCode{ file.ReadBinary() };
+		UList const shaderCode{ file.ReadBinary() };
 
 		VkShaderModule const shaderModule{ CreateShaderModule(device, shaderCode) };
-		shaderModules.push_back(shaderModule);
+		shaderModules.Add(shaderModule);
 
 		const VkPipelineShaderStageCreateInfo shaderStageInfo{
 			.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
@@ -86,7 +88,7 @@ void AShader::CreateGraphicsPipeline(UDevice& device, VkPipelineLayout pipelineL
 			.module = shaderModule,
 			.pName = "main",
 		};
-		shaderStages.push_back(shaderStageInfo);
+		shaderStages.Add(shaderStageInfo);
 	}
 
 	const auto& dataRasterizer{ json["rasterizer"] };
@@ -144,7 +146,7 @@ void AShader::CreateGraphicsPipeline(UDevice& device, VkPipelineLayout pipelineL
 				.colorWriteMask = dataColorBlendAttachment["colorWriteMask"],
 			};
 		})
-		| std::ranges::to<std::vector>()
+		| std::ranges::to<UList>()
 	};
 
 	const VkPipelineVertexInputStateCreateInfo vertexInputInfo{
@@ -171,37 +173,37 @@ void AShader::CreateGraphicsPipeline(UDevice& device, VkPipelineLayout pipelineL
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
 		.logicOpEnable = VK_FALSE,
 		.logicOp = VK_LOGIC_OP_COPY, // Optional
-		.attachmentCount = static_cast<u32>(colorBlendAttachments.size()),
-		.pAttachments = colorBlendAttachments.data(),
+		.attachmentCount = static_cast<u32>(colorBlendAttachments.Size()),
+		.pAttachments = colorBlendAttachments.Data(),
 		.blendConstants = { 0.0f, 0.0f, 0.0f, 0.0f }, // Optional
 	};
 
-	constexpr std::array dynamicStates
+	constexpr UArray dynamicStates
 	{
 		VK_DYNAMIC_STATE_VIEWPORT,
 		VK_DYNAMIC_STATE_SCISSOR
 	};
 	const VkPipelineDynamicStateCreateInfo dynamicState{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
-		.dynamicStateCount = static_cast<u32>(dynamicStates.size()),
-		.pDynamicStates = dynamicStates.data(),
+		.dynamicStateCount = static_cast<u32>(dynamicStates.Size()),
+		.pDynamicStates = dynamicStates.Data(),
 	};
 
-	const std::vector colorAttachmentFormats{ GetOutputColorAttachmentFormats(json["pipelinePass"], swapchainFormat) };
+	const UList colorAttachmentFormats{ GetOutputColorAttachmentFormats(json["pipelinePass"], swapchainFormat) };
 	const VkPipelineRenderingCreateInfo pipelineRenderingInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
 		.pNext = VK_NULL_HANDLE,
 		.viewMask = json["viewMask"],
-		.colorAttachmentCount = static_cast<u32>(colorAttachmentFormats.size()),
-		.pColorAttachmentFormats = colorAttachmentFormats.data(),
+		.colorAttachmentCount = static_cast<u32>(colorAttachmentFormats.Size()),
+		.pColorAttachmentFormats = colorAttachmentFormats.Data(),
 		.depthAttachmentFormat = device.GetDepthFormat(),
 	};
 
 	const VkGraphicsPipelineCreateInfo pipelineInfo{
 		.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 		.pNext = &pipelineRenderingInfo,
-		.stageCount = static_cast<u32>(shaderStages.size()),
-		.pStages = shaderStages.data(),
+		.stageCount = static_cast<u32>(shaderStages.Size()),
+		.pStages = shaderStages.Data(),
 
 		.pVertexInputState = &vertexInputInfo,
 		.pInputAssemblyState = &inputAssembly,
@@ -233,7 +235,7 @@ void AShader::CreateComputePipeline(UDevice& device, VkPipelineLayout pipelineLa
 
 	UPath const path{ json["path"].get<std::string>() };
 	UFile const file{ CompiledShadersPath / path.Name() + ".spv" };
-	std::vector const shaderCode{ file.ReadBinary() };
+	UList const shaderCode{ file.ReadBinary() };
 
 	VkShaderModule const shaderModule{ CreateShaderModule(device, shaderCode) };
 
@@ -265,7 +267,7 @@ void AShader::CreateComputePipeline(UDevice& device, VkPipelineLayout pipelineLa
 	vkDestroyShaderModule(device.GetDevice(), shaderModule, nullptr);
 }
 
-auto AShader::GetOutputColorAttachmentFormats(EPipelinePass pipelinePass, VkFormat swapchainFormat) const -> std::vector<VkFormat>
+auto AShader::GetOutputColorAttachmentFormats(EPipelinePass pipelinePass, VkFormat swapchainFormat) const -> UList<VkFormat>
 {
 	switch (pipelinePass)
 	{

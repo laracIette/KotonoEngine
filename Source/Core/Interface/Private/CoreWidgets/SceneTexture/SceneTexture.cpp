@@ -35,7 +35,7 @@ void WSceneTexture::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGr
 		GetScene()->PopulateRenderGraph(sceneRenderGraph, sceneVisibility_);
 	}
 	
-	interfaceRenderGraph.drawDatas.push_back(
+	interfaceRenderGraph.drawDatas.Add(
 		UInterfaceDrawData::MakeSceneTexture(
 			GetScissor(),
 			GetModelMatrix(),

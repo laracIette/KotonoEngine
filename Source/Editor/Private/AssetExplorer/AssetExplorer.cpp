@@ -143,19 +143,19 @@ void WAssetExplorer::Push(UPath const& path)
 
 	currentDirectory_ = path;
 	++currentPathIndex_;
-	navigatedPaths_.erase(navigatedPaths_.begin() + currentPathIndex_, navigatedPaths_.end());
-	navigatedPaths_.push_back(path);
+	navigatedPaths_.Erase(navigatedPaths_.begin() + currentPathIndex_, navigatedPaths_.end());
+	navigatedPaths_.Add(path);
 	UpdateItemList();
 }
 
 auto WAssetExplorer::CanNavigatePrevious() const -> b8
 {
-	return !navigatedPaths_.empty() && currentPathIndex_ > 0;
+	return !navigatedPaths_.IsEmpty() && currentPathIndex_ > 0;
 }
 
 auto WAssetExplorer::CanNavigateNext() const -> b8
 {
-	return !navigatedPaths_.empty() && currentPathIndex_ < navigatedPaths_.size() - 1;
+	return !navigatedPaths_.IsEmpty() && currentPathIndex_ < navigatedPaths_.Size() - 1;
 }
 
 void WAssetExplorer::NavigatePrevious()
@@ -182,15 +182,15 @@ auto WAssetExplorer::MakeItems() -> USet<UObjectPtr<WSelectableListItem>>
 	auto const directories{ fileExplorer.GetDirectories() };
 	auto const files{ fileExplorer.GetFiles() };
 
-	std::vector<UObjectPtr<WAssetExplorerItem>> items{};
+	UList<UObjectPtr<WAssetExplorerItem>> items{};
 
     for (auto const& directory : directories)
 	{
-		items.push_back(UCreate<WAssetExplorerDirectory>{}(directory, [this](UPath const& path) { Push(path); }));
+		items.Add(UCreate<WAssetExplorerDirectory>{}(directory, [this](UPath const& path) { Push(path); }));
 	}
 	for (auto const& file : files)
 	{
-		items.push_back(UCreate<WAssetExplorerFile>{}(file.Path()));
+		items.Add(UCreate<WAssetExplorerFile>{}(file.Path()));
 	}
 
 	return items

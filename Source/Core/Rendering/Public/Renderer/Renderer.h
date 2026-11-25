@@ -59,7 +59,7 @@ private:
 
 	void RecreateFrames();
 
-	b8 TryAcquireNextImage(u32 frameIndex);
+	auto TryAcquireNextImage(u32 frameIndex) -> b8;
 
 	void CreateCommandPools();
 	void CreateCommandPool(u32 frameIndex);
@@ -79,11 +79,11 @@ private:
 	void CreateSyncObjects();
 
 	auto MakeFrameContextSceneView(USceneView const& sceneView) const -> UFrameContextSceneView;
-	auto MakeInterfaceDrawCommands(USpan<UInterfaceDrawData const> drawDatas, u32 frameIndex) -> std::vector<UDrawCommand>;
-	auto MakeSceneDrawCommands(USpan<USceneDrawData const> drawDatas, u32 frameIndex) -> std::vector<UDrawCommand>;
-	auto MakeDirectionalLights(USpan<UDirectionalLightData const> directionalLightDatas, UFrameContextSceneView const& sceneView, USceneRenderer::SceneRenderHandle sceneRender, u32 frameIndex) -> std::vector<UDirectionalLight>;
-	auto MakePointLights(USpan<UPointLightData const> pointLightDatas) const -> std::vector<UPointLight>;
-	auto MakeSceneRenderViews(USpan<UInterfaceDrawData const> drawDatas, u32 frameIndex) -> std::vector<USceneRenderView>;
+	auto MakeInterfaceDrawCommands(USpan<UInterfaceDrawData const> drawDatas, u32 frameIndex) -> UList<UDrawCommand>;
+	auto MakeSceneDrawCommands(USpan<USceneDrawData const> drawDatas, u32 frameIndex) -> UList<UDrawCommand>;
+	auto MakeDirectionalLights(USpan<UDirectionalLightData const> directionalLightDatas, UFrameContextSceneView const& sceneView, USceneRenderer::SceneRenderHandle sceneRender, u32 frameIndex) -> UList<UDirectionalLight>;
+	auto MakePointLights(USpan<UPointLightData const> pointLightDatas) const -> UList<UPointLight>;
+	auto MakeSceneRenderViews(USpan<UInterfaceDrawData const> drawDatas, u32 frameIndex) -> UList<USceneRenderView>;
 
 	auto GetOrCreateTexture(UPath const& path) -> ATexture*;
 	auto GetOrCreateMaterial(UPath const& path) -> AMaterial*;

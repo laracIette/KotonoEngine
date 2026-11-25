@@ -1,8 +1,10 @@
 #pragma once
-#include <array>
+
+#include "Containers/Array.h"
+#include "types.h"
+
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float3.hpp>
-#include <types.h>
 
 inline constexpr u32 NUM_DIRECTIONAL_CASCADES{ 4 };
 
@@ -14,6 +16,6 @@ struct UDirectionalLight final
 	u32 castShadow;
 	u32 shadowMap;
 	u32 shadowSampler;
-	std::array<glm::mat4, NUM_DIRECTIONAL_CASCADES> lightViewProjs;
-	std::array<f32, NUM_DIRECTIONAL_CASCADES> cascadeSplits;
+	UArray<glm::mat4, NUM_DIRECTIONAL_CASCADES> lightViewProjs;
+	UArray<f32, NUM_DIRECTIONAL_CASCADES> cascadeSplits;
 };

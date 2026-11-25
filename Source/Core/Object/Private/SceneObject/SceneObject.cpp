@@ -46,7 +46,7 @@ UScene* KSceneObject::GetScene() const
 
 UObjectPtr<KSceneComponent> KSceneObject::GetRootComponent() const
 {
-	return sceneComponents_.empty() ? nullptr : sceneComponents_[0];
+	return sceneComponents_.IsEmpty() ? nullptr : sceneComponents_[0];
 }
 
 void KSceneObject::SetParent(UObjectPtr<KSceneObject> const& parent, ECoordinateSpace keepTransform)

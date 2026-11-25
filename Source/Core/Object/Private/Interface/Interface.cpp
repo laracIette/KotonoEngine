@@ -131,12 +131,12 @@ void UInterface::OpenWidgetInWindow(glm::uvec2 const& windowExtent, UObjectPtr<W
 		return;
 	}
 
-	pendingWindows_.emplace_back(windowExtent, widget, std::string{ name });
+	pendingWindows_.Add(PendingWindow{ windowExtent, widget, std::string{ name } });
 }
 
 void UInterface::ClearPendingWindows()
 {
-	pendingWindows_.clear();
+	pendingWindows_.Clear();
 }
 
 void UInterface::UpdateFocusedWidgets(glm::vec2 const& cursorPosition)

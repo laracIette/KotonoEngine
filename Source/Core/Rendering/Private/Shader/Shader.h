@@ -2,9 +2,9 @@
 
 #include "Asset/Asset.h"
 
+#include "Containers/List.h"
 #include "Containers/Span.h"
 
-#include <vector>
 #include <vulkan/vulkan_core.h>
 
 class UDevice;
@@ -33,7 +33,7 @@ public:
 private:
 	void CreateGraphicsPipeline(UDevice& device, VkPipelineLayout pipelineLayout, VkFormat swapchainFormat);
 	void CreateComputePipeline(UDevice& device, VkPipelineLayout pipelineLayout);
-	auto GetOutputColorAttachmentFormats(EPipelinePass pipelinePass, VkFormat swapchainFormat) const -> std::vector<VkFormat>;
+	auto GetOutputColorAttachmentFormats(EPipelinePass pipelinePass, VkFormat swapchainFormat) const -> UList<VkFormat>;
 	auto CreateShaderModule(UDevice& device, USpan<u8 const> code) -> VkShaderModule;
 
 private:

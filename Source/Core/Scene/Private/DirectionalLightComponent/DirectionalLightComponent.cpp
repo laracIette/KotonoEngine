@@ -23,7 +23,7 @@ void KDirectionalLightComponent::PopulateRenderGraph(USceneRenderGraph& sceneRen
 {
 	if (has_flag(visibility, ESceneVisibility::DirectionalLight))
 	{
-		sceneRenderGraph.directionalLightDatas.push_back({
+		sceneRenderGraph.directionalLightDatas.Add({
 			.direction = ForwardVector(),
 			.color = color_,
 			.intensity = intensity_,

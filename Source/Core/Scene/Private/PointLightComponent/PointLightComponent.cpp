@@ -20,7 +20,7 @@ void KPointLightComponent::PopulateRenderGraph(USceneRenderGraph& sceneRenderGra
 {
 	if (has_flag(visibility, ESceneVisibility::PointLight))
 	{
-		sceneRenderGraph.pointLightDatas.push_back({
+		sceneRenderGraph.pointLightDatas.Add({
 			.position = GetWorldPosition(),
 			.range = range_,
 			.color = color_,

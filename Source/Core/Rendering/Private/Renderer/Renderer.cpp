@@ -28,9 +28,9 @@ struct USceneRenderView final
 {
 	USceneRenderer::SceneRenderHandle sceneRender;
 	UFrameContextSceneView sceneView;
-	std::vector<UDrawCommand> sceneDrawCommands;
-	std::vector<UDirectionalLight> directionalLights;
-	std::vector<UPointLight> pointLights;
+	UList<UDrawCommand> sceneDrawCommands;
+	UList<UDirectionalLight> directionalLights;
+	UList<UPointLight> pointLights;
 };
 
 namespace
@@ -78,12 +78,20 @@ static constexpr auto getRHIThreadFrame(u32 frameCount) noexcept -> u32
 }
 
 URenderer::URenderer(UDevice& device, USurface& surface)
-	: device_{ device }
-	, swapchain_{ device, surface }
-	, pipelineResourceManager_{ device }
-	, sceneRenderer_{ device, swapchain_, pipelineResourceManager_ }
-	, interfaceRenderer_{ device, pipelineResourceManager_ }
-	, indexBuffer_{ device }
+    : device_{ device }
+    , swapchain_{ device, surface }
+    , frameCount_{ 0 }
+    , sceneRenderer_{ device, swapchain_, pipelineResourceManager_ }
+    , interfaceRenderer_{ device, pipelineResourceManager_ }
+    , pipelineResourceManager_{ device }
+    , indexBuffer_{ device }
+    , clusterAABBPipeline_{ VK_NULL_HANDLE }
+    , lightBinningPipeline_{ VK_NULL_HANDLE }
+    , shadowPrePassPipeline_{ VK_NULL_HANDLE }
+    , depthPrePassPipeline_{ VK_NULL_HANDLE }
+    , deferredLightingPipeline_{ VK_NULL_HANDLE }
+    , postProcessPipeline_{ VK_NULL_HANDLE }
+    , defaultSampler_{ 0 }
 {
 }
 
@@ -225,7 +233,7 @@ void URenderer::RecreateFrames()
 	}
 }
 
-bool URenderer::TryAcquireNextImage(u32 frameIndex)
+auto URenderer::TryAcquireNextImage(u32 frameIndex) -> b8
 {
 	// Wait for current frame to be rendered
 	VK_CHECK_THROW(
@@ -349,7 +357,7 @@ void URenderer::RecordCommandBuffer(
 			}
 			, {
 				.drawCommands = sceneRenderView.sceneDrawCommands,
-				.directionalLightCount = static_cast<u32>(sceneRenderView.directionalLights.size()),
+				.directionalLightCount = static_cast<u32>(sceneRenderView.directionalLights.Size()),
 			}
 		);
 	}
@@ -395,7 +403,7 @@ void URenderer::BeginCommandBuffer(VkCommandBuffer commandBuffer) const
 void URenderer::CmdBarrierSwapchainNoneToWrite(VkCommandBuffer commandBuffer, u32 frameIndex) const
 {
 	Barriers::CmdTransitionImages(commandBuffer
-		, std::array{ swapchain_.GetAllocatedImage(frameDatas_[frameIndex].imageIndex).image }
+		, UArray{ swapchain_.GetAllocatedImage(frameDatas_[frameIndex].imageIndex).image }
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 		, VK_ACCESS_2_NONE
@@ -437,7 +445,7 @@ void URenderer::CmdBeginRenderingInterface(VkCommandBuffer commandBuffer, u32 fr
 void URenderer::CmdBarrierSwapchainWriteToPresent(VkCommandBuffer commandBuffer, u32 frameIndex) const
 {
 	Barriers::CmdTransitionImages(commandBuffer
-		, std::array{ swapchain_.GetAllocatedImage(frameDatas_[frameIndex].imageIndex).image }
+		, UArray{ swapchain_.GetAllocatedImage(frameDatas_[frameIndex].imageIndex).image }
 		, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 		, VK_PIPELINE_STAGE_2_NONE
 		, VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT
@@ -531,7 +539,7 @@ auto URenderer::MakeFrameContextSceneView(USceneView const& sceneView) const -> 
 	};
 }
 
-auto URenderer::MakeInterfaceDrawCommands(USpan<UInterfaceDrawData const> drawDatas, u32 frameIndex) -> std::vector<UDrawCommand>
+auto URenderer::MakeInterfaceDrawCommands(USpan<UInterfaceDrawData const> drawDatas, u32 frameIndex) -> UList<UDrawCommand>
 {
 	return drawDatas
 		| std::views::filter(&UInterfaceDrawData::isVisible)
@@ -569,10 +577,10 @@ auto URenderer::MakeInterfaceDrawCommands(USpan<UInterfaceDrawData const> drawDa
 
 			return drawCommand;
 		})
-		| std::ranges::to<std::vector>();
+		| std::ranges::to<UList>();
 }
 
-auto URenderer::MakeSceneDrawCommands(USpan<USceneDrawData const> drawDatas, u32 frameIndex) -> std::vector<UDrawCommand>
+auto URenderer::MakeSceneDrawCommands(USpan<USceneDrawData const> drawDatas, u32 frameIndex) -> UList<UDrawCommand>
 {
 	return drawDatas
 		| std::views::filter(&USceneDrawData::isVisible)
@@ -619,7 +627,7 @@ auto URenderer::MakeSceneDrawCommands(USpan<USceneDrawData const> drawDatas, u32
 
 			return drawCommand;
 		})
-		| std::ranges::to<std::vector>();
+		| std::ranges::to<UList>();
 }
 
 auto URenderer::MakeDirectionalLights(
@@ -627,17 +635,17 @@ auto URenderer::MakeDirectionalLights(
 	, UFrameContextSceneView const& sceneView
 	, USceneRenderer::SceneRenderHandle sceneRender
 	, u32 frameIndex
-) -> std::vector<UDirectionalLight>
+) -> UList<UDirectionalLight>
 {
 	auto* const sampler{ GetOrCreateSampler(UPath{ "${ENGINE_DIRECTORY}/Assets/samplers/shadow.kasset" }) };
 
-	std::array<f32, NUM_DIRECTIONAL_CASCADES + 1> const cascadeSplits{
+	UArray<f32, NUM_DIRECTIONAL_CASCADES + 1> const cascadeSplits{
 		sceneView.depthNear,
 		5.0f, 15.0f, 50.0f, 200.0f,
 	};
 
 	auto const makeLightViewProjs{ [sceneView, cascadeSplits](glm::vec3 const& direction) {
-		std::array<glm::mat4, NUM_DIRECTIONAL_CASCADES> lightViewProjs{};
+		UArray<glm::mat4, NUM_DIRECTIONAL_CASCADES> lightViewProjs{};
 		
 		std::ranges::copy(std::views::iota(0u, NUM_DIRECTIONAL_CASCADES)
 			| std::views::transform([direction, sceneView, cascadeSplits](u32 index) {
@@ -672,10 +680,10 @@ auto URenderer::MakeDirectionalLights(
 				.cascadeSplits = { 5.0f, 15.0f, 50.0f, 200.0f },
 			};
 		})
-		| std::ranges::to<std::vector>();
+		| std::ranges::to<UList>();
 }
 
-auto URenderer::MakePointLights(USpan<UPointLightData const> pointLightDatas) const -> std::vector<UPointLight>
+auto URenderer::MakePointLights(USpan<UPointLightData const> pointLightDatas) const -> UList<UPointLight>
 {
 	return pointLightDatas
 		| std::views::transform([](UPointLightData const& pointLightData) {
@@ -686,10 +694,10 @@ auto URenderer::MakePointLights(USpan<UPointLightData const> pointLightDatas) co
 				.intensity = pointLightData.intensity,
 			};
 		})
-		| std::ranges::to<std::vector>();
+		| std::ranges::to<UList>();
 }
 
-auto URenderer::MakeSceneRenderViews(USpan<UInterfaceDrawData const> drawDatas, u32 frameIndex) -> std::vector<USceneRenderView>
+auto URenderer::MakeSceneRenderViews(USpan<UInterfaceDrawData const> drawDatas, u32 frameIndex) -> UList<USceneRenderView>
 {
 	return drawDatas
 		| std::views::transform(&UInterfaceDrawData::textures)
@@ -711,7 +719,7 @@ auto URenderer::MakeSceneRenderViews(USpan<UInterfaceDrawData const> drawDatas, 
 				.pointLights = MakePointLights(sceneRenderGraph.pointLightDatas),
 			};
 		})
-		| std::ranges::to<std::vector>();
+		| std::ranges::to<UList>();
 }
 
 auto URenderer::GetOrCreateTexture(UPath const& path) -> ATexture*

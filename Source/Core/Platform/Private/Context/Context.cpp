@@ -1,20 +1,20 @@
 #include "Context/Context.h"
 
+#include "Containers/Array.h"
+#include "Containers/List.h"
+#include "Logging/log.h"
+#include "types.h"
 #include "vk_utils/vk_utils.h"
-#include <cstring>
-#include <array>
-#include <GLFW/glfw3.h>
-#include <Logging/log.h>
-#include <types.h>
-#include <print>
-#include <vector>
 
-static constexpr std::array VALIDATION_LAYERS
+#include <GLFW/glfw3.h>
+#include <print>
+
+static constexpr UArray VALIDATION_LAYERS
 {
 	"VK_LAYER_KHRONOS_validation",
 };
 
-static constexpr std::array VALIDATION_FEATURES
+static constexpr UArray VALIDATION_FEATURES
 {
 	VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT,
 };
@@ -36,7 +36,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 	return VK_FALSE;
 }
 
-static VkDebugUtilsMessengerCreateInfoEXT getDebugMessengerCreateInfo()
+static auto getDebugMessengerCreateInfo() -> VkDebugUtilsMessengerCreateInfoEXT
 {
 	return{
 		.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
@@ -47,7 +47,7 @@ static VkDebugUtilsMessengerCreateInfoEXT getDebugMessengerCreateInfo()
 	};
 }
 
-static VkResult createDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
+static auto createDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) -> VkResult
 {
 	const auto func{ reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
 		vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT")
@@ -75,13 +75,15 @@ static void destroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMesse
 	}
 }
 
-static b8 checkValidationLayerSupport()
+static auto checkValidationLayerSupport() -> b8
 {
 	u32 layerCount;
 	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
-	std::vector<VkLayerProperties> availableLayers{ layerCount };
-	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+	UList<VkLayerProperties> availableLayers{};
+    availableLayers.Resize(layerCount);
+
+	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.Data());
 
 	for (const char* layerName : VALIDATION_LAYERS)
 	{
@@ -105,16 +107,16 @@ static b8 checkValidationLayerSupport()
 	return true;
 }
 
-static std::vector<const char*> getRequiredExtensions()
+static auto getRequiredExtensions() -> UList<const char*>
 {
 	u32 glfwExtensionCount{ 0 };
 	const char** glfwExtensions{ glfwGetRequiredInstanceExtensions(&glfwExtensionCount) };
 
-	std::vector<const char*> extensions{ glfwExtensions, glfwExtensions + glfwExtensionCount };
+	UList<const char*> extensions{ glfwExtensions, glfwExtensions + glfwExtensionCount };
 
 	if constexpr (ENABLE_VALIDATION_LAYERS)
 	{
-		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+		extensions.Add(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 	}
 
 	return extensions;
@@ -166,12 +168,12 @@ void UContext::CreateInstance()
 		validationFeatures = {
 			.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT,
 			.pNext = &debugCreateInfo,
-			.enabledValidationFeatureCount = static_cast<u32>(VALIDATION_FEATURES.size()),
-			.pEnabledValidationFeatures = VALIDATION_FEATURES.data(),
+			.enabledValidationFeatureCount = static_cast<u32>(VALIDATION_FEATURES.Size()),
+			.pEnabledValidationFeatures = VALIDATION_FEATURES.Data(),
 		};
 
 		pNext = &validationFeatures;
-		enabledLayerCount = static_cast<u32>(VALIDATION_LAYERS.size());
+		enabledLayerCount = static_cast<u32>(VALIDATION_LAYERS.Size());
 	}
 	else
 	{
@@ -187,10 +189,10 @@ void UContext::CreateInstance()
 		.pApplicationInfo = &appInfo,
 		
 		.enabledLayerCount = enabledLayerCount,
-		.ppEnabledLayerNames = VALIDATION_LAYERS.data(),
+		.ppEnabledLayerNames = VALIDATION_LAYERS.Data(),
 		
-		.enabledExtensionCount = static_cast<u32>(extensions.size()),
-		.ppEnabledExtensionNames = extensions.data(),
+		.enabledExtensionCount = static_cast<u32>(extensions.Size()),
+		.ppEnabledExtensionNames = extensions.Data(),
 	};
 
 	VK_CHECK_THROW(
@@ -201,15 +203,13 @@ void UContext::CreateInstance()
 
 void UContext::SetupDebugMessenger()
 {
-	if constexpr (!ENABLE_VALIDATION_LAYERS)
+	if constexpr (ENABLE_VALIDATION_LAYERS)
 	{
-		return;
+		auto const createInfo{ getDebugMessengerCreateInfo() };
+
+	    VK_CHECK_THROW(
+		    createDebugUtilsMessengerEXT(instance_, &createInfo, nullptr, &debugMessenger_),
+		    "failed to set up debug messenger!"
+	    );
 	}
-
-	auto const createInfo{ getDebugMessengerCreateInfo() };
-
-	VK_CHECK_THROW(
-		createDebugUtilsMessengerEXT(instance_, &createInfo, nullptr, &debugMessenger_),
-		"failed to set up debug messenger!"
-	);
 }

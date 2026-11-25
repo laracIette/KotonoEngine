@@ -1,9 +1,8 @@
 #pragma once
 
+#include "type_traits.h"
 #include "types.h"
 
-#include <ranges>
-#include <type_traits>
 #include <unordered_map>
 
 /// <summary>
@@ -24,48 +23,17 @@ public:
 	using const_iterator = UnorderedMapConstIterator;
 	
 public:
-	UMap() = default;
-	
-	UMap(UMap&& map) noexcept
-		: data_(std::move(map.data_))
-	{
-	}
-	
-	UMap(UMap const& map)
-		: data_(map.data_)
-	{
-	}	
+    constexpr UMap() = default;
+    constexpr UMap(UMap&&) noexcept = default;
+    constexpr UMap(UMap const&) = default;
 	
 	UMap(std::initializer_list<UnorderedMapValueType> list)
 		: data_(list.begin(), list.end())
 	{
 	}
 	
-	auto operator=(UMap&& map) noexcept -> UMap&
-	{
-		data_ = std::move(map.data_);
-		return *this;
-	}
-
-	auto operator=(UMap const& map) -> UMap&
-	{
-		if (this == &map)
-		{
-			return *this;
-		}
-		data_ = map.data_;
-		return *this;
-	}
-	
-	auto begin(this auto&& self) noexcept(noexcept(std::ranges::begin(self.data_)))
-	{
-		return std::ranges::begin(self.data_);
-	}
-	
-	auto end(this auto&& self) noexcept(noexcept(std::ranges::end(self.data_)))
-	{
-		return std::ranges::end(self.data_);
-	}
+	auto operator=(UMap&&) noexcept -> UMap& = default;
+	auto operator=(UMap const&) -> UMap& = default;
 	
 	decltype(auto) At(this auto&& self, KeyType const& key)
 	{
@@ -74,7 +42,7 @@ public:
 
 	auto operator[](KeyType&& key) -> ValueType&
 	{
-		return data_[std::move(key)];
+		return data_[Move(key)];
 	}
 
 	auto operator[](KeyType const& key) -> ValueType&
@@ -156,6 +124,16 @@ public:
 	{
 		auto const it{ Find(key) };
 		return IsValidIterator(it) ? it->second : defaultValue;
+	}
+
+    auto begin(this auto&& self) noexcept(noexcept(self.data_.begin()))
+	{
+	    return self.data_.begin();
+	}
+
+    auto end(this auto&& self) noexcept(noexcept(self.data_.end()))
+	{
+	    return self.data_.end();
 	}
 	
 private:

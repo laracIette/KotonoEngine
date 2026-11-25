@@ -2,6 +2,7 @@
 
 #include "AllocatedBuffer.h"
 #include "AllocatedImage.h"
+#include "Containers/List.h"
 #include "Containers/Span.h"
 #include "DrawCommand.h"
 #include "FrameContextBuffer/FrameContextBuffer.h"
@@ -10,7 +11,6 @@
 #include "types.h"
 
 #include <glm/ext/vector_uint2.hpp>
-#include <vector>
 #include <vulkan/vulkan_core.h>
 
 struct UFrameContextSceneView;
@@ -83,10 +83,10 @@ private:
 	auto MakeFrameContextAddresses() const -> UFrameContextAddresses;
 	auto MakeFrameContextTargets() const -> UFrameContextTargets;
 
-	auto MakeDrawDataBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UDrawDataBufferData>;
-	auto MakeTransformBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UTransformBufferData>;
-	auto MakeParametersBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UParametersBufferData>;
-	auto MakeMaterialBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UMaterialBufferData>;
+	auto MakeDrawDataBuffer(USpan<UDrawCommand const> drawCommands) const -> UList<UDrawDataBufferData>;
+	auto MakeTransformBuffer(USpan<UDrawCommand const> drawCommands) const -> UList<UTransformBufferData>;
+	auto MakeParametersBuffer(USpan<UDrawCommand const> drawCommands) const -> UList<UParametersBufferData>;
+	auto MakeMaterialBuffer(USpan<UDrawCommand const> drawCommands) const -> UList<UMaterialBufferData>;
 
 	void CmdUpdateClusterAABB(USceneRenderContext const& renderContext) const;
 

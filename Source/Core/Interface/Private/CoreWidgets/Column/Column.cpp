@@ -27,9 +27,9 @@ void WColumn::Display(UWidgetDisplaySettings displaySettings)
 
 	// Get expand height
 	f32 expandHeight{ displaySettings.bounds.y - nonExpandHeight };
-	if (!GetChildren().empty())
+	if (!GetChildren().IsEmpty())
 	{
-		expandHeight -= spacing_ * static_cast<f32>(GetChildren().size() - 1);
+		expandHeight -= spacing_ * static_cast<f32>(GetChildren().Size() - 1);
 	}
 	expandHeight /= GetChildrenExpandWeight();
 

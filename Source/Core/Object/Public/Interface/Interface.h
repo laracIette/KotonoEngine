@@ -1,12 +1,14 @@
 #pragma once
+
 #include "Ptr/ObjectPtr.h"
+#include "Containers/List.h"
 #include "Containers/Set.h"
 #include "Containers/Span.h"
 #include "properties.h"
+
 #include <glm/ext/vector_uint2.hpp>
 #include <glm/fwd.hpp>
 #include <string>
-#include <vector>
 
 enum class EButton : u8;
 enum class EKey : u8;
@@ -65,5 +67,5 @@ private:
 	USet<UObjectPtr<WWidget>> focusedWidgets_;
 	USet<UObjectPtr<WWidget>> activeWidgets_;
 
-	std::vector<PendingWindow> pendingWindows_;
+	UList<PendingWindow> pendingWindows_;
 };

@@ -1,11 +1,13 @@
 #include "SpvCompiler/SpvCompiler.h"
 
-#include <File/File.h>
+#include "Containers/Array.h"
+#include "File/File.h"
+#include "Logging/log.h"
+#include "Path/Path.h"
+#include "Serializer/Serializer.h"
+
 #include <format>
-#include <Logging/log.h>
 #include <nlohmann/json.hpp>
-#include <Path/Path.h>
-#include <Serializer/Serializer.h>
 
 static const UPath ShadersPath{ "${ENGINE_DIRECTORY}/Shaders" };
 #ifdef NDEBUG
@@ -18,7 +20,7 @@ static const UPath CompiledRegistryPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/Debu
 static const UPath DependenciesRegistryPath{ "${ENGINE_DIRECTORY}/Cache/Shaders/Debug/dependencies.ktregistry" };
 #endif
 
-static const std::array DependencyPaths{
+static const UArray DependencyPaths{
     ShadersPath / "common.glsl",
     ShadersPath / "common_frag.glsl",
     ShadersPath / "common_vert.glsl",

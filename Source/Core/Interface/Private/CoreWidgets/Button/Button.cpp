@@ -217,7 +217,7 @@ void WButton::PopulateRenderGraphShadow(UInterfaceRenderGraph& interfaceRenderGr
 	}
 	case KButtonStyle::EImageType::Normal:
 	{
-		interfaceRenderGraph.drawDatas.push_back(
+		interfaceRenderGraph.drawDatas.Add(
 			UInterfaceDrawData::MakeImage(
 				GetScissor(),
 				GetModelMatrix(),
@@ -230,7 +230,7 @@ void WButton::PopulateRenderGraphShadow(UInterfaceRenderGraph& interfaceRenderGr
 	}
 	case KButtonStyle::EImageType::Rounded:
 	{
-		interfaceRenderGraph.drawDatas.push_back(
+		interfaceRenderGraph.drawDatas.Add(
 			UInterfaceDrawData::MakeRoundedImage(
 				GetScissor(),
 				GetModelMatrix(),
@@ -271,7 +271,7 @@ void WButton::PopulateRenderGraphImage(UInterfaceRenderGraph& interfaceRenderGra
 	}
 	case KButtonStyle::EImageType::Normal:
 	{
-		interfaceRenderGraph.drawDatas.push_back(
+		interfaceRenderGraph.drawDatas.Add(
 			UInterfaceDrawData::MakeImage(
 				GetScissor(),
 				modelMatrix,
@@ -284,7 +284,7 @@ void WButton::PopulateRenderGraphImage(UInterfaceRenderGraph& interfaceRenderGra
 	}
 	case KButtonStyle::EImageType::Rounded:
 	{
-		interfaceRenderGraph.drawDatas.push_back(
+		interfaceRenderGraph.drawDatas.Add(
 			UInterfaceDrawData::MakeRoundedImage(
 				GetScissor(),
 				modelMatrix,

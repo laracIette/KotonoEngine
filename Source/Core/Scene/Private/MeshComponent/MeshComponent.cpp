@@ -55,7 +55,7 @@ void KMeshComponent::PopulateRenderGraph(USceneRenderGraph& sceneRenderGraph, ES
     if (has_flag(visibility, ESceneVisibility::Mesh))
     {
         auto const modelMatrix{ ModelMatrix() };
-        sceneRenderGraph.drawDatas.push_back({
+        sceneRenderGraph.drawDatas.Add({
             .sortKey = {},
             .modelMatrix = modelMatrix,
             .normalMatrix = glm::mat4{ glm::inverseTranspose(glm::mat3{ modelMatrix }) },

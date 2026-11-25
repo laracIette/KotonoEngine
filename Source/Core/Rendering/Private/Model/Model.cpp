@@ -26,7 +26,7 @@ auto AModel::GetVertexBufferAddress() const -> VkDeviceAddress
 
 auto AModel::GetIndexCount() const -> u32
 {
-	return meshData_.indices.size();
+	return meshData_.indices.Size();
 }
 
 auto AModel::GetFirstIndex() const -> u32
@@ -51,7 +51,7 @@ void AModel::Load()
 
 void AModel::CreateVertexBuffer(UDevice& device)
 {
-	VkDeviceSize const bufferSize{ sizeof(UVertex) * meshData_.vertices.size() };
+	VkDeviceSize const bufferSize{ sizeof(UVertex) * meshData_.vertices.Size() };
 
 	vertexBuffer_ = device.CreateAllocatedBuffer(
 		  bufferSize
@@ -61,5 +61,5 @@ void AModel::CreateVertexBuffer(UDevice& device)
 		, 0
 	);
 
-	device.StagingUpload(meshData_.vertices.data(), bufferSize, vertexBuffer_, 0, 0);
+	device.StagingUpload(meshData_.vertices.Data(), bufferSize, vertexBuffer_, 0, 0);
 }

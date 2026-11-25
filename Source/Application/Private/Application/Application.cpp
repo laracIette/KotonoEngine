@@ -1,15 +1,16 @@
 #include "Application/Application.h"
 
 #include "ClassRegistrator/ClassRegistrator.h"
+#include "Logging/log.h"
+#include "Interface/Interface.h"
+#include "SpvCompiler/SpvCompiler.h"
 #include "WindowContext/WindowContext.h"
-#include <GLFW/glfw3.h>
-#include <Logging/log.h>
-#include <Interface/Interface.h>
-#include <SpvCompiler/SpvCompiler.h>
 
 #ifndef NDEBUG
-#include <Object/Object.h>
+#include "Object/Object.h"
 #endif
+
+#include <GLFW/glfw3.h>
 
 UApplication::UApplication()
     : context_{}
@@ -28,16 +29,18 @@ void UApplication::Run()
 
     while (!mainWindowContext_->GetShouldClose())
     {
-        std::erase_if(secondaryWindowContexts_, [this](USecondaryWindowContext* windowContext) {
-            if (windowContext->GetShouldClose())
-            {
-                vkDeviceWaitIdle(device_.GetDevice());
-                windowContext->Cleanup();
-                delete windowContext;
+        secondaryWindowContexts_ = secondaryWindowContexts_
+            | std::views::filter([this](USecondaryWindowContext* windowContext) {
+                if (windowContext->GetShouldClose())
+                {
+                    vkDeviceWaitIdle(device_.GetDevice());
+                    windowContext->Cleanup();
+                    delete windowContext;
+                    return false;
+                }
                 return true;
-            }
-            return false;
-        });
+            })
+            | std::ranges::to<UList>();
 
         glfwPollEvents();
 
@@ -85,7 +88,7 @@ void UApplication::Cleanup()
         windowContext->Cleanup();
         delete windowContext;
     }
-    secondaryWindowContexts_.clear();
+    secondaryWindowContexts_.Clear();
 
     mainWindowContext_->Cleanup();
     delete mainWindowContext_;
@@ -113,11 +116,11 @@ void UApplication::Update()
     averageUpdateTime_.Add(deltaTime);
     logUPSTimer_.Update(deltaTime);
 
-    std::vector<UInterface::PendingWindow> pendingWindows{};
+    UList<UInterface::PendingWindow> pendingWindows{};
 
     auto const updateAndPopulatePendingWindows{ [&pendingWindows, deltaTime](UWindowContext* windowContext) {
         windowContext->Update(deltaTime);
-        pendingWindows.append_range(windowContext->GetInterface()->GetPendingWindows());
+        pendingWindows.Append(windowContext->GetInterface()->GetPendingWindows());
         windowContext->GetInterface()->ClearPendingWindows();
     } };
 
@@ -126,8 +129,8 @@ void UApplication::Update()
 
     for (auto const& [windowExtent, widget, name] : pendingWindows)
     {
-        secondaryWindowContexts_.push_back(new USecondaryWindowContext{ context_, device_ });
-        secondaryWindowContexts_.back()->Init(windowExtent, widget, name);
+        secondaryWindowContexts_.Add(new USecondaryWindowContext{ context_, device_ });
+        secondaryWindowContexts_.Last()->Init(windowExtent, widget, name);
     }
 }
 

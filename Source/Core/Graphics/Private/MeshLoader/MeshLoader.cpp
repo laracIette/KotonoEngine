@@ -74,16 +74,16 @@ auto SMeshLoader::Load(UPath const& path) -> UMeshData
 					.tangent = { T, handedness },
 				};
 				
-				auto const [it, emplaced] { uniqueVertices.TryEmplace(vertex, static_cast<u32>(meshData.vertices.size())) };
+				auto const emplaced { uniqueVertices.TryEmplace(vertex, static_cast<u32>(meshData.vertices.Size())).second };
 				if (emplaced)
 				{
-					uniqueVertices[vertex] = static_cast<u32>(meshData.vertices.size());
-					meshData.vertices.push_back(vertex);
+					uniqueVertices[vertex] = static_cast<u32>(meshData.vertices.Size());
+					meshData.vertices.Add(vertex);
 					
 					meshData.boundingSphereRadius = std::max(meshData.boundingSphereRadius, glm::length(vertex.position));
 				}
 
-				meshData.indices.push_back(uniqueVertices.At(vertex));
+				meshData.indices.Add(uniqueVertices.At(vertex));
 			}
 		}
 	}

@@ -1,6 +1,8 @@
 #pragma once
-#include <Path/Path.h>
-#include <types.h>
+
+#include "Path/Path.h"
+#include "types.h"
+
 class SSpvCompiler final
 {
 public:

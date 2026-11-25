@@ -2,12 +2,12 @@
 
 #include "ObjectBase.h"
 
+#include "Containers/List.h"
 #include "ObjectFactory/ObjectFactory.h"
 #include "Ptr/ObjectPtr.h"
 #include "VariableInfo.h"
 
 #include <nlohmann/json_fwd.hpp>
-#include <vector>
 
 #define SERIALIZE
 #define ABSTRACT
@@ -34,9 +34,9 @@ public:
 	
 	virtual void SerializeTo(nlohmann::json& json) const;
 	virtual void DeserializeFrom(nlohmann::json const& json);
-	virtual void PopulateMemberVariables(std::vector<UVariableInfo>& variables) const;
+	virtual void PopulateMemberVariables(UList<UVariableInfo>& variables) const;
 	
-	auto GetMemberVariables() const -> std::vector<UVariableInfo>;
+	auto GetMemberVariables() const -> UList<UVariableInfo>;
 	
 	virtual auto GetClass() const -> UPtr<KObjectReflectionBase_Class const> = 0;
 	

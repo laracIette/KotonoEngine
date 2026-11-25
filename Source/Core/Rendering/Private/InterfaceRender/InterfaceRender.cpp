@@ -106,7 +106,7 @@ auto UInterfaceRender::MakeFrameContextAddresses() const -> UFrameContextAddress
 	};
 }
 
-auto UInterfaceRender::MakeDrawDataBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UDrawDataBufferData>
+auto UInterfaceRender::MakeDrawDataBuffer(USpan<UDrawCommand const> drawCommands) const -> UList<UDrawDataBufferData>
 {
 	return drawCommands
 		| std::views::transform([](UDrawCommand const& drawCommand) {
@@ -117,10 +117,10 @@ auto UInterfaceRender::MakeDrawDataBuffer(USpan<UDrawCommand const> drawCommands
 				.vertexBufferAddress = drawCommand.vertexBufferAddress,
 			};
 		})
-		| std::ranges::to<std::vector>();
+		| std::ranges::to<UList>();
 }
 
-auto UInterfaceRender::MakeTransformBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UTransformBufferData>
+auto UInterfaceRender::MakeTransformBuffer(USpan<UDrawCommand const> drawCommands) const -> UList<UTransformBufferData>
 {
 	return drawCommands
 		| std::views::transform([](UDrawCommand const& drawCommand) {
@@ -129,10 +129,10 @@ auto UInterfaceRender::MakeTransformBuffer(USpan<UDrawCommand const> drawCommand
 				.normalMatrix = drawCommand.normalMatrix,
 			};
 		})
-		| std::ranges::to<std::vector>();
+		| std::ranges::to<UList>();
 }
 
-auto UInterfaceRender::MakeParametersBuffer(USpan<UDrawCommand const> drawCommands) const -> std::vector<UParametersBufferData>
+auto UInterfaceRender::MakeParametersBuffer(USpan<UDrawCommand const> drawCommands) const -> UList<UParametersBufferData>
 {
 	return drawCommands
 		| std::views::transform([](UDrawCommand const& drawCommand) {
@@ -142,7 +142,7 @@ auto UInterfaceRender::MakeParametersBuffer(USpan<UDrawCommand const> drawComman
 				.textures = drawCommand.textures,
 			};
 		})
-		| std::ranges::to<std::vector>();
+		| std::ranges::to<UList>();
 }
 
 void UInterfaceRender::CmdDrawFrameInterface(

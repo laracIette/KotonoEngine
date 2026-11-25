@@ -26,7 +26,7 @@ void WSplitter::AddChild(WidgetPtr const& child)
 		return;
 	}
 	
-	if (!ChildrenOwner->GetChildren().empty())
+	if (!ChildrenOwner->GetChildren().IsEmpty())
 	{
 		UObjectPtr const separator{ MakeSeparator() };
 		ChildrenOwner->AddChild(separator);

@@ -17,13 +17,13 @@ void WText::Display(UWidgetDisplaySettings displaySettings)
 {	
 	Base::Display(displaySettings);
 	
-	characters_.clear();
+	characters_.Clear();
 
 	auto const characterPaths{ font_.GetTextPaths(GetText()) };
 
 	for (auto const& [index, characterPath] : characterPaths | std::views::enumerate)
 	{		
-		if (fontSize_.x * spacing_ * characterPaths.size() > displaySettings.bounds.x
+		if (fontSize_.x * spacing_ * characterPaths.Size() > displaySettings.bounds.x
 		 && (fontSize_.x * spacing_ * (index + 1)) + (fontSize_.x * spacing_ / 2.0f * 3) > displaySettings.bounds.x)
 		{
 			for (size i{ 0 }; i < 3; ++i)
@@ -41,7 +41,7 @@ void WText::Display(UWidgetDisplaySettings displaySettings)
 				  * glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(fontSize_, bounds), 1.0f })
 				};
 
-				characters_.emplace_back(font_.GetCharacterPath('.'), modelMatrix);
+				characters_.Add(CharacterData{ font_.GetCharacterPath('.'), modelMatrix });
 			}
 			break;
 		}
@@ -59,7 +59,7 @@ void WText::Display(UWidgetDisplaySettings displaySettings)
 		  * glm::scale(glm::identity<glm::mat4>(), { px_to_ndc_size(fontSize_, bounds), 1.0f })
 		};
 
-		characters_.emplace_back(characterPath, modelMatrix);
+		characters_.Add(CharacterData{ characterPath, modelMatrix });
 	}
 }
 
@@ -98,7 +98,7 @@ void WText::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UCo
 {
 	for (auto const& [characterPath, modelMatrix] : characters_)
 	{
-		interfaceRenderGraph.drawDatas.push_back(
+		interfaceRenderGraph.drawDatas.Add(
 			UInterfaceDrawData::MakeImage(
 				GetScissor(),
 				modelMatrix,

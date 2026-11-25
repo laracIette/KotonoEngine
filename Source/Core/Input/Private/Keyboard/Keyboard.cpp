@@ -1,10 +1,12 @@
 #include "Keyboard/Keyboard.h"
 
+#include "enum_utils.h"
+#include "Window/Window.h"
+#include "Containers/Array.h"
+#include "Containers/Map.h"
+
 #include <functional>
 #include <GLFW/glfw3.h>
-#include <enum_utils.h>
-#include <Window/Window.h>
-#include <Containers/Map.h>
 
 static UMap<GLFWwindow*, std::function<void(EKey, i32)>> KeyCallbacks{};
 
@@ -17,7 +19,7 @@ namespace
 	};
 }
 
-static constexpr std::array MODIFIER_KEYS{
+static constexpr UArray MODIFIER_KEYS{
 	ModifierKeys{ EModifier::Shift,     EKey::LeftShift,      EKey::RightShift      },
 	ModifierKeys{ EModifier::Control,   EKey::LeftControl,    EKey::RightControl    },
 	ModifierKeys{ EModifier::Alt,       EKey::LeftAlt,        EKey::RightAlt        },

@@ -1,7 +1,8 @@
 #include "Font/Font.h"
 
+#include "Containers/Map.h"
+
 #include <ranges>
-#include <Containers/Map.h>
 
 static UMap<char, std::string_view> const CHARACTER_NAMES
 {
@@ -36,7 +37,7 @@ UFont::UFont(UPath const& path)
     , size_{ 10.0f }
     , spacing_{ 0.0f }
 {
-    characterPaths_ = std::vector<UPath>{ 256, DEFAULT_TEXTURE };
+    characterPaths_.Resize(256, DEFAULT_TEXTURE);
 
     for (auto const& [character, name] : CHARACTER_NAMES)
     {
@@ -80,11 +81,11 @@ auto UFont::GetCharacterPath(char character) const -> UPath
     return characterPaths_[static_cast<size>(character)];
 }
 
-auto UFont::GetTextPaths(std::string_view text) const -> std::vector<UPath>
+auto UFont::GetTextPaths(std::string_view text) const -> UList<UPath>
 {
     return text
         | std::views::transform([this](char character) { 
             return GetCharacterPath(character); 
         })
-        | std::ranges::to<std::vector>();
+        | std::ranges::to<UList>();
 }

@@ -1,9 +1,12 @@
 #pragma once
+
+#include "Containers/Array.h"
 #include "types.h"
-#include <array>
+
 #include <concepts>
 #include <numeric>
 #include <utility>
+
 template <std::floating_point T, size Size>
 class UAverage final
 {
@@ -31,7 +34,7 @@ public:
 	}
 
 private:
-	std::array<T, Size> values_;
+	UArray<T, Size> values_;
 	size index_;
 	size count_;
 };

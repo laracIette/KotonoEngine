@@ -19,7 +19,6 @@
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float2.hpp>
 #include <string>
-#include <vector>
 
 #include "Widget.generated.h"
 
@@ -29,7 +28,7 @@ inline constexpr b8 INPUT_UNHANDLED{ false };
 class WWidget;
 using WidgetPtr = UObjectPtr<WWidget>;
 using WidgetSet = USet<WidgetPtr>;
-using WidgetVector = std::vector<WidgetPtr>;
+using WidgetList = UList<WidgetPtr>;
 
 #define StateSetter(Type, Variable, SetterName) \
 	void Set##SetterName(TOptimal<Type> value) { SetState([this, value]() { Variable = value; }); }

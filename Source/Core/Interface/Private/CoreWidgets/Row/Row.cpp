@@ -27,9 +27,9 @@ void WRow::Display(UWidgetDisplaySettings displaySettings)
 
 	// Get expand width
 	f32 expandWidth{ displaySettings.bounds.x - nonExpandWidth };
-	if (!GetChildren().empty())
+	if (!GetChildren().IsEmpty())
 	{
-		expandWidth -= spacing_ * static_cast<f32>(GetChildren().size() - 1);
+		expandWidth -= spacing_ * static_cast<f32>(GetChildren().Size() - 1);
 	}
 	expandWidth /= GetChildrenExpandWeight();
 

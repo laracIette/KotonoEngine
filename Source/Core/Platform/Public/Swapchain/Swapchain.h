@@ -1,9 +1,9 @@
 #pragma once
 
 #include "AllocatedImage.h"
+#include "Containers/List.h"
 #include "types.h"
 
-#include <vector>
 #include <vulkan/vulkan_core.h>
 
 class UDevice;
@@ -16,14 +16,14 @@ public:
 	void Init();
 	void Cleanup();
 
-	UAllocatedImage const& GetAllocatedImage(u32 imageIndex) const;
+	auto GetAllocatedImage(u32 imageIndex) const -> UAllocatedImage const&;
 
-	VkResult AcquireNextImage(u64 timeout, VkSemaphore semaphore, VkFence fence, u32& imageIndex) const;
-	VkResult QueuePresent(VkSemaphore semaphore, u32 imageIndex) const;
+	auto AcquireNextImage(u64 timeout, VkSemaphore semaphore, VkFence fence, u32& imageIndex) const -> VkResult;
+	auto QueuePresent(VkSemaphore semaphore, u32 imageIndex) const -> VkResult;
 
-	VkSwapchainKHR	GetSwapchain() const { return swapchain_; }
-	VkFormat		GetFormat() const { return format_; }
-	VkExtent2D		GetExtent() const { return extent_; }
+	auto GetSwapchain() const -> VkSwapchainKHR { return swapchain_; }
+	auto GetFormat() const -> VkFormat { return format_; }
+	auto GetExtent() const -> VkExtent2D { return extent_; }
 
 private:
 	void CreateSwapchain();
@@ -35,5 +35,5 @@ private:
 	VkSwapchainKHR swapchain_;
 	VkFormat format_;
 	VkExtent2D extent_;
-	std::vector<UAllocatedImage> allocatedImages_;
+	UList<UAllocatedImage> allocatedImages_;
 };

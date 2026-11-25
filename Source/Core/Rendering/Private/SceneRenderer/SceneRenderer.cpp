@@ -3,7 +3,7 @@
 #include "DrawCommand.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
-#include <array>
+
 #include <ranges>
 
 USceneRenderer::USceneRenderer(UDevice& device, USwapchain& swapchain, UPipelineResourceManager& pipelineResourceManager)

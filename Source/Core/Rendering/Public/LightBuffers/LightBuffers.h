@@ -1,10 +1,10 @@
 #pragma once
 
-#include "types.h"
+#include "Containers/List.h"
 #include "AllocatedBuffer.h"
 #include "AllocatedImage.h"
+#include "types.h"
 
-#include <vector>
 #include <vulkan/vulkan_core.h>
 
 struct UDirectionalLight;
@@ -30,10 +30,10 @@ public:
 
 	void UpdateBuffers(USpan<UDirectionalLight const> directionalLights, USpan<UPointLight const> pointLights) const;
 
-	VkDeviceAddress GetDirectionalLightAddress() const;
-	VkDeviceAddress GetPointLightAddress() const;
+	auto GetDirectionalLightAddress() const -> VkDeviceAddress;
+	auto GetPointLightAddress() const -> VkDeviceAddress;
 
-	u32 GetDirectionalLightShadowMapTargetIndex(u32 index) const;
+	auto GetDirectionalLightShadowMapTargetIndex(u32 index) const -> u32;
 
 	void CmdSetViewportAndScissor(VkCommandBuffer commandBuffer) const;
 	void CmdBarrierShadowMapsNoneToWrite(VkCommandBuffer commandBuffer) const;
@@ -50,5 +50,5 @@ private:
 
 	UAllocatedBuffer directionalLightBuffer_;
 	UAllocatedBuffer pointLightBuffer_;
-	std::vector<ShadowMapTarget> directionalLightShadowMapTargets_;
+	UList<ShadowMapTarget> directionalLightShadowMapTargets_;
 };

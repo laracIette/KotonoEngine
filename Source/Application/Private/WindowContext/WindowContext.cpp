@@ -77,7 +77,7 @@ void UWindowContext::DrawFrame()
 		return;
 	}
 
-	interfaceRenderGraph_.drawDatas.clear();
+	interfaceRenderGraph_.drawDatas.Clear();
 	interface_->PopulateInterfaceRenderGraph(interfaceRenderGraph_);
 	renderer_.DrawFrame(interfaceRenderGraph_);
 }

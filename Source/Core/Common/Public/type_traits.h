@@ -40,3 +40,9 @@ template <typename T>
 {
     return static_cast<std::remove_reference_t<T>&&>(Value);
 }
+
+template <typename First, typename... Rest>
+struct AllConvertibleTo final : std::bool_constant<(std::is_convertible_v<Rest, First> && ...)> {};
+
+template <typename First, typename... Rest>
+inline constexpr auto VAllConvertibleTo{ AllConvertibleTo<First, Rest...>::value };

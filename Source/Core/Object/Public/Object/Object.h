@@ -225,7 +225,7 @@ public:
 	}
 
 private:
-	std::vector<UObjectPtr<T>> data_;
+	UList<UObjectPtr<T>> data_;
 };
 
 template <std::ranges::input_range R>

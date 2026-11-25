@@ -1,10 +1,11 @@
 #pragma once
+
+#include "Containers/List.h"
 #include "Vertex.h"
-#include <vector>
 
 struct UMeshData final
 {
-	std::vector<UVertex> vertices;
-	std::vector<u32> indices;
+	UList<UVertex> vertices;
+	UList<u32> indices;
 	f32 boundingSphereRadius;
 };

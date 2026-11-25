@@ -53,7 +53,7 @@ WObjectProperties::WObjectProperties(USpan<UObjectPtr<KSceneObject> const> scene
 
 auto WObjectProperties::Build() -> WidgetPtr
 {
-    if (sceneObjects_.empty())
+    if (sceneObjects_.IsEmpty())
     {
         return (
             UCreate<WText>{}()
@@ -61,7 +61,7 @@ auto WObjectProperties::Build() -> WidgetPtr
         );
     }
 
-    //std::vector<UVariableInfo> variables{};
+    //UList<UVariableInfo> variables{};
     //for (auto const& sceneObject : sceneObjects_)
     //{
     //    for (auto const& variable : sceneObject->GetMemberVariables())
@@ -70,12 +70,12 @@ auto WObjectProperties::Build() -> WidgetPtr
     //            return std::ranges::contains(otherSceneObject->GetMemberVariables(), variable);
     //        }))
     //        {
-    //            variables.push_back(variable);
+    //            variables.Add(variable);
     //        }
     //    }
     //}
 
-    UObjectPtr const sceneObject{ sceneObjects_.back() };
+    UObjectPtr const sceneObject{ sceneObjects_.Last() };
     Check(Throw, sceneObject, "sceneObject is null");
 
     return (

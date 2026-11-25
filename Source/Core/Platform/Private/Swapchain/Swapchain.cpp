@@ -1,12 +1,11 @@
 #include "Swapchain/Swapchain.h"
 
+#include "Containers/Array.h"
 #include "Containers/Span.h"
 #include "Device/Device.h"
 #include "Logging/log.h"
 #include "Surface/Surface.h"
 #include "vk_utils/vk_utils.h"
-
-#include <array>
 
 static auto chooseSurfaceFormat(USpan<VkSurfaceFormatKHR const> availableFormats) -> VkSurfaceFormatKHR
 {
@@ -52,7 +51,7 @@ void USwapchain::Cleanup()
 	{
 		device_.CleanupImageView(allocatedImage);
 	}
-	allocatedImages_.clear();
+	allocatedImages_.Clear();
 
 	vkDestroySwapchainKHR(device_.GetDevice(), swapchain_, nullptr);
 }
@@ -111,7 +110,7 @@ void USwapchain::CreateSwapchain()
 	Log(Normal, "swap chain image count: {0}", imageCount);
 
 	UQueueFamilyIndices const& indices{ device_.GetQueueFamilyIndices() };
-	std::array const queueFamilyIndices{ indices.graphicsFamily.value(), indices.presentFamily.value() };
+	UArray const queueFamilyIndices{ indices.graphicsFamily.value(), indices.presentFamily.value() };
 
 	VkSharingMode imageSharingMode;
 	u32 queueFamilyIndexCount;
@@ -119,8 +118,8 @@ void USwapchain::CreateSwapchain()
 	if (indices.graphicsFamily != indices.presentFamily)
 	{
 		imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-		queueFamilyIndexCount = static_cast<u32>(queueFamilyIndices.size());
-		pQueueFamilyIndices = queueFamilyIndices.data();
+		queueFamilyIndexCount = static_cast<u32>(queueFamilyIndices.Size());
+		pQueueFamilyIndices = queueFamilyIndices.Data();
 	}
 	else
 	{
@@ -159,10 +158,12 @@ void USwapchain::CreateSwapchain()
 	);
 
 	vkGetSwapchainImagesKHR(device_.GetDevice(), swapchain_, &imageCount, nullptr);
-	std::vector<VkImage> swapchainImages{ imageCount };
-	vkGetSwapchainImagesKHR(device_.GetDevice(), swapchain_, &imageCount, swapchainImages.data());
+	UList<VkImage> swapchainImages{};
+    swapchainImages.Resize(imageCount);
 
-	allocatedImages_.resize(imageCount);
+	vkGetSwapchainImagesKHR(device_.GetDevice(), swapchain_, &imageCount, swapchainImages.Data());
+
+	allocatedImages_.Resize(imageCount);
 	for (size i{ 0 }; i < imageCount; ++i)
 	{
 		allocatedImages_[i].image = swapchainImages[i];

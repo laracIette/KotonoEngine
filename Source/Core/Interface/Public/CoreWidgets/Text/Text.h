@@ -42,6 +42,6 @@ private:
 	StateProperty(f32, spacing_, Spacing);
 	StateProperty(UFont, font_, Font);
 
-	std::vector<CharacterData> characters_;
+	UList<CharacterData> characters_;
 };
 

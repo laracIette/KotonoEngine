@@ -2,12 +2,12 @@
 
 #include "al_utils/al_utils.h"
 #include "check.h"
+#include "Containers/Array.h"
 #include "Containers/Span.h"
 #include "enum_utils.h"
 
 #include <AL/al.h>
 #include <AL/alc.h>
-#include <array>
 #include <glm/ext/quaternion_float.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <stdexcept>
@@ -75,7 +75,7 @@ void UAudioContext::Init()
 void UAudioContext::Cleanup()
 {
 	sources_.Clear();
-	oneTimeSources_.clear();
+	oneTimeSources_.Clear();
 
 	alcMakeContextCurrent(nullptr);
 	alcDestroyContext(context_);
@@ -92,17 +92,19 @@ void UAudioContext::Update()
 		}
 	}
 
-	std::erase_if(oneTimeSources_, [](UAudioSource const& source) { 
-		return source.GetState() == EAudioSourceState::Stopped; 
-	});
+    oneTimeSources_ = oneTimeSources_
+        | std::views::filter([](UAudioSource const& source) {
+		    return source.GetState() != EAudioSourceState::Stopped;
+	    })
+        | std::ranges::to<UList>();
 }
 
 auto UAudioContext::CreateSource(UPath const& path) -> EHandle
 {
-	if (!freeSourceSlots_.empty())
+	if (!freeSourceSlots_.IsEmpty())
 	{
-		EHandle const handle{ freeSourceSlots_.back() };
-		freeSourceSlots_.pop_back();
+		EHandle const handle{ freeSourceSlots_.Last() };
+		freeSourceSlots_.Pop();
 		sources_.TryEmplace(handle, path);
 		return handle;
 	}
@@ -122,27 +124,27 @@ void UAudioContext::DeleteSource(EHandle handle)
 	Check(Throw, handle != EHandle::Invalid, "handle is invalid");
 	
 	sources_.Remove(handle);
-	freeSourceSlots_.push_back(handle);
+	freeSourceSlots_.Add(handle);
 }
 
 void UAudioContext::PlaySource(UPath const& path, b8 isLooping)
 {
-	oneTimeSources_.emplace_back(path);
-	oneTimeSources_.back().SetSpace(EAudioSourceSpace::Interface);
-	oneTimeSources_.back().SetIsLooping(isLooping);
+	oneTimeSources_.Add(UAudioSource{ path });
+	oneTimeSources_.Last().SetSpace(EAudioSourceSpace::Interface);
+	oneTimeSources_.Last().SetIsLooping(isLooping);
 }
 
 void UAudioContext::PlaySource(UPath const& path, glm::vec3 const& position, AudioSourceCreateInfo const& createInfo)
 {
-	oneTimeSources_.emplace_back(path);
-	oneTimeSources_.back().SetSpace(EAudioSourceSpace::Scene);
-	oneTimeSources_.back().SetPosition(position);
-	oneTimeSources_.back().SetVolume(createInfo.volume);
-	oneTimeSources_.back().SetPitch(createInfo.pitch);
-	oneTimeSources_.back().SetAttenuationFactor(createInfo.attenuationFactor);
-	oneTimeSources_.back().SetAttenuationStartDistance(createInfo.attenuationStartDistance);
-	oneTimeSources_.back().SetAttenuationEndDistance(createInfo.attenuationEndDistance);
-	oneTimeSources_.back().SetIsLooping(createInfo.isLooping);
+	oneTimeSources_.Add(UAudioSource{ path });
+	oneTimeSources_.Last().SetSpace(EAudioSourceSpace::Scene);
+	oneTimeSources_.Last().SetPosition(position);
+	oneTimeSources_.Last().SetVolume(createInfo.volume);
+	oneTimeSources_.Last().SetPitch(createInfo.pitch);
+	oneTimeSources_.Last().SetAttenuationFactor(createInfo.attenuationFactor);
+	oneTimeSources_.Last().SetAttenuationStartDistance(createInfo.attenuationStartDistance);
+	oneTimeSources_.Last().SetAttenuationEndDistance(createInfo.attenuationEndDistance);
+	oneTimeSources_.Last().SetIsLooping(createInfo.isLooping);
 }
 
 void UAudioContext::SetListenerPosition(glm::vec3 const& position) const
@@ -155,7 +157,7 @@ void UAudioContext::SetListenerOrientation(glm::quat const& orientation) const
 	glm::vec3 const forward{ orientation * glm::vec3{ 0.0f, 0.0f, -1.0f } };
 	glm::vec3 const up{ orientation * glm::vec3{ 0.0f, 1.0f, 0.0f } };
 
-	std::array const values{
+	UArray const values{
 		forward.x, forward.y, forward.z,
 		up.x, up.y, up.z
 	};

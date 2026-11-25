@@ -83,7 +83,7 @@ void ULightBuffers::CmdBarrierShadowMapsNoneToWrite(VkCommandBuffer commandBuffe
     auto const images{ directionalLightShadowMapTargets_
         | std::views::transform(&ShadowMapTarget::allocatedImage)
         | std::views::transform(&UAllocatedImage::image)
-        | std::ranges::to<std::vector>()
+        | std::ranges::to<UList>()
     };
 
     Barriers::CmdTransitionImages(commandBuffer
@@ -134,7 +134,7 @@ void ULightBuffers::CmdBarrierShadowMapsWriteToShaderRead(VkCommandBuffer comman
     auto const images{ directionalLightShadowMapTargets_
         | std::views::transform(&ShadowMapTarget::allocatedImage)
         | std::views::transform(&UAllocatedImage::image)
-        | std::ranges::to<std::vector>()
+        | std::ranges::to<UList>()
     };
 
     Barriers::CmdTransitionImages(commandBuffer
@@ -170,7 +170,7 @@ void ULightBuffers::CreateBuffers()
 
 void ULightBuffers::CreateShadowMapResources()
 {
-    directionalLightShadowMapTargets_.resize(MAX_DIRECTIONAL_LIGHTS);
+    directionalLightShadowMapTargets_.Resize(MAX_DIRECTIONAL_LIGHTS);
     for (auto& [allocatedImage, textureIndex] : directionalLightShadowMapTargets_)
     {
         allocatedImage = device_.CreateAllocatedImage(UAllocatedImageCreateInfo::CreateSampled2D(

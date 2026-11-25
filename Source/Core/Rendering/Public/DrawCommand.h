@@ -1,8 +1,10 @@
 #pragma once
-#include <array>
+
+#include "Containers/Array.h"
+#include "types.h"
+
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float4.hpp>
-#include <types.h>
 #include <vulkan/vulkan_core.h>
 
 struct UDrawCommand final
@@ -31,7 +33,7 @@ struct UDrawCommand final
 
 	f32 sortKey;
 
-	std::array<f32, 16>       scalars;
-	std::array<glm::vec4, 16> vectors;
-	std::array<u32, 16>       textures;
+	UArray<f32, 16>       scalars;
+	UArray<glm::vec4, 16> vectors;
+	UArray<u32, 16>       textures;
 };

@@ -7,9 +7,9 @@ UInterfaceRenderer::UInterfaceRenderer(UDevice& device, UPipelineResourceManager
 	: device_{ device }
 	, pipelineResourceManager_{ pipelineResourceManager }
 	, frameDatas_{ 
-		UInterfaceRender{ device, pipelineResourceManager },
-		UInterfaceRender{ device, pipelineResourceManager },
-		UInterfaceRender{ device, pipelineResourceManager }
+		FrameData{ UInterfaceRender{ device, pipelineResourceManager } },
+		FrameData{ UInterfaceRender{ device, pipelineResourceManager } },
+		FrameData{ UInterfaceRender{ device, pipelineResourceManager } }
 	}
 {
 }

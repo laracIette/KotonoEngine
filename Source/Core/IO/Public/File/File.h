@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Containers/List.h"
 #include "Containers/Span.h"
 #include "Path/Path.h"
 #include "types.h"
@@ -39,7 +40,7 @@ public:
 	auto ReadString() const -> std::string;
 
 	/// Get the content of the file, for binary files
-	auto ReadBinary() const -> std::vector<u8>;
+	auto ReadBinary() const -> UList<u8>;
 
 	/// Set the content of the file, for text files
 	void WriteString(std::string_view data) const;

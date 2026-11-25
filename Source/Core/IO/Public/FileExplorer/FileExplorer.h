@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Path/Path.h>
-#include <vector>
+#include "Path/Path.h"
+#include "Containers/List.h"
 
 class UFile;
 
@@ -16,13 +16,13 @@ public:
 	void SetDirectoryPath(UPath const& directoryPath);
 
 	// Get the directories paths in the current directory.
-	auto GetDirectories() const -> std::vector<UPath>;
+	auto GetDirectories() const -> UList<UPath>;
 
 	// Get the files whose name contains name.
-	auto Find(const std::string& name) const -> std::vector<UFile>;
+	auto Find(const std::string& name) const -> UList<UFile>;
 
 	// Get all the files in the directory.
-	auto GetFiles(b8 isRecursive = false) const -> std::vector<UFile>;
+	auto GetFiles(b8 isRecursive = false) const -> UList<UFile>;
 
 private:
 	UPath directoryPath_;

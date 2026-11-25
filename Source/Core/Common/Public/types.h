@@ -1,5 +1,5 @@
 #pragma once
-#include <cstddef>
+
 #include <stdint.h>
 
 using i8  =		int8_t;
@@ -12,7 +12,7 @@ using u16 =		uint16_t;
 using u32 =		uint32_t;
 using u64 =		uint64_t;
 
-using size =	size_t;
+using size =	decltype(sizeof(0));
 
 using f32 =		float;
 using f64 =		double;

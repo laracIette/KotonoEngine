@@ -1,8 +1,7 @@
 #include "Barriers.h"
 
+#include "Containers/List.h"
 #include "types.h"
-
-#include <vector>
 
 namespace Barriers
 {
@@ -18,12 +17,12 @@ namespace Barriers
 		, VkImageSubresourceRange const subresourceRange
 	)
 	{
-		std::vector<VkImageMemoryBarrier2> barriers{};
-		barriers.reserve(images.Size());
+		UList<VkImageMemoryBarrier2> barriers{};
+		barriers.Reserve(images.Size());
 
 		for (u32 i{ 0 }; i < images.Size(); ++i)
 		{
-			barriers.push_back({
+			barriers.Add({
 				.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
 				.srcStageMask = srcStage,
 				.srcAccessMask = srcAccess,
@@ -37,8 +36,8 @@ namespace Barriers
 		}
 		const VkDependencyInfo dependencyInfo{
 			.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
-			.imageMemoryBarrierCount = static_cast<u32>(barriers.size()),
-			.pImageMemoryBarriers = barriers.data(),
+			.imageMemoryBarrierCount = static_cast<u32>(barriers.Size()),
+			.pImageMemoryBarriers = barriers.Data(),
 		};
 		vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
 	}

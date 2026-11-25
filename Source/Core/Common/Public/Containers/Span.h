@@ -13,20 +13,9 @@ public:
     using value_type = ValueType;
 
 public:
-    constexpr USpan() noexcept
-        : pointer_{ nullptr }
-        , size_{ 0 }
-    {}
-
-    constexpr USpan(USpan&& span) noexcept
-        : pointer_{ span.pointer_ }
-        , size_{ span.size_ }
-    {}
-
-    constexpr USpan(USpan const& span) noexcept
-        : pointer_{ span.pointer_ }
-        , size_{ span.size_ }
-    {}
+    constexpr USpan() noexcept = default;
+    constexpr USpan(USpan&&) noexcept = default;
+    constexpr USpan(USpan const&) noexcept = default;
 
     constexpr USpan(ValueType* pointer, IndexType size) noexcept
         : pointer_{ pointer }
@@ -40,39 +29,46 @@ public:
     {}
 
     template <typename Container>
-    requires (!std::is_array_v<std::remove_reference_t<Container>> &&
-          std::is_convertible_v<typename Container::value_type*, ValueType*>)
+    requires (!std::is_array_v<std::remove_reference_t<Container>>
+        && std::is_convertible_v<typename Container::value_type*, ValueType*>)
     constexpr USpan(Container const& container) noexcept
-        : pointer_{ container.data() }
-        , size_{ container.size() }
+        : pointer_{ container.Data() }
+        , size_{ container.Size() }
     {}
 
-    constexpr auto begin() const noexcept -> ValueType* {
-        return pointer_;
-    }
-
-    constexpr auto end() const noexcept -> ValueType* {
-        return pointer_ + size_;
-    }
-
-    constexpr auto operator[](IndexType index) const noexcept -> ValueType& {
-        return pointer_[index];
-    }
-
-    constexpr auto Data() const noexcept -> ValueType* {
-        return pointer_;
-    }
-
-    constexpr auto Size() const noexcept -> IndexType {
+    [[nodiscard]] constexpr auto Size() const noexcept -> IndexType
+    {
         return size_;
     }
 
-    constexpr auto SizeBytes() const noexcept -> IndexType {
+    [[nodiscard]] constexpr auto SizeBytes() const noexcept -> IndexType
+    {
         return size_ * sizeof(ValueType);
     }
 
-    constexpr auto IsEmpty() const noexcept -> b8 {
+    [[nodiscard]] constexpr auto IsEmpty() const noexcept -> b8
+    {
         return size_ == 0;
+    }
+
+    [[nodiscard]] constexpr auto operator[](IndexType index) const noexcept -> ValueType&
+    {
+        return pointer_[index];
+    }
+
+    [[nodiscard]] constexpr auto Data() const noexcept -> ValueType*
+    {
+        return pointer_;
+    }
+
+    [[nodiscard]] constexpr auto begin() const noexcept -> ValueType*
+    {
+        return pointer_;
+    }
+
+    [[nodiscard]] constexpr auto end() const noexcept -> ValueType*
+    {
+        return pointer_ + size_;
     }
 
 private:

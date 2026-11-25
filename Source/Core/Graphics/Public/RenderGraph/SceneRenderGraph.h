@@ -1,12 +1,13 @@
 #pragma once
+
+#include "Containers/List.h"
 #include "DirectionalLightData.h"
 #include "PointLightData.h"
 #include "SceneDrawData.h"
-#include <vector>
 
 struct USceneRenderGraph final
 {
-	std::vector<USceneDrawData> drawDatas;
-	std::vector<UDirectionalLightData> directionalLightDatas;
-	std::vector<UPointLightData> pointLightDatas;
+	UList<USceneDrawData> drawDatas;
+	UList<UDirectionalLightData> directionalLightDatas;
+	UList<UPointLightData> pointLightDatas;
 };

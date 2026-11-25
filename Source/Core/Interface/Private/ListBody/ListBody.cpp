@@ -40,9 +40,9 @@ auto WListBody::GetContentSize(glm::vec2 const& bounds) const -> glm::vec2
 		}
 	}
 
-	if (!GetChildren().empty())
+	if (!GetChildren().IsEmpty())
 	{
-		size.y += spacing_ * static_cast<f32>(GetChildren().size() - 1);
+		size.y += spacing_ * static_cast<f32>(GetChildren().Size() - 1);
 	}
 
 	size = glm::min(size, newBounds);

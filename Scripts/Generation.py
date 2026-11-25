@@ -85,7 +85,7 @@ public:
 	public: \
 		void SerializeTo(nlohmann::json& json) const override; \
 		void DeserializeFrom(nlohmann::json const& json) override; \
-		void PopulateMemberVariables(std::vector<UVariableInfo>& variables) const override; \
+		void PopulateMemberVariables(UList<UVariableInfo>& variables) const override; \
 		auto Ptr() const -> UObjectPtr<{className}>; \
 		auto GetClass() const -> UPtr<KObjectReflectionBase_Class const> override = 0; \
 	private:
@@ -118,7 +118,7 @@ public:
 	public: \
 		void SerializeTo(nlohmann::json& json) const override; \
 		void DeserializeFrom(nlohmann::json const& json) override; \
-		void PopulateMemberVariables(std::vector<UVariableInfo>& variables) const override; \
+		void PopulateMemberVariables(UList<UVariableInfo>& variables) const override; \
 		auto Ptr() const -> UObjectPtr<{className}>; \
 		auto GetClass() const -> UPtr<KObjectReflectionBase_Class const> override; \
 	private: \
@@ -156,10 +156,10 @@ void {className}::DeserializeFrom(nlohmann::json const& json)
 {deserializeCode}
 }}
 
-void {className}::PopulateMemberVariables(std::vector<UVariableInfo>& variables) const
+void {className}::PopulateMemberVariables(UList<UVariableInfo>& variables) const
 {{
 	Base::PopulateMemberVariables(variables);
-	variables.insert(variables.end(), {{
+	variables.Append({{
 {variablesCode}
 	}});
 }}

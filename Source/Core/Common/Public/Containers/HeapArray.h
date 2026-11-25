@@ -73,27 +73,27 @@ public:
 		return *ptr;
 	}
 
-	auto Data() const noexcept -> ValueType*
+	[[nodiscard]] auto Data() const noexcept -> ValueType*
 	{
 		return data_;
 	}
 
-	auto Size() const noexcept -> IndexType
+	[[nodiscard]] auto Size() const noexcept -> IndexType
 	{
 		return size_;
 	}
 
-	auto SizeBytes() const noexcept -> IndexType
+	[[nodiscard]] auto SizeBytes() const noexcept -> IndexType
 	{
 		return size_ * sizeof(ValueType);
 	}
 
-	static constexpr auto Capacity() noexcept -> IndexType
+	[[nodiscard]] static constexpr auto Capacity() noexcept -> IndexType
 	{
 		return N;
 	}
 
-	static constexpr auto CapacityBytes() noexcept -> IndexType
+	[[nodiscard]] static constexpr auto CapacityBytes() noexcept -> IndexType
 	{
 		return N * sizeof(ValueType);
 	}
@@ -107,20 +107,20 @@ public:
 		size_ = 0;
 	}
 
-	auto begin(this auto&& ctn) noexcept
-	{
-		return ctn.data_;
-	}
-
-	auto end(this auto&& ctn) noexcept
-	{
-		return ctn.data_ + ctn.size_;
-	}
-
 	decltype(auto) operator[](this auto&& ctn, IndexType index) noexcept
 	{
 		Check(Abort, index < ctn.size_, "Index out of bounds!");
 		return ctn.data_[index];
+	}
+
+	[[nodiscard]] auto begin(this auto&& ctn) noexcept
+	{
+		return ctn.data_;
+	}
+
+	[[nodiscard]] auto end(this auto&& ctn) noexcept
+	{
+		return ctn.data_ + ctn.size_;
 	}
 
 private:

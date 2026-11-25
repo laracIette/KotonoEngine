@@ -17,5 +17,5 @@ protected:
 	auto Build() -> WidgetPtr override;
 
 private:
-	std::vector<UObjectPtr<KSceneObject>> sceneObjects_;
+	UList<UObjectPtr<KSceneObject>> sceneObjects_;
 };

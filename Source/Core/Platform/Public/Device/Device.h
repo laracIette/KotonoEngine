@@ -1,15 +1,19 @@
 #pragma once
+
 #include "AllocatedBuffer.h"
+#include "Containers/List.h"
 #include "QueueFamilyIndices.h"
 #include "SwapchainSupportDetails.h"
-#include <types.h>
+#include "types.h"
+
 #include <unordered_set>
-#include <vector>
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
+
 struct UAllocatedImage;
 struct UAllocatedImageCreateInfo;
 class UContext;
+
 class UDevice final
 {
 public:
@@ -30,8 +34,8 @@ public:
 
 	void StagingUpload(void const* data, VkDeviceSize size, UAllocatedBuffer const& dstBuffer, VkDeviceSize srcOffset, VkDeviceSize dstOffset);
 
-	UAllocatedBuffer CreateAllocatedBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaAllocationCreateFlags allocFlags, VmaMemoryUsage memUsage = VMA_MEMORY_USAGE_AUTO) const;
-	UAllocatedImage CreateAllocatedImage(UAllocatedImageCreateInfo const& createInfo) const;
+	auto CreateAllocatedBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaAllocationCreateFlags allocFlags, VmaMemoryUsage memUsage = VMA_MEMORY_USAGE_AUTO) const -> UAllocatedBuffer;
+	auto CreateAllocatedImage(UAllocatedImageCreateInfo const& createInfo) const -> UAllocatedImage;
 	void CreateImage(UAllocatedImage& allocatedImage, UAllocatedImageCreateInfo const& createInfo) const;
 	void CreateImageView(UAllocatedImage& allocatedImage, UAllocatedImageCreateInfo const& createInfo) const;
 
@@ -40,21 +44,20 @@ public:
 	void CleanupImage(UAllocatedImage const& allocatedImage) const;
 	void CleanupImageView(UAllocatedImage const& allocatedImage) const;
 
-	USwapchainSupportDetails QuerySwapchainSupportDetails(VkSurfaceKHR surface) const;
+	auto QuerySwapchainSupportDetails(VkSurfaceKHR surface) const -> USwapchainSupportDetails;
 
-	// Getters
-	VkPhysicalDevice	GetPhysicalDevice() const { return physicalDevice_; }
-	VkDevice			GetDevice() const { return device_; }
-	VmaAllocator		GetAllocator() const { return allocator_; }
-	VkCommandPool		GetCommandPool() const { return commandPool_; }
-	VkQueue				GetGraphicsQueue() const { return graphicsQueue_; }
-	VkQueue				GetPresentQueue() const { return presentQueue_; }
+	auto GetPhysicalDevice() const -> VkPhysicalDevice { return physicalDevice_; }
+	auto GetDevice() const -> VkDevice { return device_; }
+	auto GetAllocator() const -> VmaAllocator { return allocator_; }
+	auto GetCommandPool() const -> VkCommandPool { return commandPool_; }
+	auto GetGraphicsQueue() const -> VkQueue { return graphicsQueue_; }
+	auto GetPresentQueue() const -> VkQueue { return presentQueue_; }
 
-	f32						GetMaxSamplerAnisotropy() const { return maxSamplerAnisotropy_; }
-	VkFormat				GetDepthFormat() const { return depthFormat_; }
-	VkSampleCountFlagBits	GetMSAASamples() const { return msaaSamples_; }
+	auto GetMaxSamplerAnisotropy() const -> f32 { return maxSamplerAnisotropy_; }
+	auto GetDepthFormat() const -> VkFormat { return depthFormat_; }
+	auto GetMSAASamples() const -> VkSampleCountFlagBits { return msaaSamples_; }
 
-	UQueueFamilyIndices	const&	GetQueueFamilyIndices() const { return queueFamilyIndices_; }
+	auto GetQueueFamilyIndices() const -> UQueueFamilyIndices const& { return queueFamilyIndices_; }
 
 private:
 	void CreatePhysicalDevice(VkSurfaceKHR mainSurface);
@@ -67,11 +70,11 @@ private:
 	void EndSingleTimeCommandBuffer() const;
 	void ClearDeletionQueue();
 
-	b8 FormatSupported(VkFormat format, VkFormatFeatureFlags features) const;
+	auto FormatSupported(VkFormat format, VkFormatFeatureFlags features) const -> b8;
 	void PopulateSupportedMipmapFormats();
-	VkFormat FindSupportedDepthFormat() const;
-	f32 FindMaxSamplerAnisotropy() const;
-	VkSampleCountFlagBits GetMaxUsableSampleCount() const;
+	auto FindSupportedDepthFormat() const -> VkFormat;
+	auto FindMaxSamplerAnisotropy() const -> f32;
+	auto GetMaxUsableSampleCount() const -> VkSampleCountFlagBits;
 
 private:
 	UContext& context_;
@@ -90,7 +93,7 @@ private:
 	VkQueue presentQueue_;
 
 	VkCommandBuffer singleTimeCommandBuffer_;
-	std::vector<UAllocatedBuffer> deletionQueue_;
+	UList<UAllocatedBuffer> deletionQueue_;
 
 	std::unordered_set<VkFormat> supportedMipmapFormats_;
 	f32 maxSamplerAnisotropy_;

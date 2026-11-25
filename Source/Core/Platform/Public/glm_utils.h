@@ -1,21 +1,23 @@
 #pragma once
-#include <array>
+
+#include "Containers/Array.h"
+#include "types.h"
+#include "math_utils/math_utils.h"
+
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/ext/vector_float4.hpp>
-#include <types.h>
-#include <math_utils/math_utils.h>
 
-inline std::array<glm::vec3, 8> get_frustum_corners_world_space(
+inline UArray<glm::vec3, 8> get_frustum_corners_world_space(
       glm::mat4 const& view
     , f32 zNear
     , f32 zFar
     , f32 fovYRadians
     , f32 aspect)
 {
-    std::array<glm::vec3, 8> corners{};
+    UArray<glm::vec3, 8> corners{};
 
     // Half-dimensions of the near and far planes in view space
     f32 const tanHalfFOV{ std::tan(fovYRadians * 0.5f) };
@@ -65,7 +67,7 @@ inline glm::mat4 get_light_space_matrix(
     {
         center += v;
     }
-    center /= static_cast<f32>(corners.size());
+    center /= static_cast<f32>(corners.Size());
 
     glm::vec3 const normLightDir{ glm::normalize(lightDir) };
 

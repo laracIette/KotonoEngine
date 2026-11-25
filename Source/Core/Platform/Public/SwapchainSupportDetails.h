@@ -1,9 +1,12 @@
 #pragma once
-#include <vector>
+
+#include "Containers/List.h"
+
 #include <vulkan/vulkan_core.h>
+
 struct USwapchainSupportDetails final
 {
 	VkSurfaceCapabilitiesKHR capabilities;
-	std::vector<VkSurfaceFormatKHR> formats;
-	std::vector<VkPresentModeKHR> presentModes;
+	UList<VkSurfaceFormatKHR> formats;
+	UList<VkPresentModeKHR> presentModes;
 };

@@ -24,18 +24,8 @@ public:
 
 public:
 	USet() = default;
-
-	USet(USet&& set) noexcept
-		: values_(std::move(set.values_))
-		, indices_(std::move(set.indices_))
-	{
-	}
-
-	USet(USet const& set) 
-		: values_(set.values_)
-		, indices_(set.indices_)
-	{
-	}
+	USet(USet&&) noexcept = default;
+	USet(USet const&) = default;
 
 	template <std::input_iterator It, std::sentinel_for<It> Sentinel>
 	USet(It begin, Sentinel end)
@@ -62,28 +52,13 @@ public:
 	{
 		for (auto const& item : set)
 		{
-			values_.push_back(item);
+			values_.Add(item);
 		}
 		PopulateIndices();
 	}
 
-	auto operator=(USet&& set) noexcept -> USet&
-	{
-		values_ = std::move(set.values_);
-		indices_ = std::move(set.indices_);
-		return *this;
-	}
-
-	auto operator=(USet const& set) -> USet&
-	{
-		if (this == &set)
-		{
-			return *this;
-		}
-		values_ = set.values_;
-		indices_ = set.indices_;
-		return *this;
-	}
+	auto operator=(USet&&) noexcept -> USet& = default;
+	auto operator=(USet const&) -> USet& = default;
 
 	template <typename T>
 		requires std::constructible_from<ValueType, T&&>
@@ -96,7 +71,7 @@ public:
 
 		values_.Add(std::forward<T>(value));
 
-		ValueType const& insertedValue{ values_.back() };
+		ValueType const& insertedValue{ values_.Last() };
 		indices_.TryEmplace(insertedValue, values_.LastIndex());
 	}
 
@@ -123,6 +98,11 @@ public:
 		indices_.Erase(it);
 	}
 
+	void Remove(ValueType const& value)
+	{
+		Remove(Find(value));
+	}
+
 	void Replace(IndicesMapConstIterator it, ValueType const& value)
 	{
 		if (!IsValidIterator(it))
@@ -138,20 +118,10 @@ public:
 		values_[index] = value;
 		indices_.InsertOrAssign(value, index);
 	}
-
-	void Remove(ValueType const& value)
-	{
-		Remove(Find(value));
-	}
 	
 	void Replace(ValueType const& oldValue, ValueType const& newValue)
 	{
 		Replace(Find(oldValue), newValue);
-	}
-
-	bool Contains(ValueType const& value) const
-	{
-		return indices_.Contains(value);
 	}
 
 	void Clear() noexcept
@@ -160,54 +130,64 @@ public:
 		indices_.Clear();
 	}
 
-	constexpr auto LastIndex() const noexcept -> i64
+    constexpr void Reserve(IndexType size)
+	{
+	    values_.Reserve(size);
+	}
+
+    [[nodiscard]] constexpr auto Size() const noexcept -> IndexType
+	{
+	    return values_.Size();
+	}
+
+    [[nodiscard]] constexpr auto IsEmpty() const noexcept -> b8
+	{
+	    return values_.IsEmpty();
+	}
+
+	[[nodiscard]] constexpr auto LastIndex() const noexcept -> i64
 	{
 		return values_.LastIndex();
 	}
 
-	constexpr auto IsValidIndex(IndexType index) const noexcept -> b8
+	[[nodiscard]] constexpr auto IsValidIndex(IndexType index) const noexcept -> b8
 	{
 		return values_.IsValidIndex(index);
 	}
 
-	constexpr auto IsValidIndex(i64 index) const noexcept -> b8
+	[[nodiscard]] constexpr auto IsValidIndex(i64 index) const noexcept -> b8
 	{
 		return values_.IsValidIndex(index);
 	}
 
-	auto IsValidIterator(IndicesMapConstIterator it) const noexcept -> b8
+    [[nodiscard]] auto Contains(ValueType const& value) const -> b8
+	{
+	    return indices_.Contains(value);
+	}
+
+	[[nodiscard]] auto IsValidIterator(IndicesMapConstIterator it) const noexcept -> b8
 	{
 		return indices_.IsValidIterator(it);
 	}
 	
-	auto GetIndex(ValueType const& value) const -> IndexType
+	[[nodiscard]] auto GetIndex(ValueType const& value) const -> IndexType
 	{
 		return indices_.At(value);
 	}
 
-	constexpr auto begin(this auto&& self) noexcept(noexcept(std::ranges::begin(self.values_)))
+	constexpr auto Data(this auto&& self) noexcept
 	{
-		return std::ranges::begin(self.values_);
+		return self.values_.Data();
 	}
 
-	constexpr auto end(this auto&& self) noexcept(noexcept(std::ranges::end(self.values_)))
+	constexpr decltype(auto) First(this auto&& self) noexcept
 	{
-		return std::ranges::end(self.values_);
+		return self.values_.First();
 	}
 
-	constexpr auto data(this auto&& self) noexcept
+	constexpr decltype(auto) Last(this auto&& self) noexcept
 	{
-		return self.values_.data();
-	}
-
-	constexpr decltype(auto) front(this auto&& self) noexcept
-	{
-		return self.values_.front();
-	}
-
-	constexpr decltype(auto) back(this auto&& self) noexcept
-	{
-		return self.values_.back();
+		return self.values_.Last();
 	}
 
 	constexpr decltype(auto) operator[](this auto&& self, IndexType index) noexcept(noexcept(self.values_[index]))
@@ -215,29 +195,14 @@ public:
 		return self.values_[index];
 	}
 
-    constexpr auto data() -> ValueType*
+    constexpr auto begin(this auto&& self) noexcept(noexcept(self.values_.begin()))
 	{
-	    return values_.data();
+	    return self.values_.begin();
 	}
 
-	void push_back(auto&& value)
+    constexpr auto end(this auto&& self) noexcept(noexcept(self.values_.end()))
 	{
-		Add(std::forward<decltype(value)>(value));
-	}
-
-	constexpr void reserve(IndexType size)
-	{
-		values_.reserve(size);
-	}
-
-	constexpr auto size() const noexcept -> IndexType
-	{
-		return values_.size();
-	}
-
-	constexpr auto empty() const noexcept -> b8
-	{
-		return values_.empty();
+	    return self.values_.end();
 	}
 
 private:

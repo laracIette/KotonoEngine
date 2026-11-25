@@ -8,7 +8,7 @@ WImage::WImage()
 
 void WImage::PopulateRenderGraph(UInterfaceRenderGraph& interfaceRenderGraph, UColor const& tint) const
 {	
-	interfaceRenderGraph.drawDatas.push_back(
+	interfaceRenderGraph.drawDatas.Add(
 		UInterfaceDrawData::MakeImage(
 			GetScissor(),
 			GetModelMatrix(),

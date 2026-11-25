@@ -1,7 +1,9 @@
 #pragma once
+
+#include "Containers/List.h"
 #include "InterfaceDrawData.h"
-#include <vector>
+
 struct UInterfaceRenderGraph final
 {
-	std::vector<UInterfaceDrawData> drawDatas;
+	UList<UInterfaceDrawData> drawDatas;
 };

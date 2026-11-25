@@ -1,9 +1,10 @@
 #pragma once
+
+#include "Containers/Array.h"
 #include "types.h"
-#include <array>
 
 template <typename T, size Cols, size Rows>
-class UMatrix
+class UMatrix final
 {
 public:
 	constexpr decltype(auto) operator[](this auto&& self, size col, size row) noexcept
@@ -12,5 +13,5 @@ public:
 	}
 
 private:
-	std::array<std::array<T, Rows>, Cols> data_;
+	UArray<UArray<T, Rows>, Cols> data_;
 };

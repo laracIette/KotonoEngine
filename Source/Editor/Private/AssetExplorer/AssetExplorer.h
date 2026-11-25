@@ -34,7 +34,7 @@ private:
 
 private:
 	UPath currentDirectory_;
-	std::vector<UPath> navigatedPaths_;
+	UList<UPath> navigatedPaths_;
 	size currentPathIndex_;
 	UObjectPtr<WSelectableList> itemList_;
 };

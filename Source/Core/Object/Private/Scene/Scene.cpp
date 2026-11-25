@@ -224,7 +224,7 @@ void UScene::DeselectObject(SceneObjectPtr const& sceneObject)
 
 void UScene::DeselectAllObjects()
 {
-    if (selectedObjects_.empty())
+    if (selectedObjects_.IsEmpty())
     {
         return;
     }

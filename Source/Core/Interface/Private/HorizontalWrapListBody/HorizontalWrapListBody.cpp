@@ -59,9 +59,9 @@ auto WHorizontalWrapListBody::GetContentSize(glm::vec2 const& bounds) const -> g
 		size.y += rowSize.y;
 	}
 
-	if (rowSizes.size())
+	if (rowSizes.Size())
 	{
-		size.y += rowSpacing_ * static_cast<f32>(rowSizes.size() - 1);
+		size.y += rowSpacing_ * static_cast<f32>(rowSizes.Size() - 1);
 	}
 	
 	size = glm::min(size, newBounds);
@@ -79,9 +79,9 @@ auto WHorizontalWrapListBody::GetDesiredSize(const glm::vec2& bounds) const -> g
 		size.y += rowSize.y;
 	}
 	
-	if (rowSizes.size())
+	if (rowSizes.Size())
 	{
-		size.y += rowSpacing_ * static_cast<float>(rowSizes.size() - 1);
+		size.y += rowSpacing_ * static_cast<float>(rowSizes.Size() - 1);
 	}
 
 	return size;
@@ -92,9 +92,9 @@ auto WHorizontalWrapListBody::GetFlex() const -> EFlex
 	return EFlex::All;
 }
 
-auto WHorizontalWrapListBody::GetRowDisplaySizes(glm::vec2 const& bounds) const -> std::vector<glm::vec2>
+auto WHorizontalWrapListBody::GetRowDisplaySizes(glm::vec2 const& bounds) const -> UList<glm::vec2>
 {
-	std::vector<glm::vec2> rowSizes{};
+	UList<glm::vec2> rowSizes{};
 	glm::vec2 rowSize{ 0.0f, 0.0f };
 
 	auto const isRowEmpty{ [&rowSize]() { return rowSize == glm::vec2{ 0.0f, 0.0f }; } };
@@ -120,7 +120,7 @@ auto WHorizontalWrapListBody::GetRowDisplaySizes(glm::vec2 const& bounds) const 
 				// Submit the row if the child doesn't fit
 				else
 				{
-					rowSizes.push_back(rowSize);
+					rowSizes.Add(rowSize);
 
 					newDisplayBounds.x = bounds.x;
 					newDisplayBounds.y -= rowSize.y + rowSpacing_; // useless because bounds.y can only be INF, but here for consistency
@@ -139,15 +139,15 @@ auto WHorizontalWrapListBody::GetRowDisplaySizes(glm::vec2 const& bounds) const 
 	// Add the last computed row if necessary
 	if (!isRowEmpty())
 	{
-		rowSizes.push_back(rowSize);
+		rowSizes.Add(rowSize);
 	}
 
 	return rowSizes;
 }
 
-auto WHorizontalWrapListBody::GetRowDesiredSizes(const glm::vec2& bounds) const -> std::vector<glm::vec2>
+auto WHorizontalWrapListBody::GetRowDesiredSizes(glm::vec2 const& bounds) const -> UList<glm::vec2>
 {
-	std::vector<glm::vec2> rowSizes{};
+	UList<glm::vec2> rowSizes{};
 	glm::vec2 rowSize{ 0.0f, 0.0f };
 
 	auto const isRowEmpty{ [&rowSize]() { return rowSize == glm::vec2{ 0.0f, 0.0f }; } };
@@ -168,7 +168,7 @@ auto WHorizontalWrapListBody::GetRowDesiredSizes(const glm::vec2& bounds) const 
 				}
 				else
 				{
-					rowSizes.push_back(rowSize);
+					rowSizes.Add(rowSize);
 					rowSize = { 0.0f, 0.0f };
 				}
 			}
@@ -180,7 +180,7 @@ auto WHorizontalWrapListBody::GetRowDesiredSizes(const glm::vec2& bounds) const 
 
 	if (!isRowEmpty())
 	{
-		rowSizes.push_back(rowSize);
+		rowSizes.Add(rowSize);
 	}
 
 	return rowSizes;

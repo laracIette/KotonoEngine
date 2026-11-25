@@ -18,13 +18,13 @@ void KObjectReflectionBase::DeserializeFrom(nlohmann::json const& json)
 {
 }
 
-void KObjectReflectionBase::PopulateMemberVariables(std::vector<UVariableInfo>& variables) const
+void KObjectReflectionBase::PopulateMemberVariables(UList<UVariableInfo>& variables) const
 {
 }
 
-auto KObjectReflectionBase::GetMemberVariables() const -> std::vector<UVariableInfo>
+auto KObjectReflectionBase::GetMemberVariables() const -> UList<UVariableInfo>
 {
-	std::vector<UVariableInfo> variables{};
+	UList<UVariableInfo> variables{};
 	PopulateMemberVariables(variables);
 	return variables;
 }

@@ -18,8 +18,8 @@ public:
 	auto GetFlex() const -> EFlex override;
 
 private:
-	auto GetRowDisplaySizes(glm::vec2 const& bounds) const -> std::vector<glm::vec2>;
-	auto GetRowDesiredSizes(glm::vec2 const& bounds) const -> std::vector<glm::vec2>;
+	auto GetRowDisplaySizes(glm::vec2 const& bounds) const -> UList<glm::vec2>;
+	auto GetRowDesiredSizes(glm::vec2 const& bounds) const -> UList<glm::vec2>;
 
 private:
 	StateProperty(float, itemSpacing_, ItemSpacing);

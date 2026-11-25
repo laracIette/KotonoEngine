@@ -1,10 +1,10 @@
 #include "PipelineResourceManager/PipelineResourceManager.h"
 
+#include "Containers/Array.h"
 #include "PushConstants.h"
-#include <array>
-#include <check.h>
-#include <Device/Device.h>
-#include <vk_utils/vk_utils.h>
+#include "check.h"
+#include "Device/Device.h"
+#include "vk_utils/vk_utils.h"
 
 static constexpr u32 MAX_TEXTURES{ 65536 };
 static constexpr u32 MAX_TEXTURE_ARRAYS{ 1024 };
@@ -119,22 +119,22 @@ u32 UPipelineResourceManager::RegisterShadowSampler(VkSampler sampler)
 
 void UPipelineResourceManager::UnregisterTexture(u32 slot)
 {
-	texturePool_.freeSlots.push_back(slot);
+	texturePool_.freeSlots.Add(slot);
 }
 
 void UPipelineResourceManager::UnregisterTextureArray(u32 slot)
 {
-	textureArrayPool_.freeSlots.push_back(slot);
+	textureArrayPool_.freeSlots.Add(slot);
 }
 
 void UPipelineResourceManager::UnregisterSampler(u32 slot)
 {
-	samplerPool_.freeSlots.push_back(slot);
+	samplerPool_.freeSlots.Add(slot);
 }
 
 void UPipelineResourceManager::UnregisterShadowSampler(u32 slot)
 {
-	shadowSamplerPool_.freeSlots.push_back(slot);
+	shadowSamplerPool_.freeSlots.Add(slot);
 }
 
 void UPipelineResourceManager::CmdBindDescriptorSet(VkCommandBuffer commandBuffer) const
@@ -152,16 +152,16 @@ void UPipelineResourceManager::CmdBindDescriptorSet(VkCommandBuffer commandBuffe
 
 void UPipelineResourceManager::CreateDescriptorSetLayout()
 {
-	constexpr std::array<VkDescriptorSetLayoutBinding, 5> BINDINGS{ {
-		{ 0, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURES,			VK_SHADER_STAGE_ALL, nullptr },
-		{ 1, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURE_ARRAYS,		VK_SHADER_STAGE_ALL, nullptr },
-		{ 2, VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SAMPLERS,			VK_SHADER_STAGE_ALL, nullptr },
-		{ 3, VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SHADOW_SAMPLERS,	VK_SHADER_STAGE_ALL, nullptr },
-		{ 4, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,	MAX_STORAGE_IMAGES,		VK_SHADER_STAGE_ALL, nullptr },
-	} };
+	constexpr UArray BINDINGS{
+		VkDescriptorSetLayoutBinding{ 0, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURES,			VK_SHADER_STAGE_ALL, nullptr },
+		VkDescriptorSetLayoutBinding{ 1, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURE_ARRAYS,	VK_SHADER_STAGE_ALL, nullptr },
+		VkDescriptorSetLayoutBinding{ 2, VK_DESCRIPTOR_TYPE_SAMPLER,		    MAX_SAMPLERS,			VK_SHADER_STAGE_ALL, nullptr },
+		VkDescriptorSetLayoutBinding{ 3, VK_DESCRIPTOR_TYPE_SAMPLER,		    MAX_SHADOW_SAMPLERS,	VK_SHADER_STAGE_ALL, nullptr },
+		VkDescriptorSetLayoutBinding{ 4, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,	MAX_STORAGE_IMAGES,	VK_SHADER_STAGE_ALL, nullptr },
+	};
 
 	// Add VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT to the last binding (only) to make it resizeable
-	constexpr std::array BINDING_FLAGS{
+	constexpr UArray BINDING_FLAGS{
 		BINDLESS_FLAGS,
 		BINDLESS_FLAGS,
 		BINDLESS_FLAGS,
@@ -171,16 +171,16 @@ void UPipelineResourceManager::CreateDescriptorSetLayout()
 
 	const VkDescriptorSetLayoutBindingFlagsCreateInfo bindingFlagsInfo{
 		.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO,
-		.bindingCount = static_cast<u32>(BINDING_FLAGS.size()),
-		.pBindingFlags = BINDING_FLAGS.data(),
+		.bindingCount = static_cast<u32>(BINDING_FLAGS.Size()),
+		.pBindingFlags = BINDING_FLAGS.Data(),
 	};
 
 	const VkDescriptorSetLayoutCreateInfo layoutInfo{
 		.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
 		.pNext = &bindingFlagsInfo,
 		.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT,
-		.bindingCount = static_cast<u32>(BINDINGS.size()),
-		.pBindings = BINDINGS.data(),
+		.bindingCount = static_cast<u32>(BINDINGS.Size()),
+		.pBindings = BINDINGS.Data(),
 	};
 
 	VK_CHECK_THROW(
@@ -197,17 +197,17 @@ void UPipelineResourceManager::CreatePipelineLayout()
 	   .size = sizeof(UPushConstants),
 	};
 
-	const std::array setLayouts{ descriptorSetLayout_ };
-	const std::array pushConstantRanges{ pushConstantRange };
+	const UArray setLayouts{ descriptorSetLayout_ };
+	const UArray pushConstantRanges{ pushConstantRange };
 
 	const VkPipelineLayoutCreateInfo pipelineLayoutInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
 
-		.setLayoutCount = static_cast<u32>(setLayouts.size()),
-		.pSetLayouts = setLayouts.data(),
+		.setLayoutCount = static_cast<u32>(setLayouts.Size()),
+		.pSetLayouts = setLayouts.Data(),
 
-		.pushConstantRangeCount = static_cast<u32>(pushConstantRanges.size()),
-		.pPushConstantRanges = pushConstantRanges.data(),
+		.pushConstantRangeCount = static_cast<u32>(pushConstantRanges.Size()),
+		.pPushConstantRanges = pushConstantRanges.Data(),
 	};
 
 	VK_CHECK_THROW(
@@ -218,20 +218,20 @@ void UPipelineResourceManager::CreatePipelineLayout()
 
 void UPipelineResourceManager::CreateDescriptorPool()
 {
-	constexpr std::array<VkDescriptorPoolSize, 5> POOL_SIZES{ {
-		{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURES		},
-		{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURE_ARRAYS	},
-		{ VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SAMPLERS		},
-		{ VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SHADOW_SAMPLERS	},
-		{ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,	MAX_STORAGE_IMAGES	},
-	} };
+	constexpr UArray POOL_SIZES{
+		VkDescriptorPoolSize{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURES		    },
+		VkDescriptorPoolSize{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,	MAX_TEXTURE_ARRAYS	    },
+		VkDescriptorPoolSize{ VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SAMPLERS		    },
+		VkDescriptorPoolSize{ VK_DESCRIPTOR_TYPE_SAMPLER,		MAX_SHADOW_SAMPLERS    },
+		VkDescriptorPoolSize{ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,	MAX_STORAGE_IMAGES	    },
+	};
 
 	const VkDescriptorPoolCreateInfo poolInfo{
 		.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
 		.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT,
 		.maxSets = 1,
-		.poolSizeCount = static_cast<u32>(POOL_SIZES.size()),
-		.pPoolSizes = POOL_SIZES.data(),
+		.poolSizeCount = static_cast<u32>(POOL_SIZES.Size()),
+		.pPoolSizes = POOL_SIZES.Data(),
 	};
 
 	VK_CHECK_THROW(
@@ -253,21 +253,23 @@ void UPipelineResourceManager::CreateDescriptorSet()
 
 u32 UPipelineResourceManager::AllocateSlot(ResourcePool& resourcePool)
 {
-	if (!resourcePool.freeSlots.empty())
+	if (!resourcePool.freeSlots.IsEmpty())
 	{
-		u32 const slot{ resourcePool.freeSlots.back() };
-		resourcePool.freeSlots.pop_back();
+		u32 const slot{ resourcePool.freeSlots.Last() };
+		resourcePool.freeSlots.Pop();
 		return slot;
 	}
 	Check(Abort, resourcePool.nextSlot < resourcePool.maxSlots, "resourcePool has ran out of available slots!");
 	return resourcePool.nextSlot++;
 }
 
-void UPipelineResourceManager::WriteDescriptorSet(VkSampler sampler, VkImageView imageView
-	, const VkImageLayout imageLayout
-	, const u32 binding
-	, const u32 slot
-	, const VkDescriptorType descriptorType) const
+void UPipelineResourceManager::WriteDescriptorSet(
+      VkSampler sampler
+    , VkImageView imageView
+	, VkImageLayout imageLayout
+	, u32 binding
+	, u32 slot
+	, VkDescriptorType descriptorType) const
 {
 	const VkDescriptorImageInfo imageInfo{
 		.sampler = sampler,

@@ -1,7 +1,9 @@
 #pragma once
-#include <Path/Path.h>
-#include <types.h>
-#include <vector>
+
+#include "Containers/List.h"
+#include "Path/Path.h"
+#include "types.h"
+
 class UFont final
 {
 public:
@@ -15,7 +17,7 @@ public:
 	void SetSpacing(f32 spacing);
 
 	auto GetCharacterPath(char character) const -> UPath;
-	auto GetTextPaths(std::string_view text) const -> std::vector<UPath>;
+	auto GetTextPaths(std::string_view text) const -> UList<UPath>;
 
 private:
 	UPath path_;
@@ -23,6 +25,6 @@ private:
 	f32 size_;
 	f32 spacing_;
 
-	std::vector<UPath> characterPaths_;
+	UList<UPath> characterPaths_;
 };
 

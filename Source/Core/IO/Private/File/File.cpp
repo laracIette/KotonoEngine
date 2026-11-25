@@ -77,7 +77,7 @@ auto UFile::ReadString() const -> std::string
     return fileContents.str();
 }
 
-auto UFile::ReadBinary() const -> std::vector<u8>
+auto UFile::ReadBinary() const -> UList<u8>
 {
     if (!Exists())
     {
@@ -94,10 +94,12 @@ auto UFile::ReadBinary() const -> std::vector<u8>
     }
 
     size const fileSize{ static_cast<size>(file.tellg()) };
-    std::vector<u8> buffer(fileSize);
+
+    UList<u8> buffer{};
+    buffer.Resize(fileSize);
 
     file.seekg(0);
-    file.read(reinterpret_cast<char*>(buffer.data()), fileSize);
+    file.read(reinterpret_cast<char*>(buffer.Data()), fileSize);
 
     file.close();
 

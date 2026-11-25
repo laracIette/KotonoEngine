@@ -99,7 +99,7 @@ struct UDeserialize
 			v = static_cast<T>(UDeserialize<enum_t>{}(json));
 		}
 		else if constexpr (std::ranges::range<T>
-			&& requires(T& container, std::ranges::range_value_t<T> item) { container.push_back(item); }
+			&& requires(T& container, std::ranges::range_value_t<T> item) { container.Add(item); }
 			&& !std::convertible_to<T, std::string>
 		)
 		{
@@ -107,16 +107,16 @@ struct UDeserialize
 
 			size const rangeSize{ get_size(json) };
 
-			if constexpr (requires { v.reserve(rangeSize); })
+			if constexpr (requires { v.Reserve(rangeSize); })
 			{
-				v.reserve(rangeSize);
+				v.Reserve(rangeSize);
 			}
 
 			for (size i{ 0 }; i < rangeSize; ++i)
 			{
 				item_t value{};
 				UDeserialize<item_t>{}(get_at(json, i), value);
-				v.push_back(std::move(value));
+				v.Add(std::move(value));
 			}
 		}
 	}

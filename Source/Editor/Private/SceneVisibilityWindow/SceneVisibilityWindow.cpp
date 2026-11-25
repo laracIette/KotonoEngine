@@ -1,9 +1,9 @@
 #include "SceneVisibilityWindow.h"
 
 #include "SceneVisibilityField/SceneVisibilityField.h"
-#include <array>
-#include <enum_utils.h>
-#include <core_widgets.h>
+#include "Containers/Array.h"
+#include "core_widgets.h"
+#include "enum_utils.h"
 
 struct VisibilityField
 {
@@ -11,7 +11,7 @@ struct VisibilityField
     std::string_view name;
 };
 
-static constexpr std::array FIELDS{ 
+static constexpr UArray FIELDS{
     VisibilityField{ ESceneVisibility::All, "All" },
     VisibilityField{ ESceneVisibility::Mesh, "Mesh" },
     VisibilityField{ ESceneVisibility::Bounds, "Bounds" },
