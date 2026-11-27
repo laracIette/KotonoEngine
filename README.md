@@ -23,7 +23,7 @@ The Kotono Engine is a 3D game engine built using C++ and the Vulkan API.
 
 - The *[Vulkan SDK](https://vulkan.lunarg.com/sdk/home)* 1.4 or later, with its bin folder added to the system’s PATH environment variable.
 
-- A C++ 23 compiler. As of today, only *[MSVC](https://visualstudio.microsoft.com/downloads/)* is guaranteed to work.
+- A C++ 23 compiler. As of today, Clang and *[MSVC](https://visualstudio.microsoft.com/downloads/)* have both been tested.
 
 ### Instructions
 

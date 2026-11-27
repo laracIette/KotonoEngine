@@ -113,7 +113,7 @@ void URenderer::Init()
 
 void URenderer::Cleanup()
 {
-	Log(Normal, "cleaning up renderer");
+	Log(Info, "cleaning up renderer");
 
 	for (auto const* texture : textures_ | std::views::values)
 	{
@@ -156,7 +156,7 @@ void URenderer::Cleanup()
 		vkDestroyCommandPool(device_.GetDevice(), frameData.commandPool, nullptr);
 	}
 
-	Log(Normal, "cleaned up renderer");
+	Log(Info, "cleaned up renderer");
 }
 
 void URenderer::DrawFrame(UInterfaceRenderGraph const& interfaceRenderGraph)
@@ -190,7 +190,7 @@ void URenderer::DrawFrame(UInterfaceRenderGraph const& interfaceRenderGraph)
 
 	if (!TryAcquireNextImage(frameIndex))
 	{
-		Log(Normal, "frame {0} skipped", frameCount_);
+		Log(Info, "frame {0} skipped", frameCount_);
 		return;
 	}
 

@@ -137,7 +137,7 @@ void UContext::Cleanup() const
 
 	vkDestroyInstance(instance_, nullptr);
 
-	Log(Normal, "cleaned up context");
+	Log(Info, "cleaned up context");
 }
 
 void UContext::CreateInstance()

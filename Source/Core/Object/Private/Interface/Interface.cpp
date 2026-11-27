@@ -51,7 +51,7 @@ void UInterface::BeginDraw(glm::uvec2 const& bounds)
 			},
 		});
 
-		Log(Normal, "{0} displayed with a size of: {1}", widget_->GetName(), glm::to_string(bounds));
+		Log(Info, "{0} displayed with a size of: {1}", widget_->GetName(), glm::to_string(bounds));
 	}
 }
 
@@ -61,7 +61,7 @@ void UInterface::EndDraw() const
 	{
 		widget_->Remove();
 
-		Log(Normal, "{0} removed", widget_->GetName());
+		Log(Info, "{0} removed", widget_->GetName());
 	}
 }
 

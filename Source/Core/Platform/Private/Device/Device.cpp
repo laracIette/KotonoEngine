@@ -456,7 +456,7 @@ void UDevice::CreatePhysicalDevice(VkSurfaceKHR mainSurface)
 				maxVRAM = totalVRAM;
 				bestDevice = device;
 
-				Log(Normal, "Selected GPU: {0}, VRAM: {1} MB", deviceProperties.deviceName, totalVRAM / (1024llu * 1024));
+				Log(Info, "Selected GPU: {0}, VRAM: {1} MB", deviceProperties.deviceName, totalVRAM / (1024llu * 1024));
 			}
 
 			// Stop on cpu if on battery

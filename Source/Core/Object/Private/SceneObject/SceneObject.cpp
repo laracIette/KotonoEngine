@@ -84,7 +84,7 @@ void KSceneObject::AddComponent(UObjectPtr<KSceneComponent> const& component)
 {
 	if (!component)
 	{
-		Log(Normal, "can't add a null scene component");
+		Log(Info, "can't add a null scene component");
 		return;
 	}
 
@@ -111,7 +111,7 @@ void KSceneObject::RemoveComponent(UObjectPtr<KSceneComponent> const& component)
 {
 	if (!component)
 	{
-		Log(Normal, "can't remove a null scene component");
+		Log(Info, "can't remove a null scene component");
 		return;
 	}
 

@@ -59,7 +59,10 @@ void UApplication::Init()
 	
     SSpvCompiler::CompileUpdated();
 
-	Check(Abort, glfwInit() == GLFW_TRUE, "failed to initialize GLFW!");
+    if (glfwInit() == GLFW_FALSE)
+    {
+        Log(Info, "failed to initialize GLFW!");
+    }
 
     RegisterObjectClasses();
 
@@ -146,5 +149,5 @@ void UApplication::DrawFrame() const
 
 void UApplication::LogUPS() const
 {
-    Log(Normal, "{0:.2f} ups", 1.0f / averageUpdateTime_.Get());
+    Log(Info, "{0:.2f} ups", 1.0f / averageUpdateTime_.Get());
 }

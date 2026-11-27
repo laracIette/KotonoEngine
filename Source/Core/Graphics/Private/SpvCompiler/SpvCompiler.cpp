@@ -29,7 +29,7 @@ static const UArray DependencyPaths{
 
 void SSpvCompiler::CompileAll()
 {
-    Log(Normal, "Clearing registry...");
+    Log(Info, "Clearing registry...");
 
     SSerializer::Serialize(nlohmann::json::object(), CompiledRegistryPath);
     CompileUpdated();
@@ -45,7 +45,7 @@ void SSpvCompiler::CompileUpdated()
         return CompileAll();
     }
 
-    Log(Normal, "compiling updated spirv shaders");
+    Log(Info, "compiling updated spirv shaders");
 
     nlohmann::json json{};
     SSerializer::Deserialize(json, CompiledRegistryPath);
@@ -100,7 +100,7 @@ void SSpvCompiler::CompileUpdated()
 
     SSerializer::Serialize(json, CompiledRegistryPath);
 
-    Log(Normal, "compiled updated spirv shaders");
+    Log(Info, "compiled updated spirv shaders");
 }
 
 auto SSpvCompiler::HasDependenciesUpdated() -> b8
@@ -162,11 +162,11 @@ auto SSpvCompiler::Compile(UPath const& path) -> b8
 
     if (result)
     {
-        Log(Normal, "Successfully compiled shader {0}", filePath.ToPath().string());
+        Log(Info, "Successfully compiled shader {0}", filePath.ToPath().string());
     }
     else
     {
-        Log(Normal, "Found errors while compiling shader {0}", filePath.ToPath().string());
+        Log(Info, "Found errors while compiling shader {0}", filePath.ToPath().string());
     }
 
     return result;

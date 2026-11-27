@@ -55,7 +55,7 @@ auto UFile::ReadString() const -> std::string
     // Check if path exists.
     if (!Exists())
     {
-        Log(Normal, "Failed to find a file at {0}", path_.ToString());
+        Log(Info, "Failed to find a file at {0}", path_.ToString());
         return "";
     }
 
@@ -64,7 +64,7 @@ auto UFile::ReadString() const -> std::string
 
     if (!file.is_open())
     {
-        Log(Normal, "Failed to open the file at {0}", path_.ToString());
+        Log(Info, "Failed to open the file at {0}", path_.ToString());
         return "";
     }
 
@@ -81,7 +81,7 @@ auto UFile::ReadBinary() const -> UList<u8>
 {
     if (!Exists())
     {
-        Log(Normal, "Failed to find a file at {0}", path_.ToString());
+        Log(Info, "Failed to find a file at {0}", path_.ToString());
         return {};
     }
 
@@ -89,7 +89,7 @@ auto UFile::ReadBinary() const -> UList<u8>
 
     if (!file.is_open())
     {
-        Log(Normal, "Failed to open the file at {0}", path_.ToString());
+        Log(Info, "Failed to open the file at {0}", path_.ToString());
         return {};
     }
 
@@ -113,7 +113,7 @@ void UFile::WriteString(std::string_view data) const
 
     if (!file.is_open())
     {
-        Log(Normal, "Failed to open the file at {0}", path_.ToString());
+        Log(Info, "Failed to open the file at {0}", path_.ToString());
         return;
     }
 
@@ -131,7 +131,7 @@ void UFile::WriteBinary(USpan<u32 const> data) const
 
     if (!file.is_open())
     {
-        Log(Normal, "Failed to open the file at {0}", path_.ToString());
+        Log(Info, "Failed to open the file at {0}", path_.ToString());
         return;
     }
 

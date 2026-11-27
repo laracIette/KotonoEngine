@@ -34,13 +34,13 @@ void AShader::Init(UDevice& device, VkPipelineLayout pipelineLayout, VkFormat sw
 	{
 		CreateGraphicsPipeline(device, pipelineLayout, swapchainFormat);
 	}
-	Log(Normal, "initialized shader {0}", GetPath().ToString());
+	Log(Info, "initialized shader {0}", GetPath().ToString());
 }
 
 void AShader::Cleanup(UDevice& device) const
 {
 	vkDestroyPipeline(device.GetDevice(), pipeline_, nullptr);
-	Log(Normal, "cleaned up shader {0}", GetPath().ToString());
+	Log(Info, "cleaned up shader {0}", GetPath().ToString());
 }
 
 auto AShader::GetPipeline() const -> VkPipeline

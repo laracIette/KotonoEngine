@@ -1,6 +1,10 @@
 #pragma once
 
-#ifdef NDEBUG
+#ifndef NDEBUG
+#define WITH_LOG
+#endif
+
+#ifndef WITH_LOG
 
 #define Log(...)
 
@@ -23,7 +27,7 @@ inline void LogInternal(char const* logColor, char const* file, int line, std::f
 
 enum class ELogSeverity
 {
-	Normal,
+	Info,
 	Important,
 	Warning,
 	Error,
@@ -33,7 +37,7 @@ consteval auto GetLogSeverityColor(ELogSeverity severity) noexcept
 {
 	switch (severity)
 	{
-	case ELogSeverity::Normal:		return LOG_COLOR_DEFAULT;
+	case ELogSeverity::Info:		return LOG_COLOR_DEFAULT;
 	case ELogSeverity::Important:	return LOG_COLOR_ACCENT;
 	case ELogSeverity::Warning:		return LOG_COLOR_WARNING;
 	case ELogSeverity::Error:		return LOG_COLOR_ERROR;

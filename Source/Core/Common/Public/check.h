@@ -1,12 +1,13 @@
 #pragma once
 
-#ifdef NDEBUG
+#include "Logging/log.h"
+
+#ifndef WITH_LOG
 
 #define Check(...)
 
 #else
 
-#include "Logging/log.h"
 #include <cstdlib>
 #include <stdexcept>
 
